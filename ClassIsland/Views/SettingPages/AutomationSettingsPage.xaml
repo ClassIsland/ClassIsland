@@ -54,12 +54,12 @@
                 <Button Content="新建"
                         IsDefault="True"
                         HorizontalAlignment="Right"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
+                        Style="{DynamicResource MaterialFlatButton}"
                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                         CommandParameter="{Binding ViewModel.CreateProfileName, Mode=OneWay}" />
                 <Button Content="取消"
                         HorizontalAlignment="Right"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
+                        Style="{DynamicResource MaterialFlatButton}"
                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                         Margin="6 0 0 0"
                         CommandParameter="{x:Null}" />
@@ -95,7 +95,7 @@
                             <ci:SettingsCard.Switcher>
                                 <StackPanel Orientation="Horizontal">
                                     <Button Content="{materialDesign:PackIcon HelpCircleOutline}"
-                                            ToolTip="自动化帮助文档…"
+                                            ToolTip.Tip="自动化帮助文档…"
                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                             CommandParameter="https://docs.classisland.tech/app/automation"
                                             Style="{StaticResource MaterialDesignToolForegroundButton}"/>
@@ -107,7 +107,7 @@
                         <Grid Grid.Row="1">
 
                             <!-- 添加自动化 -->
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            <Button Style="{StaticResource MaterialFlatButton}"
                                     Click="ButtonAdd_OnClick"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Bottom"
@@ -130,19 +130,19 @@
                                           SelectedItem="{Binding SettingsService.Settings.CurrentAutomationConfig}"
                                           materialDesign:HintAssist.Hint="配置方案" />
                                 <Button Content="{materialDesign:PackIcon Refresh}"
-                                        ToolTip="刷新配置方案"
+                                        ToolTip.Tip="刷新配置方案"
                                         VerticalAlignment="Center"
                                         Margin="2 0"
                                         Click="ButtonRefresh_OnClick"
                                         Style="{StaticResource MaterialDesignToolForegroundButton}" />
                                 <Button Content="{materialDesign:PackIcon FileDocumentPlusOutline}"
-                                        ToolTip="新建配置方案…"
+                                        ToolTip.Tip="新建配置方案…"
                                         VerticalAlignment="Center"
                                         Margin="2 0"
                                         Click="ButtonCreateConfig_OnClick"
                                         Style="{StaticResource MaterialDesignToolForegroundButton}" />
                                 <Button Content="{materialDesign:PackIcon FolderOpenOutline}"
-                                        ToolTip="打开配置文件夹…"
+                                        ToolTip.Tip="打开配置文件夹…"
                                         VerticalAlignment="Center"
                                         Click="ButtonOpenConfigFolder_OnClick"
                                         Margin="2 0"
@@ -182,17 +182,17 @@
                                             <StackPanel Orientation="Horizontal"
                                                         HorizontalAlignment="Right"
                                                         DockPanel.Dock="Right">
-                                                <ToggleButton ToolTip="启用"
+                                                <ToggleButton ToolTip.Tip="启用"
                                                               IsChecked="{Binding ActionSet.IsEnabled}" />
                                                 <Button Content="{materialDesign:PackIcon Kind=ContentCopy}"
-                                                        ToolTip="复制"
+                                                        ToolTip.Tip="复制"
                                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
                                                         Command="{x:Static local:AutomationSettingsPage.DuplicateCommand}"
                                                         CommandParameter="{Binding}"
                                                         Padding="15 0 10 0" />
 
                                                 <Button Content="{materialDesign:PackIcon Kind=Close}"
-                                                        ToolTip="删除"
+                                                        ToolTip.Tip="删除"
                                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
                                                         Command="{x:Static local:AutomationSettingsPage.RemoveCommand}"
                                                         CommandParameter="{Binding}"
@@ -265,7 +265,7 @@
                                     CommandParameter="{Binding ActionSet}"
                                     Padding="12 0">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ActionSet.IsOn}" Value="True">
                                                 <Setter Property="Opacity" Value="0.56" />
@@ -281,7 +281,7 @@
                                     Padding="12 0"
                                     Margin="0 0 8 0">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ActionSet.IsOn}" Value="False">
                                                 <Setter Property="Opacity" Value="0.56" />
@@ -410,7 +410,7 @@
                                    Width="72"
                                    Height="72"
                                    PackIconKind="ScriptOutline"
-                                   StickerToolTip="光辉矢愿_瞄准" />
+                                   StickerToolTip.Tip="光辉矢愿_瞄准" />
                             <TextBlock Text="在左侧选择或添加一个自动化，然后在此处进行设置。"
                                        TextWrapping="Wrap"
                                        Margin="0 4 0 0" />
@@ -434,21 +434,21 @@
                         </Grid.ColumnDefinitions>
                         <Image Grid.Column="0"
                                Source="/Assets/AppLogo.png"
-                               ToolTip="ClassIsland"/>
+                               ToolTip.Tip="ClassIsland"/>
                         <materialDesign:PackIcon Grid.Column="1"
                                                  VerticalAlignment="Center"
                                                  Width="25"
                                                  Height="25"
                                                  Margin="16 0"
                                                  Kind="Plus"
-                                                 ToolTip="现已推出" />
+                                                 ToolTip.Tip="现已推出" />
                         <materialDesign:PackIcon Grid.Column="2"
                                                  Kind="ScriptTextKey"
                                                  VerticalAlignment="Stretch"
                                                  HorizontalAlignment="Stretch"
                                                  Height="75"
                                                  Width="75"
-                                                 ToolTip="自动化" />
+                                                 ToolTip.Tip="自动化" />
                     </Grid>
                     <TextBlock Text="自动化"
                                HorizontalAlignment="Center"
@@ -470,7 +470,7 @@
                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                             CommandParameter="https://docs.classisland.tech/app/automation"
                             Style="{StaticResource MaterialDesignFlatSecondaryButton}"
-                            ToolTip="docs.classisland.tech/app/automation"
+                            ToolTip.Tip="docs.classisland.tech/app/automation"
                             ToolTipService.Placement="Right">
                         <ci:IconText Kind="ExternalLink"
                                      Text="阅读自动化帮助" />

@@ -92,7 +92,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <Button Content="{materialDesign:PackIcon ContentCopy}"
                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                        ToolTip="复制详细信息"
+                                        ToolTip.Tip="复制详细信息"
                                         CommandParameter="{Binding}"
                                         Margin="0 -8"
                                         Command="{Binding CopyErrorDetailsCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ConfigErrorsWindow}}"/>

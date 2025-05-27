@@ -45,9 +45,9 @@
                      materialDesign:HintAssist.Hint="配置名"
                      materialDesign:TextFieldAssist.SuffixText=".json"/>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="新建" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                <Button Content="新建" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
                         CommandParameter="{Binding ViewModel.CreateProfileName, Mode=OneWay}"/>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
         </StackPanel>
 
@@ -106,7 +106,7 @@
             </Setter>
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
-                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                         <Setter Property="ContextMenu" Value="{StaticResource ComponentOperationContextMenu}"/>
                     </Style>
                 </Setter.Value>
@@ -123,7 +123,7 @@
                             <Button Content="{materialDesign:PackIcon MoreHoriz}"
                                     Margin="4 -16 0 -16"
                                     VerticalAlignment="Center"
-                                    ToolTip="更多选项…"
+                                    ToolTip.Tip="更多选项…"
                                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
                                     Command="{Binding OpenContextMenuCommand, RelativeSource={RelativeSource AncestorType=local:ComponentsSettingsPage}}"
                                     Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -131,7 +131,7 @@
                             <Button Content="{materialDesign:PackIcon OpenInBrowser}"
                                     Margin="0 -16 0 -16"
                                     VerticalAlignment="Center"
-                                    ToolTip="查看子组件"
+                                    ToolTip.Tip="查看子组件"
                                     Click="ButtonShowChildrenComponents_OnClick"
                                     Style="{StaticResource MaterialDesignToolForegroundButton}">
                                 <Button.Visibility>
@@ -145,7 +145,7 @@
                                     Foreground="IndianRed"
                                     Margin="0 -16 -4 -16"
                                     VerticalAlignment="Center"
-                                    ToolTip="删除"
+                                    ToolTip.Tip="删除"
                                     Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     Click="ButtonRemoveSelectedComponent_OnClick"
                                     Style="{StaticResource MaterialDesignToolForegroundButton}"/>
@@ -198,19 +198,19 @@
                           SelectedItem="{Binding SettingsService.Settings.CurrentComponentConfig}"
                           materialDesign:HintAssist.Hint="配置方案"/>
                 <Button Content="{materialDesign:PackIcon Refresh}"
-                        ToolTip="刷新"
+                        ToolTip.Tip="刷新"
                         VerticalAlignment="Center"
                         Margin="2 0"
                         Click="ButtonRefresh_OnClick"
                         Style="{StaticResource MaterialDesignToolForegroundButton}"/>
                 <Button Content="{materialDesign:PackIcon Add}"
-                        ToolTip="新建…"
+                        ToolTip.Tip="新建…"
                         VerticalAlignment="Center"
                         Margin="2 0"
                         Click="ButtonCreateConfig_OnClick"
                         Style="{StaticResource MaterialDesignToolForegroundButton}"/>
                 <Button Content="{materialDesign:PackIcon FolderOpenOutline}"
-                        ToolTip="打开配置文件夹…"
+                        ToolTip.Tip="打开配置文件夹…"
                         VerticalAlignment="Center"
                         Click="ButtonOpenConfigFolder_OnClick"
                         Margin="2 0"
@@ -251,7 +251,7 @@
                                 Margin="0 -16 4 -16"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Right"
-                                ToolTip="返回上一层级"
+                                ToolTip.Tip="返回上一层级"
                                 Visibility="{Binding ViewModel.CanChildrenNavigateBack, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
                                 Click="ButtonNavigateUp_OnClick"
                                 Style="{StaticResource MaterialDesignToolForegroundButton}" />
@@ -264,7 +264,7 @@
                                 Margin="4 -16 -4 -16"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Right"
-                                ToolTip="关闭"
+                                ToolTip.Tip="关闭"
                                 Click="ButtonChildrenViewClose_OnClick"
                                 Style="{StaticResource MaterialDesignToolForegroundButton}" />
                     </Grid>
@@ -310,7 +310,7 @@
                             </DataTemplate>
                         </dd:DragDrop.EffectCopyAdornerTemplate>
                         <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                                 
                             </Style>
                         </ListBox.ItemContainerStyle>
@@ -379,7 +379,7 @@
                                             <controls2:SettingsCard.Switcher>
                                                 <StackPanel Orientation="Horizontal">
                                                     <Button HorizontalAlignment="Left"
-                                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Style="{StaticResource MaterialFlatButton}"
                                                             Click="ButtonOpenRuleset_OnClick"
                                                             Visibility="{Binding HideOnRule, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                         <controls2:IconText Kind="TagMultipleOutline" Text="编辑规则集…" />
@@ -482,7 +482,7 @@
                                                 <Grid>
                                                     <ListBox SelectedIndex="{Binding HorizontalAlignment, Converter={StaticResource HorizontalAlignmentToIntConverter}}">
                                                         <ListBox.ItemContainerStyle>
-                                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                                                                 <Style.Triggers>
                                                                     <Trigger Property="IsSelected" Value="True">
                                                                         <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
@@ -495,10 +495,10 @@
                                                                 <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
                                                             </ItemsPanelTemplate>
                                                         </ListBox.ItemsPanel>
-                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalLeft}" ToolTip="左对齐"/>
-                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalCenter}" ToolTip="居中"/>
-                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalRight}" ToolTip="右对齐"/>
-                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalDistribute}" ToolTip="拉伸"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalLeft}" ToolTip.Tip="左对齐"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalCenter}" ToolTip.Tip="居中"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalRight}" ToolTip.Tip="右对齐"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalDistribute}" ToolTip.Tip="拉伸"/>
                                                     </ListBox>
                                                 </Grid>
                                             </controls2:SettingsCard.Switcher>
@@ -571,7 +571,7 @@
                                                 </Grid>
                                             </Expander>
                                         </materialDesign:Card>
-                                        <StackPanel Orientation="Horizontal" ToolTip="GUID" HorizontalAlignment="Left">
+                                        <StackPanel Orientation="Horizontal" ToolTip.Tip="GUID" HorizontalAlignment="Left">
                                             <materialDesign:PackIcon Kind="Code" VerticalAlignment="Center"/>
                                             <TextBox Text="{Binding Id, Mode=OneWay}"
                                                      Margin="4 0 0 0"
@@ -599,11 +599,11 @@
                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                             Content="{materialDesign:PackIcon ArrowUp}"
                             Click="ButtonMoveToPrevLine_OnClick"
-                            ToolTip="移动到上一行"/>
+                            ToolTip.Tip="移动到上一行"/>
                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                             Content="{materialDesign:PackIcon ArrowDown}"
                             Click="ButtonMoveToNextLine_OnClick"
-                            ToolTip="移动到下一行"/>
+                            ToolTip.Tip="移动到下一行"/>
                 </StackPanel>
             </Grid>
         </Grid>

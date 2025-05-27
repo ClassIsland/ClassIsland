@@ -118,14 +118,14 @@
                 <Run Text="吗？如果有与此时间表关联的课程表，那么这些课程表在时间表删除后将无法正常工作！"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="删除" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="删除" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
                         </system:Boolean>
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             False
@@ -145,14 +145,14 @@
                 <Run Text="确定要删除选中的科目吗？如果有包含此科目的课程表，那么这些课程表在科目删除后将无法正常工作！"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="删除" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="删除" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
                         </system:Boolean>
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             False
@@ -174,14 +174,14 @@
                 <Run Text="吗？"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="删除" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="删除" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
                         </system:Boolean>
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             False
@@ -208,16 +208,16 @@
                         <TextBlock TextWrapping="Wrap" FontSize="13" Margin="0 4 0 0">
                             这是一个临时层课表，将在使用过后自动删除。
                         </TextBlock>
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        <Button Style="{StaticResource MaterialFlatButton}"
                                 HorizontalAlignment="Left"
                                 Padding="4"
                                 Margin="0 4 0 0"
                                 FontSize="13"
                                 Click="ButtonConvertToStdClassPlan_OnClick"
-                                ToolTip="将当前临时层课表转换为正常课表。">
+                                ToolTip.Tip="将当前临时层课表转换为正常课表。">
                             <controls1:IconText Kind="CogTransferOutline" Text="转换为普通课表"/>
                         </Button>
-                        <!--<Button Style="{StaticResource MaterialDesignFlatButton}"
+                        <!--<Button Style="{StaticResource MaterialFlatButton}"
                                 HorizontalAlignment="Left"
                                 Padding="4"
                                 Margin="0 2 0 0"
@@ -239,7 +239,7 @@
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value.Name}"
-                                       ToolTip="{Binding Key}" />
+                                       ToolTip.Tip="{Binding Key}" />
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
@@ -253,7 +253,7 @@
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value.Name}"
-                                       ToolTip="{Binding Key}" />
+                                       ToolTip.Tip="{Binding Key}" />
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
@@ -331,10 +331,10 @@
                                           IsChecked="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled}"/>
                             <TextBlock Text="启用临时层" VerticalAlignment="Center"/>
                         </StackPanel>
-                        <Button Style="{StaticResource MaterialDesignFlatButton}" Margin="0 4 0 0"
+                        <Button Style="{StaticResource MaterialFlatButton}" Margin="0 4 0 0"
                                 HorizontalAlignment="Left"
                                 Click="ButtonClearTempOverlay_OnClick"
-                                ToolTip="清除临时层课表。">
+                                ToolTip.Tip="清除临时层课表。">
                             <controls1:IconText Kind="ClearOutline" Text="清除临时层"/>
                         </Button>
                     </StackPanel>
@@ -342,9 +342,9 @@
                     <Separator Margin="0 16 0 4"/>
                     <controls1:IconText Kind="FileChartOutline" Text="临时课表" Margin="0 0 0 8"/>
                     <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天有效。" TextWrapping="Wrap"/>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                    <Button Style="{StaticResource MaterialFlatButton}" 
                             HorizontalAlignment="Left"
-                            ToolTip="清除选择的临时课表，并恢复至正常课表安排。"
+                            ToolTip.Tip="清除选择的临时课表，并恢复至正常课表安排。"
                             Margin="0 6 0 0"
                             Click="ButtonClearTemporaryClassPlan_OnClick">
                         <Button.Visibility>
@@ -397,7 +397,7 @@
                 <StackPanel Grid.Row="2">
                     <Separator Margin="0 16 0 4" />
                     <controls1:IconText Kind="CalendarOutline" Text="多周轮换偏移" Margin="0 0 0 8" />
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    <Button Style="{StaticResource MaterialFlatButton}"
                             HorizontalAlignment="Left"
                             Click="ButtonOpenWeekOffsetSettings_OnClick">
                         <ci:IconText Kind="CalendarMultiple" Text="调整多周轮换偏移…"/>
@@ -433,9 +433,9 @@
                      materialDesign:HintAssist.Hint="档案名"
                      materialDesign:TextFieldAssist.SuffixText=".json"/>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="新建" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                <Button Content="新建" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
                         CommandParameter="{Binding ViewModel.CreateProfileName, Mode=OneWay}"/>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
         </StackPanel>
 
@@ -448,9 +448,9 @@
                      materialDesign:HintAssist.Hint="档案名"
                      materialDesign:TextFieldAssist.SuffixText=".json"/>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="重命名" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                <Button Content="重命名" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
                         CommandParameter="{Binding ViewModel.RenameProfileName, Mode=OneWay}"/>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
         </StackPanel>
 
@@ -469,7 +469,7 @@
                 <Grid HorizontalAlignment="Right">
                     <Button Content="删除" 
                             IsDefault="True"
-                            Style="{DynamicResource MaterialDesignFlatButton}" 
+                            Style="{DynamicResource MaterialFlatButton}" 
                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                         <Button.CommandParameter>
                             <system:Boolean xmlns:system="clr-namespace:System;assembly=System.Runtime">
@@ -478,7 +478,7 @@
                         </Button.CommandParameter>
                     </Button>
                 </Grid>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
         </StackPanel>
 
@@ -495,17 +495,17 @@
                 <!--<TextBlock Text="{Binding MainViewModel.Settings.SelectedProfile, Mode=OneWay}"/>-->
                 <WrapPanel Margin="0 6 0 0">
                     <WrapPanel.Resources>
-                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                        <Style TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
                             <Setter Property="Margin" Value="0 0 6 0"/>
                         </Style>
                     </WrapPanel.Resources>
-                    <Button ToolTip="新建档案。" Click="ButtonCreateProfile_OnClick">
+                    <Button ToolTip.Tip="新建档案。" Click="ButtonCreateProfile_OnClick">
                         <controls1:IconText Kind="FileDocumentAddOutline" Text="新建档案"/>
                     </Button>
-                    <Button ToolTip="打开档案文件夹。" Click="ButtonOpenProfileFolder_OnClick">
+                    <Button ToolTip.Tip="打开档案文件夹。" Click="ButtonOpenProfileFolder_OnClick">
                         <controls1:IconText Kind="FolderOpenOutline" Text="打开文件夹"/>
                     </Button>
-                    <Button ToolTip="重新加载档案列表。" Click="ButtonRefreshProfiles_OnClick">
+                    <Button ToolTip.Tip="重新加载档案列表。" Click="ButtonRefreshProfiles_OnClick">
                         <controls1:IconText Kind="Refresh" Text="刷新"/>
                     </Button>
                 </WrapPanel>
@@ -592,7 +592,7 @@
                                         <TextBlock Text="当前：" VerticalAlignment="Center" />
                                         <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"
                                                    VerticalAlignment="Center" />
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button Style="{StaticResource MaterialFlatButton}"
                                                 VerticalAlignment="Center"
                                                 Click="ButtonClearTempClassPlanGroup_OnClick">
                                             <controls1:IconText Kind="Clear" Text="清除" />
@@ -638,9 +638,9 @@
                     <controls1:IconText Kind="Group" Text="管理课表群" Margin="0 0 0 4"/>
                     
                     <WrapPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                        <Button Style="{StaticResource MaterialFlatButton}" 
                                 HorizontalAlignment="Left"
-                                ToolTip="创建一个新的课表群。"
+                                ToolTip.Tip="创建一个新的课表群。"
                                 Margin="2"
                                 Click="ButtonNewClassPlanGroups_OnClick">
                             <Button.IsEnabled>
@@ -694,14 +694,14 @@
                 <Run Text="当前档案不受信任，部分功能（如行动时间点等）将禁用。如果您信任此档案并希望启用这些受限的功能，请将此档案设置为信任。"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="信任此档案" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="信任此档案" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
                         </system:Boolean>
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             False
@@ -745,10 +745,10 @@
                                     </Grid.RowDefinitions>
                                     <!-- 课表操作 -->
                                     <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
-                                        <Button Click="ButtonAddClassPlan_OnClick" ToolTip="新建课表。">
+                                        <Button Click="ButtonAddClassPlan_OnClick" ToolTip.Tip="新建课表。">
                                             <controls1:IconText Kind="Add" Text="添加"/>
                                         </Button>
-                                        <Button Click="ButtonDuplicateClassPlan_OnClick" ToolTip="复制选中的课表。"
+                                        <Button Click="ButtonDuplicateClassPlan_OnClick" ToolTip.Tip="复制选中的课表。"
                                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                             <Button.Style>
                                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
@@ -763,10 +763,10 @@
                                             <controls1:IconText Kind="ContentCopy" Text="复制"/>
                                         </Button>
                                         <Separator/>
-                                        <Button Click="ButtonRefreshClassPlans_OnClick" ToolTip="刷新当前视图。">
+                                        <Button Click="ButtonRefreshClassPlans_OnClick" ToolTip.Tip="刷新当前视图。">
                                             <controls1:IconText Kind="Refresh" Text="刷新"/>
                                         </Button>
-                                        <!--<Button Click="ButtonImportFromFile_OnClick" ToolTip="从表格导入课表。" Visibility="{Binding MainViewModel.Settings.ExpIsExcelImportEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <!--<Button Click="ButtonImportFromFile_OnClick" ToolTip.Tip="从表格导入课表。" Visibility="{Binding MainViewModel.Settings.ExpIsExcelImportEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <controls:IconText Kind="Add" Text="从表格导入…"/>
                                         </Button>-->
                                     </ToolBar>
@@ -1015,16 +1015,16 @@
                                             <!--<Button Click="ButtonDebugAddNewClass_OnClick">
                                             <controls:IconText Kind="Add" Text="DebugAddNew"/>
                                         </Button>-->
-                                            <Button Click="ButtonClassPlanInfoEdit_OnClick" ToolTip="查看并编辑课表的基本信息。"
+                                            <Button Click="ButtonClassPlanInfoEdit_OnClick" ToolTip.Tip="查看并编辑课表的基本信息。"
                                                     Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                                 <controls1:IconText Kind="InfoOutline" Text="课表信息" />
                                             </Button>
                                             <Button Click="ButtonClassPlanDetails_OnClick" 
-                                                    ToolTip="查看课表的所有时间点的附加设置继承情况。">
+                                                    ToolTip.Tip="查看课表的所有时间点的附加设置继承情况。">
                                                 <controls1:IconText Kind="Text" Text="详细看板…" />
                                             </Button>
                                             <Separator />
-                                            <Button ToolTip="创建临时课表层。"
+                                            <Button ToolTip.Tip="创建临时课表层。"
                                                     Click="ButtonBeginCreateTempOverlayClassPlan_OnClick"
                                                     IsEnabled="{Binding IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
                                                 <controls1:IconText Kind="LayersOutline" Text="创建临时层" />
@@ -1067,7 +1067,7 @@
                                                 </Border>
                                             </materialDesign:PopupEx>
                                             <Separator />
-                                            <Button Click="ButtonDeleteClassPlan_OnClick" ToolTip="删除该课表。">
+                                            <Button Click="ButtonDeleteClassPlan_OnClick" ToolTip.Tip="删除该课表。">
                                                 <controls1:IconText Kind="Delete" Text="删除课表" />
                                             </Button>
                                         </ToolBar>
@@ -1244,9 +1244,9 @@
                                                                             Content="{materialDesign:PackIcon Close}"
                                                                             VerticalAlignment="Center"
                                                                             DockPanel.Dock="Right"
-                                                                            ToolTip="关闭"
+                                                                            ToolTip.Tip="关闭"
                                                                             Click="ButtonCloseCompleteTip_OnClick"/>
-                                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                    <Button Style="{StaticResource MaterialFlatButton}"
                                                                             DockPanel.Dock="Right"
                                                                             Click="ButtonAddClassPlanFromCompletedTip_OnClick"
                                                                             materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
@@ -1331,11 +1331,11 @@
                                     </Grid.RowDefinitions>
                                     <!-- 时间表操作 -->
                                     <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}">
-                                        <Button Click="ButtonAddTimeLayout_OnClick" ToolTip="新建时间表。"
+                                        <Button Click="ButtonAddTimeLayout_OnClick" ToolTip.Tip="新建时间表。"
                                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                             <controls1:IconText Kind="Add" Text="添加"/>
                                         </Button>
-                                        <Button Click="ButtonDuplicateTimeLayout_OnClick" ToolTip="复制选中的时间表。"
+                                        <Button Click="ButtonDuplicateTimeLayout_OnClick" ToolTip.Tip="复制选中的时间表。"
                                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                             <Button.Style>
                                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
@@ -1365,7 +1365,7 @@
                                                 <Grid HorizontalAlignment="Stretch">
                                                     <TextBlock Text="{Binding Value.Name}" HorizontalAlignment="Left"/>
                                                     <materialDesign:PackIcon Kind="MapMarkerRadiusOutline" HorizontalAlignment="Right"
-                                                                             ToolTip="此时间表正在活动。"
+                                                                             ToolTip.Tip="此时间表正在活动。"
                                                                              Visibility="{Binding Value.IsActivated, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                                 </Grid>
                                             </DataTemplate>
@@ -1429,21 +1429,21 @@
                                     <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" ToolBarTray.IsLocked="True" 
                                              IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                         <!--<TextBlock Text="{Binding Layouts}"/>-->
-                                        <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。">
+                                        <Button Click="ButtonAddClassTime_OnClick" ToolTip.Tip="添加上课时间点。">
                                             <controls1:IconText Kind="NotePlusOutline" Text="上课"/>
                                         </Button>
-                                        <Button Click="ButtonAddBreakTime_OnClick" ToolTip="添加课间休息时间点。">
+                                        <Button Click="ButtonAddBreakTime_OnClick" ToolTip.Tip="添加课间休息时间点。">
                                             <controls1:IconText Kind="ClockPlusOutline" Text="课间"/>
                                         </Button>
-                                        <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。">
+                                        <Button Click="ButtonAddSeparator_OnClick" ToolTip.Tip="添加分割线。">
                                             <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
                                         </Button>
-                                        <Button Click="ButtonAddActionTimePoint_OnClick" ToolTip="添加行动时间点。"
+                                        <Button Click="ButtonAddActionTimePoint_OnClick" ToolTip.Tip="添加行动时间点。"
                                                 IsEnabled="{Binding ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}">
                                             <controls1:IconText Kind="AirplanePlus" Text="行动"/>
                                         </Button>
                                         <Separator/>
-                                        <Button Click="ButtonRemoveTimePoint_OnClick" ToolTip="删除选中的时间点。">
+                                        <Button Click="ButtonRemoveTimePoint_OnClick" ToolTip.Tip="删除选中的时间点。">
                                             <Button.Style>
                                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                                                     <Style.Triggers>
@@ -1456,12 +1456,12 @@
                                             <controls1:IconText Kind="Remove" Text="删除"/>
                                         </Button>
                                         <Button Click="ButtonRefreshTimeLayout_OnClick"
-                                                ToolTip="重新排序该时间表中的时间点。"
+                                                ToolTip.Tip="重新排序该时间表中的时间点。"
                                                >
                                             <controls1:IconText Kind="Refresh" Text="刷新"/>
                                         </Button>
                                         <!--<Button  Click="ButtonEditTimePoint_OnClick"
-                                                 ToolTip="编辑选中的时间点。">
+                                                 ToolTip.Tip="编辑选中的时间点。">
                                             <Button.Style>
                                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                                                     <Style.Triggers>
@@ -1482,11 +1482,11 @@
                                         </StackPanel>
                                         <Separator/>-->
                                         <Button Click="ButtonEditTimeLayoutInfo_OnClick"
-                                                ToolTip="查看并编辑时间表的基本信息。">
+                                                ToolTip.Tip="查看并编辑时间表的基本信息。">
                                             <controls1:IconText Kind="InfoOutline" Text="时间表信息"/>
                                         </Button>
                                         <Button Click="ButtonDeleteTimeLayout_OnClick"
-                                                ToolTip="删除该时间表。">
+                                                ToolTip.Tip="删除该时间表。">
                                             <controls1:IconText Kind="Delete" Text="删除时间表"/>
                                         </Button>
                                     </ToolBar>
@@ -1499,7 +1499,7 @@
                                         <!-- 旧版编辑器 -->
                                         <TabItem Header="{materialDesign:PackIcon ListBoxOutline}" 
                                                  Visibility="Collapsed"
-                                                 ToolTip="列表" Padding="4">
+                                                 ToolTip.Tip="列表" Padding="4">
                                             <ListBox SelectionMode="Single"
                                                      VirtualizingPanel.IsVirtualizing="True"
                                                      VirtualizingPanel.ScrollUnit="Pixel"
@@ -1553,7 +1553,7 @@
                                             </Style>
                                         </StackPanel.Style>
                                         <Button Content="{materialDesign:PackIcon Target}"
-                                                ToolTip="定位选中项目"
+                                                ToolTip.Tip="定位选中项目"
                                                 VerticalAlignment="Center"
                                                 Margin="2 0"
                                                 ToolTipService.Placement="Top"
@@ -1563,17 +1563,17 @@
                                             Content="{materialDesign:PackIcon Kind=Magnet, Size=14}"
                                             IsChecked="{Binding ViewModel.IsTimeLineSticky, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}"
                                             Style="{StaticResource MaterialDesignFlatToggleButton}"
-                                            ToolTip="启用时间点吸附" 
+                                            ToolTip.Tip="启用时间点吸附" 
                                             Margin="2 0"    
                                             ToolTipService.Placement="Top"
                                             Width="24" Height="24"/>
                                         <TextBlock Text="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay, StringFormat={}{0:P0}}" 
                                                    Margin="4 0 4 0"
-                                                   ToolTip="缩放比例"
+                                                   ToolTip.Tip="缩放比例"
                                                    ToolTipService.Placement="Top"
                                                    VerticalAlignment="Center"/>
                                         <RepeatButton Content="{materialDesign:PackIcon ZoomOut}"
-                                                      ToolTip="缩小"
+                                                      ToolTip.Tip="缩小"
                                                       Delay="500" Interval="100"
                                                       ToolTipService.Placement="Top"
                                                       VerticalAlignment="Center"
@@ -1581,7 +1581,7 @@
                                                       Style="{StaticResource MaterialDesignToolForegroundButton}"
                                                       Click="ButtonZoomOut_OnClick"/>
                                         <RepeatButton Content="{materialDesign:PackIcon ZoomIn}"
-                                                      ToolTip="放大"
+                                                      ToolTip.Tip="放大"
                                                       Delay="500" Interval="100"
                                                       ToolTipService.Placement="Top"
                                                       VerticalAlignment="Center"
@@ -1595,7 +1595,7 @@
                                             VerticalAlignment="Bottom"
                                             HorizontalAlignment="Right"
                                             Content="{materialDesign:PackIcon Target}"
-                                            ToolTip="定位选中项目"
+                                            ToolTip.Tip="定位选中项目"
                                             Margin="2 0"
                                             Click="ButtonTimeLayoutEditScrollToContent_OnClick">
                                         <Button.Style>
@@ -1627,7 +1627,7 @@
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemContainerStyle>
-                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                                                 <Setter Property="Padding" Value="0"/>
                                             </Style>
                                         </ListBox.ItemContainerStyle>
@@ -1639,14 +1639,14 @@
                                                     </Style>
                                                     <converters1:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
                                                 </DataTemplate.Resources>
-                                                <RadioButton ToolTip="{Binding ToolTip}"
+                                                <RadioButton ToolTip.Tip="{Binding ToolTip}"
                                                              IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
                                                     <materialDesign:PackIcon Kind="{Binding Kind}"/>
                                                 </RadioButton>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
-                                        <materialDesign:PackIcon Kind="ListBoxOutline" ToolTip="列表视图"/>
-                                        <materialDesign:PackIcon Kind="TimelineOutline" ToolTip="时间线视图"/>
+                                        <materialDesign:PackIcon Kind="ListBoxOutline" ToolTip.Tip="列表视图"/>
+                                        <materialDesign:PackIcon Kind="TimelineOutline" ToolTip.Tip="时间线视图"/>
                                     </ListBox>
 
                                     <GridSplitter Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="2"/>
@@ -1757,7 +1757,7 @@
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
                                                 <WrapPanel Orientation="Horizontal" Margin="0 4 0 0">
-                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                    <Button Style="{StaticResource MaterialFlatButton}"
                                                             Click="ButtonOverwriteClasses_OnClick"
                                                             IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
                                                         <controls1:IconText Kind="Upload" Text="覆盖现有课程"/>
@@ -1823,7 +1823,7 @@
                                                     </Style>
                                                 </StackPanel.Style>
                                                 <controls1:IconText Kind="Airplane" Text="行动" Margin="0 0 0 8" />
-                                                <Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
+                                                <Button Style="{StaticResource MaterialFlatButton}" HorizontalAlignment="Left"
                                                         Click="ButtonDebugTriggerAction_OnClick"
                                                         IsEnabled="{Binding ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}"
                                                         Margin="0 0 0 2">
@@ -1850,7 +1850,7 @@
                                             <ci:StickerControl ImageSource="/Assets/HoYoStickers/藿藿_好痛.png" Width="78" 
                                                                PackIconKind="ClockCheckOutline"
                                                                Margin="0 0 0 8"
-                                                                StickerToolTip="霍霍_好痛"/>
+                                                                StickerToolTip.Tip="霍霍_好痛"/>
                                             <TextBlock Text="您还没有创建时间点。点击上方工具栏新建时间点按钮以新建时间点。"
                                                        TextAlignment="Center"
                                                        VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
@@ -1864,7 +1864,7 @@
                                         <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <Image Source="/Assets/HoYoStickers/帕姆_震惊.png" Width="78"  Margin="0 0 0 8"
-                                                   ToolTip="帕姆_震惊"/>
+                                                   ToolTip.Tip="帕姆_震惊"/>
                                             <TextBlock Text="无法编辑处于活动状态的时间表。"
                                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                         </StackPanel>
@@ -1906,7 +1906,7 @@
                                 <ToolBar Grid.Column="0" Grid.ColumnSpan="3"
                                          IsEnabled="{Binding ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}}"
                                          Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonAddSubject_OnClick" ToolTip="添加科目。">
+                                    <Button Click="ButtonAddSubject_OnClick" ToolTip.Tip="添加科目。">
                                         <controls1:IconText Kind="Add" Text="添加"/>
                                     </Button>
                                     <Separator/>
@@ -1915,7 +1915,7 @@
                                         <Run Text="X"/>
                                         <Run Text="项。"/>
                                     </TextBlock>-->
-                                    <Button Click="ButtonDuplicateSubject_OnClick" ToolTip="复制选中的科目。">
+                                    <Button Click="ButtonDuplicateSubject_OnClick" ToolTip.Tip="复制选中的科目。">
                                         <Button.Style>
                                             <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                                                 <Style.Triggers>
@@ -2158,7 +2158,7 @@
                                                                 HorizontalAlignment="Left">
                                                             <Button.Style>
                                                                 <Style TargetType="Button"
-                                                                       BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                                                       BasedOn="{StaticResource MaterialFlatButton}">
                                                                     <Style.Triggers>
                                                                         <DataTrigger
                                                                             Binding="{Binding ViewModel.TargetSubjectIndex}"
@@ -2233,12 +2233,12 @@
                                                             Width="100"/>
                                                 <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                                         Content="{materialDesign:PackIcon ArrowLeft}"
-                                                        ToolTip="上一周"
+                                                        ToolTip.Tip="上一周"
                                                         Margin="4 0 0 0"
                                                         Click="ButtonPreviousWeek_OnClick"/>
                                                 <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                                         Content="{materialDesign:PackIcon ArrowRight}"
-                                                        ToolTip="下一周"
+                                                        ToolTip.Tip="下一周"
                                                         Margin="4 0 0 0"
                                                         Click="ButtonNextWeek_OnClick"/>
                                                 <TextBlock VerticalAlignment="Center"
@@ -2476,7 +2476,7 @@
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemContainerStyle>
-                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                                             <Setter Property="Padding" Value="0"/>
                                         </Style>
                                     </ListBox.ItemContainerStyle>
@@ -2488,14 +2488,14 @@
                                                 </Style>
                                                 <converters1:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
                                             </DataTemplate.Resources>
-                                            <RadioButton ToolTip="{Binding ToolTip}"
+                                            <RadioButton ToolTip.Tip="{Binding ToolTip}"
                                                              IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
                                                 <materialDesign:PackIcon Kind="{Binding Kind}"/>
                                             </RadioButton>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
-                                    <materialDesign:PackIcon Kind="Table" ToolTip="周视图"/>
-                                    <materialDesign:PackIcon Kind="CalendarOutline" ToolTip="日历视图"/>
+                                    <materialDesign:PackIcon Kind="Table" ToolTip.Tip="周视图"/>
+                                    <materialDesign:PackIcon Kind="CalendarOutline" ToolTip.Tip="日历视图"/>
                                 </ListBox>
                             </Grid>
                         </TabItem>
@@ -2533,7 +2533,7 @@
                                 <TextBlock Text="档案编辑" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center" Margin="0,0,16,0"/>
-                                <Button ToolTip="保存当前档案。" 
+                                <Button ToolTip.Tip="保存当前档案。" 
                                         Click="ButtonSave_OnClick"
                                         VerticalAlignment="Center"
                                         Margin="0 -16 8 -16"
@@ -2541,7 +2541,7 @@
                                         Content="{materialDesign:PackIcon ContentSave, Size=18}"/>
                                 <materialDesign:Chip
                                     Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
-                                    ToolTip="档案"
+                                    ToolTip.Tip="档案"
                                     Icon="{materialDesign:PackIcon FileDocumentOutline}"
                                     Click="ButtonProfileManage_OnClick"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
@@ -2552,7 +2552,7 @@
                                 <materialDesign:Chip
                                     Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                                    ToolTip="查看您的单位/组织如何管理此ClassIsland实例。"
+                                    ToolTip.Tip="查看您的单位/组织如何管理此ClassIsland实例。"
                                     Icon="{materialDesign:PackIcon WorkOutline}">
                                     <materialDesign:Chip.CommandParameter>
                                         <controls:ManagementInfoControl/>
@@ -2565,7 +2565,7 @@
                                     Visibility="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource InverseBoolToVisConverter}, Mode=OneWay}"
                                     Click="ButtonTemporaryClassPlan_OnClick"
                                     Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
-                                    ToolTip="当前启用的课表">
+                                    ToolTip.Tip="当前启用的课表">
                                     <materialDesign:Chip.Style>
                                         <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
                                             <Style.Triggers>
@@ -2610,7 +2610,7 @@
                                     </TextBlock>
                                 </materialDesign:Chip>
                                 <materialDesign:Chip
-                                    ToolTip="课表群"
+                                    ToolTip.Tip="课表群"
                                     Icon="{materialDesign:PackIcon Group}"
                                     Click="ButtonClassPlansGroup_OnClick"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
@@ -2642,7 +2642,7 @@
                                     </ItemsPanelTemplate>
                                 </ListBox.ItemsPanel>
                                 <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                                         <Setter Property="Padding" Value="0"/>
                                     </Style>
                                 </ListBox.ItemContainerStyle>
@@ -2682,7 +2682,7 @@
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
                                 <materialDesign:Chip
-                                    ToolTip="当前档案不受信任，部分功能受限。"
+                                    ToolTip.Tip="当前档案不受信任，部分功能受限。"
                                     Icon="{materialDesign:PackIcon Warning}"
                                     Click="ButtonUnTrustedProfile_OnClick"
                                     Visibility="{Binding ProfileService.IsCurrentProfileTrusted, Converter={StaticResource InverseBoolToVisConverter}}">
@@ -2691,7 +2691,7 @@
                                     </TextBlock>
                                 </materialDesign:Chip>
                                 <materialDesign:Chip
-                                    ToolTip="查看档案编辑帮助。"
+                                    ToolTip.Tip="查看档案编辑帮助。"
                                     Icon="{materialDesign:PackIcon Help}"
                                     Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
                                     CommandParameter="https://docs.classisland.tech/app/profile/"
@@ -2702,7 +2702,7 @@
                                 </materialDesign:Chip>
                                 <Grid>
                                     <materialDesign:Chip
-                                        ToolTip="导入或导出档案…"
+                                        ToolTip.Tip="导入或导出档案…"
                                         Icon="{materialDesign:PackIcon Import}"
                                         Click="ButtonImportFromFile_OnClick"
                                         IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
@@ -2777,7 +2777,7 @@
                             <Button Grid.Column="1" Content="{materialDesign:PackIcon Close}"
                                     Click="ButtonHideSellingAnnouncementBanner_OnClick"
                                     Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                    ToolTip="不再显示"/>
+                                    ToolTip.Tip="不再显示"/>
                         </Grid>
                     </materialDesign:ColorZone>
                 </Grid>

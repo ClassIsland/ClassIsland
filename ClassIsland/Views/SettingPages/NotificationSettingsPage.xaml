@@ -363,13 +363,13 @@
                                                        Margin="0 6 0 0">
                                                 <Button Click="ButtonTestSpeeching_OnClick"
                                                         HorizontalAlignment="Left"
-                                                        Style="{StaticResource MaterialDesignFlatButton}">
+                                                        Style="{StaticResource MaterialFlatButton}">
                                                     <controls2:IconText Kind="Play"
                                                                         Text="测试语音" />
                                                 </Button>
                                                 <Button Click="ButtonOpenSpeechSettings_OnClick"
                                                         HorizontalAlignment="Left"
-                                                        Style="{StaticResource MaterialDesignFlatButton}">
+                                                        Style="{StaticResource MaterialFlatButton}">
                                                     <controls2:IconText Kind="ExternalLink"
                                                                         Text="系统文本转语音设置" />
                                                 </Button>
@@ -579,7 +579,7 @@
                                         Foreground="{DynamicResource PrimaryHueMidBrush}"
                                         Content="{materialDesign:PackIcon CogOutline}"
                                         VerticalAlignment="Center"
-                                        ToolTip="查看提醒高级设置…"
+                                        ToolTip.Tip="查看提醒高级设置…"
                                         Margin="0 0 6 0"
                                         Click="ButtonOpenAdvancedProviderSettings_OnClick"
                                         IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"/>
@@ -603,7 +603,7 @@
                         </Style>
                     </StackPanel.Style>
                     <ci:StickerControl ImageSource="/Assets/HoYoStickers/普罗米修斯_查询.png" Width="72" Height="72"
-                           StickerToolTip="普罗米修斯_查询"
+                           StickerToolTip.Tip="普罗米修斯_查询"
                            PackIconKind="BellNotificationOutline"/>
                     <TextBlock Text="在左侧选择一个提醒提供方，然后在此处进行设置。" TextWrapping="Wrap"
                                Margin="0 4 0 0" />

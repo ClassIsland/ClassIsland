@@ -137,7 +137,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <Button Margin="0 8 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                    <Button Margin="0 8 0 0" Style="{StaticResource MaterialFlatButton}"
                             HorizontalAlignment="Left" Click="ButtonRefreshMonitors_OnClick">
                         <ci:IconText Kind="Refresh" Text="刷新显示器列表" />
                     </Button>

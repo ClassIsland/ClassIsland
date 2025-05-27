@@ -1,0 +1,105 @@
+<UserControl x:Class="ClassIsland.Core.Controls.AnnouncementControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:navHyperlink="clr-namespace:ClassIsland.Core.Controls.NavHyperlink"
+             xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
+             xmlns:materialDesign="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AnnouncementControl}}"
+          x:Name="Root">
+        <Grid.Styles>
+            <Style Selector="Grid#Root">
+                <Style Selector="^.Announcement">
+                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                        <Setter Property="Background" Value="#175DE2E7"/>
+                    </Style>
+                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                        <Setter Property="Kind" Value="BullhornOutline"/>
+                    </Style>
+                </Style>
+                <Style Selector="^.Info">
+                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                        <Setter Property="Background" Value="#174169e1"/>
+                    </Style>
+                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                        <Setter Property="Kind" Value="InfoCircleOutline"/>
+                    </Style>
+                </Style>
+                <Style Selector="^.Important">
+                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                        <Setter Property="Background" Value="#17800080"/>
+                    </Style>
+                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                        <Setter Property="Kind" Value="MessageAlertOutline"/>
+                    </Style>
+                </Style>
+                <Style Selector="^.Warning">
+                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                        <Setter Property="Background" Value="#17FE9900"/>
+                    </Style>
+                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                        <Setter Property="Kind" Value="WarningOutline"/>
+                    </Style>
+                </Style>
+                <Style Selector="^.Critical">
+                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                        <Setter Property="Background" Value="#17D20103"/>
+                    </Style>
+                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                        <Setter Property="Kind" Value="ErrorOutline"/>
+                    </Style>
+                </Style>
+            </Style>
+        </Grid.Styles>
+        <Interaction.Behaviors>
+            <DataTriggerBehavior Binding="{Binding Announcement.Severity}" Value="Announcement">
+                <AddClassAction ClassName="Announcement"/>
+            </DataTriggerBehavior>
+            <DataTriggerBehavior Binding="{Binding Announcement.Severity}" Value="Info">
+                <AddClassAction ClassName="Info"/>
+            </DataTriggerBehavior>
+            <DataTriggerBehavior Binding="{Binding Announcement.Severity}" Value="Important">
+                <AddClassAction ClassName="Important"/>
+            </DataTriggerBehavior>
+            <DataTriggerBehavior Binding="{Binding Announcement.Severity}" Value="Warning">
+                <AddClassAction ClassName="Warning"/>
+            </DataTriggerBehavior>
+            <DataTriggerBehavior Binding="{Binding Announcement.Severity}" Value="Critical">
+                <AddClassAction ClassName="Critical"/>
+            </DataTriggerBehavior>
+        </Interaction.Behaviors>
+        <materialDesign:ColorZone Margin="0 0 0 4"
+                                  Panel.ZIndex="1" x:Name="Background">
+            <StackPanel Margin="8 4">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <avalonia:MaterialIcon Grid.Column="0" Height="20" Width="20" x:Name="Icon"/>
+                    <TextBlock Grid.Column="1" TextWrapping="Wrap"
+                               VerticalAlignment="Top"
+                               Margin="4 0 0 0"
+                               Text="{Binding Announcement.Summary, Mode=OneWay}"/>
+
+                    <Button Grid.Column="2" VerticalAlignment="Top"
+                            Theme="{StaticResource MaterialFlatButton}"
+                            Classes="circle"
+                            Margin="0 -7"
+                            Content="{avalonia:MaterialIconExt Close}"
+                            ToolTip.Tip="关闭"
+                            Click="ButtonRead_OnClick"/>
+                </Grid>
+                <Button Theme="{StaticResource MaterialFlatButton}" HorizontalAlignment="Left"
+                        Margin="24 6 0 0" Foreground="{DynamicResource MaterialDesignBody}"
+                        Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                        CommandParameter="{Binding Announcement.DetailsUri, Mode=OneWay}"
+                        IsVisible="{Binding Announcement.HasDetails, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <avalonia:MaterialIconText Kind="OpenInNew" Text="详细信息"/>
+                </Button>
+            </StackPanel>
+        </materialDesign:ColorZone>
+    </Grid>
+</UserControl>
+

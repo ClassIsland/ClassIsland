@@ -1,0 +1,177 @@
+<UserControl x:Class="ClassIsland.Core.Controls.AttachedSettingsControlPresenter"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:materialDesign="using:Material.Styles.Controls"
+             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters1:AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter
+            x:Key="AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter" />
+        <converters1:BooleanAndExpressionMultiConverter x:Key="BooleanAndConverter" />
+        
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}">
+        <Expander Background="Transparent">
+            <Expander.IsExpanded>
+                <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <Binding Path="AssociatedAttachedSettings.IsAttachSettingsEnabled"/>
+                    <Binding Path="IsDependencyMode" Converter="{StaticResource InvertBooleanConverter}"/>
+                </MultiBinding>
+            </Expander.IsExpanded>
+            <Expander.Header>
+                <DockPanel>
+                    <ToggleButton DockPanel.Dock="Right"
+                                  IsChecked="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled}"
+                                  ToolTip.Tip="是否在此处启用特定的设置"
+                                  Content="{avalonia:MaterialIconExt LayersOutline}"
+                                  IsEnabled="{Binding ControlInfo.HasEnabledState, Mode=OneWay}"/>
+                    <Button DockPanel.Dock="Right"  
+                            Theme="{StaticResource MaterialFlatButton}"
+                            Classes="circle"
+                            Margin="4 -4"
+                            ToolTip.Tip="查看此设置的继承情况…"
+                            Content="{avalonia:MaterialIconExt LayersSearchOutline}"
+                            Click="ButtonShowDetails_OnClick">
+                        <Button.IsVisible>
+                            <MultiBinding Converter="{StaticResource BooleanAndConverter}" Mode="OneWay">
+                                <Binding Path="ControlInfo.HasEnabledState" Mode="OneWay"/>
+                                <Binding Path="IsDependencyMode" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}"/>
+                            </MultiBinding>
+                        </Button.IsVisible>
+                        <Button.Flyout>
+                            <Flyout>
+                                <Border Width="350"
+                                        MinHeight="300"
+                                        MaxHeight="500">
+                                    <Grid RowDefinitions="*,Auto">
+                                        <TabControl Grid.Row="0">
+                                            <TabItem Header="被覆盖">
+                                                <Grid Margin="4" RowDefinitions="Auto,*">
+                                                    <TextBlock Grid.Row="0" Text="以下节点的设置可能会覆盖此处的设置。" />
+                                                    <ListBox Grid.Row="1" ItemsSource="{Binding NextItems}">
+                                                        <ListBox.ItemContainerTheme>
+                                                            <ControlTheme TargetType="ListBoxItem"
+                                                                   BasedOn="{StaticResource MaterialListBoxItem}">
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate>
+                                                                            <controls:AttachedSettingsControlPresenter
+                                                                                Margin="4"
+                                                                                TargetObject="{Binding Object, Mode=OneWay}"
+                                                                                ContentId="{Binding Address.Guid, Mode=OneWay}"
+                                                                                ContentIndex="{Binding Address.Index, Mode=OneWay}"
+                                                                                IsDependencyMode="True"
+                                                                                ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}" />
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </ControlTheme>
+                                                        </ListBox.ItemContainerTheme>
+                                                    </ListBox>
+                                                </Grid>
+                                            </TabItem>
+                                            <TabItem Header="继承">
+                                                <Grid Margin="4" RowDefinitions="Auto,*">
+                                                    <TextBlock Grid.Row="0" Text="此处的设置可能会覆盖以下节点的设置。" />
+                                                    <ListBox Grid.Row="1" ItemsSource="{Binding PreviousItems}">
+                                                        <ListBox.ItemContainerTheme>
+                                                            <ControlTheme TargetType="ListBoxItem"
+                                                                          BasedOn="{StaticResource MaterialListBoxItem}">
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate>
+                                                                            <controls:AttachedSettingsControlPresenter
+                                                                                Margin="4"
+                                                                                TargetObject="{Binding Object, Mode=OneWay}"
+                                                                                ContentId="{Binding Address.Guid, Mode=OneWay}"
+                                                                                ContentIndex="{Binding Address.Index, Mode=OneWay}"
+                                                                                IsDependencyMode="True"
+                                                                                ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}" />
+                                                                        </ControlTemplate>  
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </ControlTheme>
+                                                        </ListBox.ItemContainerTheme>
+                                                    </ListBox>
+                                                </Grid>
+                                            </TabItem>
+                                        </TabControl>
+                                        <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal"
+                                                   Margin="4 0 4 4">
+                                            <Button HorizontalAlignment="Left"
+                                                    Content="{avalonia:MaterialIconExt HelpCircleOutline}"
+                                                    ToolTip.Tip="附加设置帮助…"
+                                                    Margin="4 0 0 0"
+                                                    Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                                    CommandParameter="https://docs.classisland.tech/app/advanced#%E9%99%84%E5%8A%A0%E8%AE%BE%E7%BD%AE"
+                                                    Theme="{StaticResource MaterialFlatButton}"
+                                                    Classes="circle"/>
+                                            <Button HorizontalAlignment="Left"
+                                                    Content="{avalonia:MaterialIconExt Refresh}"
+                                                    ToolTip.Tip="刷新"
+                                                    Margin="4 0 0 0"
+                                                    Click="ButtonRefresh_OnClick"
+                                                    Theme="{StaticResource MaterialFlatButton}" 
+                                                    Classes="circle"/>
+                                        </WrapPanel>
+                                        <ProgressBar Grid.Row="0"
+                                                     IsIndeterminate="True"
+                                                     VerticalAlignment="Top"
+                                                     IsVisible="{Binding IsLoaded}" />
+                                    </Grid>
+                                </Border>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Grid>
+                        <avalonia:MaterialIconText Kind="{Binding ControlInfo.IconKind, Mode=OneWay}"
+                                     Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"
+                                     IsVisible="{Binding IsDependencyMode, Converter={StaticResource InvertBooleanConverter}}"/>
+                        <avalonia:MaterialIconText Kind="{Binding DependencyItemPackIconKind, Mode=OneWay}"
+                                     Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
+                                     IsVisible="{Binding IsDependencyMode}">
+                            <!-- TODO: P2 完成依赖状态样式 -->
+                            <!-- <avalonia:MaterialIconText.Style> -->
+                            <!--     <Style TargetType="local:IconText"> -->
+                            <!--         <Style.Resources> -->
+                            <!--             <Style TargetType="TextBlock"> -->
+                            <!--                 <Style.Triggers> -->
+                            <!--                     <DataTrigger Binding="{Binding State}" Value="Disabled"> -->
+                            <!--                         <Setter Property="Opacity" Value="0.5"/> -->
+                            <!--                     </DataTrigger> -->
+                            <!--                     <DataTrigger Binding="{Binding State, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}" Value="Override"> -->
+                            <!-- -->
+                            <!--                         <Setter Property="TextDecorations" Value="{x:Static TextDecorations.Strikethrough}"/> -->
+                            <!--                     </DataTrigger> -->
+                            <!--                 </Style.Triggers> -->
+                            <!--             </Style> -->
+                            <!--         </Style.Resources> -->
+                            <!--         <Style.Triggers> -->
+                            <!--             <DataTrigger Binding="{Binding State}" Value="Disabled"> -->
+                            <!--                 <Setter Property="Opacity" Value="0.5"/> -->
+                            <!--             </DataTrigger> -->
+                            <!--             <DataTrigger Binding="{Binding State}" Value="Override"> -->
+                            <!--                 <Setter Property="TextElement.FontStyle" Value="Italic"/> -->
+                            <!--             </DataTrigger> -->
+                            <!--         </Style.Triggers> -->
+                            <!--     </Style> -->
+                            <!-- </avalonia:MaterialIconText.Style> -->
+                        </avalonia:MaterialIconText>
+
+                    </Grid>
+                </DockPanel>
+            </Expander.Header>
+            <ContentPresenter x:Name="MainContentPresenter" IsEnabled="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled, Mode=OneWay}"/>
+
+        </Expander>
+    </Grid>
+</UserControl>
+

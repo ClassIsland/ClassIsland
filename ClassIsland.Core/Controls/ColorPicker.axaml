@@ -1,0 +1,71 @@
+<UserControl
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="using:Material.Styles.Controls"
+             xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+             xmlns:controls1="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+             x:Class="ClassIsland.Core.Controls.ColorPicker"
+             mc:Ignorable="d" 
+             d:DesignWidth="200">
+    <UserControl.Resources>
+        <converters:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Button Theme="{StaticResource MaterialOutlineButton}" Padding="10 5">
+            <Button.Flyout>
+                <Flyout>
+                    <Grid Height="300" Width="400" RowDefinitions="*,Auto">
+                        <ColorPicker Grid.Row="0" x:Name="Picker"
+                                     Color="{Binding Color, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls1:ColorPicker}}, Delay=20}" />
+                        <Grid Grid.Row="1" Margin="12 0 12 12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="128" />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Grid.Column="0" Width="50" Margin="2,0,10,2"
+                                       Fill="{Binding Color, ElementName=Picker, Converter={StaticResource ColorToColorPickerBrushConverter}}" />
+                            <TextBox Margin="2,0,10,2"
+                                     Padding="6"
+                                     Grid.Column="1"
+                                     assists:TextFieldAssist.Label="HEX"
+                                     KeyDown="UIElement_OnKeyDown"
+                                     UseFloatingWatermark="True"
+                                     Text="{Binding Color, ElementName=Picker, UpdateSourceTrigger=LostFocus}" />
+                            <TextBox Margin="2,0,3,2"
+                                     Padding="6"
+                                     Grid.Column="2"
+                                     assists:TextFieldAssist.Label="R"
+                                     UseFloatingWatermark="True"
+                                     Text="{Binding Color.R, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Margin="2,0,3,2"
+                                     Padding="6"
+                                     Grid.Column="3"
+                                     assists:TextFieldAssist.Label="G"
+                                     UseFloatingWatermark="True"
+                                     Text="{Binding Color.G, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Margin="2,0,0,2"
+                                     Padding="6"
+                                     Grid.Column="4"
+                                     assists:TextFieldAssist.Label="B"
+                                     UseFloatingWatermark="True"
+                                     Text="{Binding Color.B, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                    </Grid>
+                </Flyout>
+            </Button.Flyout>
+            <StackPanel Orientation="Horizontal">
+                <Rectangle Width="12" Height="12" VerticalAlignment="Center" d:Fill="Black" Stroke="White"
+                           Fill="{Binding ColorBrush, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls1:ColorPicker}}}" />
+                <TextBlock VerticalAlignment="Center" Margin="3 0 0 0" d:Text="#114514"
+                           Text="{Binding ColorHex, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls1:ColorPicker}}}" />
+            </StackPanel>
+        </Button>
+    </Grid>
+</UserControl>
+

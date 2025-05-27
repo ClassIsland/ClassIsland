@@ -22,7 +22,7 @@
       Title="ManagementSettingsPage">
 
     <ci:SettingsPageBase.Resources>
-        <Style x:Key="LinkButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+        <Style x:Key="LinkButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
             <Setter Property="Height" Value="48"/>
             <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
             <Setter Property="materialDesign:RippleAssist.Feedback" Value="{DynamicResource MaterialDesignBody}"/>

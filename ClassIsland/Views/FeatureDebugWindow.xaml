@@ -171,7 +171,7 @@
                     <ci:StickerControl PackIconKind="Github"
                                     FallbackPackIconKind="QuestionMarkCircleOutline"
                                     Width="64" Height="64"
-                                    StickerToolTip="帕姆_点赞"
+                                    StickerToolTip.Tip="帕姆_点赞"
                                     ImageSource="/Assets/HoYoStickers/帕姆_点赞.png"/>
                     <controls:WeatherRangePackIconControl>
                         <controls:WeatherRangePackIconControl.Value>

@@ -29,7 +29,7 @@
                 <Run Text="{Binding ManagementService.Persist.ClientUniqueId, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}}"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True

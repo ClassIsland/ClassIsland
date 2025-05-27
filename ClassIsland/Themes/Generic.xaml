@@ -27,7 +27,7 @@
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
     </Style>
 
-    <Style TargetType="{x:Type controls:FileBrowserButton}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+    <Style TargetType="{x:Type controls:FileBrowserButton}" BasedOn="{StaticResource MaterialFlatButton}">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Content" Value="{materialDesign:PackIcon Folder}"/>
         <Setter Property="ToolTip" Value="浏览…"/>
@@ -181,7 +181,7 @@
         </Setter>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                     <Style.Resources>
                         <converters1:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
                         <converters1:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
@@ -221,12 +221,12 @@
                                                                 <!--<Button Content="{materialDesign:PackIcon Edit}"
                                                                         Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"
                                                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                        ToolTip="编辑时间点…" Margin="0 0 4 0" />-->
+                                                                        ToolTip.Tip="编辑时间点…" Margin="0 0 4 0" />-->
                                                                 <Button Content="{materialDesign:PackIcon Delete}"
                                                                         Foreground="IndianRed"
                                                                         Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
                                                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                        ToolTip="删除时间点" />
+                                                                        ToolTip.Tip="删除时间点" />
                                                             </StackPanel>
                                                         </Border>
                                                     </Grid>
@@ -271,12 +271,12 @@
                                                                 <!--<Button Content="{materialDesign:PackIcon Edit}"
                                                                         Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"
                                                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                        ToolTip="编辑时间点…" Margin="0 0 4 0" />-->
+                                                                        ToolTip.Tip="编辑时间点…" Margin="0 0 4 0" />-->
                                                                 <Button Content="{materialDesign:PackIcon Delete}"
                                                                         Foreground="IndianRed"
                                                                         Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
                                                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                        ToolTip="删除时间点" />
+                                                                        ToolTip.Tip="删除时间点" />
                                                             </StackPanel>
                                                         </Border>
                                                     </Grid>
@@ -354,12 +354,12 @@
                                                         <!--<Button Content="{materialDesign:PackIcon Edit}"
                                                                 Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"
                                                                 Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                ToolTip="编辑时间点…" Margin="0 0 4 0"/>-->
+                                                                ToolTip.Tip="编辑时间点…" Margin="0 0 4 0"/>-->
                                                         <Button Content="{materialDesign:PackIcon Delete}"
                                                                 Foreground="IndianRed"
                                                                 Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
                                                                 Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                ToolTip="删除时间点" />
+                                                                ToolTip.Tip="删除时间点" />
                                                     </StackPanel>
                                                 </Border>
                                             </Grid>
@@ -391,7 +391,7 @@
            BasedOn="{StaticResource MaterialDesignListBox}">
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                     <Setter Property="Padding" Value="1"/>
                     <Setter Property="Margin" Value="0 2"/>
                 </Style>

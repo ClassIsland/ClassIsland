@@ -144,7 +144,7 @@
                         <TextBox Grid.Column="1"
                                  Text="{Binding SettingsService.Settings.DebugTimeSpeed, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
                                  MinWidth="102"/>
-                        <Button Grid.Column="2" Click="ButtonResetTimeSpeed_OnClick" ToolTip="重置时间流速" Style="{StaticResource MaterialDesignFlatButton}"
+                        <Button Grid.Column="2" Click="ButtonResetTimeSpeed_OnClick" ToolTip.Tip="重置时间流速" Style="{StaticResource MaterialFlatButton}"
                                 Content="{materialDesign:PackIcon ClockRemoveOutline}"/>
                     </Grid>
                 </controls2:SettingsControl.Switcher>

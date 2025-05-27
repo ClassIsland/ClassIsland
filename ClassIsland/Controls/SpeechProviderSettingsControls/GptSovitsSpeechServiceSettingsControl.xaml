@@ -22,7 +22,7 @@
                 <TextBlock Text="管理 GPT-SoVITS 语音预设。" TextWrapping="Wrap"
                            Margin="0 0 0 4" />
                 <WrapPanel>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    <Button Style="{StaticResource MaterialFlatButton}"
                             HorizontalAlignment="Left"
                             Click="ButtonSaveGptSovitsPreset_OnClick">
                         <ci:IconText Kind="Floppy" Text="保存预设"/>
@@ -52,27 +52,27 @@
                                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                             Content="{materialDesign:PackIcon Download}"
                                             Margin="0 -8"
-                                            ToolTip="加载"
+                                            ToolTip.Tip="加载"
                                             Command="{Binding Data.LoadGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
                                             CommandParameter="{Binding}"/>
 
                                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                             Content="{materialDesign:PackIcon Upload}"
                                             Margin="0 -8"
-                                            ToolTip="覆盖"
+                                            ToolTip.Tip="覆盖"
                                             Visibility="{Binding IsInternal, Converter={StaticResource InverseBoolToVisConverter}}"
                                             Command="{Binding Data.OverwriteGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
                                             CommandParameter="{Binding}"/>
                                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                             Content="{materialDesign:PackIcon ContentCopy}"
                                             Margin="0 -8"
-                                            ToolTip="创建副本"
+                                            ToolTip.Tip="创建副本"
                                             Command="{Binding Data.DuplicateGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
                                             CommandParameter="{Binding}"/>
                                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                             Content="{materialDesign:PackIcon Remove}"
                                             Margin="0 -8"
-                                            ToolTip="移除"
+                                            ToolTip.Tip="移除"
                                             Visibility="{Binding IsInternal, Converter={StaticResource InverseBoolToVisConverter}}"
                                             Foreground="IndianRed"
                                             Command="{Binding Data.RemoveGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
@@ -89,12 +89,12 @@
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:GptSovitsSpeechServiceSettingsControl}}" Margin="0 6 0 6">
 
         <WrapPanel>
-            <Button Style="{StaticResource MaterialDesignFlatButton}"
+            <Button Style="{StaticResource MaterialFlatButton}"
                     HorizontalAlignment="Left"
                     Click="ButtonOpenGptSovitsPresetsDrawer_OnClick">
                 <ci:IconText Kind="ListBoxOutline" Text="语音预设…" />
             </Button>
-            <Button Style="{StaticResource MaterialDesignFlatButton}"
+            <Button Style="{StaticResource MaterialFlatButton}"
                     HorizontalAlignment="Left"
                     Click="ButtonSaveGptSovitsPreset2_OnClick">
                 <ci:IconText Kind="Floppy" Text="保存预设" />

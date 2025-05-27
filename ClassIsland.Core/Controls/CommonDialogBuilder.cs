@@ -1,11 +1,13 @@
-﻿using ClassIsland.Core.Controls.CommonDialog;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
+using Material.Icons;
+using Material.Icons.Avalonia;
 
 namespace ClassIsland.Core.Controls;
 
@@ -59,7 +61,7 @@ public class CommonDialogBuilder
     /// <param name="width">位图宽度（px），默认为 64</param>
     /// <param name="height">位图高度（px），默认为 64</param>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder SetBitmapIcon(BitmapSource source, double width = 64, double height = 64)
+    public CommonDialogBuilder SetBitmapIcon(Bitmap source, double width = 64, double height = 64)
     {
         Dialog.DialogIcon = new Image()
         {
@@ -81,7 +83,7 @@ public class CommonDialogBuilder
     /// </remarks>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
     public CommonDialogBuilder SetBitmapIcon(Uri uri, double width = 64, double height = 64) =>
-        SetBitmapIcon(new BitmapImage(uri), width, height);
+        SetBitmapIcon(new Bitmap(AssetLoader.Open(uri)), width, height);
 
     /// <summary>
     /// 设置图标类型。
@@ -123,7 +125,7 @@ public class CommonDialogBuilder
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
     public CommonDialogBuilder SetPackIcon(MaterialIconKind kind, double width = 64, double height = 64)
     {
-        Dialog.DialogIcon = new PackIcon()
+        Dialog.DialogIcon = new MaterialIcon()
         {
             Kind = kind,
             Width = width,
@@ -206,23 +208,41 @@ public class CommonDialogBuilder
     /// </summary>
     /// <param name="owner">对话框所有者</param>
     /// <returns>对话框选择的返回值</returns>
-    public int ShowDialog(Window? owner=null)
+    public async Task<int> ShowDialog(Window? owner=null)
     {
-        Dialog.Owner = owner;
-        Dialog.ShowDialog();
+        var window = owner ?? AppBase.Current.MainWindow;
+        if (window == null)
+        {
+            var cancel = new CancellationTokenSource();
+
+            void OnDialogOnClosed(object? s, EventArgs e)
+            {
+                cancel.Cancel();
+                Dialog.Closed -= OnDialogOnClosed;
+            }
+            Dialog.Closed += OnDialogOnClosed;
+            Dialog.Show();
+
+            if (!cancel.Token.IsCancellationRequested)
+            {
+                await Task.Run(() => cancel.Token.WaitHandle.WaitOne(), cancel.Token);
+            }
+        }
+        else
+        {
+            await Dialog.ShowDialog(window);
+        }
         return Dialog.ExecutedActionIndex;
     }
 
     /// <summary>
     /// 显示构建的对话框。
     /// </summary>
-    /// <param name="inputResult">输入框的输入结果</param>
     /// <param name="owner">对话框所有者</param>
     /// <returns>对话框选择的返回值</returns>
-    public int ShowDialog(out string inputResult, Window? owner = null)
+    public async Task<(int, string)> ShowDialogWithOutput(Window? owner = null)
     {
-        var r = ShowDialog(owner);
-        inputResult = Dialog.InputResult;
-        return r;
+        var r = await ShowDialog(owner);
+        return (r, Dialog.InputResult);
     }
 }

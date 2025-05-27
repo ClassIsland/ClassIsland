@@ -5,18 +5,19 @@
          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
          xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
          xmlns:converters="clr-namespace:ClassIsland.Converters">
+    <ci:AppBase.Styles>
+        <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
+    </ci:AppBase.Styles>
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Assets/Fonts/Fonts.axaml"/>
                 <ResourceInclude Source="/Themes/Generic.axaml"/>
-                <ResourceInclude Source="pack://application:,,,/ClassIsland.Core;component/ThemeBase.axaml"/>
+                <ResourceInclude Source="avares://ClassIsland.Core/ThemeBase.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>
-            <ci:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
             <ci:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
-
             
             <converters:MainWindowIsMainLineConverter x:Key="MainWindowIsMainLineConverter" />
         </ResourceDictionary>

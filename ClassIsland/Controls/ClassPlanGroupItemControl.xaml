@@ -19,7 +19,7 @@
                 <Grid HorizontalAlignment="Right">
                     <Button Content="解散" 
                             IsDefault="True"
-                            Style="{DynamicResource MaterialDesignFlatButton}" 
+                            Style="{DynamicResource MaterialFlatButton}" 
                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                         <Button.CommandParameter>
                             <system:Boolean xmlns:system="clr-namespace:System;assembly=System.Runtime">
@@ -28,7 +28,7 @@
                         </Button.CommandParameter>
                     </Button>
                 </Grid>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
         </StackPanel>
 
@@ -46,7 +46,7 @@
                             Foreground="Red"
                             materialDesign:RippleAssist.Feedback="Red"
                             IsDefault="True"
-                            Style="{DynamicResource MaterialDesignFlatButton}" 
+                            Style="{DynamicResource MaterialFlatButton}" 
                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                         <Button.CommandParameter>
                             <system:Boolean xmlns:system="clr-namespace:System;assembly=System.Runtime">
@@ -55,7 +55,7 @@
                         </Button.CommandParameter>
                     </Button>
                 </Grid>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
         </StackPanel>
     </UserControl.Resources>

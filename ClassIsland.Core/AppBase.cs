@@ -1,5 +1,6 @@
 using System.Reflection;
 using Avalonia;
+using Avalonia.Controls;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
 
@@ -104,4 +105,9 @@ public abstract class AppBase : Application, IAppHost
     /// 应用当前生命周期状态
     /// </summary>
     public static ApplicationLifetime CurrentLifetime { get; internal set; } = Enums.ApplicationLifetime.None;
+    
+    /// <summary>
+    /// 应用当前的主窗口
+    /// </summary>
+    public Window? MainWindow { get; internal set; }
 }

@@ -42,7 +42,7 @@
                              Visibility="{Binding ViewModel.IsWorking, Converter={StaticResource BooleanToVisibilityConverter}}"
                              />
                 <StackPanel Orientation="Horizontal"  HorizontalAlignment="Right">
-                    <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                         <Button.CommandParameter>
                             <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                                 False
@@ -51,7 +51,7 @@
                     </Button>
                     <Button Content="连接" IsDefault="True" 
                             IsEnabled="{Binding ViewModel.IsConfigLoaded}"
-                            HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}"
+                            HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}"
                             Click="ButtonOk_OnClick">
                        
                     </Button>

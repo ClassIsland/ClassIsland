@@ -188,14 +188,14 @@
                                                                    VerticalAlignment="Center"
                                                                    Grid.Column="1">
                                     <!-- 刷新 -->
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    <Button Style="{StaticResource MaterialFlatButton}"
                                                                     Click="ButtonUpdateWallpaper_OnClick"
                                                                     VerticalAlignment="Center"
                                                                     Margin="2 0">
                                         <controls1:IconText Kind="Refresh" Text="刷新" />
                                     </Button>
                                     <!-- 预览提取结果 -->
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    <Button Style="{StaticResource MaterialFlatButton}"
                                                                     Click="ButtonPreviewWallpaper_OnClick"
                                                                     VerticalAlignment="Center"
                                                                     Margin="2 0">
@@ -288,9 +288,9 @@
                                                                Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
                     <controls1:SettingsCard.Switcher>
                         <DockPanel Width="150">
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            <Button Style="{StaticResource MaterialFlatButton}"
                                                             Content="{materialDesign:PackIcon WindowMaximize}"
-                                                            ToolTip="浏览…"
+                                                            ToolTip.Tip="浏览…"
                                                             DockPanel.Dock="Right"
                                                             Click="ButtonBrowseWindows_OnClick" />
                             <TextBox Foreground="{DynamicResource MaterialDesignBody}"
@@ -357,11 +357,11 @@
                                 </ListBox>
                                 <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1">
                                     <!-- 刷新 -->
-                                    <Button Click="ButtonUpdateWallpaper_OnClick" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Margin="2 0">
+                                    <Button Click="ButtonUpdateWallpaper_OnClick" Style="{StaticResource MaterialFlatButton}" VerticalAlignment="Center" Margin="2 0">
                                         <controls1:IconText Kind="Refresh" Text="刷新"/>
                                     </Button>
                                     <!-- 预览提取结果 -->
-                                    <Button Click="ButtonPreviewWallpaper_OnClick" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Margin="2 0">
+                                    <Button Click="ButtonPreviewWallpaper_OnClick" Style="{StaticResource MaterialFlatButton}" VerticalAlignment="Center" Margin="2 0">
                                         <controls1:IconText Kind="EyeOutline" Text="预览提取结果"/>
                                     </Button>
                                 </WrapPanel>
@@ -401,7 +401,7 @@
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock FontFamily="{Binding}" FontWeight="Normal"
-                                               ToolTip="{Binding Source}">
+                                               ToolTip.Tip="{Binding Source}">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Style.Triggers>
@@ -431,7 +431,7 @@
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}" FontWeight="{Binding}"
-                                               ToolTip="{Binding}" />
+                                               ToolTip.Tip="{Binding}" />
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                             <x:Static Member="FontWeights.Thin" />

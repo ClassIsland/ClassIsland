@@ -81,7 +81,7 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
                 <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                         <Setter Property="Padding" Value="0 0" />
                     </Style>
                 </ListBox.ItemContainerStyle>
@@ -102,15 +102,15 @@
                                       CornerRadius="4"
                                       Background="{DynamicResource MaterialDesignCardBackground}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    <Button Style="{StaticResource MaterialFlatButton}"
                             Click="ButtonBase_OnClick">
                         <ci:IconText Kind="Refresh" Text="刷新市场" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    <Button Style="{StaticResource MaterialFlatButton}"
                             Click="ButtonLoadThemes_OnClick">
                         <ci:IconText Kind="Restart" Text="重载主题" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    <Button Style="{StaticResource MaterialFlatButton}"
                             Click="ButtonOpenThemeFolder_OnClick">
                         <ci:IconText Kind="FolderOutline" Text="打开主题文件夹…" />
                     </Button>
@@ -154,7 +154,7 @@
                      materialDesign:ListBoxItemAssist.ShowSelection="False"
                      VerticalContentAlignment="Stretch">
             <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="Margin" Value="2"/>
                     <Setter Property="Template">
@@ -251,7 +251,7 @@
                                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                             Content="{materialDesign:PackIcon Web, Size=14}"
                                             Margin="2 -8 0 -8"
-                                            ToolTip="网站…"
+                                            ToolTip.Tip="网站…"
                                             CommandParameter="{Binding Value.Manifest.Url}"
                                             Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}" />
                                 </StackPanel>
@@ -266,13 +266,13 @@
                                                 Visibility="{Binding Value.IsError, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                 Margin="2 0"
                                                 Foreground="Red"
-                                                ToolTip="加载此主题时发生错误"
+                                                ToolTip.Tip="加载此主题时发生错误"
                                                 CommandParameter="{Binding Value}"
                                                 Command="{Binding ShowErrorsCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
                                     <materialDesign:PopupBox Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                              Content="{materialDesign:PackIcon MoreHoriz}"
                                                              Margin="2 0"
-                                                             ToolTip="更多选项…"
+                                                             ToolTip.Tip="更多选项…"
                                                              UseLayoutRounding="True"
                                                              RenderOptions.EdgeMode="Aliased">
                                         <StackPanel>
@@ -294,7 +294,7 @@
                                         </StackPanel>
                                     </materialDesign:PopupBox>
                                     <Button
-                                            ToolTip="安装"
+                                            ToolTip.Tip="安装"
                                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                             Width="28" Height="28"
                                             CommandParameter="{Binding Value.Manifest.Id}"
@@ -311,7 +311,7 @@
                                         </Button.Visibility>
                                     </Button>
                                     <Button
-                                            ToolTip="更新"
+                                            ToolTip.Tip="更新"
                                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                             Width="28" Height="28"
                                             CommandParameter="{Binding Value.Manifest.Id}"
@@ -329,7 +329,7 @@
                                         </Button.Visibility>
                                     </Button>
                                     <Button
-                                            ToolTip="重启以应用更改"
+                                            ToolTip.Tip="重启以应用更改"
                                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                             Width="28" Height="28"
                                             Click="ButtonRestart_OnClick"

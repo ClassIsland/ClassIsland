@@ -43,7 +43,7 @@
                             Style="{StaticResource MaterialDesignHamburgerToggleButton}" />-->
                     <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center"
                                 Margin="0 -16">
-                        <Button ToolTip="返回"
+                        <Button ToolTip.Tip="返回"
                                 Margin="0 0 16 0"
                                 VerticalAlignment="Center"
                                 Padding="0"

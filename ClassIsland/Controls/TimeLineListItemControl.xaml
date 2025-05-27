@@ -59,7 +59,7 @@
         <!-- Time -->
         <TextBlock Grid.Column="1" Grid.Row="0"
                    VerticalAlignment="Center"
-                   ToolTip="时间段">
+                   ToolTip.Tip="时间段">
             <Run
                 Text="{Binding TimePoint.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
             <Run Text="-" />
@@ -71,7 +71,7 @@
         <controls:IconText Grid.Column="1" Grid.Row="1"
                            Kind="ClockAutoOutline"
                            Text="{Binding TimePoint.Last}"
-                           Margin="0 0 0 0" ToolTip="持续时间" />
+                           Margin="0 0 0 0" ToolTip.Tip="持续时间" />
 
     </Grid>
 </UserControl>

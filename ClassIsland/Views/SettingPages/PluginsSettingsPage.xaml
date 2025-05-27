@@ -92,14 +92,14 @@
                             <CheckBox Content="已启用" Margin="0 0 6  0"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{Binding IsEnabled}"/>
-                            <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                            <Button Style="{StaticResource MaterialFlatButton}" 
                                                     VerticalAlignment="Center"
                                                     Margin="0 0 6  0"
                                                     Click="ButtonUninstall_OnClick"
                                                     Visibility="{Binding IsUninstalling, Converter={StaticResource InverseBoolToVisConverter}}">
                                 <ci:IconText Kind="Remove" Text="卸载"/>
                             </Button>
-                            <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                            <Button Style="{StaticResource MaterialFlatButton}" 
                                                     VerticalAlignment="Center"
                                                     Margin="0 0 6  0"
                                                     Click="ButtonUndoUninstall_OnClick"
@@ -198,7 +198,7 @@
                     </StackPanel>
                     <materialDesign:PopupBox Grid.Column="1" VerticalAlignment="Top"
                                              HorizontalAlignment="Right"
-                                             ToolTip="更多选项…"
+                                             ToolTip.Tip="更多选项…"
                                              Visibility="{Binding IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
                                              IsPopupOpen="{Binding ViewModel.IsPluginOperationsPopupOpened, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Mode=TwoWay}">
                         <StackPanel ButtonBase.Click="ButtonBase_OnClick">
@@ -330,10 +330,10 @@
                 <Separator Margin="0 16 0 8"/>
                 <ci:IconText Kind="SourceRepositoryMultiple" Text="自定义插件源" Margin="0 0 0 8"/>
                 <WrapPanel Margin="0 0 0 0">
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonAddPluginSource_OnClick">
+                    <Button Style="{StaticResource MaterialFlatButton}" Click="ButtonAddPluginSource_OnClick">
                         <ci:IconText Kind="Add" Text="添加"/>
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonRemovePluginSource_OnClick">
+                    <Button Style="{StaticResource MaterialFlatButton}" Click="ButtonRemovePluginSource_OnClick">
                         <ci:IconText Kind="Remove" Text="删除"/>
                     </Button>
                 </WrapPanel>
@@ -383,7 +383,7 @@
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <ci:StickerControl ImageSource="/Assets/HoYoStickers/光辉矢愿_不可以看.png"
                                        Height="72" Width="72"
-                                       StickerToolTip="光辉矢愿_不可以看"
+                                       StickerToolTip.Tip="光辉矢愿_不可以看"
                                        FallbackPackIconKind="ToyBrickSearch"
                                        Margin="0 0 0 8" />
                     <TextBlock Margin="0 0 0 6">
@@ -406,7 +406,7 @@
                     </TextBlock>
                     <Button HorizontalAlignment="Center" Click="ButtonOpenMarket_OnClick">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                            <Style TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
                                 <Style.Triggers>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
@@ -466,7 +466,7 @@
                                     </ItemsPanelTemplate>
                                 </ListBox.ItemsPanel>
                                 <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                                         <Setter Property="Padding" Value="0 0" />
                                     </Style>
                                 </ListBox.ItemContainerStyle>
@@ -486,7 +486,7 @@
                             <materialDesign:PopupBox VerticalAlignment="Center"
                                                      HorizontalAlignment="Right"
                                                      DockPanel.Dock="Right"
-                                                     ToolTip="更多选项…"
+                                                     ToolTip.Tip="更多选项…"
                                                      IsPopupOpen="{Binding ViewModel.IsPluginMarketOperationsPopupOpened, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Mode=TwoWay}">
                                 <StackPanel ButtonBase.Click="ButtonBase2_OnClick">
                                     <MenuItem Icon="{materialDesign:PackIcon Reload}" Header="从缓存重载插件源" 
@@ -504,7 +504,7 @@
                                 </StackPanel>
                             </materialDesign:PopupBox>
                             <Button DockPanel.Dock="Right" 
-                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Style="{StaticResource MaterialFlatButton}"
                                     Click="ButtonBaseRefreshPlugins_OnClick"
                                     IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}">
                                 <ci:IconText Kind="Refresh" Text="刷新"/>
@@ -625,26 +625,26 @@
                                                Grid.RowSpan="2" 
                                                Orientation="Horizontal"
                                                VerticalAlignment="Top" HorizontalAlignment="Right">
-                                        <StackPanel Orientation="Horizontal" ToolTip="下载量" Margin="2 0 0 0">
+                                        <StackPanel Orientation="Horizontal" ToolTip.Tip="下载量" Margin="2 0 0 0">
                                             <materialDesign:PackIcon Width="16" Height="16"
                                                                      Kind="Download" VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding Value.DownloadCount, Converter={StaticResource LargeNumberToFriendlyNumberConverter}}"
                                                        FontSize="12" VerticalAlignment="Center"/>
                                         </StackPanel>
-                                        <StackPanel Orientation="Horizontal" ToolTip="Stars" Margin="4 0 0 0">
+                                        <StackPanel Orientation="Horizontal" ToolTip.Tip="Stars" Margin="4 0 0 0">
                                             <materialDesign:PackIcon Width="16" Height="16"
                                                                      Kind="Star" VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding Value.StarsCount, Converter={StaticResource LargeNumberToFriendlyNumberConverter}}"
                                                        FontSize="12" VerticalAlignment="Center"/>
                                         </StackPanel>
-                                        <materialDesign:PackIcon ToolTip="此插件将在重启后被卸载。"
+                                        <materialDesign:PackIcon ToolTip.Tip="此插件将在重启后被卸载。"
                                                                  Foreground="Orange"
                                                                  Width="16" Height="16"
                                                                  VerticalAlignment="Center"
                                                                  Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                                  Margin="4 0 0 0"
                                                                  Kind="Delete"/>
-                                        <materialDesign:PackIcon ToolTip="插件需要重启以应用更改。"
+                                        <materialDesign:PackIcon ToolTip.Tip="插件需要重启以应用更改。"
                                                                  Foreground="Orange"
                                                                  Width="16" Height="16"
                                                                  VerticalAlignment="Center"
@@ -652,7 +652,7 @@
                                                                  Margin="2 0 0 0"
                                                                  Kind="Restart"/>
                                         <materialDesign:PackIcon Foreground="Red"
-                                                                         ToolTip="加载此插件时出现错误。"
+                                                                         ToolTip.Tip="加载此插件时出现错误。"
                                                                          Width="16" Height="16"
                                                                          Margin="2 0 0 0"
                                                                          VerticalAlignment="Center"
@@ -667,13 +667,13 @@
                                                 </Style>
                                             </materialDesign:PackIcon.Style>
                                         </materialDesign:PackIcon>
-                                        <materialDesign:PackIcon ToolTip="更新可用。"
+                                        <materialDesign:PackIcon ToolTip.Tip="更新可用。"
                                                                  Width="16" Height="16"
                                                                  VerticalAlignment="Center"
                                                                  Visibility="{Binding Value.IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                                  Margin="2 0 0 0"
                                                                  Kind="Upload"/>
-                                        <materialDesign:PackIcon ToolTip="此插件已安装。"
+                                        <materialDesign:PackIcon ToolTip.Tip="此插件已安装。"
                                                                  Width="16" Height="16"
                                                                  VerticalAlignment="Center"
                                                                  Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -690,7 +690,7 @@
                                           IsEnabled="{Binding Value.DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
                                           VerticalAlignment="Bottom" HorizontalAlignment="Right">
                                         <Button
-                                            ToolTip="安装"
+                                            ToolTip.Tip="安装"
                                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                             Width="28" Height="28"
                                             CommandParameter="{Binding Value.Manifest.Id}"
@@ -707,7 +707,7 @@
                                             </Button.Visibility>
                                         </Button>
                                         <Button
-                                            ToolTip="更新"
+                                            ToolTip.Tip="更新"
                                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                             Width="28" Height="28"
                                             CommandParameter="{Binding Value.Manifest.Id}"
@@ -725,7 +725,7 @@
                                             </Button.Visibility>
                                         </Button>
                                         <Button
-                                            ToolTip="重启以应用更改"
+                                            ToolTip.Tip="重启以应用更改"
                                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                             Width="28" Height="28"
                                             Click="ButtonRestart_OnClick"
@@ -734,7 +734,7 @@
                                         </Button>
 
                                         <CheckBox Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                  ToolTip="启用插件"
+                                                  ToolTip.Tip="启用插件"
                                                   Margin="4 0 0 0"
                                                   VerticalAlignment="Bottom"
                                                   IsChecked="{Binding Value.IsEnabled}"/>

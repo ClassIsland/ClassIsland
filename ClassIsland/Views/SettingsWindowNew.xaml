@@ -38,14 +38,14 @@
                 <Run Text="部分设置需要重启以应用。"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="稍后" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="稍后" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             False
                         </system:Boolean>
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="立即重启" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="立即重启" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
@@ -92,7 +92,7 @@
                           Margin="0 24 0 0"
                           Visibility="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource InverseBoolToVisConverter}}">
                     
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    <Button Style="{StaticResource MaterialFlatButton}"
                             Click="ButtonDoNotClickVeryDangerous_OnClick"
                             Foreground="Red"
                             materialDesign:RippleAssist.Feedback="Red"
@@ -323,7 +323,7 @@
                             Style="{StaticResource MaterialDesignHamburgerToggleButton}" />-->
                             <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center"
                                         Margin="0 -16">
-                                <Button ToolTip="返回"
+                                <Button ToolTip.Tip="返回"
                                         Margin="0 0 16 0"
                                         VerticalAlignment="Center"
                                         Padding="0"
@@ -331,7 +331,7 @@
                                         Visibility="{Binding ViewModel.CanGoBack, Converter={StaticResource BooleanToVisibilityConverter}}"
                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
                                         Content="{materialDesign:PackIcon ArrowLeft, Size=24}" />
-                                <Button ToolTip="导航栏"
+                                <Button ToolTip.Tip="导航栏"
                                         Margin="0 0 16 0"
                                         VerticalAlignment="Center"
                                         Padding="0"
@@ -369,7 +369,7 @@
                                 </StackPanel.Resources>
                                 <materialDesign:Chip
                                     Visibility="{Binding ViewModel.IsRequestedRestart, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                    ToolTip="部分设置需要重启应用后生效。"
+                                    ToolTip.Tip="部分设置需要重启应用后生效。"
                                     Click="ButtonRestartApp_OnClick"
                                     Icon="{materialDesign:PackIcon Restart}">
                                     <TextBlock>
@@ -379,7 +379,7 @@
                                 <materialDesign:Chip
                                     Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                                    ToolTip="查看您的单位/组织如何管理此ClassIsland实例。"
+                                    ToolTip.Tip="查看您的单位/组织如何管理此ClassIsland实例。"
                                     Icon="{materialDesign:PackIcon WorkOutline}">
                                     <materialDesign:Chip.CommandParameter>
                                         <controls2:ManagementInfoControl />
@@ -391,8 +391,8 @@
                                 <TextBlock Text="{x:Static ci:App.AppVersion}"
                                            Margin="8 0 0 0"
                                            VerticalAlignment="Center"
-                                           ToolTip="应用版本" />
-                                <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多选项…" StaysOpen="False"
+                                           ToolTip.Tip="应用版本" />
+                                <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip.Tip="更多选项…" StaysOpen="False"
                                                          IsPopupOpen="{Binding ViewModel.IsPopupOpen, Mode=TwoWay}">
                                     <StackPanel>
                                         <StackPanel>

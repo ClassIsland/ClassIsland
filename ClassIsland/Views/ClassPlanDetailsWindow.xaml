@@ -98,7 +98,7 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button ToolTip="刷新"
+                        <Button ToolTip.Tip="刷新"
                                 Margin="8 0 0 0"
                                 VerticalAlignment="Center"
                                 Padding="0"
@@ -115,7 +115,7 @@
                     <ListBox Grid.Row="2"
                              ItemsSource="{Binding ViewModel.Nodes}">
                         <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate>
@@ -222,7 +222,7 @@
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center" Margin="0,0,16,0" />
                     <materialDesign:Chip
-                        ToolTip="课表">
+                        ToolTip.Tip="课表">
                         <materialDesign:Chip.Style>
                             <Style TargetType="materialDesign:Chip"
                                    BasedOn="{StaticResource MaterialDesignOutlineChip}">
@@ -248,7 +248,7 @@
                         </TextBlock>
                     </materialDesign:Chip>
                 </StackPanel>
-                <Button ToolTip="刷新"
+                <Button ToolTip.Tip="刷新"
                         Margin="0 -4 16 -4"
                         VerticalAlignment="Center"
                         Padding="0"

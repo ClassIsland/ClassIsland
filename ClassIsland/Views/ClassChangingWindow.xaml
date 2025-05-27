@@ -29,7 +29,7 @@
         d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
         WindowStartupLocation="CenterScreen">
     <controls1:MyWindow.Resources>
-        <Style x:Key="ClassPlanListBoxItemStyle" BasedOn="{StaticResource MaterialDesignListBoxItem}"
+        <Style x:Key="ClassPlanListBoxItemStyle" BasedOn="{StaticResource MaterialFlatListBoxItem}"
                TargetType="{x:Type ListBoxItem}">
             <Setter Property="Padding" Value="0" />
             <Setter Property="IsTabStop" Value="False" />
@@ -58,14 +58,14 @@
                 <Run Text="当前已经存在一个临时层课表，如果继续换课，那么该临时层将被覆盖。是否继续？"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="继续" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="继续" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
                         </system:Boolean>
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             False
@@ -216,12 +216,12 @@
                 <Button Style="{StaticResource MaterialDesignPaperButton}"
                         Margin="0 0 4 0"
                         IsCancel="True"
-                        ToolTip="取消换课操作。">
+                        ToolTip.Tip="取消换课操作。">
                     <controls1:IconText Kind="Cancel" Text="取消" />
                 </Button>
                 <Button Margin="0 0 4 0"
                         Click="ButtonPrev_OnClick"
-                        ToolTip="返回上一步。">
+                        ToolTip.Tip="返回上一步。">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignPaperButton}">
                             <Style.Triggers>
@@ -253,7 +253,7 @@
                         </Style>
                     </StackPanel.Style>
                     <Button Margin="12 0 0 0" Click="ButtonNext_OnClick"
-                            ToolTip="进入下一步。">
+                            ToolTip.Tip="进入下一步。">
                         <controls1:IconText Kind="ArrowRight" Text="下一步" />
                     </Button>
                 </StackPanel>
@@ -283,7 +283,7 @@
                     </StackPanel.Style>
                     <CheckBox Margin="4 0 0 0"
                               Content="永久换课"
-                              ToolTip="如果选择，将不会在换课时创建临时层课表，而会直接应用到原课表上。"
+                              ToolTip.Tip="如果选择，将不会在换课时创建临时层课表，而会直接应用到原课表上。"
                               IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
                               Visibility="{Binding ClassPlan.IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
                         <CheckBox.IsEnabled>
@@ -293,7 +293,7 @@
                             </MultiBinding>
                         </CheckBox.IsEnabled>
                     </CheckBox>
-                    <Button Margin="12 0 0 0" ToolTip="确认并应用换课。"
+                    <Button Margin="12 0 0 0" ToolTip.Tip="确认并应用换课。"
                             Click="ButtonConfirmClassChanging_OnClick">
                         <controls1:IconText Kind="Check" Text="确认换课" />
                     </Button>
@@ -321,7 +321,7 @@
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center" Margin="0,0,16,0" />
                     <materialDesign:Chip
-                        ToolTip="要换课的课表"
+                        ToolTip.Tip="要换课的课表"
                         Click="ButtonTemporaryClassPlan_OnClick">
                         <materialDesign:Chip.Style>
                             <Style TargetType="materialDesign:Chip"

@@ -45,7 +45,7 @@
                     <TextBlock Text="强制更新" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
                     <TextBlock Text="将应用强制更新到当前分支的最新版本，即使当前版本高于该分支的最新版本。" FontWeight="Light" TextWrapping="Wrap"
                                Margin="0 6 0 0" />
-                    <Button Margin="0 3 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                    <Button Margin="0 3 0 0" Style="{StaticResource MaterialFlatButton}"
                             HorizontalAlignment="Left"
                             Click="ButtonForceUpdate_OnClick">
                         <controls1:IconText Kind="AlertOutline" Text="强制更新" />
@@ -471,15 +471,15 @@
                     </Button>
                     <!-- debug -->
                     <Button Content="（debug）重置更新状态"
-                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Style="{StaticResource MaterialFlatButton}"
                             Click="ButtonDebugResetUpdate_OnClick"
                             Visibility="{Binding SettingsService.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <Button Content="（debug）下载完成"
-                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Style="{StaticResource MaterialFlatButton}"
                             Click="ButtonDebugDownloaded_OnClick"
                             Visibility="{Binding SettingsService.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <Button Content="（debug）网络错误"
-                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Style="{StaticResource MaterialFlatButton}"
                             Click="ButtonDebugNetworkError_OnClick"
                             Visibility="{Binding SettingsService.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </WrapPanel>
@@ -553,7 +553,7 @@
                             </StackPanel.Style>
                             <ci:StickerControl ImageSource="/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="81"
                                    Height="81"
-                                   StickerToolTip="光辉矢愿_遨游"
+                                   StickerToolTip.Tip="光辉矢愿_遨游"
                                    PackIconKind="UploadOutline"/>
 
                             <TextBlock TextWrapping="Wrap"
@@ -579,7 +579,7 @@
                             </TextBlock>
 
                             <Button HorizontalAlignment="Center" Margin="0 8 0 0"
-                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Style="{StaticResource MaterialFlatButton}"
                                     Click="ButtonChangelogs_OnClick">
                                 <controls1:IconText Kind="FileDocumentOutline" Text="查看新增功能" />
                             </Button>
@@ -687,7 +687,7 @@
                                            TextWrapping="Wrap"
                                            Text="{Binding ViewModel.SelectedChannelModel.Description, Mode=OneWay}" />
                                 <!--<TextBlock Text="{Binding SettingsService.Settings.SelectedChannel, Mode=OneWay}"/>-->
-                                <!--<Button Content="管理更新频道" Style="{StaticResource MaterialDesignFlatButton}"
+                                <!--<Button Content="管理更新频道" Style="{StaticResource MaterialFlatButton}"
                                                             HorizontalAlignment="Left"
                                                             Margin="0 3 0 0" />-->
                             </StackPanel>
@@ -783,7 +783,7 @@
                                     </ListBox>
                                     <Button Content="测试延迟"
                                             Click="MenuItemTestUpdateMirrors_OnClick"
-                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                            Style="{StaticResource MaterialFlatButton}"
                                             HorizontalAlignment="Left"
                                             Margin="0 4 0 0" />
                                     <Separator Margin="0 4" />
@@ -799,7 +799,7 @@
                         <!-- 高级设置 -->
                         <Border Style="{StaticResource UpdateEnabledStyle}">
                             <Button Content="高级设置"
-                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Style="{StaticResource MaterialFlatButton}"
                                     HorizontalAlignment="Left"
                                     Margin="0 8 0 0"
                                     Click="ButtonAdvancedSettings_OnClick" />

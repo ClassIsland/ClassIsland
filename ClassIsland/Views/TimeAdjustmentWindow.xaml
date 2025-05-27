@@ -37,7 +37,7 @@
                            HorizontalAlignment="Left"
                            Margin="0 0 4 0" />
                 <Button Content="{materialDesign:PackIcon ClockOutline}"
-                        ToolTip="编辑"
+                        ToolTip.Tip="编辑"
                         Margin="4 -8"
                         Click="ButtonBase_OnClick"
                         Style="{StaticResource MaterialDesignToolForegroundButton}"/>
@@ -58,12 +58,12 @@
                     </Border>
                 </materialDesign:PopupEx>
                 <Button Content="{materialDesign:PackIcon BellNotificationOutline}"
-                        ToolTip="对齐到下个铃声"
+                        ToolTip.Tip="对齐到下个铃声"
                         Margin="4 -8"
                         Click="ButtonAdjustToNextEvent_OnClick"
                         Style="{StaticResource MaterialDesignToolForegroundButton}"/>
                 <Button Content="{materialDesign:PackIcon ClockStart}"
-                        ToolTip="对齐到下个整分钟"
+                        ToolTip.Tip="对齐到下个整分钟"
                         Margin="4 -8"
                         Click="ButtonAdjustToNextMinute_OnClick"
                         Style="{StaticResource MaterialDesignToolForegroundButton}"/>
@@ -106,7 +106,7 @@
             <Button Margin="0 16 0 0"
                     Style="{StaticResource MaterialDesignFloatingActionButton}"
                     Content="{materialDesign:PackIcon ClockCheckOutline, Size=22}"
-                    ToolTip="校准"
+                    ToolTip.Tip="校准"
                     Click="ButtonApplyAdjustment_OnClick"/>
 
             <TextBlock HorizontalAlignment="Center"

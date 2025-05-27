@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Core.Controls.SettingsControl"
+             ClipToBounds="False">
+    <UserControl.Styles>
+        <!-- Header TextBlock style -->
+        <Style Selector="TextBlock.header">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style Selector="TextBlock.header.compact">
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        
+        <!-- Description TextBlock style -->
+        <Style Selector="TextBlock.description">
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style Selector="TextBlock.description.compact">
+            <Setter Property="FontSize" Value="10"/>
+        </Style>
+        
+        <Style Selector="ContentPresenter.switcher:not(.default)">
+            <Setter Property="Content" Value="{Binding Switcher, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}"/>
+        </Style>
+        
+        <Style Selector="ContentPresenter.switcher.default">
+            <Setter Property="Content" Value="{Binding IsOn, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}"/>
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate DataType="system:Boolean">
+                        <ToggleSwitch IsChecked="{Binding}"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style Selector="TextBox:not(.floatingHint)">
+            <Setter Property="UseFloatingWatermark" Value="False"/>
+        </Style>
+    </UserControl.Styles>
+    <UserControl.Resources>
+        <ToggleButton 
+            x:Key="ToggleButton"
+            IsChecked="{Binding IsOn, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <!-- icon -->
+        <avalonia:MaterialIcon Grid.Column="0"
+                         Margin="0 0 6 0"
+                         VerticalAlignment="Center"
+                         Height="18" Width="18"
+                         Kind="{Binding IconGlyph, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}" />
+
+        <!-- text -->
+        <StackPanel VerticalAlignment="Center"
+                    Grid.Column="1">
+
+            <TextBlock TextWrapping="Wrap" 
+                       Text="{Binding Header, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}"
+                       Classes="header" Classes.compact="{Binding IsCompact, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}">
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0 1 0 0" 
+                       Opacity="0.75"
+                       Classes="description" Classes.compact="{Binding IsCompact, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}"
+                       Text="{Binding Description, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}"/>
+
+        </StackPanel>
+
+        <!-- switcher -->
+        <ContentPresenter
+            IsVisible="{Binding HasSwitcher, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}"
+            Grid.Column="2"
+            Margin="6 0 0 0"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            ClipToBounds="False"
+            Classes="switcher default">
+            <Interaction.Behaviors>
+                <DataTriggerBehavior Binding="{Binding Switcher, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsControl}}}" 
+                             Value="{x:Null}"
+                             ComparisonCondition="NotEqual">
+                    <RemoveClassAction ClassName="default"/>
+                </DataTriggerBehavior>
+            </Interaction.Behaviors>
+        </ContentPresenter>
+    </Grid>
+</UserControl>

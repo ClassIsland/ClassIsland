@@ -43,7 +43,7 @@
                             <Run Text="ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。"/>
                         </TextBlock>
                     </DockPanel>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
+                    <Button Style="{StaticResource MaterialFlatButton}" HorizontalAlignment="Left"
                             Margin="24 6 0 0" Foreground="{DynamicResource MaterialDesignBody}"
                             materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
                             Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
@@ -118,18 +118,18 @@
                                         Margin="0 0 0 6"
                                         HasSwitcher="False"/>
                     <WrapPanel>
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        <Button Style="{StaticResource MaterialFlatButton}"
                                 IsEnabled="{Binding ViewModel.IsBackingUp, Converter={StaticResource InvertBooleanConverter}}"
                                 Click="ButtonCreateBackup_OnClick">
                             <ci:IconText Kind="BackupRestore" Text="立即备份" />
                         </Button>
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        <Button Style="{StaticResource MaterialFlatButton}"
                                 Click="ButtonViewBackupFiles_OnClick">
                             <ci:IconText Kind="FolderOutline" Text="查看备份文件…" />
                         </Button>
                         <materialDesign:PackIcon Kind="Check"
                                                  VerticalAlignment="Stretch"
-                                                 ToolTip="备份成功。"
+                                                 ToolTip.Tip="备份成功。"
                                                  Visibility="{Binding ViewModel.IsBackupFinished, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                                      Visibility="{Binding ViewModel.IsBackingUp, Converter={StaticResource BooleanToVisibilityConverter}}"/>
@@ -145,7 +145,7 @@
                                         Margin="0 0 0 6"
                                         HasSwitcher="False"/>
                     <WrapPanel>
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        <Button Style="{StaticResource MaterialFlatButton}"
                                 IsEnabled="{Binding ViewModel.IsBackingUp, Converter={StaticResource InvertBooleanConverter}}"
                                 Click="ButtonRecoverBackup_OnClick">
                             <ci:IconText Kind="Restore" Text="恢复备份" />

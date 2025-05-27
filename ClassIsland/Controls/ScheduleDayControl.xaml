@@ -59,7 +59,7 @@
                 </materialDesign:Badged.Style>
                 <Button Content="{materialDesign:PackIcon FileDocumentMultipleOutline}"
                         Style="{StaticResource MaterialDesignToolForegroundButton}"
-                        ToolTip="预定临时课表"
+                        ToolTip.Tip="预定临时课表"
                         Margin="0 -4 -4 0"
                         Background="Transparent"
                         ClickMode="Press"
@@ -67,7 +67,7 @@
             </materialDesign:Badged>
             <Button Content="{materialDesign:PackIcon Clear}"
                     Style="{StaticResource MaterialDesignToolForegroundButton}"
-                    ToolTip="清除临时课表"
+                    ToolTip.Tip="清除临时课表"
                     VerticalAlignment="Bottom"
                     Margin="0 0 4 0 "
                     Background="Transparent"
@@ -98,7 +98,7 @@
                         <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                 Content="{materialDesign:PackIcon Close}"
                                 HorizontalAlignment="Right"
-                                ToolTip="关闭" ClickMode="Press"
+                                ToolTip.Tip="关闭" ClickMode="Press"
                                 Foreground="{DynamicResource MaterialDesignBody}"
                                 Margin="0 -4"
                                 Click="ButtonCloseSchedulePopup_OnClick" />
@@ -133,11 +133,11 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                         <StackPanel Orientation="Horizontal" Grid.Row="2">
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            <Button Style="{StaticResource MaterialFlatButton}"
                                     Click="ButtonConfirmTempClassPlan_OnClick" ClickMode="Press">
                                 <ci:IconText Kind="Check" Text="确定" />
                             </Button>
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            <Button Style="{StaticResource MaterialFlatButton}"
                                     Click="ButtonClearTempClassPlan_OnClick" ClickMode="Press">
                                 <ci:IconText Kind="Clear" Text="清除" />
                             </Button>

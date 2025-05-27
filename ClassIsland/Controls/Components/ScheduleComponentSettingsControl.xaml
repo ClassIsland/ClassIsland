@@ -21,14 +21,14 @@
                 <Run Text="此操作将从 1.4 及以前的课表设置导入课表组件设置，并覆盖当前课表组件的设置。"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="继续" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="继续" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
                         </system:Boolean>
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             False
@@ -46,7 +46,7 @@
                                           Margin="0 0 0 4">
                     <Grid>
                         <DockPanel Margin="8 0 4 0">
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            <Button Style="{StaticResource MaterialFlatButton}"
                                     DockPanel.Dock="Right"
                                     materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
                                     Foreground="{DynamicResource MaterialDesignBody}"
@@ -296,7 +296,7 @@
                     </ci:SettingsCard.Switcher>
                 </ci:SettingsCard>
                 <Button Margin="0 0 0 6" HorizontalAlignment="Left"
-                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Style="{StaticResource MaterialFlatButton}"
                         Click="ButtonImportLegacySettings_OnClick"
                         Visibility="{Binding SettingsService.Settings.IsMigratedFromv1_4, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <ci:IconText Kind="Import" Text="导入旧版设置"/>

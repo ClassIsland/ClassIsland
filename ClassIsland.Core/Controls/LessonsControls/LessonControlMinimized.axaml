@@ -1,0 +1,70 @@
+<local:LessonControlBase x:Class="ClassIsland.Core.Controls.LessonsControls.LessonControlMinimized"
+                   xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                   xmlns:local="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
+                   xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+                   xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+                   mc:Ignorable="d" 
+                   d:DesignHeight="450" d:DesignWidth="800">
+    <local:LessonControlBase.Resources>
+        <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
+    </local:LessonControlBase.Resources>
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}"
+                Orientation="Horizontal">
+
+        <Border Width="10">
+            <Border.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+            </Border.LayoutTransform>
+        </Border>
+
+        <ContentPresenter>
+            <ContentPresenter.ContentTemplate>
+                <DataTemplate DataType="{x:Type profile:Subject}">
+                    <Grid>
+                        <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" x:Name="Text"
+                               Text="{Binding Initial}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}"
+                                                           Value="True" />
+                                                <Condition Binding="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}"
+                                                           Value="True" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Effect">
+                                                <Setter.Value>
+                                                    <DropShadowEffect BlurRadius="3"
+                                                                      ShadowDepth="0"
+                                                                      Color="#FF0" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ContentPresenter.ContentTemplate>
+            <ContentPresenter.Content>
+                <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}">
+                    <Binding Path="Subjects"/>
+                    <Binding Path="ClassInfo.SubjectId"/>
+                </MultiBinding>
+            </ContentPresenter.Content>
+        </ContentPresenter>
+
+        <Border Width="10">
+            <Border.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+            </Border.LayoutTransform>
+        </Border>
+
+    </StackPanel>
+</local:LessonControlBase>
+

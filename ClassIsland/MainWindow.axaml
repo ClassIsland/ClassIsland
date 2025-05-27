@@ -271,7 +271,7 @@
                         IconSource="/Assets/AppLogo.ico"
                         MenuActivation="LeftOrRightClick"
                         ToolTipText="ClassIsland"
-                        ToolTip="ClassIsland">
+                        ToolTip.Tip="ClassIsland">
             </tb:TaskbarIcon>-->
 
                 <!-- Content -->

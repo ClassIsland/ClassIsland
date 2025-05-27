@@ -27,7 +27,7 @@
               VerticalAlignment="Bottom">
             <Border Background="{DynamicResource MaterialDesignPaper}"
                     Opacity="0.8"/>
-            <Button Style="{StaticResource MaterialDesignFlatButton}"
+            <Button Style="{StaticResource MaterialFlatButton}"
                     Click="ButtonRefresh_OnClick"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Left"
@@ -35,7 +35,7 @@
                     Margin="8">
                 <controls1:IconText Kind="Refresh" Text="刷新" />
             </Button>
-            <Button Style="{StaticResource MaterialDesignFlatButton}"
+            <Button Style="{StaticResource MaterialFlatButton}"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Right"
                     IsCancel="True"

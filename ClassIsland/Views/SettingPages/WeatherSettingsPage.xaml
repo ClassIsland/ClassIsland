@@ -102,7 +102,7 @@
                     </Run>
                     <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" />
                 </TextBlock>
-                <Button Content="刷新" Style="{StaticResource MaterialDesignFlatButton}"
+                <Button Content="刷新" Style="{StaticResource MaterialFlatButton}"
                         HorizontalAlignment="Left"
                         Click="ButtonRefreshWeather_OnClick"
                         Margin="6 0 0 0" />
@@ -176,7 +176,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding SettingsService.Settings.CityName}"
                                                VerticalAlignment="Center" />
-                                    <Button Content="{materialDesign:PackIcon EditOutline}" ToolTip="编辑"
+                                    <Button Content="{materialDesign:PackIcon EditOutline}" ToolTip.Tip="编辑"
                                             Margin="6 0 0 0"
                                             Click="ButtonEditCurrentCity_OnClick"
                                             Foreground="{DynamicResource PrimaryHueMidBrush}">
@@ -246,7 +246,7 @@
                                                     materialDesign:TextFieldAssist.PrefixText="纬度"
                                                     materialDesign:TextFieldAssist.SuffixText="°" />
                                             </StackPanel>
-                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                            <Button Style="{StaticResource MaterialFlatButton}"
                                                     VerticalAlignment="Center" HorizontalAlignment="Center"
                                                     Click="ButtonShowPos_OnClick"
                                                     Visibility="{Binding ViewModel.HideLocationPos, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -255,7 +255,7 @@
                                         </Grid>
                                         <Button Style="{StaticResource MaterialDesignToolButton}"
                                                 Content="{materialDesign:PackIcon CrosshairsGps}"
-                                                ToolTip="定位"
+                                                ToolTip.Tip="定位"
                                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                 Click="ButtonGetCurrentPos_OnClick" />
                                     </StackPanel>

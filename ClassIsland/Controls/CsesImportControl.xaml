@@ -51,14 +51,14 @@
                                          Filter="CSES 课表文件(*.yml, *.yaml)|*.yml;*.yaml"/>
             </Grid>
             <WrapPanel HorizontalAlignment="Right">
-                <Button Content="取消"  Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="取消"  Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             False
                         </system:Boolean>
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="导入" IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}" 
+                <Button Content="导入" IsDefault="True" Style="{DynamicResource MaterialFlatButton}" 
                         Click="ButtonOk_OnClick"/>
             </WrapPanel>
         </StackPanel>
