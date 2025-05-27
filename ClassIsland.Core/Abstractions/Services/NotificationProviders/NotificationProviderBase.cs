@@ -1,14 +1,15 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
-using MaterialDesignThemes.Wpf;
+using Material.Icons.Avalonia;
 using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
@@ -88,10 +89,7 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
         ProviderGuid = info.Guid;
         if (info.UseBitmapIcon)
         {
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri(info.BitmapIconUri, UriKind.RelativeOrAbsolute);
-            bitmapImage.EndInit();
+            var bitmapImage = new Bitmap(AssetLoader.Open(new Uri(info.BitmapIconUri, UriKind.RelativeOrAbsolute)));
             IconElement = new Image()
             {
                 Source = bitmapImage,
@@ -102,7 +100,7 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
         }
         else
         {
-            IconElement = new PackIcon()
+            IconElement = new MaterialIcon()
             {
                 Kind = info.PackIcon,
                 Width = 24,

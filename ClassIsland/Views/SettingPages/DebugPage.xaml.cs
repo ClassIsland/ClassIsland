@@ -15,7 +15,6 @@ using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
-using MaterialDesignThemes.Wpf;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Path = System.IO.Path;
 
@@ -24,7 +23,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// DebugPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("debug", "调试", PackIconKind.BugOutline, PackIconKind.Bug, SettingsPageCategory.Debug)]
+[SettingsPageInfo("debug", "调试", MaterialIconKind.BugOutline, MaterialIconKind.Bug, SettingsPageCategory.Debug)]
 public partial class DebugPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }

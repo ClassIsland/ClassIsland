@@ -104,7 +104,6 @@
         <None Include="..\..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
     <ItemGroup>
-        <Resource Include="Assets\**" />
         <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">

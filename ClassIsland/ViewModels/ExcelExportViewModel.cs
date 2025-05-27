@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows.Media;
 using ClassIsland.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
 using unvell.ReoGrid;
 using unvell.ReoGrid.IO.OpenXML.Schema;
 using Cell = unvell.ReoGrid.Cell;

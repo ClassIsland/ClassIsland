@@ -13,7 +13,6 @@ using ClassIsland.Services;
 using ClassIsland.Services.AppUpdating;
 using ClassIsland.Shared.Enums;
 using ClassIsland.ViewModels.SettingsPages;
-using MaterialDesignThemes.Wpf;
 using Sentry;
 using Path = System.IO.Path;
 
@@ -22,7 +21,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// UpdatesSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("update", "更新", PackIconKind.UploadOutline, PackIconKind.Upload, SettingsPageCategory.Internal)]
+[SettingsPageInfo("update", "更新", MaterialIconKind.UploadOutline, MaterialIconKind.Upload, SettingsPageCategory.Internal)]
 public partial class UpdatesSettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }

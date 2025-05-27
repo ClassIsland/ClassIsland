@@ -21,7 +21,6 @@ using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels.SettingsPages;
 using CommunityToolkit.Mvvm.Input;
 using GongSolutions.Wpf.DragDrop;
-using MaterialDesignThemes.Wpf;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.SettingPages;
@@ -29,7 +28,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// ComponentsSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("components", "组件", PackIconKind.WidgetsOutline, PackIconKind.Widgets, SettingsPageCategory.Internal)]
+[SettingsPageInfo("components", "组件", MaterialIconKind.WidgetsOutline, MaterialIconKind.Widgets, SettingsPageCategory.Internal)]
 public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
 {
     public IComponentsService ComponentsService { get; }

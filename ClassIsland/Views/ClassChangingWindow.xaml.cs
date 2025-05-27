@@ -13,7 +13,6 @@ using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.ViewModels;
 
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Views;
 

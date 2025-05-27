@@ -13,7 +13,6 @@ using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Profile;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Controls;
 
@@ -85,7 +84,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     private ObservableCollection<AttachableObjectNode> _nextItems = new();
     private ObservableCollection<AttachableObjectNode> _previousItems = new();
-    private PackIconKind _dependencyItemPackIconKind = PackIconKind.CogOutline;
+    private MaterialIconKind _dependencyItemMaterialIconKind = MaterialIconKind.CogOutline;
     private string _dependencyItemTitle = "";
     private bool _isLoading = false;
 
@@ -126,13 +125,13 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         }
     }
 
-    public PackIconKind DependencyItemPackIconKind
+    public MaterialIconKind DependencyItemMaterialIconKind
     {
-        get => _dependencyItemPackIconKind;
+        get => _dependencyItemMaterialIconKind;
         set
         {
-            if (value == _dependencyItemPackIconKind) return;
-            _dependencyItemPackIconKind = value;
+            if (value == _dependencyItemMaterialIconKind) return;
+            _dependencyItemMaterialIconKind = value;
             OnPropertyChanged();
         }
     }
@@ -249,14 +248,14 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
             return;
         }
 
-        DependencyItemPackIconKind = node.Target switch
+        DependencyItemMaterialIconKind = node.Target switch
         {
-            AttachedSettingsTargets.Lesson => PackIconKind.TextBoxOutline,
-            AttachedSettingsTargets.Subject => PackIconKind.BookOutline,
-            AttachedSettingsTargets.ClassPlan => PackIconKind.FileChartOutline,
-            AttachedSettingsTargets.TimePoint => PackIconKind.TimelineOutline,
-            AttachedSettingsTargets.TimeLayout => PackIconKind.TableClock,
-            _ => PackIconKind.CogOutline
+            AttachedSettingsTargets.Lesson => MaterialIconKind.TextBoxOutline,
+            AttachedSettingsTargets.Subject => MaterialIconKind.BookOutline,
+            AttachedSettingsTargets.ClassPlan => MaterialIconKind.FileChartOutline,
+            AttachedSettingsTargets.TimePoint => MaterialIconKind.TimelineOutline,
+            AttachedSettingsTargets.TimeLayout => MaterialIconKind.TableClock,
+            _ => MaterialIconKind.CogOutline
         };
         var policy = ManagementService.Policy;
         IsEnabled = !policy.DisableProfileEditing;

@@ -1,7 +1,6 @@
 ﻿using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Ruleset;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Extensions.Registry;
@@ -21,7 +20,7 @@ public static class RulesetRegistryExtensions
     /// <param name="onHandle">规则处理程序。</param>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule(this IServiceCollection services, string id, string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle = null)
+        MaterialIconKind iconKind = MaterialIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
         Register(id, name, iconKind, onHandle);
         return services;
@@ -38,7 +37,7 @@ public static class RulesetRegistryExtensions
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings>(this IServiceCollection services, string id, string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle=null)
+        MaterialIconKind iconKind = MaterialIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle=null)
     {
         var info = Register(id, name, iconKind, onHandle);
         info.SettingsType = typeof(TSettings);
@@ -57,7 +56,7 @@ public static class RulesetRegistryExtensions
     /// <typeparam name="TSettingsControl">规则设置控件类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings, TSettingsControl>(this IServiceCollection services, string id, string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate ? onHandle = null) where TSettingsControl : RuleSettingsControlBase
+        MaterialIconKind iconKind = MaterialIconKind.CogOutline, RuleRegistryInfo.HandleDelegate ? onHandle = null) where TSettingsControl : RuleSettingsControlBase
     {
         var info = Register(id, name, iconKind, onHandle);
         services.AddKeyedTransient<RuleSettingsControlBase, TSettingsControl>(id);
@@ -68,7 +67,7 @@ public static class RulesetRegistryExtensions
 
 
     private static RuleRegistryInfo Register(string id, string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle = null)
+        MaterialIconKind iconKind = MaterialIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
         if (IRulesetService.Rules.ContainsKey(id))
         {

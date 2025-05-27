@@ -2,11 +2,10 @@ using System;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
-[TriggerInfo("classisland.lessons.onClass", "上课时", PackIconKind.BookOutline)]
+[TriggerInfo("classisland.lessons.onClass", "上课时", MaterialIconKind.BookOutline)]
 public class OnClassTrigger(ILessonsService lessonsService) : TriggerBase
 {
     private ILessonsService LessonsService { get; } = lessonsService;

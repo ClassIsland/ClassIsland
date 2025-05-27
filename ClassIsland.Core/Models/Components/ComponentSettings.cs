@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
-using System.Windows;
-using System.Windows.Media;
+using Avalonia.Layout;
+using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Services.Registry;

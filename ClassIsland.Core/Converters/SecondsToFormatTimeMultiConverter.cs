@@ -1,5 +1,6 @@
 using System.Globalization;
-using System.Windows.Data;
+
+using Avalonia.Data.Converters;
 
 namespace ClassIsland.Core.Converters;
 
@@ -8,9 +9,9 @@ namespace ClassIsland.Core.Converters;
 /// </summary>
 public class SecondsToFormatTimeMultiConverter : IMultiValueConverter
 {
-    public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(IList<object?> value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value.Length < 2)
+        if (value.Count < 2)
         {
             return "";
         }

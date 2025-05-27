@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Avalonia.Markup.Xaml.Templates;
 
 namespace ClassIsland.Core.Models.Weather;
 

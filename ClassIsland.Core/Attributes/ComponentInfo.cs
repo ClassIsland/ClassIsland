@@ -1,5 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
-using System.Drawing;
+﻿using System.Drawing;
+using Material.Icons;
 
 namespace ClassIsland.Core.Attributes;
 
@@ -22,7 +22,7 @@ public class ComponentInfo : Attribute
     /// <summary>
     /// 组件图标
     /// </summary>
-    public PackIconKind PackIcon { get; } = PackIconKind.WidgetsOutline;
+    public MaterialIconKind PackIcon { get; } = MaterialIconKind.WidgetsOutline;
 
     /// <summary>
     /// 组件位图图标uri
@@ -62,7 +62,7 @@ public class ComponentInfo : Attribute
     internal List<string> MigrateSources { get; } = new();
 
     /// <inheritdoc />
-    public ComponentInfo(string guid, string name, PackIconKind icon, string description = "") : this(guid, name,
+    public ComponentInfo(string guid, string name, MaterialIconKind icon, string description = "") : this(guid, name,
         description)
     {
         PackIcon = icon;

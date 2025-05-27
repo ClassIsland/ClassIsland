@@ -10,13 +10,12 @@ using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
-using MaterialDesignThemes.Wpf;
 
 using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("8FBC3A26-6D20-44DD-B895-B9411E3DDC51", "放学提醒", PackIconKind.HumanRunFast, "在当天的课程结束后发出提醒。")]
+[NotificationProviderInfo("8FBC3A26-6D20-44DD-B895-B9411E3DDC51", "放学提醒", MaterialIconKind.HumanRunFast, "在当天的课程结束后发出提醒。")]
 public class AfterSchoolNotificationProvider : NotificationProviderBase<AfterSchoolNotificationProviderSettings>
 {
     public INotificationHostService NotificationHostService { get; }
@@ -45,7 +44,7 @@ public class AfterSchoolNotificationProvider : NotificationProviderBase<AfterSch
 
         ShowNotification(new NotificationRequest
         {
-            MaskContent = NotificationContent.CreateTwoIconsMask("放学", rightIcon: PackIconKind.ExitRun),
+            MaskContent = NotificationContent.CreateTwoIconsMask("放学", rightIcon: MaterialIconKind.ExitRun),
             OverlayContent = NotificationContent.CreateSimpleTextContent(settings.NotificationMsg, x => x.Duration=TimeSpan.FromSeconds(30))
         });
     }

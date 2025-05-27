@@ -7,7 +7,6 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.ViewModels.SettingsPages;
-using MaterialDesignThemes.Wpf;
 using Net.Codecrete.QrCodeGenerator;
 
 namespace ClassIsland.Views.SettingPages;

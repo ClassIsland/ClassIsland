@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Windows;
-using System.Windows.Data;
+using Avalonia;
+using Avalonia.Data.Converters;
 
 namespace ClassIsland.Core.Converters;
 
@@ -10,9 +11,9 @@ namespace ClassIsland.Core.Converters;
 public class DoubleToThicknessMultiConverter : IMultiValueConverter
 {
     /// <inheritdoc />
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
-        return values.Length switch
+        return values.Count switch
         {
             1 => new Thickness(values[0] as double? ?? 0),
             2 => new Thickness(values[0] as double? ?? 0, values[1] as double? ?? 0,

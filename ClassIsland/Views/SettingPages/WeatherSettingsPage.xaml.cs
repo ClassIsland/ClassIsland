@@ -10,7 +10,6 @@ using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views.SettingPages;
@@ -18,7 +17,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// WeatherSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("weather", "天气", PackIconKind.CloudOutline, PackIconKind.Cloud, SettingsPageCategory.Internal)]
+[SettingsPageInfo("weather", "天气", MaterialIconKind.CloudOutline, MaterialIconKind.Cloud, SettingsPageCategory.Internal)]
 public partial class WeatherSettingsPage : SettingsPageBase
 {
     public WeatherSettingsViewModel ViewModel { get; } = new();

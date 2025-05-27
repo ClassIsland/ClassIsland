@@ -27,7 +27,6 @@ using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Services;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
@@ -505,7 +504,7 @@ public partial class SettingsWindowNew : MyWindow
                 .SetContent("您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。")
                 .SetIconKind(CommonDialogIconKind.Hint)
                 .AddCancelAction()
-                .AddAction("继续", PackIconKind.Check, true)
+                .AddAction("继续", MaterialIconKind.Check, true)
                 .ShowDialog();
             
             if (r != 1)
@@ -592,7 +591,7 @@ public partial class SettingsWindowNew : MyWindow
             var urlDialogResult = new CommonDialogBuilder()
                 .SetContent("快捷换课快捷方式需要启用【注册 Url 协议】选项才能工作。您要启用它吗？")
                 .AddCancelAction()
-                .AddAction("启用", PackIconKind.Check, true)
+                .AddAction("启用", MaterialIconKind.Check, true)
                 .SetIconKind(CommonDialogIconKind.Hint)
                 .ShowDialog(this);
             if (urlDialogResult == 0)
@@ -633,10 +632,10 @@ public partial class SettingsWindowNew : MyWindow
         var result = new CommonDialogBuilder()
             .SetIconKind(CommonDialogIconKind.Hint)
             .SetContent("警告！ClassIsland 开发者不对应用接下来的行为造成的任何后果负责，并且不接受有关这些行为的任何 Bug 反馈。您确定要继续吗？")
-            .AddAction("OK", PackIconKind.HandOkay)
-            .AddAction("搞定", PackIconKind.ThumbUpOutline)
-            .AddAction("继续", PackIconKind.ArrowRight)
-            .AddAction("确定", PackIconKind.Check, true)
+            .AddAction("OK", MaterialIconKind.HandOkay)
+            .AddAction("搞定", MaterialIconKind.ThumbUpOutline)
+            .AddAction("继续", MaterialIconKind.ArrowRight)
+            .AddAction("确定", MaterialIconKind.Check, true)
             .ShowDialog();
 
         var random = new Random();

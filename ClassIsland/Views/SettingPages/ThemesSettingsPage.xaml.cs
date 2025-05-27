@@ -15,7 +15,6 @@ using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
@@ -25,7 +24,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// ThemesSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("classisland.themes", "主题", PackIconKind.FileCodeOutline, PackIconKind.FileCode)]
+[SettingsPageInfo("classisland.themes", "主题", MaterialIconKind.FileCodeOutline, MaterialIconKind.FileCode)]
 public partial class ThemesSettingsPage
 {
     public IXamlThemeService XamlThemeService { get; }

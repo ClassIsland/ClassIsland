@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
+using Material.Icons;
 
 namespace ClassIsland.Core.Models.Notification.Templates;
 
@@ -11,12 +11,12 @@ public partial class TwoIconsMaskTemplateData : ObservableObject
     /// <summary>
     /// 左侧图标类型
     /// </summary>
-    [ObservableProperty] private PackIconKind _leftIconKind = PackIconKind.AlertCircleOutline;
+    [ObservableProperty] private MaterialIconKind _leftIconKind = MaterialIconKind.AlertCircleOutline;
 
     /// <summary>
     /// 右侧图标类型
     /// </summary>
-    [ObservableProperty] private PackIconKind _rightIconKind = PackIconKind.BellRing;
+    [ObservableProperty] private MaterialIconKind _rightIconKind = MaterialIconKind.BellRing;
 
     /// <summary>
     /// 是否拥有右侧图标

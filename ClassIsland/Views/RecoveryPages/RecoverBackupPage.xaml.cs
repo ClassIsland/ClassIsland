@@ -11,7 +11,6 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.RecoveryPages;
-using MaterialDesignThemes.Wpf;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.RecoveryPages;
@@ -80,7 +79,7 @@ public partial class RecoverBackupPage : Page
 
         var result = new CommonDialogBuilder()
             .SetCaption("恢复备份")
-            .SetPackIcon(PackIconKind.Restore)
+            .SetPackIcon(MaterialIconKind.Restore)
             .SetContent($"您确定要把应用配置恢复到备份 {ViewModel.SelectedBackupName} 的状态吗？此操作无法撤销。")
             .AddCancelAction()
             .AddConfirmAction()

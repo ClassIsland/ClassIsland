@@ -12,7 +12,6 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Services;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.ViewModels.SettingsPages;
-using MaterialDesignThemes.Wpf;
 using System.Diagnostics;
 using System.Windows.Input;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
@@ -31,7 +30,7 @@ using GptSoVitsSpeechSettingsList = ObservableCollection<GptSoVitsSpeechSettings
 /// <summary>
 /// NotificationSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("notification", "提醒", PackIconKind.BellNotificationOutline, PackIconKind.BellNotification, SettingsPageCategory.Internal)]
+[SettingsPageInfo("notification", "提醒", MaterialIconKind.BellNotificationOutline, MaterialIconKind.BellNotification, SettingsPageCategory.Internal)]
 public partial class NotificationSettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }

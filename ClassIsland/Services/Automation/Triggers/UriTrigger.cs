@@ -2,11 +2,10 @@
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Models.EventArgs;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
-[TriggerInfo("classisland.uri", "调用 Uri 时", PackIconKind.Link)]
+[TriggerInfo("classisland.uri", "调用 Uri 时", MaterialIconKind.Link)]
 public class UriTrigger(UriTriggerHandlerService uriTriggerHandlerService) : TriggerBase<UriTriggerSettings>
 {
     private UriTriggerHandlerService UriTriggerHandlerService { get; } = uriTriggerHandlerService;

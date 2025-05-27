@@ -1,5 +1,5 @@
 using ClassIsland.Core.Enums.SettingsWindow;
-using MaterialDesignThemes.Wpf;
+using Material.Icons;
 
 namespace ClassIsland.Core.Attributes;
 
@@ -8,8 +8,8 @@ public class SettingsPageInfo : Attribute
 {
     public string Name { get; } = "";
     public string Id { get; } = "";
-    public PackIconKind UnSelectedPackIcon { get; } = PackIconKind.CogOutline;
-    public PackIconKind SelectedPackIcon { get; } = PackIconKind.Cog;
+    public MaterialIconKind UnSelectedPackIcon { get; } = MaterialIconKind.CogOutline;
+    public MaterialIconKind SelectedPackIcon { get; } = MaterialIconKind.Cog;
     public string UnSelectedBitmapUri { get; } = "";
     public string SelectedBitmapUri { get; } = "";
     public bool UseBitmapIcon { get; } = false;
@@ -30,13 +30,13 @@ public class SettingsPageInfo : Attribute
         HideDefault = hideDefault;
     }
 
-    public SettingsPageInfo(string id, string name, PackIconKind unSelectedIcon, PackIconKind selectedIcon, SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, category)
+    public SettingsPageInfo(string id, string name, MaterialIconKind unSelectedIcon, MaterialIconKind selectedIcon, SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, category)
     {
         UnSelectedPackIcon = unSelectedIcon;
         SelectedPackIcon = selectedIcon;
     }
 
-    public SettingsPageInfo(string id, string name, PackIconKind unSelectedIcon, PackIconKind selectedIcon, bool hideDefault, SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, unSelectedIcon, selectedIcon, category)
+    public SettingsPageInfo(string id, string name, MaterialIconKind unSelectedIcon, MaterialIconKind selectedIcon, bool hideDefault, SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, unSelectedIcon, selectedIcon, category)
     {
         HideDefault = hideDefault;
     }

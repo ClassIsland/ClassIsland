@@ -1,4 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using Material.Icons;
 
 namespace ClassIsland.Core.Attributes;
 
@@ -21,7 +21,7 @@ public class NotificationProviderInfo : Attribute
     /// <summary>
     /// 提醒提供方图标
     /// </summary>
-    public PackIconKind PackIcon { get; } = PackIconKind.BellRing;
+    public MaterialIconKind PackIcon { get; } = MaterialIconKind.BellRing;
 
     /// <summary>
     /// 提醒提供方位图图标uri
@@ -60,7 +60,7 @@ public class NotificationProviderInfo : Attribute
 
 
     /// <inheritdoc />
-    public NotificationProviderInfo(string guid, string name, PackIconKind icon, string description = "") : this(guid, name,
+    public NotificationProviderInfo(string guid, string name, MaterialIconKind icon, string description = "") : this(guid, name,
         description)
     {
         PackIcon = icon;

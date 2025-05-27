@@ -4,5 +4,6 @@
         
         <AvaloniaResource Remove="**\*.xaml"/>
         <AvaloniaXaml Remove="*.xaml"/>
+        <None Include="*.xaml"/>
     </ItemGroup>
 </Project>

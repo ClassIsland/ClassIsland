@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Controls.IconControl;
 
@@ -24,13 +23,13 @@ public class IconControl : Control
 {
     #region Props
 
-    public static readonly DependencyProperty PackIconKindProperty = DependencyProperty.Register(
-        nameof(PackIconKind), typeof(PackIconKind), typeof(IconControl), new PropertyMetadata(default(PackIconKind)));
+    public static readonly DependencyProperty MaterialIconKindProperty = DependencyProperty.Register(
+        nameof(MaterialIconKind), typeof(MaterialIconKind), typeof(IconControl), new PropertyMetadata(default(MaterialIconKind)));
 
-    public PackIconKind PackIconKind
+    public MaterialIconKind MaterialIconKind
     {
-        get { return (PackIconKind)GetValue(PackIconKindProperty); }
-        set { SetValue(PackIconKindProperty, value); }
+        get { return (MaterialIconKind)GetValue(MaterialIconKindProperty); }
+        set { SetValue(MaterialIconKindProperty, value); }
     }
 
     public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(
@@ -64,13 +63,13 @@ public class IconControl : Control
         set { SetValue(IconKindProperty, value); }
     }
 
-    public static readonly DependencyProperty FallbackPackIconKindProperty = DependencyProperty.Register(
-        nameof(FallbackPackIconKind), typeof(PackIconKind), typeof(IconControl), new PropertyMetadata(default(PackIconKind)));
+    public static readonly DependencyProperty FallbackMaterialIconKindProperty = DependencyProperty.Register(
+        nameof(FallbackMaterialIconKind), typeof(MaterialIconKind), typeof(IconControl), new PropertyMetadata(default(MaterialIconKind)));
 
-    public PackIconKind FallbackPackIconKind
+    public MaterialIconKind FallbackMaterialIconKind
     {
-        get { return (PackIconKind)GetValue(FallbackPackIconKindProperty); }
-        set { SetValue(FallbackPackIconKindProperty, value); }
+        get { return (MaterialIconKind)GetValue(FallbackMaterialIconKindProperty); }
+        set { SetValue(FallbackMaterialIconKindProperty, value); }
     }
 
     public static readonly DependencyProperty RealIconKindProperty = DependencyProperty.Register(

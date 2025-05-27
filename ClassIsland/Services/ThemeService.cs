@@ -6,7 +6,6 @@ using System.Windows.Media;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
 
-using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

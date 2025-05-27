@@ -6,14 +6,13 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
 
 /// <summary>
 /// DateComponent.xaml 的交互逻辑
 /// </summary>
-[ComponentInfo("DF3F8295-21F6-482E-BADA-FA0E5F14BB66", "日期", PackIconKind.CalendarOutline, "显示今天的日期和星期。")]
+[ComponentInfo("DF3F8295-21F6-482E-BADA-FA0E5F14BB66", "日期", MaterialIconKind.CalendarOutline, "显示今天的日期和星期。")]
 public partial class DateComponent : ComponentBase, INotifyPropertyChanged
 {
     public ILessonsService LessonsService { get; }

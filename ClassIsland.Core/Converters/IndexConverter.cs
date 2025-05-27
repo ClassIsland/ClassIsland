@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
-using System.Windows.Controls;
-using System.Windows.Data;
+using Avalonia.Controls;
+using Avalonia.Data.Converters;
+
 
 namespace ClassIsland.Core.Converters;
 

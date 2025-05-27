@@ -11,7 +11,6 @@ using ClassIsland.Shared.Extensions;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 using CsesSharp;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Controls;

@@ -9,14 +9,13 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Services;
 
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
 
 /// <summary>
 /// ClockComponent.xaml 的交互逻辑
 /// </summary>
-[ComponentInfo("9E1AF71D-8F77-4B21-A342-448787104DD9", "时钟", PackIconKind.ClockDigital, "显示现在的时间，支持精确到秒。")]
+[ComponentInfo("9E1AF71D-8F77-4B21-A342-448787104DD9", "时钟", MaterialIconKind.ClockDigital, "显示现在的时间，支持精确到秒。")]
 public partial class ClockComponent : ComponentBase<ClockComponentSettings>, INotifyPropertyChanged
 {
     private DateTime _currentTime = DateTime.Now;

@@ -1,11 +1,12 @@
 using System.Globalization;
-using System.Windows.Data;
+
+using Avalonia.Data.Converters;
 
 namespace ClassIsland.Core.Converters;
 
 public class DateTimeToCanvasPosConverter : IMultiValueConverter
 {
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
         var v = (DateTime)values[0];
         var s = values[1] as double? ?? 1.0;

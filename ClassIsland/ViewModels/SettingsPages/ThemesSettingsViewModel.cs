@@ -1,6 +1,5 @@
 ﻿using ClassIsland.Core.Models.Plugin;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
 using System.Windows.Documents;
 using ClassIsland.Core.Models.XamlTheme;
 

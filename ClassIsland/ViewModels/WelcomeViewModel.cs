@@ -3,7 +3,6 @@
 using ClassIsland.Models;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.ViewModels;
 

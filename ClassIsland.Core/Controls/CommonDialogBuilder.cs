@@ -1,5 +1,4 @@
 ﻿using ClassIsland.Core.Controls.CommonDialog;
-using MaterialDesignThemes.Wpf;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -95,10 +94,10 @@ public class CommonDialogBuilder
         return managementService?.Policy.DisableEasterEggs == true
             ? kind switch
             {
-                CommonDialogIconKind.Information => SetPackIcon(PackIconKind.InfoCircle),
-                CommonDialogIconKind.Hint => SetPackIcon(PackIconKind.WarningCircle),
-                CommonDialogIconKind.Forbidden => SetPackIcon(PackIconKind.AlertOctagon),
-                CommonDialogIconKind.Error => SetPackIcon(PackIconKind.CloseCircle),
+                CommonDialogIconKind.Information => SetPackIcon(MaterialIconKind.InfoCircle),
+                CommonDialogIconKind.Hint => SetPackIcon(MaterialIconKind.WarningCircle),
+                CommonDialogIconKind.Forbidden => SetPackIcon(MaterialIconKind.AlertOctagon),
+                CommonDialogIconKind.Error => SetPackIcon(MaterialIconKind.CloseCircle),
                 _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
             }
             : kind switch
@@ -122,7 +121,7 @@ public class CommonDialogBuilder
     /// <param name="width">图标宽度（px），默认为 64</param>
     /// <param name="height">图标高度（px），默认为 64</param>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder SetPackIcon(PackIconKind kind, double width = 64, double height = 64)
+    public CommonDialogBuilder SetPackIcon(MaterialIconKind kind, double width = 64, double height = 64)
     {
         Dialog.DialogIcon = new PackIcon()
         {
@@ -162,12 +161,12 @@ public class CommonDialogBuilder
     /// <param name="icon">操作的图标包类型</param>
     /// <param name="isPrimary">操作是否是主要操作，按下 Enter 时将默认选择</param>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddAction(string name, PackIconKind icon, bool isPrimary=false)
+    public CommonDialogBuilder AddAction(string name, MaterialIconKind icon, bool isPrimary=false)
     {
         return AddAction(new DialogAction()
         {
             Name = name,
-            PackIconKind = icon,
+            MaterialIconKind = icon,
             IsPrimary = isPrimary
         });
     }
@@ -176,25 +175,25 @@ public class CommonDialogBuilder
     /// 添加一个“确定”操作按钮。
     /// </summary>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddConfirmAction() => AddAction("确定", PackIconKind.Check);
+    public CommonDialogBuilder AddConfirmAction() => AddAction("确定", MaterialIconKind.Check);
 
     /// <summary>
     /// 添加一个“是”操作按钮。
     /// </summary>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddYesAction() => AddAction("是", PackIconKind.Check);
+    public CommonDialogBuilder AddYesAction() => AddAction("是", MaterialIconKind.Check);
 
     /// <summary>
     /// 添加一个“否”操作按钮。
     /// </summary>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddNoAction() => AddAction("否", PackIconKind.Close);
+    public CommonDialogBuilder AddNoAction() => AddAction("否", MaterialIconKind.Close);
 
     /// <summary>
     /// 添加一个“取消”操作按钮。
     /// </summary>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddCancelAction() => AddAction("取消", PackIconKind.Cancel);
+    public CommonDialogBuilder AddCancelAction() => AddAction("取消", MaterialIconKind.Cancel);
 
     /// <summary>
     /// 获得构建的 <see cref="CommonDialog"/> 对象。

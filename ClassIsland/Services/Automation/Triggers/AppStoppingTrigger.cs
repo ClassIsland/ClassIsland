@@ -2,11 +2,10 @@ using System;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
-[TriggerInfo("classisland.lifetime.stopping", "应用退出时", PackIconKind.ExitToApp)]
+[TriggerInfo("classisland.lifetime.stopping", "应用退出时", MaterialIconKind.ExitToApp)]
 public class AppStoppingTrigger : TriggerBase
 {
     public override void Loaded()

@@ -1,6 +1,6 @@
-﻿using System.Windows.Media;
+﻿using Avalonia.Media;
 using ClassIsland.Core.Models.Theming;
-using MaterialDesignThemes.Wpf;
+using Material.Styles.Themes;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Core.Abstractions.Services;

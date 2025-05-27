@@ -1,13 +1,10 @@
-﻿using System.Windows.Controls;
-using System.Windows.Media;
-using ClassIsland.Core.Attributes;
+﻿using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
-using MaterialDesignThemes.Wpf;
-using System.Windows.Media.Imaging;
 using ClassIsland.Core.Abstractions.Controls;
+using Material.Icons.Avalonia;
 
 namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 
@@ -64,7 +61,7 @@ public class NotificationChannel : INotificationSender, INotificationProvider
         var info = ChannelInfo;
         Name = info.Name;
         Description = info.Description;
-        IconElement = new PackIcon()
+        IconElement = new MaterialIcon()
         {
             Kind = info.PackIcon,
             Width = 24,

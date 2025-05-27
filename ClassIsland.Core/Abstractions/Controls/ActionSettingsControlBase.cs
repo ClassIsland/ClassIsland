@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Windows.Controls;
+using Avalonia.Controls;
 using ClassIsland.Core.Models.Action;
 using ClassIsland.Shared;
 using Microsoft.Extensions.DependencyInjection;

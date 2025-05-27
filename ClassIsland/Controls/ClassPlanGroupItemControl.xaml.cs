@@ -11,7 +11,6 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Views;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls;
 

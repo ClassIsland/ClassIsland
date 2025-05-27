@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Controls;
 
@@ -41,11 +40,11 @@ public partial class InfoCard : UserControl
     }
 
     public static readonly DependencyProperty IconKindProperty = DependencyProperty.Register(
-        nameof(IconKind), typeof(PackIconKind), typeof(InfoCard), new PropertyMetadata(default(PackIconKind)));
+        nameof(IconKind), typeof(MaterialIconKind), typeof(InfoCard), new PropertyMetadata(default(MaterialIconKind)));
 
-    public PackIconKind IconKind
+    public MaterialIconKind IconKind
     {
-        get { return (PackIconKind)GetValue(IconKindProperty); }
+        get { return (MaterialIconKind)GetValue(IconKindProperty); }
         set { SetValue(IconKindProperty, value); }
     }
 

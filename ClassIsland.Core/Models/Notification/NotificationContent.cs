@@ -1,10 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows;
+using Avalonia.Markup.Xaml.Templates;
 using ClassIsland.Core.Controls.NotificationTemplates;
 using ClassIsland.Core.Models.Notification.Templates;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Google.Protobuf.WellKnownTypes;
-using MaterialDesignThemes.Wpf;
+using Material.Icons;
 
 namespace ClassIsland.Core.Models.Notification;
 
@@ -112,7 +113,7 @@ public class NotificationContent : ObservableRecipient
     /// <param name="factory">提醒内容处理工厂</param>
     /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
     public static NotificationContent CreateTwoIconsMask(string text,
-        PackIconKind leftIcon = PackIconKind.AlertCircleOutline, PackIconKind rightIcon = PackIconKind.BellRing, bool hasRightIcon=true,
+        MaterialIconKind leftIcon = MaterialIconKind.AlertCircleOutline, MaterialIconKind rightIcon = MaterialIconKind.BellRing, bool hasRightIcon=true,
         Action<NotificationContent>? factory = null)
     {
         var content = new NotificationContent

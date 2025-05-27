@@ -11,13 +11,12 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Actions;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Core.Models.Notification;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
 using ClassIsland.Helpers;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("4B12F124-8585-43C7-AFC5-7BBB7CBE60D6", "行动提醒", PackIconKind.Airplane, "显示由行动发出的提醒。")]
+[NotificationProviderInfo("4B12F124-8585-43C7-AFC5-7BBB7CBE60D6", "行动提醒", MaterialIconKind.Airplane, "显示由行动发出的提醒。")]
 public class ActionNotificationProvider : NotificationProviderBase
 {
     public INotificationHostService NotificationHostService { get; }

@@ -1,14 +1,12 @@
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using MaterialDesignThemes.Wpf;
+using Avalonia.Controls;
+using DialogHostAvalonia;
 
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
 /// 设置页面基类
 /// </summary>
-public abstract class SettingsPageBase : Page
+public abstract class SettingsPageBase : UserControl
 {
     /// <summary>
     /// 设置窗口的<see cref="DialogHost"/>的标识符。
@@ -38,7 +36,7 @@ public abstract class SettingsPageBase : Page
     /// <param name="dataContext">抽屉元素的数据上下文</param>
     protected void OpenDrawer(string key, bool useGlobalDataContext=false, object? dataContext=null)
     {
-        OpenDrawer(FindResource(key), useGlobalDataContext,  dataContext);
+        OpenDrawer(this.FindResource(key)!, useGlobalDataContext,  dataContext);
     }
 
     /// <summary>
@@ -49,7 +47,7 @@ public abstract class SettingsPageBase : Page
     /// <param name="dataContext">抽屉元素的数据上下文</param>
     protected void OpenDrawer(object o, bool useGlobalDataContext=false, object? dataContext=null)
     {
-        if (o is FrameworkElement e && !useGlobalDataContext)
+        if (o is Control e && !useGlobalDataContext)
         {
             e.DataContext = dataContext ?? this;
         }

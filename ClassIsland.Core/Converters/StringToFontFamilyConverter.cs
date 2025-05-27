@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Media;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
+
 
 namespace ClassIsland.Core.Converters;
 
@@ -15,6 +16,6 @@ public class StringToFontFamilyConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         var v = (FontFamily)value;
-        return v.Source;
+        return v.Name;
     }
 }

@@ -7,14 +7,13 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
 
 /// <summary>
 /// CountDownComponent.xaml 的交互逻辑
 /// </summary>
-[ComponentInfo("7C645D35-8151-48BA-B4AC-15017460D994", "倒计时日", PackIconKind.TimerOutline, "显示距离某一天的倒计时。")]
+[ComponentInfo("7C645D35-8151-48BA-B4AC-15017460D994", "倒计时日", MaterialIconKind.TimerOutline, "显示距离某一天的倒计时。")]
 public partial class CountDownComponent : ComponentBase<CountDownComponentSettings>, INotifyPropertyChanged
 {
     private string _daysLeft = "";

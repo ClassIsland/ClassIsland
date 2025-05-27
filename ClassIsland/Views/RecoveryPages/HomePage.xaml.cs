@@ -8,7 +8,6 @@ using ClassIsland.Core;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Services;
-using MaterialDesignThemes.Wpf;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.RecoveryPages;
@@ -65,7 +64,7 @@ public partial class HomePage : Page
     {
         var result = new CommonDialogBuilder()
             .SetCaption("清除临时文件")
-            .SetPackIcon(PackIconKind.GarbageCanEmpty)
+            .SetPackIcon(MaterialIconKind.GarbageCanEmpty)
             .SetContent("此操作将删除所有缓存和临时文件，并且无法恢复。您确定要清除临时文件吗？")
             .AddCancelAction()
             .AddConfirmAction()
@@ -97,7 +96,7 @@ public partial class HomePage : Page
     {
         var result = new CommonDialogBuilder()
             .SetCaption("重置应用设置")
-            .SetPackIcon(PackIconKind.SettingsRefreshOutline)
+            .SetPackIcon(MaterialIconKind.SettingsRefreshOutline)
             .SetContent("此操作将重置应用的设置信息，并且无法恢复，不影响档案、组件、自动化、插件等的配置。您确定要重置应用设置吗？\n\n如果您确实希望重置应用设置，请在下方文本框输入 ⌈我确认重置应用设置⌋。")
             .AddCancelAction()
             .AddConfirmAction()
@@ -130,7 +129,7 @@ public partial class HomePage : Page
     {
         var result = new CommonDialogBuilder()
             .SetCaption("重置全部配置")
-            .SetPackIcon(PackIconKind.FileRemoveOutline)
+            .SetPackIcon(MaterialIconKind.FileRemoveOutline)
             .SetContent("此操作将重置应用的所有配置，包括应用设置、组件配置、自动化配置、插件设置等，并且无法恢复，不影响档案配置。您确定要重置全部配置吗？\n\n如果您确实希望重置全部配置，请在下方文本框输入 ⌈我确认重置全部配置⌋。")
             .AddCancelAction()
             .AddConfirmAction()
@@ -168,7 +167,7 @@ public partial class HomePage : Page
     {
         var result = new CommonDialogBuilder()
             .SetCaption("重置全部信息")
-            .SetPackIcon(PackIconKind.Remove)
+            .SetPackIcon(MaterialIconKind.Remove)
             .SetContent("此操作将重置应用的所有信息，恢复到安装前的状态，包括档案配置、应用设置、组件配置、自动化配置、插件设置、已安装的插件等，并且无法恢复。您确定要重置全部信息吗？\n\n如果您确实希望重置全部信息，请在下方文本框输入 ⌈我确认重置包括课表配置在内的全部信息⌋。")
             .AddCancelAction()
             .AddConfirmAction()

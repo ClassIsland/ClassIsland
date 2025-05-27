@@ -13,14 +13,13 @@ using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Protobuf.Command;
 using ClassIsland.Shared.Protobuf.Enum;
 
-using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("0117fb4f-5374-434a-97fb-4f5374634a07", "集控提醒", PackIconKind.Work, "来自集控服务器的提醒。")]
+[NotificationProviderInfo("0117fb4f-5374-434a-97fb-4f5374634a07", "集控提醒", MaterialIconKind.Work, "来自集控服务器的提醒。")]
 public class ManagementNotificationProvider : NotificationProviderBase
 {
     private INotificationHostService NotificationHostService { get; }
@@ -56,7 +55,7 @@ public class ManagementNotificationProvider : NotificationProviderBase
         Logger.LogInformation("接受集控消息：{} {}", payload.MessageMask, payload.MessageContent);
         ShowNotification(new NotificationRequest()
         {
-            MaskContent = NotificationContent.CreateTwoIconsMask(payload.MessageMask, rightIcon:PackIconKind.Announcement),
+            MaskContent = NotificationContent.CreateTwoIconsMask(payload.MessageMask, rightIcon:MaterialIconKind.Announcement),
             OverlayContent = NotificationContent.CreateRollingTextContent(payload.MessageContent, TimeSpan.FromSeconds(payload.DurationSeconds) * payload.RepeatCounts, payload.RepeatCounts),
             IsPriorityOverride = payload.IsEmergency,
             PriorityOverride = -1,

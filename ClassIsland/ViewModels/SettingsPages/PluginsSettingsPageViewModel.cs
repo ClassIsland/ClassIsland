@@ -1,7 +1,6 @@
 ﻿using System.Windows.Documents;
 using ClassIsland.Core.Models.Plugin;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 

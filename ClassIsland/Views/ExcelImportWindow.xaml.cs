@@ -23,7 +23,6 @@ using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 
-using MaterialDesignThemes.Wpf;
 
 using OfficeOpenXml;
 

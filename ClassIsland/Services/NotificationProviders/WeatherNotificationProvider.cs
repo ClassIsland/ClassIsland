@@ -13,7 +13,6 @@ using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Shared;
-using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -24,7 +23,7 @@ using ClassIsland.Helpers;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("7625DE96-38AA-4B71-B478-3F156DD9458D", "天气预警", PackIconKind.CloudWarning, "当有降雨或者极端天气时发出提醒。")]
+[NotificationProviderInfo("7625DE96-38AA-4B71-B478-3F156DD9458D", "天气预警", MaterialIconKind.CloudWarning, "当有降雨或者极端天气时发出提醒。")]
 public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotificationProviderSettings>
 {
 

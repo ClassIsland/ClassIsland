@@ -13,7 +13,6 @@ using ClassIsland.Helpers;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 
-using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Logging;
 

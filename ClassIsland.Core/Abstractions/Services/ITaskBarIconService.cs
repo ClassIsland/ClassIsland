@@ -1,5 +1,4 @@
-using H.NotifyIcon;
-using H.NotifyIcon.Core;
+using Avalonia.Controls;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -11,7 +10,7 @@ public interface ITaskBarIconService
     /// <summary>
     /// 任务栏图标实例
     /// </summary>
-    TaskbarIcon MainTaskBarIcon { get; }
+    TrayIcon MainTaskBarIcon { get; }
 
     /// <summary>
     /// 显示一条气泡通知。

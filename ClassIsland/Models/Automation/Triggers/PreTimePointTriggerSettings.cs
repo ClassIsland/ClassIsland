@@ -1,7 +1,6 @@
 ﻿using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Models.Automation.Triggers;
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ClassIsland.Core.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.ViewModels;
 

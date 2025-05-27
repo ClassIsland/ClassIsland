@@ -7,7 +7,6 @@ using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Shared.Helpers;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,7 +21,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// AutomationSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("automation", "自动化", PackIconKind.ScriptOutline, PackIconKind.ScriptText, SettingsPageCategory.Internal)]
+[SettingsPageInfo("automation", "自动化", MaterialIconKind.ScriptOutline, MaterialIconKind.ScriptText, SettingsPageCategory.Internal)]
 public partial class AutomationSettingsPage
 {
     public AutomationSettingsViewModel ViewModel { get; } = new();

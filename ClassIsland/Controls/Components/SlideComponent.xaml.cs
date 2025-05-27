@@ -9,7 +9,6 @@ using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Helpers;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
 
@@ -17,7 +16,7 @@ namespace ClassIsland.Controls.Components;
 /// SlideComponent.xaml 的交互逻辑
 /// </summary>
 [ContainerComponent]
-[ComponentInfo("7E19A113-D281-4F33-970A-834A0B78B5AD", "轮播组件", PackIconKind.Slideshow, "轮播多个组件。")]
+[ComponentInfo("7E19A113-D281-4F33-970A-834A0B78B5AD", "轮播组件", MaterialIconKind.Slideshow, "轮播多个组件。")]
 public partial class SlideComponent
 {
     public IRulesetService RulesetService { get; }

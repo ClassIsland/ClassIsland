@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
-using static System.Windows.Forms.AxHost;
 
 namespace ClassIsland.Core.Models.Ruleset;
 

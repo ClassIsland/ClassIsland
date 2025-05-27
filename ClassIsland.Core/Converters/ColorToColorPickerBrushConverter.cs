@@ -1,10 +1,12 @@
 ﻿using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Media;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
+
 
 namespace ClassIsland.Core.Converters;
 
-[ValueConversion(typeof(Color), typeof(Brush))]
+
 public class ColorToColorPickerBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -13,7 +15,7 @@ public class ColorToColorPickerBrushConverter : IValueConverter
         {
             return new SolidColorBrush(color);
         }
-        return Binding.DoNothing;
+        return BindingOperations.DoNothing;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

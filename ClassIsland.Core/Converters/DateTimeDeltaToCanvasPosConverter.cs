@@ -1,11 +1,12 @@
 using System.Globalization;
-using System.Windows.Data;
+
+using Avalonia.Data.Converters;
 
 namespace ClassIsland.Core.Converters;
 
 public class DateTimeDeltaToCanvasPosConverter : IMultiValueConverter
 {
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
         var v1 = ((DateTime)values[0]).TimeOfDay;
         var v2 = ((DateTime)values[1]).TimeOfDay;

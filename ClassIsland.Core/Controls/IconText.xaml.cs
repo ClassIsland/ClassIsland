@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Controls;
 
@@ -19,11 +18,11 @@ public partial class IconText : UserControl
     }
 
     public static readonly DependencyProperty KindProperty = DependencyProperty.Register(
-        nameof(Kind), typeof(PackIconKind), typeof(IconText), new PropertyMetadata(default(PackIconKind)));
+        nameof(Kind), typeof(MaterialIconKind), typeof(IconText), new PropertyMetadata(default(MaterialIconKind)));
 
-    public PackIconKind Kind
+    public MaterialIconKind Kind
     {
-        get => (PackIconKind)GetValue(KindProperty);
+        get => (MaterialIconKind)GetValue(KindProperty);
         set => SetValue(KindProperty, value);
     }
 

@@ -6,7 +6,6 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Services;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
 

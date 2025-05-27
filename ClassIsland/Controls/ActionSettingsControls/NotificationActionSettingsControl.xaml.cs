@@ -3,7 +3,6 @@ using System.Linq;
 using System.Windows;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Views;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.ActionSettingsControls;
 

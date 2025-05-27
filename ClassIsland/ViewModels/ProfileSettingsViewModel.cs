@@ -5,7 +5,6 @@ using ClassIsland.Shared.Models.Profile;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.ViewModels;
 

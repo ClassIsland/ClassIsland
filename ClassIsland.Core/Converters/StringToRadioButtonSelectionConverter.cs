@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
-using System.Windows.Data;
+
+using Avalonia.Data.Converters;
 
 namespace ClassIsland.Core.Converters;
 
@@ -7,7 +8,7 @@ public class StringToRadioButtonSelectionConverter : IMultiValueConverter
 {
     private string _valueRaw = "";
 
-    public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(IList<object?> value, Type targetType, object parameter, CultureInfo culture)
     {
         var r = (string)value[0];
         var p = (string)value[1];

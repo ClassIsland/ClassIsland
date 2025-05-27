@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using System.Windows;
-using System.Windows.Data;
+using Avalonia;
+using Avalonia.Data.Converters;
+
 
 namespace ClassIsland.Core.Converters;
 
@@ -14,15 +16,15 @@ namespace ClassIsland.Core.Converters;
 /// 显示秒数形似：1:02:34，12:34，34s<br/>
 /// 不显示秒数形似：1h02m，12min
 /// </returns>
-public class SecondsToFormatTimeConverter : DependencyObject, IValueConverter
+public class SecondsToFormatTimeConverter : AvaloniaObject, IValueConverter
 {
-    public static readonly DependencyProperty CeilingProperty = DependencyProperty.Register(
-        nameof(Ceiling), typeof(bool), typeof(SecondsToFormatTimeConverter), new PropertyMetadata(default(bool)));
+    public static readonly StyledProperty<bool> CeilingProperty = AvaloniaProperty.Register<SecondsToFormatTimeConverter, bool>(
+        nameof(Ceiling));
 
     public bool Ceiling
     {
-        get { return (bool)GetValue(CeilingProperty); }
-        set { SetValue(CeilingProperty, value); }
+        get => GetValue(CeilingProperty);
+        set => SetValue(CeilingProperty, value);
     }
 
     /// <inheritdoc />

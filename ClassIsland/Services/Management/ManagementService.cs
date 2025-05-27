@@ -17,7 +17,6 @@ using ClassIsland.Models.Authorize;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Client;
 using ClassIsland.Shared.Protobuf.Service;
-using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Logging;
 
@@ -230,7 +229,7 @@ public class ManagementService : IManagementService
             .SetContent($"确定要加入组织 {mf.OrganizationName} 的管理吗？")
             .SetIconKind(CommonDialogIconKind.Hint)
             .AddCancelAction()
-            .AddAction("加入", PackIconKind.Check, true);
+            .AddAction("加入", MaterialIconKind.Check, true);
 
         var result = dialogBuilder.ShowDialog();
         if (result != 1)
@@ -270,7 +269,7 @@ public class ManagementService : IManagementService
             .SetContent($"确定要退出组织 {Manifest.OrganizationName} 的管理吗？")
             .SetIconKind(CommonDialogIconKind.Hint)
             .AddCancelAction()
-            .AddAction("退出", PackIconKind.ExitRun, true);
+            .AddAction("退出", MaterialIconKind.ExitRun, true);
 
         var result = dialogBuilder.ShowDialog();
         if (result != 1)

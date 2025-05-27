@@ -1,5 +1,4 @@
 using System.Windows;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Controls.CommonDialog;
 
@@ -23,13 +22,13 @@ public class DialogAction : DependencyObject
         set { SetValue(UseCustomIconProperty, value); }
     }
 
-    public static readonly DependencyProperty PackIconKindProperty = DependencyProperty.Register(
-        nameof(PackIconKind), typeof(PackIconKind), typeof(DialogAction), new PropertyMetadata(default(PackIconKind)));
+    public static readonly DependencyProperty MaterialIconKindProperty = DependencyProperty.Register(
+        nameof(MaterialIconKind), typeof(MaterialIconKind), typeof(DialogAction), new PropertyMetadata(default(MaterialIconKind)));
 
-    public PackIconKind PackIconKind
+    public MaterialIconKind MaterialIconKind
     {
-        get { return (PackIconKind)GetValue(PackIconKindProperty); }
-        set { SetValue(PackIconKindProperty, value); }
+        get { return (MaterialIconKind)GetValue(MaterialIconKindProperty); }
+        set { SetValue(MaterialIconKindProperty, value); }
     }
 
     public static readonly DependencyProperty CustomIconProperty = DependencyProperty.Register(

@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Controls;
 
@@ -9,7 +8,7 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public partial class SettingsControl : UserControl
 {
-    public static readonly DependencyProperty IconGlyphProperty = DependencyProperty.Register(nameof(IconGlyph), typeof(PackIconKind), typeof(SettingsControl), new PropertyMetadata(PackIconKind.SimpleIcons));
+    public static readonly DependencyProperty IconGlyphProperty = DependencyProperty.Register(nameof(IconGlyph), typeof(MaterialIconKind), typeof(SettingsControl), new PropertyMetadata(MaterialIconKind.SimpleIcons));
     public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(nameof(Header), typeof(string), typeof(SettingsControl), new PropertyMetadata(""));
     public static readonly DependencyProperty DescriptionProperty = DependencyProperty.Register(nameof(Description), typeof(string), typeof(SettingsControl), new PropertyMetadata(""));
     public static readonly DependencyProperty SwitcherProperty = DependencyProperty.Register(nameof(Switcher), typeof(object), typeof(SettingsControl), new PropertyMetadata(null));
@@ -17,9 +16,9 @@ public partial class SettingsControl : UserControl
     public static readonly DependencyProperty IsOnProperty = DependencyProperty.Register(nameof(IsOn), typeof(bool), typeof(SettingsControl), new PropertyMetadata(false));
     public static readonly DependencyProperty IsCompactProperty = DependencyProperty.Register(nameof(IsCompact), typeof(bool), typeof(SettingsControl), new PropertyMetadata(false));
 
-    public PackIconKind IconGlyph
+    public MaterialIconKind IconGlyph
     {
-        get => (PackIconKind)GetValue(IconGlyphProperty);
+        get => (MaterialIconKind)GetValue(IconGlyphProperty);
         set => SetValue(IconGlyphProperty, value);
     }
 

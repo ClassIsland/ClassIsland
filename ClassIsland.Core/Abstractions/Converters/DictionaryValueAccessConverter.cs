@@ -1,7 +1,5 @@
 using System.Globalization;
-using System.Windows.Data;
-using ClassIsland.Shared.Models.Profile;
-using ClassIsland.Shared;
+using Avalonia.Data.Converters;
 
 namespace ClassIsland.Core.Abstractions.Converters;
 
@@ -16,9 +14,9 @@ namespace ClassIsland.Core.Abstractions.Converters;
 public abstract class DictionaryValueAccessConverter<T> : IMultiValueConverter
 {
     /// <inheritdoc />
-    public object? Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length < 2)
+        if (values.Count < 2)
         {
             return null;
         }
@@ -35,6 +33,6 @@ public abstract class DictionaryValueAccessConverter<T> : IMultiValueConverter
     /// <inheritdoc />
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
-        return Array.Empty<object>();
+        return [];
     }
 }

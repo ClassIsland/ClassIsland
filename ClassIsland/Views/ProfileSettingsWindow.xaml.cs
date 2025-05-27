@@ -30,7 +30,6 @@ using ClassIsland.Shared.Models.Action;
 using ClassIsland.ViewModels;
 using CommunityToolkit.Mvvm.Input;
 using CsesSharp;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Sentry;
@@ -1202,7 +1201,7 @@ public partial class ProfileSettingsWindow : MyWindow
                 .SetIconKind(CommonDialogIconKind.Hint)
                 .SetContent("兼容性警告：以下课表无法导出到 CSES 格式：\n" + string.Join('\n', warnings) + "\n\n是否继续导出？")
                 .AddCancelAction()
-                .AddAction("继续", PackIconKind.Check, true)
+                .AddAction("继续", MaterialIconKind.Check, true)
                 .ShowDialog(this);
             if (r == 0)
             {

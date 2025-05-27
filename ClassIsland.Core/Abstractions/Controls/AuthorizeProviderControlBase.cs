@@ -2,8 +2,8 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Shared;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using System.Windows.Controls;
 using System.Windows.Input;
+using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Abstractions.Controls;
@@ -16,7 +16,7 @@ public abstract class AuthorizeProviderControlBase : UserControl
     /// <summary>
     /// 完成认证命令。
     /// </summary>
-    public static readonly ICommand CompleteAuthorizeCommand = new RoutedUICommand();
+    public static readonly ICommand CompleteAuthorizeCommand = new RoutedCommand();
 
     /// <summary>
     /// 通过认证。
