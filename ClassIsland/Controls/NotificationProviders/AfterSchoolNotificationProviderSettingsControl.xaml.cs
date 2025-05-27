@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,3 +25,4 @@ public partial class AfterSchoolNotificationProviderSettingsControl
         SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("8FBC3A26-6D20-44DD-B895-B9411E3DDC51"))));
     }
 }
+#endif

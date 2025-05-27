@@ -1,3 +1,4 @@
+#if false
 namespace ClassIsland.Controls.ActionSettingsControls;
 
 public partial class SleepActionSettingsControl
@@ -8,3 +9,4 @@ public partial class SleepActionSettingsControl
         DataContext = this;
     }
 }
+#endif

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Nullable>enable</Nullable>
-        <UseWPF>true</UseWPF>
+        <UseWPF>false</UseWPF>
         <UseWindowsForms>True</UseWindowsForms>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
@@ -9,7 +9,7 @@
         <UserSecretsId>0702af86-626c-4e4a-94e4-f506e4e2beb7</UserSecretsId>
         <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-        <StartupObject></StartupObject>
+        <StartupObject>ClassIsland.Program</StartupObject>
         <AssemblyName>ClassIsland</AssemblyName>
         <RootNamespace>ClassIsland</RootNamespace>
 		<IsMsix>$(IsMsix)</IsMsix>
@@ -107,6 +107,7 @@
         <Resource Include="Assets\**" />
         <AvaloniaResource Include="Assets\**"/>
         <AvaloniaResource Remove="**\*.xaml"/>
+        <AvaloniaXaml Remove="*.xaml"/>
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
@@ -130,16 +131,6 @@
         <ProjectReference Include="..\vendors\System.Device.Location\System.Device.Location.csproj" />
     </ItemGroup>
 	<ItemGroup>
-		<Page Update="Themes\LightTheme.xaml">
-			<Generator>MSBuild:Compile</Generator>
-			<XamlRuntime>Wpf</XamlRuntime>
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="Themes\DarkTheme.xaml">
-			<Generator>MSBuild:Compile</Generator>
-			<XamlRuntime>Wpf</XamlRuntime>
-			<SubType>Designer</SubType>
-		</Page>
 	</ItemGroup>
 
     <Target Name="PrintConstants" AfterTargets="Build">
@@ -149,4 +140,5 @@
     </Target>
 
 	<Import Project="..\Global.props" />
+    <Import Project="..\AvaloniaShared.props"/>
 </Project>

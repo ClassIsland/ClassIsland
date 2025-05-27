@@ -1,4 +1,5 @@
-﻿using System.Linq;
+#if false
+using System.Linq;
 using System.Windows;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Views;
@@ -46,3 +47,4 @@ public partial class NotificationActionSettingsControl
         }
     }
 }
+#endif

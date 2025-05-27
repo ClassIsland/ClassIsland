@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+#if false
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
 using MaterialDesignThemes.Wpf;
@@ -16,3 +17,4 @@ public partial class TextComponent : ComponentBase<TextComponentSettings>
         InitializeComponent();
     }
 }
+#endif

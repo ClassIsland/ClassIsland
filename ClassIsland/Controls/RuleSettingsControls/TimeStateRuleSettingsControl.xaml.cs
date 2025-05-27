@@ -1,4 +1,5 @@
-﻿namespace ClassIsland.Controls.RuleSettingsControls;
+#if false
+namespace ClassIsland.Controls.RuleSettingsControls;
 
 /// <summary>
 /// TimeStateRuleSettingsControl.xaml 的交互逻辑
@@ -10,3 +11,4 @@ public partial class TimeStateRuleSettingsControl
         InitializeComponent();
     }
 }
+#endif

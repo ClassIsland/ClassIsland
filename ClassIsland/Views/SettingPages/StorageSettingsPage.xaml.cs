@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Diagnostics;
 using System.Windows;
 using ClassIsland.Core;
@@ -80,3 +81,4 @@ public partial class StorageSettingsPage
         AppBase.Current.Restart(["-m", "-r"]);
     }
 }
+#endif

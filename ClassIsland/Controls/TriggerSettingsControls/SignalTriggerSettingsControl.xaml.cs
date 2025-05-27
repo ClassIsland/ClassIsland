@@ -1,4 +1,5 @@
-﻿namespace ClassIsland.Controls.TriggerSettingsControls;
+#if false
+namespace ClassIsland.Controls.TriggerSettingsControls;
 
 /// <summary>
 /// SignalTriggerSettingsControl.xaml 的交互逻辑
@@ -10,3 +11,4 @@ public partial class SignalTriggerSettingsControl
         InitializeComponent();
     }
 }
+#endif

@@ -87,4 +87,5 @@
 
   <Import Project="..\GeneratePackage.props" />
   <Import Project="..\Global.props" />
+  <Import Project="..\AvaloniaShared.props"/>
 </Project>

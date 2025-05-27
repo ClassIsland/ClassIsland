@@ -1,5 +1,5 @@
 using System.Reflection;
-using System.Windows;
+using Avalonia;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
 
@@ -103,5 +103,5 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用当前生命周期状态
     /// </summary>
-    public static ApplicationLifetime CurrentLifetime { get; internal set; } = ApplicationLifetime.None;
+    public static ApplicationLifetime CurrentLifetime { get; internal set; } = Enums.ApplicationLifetime.None;
 }

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+#if false
+using System.Windows;
 using System.Windows.Controls;
 
 using MaterialDesignThemes.Wpf;
@@ -24,3 +25,4 @@ public partial class ThemeDemo : UserControl
         InitializeComponent();
     }
 }
+#endif

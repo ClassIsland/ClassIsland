@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -85,3 +86,4 @@ public partial class WeekOffsetSettingsControl : UserControl, INotifyPropertyCha
         SettingsService.Settings.MultiWeekRotationOffset = [-1, -1, 0, 0, 0];
     }
 }
+#endif

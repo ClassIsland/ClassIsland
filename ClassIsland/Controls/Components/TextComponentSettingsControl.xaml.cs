@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+#if false
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Models.ComponentSettings;
 
 namespace ClassIsland.Controls.Components;
@@ -13,3 +14,4 @@ public partial class TextComponentSettingsControl : ComponentBase<TextComponentS
         InitializeComponent();
     }
 }
+#endif

@@ -5,15 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Threading;
+
 using Windows.Win32.UI.Accessibility;
 using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core;
@@ -55,7 +47,7 @@ namespace ClassIsland;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow
 {
     public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+#if false
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Controls;
@@ -87,3 +88,4 @@ public partial class AuthorizeProviderPresenter : UserControl
         InitializeComponent();
     }
 }
+#endif

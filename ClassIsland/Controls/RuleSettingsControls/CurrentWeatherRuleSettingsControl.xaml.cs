@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Abstractions.Services;
+#if false
+using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Controls.RuleSettingsControls;
 
@@ -15,3 +16,4 @@ public partial class CurrentWeatherRuleSettingsControl
         InitializeComponent();
     }
 }
+#endif

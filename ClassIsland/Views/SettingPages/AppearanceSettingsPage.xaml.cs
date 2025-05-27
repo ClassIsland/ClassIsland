@@ -1,3 +1,4 @@
+#if false
 using ClassIsland.Core.Abstractions.Controls;
 using System;
 using System.Windows;
@@ -77,3 +78,4 @@ public partial class AppearanceSettingsPage : SettingsPageBase
         }
     }
 }
+#endif

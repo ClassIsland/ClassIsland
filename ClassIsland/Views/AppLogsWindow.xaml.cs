@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -142,3 +143,4 @@ public partial class AppLogsWindow : MyWindow
         AppLogService.Logs.Clear();
     }
 }
+#endif

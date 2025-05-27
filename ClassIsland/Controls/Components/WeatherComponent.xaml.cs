@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+#if false
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
@@ -24,3 +25,4 @@ public partial class WeatherComponent : ComponentBase<WeatherComponentSettings>
         InitializeComponent();
     }
 }
+#endif

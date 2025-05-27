@@ -1,4 +1,5 @@
-﻿using System.Windows;
+#if false
+using System.Windows;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
@@ -43,3 +44,4 @@ public partial class ManagementCredentialsSettingsPage
         ViewModel.IsLocked = true;
     }
 }
+#endif

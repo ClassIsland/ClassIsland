@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
@@ -109,3 +110,4 @@ public partial class GeneralSettingsPage : SettingsPageBase
         window.ShowDialog();
     }
 }
+#endif

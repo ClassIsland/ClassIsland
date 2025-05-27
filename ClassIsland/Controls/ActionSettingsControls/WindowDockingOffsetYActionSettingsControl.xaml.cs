@@ -1,3 +1,4 @@
+#if false
 namespace ClassIsland.Controls.ActionSettingsControls;
 
 public partial class WindowDockingOffsetYActionSettingsControl
@@ -8,3 +9,4 @@ public partial class WindowDockingOffsetYActionSettingsControl
         DataContext = this;
     }
 }
+#endif

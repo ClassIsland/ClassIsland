@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+#if false
+using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Services.Management;
 
 namespace ClassIsland.Controls;
@@ -17,3 +18,4 @@ public partial class ManagementInfoControl : UserControl
 
     public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
 }
+#endif

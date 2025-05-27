@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -181,3 +182,4 @@ public partial class SlideComponent
         Timer.Start();
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -89,3 +90,4 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
         //storyboard.Begin();
     }
 }
+#endif

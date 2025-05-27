@@ -1,4 +1,5 @@
-﻿using System.Windows;
+#if false
+using System.Windows;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Shared;
@@ -34,3 +35,4 @@ public partial class ConfigErrorsWindow
         AppBase.Current.Restart(["-m", "-r"]);
     }
 }
+#endif

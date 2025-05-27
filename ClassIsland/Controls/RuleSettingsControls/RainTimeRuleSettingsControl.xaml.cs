@@ -1,4 +1,5 @@
-﻿namespace ClassIsland.Controls.RuleSettingsControls;
+#if false
+namespace ClassIsland.Controls.RuleSettingsControls;
 
 /// <summary>
 /// RainTimeRuleSettingsControl.xaml 的交互逻辑
@@ -10,3 +11,4 @@ public partial class RainTimeRuleSettingsControl
         InitializeComponent();
     }
 }
+#endif

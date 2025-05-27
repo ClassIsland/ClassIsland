@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,8 +16,6 @@ using System.Windows.Controls;
 using System.Windows.Diagnostics;
 using System.Windows.Input;
 using System.Windows.Threading;
-using ClassIsland.Controls.AttachedSettingsControls;
-using ClassIsland.Controls.Components;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Commands;
@@ -53,11 +52,8 @@ using Sentry;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Models.Rules;
 using ClassIsland.Models.Actions;
-using ClassIsland.Controls.RuleSettingsControls;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
-using ClassIsland.Controls.ActionSettingsControls;
-using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
 #if IsMsix
@@ -65,7 +61,6 @@ using Windows.ApplicationModel;
 using Windows.Storage;
 #endif
 using ClassIsland.Services.Automation.Triggers;
-using ClassIsland.Controls.TriggerSettingsControls;
 using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Core.Abstractions.Views;
 using ClassIsland.Core.Helpers;
@@ -76,10 +71,9 @@ using ClassIsland.Shared.Helpers;
 using Microsoft.Extensions.Logging.Console;
 using Walterlv.Threading;
 using Walterlv.Windows;
-using ClassIsland.Controls.NotificationProviders;
 using System.Text;
-using ClassIsland.Controls.SpeechProviderSettingsControls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Helpers;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using Google.Protobuf.WellKnownTypes;
@@ -1146,3 +1140,5 @@ public partial class App : AppBase, IAppHost
         Process.Start(startInfo);
     }
 }
+
+

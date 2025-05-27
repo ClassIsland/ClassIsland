@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -50,3 +51,4 @@ public partial class TestSettingsPage : SettingsPageBase
         navigationService!.Navigated -= OnNavigated;
     }
 }
+#endif

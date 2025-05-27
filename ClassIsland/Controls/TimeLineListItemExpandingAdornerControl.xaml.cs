@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -225,3 +226,4 @@ public partial class TimeLineListItemExpandingAdornerControl
         // App.GetService<ProfileSettingsWindow>().UpdateTimeLayout();
     }
 }
+#endif

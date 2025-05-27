@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,3 +40,4 @@ public partial class ManagementNotificationProviderControl : UserControl
         storyboard.Begin();
     }
 }
+#endif

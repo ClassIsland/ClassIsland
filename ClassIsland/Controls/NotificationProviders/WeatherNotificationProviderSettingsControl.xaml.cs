@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,3 +26,4 @@ public partial class WeatherNotificationProviderSettingsControl
         SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("7625DE96-38AA-4B71-B478-3F156DD9458D"))));
     }
 }
+#endif

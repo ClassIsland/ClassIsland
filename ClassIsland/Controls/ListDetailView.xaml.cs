@@ -1,4 +1,5 @@
-﻿using System.Windows;
+#if false
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ClassIsland.Controls;
@@ -85,3 +86,4 @@ public partial class ListDetailView : UserControl
         IsPanelOpened = false;
     }
 }
+#endif

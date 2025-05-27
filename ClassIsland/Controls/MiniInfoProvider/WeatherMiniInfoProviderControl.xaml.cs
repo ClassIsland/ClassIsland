@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+#if false
+using System.Windows.Controls;
 
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -23,3 +24,4 @@ public partial class WeatherMiniInfoProviderControl : UserControl
         InitializeComponent();
     }
 }
+#endif

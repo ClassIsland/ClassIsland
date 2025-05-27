@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+#if false
+using ClassIsland.Core.Abstractions.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -61,3 +62,4 @@ public partial class DateComponent : ComponentBase, INotifyPropertyChanged
         return true;
     }
 }
+#endif

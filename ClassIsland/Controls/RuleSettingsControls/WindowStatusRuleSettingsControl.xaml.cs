@@ -1,4 +1,5 @@
-﻿namespace ClassIsland.Controls.RuleSettingsControls
+#if false
+namespace ClassIsland.Controls.RuleSettingsControls
 {
     /// <summary>
     /// WindowStatusRuleSettingsControl.xaml 的交互逻辑
@@ -11,3 +12,5 @@
         }
     }
 }
+
+#endif

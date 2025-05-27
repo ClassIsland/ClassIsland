@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -399,3 +400,4 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
         }
     }
 }
+#endif

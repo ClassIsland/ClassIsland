@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Attributes;
+#if false
+using ClassIsland.Core.Attributes;
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
@@ -14,3 +15,4 @@ public partial class SeparatorComponent
         InitializeComponent();
     }
 }
+#endif

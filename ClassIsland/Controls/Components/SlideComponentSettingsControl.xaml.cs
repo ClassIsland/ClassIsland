@@ -1,4 +1,5 @@
-﻿using System.Windows;
+#if false
+using System.Windows;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls.Ruleset;
 
@@ -39,3 +40,4 @@ public partial class SlideComponentSettingsControl
         OpenDrawer("RulesetControl");
     }
 }
+#endif

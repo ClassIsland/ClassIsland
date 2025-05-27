@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,3 +25,4 @@ public partial class ClassNotificationProviderSettingsControl
         SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("08F0D9C3-C770-4093-A3D0-02F3D90C24BC"))));
     }
 }
+#endif

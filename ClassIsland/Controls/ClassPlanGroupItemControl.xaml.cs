@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -145,3 +146,4 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
         ProfileService.Profile.DeleteClassPlanGroup(Key);
     }
 }
+#endif

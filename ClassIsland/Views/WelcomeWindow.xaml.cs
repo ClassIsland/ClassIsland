@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -170,3 +171,4 @@ public partial class WelcomeWindow : MyWindow
         }
     }
 }
+#endif

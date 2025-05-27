@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -141,3 +142,5 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         return true;
     }
 }
+
+#endif

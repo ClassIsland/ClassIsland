@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -100,3 +101,4 @@ public partial class TimeLineListItemSeparatorAdornerControl : UserControl
     void Thumb_OnMouseUp(object _, MouseEventArgs e) => VisualTreeUtils.FindParentVisuals<ScrollViewer>(this).ForEach(static i => i.IsManipulationEnabled = true);
     void Thumb_OnMouseLeave(object _, MouseEventArgs e) => VisualTreeUtils.FindParentVisuals<ScrollViewer>(this).ForEach(static i => i.IsManipulationEnabled = true);
 }
+#endif

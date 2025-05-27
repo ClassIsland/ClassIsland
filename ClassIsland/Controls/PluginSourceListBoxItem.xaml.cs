@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+#if false
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,3 +24,4 @@ public partial class PluginSourceListBoxItem : UserControl
         InitializeComponent();
     }
 }
+#endif

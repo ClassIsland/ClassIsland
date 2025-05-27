@@ -1,3 +1,4 @@
+#if false
 namespace ClassIsland.Controls.ActionSettingsControls;
 
 public partial class ThemeActionSettingsControl
@@ -8,3 +9,4 @@ public partial class ThemeActionSettingsControl
         DataContext = this;
     }
 }
+#endif

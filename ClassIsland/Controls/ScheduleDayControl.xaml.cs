@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Linq;
 using System.Windows;
@@ -196,3 +197,4 @@ public partial class ScheduleDayControl : UserControl
         _parentScheduleCalendarControl = null;
     }
 }
+#endif

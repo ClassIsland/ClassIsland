@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -253,3 +254,4 @@ public partial class DebugPage : SettingsPageBase
         CommonDialog.ShowInfo(location.ToString());
     }
 }
+#endif

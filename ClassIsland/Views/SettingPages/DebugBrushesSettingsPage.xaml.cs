@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+#if false
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using MaterialDesignThemes.Wpf;
@@ -17,3 +18,4 @@ public partial class DebugBrushesSettingsPage : SettingsPageBase
         DataContext = this;
     }
 }
+#endif

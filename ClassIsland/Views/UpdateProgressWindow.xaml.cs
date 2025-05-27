@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+#if false
+using System.ComponentModel;
 using System.Windows;
 
 namespace ClassIsland.Views;
@@ -34,3 +35,4 @@ public partial class UpdateProgressWindow
         e.Cancel = true;
     }
 }
+#endif

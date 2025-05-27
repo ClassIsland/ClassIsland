@@ -1,4 +1,5 @@
-﻿using System.Windows;
+#if false
+using System.Windows;
 using System.Windows.Input;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
@@ -151,3 +152,4 @@ public partial class AutomationSettingsPage
         SettingsService.Settings.IsAutomationWarningVisible = false;
     }
 }
+#endif

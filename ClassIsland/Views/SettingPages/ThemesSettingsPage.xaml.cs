@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+#if false
+using System.Collections.Generic;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -181,3 +182,4 @@ public partial class ThemesSettingsPage
         SettingsService.Settings.IsThemeWarningVisible = false;
     }
 }
+#endif

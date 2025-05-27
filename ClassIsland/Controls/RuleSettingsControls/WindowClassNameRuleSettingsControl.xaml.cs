@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+#if false
+using System.Windows.Controls;
 
 namespace ClassIsland.Controls.RuleSettingsControls
 {
@@ -13,3 +14,5 @@ namespace ClassIsland.Controls.RuleSettingsControls
         }
     }
 }
+
+#endif

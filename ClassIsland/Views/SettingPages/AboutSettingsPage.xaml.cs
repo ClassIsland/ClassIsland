@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -211,3 +212,4 @@ public partial class AboutSettingsPage : SettingsPageBase
         }
     }
 }
+#endif

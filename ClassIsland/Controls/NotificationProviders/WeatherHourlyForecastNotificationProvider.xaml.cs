@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using ClassIsland.Core.Models.Weather;
@@ -28,3 +29,4 @@ public partial class WeatherHourlyForecastNotificationProvider : UserControl
         InitializeComponent();
     }
 }
+#endif

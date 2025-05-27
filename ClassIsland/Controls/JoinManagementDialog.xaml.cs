@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -74,3 +75,4 @@ public partial class JoinManagementDialog : UserControl
         ViewModel.IsWorking = false;
     }
 }
+#endif

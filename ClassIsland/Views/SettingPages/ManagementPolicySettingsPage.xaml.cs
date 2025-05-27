@@ -1,4 +1,5 @@
-﻿using System.Windows;
+#if false
+using System.Windows;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
@@ -48,3 +49,4 @@ public partial class ManagementPolicySettingsPage
         ViewModel.IsLocked = true;
     }
 }
+#endif

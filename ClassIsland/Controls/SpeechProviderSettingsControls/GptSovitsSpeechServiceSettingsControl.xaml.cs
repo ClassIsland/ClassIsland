@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -243,3 +244,4 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
         return true;
     }
 }
+#endif

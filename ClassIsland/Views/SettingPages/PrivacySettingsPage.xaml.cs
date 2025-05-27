@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.ComponentModel;
 using System.Windows;
 using ClassIsland.Core.Abstractions.Controls;
@@ -54,3 +55,4 @@ public partial class PrivacySettingsPage : SettingsPageBase
         SettingsService.Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
     }
 }
+#endif

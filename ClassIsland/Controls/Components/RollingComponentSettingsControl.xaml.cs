@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+#if false
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls.Ruleset;
 using System;
 using System.Collections.Generic;
@@ -52,3 +53,4 @@ public partial class RollingComponentSettingsControl
         OpenDrawer("RulesetControl");
     }
 }
+#endif

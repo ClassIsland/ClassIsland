@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Diagnostics;
 using System.Windows;
 using Windows.Win32.UI.Accessibility;
@@ -110,3 +111,4 @@ public partial class WindowRuleDebugWindow
         ViewModel.ForegroundWindowState = "正常";
     }
 }
+#endif

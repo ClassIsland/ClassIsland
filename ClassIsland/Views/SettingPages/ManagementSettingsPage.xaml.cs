@@ -1,3 +1,4 @@
+#if false
 using System.Windows;
 using System.Windows.Media;
 using ClassIsland.Controls;
@@ -45,3 +46,4 @@ public partial class ManagementSettingsPage
         ViewModel.CuidQrCodePath = Geometry.Parse(qrcode.ToGraphicsPath());
     }
 }
+#endif

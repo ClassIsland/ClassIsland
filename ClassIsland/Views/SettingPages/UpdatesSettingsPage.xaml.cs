@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
@@ -208,3 +209,4 @@ public partial class UpdatesSettingsPage : SettingsPageBase
         UpdateService.UpdateInfoUpdated -= UpdateServiceOnUpdateInfoUpdated;
     }
 }
+#endif

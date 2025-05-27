@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
@@ -20,3 +21,4 @@ public partial class ExcelSelectionTextBoxStrongHighlight : UserControl
         base.OnInitialized(e);
     }
 }
+#endif

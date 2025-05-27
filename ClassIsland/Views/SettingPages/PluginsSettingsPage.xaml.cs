@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -482,3 +483,4 @@ public partial class PluginsSettingsPage : SettingsPageBase
         ViewModel.PluginCategoryIndex = 0;
     }
 }
+#endif

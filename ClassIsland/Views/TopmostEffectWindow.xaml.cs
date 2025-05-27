@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -131,3 +132,4 @@ public partial class TopmostEffectWindow : Window
         e.Cancel = true;
     }
 }
+#endif

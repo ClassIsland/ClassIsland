@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Windows;
 using System.Windows.Navigation;
 using ClassIsland.Core;
@@ -49,3 +50,4 @@ public partial class RecoveryWindow
         ViewModel.CanGoBack = MainFrame.CanGoBack;
     }
 }
+#endif

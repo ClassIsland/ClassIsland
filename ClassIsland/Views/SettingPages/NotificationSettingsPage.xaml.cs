@@ -1,3 +1,4 @@
+#if false
 using ClassIsland.Core.Abstractions.Controls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -180,3 +181,4 @@ public partial class NotificationSettingsPage : SettingsPageBase
         OpenDrawer("NotificationSettingsDrawer", dataContext: ViewModel.SelectedRegisterInfo);
     }
 }
+#endif

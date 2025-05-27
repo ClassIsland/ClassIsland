@@ -1,3 +1,4 @@
+#if false
 using ClassIsland.Core.Controls;
 using System;
 using System.Collections.Generic;
@@ -723,3 +724,4 @@ public partial class SettingsWindowNew : MyWindow
         sb.Begin(this);
     }
 }
+#endif

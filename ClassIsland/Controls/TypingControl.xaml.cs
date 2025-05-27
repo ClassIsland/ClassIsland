@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -89,3 +90,4 @@ public partial class TypingControl : UserControl
         IsBusy = false;
     }
 }
+#endif

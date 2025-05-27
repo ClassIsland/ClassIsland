@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -150,3 +151,4 @@ public partial class ClassChangingWindow : MyWindow
         Close();
     }
 }
+#endif

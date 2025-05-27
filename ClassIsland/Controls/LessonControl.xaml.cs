@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -343,3 +344,4 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         return true;
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Attributes;
+#if false
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using MaterialDesignThemes.Wpf;
 
@@ -18,3 +19,4 @@ public partial class LessonControlAttachedSettingsControl
         InitializeComponent();
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -86,3 +87,4 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
 
     public event EventHandler? EffectCompleted;
 }
+#endif

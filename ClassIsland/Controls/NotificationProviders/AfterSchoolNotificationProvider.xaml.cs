@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+#if false
+using System.Windows.Controls;
 
 namespace ClassIsland.Controls.NotificationProviders;
 
@@ -18,3 +19,4 @@ public partial class AfterSchoolNotificationProviderControl : UserControl
         ShowContent = FindResource(key);
     }
 }
+#endif

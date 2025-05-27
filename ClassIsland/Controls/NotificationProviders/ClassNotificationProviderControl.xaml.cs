@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -138,3 +139,5 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         return string.Join(" ", parts);
     }
 }
+
+#endif

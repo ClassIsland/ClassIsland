@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using ClassIsland.Views;
@@ -29,3 +30,4 @@ public partial class RecoverySplashControl : UserControl
         Dispatcher.Invoke(() => Visibility = Visibility.Collapsed);
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+#if false
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -74,3 +75,4 @@ public sealed partial class TimeLineListItemControl : UserControl, INotifyProper
         CheckSize();
     }
 }
+#endif

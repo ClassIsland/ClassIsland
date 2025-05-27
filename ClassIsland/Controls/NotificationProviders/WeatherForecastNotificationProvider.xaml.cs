@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+#if false
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
@@ -58,3 +59,4 @@ public partial class WeatherForecastNotificationProvider : UserControl, INotifyP
         return true;
     }
 }
+#endif

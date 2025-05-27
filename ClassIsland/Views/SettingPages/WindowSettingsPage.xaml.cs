@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
@@ -64,3 +65,4 @@ public partial class WindowSettingsPage : SettingsPageBase
         RequestRestart();
     }
 }
+#endif

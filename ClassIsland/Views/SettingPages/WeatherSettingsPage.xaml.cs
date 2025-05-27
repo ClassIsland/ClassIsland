@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -138,3 +139,4 @@ public partial class WeatherSettingsPage : SettingsPageBase
         ViewModel.HideLocationPos = false;
     }
 }
+#endif

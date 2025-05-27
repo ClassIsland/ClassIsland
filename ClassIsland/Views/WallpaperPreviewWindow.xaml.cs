@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using ClassIsland.Core.Controls;
@@ -39,3 +40,4 @@ public partial class WallpaperPreviewWindow : MyWindow
         await WallpaperPickingService.GetWallpaperAsync();
     }
 }
+#endif

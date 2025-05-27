@@ -1,4 +1,5 @@
-﻿namespace ClassIsland.Controls.TriggerSettingsControls;
+#if false
+namespace ClassIsland.Controls.TriggerSettingsControls;
 
 /// <summary>
 /// UriTriggerSettingsControl.xaml 的交互逻辑
@@ -10,3 +11,4 @@ public partial class UriTriggerSettingsControl
         InitializeComponent();
     }
 }
+#endif

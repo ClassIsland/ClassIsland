@@ -1,4 +1,5 @@
-﻿namespace ClassIsland.Controls.ActionSettingsControls;
+#if false
+namespace ClassIsland.Controls.ActionSettingsControls;
 
 /// <summary>
 /// WeatherNotificationActionSettingControl.xaml 的交互逻辑
@@ -10,3 +11,4 @@ public partial class WeatherNotificationActionSettingControl
         InitializeComponent();
     }
 }
+#endif

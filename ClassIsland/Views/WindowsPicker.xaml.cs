@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -96,3 +97,4 @@ public partial class WindowsPicker : MyWindow
         ViewModel.IsWorking = false;
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+#if false
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -63,3 +64,4 @@ public partial class WeatherRangePackIconControl : UserControl, INotifyPropertyC
         return true;
     }
 }
+#endif

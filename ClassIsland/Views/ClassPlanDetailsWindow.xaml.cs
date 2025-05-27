@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+#if false
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -184,3 +185,4 @@ public partial class ClassPlanDetailsWindow
         Analyze();
     }
 }
+#endif
