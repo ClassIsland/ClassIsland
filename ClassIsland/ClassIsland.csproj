@@ -106,8 +106,6 @@
     <ItemGroup>
         <Resource Include="Assets\**" />
         <AvaloniaResource Include="Assets\**"/>
-        <AvaloniaResource Remove="**\*.xaml"/>
-        <AvaloniaXaml Remove="*.xaml"/>
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />

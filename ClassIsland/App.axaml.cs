@@ -11,11 +11,6 @@ using System.Speech.Synthesis;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Diagnostics;
-using System.Windows.Input;
-using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Commands;
@@ -72,6 +67,8 @@ using Microsoft.Extensions.Logging.Console;
 using Walterlv.Threading;
 using Walterlv.Windows;
 using System.Text;
+using Avalonia;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Helpers;
 using ClassIsland.Shared.Protobuf.AuditEvent;
@@ -215,18 +212,10 @@ public partial class App : AppBase, IAppHost
         }
     }
 
-    static App()
-    {
-        DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ToolTipService.InitialShowDelayProperty,
-            0);
-        DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ShadowAssist.CacheModeProperty,
-            null);
-    }
-
     private void TaskSchedulerOnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
     {
         e.SetObserved();
-        Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             ProcessUnhandledException(e.Exception);
         });
@@ -261,7 +250,7 @@ public partial class App : AppBase, IAppHost
 
     private void ProcessWpfCriticalException(Exception ex)
     {
-        Exit += (_, _) =>
+        Avalonia.Threading.Dispatcher.UIThread.ShutdownFinished += (_, _) =>
         {
             DiagnosticService.ProcessCriticalException(ex);
         };
@@ -271,10 +260,10 @@ public partial class App : AppBase, IAppHost
     internal void ProcessUnhandledException(Exception e, bool critical=false)
     {
 #if DEBUG
-        if (e.GetType() == typeof(ResourceReferenceKeyNotFoundException))
-        {
-            return;
-        }
+        // if (e.GetType() == typeof(ResourceReferenceKeyNotFoundException))
+        // {
+        //     return;
+        // }
 #endif
         Logger?.LogCritical(e, "发生严重错误");
         IsCrashed = true;
@@ -360,7 +349,7 @@ public partial class App : AppBase, IAppHost
         }
     }
 
-    private async void App_OnStartup(object sender, StartupEventArgs e)
+    public async override void OnFrameworkInitializationCompleted()
     {
         var transaction = SentrySdk.StartTransaction(
             "startup",
@@ -368,7 +357,7 @@ public partial class App : AppBase, IAppHost
         );
         SentrySdk.ConfigureScope(s => s.Transaction = transaction);
         var spanPreInit = transaction.StartChild("startup-init");
-        AppBase.CurrentLifetime = ApplicationLifetime.Initializing;
+        AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Initializing;
         MyWindow.ShowOssWatermark = ApplicationCommand.ShowOssWatermark;
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
@@ -384,12 +373,10 @@ public partial class App : AppBase, IAppHost
         //{
         //    Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");
         //}
-
-        BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
+        
 
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-CN");
         Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-CN");
-        FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag)));
 
         // 检测Mutex
         if (!IsMutexCreateNew)
@@ -872,7 +859,7 @@ public partial class App : AppBase, IAppHost
                 connection.LogAuditEvent(AuditEvents.AppStarted, new Empty());
             }
             _isStartedCompleted = true;
-            AppBase.CurrentLifetime = ApplicationLifetime.Running;
+            AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Running;
         };
 #if DEBUG
         MemoryProfiler.GetSnapshot("Pre MainWindow show");
@@ -907,6 +894,8 @@ public partial class App : AppBase, IAppHost
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
             GetService<ITaskBarIconService>().ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。", clickedCallback:() => uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update")));
         }
+        
+        base.OnFrameworkInitializationCompleted();
     }
 
     private ISpeechService GetSpeechService(IServiceProvider provider)
@@ -990,93 +979,21 @@ public partial class App : AppBase, IAppHost
         }
     }
 
-    private void OverrideFocusVisualStyle()
-    {
-        var overwriteList = new List<string>()
-        {
-            "MaterialDesignRaisedButton",
-            "MaterialDesignFlatButton",
-            "MaterialDesignFloatingActionMiniButton",
-            "MaterialDesignPaperButton",
-            "MaterialDesignCheckBox",
-            "MaterialDesignUserForegroundCheckBox",
-            "MaterialDesignComboBoxItemStyle",
-            "MaterialDesignDataGridComboBoxItemStyle",
-            "MaterialDesignDataGridComboBox",
-            "MaterialDesignCardsListBoxItem",
-            "MaterialDesignRadioButton",
-            "MaterialDesignUserForegroundRadioButton",
-            "MaterialDesignTabRadioButton",
-            "MaterialDesignScrollBarButton",
-            "MaterialDesignSnackbarActionButton",
-            "MaterialDesignFilledUniformTabControl",
-            "MaterialDesignSwitchToggleButton",
-            "MaterialDesignSwitchAccentToggleButton"
-        };
-        var v = Resources[SystemParameters.FocusVisualStyleKey];
-        foreach (var k in overwriteList)
-        {
-            var style = (Style?)TryFindResource(k);
-            if (style == null) continue;
-            Setter? targetSetter =
-                DependencyPropertyHelper.FindSetter(style.Setters, FrameworkElement.FocusVisualStyleProperty);
-            Setter? templateSetter = DependencyPropertyHelper.FindSetter(style.Setters, Control.TemplateProperty);
-
-            if (targetSetter != null)
-            {
-                typeof(Setter).GetField("_value", BindingFlags.NonPublic | BindingFlags.Instance)
-                    ?.SetValue(targetSetter, v);
-            }
-
-            if (templateSetter != null)
-            {
-                var template = (ControlTemplate)templateSetter.Value;
-                foreach (var trigger in template.Triggers)
-                {
-                    if (trigger is not Trigger tt)
-                    {
-                        continue;
-                    }
-
-                    var target =
-                        DependencyPropertyHelper.FindSetter(tt.Setters, FrameworkElement.FocusVisualStyleProperty);
-                    if (target != null)
-                    {
-                        typeof(Setter).GetField("_value", BindingFlags.NonPublic | BindingFlags.Instance)
-                            ?.SetValue(target, v);
-                    }
-                }
-            }
-        }
-    }
-
-    private void BindingDiagnosticsOnBindingFailed(object? sender, BindingFailedEventArgs e)
-    {
-        if (e.EventType == TraceEventType.Verbose)
-        {
-            Logger?.LogTrace($"{e.Message}");
-        }
-        else
-        {
-            Logger?.LogWarning($"{e.Message}");
-        }
-    }
-
     public static void ReleaseLock()
     {
-        var app = (App)Application.Current;
+        var app = (App)Application.Current!;
         app.Mutex?.ReleaseMutex();
     }
 
     public override void Stop()
     {
-        if (CurrentLifetime == ApplicationLifetime.Stopping)
+        if (CurrentLifetime == ClassIsland.Core.Enums.ApplicationLifetime.Stopping)
         {
             return;
         }
-        Dispatcher.Invoke(async () =>
+        Dispatcher.UIThread.Invoke(async () =>
         {
-            CurrentLifetime = ApplicationLifetime.Stopping;
+            CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Stopping;
             Logger?.LogInformation("正在停止应用");
             if (IAppHost.TryGetService<IManagementService>() is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
             {
@@ -1088,15 +1005,7 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
-            Current.Shutdown();
-            if (AsyncBox.RelatedAsyncDispatchers.TryGetValue(Dispatcher, out var asyncDispatcherAwaiter))
-            {
-                var asyncDispatcher = await asyncDispatcherAwaiter;
-                if (!asyncDispatcher.HasShutdownStarted)
-                {
-                    asyncDispatcher.InvokeShutdown();
-                }
-            }
+            Dispatcher.UIThread.InvokeShutdown();
             try
             {
                 //ReleaseLock();

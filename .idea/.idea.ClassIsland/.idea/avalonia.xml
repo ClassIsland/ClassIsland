@@ -3,8 +3,10 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="ClassIsland/App.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/AppNew.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Assets/Fonts/Fonts.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
       </map>
     </option>
   </component>

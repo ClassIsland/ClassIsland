@@ -1,5 +1,8 @@
 <Project>
     <ItemGroup>
         <PackageReference Include="HotAvalonia" Version="3.0.0" PrivateAssets="All" Publish="True" />
+        
+        <AvaloniaResource Remove="**\*.xaml"/>
+        <AvaloniaXaml Remove="*.xaml"/>
     </ItemGroup>
 </Project>

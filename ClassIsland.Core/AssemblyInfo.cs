@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Markup;
+using Avalonia.Metadata;
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located
@@ -13,15 +13,15 @@ using System.Windows.Markup;
 [assembly: InternalsVisibleTo("ClassIsland")]
 
 [assembly: XmlnsPrefix("http://classisland.tech/schemas/xaml/core", "ci")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Converters", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.CommonDialog", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.LessonsControls", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.IconControl", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.NavHyperlink", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.Ruleset", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Commands", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Controls", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.StickerControl", AssemblyName = "ClassIsland.Core")]
-[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Views", AssemblyName = "ClassIsland.Core")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Converters")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.CommonDialog")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.LessonsControls")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.IconControl")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.NavHyperlink")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.Ruleset")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Commands")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Controls")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.StickerControl")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Views")]
