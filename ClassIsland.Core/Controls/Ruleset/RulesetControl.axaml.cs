@@ -4,16 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
-
-
-
-
-
-
-
+using System.Windows.Input;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Shared.Helpers;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ClassIsland.Core.Controls.Ruleset;
 
@@ -22,43 +20,22 @@ namespace ClassIsland.Core.Controls.Ruleset;
 /// </summary>
 public partial class RulesetControl : UserControl
 {
-    /// <summary>
-    /// 添加规则命令。
-    /// </summary>
-    public static readonly ICommand AddRuleCommand = new RoutedUICommand();
-
-    /// <summary>
-    /// 删除规则命令。
-    /// </summary>
-    public static readonly ICommand RemoveRuleCommand = new RoutedUICommand();
-
-    /// <summary>
-    /// 添加规则组命令。
-    /// </summary>
-    public static readonly ICommand RemoveGroupCommand = new RoutedUICommand();
-
-    /// <summary>
-    /// 复制规则组命令。
-    /// </summary>
-    public static readonly ICommand DuplicateGroupCommand = new RoutedUICommand();
-
-
-    public static readonly DependencyProperty RulesetProperty = DependencyProperty.Register(
-        nameof(Ruleset), typeof(Models.Ruleset.Ruleset), typeof(RulesetControl), new PropertyMetadata(default(Models.Ruleset.Ruleset)));
-
+    public static readonly StyledProperty<Models.Ruleset.Ruleset> RulesetProperty = AvaloniaProperty.Register<RulesetControl, Models.Ruleset.Ruleset>(
+        nameof(Ruleset));
+    
     public Models.Ruleset.Ruleset Ruleset
     {
-        get { return (Models.Ruleset.Ruleset)GetValue(RulesetProperty); }
-        set { SetValue(RulesetProperty, value); }
+        get => GetValue(RulesetProperty);
+        set => SetValue(RulesetProperty, value);
     }
 
-    public static readonly DependencyProperty ShowTitleProperty = DependencyProperty.Register(
-        nameof(ShowTitle), typeof(bool), typeof(RulesetControl), new PropertyMetadata(true));
-
+    public static readonly StyledProperty<bool> ShowTitleProperty = AvaloniaProperty.Register<RulesetControl, bool>(
+        nameof(ShowTitle));
+    
     public bool ShowTitle
     {
-        get { return (bool)GetValue(ShowTitleProperty); }
-        set { SetValue(ShowTitleProperty, value); }
+        get => GetValue(ShowTitleProperty);
+        set => SetValue(ShowTitleProperty, value);
     }
 
     /// <inheritdoc />
@@ -72,64 +49,31 @@ public partial class RulesetControl : UserControl
         Ruleset.Groups.Add(new RuleGroup());
     }
 
-    private void CommandAddRule_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    [RelayCommand]
+    private void AddRule(RuleGroup group)
     {
-        if (e.Parameter is not RuleGroup group)
-        {
-            return;
-        }
         group.Rules.Add(new Rule());
     }
 
-    private void CommandRemoveRuleCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    [RelayCommand]
+    private void RemoveRule(Rule rule)
     {
-        if (e.Parameter is not Rule rule)
-        {
-            return;
-        }
-
         foreach (var group in Ruleset.Groups)
         {
             group.Rules.Remove(rule);
         }
     }
 
-    private void CommandRemoveGroupCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    [RelayCommand]
+    private void RemoveGroup(RuleGroup group)
     {
-        if (e.Parameter is not RuleGroup group)
-        {
-            return;
-        }
-
         Ruleset.Groups.Remove(group);
     }
 
-    private void CommandDuplicateGroup_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    [RelayCommand]
+    private void DuplicateGroup(RuleGroup group)
     {
-        if (e.Parameter is not RuleGroup group)
-        {
-            return;
-        }
-
         Ruleset.Groups.Add(ConfigureFileHelper.CopyObject(group));
     }
-
-    private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
-    {
-        if (!e.Handled)
-        {
-            // ListView拦截鼠标滚轮事件
-            e.Handled = true;
-
-            // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
-            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
-            eventArg.Source = sender;
-            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
-            if (parent != null)
-            {
-                parent.RaiseEvent(eventArg);
-            }
-        }
-    }
+    
 }

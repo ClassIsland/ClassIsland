@@ -4,14 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
-
-
-
-
-
-
-
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Reactive;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Action;
@@ -23,40 +18,30 @@ namespace ClassIsland.Core.Controls.Action;
 /// </summary>
 public partial class TriggerSettingsControlPresenter : UserControl
 {
-    public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
-        nameof(Settings), typeof(TriggerSettings), typeof(TriggerSettingsControlPresenter), new PropertyMetadata(default(TriggerSettings),
-            (o, args) =>
-            {
-                if (o is TriggerSettingsControlPresenter control)
-                {
-                    control.UpdateContent();
-                }
-            }));
+    public static readonly StyledProperty<TriggerSettings?> SettingsProperty = AvaloniaProperty.Register<TriggerSettingsControlPresenter, TriggerSettings?>(
+        nameof(Settings));
 
     public TriggerSettings? Settings
     {
-        get { return (TriggerSettings)GetValue(SettingsProperty); }
-        set { SetValue(SettingsProperty, value); }
+        get => GetValue(SettingsProperty);
+        set => SetValue(SettingsProperty, value);
     }
 
-    public static readonly DependencyProperty IdProperty = DependencyProperty.Register(
-        nameof(Id), typeof(string), typeof(TriggerSettingsControlPresenter), new PropertyMetadata("", (o, args) =>
-        {
-            if (o is TriggerSettingsControlPresenter control)
-            {
-                control.UpdateContent();
-            }
-        }));
+    public static readonly StyledProperty<string?> IdProperty = AvaloniaProperty.Register<TriggerSettingsControlPresenter, string?>(
+        nameof(Id));
 
     public string? Id
     {
-        get { return (string)GetValue(IdProperty); }
-        set { SetValue(IdProperty, value); }
+        get => GetValue(IdProperty);
+        set => SetValue(IdProperty, value);
     }
 
     public TriggerSettingsControlPresenter()
     {
         InitializeComponent();
+
+        this.GetObservable(IdProperty).Subscribe(new AnonymousObserver<string?>(_ => UpdateContent()));
+        this.GetObservable(SettingsProperty).Subscribe(new AnonymousObserver<TriggerSettings?>(_ => UpdateContent()));
     }
 
     private void UpdateContent()

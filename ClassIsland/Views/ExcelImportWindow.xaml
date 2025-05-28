@@ -688,7 +688,7 @@
                                              ItemsSource="{Binding ViewModel.ClassRecognitionRange}">
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem"
-                                                   BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                                                   BasedOn="{StaticResource MaterialListBoxItem}">
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                         </Style>
                                     </ListBox.ItemContainerStyle>
@@ -710,7 +710,7 @@
                                              ItemsSource="{Binding ViewModel.ClassRecognitionTimePoints}">
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem"
-                                                   BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                                                   BasedOn="{StaticResource MaterialListBoxItem}">
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                         </Style>
                                     </ListBox.ItemContainerStyle>

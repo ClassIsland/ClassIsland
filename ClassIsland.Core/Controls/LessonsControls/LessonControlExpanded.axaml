@@ -7,8 +7,47 @@
              xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
              xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Classes.ChangedClass="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource Self}}"
+             Classes.HighlightChangedClass="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}"
+             Classes.ExtraInfo4ShowSeconds="{Binding ExtraInfo4ShowSeconds, RelativeSource={RelativeSource Self}}">
+    <Interaction.Behaviors>
+        <DataTriggerBehavior Binding="{Binding CurrentTimeLayoutItem.TimeType, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}"
+                             Value="1">
+            <AddClassAction ClassName="Breaking"/>
+        </DataTriggerBehavior>
+    </Interaction.Behaviors>
+    <local:LessonControlBase.Styles>
+        <Style Selector="local|LessonControlBase.ChangedClass.HighlightChangedClass > TextBlock#Text">
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="3"
+                                      OffsetX="0" OffsetY="0"
+                                      Color="#FF0" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style Selector="local|LessonControlBase.Breaking > TextBlock#Text">
+            <Setter Property="Text" Value="{Binding CurrentTimeLayoutItem.BreakNameText, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
+        </Style>
+        
+        <Style Selector="local|LessonControlBase:not(.Breaking) > TextBlock#Text">
+            <Setter Property="Text" Value="{Binding CurrentSubject.Name, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
+        </Style>
+        
+        <Style Selector="TabControl#DetailedInfoTabControl">
+            <Setter Property="SelectedIndex" Value="{Binding SettingsSource.ExtraInfoType, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}" />
+        </Style>
+        <Style Selector="local|LessonControlExpanded[IsLiveUpdatingEnabled=False] > TabControl#DetailedInfoTabControl">
+            <Setter Property="SelectedIndex" Value="0" />
+        </Style>
+        <Style Selector="local|LessonControlExpanded.ExtraInfo4ShowSeconds > TabControl#DetailedInfoTabControl">
+            <Setter Property="SelectedIndex" Value="5" />
+        </Style>
+    </local:LessonControlBase.Styles>
     <local:LessonControlBase.Resources>
         <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
         <converters:SecondsToFormatTimeConverter x:Key="SecondsToFormatTimeConverter" />
@@ -16,88 +55,44 @@
         <converters:SecondsToFormatTimeMultiConverter x:Key="SecondsToFormatTimeMultiConverter" />
         <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
         <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
-        <converters:BooleanToVisibilityReConverter x:Key="InverseBooleanToVisConverter" />
     </local:LessonControlBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControlExpanded}}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-            <Border Width="16">
-                <Border.LayoutTransform>
+            <LayoutTransformControl>
+                <LayoutTransformControl.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
-                </Border.LayoutTransform>
-            </Border>
+                </LayoutTransformControl.LayoutTransform>
+                <Border Width="16"/>
+            </LayoutTransformControl>
 
             <ContentPresenter>
-                <ContentPresenter.Style>
-                    <Style TargetType="ContentPresenter">
-                        <Setter Property="Content">
-                            <Setter.Value>
-                                <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}">
-                                    <Binding Path="Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}"/>
-                                    <Binding Path="ClassInfo.SubjectId" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}"/>
-                                </MultiBinding>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ContentPresenter.Style>
+                <ContentPresenter.Content>
+                    <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}">
+                        <Binding Path="Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}"/>
+                        <Binding Path="ClassInfo.SubjectId" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}"/>
+                    </MultiBinding>
+                </ContentPresenter.Content>
                 <ContentPresenter.ContentTemplate>
                     <DataTemplate DataType="{x:Type profile:Subject}">
                         <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
-                                   FontWeight="Bold">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentTimeLayoutItem.TimeType, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}"
-                                                     Value="1">
-                                            <Setter Property="Text" Value="{Binding CurrentTimeLayoutItem.BreakNameText, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
-                                        </DataTrigger>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}"
-                                                           Value="True" />
-                                                <Condition Binding="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}"
-                                                           Value="True" />
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="Effect" Value="{DynamicResource LuminousClass}"/>
-                                        </MultiDataTrigger>
-                                    </Style.Triggers>
-                                    <Setter Property="Text" Value="{Binding Name}"/>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                                   FontWeight="Bold"/>
                     </DataTemplate>
                 </ContentPresenter.ContentTemplate>
             </ContentPresenter>
             
             <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
                 <TabControl SelectedIndex="{Binding MasterTabIndex}" Margin="6 0 0 0"
-                            Visibility="{Binding SettingsSource.ShowExtraInfoOnTimePoint, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            IsVisible="{Binding SettingsSource.ShowExtraInfoOnTimePoint}">
                     <TabControl.Resources>
-                        <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </Style>
                     </TabControl.Resources>
                     <TabItem>
-                        <TabControl VerticalAlignment="Bottom" FontSize="{DynamicResource MainWindowSecondaryFontSize}">
-                            <TabControl.Style>
-                                <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsLiveUpdatingEnabled, Mode=OneWay}" Value="False">
-                                            <Setter Property="SelectedIndex" Value="0" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ExtraInfo4ShowSeconds, Mode=OneWay}" Value="True">
-                                            <Setter Property="SelectedIndex" Value="5" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    <Setter Property="SelectedIndex"
-                                            Value="{Binding SettingsSource.ExtraInfoType, Mode=OneWay}" />
-                                </Style>
-                            </TabControl.Style>
+                        <TabControl VerticalAlignment="Bottom" FontSize="{DynamicResource MainWindowSecondaryFontSize}"
+                                    x:Name="DetailedInfoTabControl">
                             <TabItem>
                                 <TextBlock VerticalAlignment="Bottom">
                                     <Run
                                         Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
                                     </Run><Run Text="-">
-
                                     </Run><Run
                                               Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}" />
                                 </TextBlock>
@@ -152,13 +147,13 @@
                     <TabItem>
                         <Grid VerticalAlignment="Bottom">
                             <Border Background="{DynamicResource PrimaryHueMidBrush}"
-                                    Height="{Binding ActualHeight, ElementName=BorderStroke}"
+                                    Height="{Binding Bounds.Height, ElementName=BorderStroke}"
                                     ClipToBounds="True"
                                     BorderThickness="1"
                                     Padding="8 0"
                                     Opacity="0.3"
                                     VerticalAlignment="Bottom"
-                                    CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
+                                    CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                             </Border>
                             <Border ClipToBounds="True"
                                     BorderBrush="{DynamicResource PrimaryHueMidBrush}"
@@ -166,17 +161,17 @@
                                     Padding="8 0"
                                     x:Name="BorderStroke"
                                     VerticalAlignment="Bottom"
-                                    CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
+                                    CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                                 <Grid>
                                     <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center"
-                                               Visibility="{Binding SettingsSource.IsNonExactCountdownEnabled, Converter={StaticResource InverseBooleanToVisConverter}}">
+                                               IsVisible="{Binding SettingsSource.IsNonExactCountdownEnabled}">
                                         <Run Text="-">
                                         </Run><Run Text="{Binding LeftSeconds,
                                                    Converter={StaticResource SecondsToFormatTimeConverter},
                                                    ConverterParameter={StaticResource TrueValue}}"/>
                                     </TextBlock>
                                     <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center"
-                                               Visibility="{Binding SettingsSource.IsNonExactCountdownEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                               IsVisible="{Binding SettingsSource.IsNonExactCountdownEnabled}">
                                         <Run Text="&lt;">
                                         </Run><Run Text="{Binding SettingsSource.CountdownSeconds, Mode=OneWay, Converter={StaticResource SecondsToFormatTimeConverterCeiling}}"/>
                                     </TextBlock>
@@ -188,21 +183,15 @@
 
             </StackPanel>
 
-            <Border Width="16">
-                <Border.LayoutTransform>
+            <LayoutTransformControl>
+                <LayoutTransformControl.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
-                </Border.LayoutTransform>
-            </Border>
+                </LayoutTransformControl.LayoutTransform>
+                <Border Width="16"/>
+            </LayoutTransformControl>
         </StackPanel>
         <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                 materialDesign:TransitionAssist.DisableTransitions="True">
-            <ProgressBar.Style>
-                <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
-                    <Setter Property="Value" Value="{Binding Seconds}"/>
-                    <Setter Property="Maximum" Value="{Binding TotalSeconds}"/>
-                </Style>
-            </ProgressBar.Style>
-        </ProgressBar>
+                     Value="{Binding Seconds}" Maximum="{Binding TotalSeconds}"/>
         <!--<TextBlock Text="{Binding Index}" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>-->
     </Grid>
 </local:LessonControlBase>

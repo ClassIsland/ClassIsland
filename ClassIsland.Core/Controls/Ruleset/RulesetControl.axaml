@@ -9,120 +9,92 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
              xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:assists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.CommandBindings>
-        <CommandBinding Command="{x:Static local:RulesetControl.AddRuleCommand}" Executed="CommandAddRule_OnExecuted"/>
-        <CommandBinding Command="{x:Static local:RulesetControl.RemoveRuleCommand}" Executed="CommandRemoveRuleCommand_OnExecuted"/>
-        <CommandBinding Command="{x:Static local:RulesetControl.RemoveGroupCommand}" Executed="CommandRemoveGroupCommand_OnExecuted"/>
-        <CommandBinding Command="{x:Static local:RulesetControl.DuplicateGroupCommand}" Executed="CommandDuplicateGroup_OnExecuted"/>
-    </UserControl.CommandBindings>
+    <UserControl.Styles>
+        <Style Selector="local|RulesetControl[ShowTitle=True] > Grid#GridRulesetControlRoot">
+            <Setter Property="Margin" Value="16"/>
+        </Style>
+    </UserControl.Styles>
     <UserControl.Resources>
         <converters:RuleLogicalModeToIntConverter x:Key="RuleLogicalModeToIntConverter" />
-
-        <Style TargetType="Ellipse" x:Key="RuleObjectStateIndicatorStyle">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding State, Mode=OneWay}" Value="2">
-                    <Setter Property="Fill" Value="Green"/>
-                    <Setter Property="ToolTip" Value="已满足"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding State, Mode=OneWay}" Value="1">
-                    <Setter Property="Fill" Value="IndianRed"/>
-                    <Setter Property="ToolTip" Value="不满足"/>
-                </DataTrigger>
-            </Style.Triggers>
-            <Setter Property="Fill" Value="DarkGray"/>
-            <Setter Property="ToolTip" Value="未知"/>
-        </Style>
+        <!-- TODO: 实现规则集状态显示 -->
+        <!-- <Style TargetType="Ellipse" x:Key="RuleObjectStateIndicatorStyle"> -->
+        <!--     <Style.Triggers> -->
+        <!--         <DataTrigger Binding="{Binding State, Mode=OneWay}" Value="2"> -->
+        <!--             <Setter Property="Fill" Value="Green"/> -->
+        <!--             <Setter Property="ToolTip" Value="已满足"/> -->
+        <!--         </DataTrigger> -->
+        <!--         <DataTrigger Binding="{Binding State, Mode=OneWay}" Value="1"> -->
+        <!--             <Setter Property="Fill" Value="IndianRed"/> -->
+        <!--             <Setter Property="ToolTip" Value="不满足"/> -->
+        <!--         </DataTrigger> -->
+        <!--     </Style.Triggers> -->
+        <!--     <Setter Property="Fill" Value="DarkGray"/> -->
+        <!--     <Setter Property="ToolTip" Value="未知"/> -->
+        <!-- </Style> -->
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RulesetControl}}"
-          MinWidth="450">
-        <Grid.Style>
-            <Style TargetType="Grid">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding ShowTitle}" Value="True">
-                        <Setter Property="Margin" Value="16"></Setter>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
+          MinWidth="450"
+          x:Name="GridRulesetControlRoot" RowDefinitions="Auto,*">
         <StackPanel Grid.Row="0">
-            <TextBlock Text="规则集" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                           Margin="0 0 0 8" Visibility="{Binding ShowTitle, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <TextBlock Text="规则集" Classes="Headline5"
+                           Margin="0 0 0 8" IsVisible="{Binding ShowTitle}"/>
             <WrapPanel Orientation="Horizontal">
                 <ComboBox SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          materialDesign:HintAssist.Hint="模式">
+                          assists:TextFieldAssist.Label="模式">
                     <ComboBoxItem>
-                        <controls:IconText Kind="SelectMultiple" Text="当以下任意条件组满足时"/>
+                        <avalonia:MaterialIconText Kind="SelectMultiple" Text="当以下任意条件组满足时"/>
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <controls:IconText Kind="SelectGroup" Text="当以下所有条件组满足时"/>
+                        <avalonia:MaterialIconText Kind="SelectGroup" Text="当以下所有条件组满足时"/>
                     </ComboBoxItem>
                 </ComboBox>
                 <CheckBox Content="反转" IsChecked="{Binding Ruleset.IsReversed}"/>
-                <Button Style="{StaticResource MaterialFlatButton}"
+                <Button Theme="{StaticResource MaterialFlatButton}"
+                        Classes="primary"
                         Click="ButtonAddRule_OnClick">
-                    <controls:IconText Kind="Add" Text="添加组"/>
+                    <avalonia:MaterialIconText Kind="Add" Text="添加组"/>
                 </Button>
                 <Ellipse Grid.Column="1" Width="8" Height="8" 
                          Margin="4 0 4 0"
                          DataContext="{Binding Ruleset}"
-                         Style="{StaticResource RuleObjectStateIndicatorStyle}"/>
+                         Classes="rule-state-indicator"/>
             </WrapPanel>
             
         </StackPanel>
         <!-- Main list box -->
-        <ListBox Grid.Row="1" ItemsSource="{Binding Ruleset.Groups}"
-                 HorizontalContentAlignment="Stretch"
-                 materialDesign:ListBoxItemAssist.ShowSelection="False"
-                 dd:DragDrop.IsDragSource="True"
-                 dd:DragDrop.IsDropTarget="True"
-                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}">
-            <dd:DragDrop.EffectMoveAdornerTemplate>
-                <DataTemplate>
-                    <materialDesign:ColorZone Mode="PrimaryMid" Height="24" CornerRadius="12">
-                        <controls:IconText Kind="ArrowUpDown" Text="移动"
-                                           Margin="4 0"
-                                           IconMargin="2"
-                                           TextElement.FontWeight="Medium"
-                                           VerticalAlignment="Center"/>
-                    </materialDesign:ColorZone>
-                </DataTemplate>
-            </dd:DragDrop.EffectMoveAdornerTemplate>
+        <ListBox Grid.Row="1" ItemsSource="{Binding Ruleset.Groups}">
+            <Interaction.Behaviors>
+                <ItemDragBehavior/>
+            </Interaction.Behaviors>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Background="{DynamicResource MaterialDesignToolBarBackground}"
                             Padding="8"
                             CornerRadius="2"
                             Margin="-4">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
+                        <Grid RowDefinitions="Auto,*">
                             <WrapPanel Grid.Row="0" Orientation="Horizontal"
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Center">
                                 <ComboBox SelectedIndex="{Binding Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
-                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                          materialDesign:HintAssist.Hint="模式">
+                                          assists:TextFieldAssist.Label="模式">
                                     <ComboBoxItem>
-                                        <controls:IconText Kind="SelectMultiple" Text="当以下任意条件满足时"/>
+                                        <avalonia:MaterialIconText Kind="SelectMultiple" Text="当以下任意条件满足时"/>
                                     </ComboBoxItem>
                                     <ComboBoxItem>
-                                        <controls:IconText Kind="SelectGroup" Text="当以下所有条件满足时"/>
+                                        <avalonia:MaterialIconText Kind="SelectGroup" Text="当以下所有条件满足时"/>
                                     </ComboBoxItem>
                                 </ComboBox>
                                 <CheckBox Content="反转" IsChecked="{Binding IsReversed}"/>
-                                <Button Style="{StaticResource MaterialFlatButton}"
-                                        Command="{x:Static local:RulesetControl.AddRuleCommand}"
+                                <Button Theme="{StaticResource MaterialFlatButton}"
+                                        Classes="primary"
+                                        Command="{Binding AddRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                         CommandParameter="{Binding}">
-                                    <controls:IconText Kind="Add" Text="规则"/>
+                                    <avalonia:MaterialIconText Kind="Add" Text="规则"/>
                                 </Button>
                             </WrapPanel>
 
@@ -130,69 +102,54 @@
                                         HorizontalAlignment="Right">
                                 <Ellipse Width="8" Height="8" 
                                          Margin="0 0 4 0"
-                                         Style="{StaticResource RuleObjectStateIndicatorStyle}"/>
+                                         Classes="rule-state-indicator"/>
                                 <ToggleButton ToolTip.Tip="启用规则集"
                                               IsChecked="{Binding IsEnabled}"
                                               Margin="0 0 4 0"/>
-                                <Button Content="{materialDesign:PackIcon ContentDuplicate}"
-                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                <Button Content="{avalonia:MaterialIconExt ContentDuplicate}"
+                                        Theme="{StaticResource MaterialFlatButton}"
+                                        Classes="circle"
                                         ToolTip.Tip="复制"
-                                        Command="{x:Static local:RulesetControl.DuplicateGroupCommand}"
+                                        Command="{Binding DuplicateGroupCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                         CommandParameter="{Binding}"
                                         Margin="0 0 4 0"
                                 />
-                                <Button Content="{materialDesign:PackIcon Remove}"
-                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                        Command="{x:Static local:RulesetControl.RemoveGroupCommand}"
+                                <Button Content="{avalonia:MaterialIconExt Remove}"
+                                        Theme="{StaticResource MaterialFlatButton}"
+                                        Classes="circle"
+                                        Command="{Binding RemoveGroupCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                         CommandParameter="{Binding}"
                                         ToolTip.Tip="删除"
                                 />
                             </StackPanel>
 
-                            <ItemsControl Grid.Row="1" ItemsSource="{Binding Rules}"
-                                          dd:DragDrop.IsDragSource="True"
-                                          dd:DragDrop.IsDropTarget="True"
-                                          dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}">
-                                <dd:DragDrop.EffectMoveAdornerTemplate>
-                                    <DataTemplate>
-                                        <materialDesign:ColorZone Mode="PrimaryMid" Height="24" CornerRadius="12">
-                                            <controls:IconText Kind="ArrowUpDown" Text="移动"
-                                                               Margin="4 0"
-                                                               IconMargin="2"
-                                                               TextElement.FontWeight="Medium"
-                                                               VerticalAlignment="Center"/>
-                                        </materialDesign:ColorZone>
-                                    </DataTemplate>
-                                </dd:DragDrop.EffectMoveAdornerTemplate>
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding Rules}">
+                                <Interaction.Behaviors>
+                                    <ItemDragBehavior/>
+                                </Interaction.Behaviors>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Margin="0 2">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="2*" />
-                                                <ColumnDefinition Width="3*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" Content="{materialDesign:PackIcon Remove}"
-                                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        <Grid Margin="0 2" ColumnDefinitions="Auto,Auto,Auto,2*,3*">
+                                            <Button Grid.Column="0" Content="{avalonia:MaterialIconExt Remove}"
+                                                    Theme="{StaticResource MaterialFlatButton}"
+                                                    Classes="circle"
                                                     ToolTip.Tip="删除"
-                                                    Command="{x:Static local:RulesetControl.RemoveRuleCommand}"
+                                                    Command="{Binding RemoveRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                                     CommandParameter="{Binding}"
-                                                    />
+                                            />
                                             <Ellipse Grid.Column="1" Width="8" Height="8" 
                                                      Margin="0 0 4 0"
-                                                     Style="{StaticResource RuleObjectStateIndicatorStyle}"/>
+                                                     Classes="rule-state-indicator"/>
                                             <CheckBox Grid.Column="2"
                                                       Content="反转" IsChecked="{Binding IsReversed}" />
                                             <ComboBox Grid.Column="3"
                                                       SelectedValue="{Binding Id}"
-                                                      SelectedValuePath="Key"
+                                                      SelectedValueBinding="{Binding Key}"
                                                       ItemsSource="{x:Static services:IRulesetService.Rules}">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <controls:IconText Kind="{Binding Value.IconKind}"
-                                                                           Text="{Binding Value.Name}" />
+                                                        <avalonia:MaterialIconText Kind="{Binding Value.IconKind}"
+                                                                                   Text="{Binding Value.Name}" />
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>
                                             </ComboBox>

@@ -1,6 +1,5 @@
 using System.Globalization;
-using System.Windows.Data;
-
+using Avalonia.Data.Converters;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
@@ -10,14 +9,14 @@ namespace ClassIsland.Core.Controls.LessonsControls;
 public class ClassInfoMultiConverter : IMultiValueConverter
 {
     /// <inheritdoc />
-    public object? Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
         // 输入参数：
         // [0]: TimeLayoutItem            SelectedItem
         // [1]: int                       SelectedIndex
         // [2]: ObservableDictionary<...> Subjects
         // [3]: ClassPlan                 ClassPlan
-        if (values.Length < 4)
+        if (values.Count < 4)
         {
             return null;
         }
@@ -52,6 +51,6 @@ public class ClassInfoMultiConverter : IMultiValueConverter
     /// <inheritdoc />
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
-        return Array.Empty<object>();
+        return [];
     }
 }

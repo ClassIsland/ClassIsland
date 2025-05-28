@@ -1,8 +1,9 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:core="clr-namespace:ClassIsland.Core">
+                    xmlns:core="clr-namespace:ClassIsland.Core"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core">
     <ControlTemplate x:Key="DevelopmentBuildAdornerControlTemplate"
-                     TargetType="Control">
+                     TargetType="ci:DevelopmentBuildAdorner">
         <Grid VerticalAlignment="Stretch"
               IsHitTestVisible="False"
               HorizontalAlignment="Stretch">
@@ -13,7 +14,7 @@
                        HorizontalAlignment="Left"
                        FontSize="12"
                        Opacity="0.8"
-                       Visibility="{Binding IsDevelopmentBuild, Converter={StaticResource BooleanToVisibilityConverter}}">
+                       IsVisible="{Binding IsDevelopmentBuild, RelativeSource={RelativeSource TemplatedParent}}">
                 <Run Text="开发中画面，不代表最终品质。"/><LineBreak/>
                 <Run Text="{x:Static core:AppBase.AppVersionLong}"/>
             </TextBlock>
@@ -23,7 +24,7 @@
                        FontSize="12"
                        Foreground="{DynamicResource PrimaryHueMidBrush}"
                        FontFamily="JetBrains Mono, Consolas,  黑体"
-                       Visibility="{Binding ShowOssWatermark, Converter={StaticResource BooleanToVisibilityConverter}}">
+                       IsVisible="{Binding ShowOssWatermark, RelativeSource={RelativeSource TemplatedParent}}">
                 <Run Text="https://www.classisland.tech"/>
             </TextBlock>
         </Grid>

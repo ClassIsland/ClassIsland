@@ -1,5 +1,7 @@
 using System.Windows;
-
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Reactive;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Ruleset;
@@ -11,40 +13,31 @@ namespace ClassIsland.Core.Controls.Ruleset;
 /// </summary>
 public partial class RulesetSettingsControlPresenter : UserControl
 {
-    public static readonly DependencyProperty RuleIdProperty = DependencyProperty.Register(
-        nameof(RuleId), typeof(string), typeof(RulesetSettingsControlPresenter), new PropertyMetadata(default(string), (o, args) =>
-        {
-            if (o is RulesetSettingsControlPresenter control)
-            {
-                control.UpdateContent();
-            }
-        }));
+    public static readonly StyledProperty<string> RuleIdProperty = AvaloniaProperty.Register<RulesetSettingsControlPresenter, string>(
+        nameof(RuleId));
 
     public string RuleId
     {
-        get { return (string)GetValue(RuleIdProperty); }
-        set { SetValue(RuleIdProperty, value); }
+        get => GetValue(RuleIdProperty);
+        set => SetValue(RuleIdProperty, value);
     }
 
-    public static readonly DependencyProperty RuleProperty = DependencyProperty.Register(
-        nameof(Rule), typeof(Rule), typeof(RulesetSettingsControlPresenter), new PropertyMetadata(default(Rule), (o, args) =>
-        {
-            if (o is RulesetSettingsControlPresenter control)
-            {
-                control.UpdateContent();
-            }
-        }));
+    public static readonly StyledProperty<Rule?> RuleProperty = AvaloniaProperty.Register<RulesetSettingsControlPresenter, Rule?>(
+        nameof(Rule));
 
     public Rule? Rule
     {
-        get { return (Rule)GetValue(RuleProperty); }
-        set { SetValue(RuleProperty, value); }
+        get => GetValue(RuleProperty);
+        set => SetValue(RuleProperty, value);
     }
 
     /// <inheritdoc />
     public RulesetSettingsControlPresenter()
     {
         InitializeComponent();
+        
+        this.GetObservable(RuleIdProperty).Subscribe(new AnonymousObserver<string>(_ => UpdateContent()));
+        this.GetObservable(RuleProperty).Subscribe(new AnonymousObserver<Rule?>(_ => UpdateContent()));
     }
 
     private void UpdateContent()

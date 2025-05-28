@@ -6,32 +6,15 @@
           xmlns:local="clr-namespace:ClassIsland.Core.Controls.CommonDialog"
           xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
           xmlns:commonDialog="clr-namespace:ClassIsland.Core.Controls.CommonDialog"
+          xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
           mc:Ignorable="d"
           d:DataContext="{d:DesignInstance local:CommonDialog}"
-          TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-          Background="{DynamicResource MaterialDesignPaper}"
-          TextElement.FontWeight="Regular"
-          TextElement.FontSize="14"
-          FontFamily="{StaticResource HarmonyOsSans}"
           Title="ClassIsland"
           SizeToContent="Height"
-          ResizeMode="NoResize"
+          CanResize="False"
           WindowStartupLocation="CenterScreen"
           MinHeight="200" Width="640">
-    <controls:MyWindow.CommandBindings>
-        <CommandBinding Command="{x:Static commonDialog:CommonDialog.ActionCommand}"
-                        Executed="CommandBinding_OnExecuted"/>
-    </controls:MyWindow.CommandBindings>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="5"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+    <Grid RowDefinitions="*,5,Auto" ColumnDefinitions="Auto,*">
 
         <!-- Content -->
         <ContentPresenter Grid.Column="0" Grid.Row="0"
@@ -49,7 +32,8 @@
                            Text="{Binding DialogContent, Mode=OneWay}"/>
                 <TextBox Text="{Binding InputResult}" 
                          Margin="0 8 0 0"
-                         Visibility="{Binding HasInput, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                         Classes="dense"
+                         IsVisible="{Binding HasInput}"/>
             </StackPanel>
         </ScrollViewer>
         <!-- Sep -->
@@ -70,12 +54,11 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Button IsDefault="{Binding IsPrimary}" 
-                            Command="{x:Static commonDialog:CommonDialog.ActionCommand}"
+                            Command="{Binding PerformActionCommand, RelativeSource={RelativeSource AncestorType=local:CommonDialog}}"
                             CommandParameter="{Binding}"
-                            Style="{StaticResource MaterialFlatButton}"
-                            FocusVisualStyle="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"
+                            Theme="{StaticResource MaterialFlatButton}" Classes="primary"
                             Margin="4 0 0 0">
-                        <controls:IconText Kind="{Binding PackIconKind}"
+                        <avalonia:MaterialIconText Kind="{Binding PackIconKind}"
                                         Text="{Binding Name}"/>
                     </Button>
 

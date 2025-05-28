@@ -7,47 +7,39 @@
                    xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
                    mc:Ignorable="d" 
-                   d:DesignHeight="450" d:DesignWidth="800">
+                   d:DesignHeight="450" d:DesignWidth="800"
+                   Classes.ChangedClass="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource Self}}"
+                   Classes.HighlightChangedClass="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}">
+    <local:LessonControlBase.Styles>
+        <Style Selector="local|LessonControlBase.ChangedClass.HighlightChangedClass > TextBlock#Text">
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="3"
+                                      OffsetX="0" OffsetY="0"
+                                      Color="#FF0" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </local:LessonControlBase.Styles>
     <local:LessonControlBase.Resources>
         <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
     </local:LessonControlBase.Resources>
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}"
                 Orientation="Horizontal">
-
-        <Border Width="10">
-            <Border.LayoutTransform>
+        
+        <LayoutTransformControl>
+            <LayoutTransformControl.LayoutTransform>
                 <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
-            </Border.LayoutTransform>
-        </Border>
+            </LayoutTransformControl.LayoutTransform>
+            <Border Width="10"/>
+        </LayoutTransformControl>
 
         <ContentPresenter>
             <ContentPresenter.ContentTemplate>
                 <DataTemplate DataType="{x:Type profile:Subject}">
                     <Grid>
                         <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" x:Name="Text"
-                               Text="{Binding Initial}">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Style.Triggers>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}"
-                                                           Value="True" />
-                                                <Condition Binding="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}"
-                                                           Value="True" />
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="Effect">
-                                                <Setter.Value>
-                                                    <DropShadowEffect BlurRadius="3"
-                                                                      ShadowDepth="0"
-                                                                      Color="#FF0" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </MultiDataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                               Text="{Binding Initial}"/>
                     </Grid>
                 </DataTemplate>
             </ContentPresenter.ContentTemplate>
@@ -59,11 +51,12 @@
             </ContentPresenter.Content>
         </ContentPresenter>
 
-        <Border Width="10">
-            <Border.LayoutTransform>
+        <LayoutTransformControl>
+            <LayoutTransformControl.LayoutTransform>
                 <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
-            </Border.LayoutTransform>
-        </Border>
+            </LayoutTransformControl.LayoutTransform>
+            <Border Width="10"/>
+        </LayoutTransformControl>
 
     </StackPanel>
 </local:LessonControlBase>

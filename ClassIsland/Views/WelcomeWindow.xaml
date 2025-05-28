@@ -122,7 +122,7 @@
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem"
-                                               BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                                               BasedOn="{StaticResource MaterialListBoxItem}">
                                             <Setter Property="Padding" Value="0" />
                                             <Setter Property="IsTabStop" Value="False" />
                                         </Style>

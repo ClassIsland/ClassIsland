@@ -3,34 +3,34 @@
                     xmlns:lessonsControls="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
                     xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime">
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-    </ResourceDictionary.MergedDictionaries>
 
-    <Style TargetType="{x:Type lessonsControls:LessonsListBox}"
-           BasedOn="{StaticResource MaterialDesignListBox}"
+    <ControlTheme TargetType="{x:Type lessonsControls:LessonsListBox}"
+           BasedOn="{StaticResource MaterialListBox}"
            x:Key="ClassIsland.LessonsListBox">
-        <Style.Resources>
+        <ControlTheme.Resources>
             <lessonsControls:ClassInfoMultiConverter x:Key="ClassInfoMultiConverter"/>
             <lessonsControls:LessonsListBoxItemTemplateMultiConverter
                 x:Key="LessonsListBoxItemTemplateMultiConverter">
                 <lessonsControls:LessonsListBoxItemTemplateMultiConverter.SeparatorDataTemplate>
                     <DataTemplate DataType="{x:Type lessonsControls:LessonsListBox}">
                         <StackPanel Orientation="Horizontal">
-                            <Border Width="10">
-                                <Border.LayoutTransform>
-                                    <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}, Mode=OneWay}"/>
-                                </Border.LayoutTransform>
-                            </Border>
+                            <LayoutTransformControl>
+                                <LayoutTransformControl.LayoutTransform>
+                                    <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                                </LayoutTransformControl.LayoutTransform>
+                                <Border Width="10"/>
+                            </LayoutTransformControl>
 
                             <Line VerticalAlignment="Center" Stroke="{DynamicResource MaterialDesignBody}" StrokeThickness="2"
-                                  HorizontalAlignment="Center" X1="0" X2="0" Y1="0" Y2="25" Opacity="0.8"/>
+                                  HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" Opacity="0.8">
+                            </Line>
 
-                            <Border Width="10">
-                                <Border.LayoutTransform>
-                                    <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}, Mode=OneWay}"/>
-                                </Border.LayoutTransform>
-                            </Border>
+                            <LayoutTransformControl>
+                                <LayoutTransformControl.LayoutTransform>
+                                    <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                                </LayoutTransformControl.LayoutTransform>
+                                <Border Width="10"/>
+                            </LayoutTransformControl>
                         </StackPanel>
                     </DataTemplate>
                 </lessonsControls:LessonsListBoxItemTemplateMultiConverter.SeparatorDataTemplate>
@@ -69,12 +69,10 @@
                     </DataTemplate>
                 </lessonsControls:LessonsListBoxItemTemplateMultiConverter.MinimizedDataTemplate>
             </lessonsControls:LessonsListBoxItemTemplateMultiConverter>
-        </Style.Resources>
+        </ControlTheme.Resources>
         <Setter Property="Height" Value="40"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ItemsSource" Value="{Binding ClassPlan.TimeLayout.Layouts, RelativeSource={RelativeSource Self}, Mode=OneWay}"/>
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
-        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
@@ -106,16 +104,16 @@
                 </DataTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="ItemContainerStyle">
+        <Setter Property="ItemContainerTheme">
             <Setter.Value>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="MaxHeight" Value="40"/>
-                </Style>
+                </ControlTheme>
             </Setter.Value>
         </Setter>
-    </Style>
+    </ControlTheme>
 
-    <Style TargetType="lessonsControls:LessonsListBox"
-           BasedOn="{StaticResource ClassIsland.LessonsListBox}"/>
+    <ControlTheme TargetType="lessonsControls:LessonsListBox"
+                  BasedOn="{StaticResource ClassIsland.LessonsListBox}"/>
 </ResourceDictionary>

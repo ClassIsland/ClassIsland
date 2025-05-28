@@ -1,18 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-
-
-
-
-
-
-
-
-
+using Avalonia.Animation;
+using Avalonia.Controls;
+using Avalonia.Data.Core;
+using Avalonia.Interactivity;
+using Avalonia.Rendering.Composition;
+using Avalonia.Styling;
 using ClassIsland.Core.Models.Notification.Templates;
 
 namespace ClassIsland.Core.Controls.NotificationTemplates;
@@ -35,19 +26,27 @@ public partial class RollingTextTemplate : UserControl
 
     private void RollingTextTemplate_OnLoaded(object sender, RoutedEventArgs e)
     {
-        var da = new DoubleAnimation()
+        var anim = new Animation()
         {
-            From = -Description.ActualWidth,
-            To = RootCanvas.ActualWidth,
             Duration = Data.Duration / Math.Min(Data.RepeatCount, 1),
+            IterationCount = IterationCount.Infinite
         };
-        var storyboard = new Storyboard()
+        anim.Children.Add(new KeyFrame()
         {
-        };
-        Storyboard.SetTarget(da, Description);
-        Storyboard.SetTargetProperty(da, new PropertyPath(Canvas.RightProperty));
-        storyboard.Children.Add(da);
-        storyboard.RepeatBehavior = RepeatBehavior.Forever;
-        storyboard.Begin();
+            Cue = new Cue(0),
+            Setters =
+            {
+                new Setter(Canvas.RightProperty, -Description.Bounds.Width)
+            }
+        });
+        anim.Children.Add(new KeyFrame()
+        {
+            Cue = new Cue(1),
+            Setters =
+            {
+                new Setter(Canvas.RightProperty, RootCanvas.Bounds.Width)
+            }
+        });
+        anim.RunAsync(RootCanvas);
     }
 }

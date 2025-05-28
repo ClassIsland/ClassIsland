@@ -8,26 +8,15 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TriggerSettingsControl}}">
         <ItemsControl ItemsSource="{Binding Triggers}"
-                      HorizontalContentAlignment="Stretch"
-                      dd:DragDrop.IsDragSource="True"
-                      dd:DragDrop.IsDropTarget="True"
-                      dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
                       HorizontalAlignment="Stretch">
-            <dd:DragDrop.EffectMoveAdornerTemplate>
-                <DataTemplate>
-                    <materialDesign:ColorZone Mode="PrimaryMid" Height="24" CornerRadius="12">
-                        <controls:IconText Kind="ArrowUpDown" Text="调整触发器顺序"
-                                     Margin="4 0"
-                                     IconMargin="2"
-                                     TextElement.FontWeight="Medium"
-                                     VerticalAlignment="Center"/>
-                    </materialDesign:ColorZone>
-                </DataTemplate>
-            </dd:DragDrop.EffectMoveAdornerTemplate>
+            <Interaction.Behaviors>
+                <ItemDragBehavior />
+            </Interaction.Behaviors>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border HorizontalAlignment="Stretch"
@@ -38,28 +27,24 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Button Grid.Column="0"
-                                    Content="{materialDesign:PackIcon Remove}"
-                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                    Content="{avalonia:MaterialIcon Remove}"
+                                    Theme="{StaticResource MaterialFlatButton}"
+                                    Classes="circle"
                                     ToolTip.Tip="删除"
                                     Command="{Binding RemoveTriggerCommand, RelativeSource={RelativeSource AncestorType=local:TriggerSettingsControl}}"
                                     CommandParameter="{Binding}"
                                     Margin="0 0 2 0"
-                                    Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:TriggerSettingsControl}}"/>
-                            <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
+                                    IsVisible="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:TriggerSettingsControl}}"/>
+                            <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1"
+                                  ColumnDefinitions="Auto,*,Auto,Auto">
                                 <ComboBox SelectedValue="{Binding Id}"
-                                          SelectedValuePath="Id"
+                                          SelectedValueBinding="{Binding Id}"
                                           ItemsSource="{x:Static services:IAutomationService.RegisteredTriggers}"
                                           MinWidth="100">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
-                                            <controls:IconText Kind="{Binding IconKind}"
-                                                               Text="{Binding Name}"/>
+                                            <avalonia:MaterialIconText Kind="{Binding IconKind}"
+                                                                       Text="{Binding Name}"/>
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
@@ -73,11 +58,11 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Button Style="{StaticResource MaterialFlatButton}"
+        <Button Theme="{StaticResource MaterialFlatButton}" Classes="primary"
                 Click="ButtonAddTrigger_OnClick"
                 HorizontalAlignment="Left">
-            <controls:IconText Kind="Plus"
-                               Text="添加触发器" />
+            <avalonia:MaterialIconText Kind="Plus"
+                                       Text="添加触发器" />
         </Button>
     </StackPanel>
 </UserControl>

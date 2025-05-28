@@ -115,7 +115,7 @@
                     <ListBox Grid.Row="2"
                              ItemsSource="{Binding ViewModel.Nodes}">
                         <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate>

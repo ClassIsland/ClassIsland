@@ -1,18 +1,17 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-
-
-
-
-
+using System.Windows.Input;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+using Avalonia;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Shared;
+using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
 
 namespace ClassIsland.Core.Controls.CommonDialog;
 
@@ -27,8 +26,6 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
     private int _executedActionIndex = -1;
     private bool _hasInput = false;
     private string _inputResult = "";
-
-    public static ICommand ActionCommand { get; } = new RoutedCommand();
 
     public string DialogContent
     {
@@ -106,19 +103,6 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
 
     private static bool IsEasterEggDisabled => IAppHost.TryGetService<IManagementService>()?.Policy.DisableEasterEggs == true;
 
-    protected override void OnContentRendered(EventArgs e)
-    {
-        base.OnContentRendered(e);
-        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
-        //NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE,
-        //    NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE) & ~NativeWindowHelper.WS_SYSMENU);
-        PInvoke.SetWindowLong(hWnd,
-            WINDOW_LONG_PTR_INDEX.GWL_STYLE,
-            PInvoke.GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE) | NativeWindowHelper.WS_EX_DLGMODALFRAME );
-        PInvoke.SetWindowPos(hWnd, default , 0, 0, 0, 0,
-            SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED);
-    }
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -133,64 +117,25 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
         OnPropertyChanged(propertyName);
         return true;
     }
-
-    private void CommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    
+    [RelayCommand]
+    private void PerformAction(DialogAction action)
     {
-        ExecutedActionIndex = Actions.IndexOf((DialogAction)e.Parameter);
+        ExecutedActionIndex = Actions.IndexOf(action);
         Close();
     }
 
-    public void ShowDialog(out string inputResult)
-    {
-        ShowDialog();
-        inputResult = InputResult;
-        return;
-    }
 
-
-    public static int ShowError(string message) =>
+    public static Task<int> ShowError(string message) =>
         new CommonDialogBuilder().SetContent(message).SetIconKind(CommonDialogIconKind.Forbidden).AddConfirmAction()
             .ShowDialog();
 
-    public static int ShowInfo(string message) =>
+    public static Task<int> ShowInfo(string message) =>
         new CommonDialogBuilder().SetContent(message).SetIconKind(CommonDialogIconKind.Information).AddConfirmAction()
             .ShowDialog();
 
-    public static int ShowHint(string message) =>
+    public static Task<int> ShowHint(string message) =>
         new CommonDialogBuilder().SetContent(message).SetIconKind(CommonDialogIconKind.Hint).AddConfirmAction()
             .ShowDialog();
-
-    public static int ShowDialog(string caption, string message, BitmapImage icon, double iconWidth, double iconHeight, ObservableCollection<DialogAction> dialogActions)
-    {
-        var dialog = new CommonDialog()
-        {
-            DialogContent = message,
-            DialogIcon = new Image()
-            {
-                Source = icon,
-                Width = iconWidth,
-                Height = iconHeight
-            },
-            Actions = dialogActions,
-            Title = caption
-        };
-        dialog.ShowDialog();
-        return dialog.ExecutedActionIndex;
-    }
-
-    public static int ShowDialog(string caption, string message, BitmapImage icon, double iconWidth,
-        double iconHeight) => ShowDialog(
-        caption, message, icon, iconWidth, iconHeight, new ObservableCollection<DialogAction>()
-        {
-            new()
-            {
-                MaterialIconKind = MaterialIconKind.Check,
-                Name = "确定",
-                IsPrimary = true
-            }
-        }
-    );
-
-    public static int ShowDialog(string message, BitmapImage icon, double iconWidth,
-        double iconHeight) => ShowDialog("ClassIsland", message, icon, iconWidth, iconHeight);
+    
 }

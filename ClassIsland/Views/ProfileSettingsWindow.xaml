@@ -1627,7 +1627,7 @@
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemContainerStyle>
-                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                                                 <Setter Property="Padding" Value="0"/>
                                             </Style>
                                         </ListBox.ItemContainerStyle>
@@ -2476,7 +2476,7 @@
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemContainerStyle>
-                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                                             <Setter Property="Padding" Value="0"/>
                                         </Style>
                                     </ListBox.ItemContainerStyle>
@@ -2642,7 +2642,7 @@
                                     </ItemsPanelTemplate>
                                 </ListBox.ItemsPanel>
                                 <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                                         <Setter Property="Padding" Value="0"/>
                                     </Style>
                                 </ListBox.ItemContainerStyle>

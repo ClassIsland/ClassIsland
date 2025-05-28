@@ -106,7 +106,7 @@
             </Setter>
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
-                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                         <Setter Property="ContextMenu" Value="{StaticResource ComponentOperationContextMenu}"/>
                     </Style>
                 </Setter.Value>
@@ -310,7 +310,7 @@
                             </DataTemplate>
                         </dd:DragDrop.EffectCopyAdornerTemplate>
                         <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                                 
                             </Style>
                         </ListBox.ItemContainerStyle>
@@ -482,7 +482,7 @@
                                                 <Grid>
                                                     <ListBox SelectedIndex="{Binding HorizontalAlignment, Converter={StaticResource HorizontalAlignmentToIntConverter}}">
                                                         <ListBox.ItemContainerStyle>
-                                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                                                                 <Style.Triggers>
                                                                     <Trigger Property="IsSelected" Value="True">
                                                                         <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>

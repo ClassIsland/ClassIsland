@@ -81,7 +81,7 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
                 <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                         <Setter Property="Padding" Value="0 0" />
                     </Style>
                 </ListBox.ItemContainerStyle>
@@ -154,7 +154,7 @@
                      materialDesign:ListBoxItemAssist.ShowSelection="False"
                      VerticalContentAlignment="Stretch">
             <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="Margin" Value="2"/>
                     <Setter Property="Template">

@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Documents;
+using Avalonia.Controls;
 using ClassIsland.Core.Commands;
 
 namespace ClassIsland.Core.Controls.NavHyperlink;
@@ -7,7 +8,7 @@ namespace ClassIsland.Core.Controls.NavHyperlink;
 /// <summary>
 /// 可调用应用 Uri 导航的 <see cref="Hyperlink"/>
 /// </summary>
-public class NavHyperlink : Hyperlink
+public class NavHyperlink : HyperlinkButton
 {
     public static readonly DependencyProperty NavigateTargetProperty = DependencyProperty.Register(
         nameof(NavigateTarget), typeof(string), typeof(NavHyperlink), new PropertyMetadata(default(Uri), (o, args) =>

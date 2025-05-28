@@ -1,51 +1,23 @@
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Material.Icons;
 
 namespace ClassIsland.Core.Controls.CommonDialog;
 
-public class DialogAction : DependencyObject
+public partial class DialogAction : ObservableObject
 {
-    public static readonly DependencyProperty NameProperty = DependencyProperty.Register(
-        nameof(Name), typeof(string), typeof(DialogAction), new PropertyMetadata(default(string)));
-
-    public string Name
-    {
-        get { return (string)GetValue(NameProperty); }
-        set { SetValue(NameProperty, value); }
-    }
-
-    public static readonly DependencyProperty UseCustomIconProperty = DependencyProperty.Register(
-        nameof(UseCustomIcon), typeof(bool), typeof(DialogAction), new PropertyMetadata(default(bool)));
-
-    public bool UseCustomIcon
-    {
-        get { return (bool)GetValue(UseCustomIconProperty); }
-        set { SetValue(UseCustomIconProperty, value); }
-    }
-
-    public static readonly DependencyProperty MaterialIconKindProperty = DependencyProperty.Register(
-        nameof(MaterialIconKind), typeof(MaterialIconKind), typeof(DialogAction), new PropertyMetadata(default(MaterialIconKind)));
-
-    public MaterialIconKind MaterialIconKind
-    {
-        get { return (MaterialIconKind)GetValue(MaterialIconKindProperty); }
-        set { SetValue(MaterialIconKindProperty, value); }
-    }
-
-    public static readonly DependencyProperty CustomIconProperty = DependencyProperty.Register(
-        nameof(CustomIcon), typeof(object), typeof(DialogAction), new PropertyMetadata(default(object)));
-
-    public object CustomIcon
-    {
-        get { return (object)GetValue(CustomIconProperty); }
-        set { SetValue(CustomIconProperty, value); }
-    }
-
-    public static readonly DependencyProperty IsPrimaryProperty = DependencyProperty.Register(
-        nameof(IsPrimary), typeof(bool), typeof(DialogAction), new PropertyMetadata(default(bool)));
-
-    public bool IsPrimary
-    {
-        get { return (bool)GetValue(IsPrimaryProperty); }
-        set { SetValue(IsPrimaryProperty, value); }
-    }
+    /// <summary>
+    /// 操作名称
+    /// </summary>
+    [ObservableProperty] private string _name = "";
+    
+    /// <summary>
+    /// 图标类型
+    /// </summary>
+    [ObservableProperty] private MaterialIconKind _materialIconKind = MaterialIconKind.Abacus;
+    
+    /// <summary>
+    /// 是否是主要操作
+    /// </summary>
+    [ObservableProperty] private bool _isPrimary = false;
 }

@@ -1,17 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-
-
-
-
-
-
-
-
+using Avalonia;
 using ClassIsland.Shared.Abstraction.Models;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
@@ -27,12 +14,12 @@ public partial class LessonControlMinimized : LessonControlBase
         InitializeComponent();
     }
 
-    public static readonly DependencyProperty DefaultLessonControlSettingsProperty = DependencyProperty.Register(
-        nameof(DefaultLessonControlSettings), typeof(ILessonControlSettings), typeof(LessonControlMinimized), new PropertyMetadata(default(ILessonControlSettings)));
-
+    public static readonly StyledProperty<ILessonControlSettings> DefaultLessonControlSettingsProperty = AvaloniaProperty.Register<LessonControlMinimized, ILessonControlSettings>(
+        nameof(DefaultLessonControlSettings));
+    
     public ILessonControlSettings DefaultLessonControlSettings
     {
-        get { return (ILessonControlSettings)GetValue(DefaultLessonControlSettingsProperty); }
-        set { SetValue(DefaultLessonControlSettingsProperty, value); }
+        get => GetValue(DefaultLessonControlSettingsProperty);
+        set => SetValue(DefaultLessonControlSettingsProperty, value);
     }
 }

@@ -5,14 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
-
-
-
-
-
-
-
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Models.Action;
 using CommunityToolkit.Mvvm.Input;
 
@@ -23,13 +18,13 @@ namespace ClassIsland.Core.Controls.Action;
 /// </summary>
 public partial class TriggerSettingsControl : UserControl
 {
-    public static readonly DependencyProperty TriggersProperty = DependencyProperty.Register(
-        nameof(Triggers), typeof(ObservableCollection<TriggerSettings>), typeof(TriggerSettingsControl), new PropertyMetadata(new ObservableCollection<TriggerSettings>()));
+    public static readonly StyledProperty<ObservableCollection<TriggerSettings>> TriggersProperty = AvaloniaProperty.Register<TriggerSettingsControl, ObservableCollection<TriggerSettings>>(
+        nameof(Triggers));
 
     public ObservableCollection<TriggerSettings> Triggers
     {
-        get { return (ObservableCollection<TriggerSettings>)GetValue(TriggersProperty); }
-        set { SetValue(TriggersProperty, value); }
+        get => GetValue(TriggersProperty);
+        set => SetValue(TriggersProperty, value);
     }
 
     public TriggerSettingsControl()

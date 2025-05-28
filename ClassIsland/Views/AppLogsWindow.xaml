@@ -80,7 +80,7 @@
                             x:Name="MainListView"
                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <controls1:AutoScrollListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialFlatListBoxItem}">
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialListBoxItem}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding LogLevel}" Value="Trace">
                             <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>

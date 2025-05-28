@@ -2,10 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:iconControl="clr-namespace:ClassIsland.Core.Controls.IconControl"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-    </ResourceDictionary.MergedDictionaries>
-    <Style TargetType="{x:Type iconControl:IconControl}" x:Key="IconControlBaseStyle">
+    <ControlTheme TargetType="{x:Type iconControl:IconControl}" x:Key="IconControlBaseStyle">
         <Style.Triggers>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -52,7 +49,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </ControlTheme>
 
-    <Style TargetType="{x:Type iconControl:IconControl}" BasedOn="{StaticResource IconControlBaseStyle}"/>
+    <ControlTheme TargetType="{x:Type iconControl:IconControl}" BasedOn="{StaticResource IconControlBaseStyle}"/>
 </ResourceDictionary>

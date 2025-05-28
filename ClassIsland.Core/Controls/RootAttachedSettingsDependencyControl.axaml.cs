@@ -7,14 +7,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
-
-
-
-
-
-
-
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Reactive;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
@@ -29,32 +25,25 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public partial class RootAttachedSettingsDependencyControl : UserControl, INotifyPropertyChanged
 {
-    public static readonly DependencyProperty ControlInfoProperty = DependencyProperty.Register(
-        nameof(ControlInfo), typeof(AttachedSettingsControlInfo), typeof(RootAttachedSettingsDependencyControl), new PropertyMetadata(default(AttachedSettingsControlInfo),
-            (o, args) =>
-            {
-                if (o is RootAttachedSettingsDependencyControl control)
-                {
-                    control.Update();
-                }
-            }));
+    public static readonly StyledProperty<AttachedSettingsControlInfo?> ControlInfoProperty = AvaloniaProperty.Register<RootAttachedSettingsDependencyControl, AttachedSettingsControlInfo?>(
+        nameof(ControlInfo));
 
     public AttachedSettingsControlInfo? ControlInfo
     {
-        get { return (AttachedSettingsControlInfo)GetValue(ControlInfoProperty); }
-        set { SetValue(ControlInfoProperty, value); }
+        get => GetValue(ControlInfoProperty);
+        set => SetValue(ControlInfoProperty, value);
     }
 
-    public static readonly DependencyProperty IsDrawerModeProperty = DependencyProperty.Register(
-        nameof(IsDrawerMode), typeof(bool), typeof(RootAttachedSettingsDependencyControl), new PropertyMetadata(default(bool)));
-
-    private ObservableCollection<AttachableObjectNode> _nodes = new();
+    public static readonly StyledProperty<bool> IsDrawerModeProperty = AvaloniaProperty.Register<RootAttachedSettingsDependencyControl, bool>(
+        nameof(IsDrawerMode));
 
     public bool IsDrawerMode
     {
-        get { return (bool)GetValue(IsDrawerModeProperty); }
-        set { SetValue(IsDrawerModeProperty, value); }
+        get => GetValue(IsDrawerModeProperty);
+        set => SetValue(IsDrawerModeProperty, value);
     }
+
+    private ObservableCollection<AttachableObjectNode> _nodes = new();
 
     public ObservableCollection<AttachableObjectNode> Nodes
     {
@@ -73,6 +62,9 @@ public partial class RootAttachedSettingsDependencyControl : UserControl, INotif
     public RootAttachedSettingsDependencyControl()
     {
         InitializeComponent();
+
+        this.GetObservable(ControlInfoProperty)
+            .Subscribe(new AnonymousObserver<AttachedSettingsControlInfo?>(_ => Update()));
     }
 
     public RootAttachedSettingsDependencyControl(AttachedSettingsControlInfo controlInfo, bool isDrawerMode=false) : this()

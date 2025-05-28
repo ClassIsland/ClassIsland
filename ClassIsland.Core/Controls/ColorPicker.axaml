@@ -35,25 +35,25 @@
                                      Grid.Column="1"
                                      assists:TextFieldAssist.Label="HEX"
                                      KeyDown="UIElement_OnKeyDown"
-                                     UseFloatingWatermark="True"
+                                     UseFloatingWatermark="True" Classes="dense"
                                      Text="{Binding Color, ElementName=Picker, UpdateSourceTrigger=LostFocus}" />
                             <TextBox Margin="2,0,3,2"
                                      Padding="6"
                                      Grid.Column="2"
                                      assists:TextFieldAssist.Label="R"
-                                     UseFloatingWatermark="True"
+                                     UseFloatingWatermark="True" Classes="dense"
                                      Text="{Binding Color.R, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Margin="2,0,3,2"
                                      Padding="6"
                                      Grid.Column="3"
                                      assists:TextFieldAssist.Label="G"
-                                     UseFloatingWatermark="True"
+                                     UseFloatingWatermark="True" Classes="dense"
                                      Text="{Binding Color.G, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBox Margin="2,0,0,2"
                                      Padding="6"
                                      Grid.Column="4"
                                      assists:TextFieldAssist.Label="B"
-                                     UseFloatingWatermark="True"
+                                     UseFloatingWatermark="True" Classes="dense"
                                      Text="{Binding Color.B, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
                         </Grid>
                     </Grid>

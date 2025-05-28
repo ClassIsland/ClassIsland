@@ -1,15 +1,12 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.Graphics.Dwm;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
-using Adorner = System.Windows.Forms.Design.Behavior.Adorner;
 
 namespace ClassIsland.Core.Controls;
 
@@ -49,10 +46,12 @@ public class MyWindow : Window
     {
         UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
 
-        if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark)&& Content is UIElement element && !_isAdornerAdded)
+        if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark)&& Content is Control element && !_isAdornerAdded)
         {
             var layer = AdornerLayer.GetAdornerLayer(element);
-            layer?.Add(new DevelopmentBuildAdorner(element, AppBase.Current.IsDevelopmentBuild, ShowOssWatermark));
+            var adorner = new DevelopmentBuildAdorner(AppBase.Current.IsDevelopmentBuild, ShowOssWatermark);
+            layer?.Children.Add(adorner);
+            AdornerLayer.SetAdornedElement(adorner, this);
             _isAdornerAdded = true;
         }
     }
@@ -62,18 +61,19 @@ public class MyWindow : Window
         UpdateImmersiveDarkMode(e.RealThemeMode);
     }
 
-    protected override void OnContentRendered(EventArgs e)
+    /// <inheritdoc />
+    public override void Show()
     {
-        base.OnContentRendered(e);
         UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
         Debug.WriteLine("rendered.");
+        base.Show();
     }
 
     private unsafe void UpdateImmersiveDarkMode(int mode)
     {
         var trueVal = 0x01;
         var falseVal = 0x00;
-        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+        var hWnd = (HWND)(TryGetPlatformHandle()?.Handle ?? nint.Zero);
         var build = Environment.OSVersion.Version.Build;
         if (build < 17763)
         {

@@ -6,33 +6,18 @@
              xmlns:local="clr-namespace:ClassIsland.Core.Controls.Action"
              xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
              xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
-             xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:controls1="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              FontFamily="{StaticResource HarmonyOsSans}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.CommandBindings>
-        <CommandBinding Command="{x:Static local:ActionControl.RemoveActionCommand}" Executed="CommandRemoveAction_OnExecuted"/>
-    </UserControl.CommandBindings>
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ActionControl}}">
         <ItemsControl ItemsSource="{Binding ActionSet.Actions}"
-                      HorizontalContentAlignment="Stretch"
-                      dd:DragDrop.IsDragSource="True"
-                      dd:DragDrop.IsDropTarget="True"
-                      dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
                       HorizontalAlignment="Stretch">
-            <dd:DragDrop.EffectMoveAdornerTemplate>
-                <DataTemplate>
-                    <materialDesign:ColorZone Mode="PrimaryMid" Height="24" CornerRadius="12">
-                        <controls:IconText Kind="ArrowUpDown" Text="调整行动顺序"
-                                     Margin="4 0"
-                                     IconMargin="2"
-                                     TextElement.FontWeight="Medium"
-                                     VerticalAlignment="Center"/>
-                    </materialDesign:ColorZone>
-                </DataTemplate>
-            </dd:DragDrop.EffectMoveAdornerTemplate>
+            <Interaction.Behaviors>
+                <ItemDragBehavior />
+            </Interaction.Behaviors>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border HorizontalAlignment="Stretch">
@@ -42,28 +27,23 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Button Grid.Column="0"
-                                    Content="{materialDesign:PackIcon Remove}"
-                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                    Content="{avalonia:MaterialIconExt Remove}"
+                                    Theme="{StaticResource MaterialFlatButton}" Classes="circle"
                                     ToolTip.Tip="删除"
-                                    Command="{x:Static local:ActionControl.RemoveActionCommand}"
+                                    Command="{Binding RemoveActionCommand, RelativeSource={RelativeSource AncestorType=local:ActionControl}}"
                                     CommandParameter="{Binding}"
                                     Margin="0 0 2 0"
-                                    Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ActionControl}}"/>
-                            <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
+                                    IsVisible="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ActionControl}}"/>
+                            <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1"
+                                  ColumnDefinitions="Auto,*,Auto,Auto">
                                 <ComboBox SelectedValue="{Binding Id}"
-                                          SelectedValuePath="Key"
+                                          SelectedValueBinding="{Binding Key}"
                                           ItemsSource="{x:Static services:IActionService.Actions}"
                                           MinWidth="100">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
-                                            <controls:IconText Kind="{Binding Value.IconKind}"
-                                                               Text="{Binding Value.Name}"/>
+                                            <avalonia:MaterialIconText Kind="{Binding Value.IconKind}"
+                                                                       Text="{Binding Value.Name}"/>
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
@@ -73,71 +53,44 @@
                                                                       Grid.Column="1" />
                                 <ProgressBar IsIndeterminate="True"
                                              Value="0"
-                                             Grid.Column="2">
-                                    <ProgressBar.Style>
-                                        <Style TargetType="ProgressBar"
-                                               BasedOn="{StaticResource MaterialDesignCircularProgressBar}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsWorking}" Value="False">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ProgressBar.Style>
+                                             Grid.Column="2" IsVisible="{Binding IsWorking}">
                                 </ProgressBar>
-                                <materialDesign:PopupBox Grid.Column="2"
-                                                         StaysOpen="True"
-                                                         Padding="0">
-                                    <materialDesign:PopupBox.ToggleContent>
-                                        <materialDesign:PackIcon Foreground="Red"
-                                                                 Width="20"
-                                                                 Height="20"
-                                                                 VerticalAlignment="Center"
-                                                                 Kind="Alert"
-                                                                 Grid.Column="2"
-                                                                 ToolTip.Tip="上次运行此行动时出现错误，点击查看错误信息。">
-                                            <materialDesign:PackIcon.Style>
-                                                <Style TargetType="materialDesign:PackIcon">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Exception}"
-                                                                     Value="{x:Null}">
-                                                            <Setter Property="Visibility"
-                                                                    Value="Collapsed" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </materialDesign:PackIcon.Style>
-                                        </materialDesign:PackIcon>
-                                    </materialDesign:PopupBox.ToggleContent>
-                                    <StackPanel MaxWidth="650"
-                                                materialDesign:ElevationAssist.Elevation="Dp4">
-                                        <TextBlock Text="上次运行此行动时出现错误。"
-                                                   Foreground="{DynamicResource SecondaryHueMidBrush}"
-                                                   Margin="10 10 0 -6" />
-                                        <TextBox Text="{Binding Exception, Mode=OneWay}"
-                                                 TextWrapping="WrapWithOverflow"
-                                                 TextAlignment="Left"
-                                                 AcceptsReturn="True"
-                                                 materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
-                                                 IsReadOnly="True"
-                                                 IsReadOnlyCaretVisible="True"
-                                                 VerticalContentAlignment="Top"
-                                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                                 BorderThickness="0"
-                                                 Padding="10" />
-                                    </StackPanel>
-                                </materialDesign:PopupBox>
+                                
+                                <Button Grid.Column="2" Content="{avalonia:MaterialIconExt Alert}"
+                                        ToolTip.Tip="上次运行此行动时出现错误，点击查看错误信息。"
+                                        Theme="{StaticResource MaterialFlatButton}"
+                                        Classes="circle"
+                                        Foreground="Red">
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <StackPanel MaxWidth="650">
+                                                <TextBlock Text="上次运行此行动时出现错误。"
+                                                           Foreground="{DynamicResource SecondaryHueMidBrush}"
+                                                           Margin="10 10 0 -6" />
+                                                <TextBox Text="{Binding Exception, Mode=OneWay}"
+                                                         TextWrapping="WrapWithOverflow"
+                                                         TextAlignment="Left"
+                                                         AcceptsReturn="True"
+                                                         Classes="solo"
+                                                         IsReadOnly="True"
+                                                         VerticalContentAlignment="Top"
+                                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                         BorderThickness="0"
+                                                         Padding="10" />
+                                            </StackPanel>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
                             </Grid>
                         </Grid>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Button Style="{StaticResource MaterialFlatButton}"
+        <Button Theme="{StaticResource MaterialFlatButton}" Classes="primary"
                 Click="ButtonAddAction_OnClick"
                 HorizontalAlignment="Left">
-            <controls:IconText Kind="Plus"
-                               Text="添加行动" />
+            <avalonia:MaterialIconText Kind="Plus" Text="添加行动" />
         </Button>
     </StackPanel>
 </UserControl>

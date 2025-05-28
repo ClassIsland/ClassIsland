@@ -1,10 +1,12 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
-
-
-
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Documents;
+using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Reactive;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Shared;
@@ -16,95 +18,70 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 {
-    public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
-        nameof(Settings), typeof(ComponentSettings), typeof(ComponentPresenter), new PropertyMetadata(default(ComponentSettings), PropertyChangedCallback));
+    public static readonly StyledProperty<ComponentSettings?> SettingsProperty = AvaloniaProperty.Register<ComponentPresenter, ComponentSettings?>(
+        nameof(Settings));
 
-    public static readonly DependencyProperty IsPresentingSettingsProperty = DependencyProperty.Register(
-        nameof(IsPresentingSettings), typeof(bool), typeof(ComponentPresenter), new PropertyMetadata(false));
+    public static readonly StyledProperty<bool> IsPresentingSettingsProperty = AvaloniaProperty.Register<ComponentPresenter, bool>(
+        nameof(IsPresentingSettings));
 
     public bool IsPresentingSettings
     {
-        get { return (bool)GetValue(IsPresentingSettingsProperty); }
-        set { SetValue(IsPresentingSettingsProperty, value); }
+        get => GetValue(IsPresentingSettingsProperty);
+        set => SetValue(IsPresentingSettingsProperty, value);
     }
 
-    public static readonly DependencyProperty HideOnRuleProperty = DependencyProperty.Register(
-        nameof(HideOnRule), typeof(bool), typeof(ComponentPresenter), new PropertyMetadata(false, (o, args) =>
-        {
-            if (o is ComponentPresenter control)
-            {
-                control.UpdateWindowRuleState();
-            }
-        }));
+    public static readonly StyledProperty<bool> HideOnRuleProperty = AvaloniaProperty.Register<ComponentPresenter, bool>(
+        nameof(HideOnRule));
 
     public bool HideOnRule
     {
-        get { return (bool)GetValue(HideOnRuleProperty); }
-        set { SetValue(HideOnRuleProperty, value); }
+        get => GetValue(HideOnRuleProperty);
+        set => SetValue(HideOnRuleProperty, value);
     }
-
-    public static readonly DependencyProperty HidingRulesProperty = DependencyProperty.Register(
-        nameof(HidingRules), typeof(Models.Ruleset.Ruleset), typeof(ComponentPresenter), new PropertyMetadata(default(Models.Ruleset.Ruleset),
-            (o, args) =>
-            {
-                if (o is ComponentPresenter control)
-                {
-                    control.CheckHideRule();
-                }
-            }));
+    
+    public static readonly StyledProperty<Models.Ruleset.Ruleset?> HidingRulesProperty = AvaloniaProperty.Register<ComponentPresenter, Models.Ruleset.Ruleset?>(
+        nameof(HidingRules));
 
     public Models.Ruleset.Ruleset? HidingRules
     {
-        get { return (Models.Ruleset.Ruleset)GetValue(HidingRulesProperty); }
-        set { SetValue(HidingRulesProperty, value); }
+        get => GetValue(HidingRulesProperty);
+        set => SetValue(HidingRulesProperty, value);
     }
-
-    public static readonly DependencyProperty IsOnMainWindowProperty = DependencyProperty.Register(
-        nameof(IsOnMainWindow), typeof(bool), typeof(ComponentPresenter), new PropertyMetadata(default(bool),
-            (o, args) =>
-            {
-                if (o is ComponentPresenter control)
-                {
-                    control.UpdateTheme();
-                }
-            }));
+    
+    public static readonly StyledProperty<bool> IsOnMainWindowProperty = AvaloniaProperty.Register<ComponentPresenter, bool>(
+        nameof(IsOnMainWindow));
 
     public bool IsOnMainWindow
     {
-        get { return (bool)GetValue(IsOnMainWindowProperty); }
-        set { SetValue(IsOnMainWindowProperty, value); }
+        get => GetValue(IsOnMainWindowProperty);
+        set => SetValue(IsOnMainWindowProperty, value);
     }
 
-    public static readonly DependencyProperty IsRootComponentProperty = DependencyProperty.Register(
-        nameof(IsRootComponent), typeof(bool), typeof(ComponentPresenter), new PropertyMetadata(default(bool)));
+    public static readonly StyledProperty<bool> IsRootComponentProperty = AvaloniaProperty.Register<ComponentPresenter, bool>(
+        nameof(IsRootComponent));
 
     public bool IsRootComponent
     {
-        get { return (bool)GetValue(IsRootComponentProperty); }
-        set { SetValue(IsRootComponentProperty, value); }
+        get => GetValue(IsRootComponentProperty);
+        set => SetValue(IsRootComponentProperty, value);
     }
 
-    private bool _isAllComponentsHid = false;
+    private bool _isAllComponentsHid;
 
-    public static readonly RoutedEvent ComponentVisibilityChangedEvent = EventManager.RegisterRoutedEvent(
-        name: "ComponentVisibilityChanged",
-        routingStrategy: RoutingStrategy.Bubble,
-        handlerType: typeof(RoutedEventHandler),
-        ownerType: typeof(ComponentPresenter));
+    public static readonly RoutedEvent<RoutedEventArgs> ComponentVisibilityChangedEvent =
+        RoutedEvent.Register<ComponentPresenter, RoutedEventArgs>(nameof(ComponentVisibilityChanged),
+            RoutingStrategies.Bubble);
 
     // Provide CLR accessors for adding and removing an event handler.
-    public event RoutedEventHandler ComponentVisibilityChanged
+    public event EventHandler<RoutedEventArgs> ComponentVisibilityChanged
     {
         add { AddHandler(ComponentVisibilityChangedEvent, value); }
         remove { RemoveHandler(ComponentVisibilityChangedEvent, value); }
     }
 
-    private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void PropertyChangedCallback(ComponentPresenter d, AvaloniaPropertyChangedEventArgs e)
     {
-        if (d is ComponentPresenter p)
-        {
-            p.UpdateContent(e.OldValue as ComponentSettings);
-        }
+        d.UpdateContent(e.OldValue as ComponentSettings);
     }
 
     private IRulesetService RulesetService { get; } = IAppHost.GetService<IRulesetService>();
@@ -113,8 +90,8 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 
     public ComponentSettings? Settings
     {
-        get { return (ComponentSettings)GetValue(SettingsProperty); }
-        set { SetValue(SettingsProperty, value); }
+        get => GetValue(SettingsProperty);
+        set => SetValue(SettingsProperty, value);
     }
 
     private void UpdateContent(ComponentSettings? oldSettings)
@@ -139,7 +116,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         // 理论上展示的内容的数据上下文应为MainWindow，这里不便用前端xaml绑定，故在后台设置。
         if (content != null && IsOnMainWindow)
         {
-            content.DataContext = Window.GetWindow(this);
+            content.DataContext = TopLevel.GetTopLevel(this)?.DataContext;
         }
 
         PresentingContent = content;
@@ -179,7 +156,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
                          nameof(Settings.MainWindowEmphasizedFontSize), nameof(Settings.MainWindowLargeFontSize)
                      ])
             {
-                if (Resources.Contains(key))
+                if (Resources.ContainsKey(key))
                 {
                     Resources.Remove(key);
                 }
@@ -189,18 +166,18 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         if (Settings.IsCustomForegroundColorEnabled)
         {
             var brush = new SolidColorBrush(Settings.ForegroundColor);
-            SetValue(Control.ForegroundProperty, brush);
+            SetValue(ForegroundProperty, brush);
             SetValue(TextElement.ForegroundProperty, brush);
             Resources["MaterialDesignBody"] = brush;
         }
         else
         {
-            if (Resources.Contains("MaterialDesignBody"))
+            if (Resources.ContainsKey("MaterialDesignBody"))
             {
                 Resources.Remove("MaterialDesignBody");
             }
-            SetValue(Control.ForegroundProperty, DependencyProperty.UnsetValue);
-            SetValue(TextElement.ForegroundProperty, DependencyProperty.UnsetValue);
+            SetValue(ForegroundProperty, AvaloniaProperty.UnsetValue);
+            SetValue(TextElement.ForegroundProperty, AvaloniaProperty.UnsetValue);
         }
     }
 
@@ -214,10 +191,19 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    
+    static ComponentPresenter()
+    {
+        SettingsProperty.Changed.AddClassHandler<ComponentPresenter>(PropertyChangedCallback);
+    }
 
     public ComponentPresenter()
     {
         InitializeComponent();
+
+        this.GetObservable(HidingRulesProperty).Subscribe(new AnonymousObserver<Models.Ruleset.Ruleset?>(_ => UpdateWindowRuleState()));
+        this.GetObservable(IsOnMainWindowProperty).Subscribe(new AnonymousObserver<bool>(_ => UpdateTheme()));
+        this.GetObservable(HideOnRuleProperty).Subscribe(new AnonymousObserver<bool>(_ => UpdateWindowRuleState()));
     }
 
     private void UpdateWindowRuleState()
@@ -230,7 +216,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         else
         {
             RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
-            Visibility = Visibility.Visible;
+            IsVisible = true;
         }
         UpdateComponentHidState();
     }
@@ -249,11 +235,11 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         }
         if (HidingRules != null && RulesetService.IsRulesetSatisfied(HidingRules))
         {
-            Visibility = Visibility.Collapsed;
+            IsVisible = false;
         }
         else
         {
-            Visibility = Visibility.Visible;
+            IsVisible = true;
         }
     }
 
@@ -282,7 +268,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     {
         var visibleStatePrev = Settings?.IsVisible;
         _isAllComponentsHid = Settings?.Children != null && Settings.Children.FirstOrDefault(x => x.IsVisible) == null;
-        if (Settings != null) Settings.IsVisible = Visibility == Visibility.Visible && !_isAllComponentsHid;
+        if (Settings != null) Settings.IsVisible = IsVisible && !_isAllComponentsHid;
         if (Settings?.IsVisible != visibleStatePrev)
         {
             RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));

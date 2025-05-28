@@ -6,14 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
-
-
-
-
-
-
-
+using Avalonia;
+using Avalonia.Reactive;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.AttachedSettings;
 using ClassIsland.Shared;
@@ -27,13 +21,14 @@ namespace ClassIsland.Core.Controls.LessonsControls;
 /// </summary>
 public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyChanged
 {
-    public static readonly DependencyProperty IsLiveUpdatingEnabledProperty = DependencyProperty.Register(
-        nameof(IsLiveUpdatingEnabled), typeof(bool), typeof(LessonControlExpanded), new PropertyMetadata(default(bool),
-            (o, args) =>
-            {
-                var control = o as LessonControlExpanded;
-                control?.OnIsLiveUpdatePropertyChanged();
-            }));
+    public static readonly StyledProperty<bool> IsLiveUpdatingEnabledProperty = AvaloniaProperty.Register<LessonControlExpanded, bool>(
+        nameof(IsLiveUpdatingEnabled));
+
+    public bool IsLiveUpdatingEnabled
+    {
+        get => GetValue(IsLiveUpdatingEnabledProperty);
+        set => SetValue(IsLiveUpdatingEnabledProperty, value);
+    }
 
     private long _leftSeconds = 0;
     private long _totalSeconds = 0;
@@ -42,37 +37,31 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private bool _extraInfo4ShowSeconds = false;
     private ILessonControlSettings? _settingsSource;
 
-    public bool IsLiveUpdatingEnabled
-    {
-        get { return (bool)GetValue(IsLiveUpdatingEnabledProperty); }
-        set { SetValue(IsLiveUpdatingEnabledProperty, value); }
-    }
-
-    public static readonly DependencyProperty CurrentTimeLayoutItemProperty = DependencyProperty.Register(
-        nameof(CurrentTimeLayoutItem), typeof(TimeLayoutItem), typeof(LessonControlExpanded), new PropertyMetadata(new TimeLayoutItem()));
-
+    public static readonly StyledProperty<TimeLayoutItem> CurrentTimeLayoutItemProperty = AvaloniaProperty.Register<LessonControlExpanded, TimeLayoutItem>(
+        nameof(CurrentTimeLayoutItem));
     public TimeLayoutItem CurrentTimeLayoutItem
     {
-        get { return (TimeLayoutItem)GetValue(CurrentTimeLayoutItemProperty); }
-        set { SetValue(CurrentTimeLayoutItemProperty, value); }
+        get => GetValue(CurrentTimeLayoutItemProperty);
+        set => SetValue(CurrentTimeLayoutItemProperty, value);
+    
     }
 
-    public static readonly DependencyProperty DefaultLessonControlSettingsProperty = DependencyProperty.Register(
-        nameof(DefaultLessonControlSettings), typeof(ILessonControlSettings), typeof(LessonControlExpanded), new PropertyMetadata(default(ILessonControlSettings)));
-
+    public static readonly StyledProperty<ILessonControlSettings> DefaultLessonControlSettingsProperty = AvaloniaProperty.Register<LessonControlExpanded, ILessonControlSettings>(
+        nameof(DefaultLessonControlSettings));
     public ILessonControlSettings DefaultLessonControlSettings
     {
-        get { return (ILessonControlSettings)GetValue(DefaultLessonControlSettingsProperty); }
-        set { SetValue(DefaultLessonControlSettingsProperty, value); }
+        get => GetValue(DefaultLessonControlSettingsProperty);
+        set => SetValue(DefaultLessonControlSettingsProperty, value);
+    
     }
 
-    public static readonly DependencyProperty CurrentClassPlanProperty = DependencyProperty.Register(
-        nameof(CurrentClassPlan), typeof(ClassPlan), typeof(LessonControlExpanded), new PropertyMetadata(default(ClassPlan)));
-
+    public static readonly StyledProperty<ClassPlan> CurrentClassPlanProperty = AvaloniaProperty.Register<LessonControlExpanded, ClassPlan>(
+        nameof(CurrentClassPlan));
     public ClassPlan CurrentClassPlan
     {
-        get { return (ClassPlan)GetValue(CurrentClassPlanProperty); }
-        set { SetValue(CurrentClassPlanProperty, value); }
+        get => GetValue(CurrentClassPlanProperty);
+        set => SetValue(CurrentClassPlanProperty, value);
+    
     }
 
     public ILessonsService? LessonsService { get; set; }
@@ -136,6 +125,9 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     public LessonControlExpanded()
     {
         InitializeComponent();
+
+        this.GetObservable(IsLiveUpdatingEnabledProperty)
+            .Subscribe(new AnonymousObserver<bool>(_ => OnIsLiveUpdatePropertyChanged()));
     }
 
     ~LessonControlExpanded()

@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
+using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
+using Material.Icons;
 
 namespace ClassIsland.Core.Controls.IconControl;
 
@@ -19,17 +16,18 @@ namespace ClassIsland.Core.Controls.IconControl;
 /// 图标控件。用于显示位图图标或MD图标包图标，并支持在图标不可用时显示指定的默认图标。
 /// </summary>
 [TemplatePart(Name = "PART_ImageIcon", Type = typeof(Image))]
-public class IconControl : Control
+[PseudoClasses(":material-icon", ":image-icon")]
+public class IconControl : TemplatedControl
 {
     #region Props
 
-    public static readonly DependencyProperty MaterialIconKindProperty = DependencyProperty.Register(
-        nameof(MaterialIconKind), typeof(MaterialIconKind), typeof(IconControl), new PropertyMetadata(default(MaterialIconKind)));
+    public static readonly StyledProperty<MaterialIconKind> MaterialIconKindProperty = AvaloniaProperty.Register<IconControl, MaterialIconKind>(
+        nameof(MaterialIconKind));
 
     public MaterialIconKind MaterialIconKind
     {
-        get { return (MaterialIconKind)GetValue(MaterialIconKindProperty); }
-        set { SetValue(MaterialIconKindProperty, value); }
+        get => GetValue(MaterialIconKindProperty);
+        set => SetValue(MaterialIconKindProperty, value);
     }
 
     public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(
@@ -63,31 +61,31 @@ public class IconControl : Control
         set { SetValue(IconKindProperty, value); }
     }
 
-    public static readonly DependencyProperty FallbackMaterialIconKindProperty = DependencyProperty.Register(
-        nameof(FallbackMaterialIconKind), typeof(MaterialIconKind), typeof(IconControl), new PropertyMetadata(default(MaterialIconKind)));
-
+    public static readonly StyledProperty<MaterialIconKind> FallbackMaterialIconKindProperty = AvaloniaProperty.Register<IconControl, MaterialIconKind>(
+        nameof(FallbackMaterialIconKind));
     public MaterialIconKind FallbackMaterialIconKind
     {
-        get { return (MaterialIconKind)GetValue(FallbackMaterialIconKindProperty); }
-        set { SetValue(FallbackMaterialIconKindProperty, value); }
+        get => GetValue(FallbackMaterialIconKindProperty);
+        set => SetValue(FallbackMaterialIconKindProperty, value);
+    
     }
 
-    public static readonly DependencyProperty RealIconKindProperty = DependencyProperty.Register(
-        nameof(RealIconKind), typeof(IconControlIconKind), typeof(IconControl), new PropertyMetadata(IconControlIconKind.PackIcon));
-
+    public static readonly StyledProperty<IconControlIconKind> RealIconKindProperty = AvaloniaProperty.Register<IconControl, IconControlIconKind>(
+        nameof(RealIconKind));
     public IconControlIconKind RealIconKind
     {
-        get { return (IconControlIconKind)GetValue(RealIconKindProperty); }
-        set { SetValue(RealIconKindProperty, value); }
+        get => GetValue(RealIconKindProperty);
+        set => SetValue(RealIconKindProperty, value);
+    
     }
 
-    public static readonly DependencyProperty IsFallbackModeProperty = DependencyProperty.Register(
-        nameof(IsFallbackMode), typeof(bool), typeof(IconControl), new PropertyMetadata(true));
-
+    public static readonly StyledProperty<bool> IsFallbackModeProperty = AvaloniaProperty.Register<IconControl, bool>(
+        nameof(IsFallbackMode));
     public bool IsFallbackMode
     {
-        get { return (bool)GetValue(IsFallbackModeProperty); }
-        set { SetValue(IsFallbackModeProperty, value); }
+        get => GetValue(IsFallbackModeProperty);
+        set => SetValue(IsFallbackModeProperty, value);
+    
     }
 
     #endregion
@@ -129,10 +127,5 @@ public class IconControl : Control
     private void OnImageSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs args)
     {
         UpdateIconSource();
-    }
-
-    static IconControl()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(IconControl), new FrameworkPropertyMetadata(typeof(IconControl)));
     }
 }
