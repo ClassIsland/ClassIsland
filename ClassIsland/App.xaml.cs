@@ -698,6 +698,20 @@ public partial class App : AppBase, IAppHost
                 services.AddSpeechProvider<SystemSpeechService>();
                 services.AddSpeechProvider<EdgeTtsService, EdgeTtsSpeechServiceSettingsControl>();
                 services.AddSpeechProvider<GptSoVitsService, GptSovitsSpeechServiceSettingsControl>();
+                // 天气图标模板
+                var materialDesignWeatherIconTemplateDictionary = new ResourceDictionary()
+                {
+                    Source = new Uri("pack://application:,,,/ClassIsland;component/Controls/WeatherIcons/MaterialDesignWeatherIconTemplate.xaml")
+                };
+                services.AddWeatherIconTemplate("classisland.weatherIcons.materialDesign", "Material Design（默认）",
+                    (DataTemplate)materialDesignWeatherIconTemplateDictionary["MaterialDesignWeatherIconTemplate"]!);
+                var simpleTextWeatherIconTemplateDictionary = new ResourceDictionary()
+                {
+                    Source = new Uri("pack://application:,,,/ClassIsland;component/Controls/WeatherIcons/SimpleTextWeatherIconTemplate.xaml")
+                };
+                services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本",
+                    (DataTemplate)simpleTextWeatherIconTemplateDictionary["SimpleTextWeatherIconTemplate"]!);
+
                 // Plugins
                 if (!ApplicationCommand.Safe)
                 {

@@ -20,7 +20,6 @@
         <ResourceDictionary Source="/Themes/MaterialDesignYouNavigationStyles.xaml" />
         <ResourceDictionary Source="/Controls/MainWindowLine.xaml"/>
         <ResourceDictionary Source="/Controls/ScheduleCalendarControl.xaml"/>
-        <ResourceDictionary Source="/Controls/SfSymbolIcon.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="controls1:NumbericTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">

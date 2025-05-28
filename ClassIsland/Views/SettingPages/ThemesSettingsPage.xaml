@@ -44,6 +44,12 @@
                               Source="{Binding XamlThemeService.MergedThemes}"
                               Filter="ThemeSource_OnFilter"/>
         <ci:BindingProxy x:Key="DataProxy"/>
+
+        <!--<Style TargetType="Canvas">
+            <Setter Property="UseLayoutRounding" Value="True"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="RenderOptions.EdgeMode" Value="Aliased"/>
+        </Style>-->
     </ci:SettingsPageBase.Resources>
     <Grid >
         <Grid.RowDefinitions>
@@ -174,7 +180,10 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <materialDesign:Card Background="{DynamicResource MaterialDesignBackground}">
+                    <materialDesign:Card Background="{DynamicResource MaterialDesignBackground}"
+                                         SnapsToDevicePixels="True"
+                                         UseLayoutRounding="True"
+                                         RenderOptions.EdgeMode="Aliased">
                         <materialDesign:Card.Resources>
                         </materialDesign:Card.Resources>
                         <Grid Background="Transparent">
@@ -263,7 +272,9 @@
                                     <materialDesign:PopupBox Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                              Content="{materialDesign:PackIcon MoreHoriz}"
                                                              Margin="2 0"
-                                                             ToolTip="更多选项…">
+                                                             ToolTip="更多选项…"
+                                                             UseLayoutRounding="True"
+                                                             RenderOptions.EdgeMode="Aliased">
                                         <StackPanel>
                                             <MenuItem Icon="{materialDesign:PackIcon FolderOutline}" Header="打开主题文件夹…"
                                                       CommandParameter="{Binding Value}"

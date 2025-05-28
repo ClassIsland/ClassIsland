@@ -9,8 +9,10 @@
              d:DesignHeight="450">
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                 DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherRangePackIconControl}}">
-        <local:WeatherPackIconControl Code="{Binding Value.From}"/>
+        <local:WeatherPackIconControl Code="{Binding Value.From}"
+                                      Tag="From"/>
         <local:WeatherPackIconControl Code="{Binding Value.To}" 
+                                      Tag="To"
                                       Visibility="{Binding HasSecondIcon, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     </StackPanel>
 </UserControl>

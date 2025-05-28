@@ -1,3 +1,6 @@
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows;
 using ClassIsland.Core.Models.Weather;
 
 namespace ClassIsland.Core.Abstractions.Services;
@@ -5,7 +8,7 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// <summary>
 /// 天气服务。
 /// </summary>
-public interface IWeatherService
+public interface IWeatherService : INotifyPropertyChanged
 {
     /// <summary>
     /// 天气状态列表
@@ -31,4 +34,14 @@ public interface IWeatherService
     /// <param name="name">搜索字符串</param>
     /// <returns>匹配搜索的城市列表</returns>
     Task<List<City>> GetCitiesByName(string name);
+
+    /// <summary>
+    /// 当前天气图标模板
+    /// </summary>
+    DataTemplate? SelectedWeatherIconTemplate { get; }
+
+    /// <summary>
+    /// 已注册的天气图标模板列表。
+    /// </summary>
+    public static ObservableCollection<WeatherIconTemplateRegistryInfo> RegisteredTemplates { get; } = [];
 }
