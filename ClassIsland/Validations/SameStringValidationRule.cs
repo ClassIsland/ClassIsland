@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿#if false
+using System.Globalization;
 using System.Windows.Controls;
 
 namespace ClassIsland.Validations;
@@ -17,3 +18,4 @@ public class SameStringValidationRule : ValidationRule
         return s[0] == s[1] ? new ValidationResult(true, null) : new ValidationResult(false, ErrorMessage);
     }
 }
+#endif

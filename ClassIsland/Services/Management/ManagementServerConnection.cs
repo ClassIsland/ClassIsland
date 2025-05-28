@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
@@ -22,8 +22,6 @@ using CsesSharp.Models;
 using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
-
-using MahApps.Metro.Controls;
 
 using Microsoft.Extensions.Logging;
 
@@ -195,7 +193,7 @@ public class ManagementServerConnection : IManagementServerConnection
                 Logger.LogInformation("接受指令：[{}] {}", r.Type, r.Payload);
                 try
                 {
-                    Application.Current.Invoke(() =>
+                    Dispatcher.UIThread.Invoke(() =>
                     {
                         CommandReceived?.Invoke(this, new ClientCommandEventArgs()
                         {

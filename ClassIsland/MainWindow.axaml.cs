@@ -621,7 +621,7 @@ public partial class MainWindow : Window
         ViewModel.Settings.IsNotificationEffectRenderingScaleAutoSet = true;
     }
 
-    private Screen? GetSelectedScreenSafe()
+    internal Screen? GetSelectedScreenSafe()
     {
         return ViewModel.Settings.WindowDockingMonitorIndex < Screens.ScreenCount 
                && ViewModel.Settings.WindowDockingMonitorIndex >= 0

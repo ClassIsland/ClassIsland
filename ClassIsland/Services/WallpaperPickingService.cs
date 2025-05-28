@@ -1,3 +1,4 @@
+#if false
 #nullable enable
 using System;
 using System.Collections.Generic;
@@ -373,3 +374,4 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         return true;
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if false
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,3 +38,4 @@ public static class AuthorizeProviderRegistryExtensions
         return services;
     }
 }
+#endif

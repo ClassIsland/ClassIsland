@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
+using Avalonia;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Models.UriNavigation;
@@ -56,7 +58,7 @@ public class UriNavigationService : IUriNavigationService
 
     public void Navigate(Uri uri)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             if (uri.Scheme == IUriNavigationService.UriScheme)
             {
@@ -78,7 +80,7 @@ public class UriNavigationService : IUriNavigationService
     public void NavigateWrapped(Uri uri, out Exception? exception)
     {
         Exception? exc = null;
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             try
             {

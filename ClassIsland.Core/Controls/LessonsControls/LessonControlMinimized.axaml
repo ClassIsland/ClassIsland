@@ -11,7 +11,7 @@
                    Classes.ChangedClass="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource Self}}"
                    Classes.HighlightChangedClass="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}">
     <local:LessonControlBase.Styles>
-        <Style Selector="local|LessonControlBase.ChangedClass.HighlightChangedClass > TextBlock#Text">
+        <Style Selector="local|LessonControlBase.ChangedClass.HighlightChangedClass TextBlock#Text">
             <Setter Property="Effect">
                 <Setter.Value>
                     <DropShadowEffect BlurRadius="3"

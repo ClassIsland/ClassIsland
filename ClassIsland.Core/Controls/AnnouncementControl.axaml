@@ -15,42 +15,42 @@
         <Grid.Styles>
             <Style Selector="Grid#Root">
                 <Style Selector="^.Announcement">
-                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                    <Style Selector="^ materialDesign|ColorZone#Background">
                         <Setter Property="Background" Value="#175DE2E7"/>
                     </Style>
-                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                    <Style Selector="^ avalonia|MaterialIcon#Icon">
                         <Setter Property="Kind" Value="BullhornOutline"/>
                     </Style>
                 </Style>
                 <Style Selector="^.Info">
-                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                    <Style Selector="^ materialDesign|ColorZone#Background">
                         <Setter Property="Background" Value="#174169e1"/>
                     </Style>
-                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                    <Style Selector="^ avalonia|MaterialIcon#Icon">
                         <Setter Property="Kind" Value="InfoCircleOutline"/>
                     </Style>
                 </Style>
                 <Style Selector="^.Important">
-                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                    <Style Selector="^ materialDesign|ColorZone#Background">
                         <Setter Property="Background" Value="#17800080"/>
                     </Style>
-                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                    <Style Selector="^ avalonia|MaterialIcon#Icon">
                         <Setter Property="Kind" Value="MessageAlertOutline"/>
                     </Style>
                 </Style>
                 <Style Selector="^.Warning">
-                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                    <Style Selector="^ materialDesign|ColorZone#Background">
                         <Setter Property="Background" Value="#17FE9900"/>
                     </Style>
-                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                    <Style Selector="^ avalonia|MaterialIcon#Icon">
                         <Setter Property="Kind" Value="WarningOutline"/>
                     </Style>
                 </Style>
                 <Style Selector="^.Critical">
-                    <Style Selector="^ > materialDesign|ColorZone#Background">
+                    <Style Selector="^ materialDesign|ColorZone#Background">
                         <Setter Property="Background" Value="#17D20103"/>
                     </Style>
-                    <Style Selector="^ > avalonia|MaterialIcon#Icon">
+                    <Style Selector="^ avalonia|MaterialIcon#Icon">
                         <Setter Property="Kind" Value="ErrorOutline"/>
                     </Style>
                 </Style>

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows;
-using System.Windows.Media;
+using Avalonia.Media;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
@@ -95,7 +95,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private WeatherInfo _lastWeatherInfo = new();
     private string _cityId = "weathercn:101010100";
     private string _cityName = "北京 (北京, 中国)";
-    private int _mainWindowFontWeight2 = FontWeights.Medium.ToOpenTypeWeight();
+    private int _mainWindowFontWeight2 = (int)FontWeight.Medium;
     private int _taskBarIconClickBehavior = 0;
     private bool _showExtraInfoOnTimePoint = true;
     private int _extraInfoType = 0;

@@ -1,12 +1,13 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using ClassIsland.Core.Models;
 using ClassIsland.Shared;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using Avalonia;
+using Avalonia.Platform;
 using Timer = System.Threading.Timer;
 
 namespace ClassIsland.Core.Helpers.Native;
@@ -46,10 +47,6 @@ public static class NativeWindowHelper
 
     public static bool IsForegroundFullScreen(Screen screen)
     {
-        if (screen == null)
-        {
-            screen = Screen.PrimaryScreen;
-        }
         var win = GetForegroundWindow();
         GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
         var pClassName = BuildPWSTR(256, out var nClassName);
@@ -61,15 +58,12 @@ public static class NativeWindowHelper
         {
             return false;
         }
-        return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.Bounds);
+        return new PixelRect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.Bounds);
     }
 
     public static bool IsForegroundMaxWindow(Screen screen)
     {
-        if (screen == null)
-        {
-            screen = Screen.PrimaryScreen;
-        }
+        
         var win = GetForegroundWindow();
         GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
         var pClassName = BuildPWSTR(256, out var nClassName);
@@ -81,7 +75,7 @@ public static class NativeWindowHelper
         {
             return false;
         }
-        return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.WorkingArea);
+        return new PixelRect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.WorkingArea);
     }
 
     public static bool IsOccupied(string filePath)
@@ -104,15 +98,11 @@ public static class NativeWindowHelper
             Thread.Sleep(TimeSpan.FromSeconds(0.1));
         }
     }
-    
-    public static System.Windows.Media.Color GetColor(int argb) => new System.Windows.Media.Color()
-    {
-        A = (byte)(argb >> 24),
-        R = (byte)(argb >> 16),
-        G = (byte)(argb >> 8),
-        B = (byte)(argb)
-    };
 
+    public static Color GetColor(int argb) =>
+        Color.FromArgb((byte)(argb >> 24), (byte)(argb >> 16), (byte)(argb >> 8), (byte)(argb));
+    
+#if false
     public static IntPtr FindWindowByClass(string className)
     {
         var windows =  GetAllWindows();
@@ -122,7 +112,6 @@ public static class NativeWindowHelper
             .ToList();
         return q.Count > 0 ? q[0].HWnd : IntPtr.Zero;
     }
-
 
     public static List<DesktopWindow> GetAllWindows(bool isDetailed=false)
     {
@@ -168,6 +157,7 @@ public static class NativeWindowHelper
 
         return windows;
     }
+#endif
 
     public static unsafe PWSTR BuildPWSTR(int bufferSize, out nint ptr)
     {

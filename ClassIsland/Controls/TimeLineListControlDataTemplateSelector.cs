@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿#if false
+
+using System.Windows;
 using System.Windows.Controls;
 
 using ClassIsland.Shared.Models.Profile;
@@ -22,3 +24,5 @@ public class TimeLineListControlDataTemplateSelector : DataTemplateSelector
         return (DataTemplate)e.FindResource(key);
     }
 }
+
+#endif

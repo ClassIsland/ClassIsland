@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 using System.Collections.ObjectModel;
 using ClassIsland.Models;
 using ClassIsland.Shared.Models.Profile;
@@ -235,7 +236,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
         set
         {
             if (Equals(value,  _selectedClassInfo)) return;
-             _selectedClassInfo = value;
+            _selectedClassInfo = value;
             OnPropertyChanged();
         }
     }
@@ -460,3 +461,4 @@ public class ProfileSettingsViewModel : ObservableRecipient
         }
     }
 }
+#endif

@@ -2,7 +2,6 @@
 using Windows.Win32.UI.Accessibility;
 using ClassIsland.Core.Abstractions.Services;
 using Microsoft.Extensions.Logging;
-using System.Windows.Threading;
 using System.Collections.Generic;
 using System.Diagnostics;
 using ClassIsland.Core.Helpers.Native;
@@ -10,6 +9,7 @@ using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core;
 using ClassIsland.Models.Rules;
 using System.Windows.Forms;
+using Avalonia.Threading;
 
 namespace ClassIsland.Services;
 
@@ -68,9 +68,7 @@ public class WindowRuleService : IWindowRuleService
         if (settings is not WindowStatusRuleSettings s) return false;
         GetWindowRect(ForegroundHwnd, out var rect);
         var mw = App.GetService<MainWindow>();
-        var screen = mw.ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
-                     mw.ViewModel.Settings.WindowDockingMonitorIndex >= 0 ?
-            Screen.AllScreens[mw.ViewModel.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen;
+        var screen = mw.GetSelectedScreenSafe();
         if (screen == null)
         {
             return false;
@@ -136,7 +134,7 @@ public class WindowRuleService : IWindowRuleService
 
         ForegroundHwnd = GetForegroundWindow();
         //Logger.LogTrace("Window event: {} HWND:{} {}", @event, hwnd, hook.Value);
-        _ = Dispatcher.CurrentDispatcher.InvokeAsync(() =>
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
         {
             ForegroundWindowChanged?.Invoke(hook, @event, hwnd, idObject, child, thread, time);
         });

@@ -2,10 +2,12 @@ using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Automation.Triggers;
+using Material.Icons;
 using TimeCrontab;
 
 namespace ClassIsland.Services.Automation.Triggers;
@@ -39,7 +41,7 @@ public class CronTrigger : TriggerBase<CronTriggerSettings>
                 break;
             }
 
-            AppBase.Current.Dispatcher.Invoke(Trigger);
+            Dispatcher.UIThread.Invoke(Trigger);
         }
     }
 

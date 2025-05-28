@@ -10,6 +10,8 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Platform;
+using Avalonia.Threading;
 #if IsMsix
 using Windows.Storage;
 #endif
@@ -28,7 +30,6 @@ using Downloader;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sentry;
-using Application = System.Windows.Application;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 using File = System.IO.File;
 
@@ -104,8 +105,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         SplashService = splashService;
         Logger = logger;
 
-        var keyStream = Application
-            .GetResourceStream(new Uri("/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute))!.Stream;
+        var keyStream = AssetLoader.Open(new Uri("/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute));
         MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
 
         Index = ConfigureFileHelper.LoadConfig<VersionsIndex>(Path.Combine(UpdateCachePath, "Index.json"));
@@ -216,24 +216,25 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public static async Task ReplaceApplicationFile(string target)
     {
-        var progressWindow = new UpdateProgressWindow();
-        progressWindow.Show();
-        if (!File.Exists(target))
-        {
-            return;
-        }
-        var s = Environment.ProcessPath!;
-        var t = target;
-        Console.WriteLine(Path.GetFullPath(t));
-        Console.WriteLine(Path.GetDirectoryName(Path.GetFullPath(t)));
-        progressWindow.ProgressText = "正在备份应用数据……";
-        await FileFolderService.CreateBackupAsync(filename: $"Update_Backup_{App.AppVersion}_{DateTime.Now:yy-MMM-dd_HH-mm-ss}", rootPath: Path.GetDirectoryName(Path.GetFullPath(t)) ?? ".");
-        progressWindow.ProgressText = "正在等待应用退出……";
-        await Task.Run(() => NativeWindowHelper.WaitForFile(t));
-        progressWindow.ProgressText = "正在覆盖应用文件……";
-        await Task.Run(() => File.Copy(s, t, true));
-        progressWindow.CanClose = true;
-        progressWindow.Close();
+        // TODO: 实现新版应用更新流程
+        // var progressWindow = new UpdateProgressWindow();
+        // progressWindow.Show();
+        // if (!File.Exists(target))
+        // {
+        //     return;
+        // }
+        // var s = Environment.ProcessPath!;
+        // var t = target;
+        // Console.WriteLine(Path.GetFullPath(t));
+        // Console.WriteLine(Path.GetDirectoryName(Path.GetFullPath(t)));
+        // progressWindow.ProgressText = "正在备份应用数据……";
+        // await FileFolderService.CreateBackupAsync(filename: $"Update_Backup_{App.AppVersion}_{DateTime.Now:yy-MMM-dd_HH-mm-ss}", rootPath: Path.GetDirectoryName(Path.GetFullPath(t)) ?? ".");
+        // progressWindow.ProgressText = "正在等待应用退出……";
+        // await Task.Run(() => NativeWindowHelper.WaitForFile(t));
+        // progressWindow.ProgressText = "正在覆盖应用文件……";
+        // await Task.Run(() => File.Copy(s, t, true));
+        // progressWindow.CanClose = true;
+        // progressWindow.Close();
     }
 
     public static void RemoveUpdateTemporary(string target)
@@ -391,7 +392,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 }
                 else
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
+                    Dispatcher.UIThread.Invoke(() =>
                     {
                         Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
                     });

@@ -10,6 +10,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Plugin;
@@ -158,7 +160,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         try
         {
             var app = (App)AppBase.Current;
-            app.Dispatcher.Invoke(() =>
+            Dispatcher.UIThread.Invoke(() =>
             {
                 if (eventArgs.ExceptionObject is Exception exception)
                 {
@@ -203,8 +205,8 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         
         
             
-        var r = System.Windows.MessageBox.Show(message, "ClassIsland", MessageBoxButton.OKCancel, MessageBoxImage.Error);
-        if (r == MessageBoxResult.Cancel)
+        var r = MessageBox.Show(message, "ClassIsland", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+        if (r == DialogResult.Cancel)
         {
             Debugger.Launch();
         }

@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Globalization;
 using System.Windows;
@@ -106,3 +107,4 @@ public class TimeLineBackgroundRulerControl : Control
         base.OnRender(drawingContext);
     }
 }
+#endif

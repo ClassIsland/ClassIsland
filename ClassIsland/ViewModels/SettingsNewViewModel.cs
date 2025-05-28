@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if false
+using System.Collections.Generic;
 using ClassIsland.Core.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -189,3 +190,4 @@ public class SettingsNewViewModel : ObservableRecipient
 
     public List<SettingsPageInfo> SideBarPages { get; } = [];
 }
+#endif

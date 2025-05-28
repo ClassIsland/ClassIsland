@@ -1,4 +1,4 @@
-﻿using System.Windows.Media;
+﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels.SettingsPages;

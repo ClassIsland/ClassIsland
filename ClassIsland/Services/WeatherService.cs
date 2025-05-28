@@ -8,7 +8,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
+using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Platform;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
@@ -120,10 +122,9 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
     private async void LoadData()
     {
-        var w = Application.GetResourceStream(new Uri("/Assets/XiaomiWeather/xiaomi_weather_status.json",
+        var w = AssetLoader.Open(new Uri("/Assets/XiaomiWeather/xiaomi_weather_status.json",
             UriKind.Relative));
-        if (w == null) return;
-        var codes = await JsonSerializer.DeserializeAsync<XiaomiWeatherStatusCodes>(w.Stream);
+        var codes = await JsonSerializer.DeserializeAsync<XiaomiWeatherStatusCodes>(w);
         WeatherStatusList = codes!.WeatherInfo;
     }
 

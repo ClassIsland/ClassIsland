@@ -1,8 +1,8 @@
-#if false
 using System;
 using System.Diagnostics;
 using System.Web;
 using System.Windows;
+using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Controls;
 using ClassIsland.Services;
@@ -43,7 +43,7 @@ public partial class CrashWindow : MyWindow
         }
         else
         {
-            Application.Current.Shutdown();
+            AppBase.Current.Stop();
         }
     }
 
@@ -80,4 +80,3 @@ public partial class CrashWindow : MyWindow
         }
     }
 }
-#endif

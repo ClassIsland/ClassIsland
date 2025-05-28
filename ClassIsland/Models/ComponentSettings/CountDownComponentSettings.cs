@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Windows.Media;
-
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.ComponentSettings;
@@ -10,7 +9,7 @@ public class CountDownComponentSettings : ObservableRecipient
     private string _countDownName = "倒计时";
     private DateTime _overTime = DateTime.Now;
     private int _daysLeft = 0;
-    private Color _fontColor = Color.FromRgb(255,0,0);
+    private Color _fontColor = Color.FromArgb(255, 255,0,0);
     private int _fontSize = 16;
     private bool _isCompactModeEnabled = false;
     private string _countDownConnector = "还有";

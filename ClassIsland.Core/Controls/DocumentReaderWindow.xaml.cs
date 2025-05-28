@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -128,3 +129,5 @@ public partial class DocumentReaderWindow : MyWindow
             Close();
     }
 }
+
+#endif

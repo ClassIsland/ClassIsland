@@ -1,6 +1,7 @@
 ﻿using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Ruleset;
+using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Extensions.Registry;

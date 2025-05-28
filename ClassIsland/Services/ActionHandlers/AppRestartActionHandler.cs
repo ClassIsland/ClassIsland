@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models.Actions;
 using Microsoft.Extensions.Hosting;

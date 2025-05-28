@@ -1,32 +1,35 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using ClassIsland.Core;
-using System.Windows.Documents;
-using Microsoft.Xaml.Behaviors;
+using System.Windows.Forms.Design.Behavior;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Xaml.Interactivity;
 
 namespace ClassIsland.Behaviors;
 
-public class AdornerAttachingBehavior : Behavior<UIElement>
+public class AdornerAttachingBehavior : Behavior<Control>
 {
-    public static readonly DependencyProperty AdornerTemplateProperty = DependencyProperty.Register(
-        nameof(AdornerTemplate), typeof(ControlTemplate), typeof(AdornerAttachingBehavior), new PropertyMetadata(default(ControlTemplate)));
-
+    public static readonly StyledProperty<ControlTemplate> AdornerTemplateProperty = AvaloniaProperty.Register<AdornerAttachingBehavior, ControlTemplate>(
+        nameof(AdornerTemplate));
     public ControlTemplate AdornerTemplate
     {
-        get { return (ControlTemplate)GetValue(AdornerTemplateProperty); }
-        set { SetValue(AdornerTemplateProperty, value); }
+        get => GetValue(AdornerTemplateProperty);
+        set => SetValue(AdornerTemplateProperty, value);
+    
     }
 
-    public static readonly DependencyProperty AdornerDataContextProperty = DependencyProperty.Register(
-        nameof(AdornerDataContext), typeof(object), typeof(AdornerAttachingBehavior), new PropertyMetadata(default(object?)));
-
-    public object? AdornerDataContext
+    public static readonly StyledProperty<object> AdornerDataContextProperty = AvaloniaProperty.Register<AdornerAttachingBehavior, object>(
+        nameof(AdornerDataContext));
+    public object AdornerDataContext
     {
-        get { return (object?)GetValue(AdornerDataContextProperty); }
-        set { SetValue(AdornerDataContextProperty, value); }
+        get => GetValue(AdornerDataContextProperty);
+        set => SetValue(AdornerDataContextProperty, value);
+    
     }
 
-    private Adorner? _adorner;
+    private Control? _adorner;
 
     protected override void OnAttached()
     {
@@ -54,7 +57,8 @@ public class AdornerAttachingBehavior : Behavior<UIElement>
         if (_adorner != null)
         {
             var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-            layer?.Remove(_adorner);
+            AdornerLayer.SetAdorner(AssociatedObject, null);
+            layer?.Children.Remove(_adorner);
             _adorner = null;
         }
     }
@@ -70,11 +74,13 @@ public class AdornerAttachingBehavior : Behavior<UIElement>
         {
             return;
         }
-        _adorner = new TimeLineListItemAdorner(AssociatedObject, AdornerTemplate)
+        _adorner = new TemplatedControl
         {
-            DataContext = AdornerDataContext
+            DataContext = AdornerDataContext,
+            Template = AdornerTemplate
         };
         
-        layer?.Add(_adorner);
+        layer?.Children.Add(_adorner);
+        AdornerLayer.SetAdorner(AssociatedObject, _adorner);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models.Actions;
 using Microsoft.Extensions.Hosting;
@@ -42,14 +42,14 @@ public class AppSettingsActionHandler : IHostedService
 
         void Add(string g, string binding, dynamic value)
         {
-            App.Current.Dispatcher.Invoke(
+            Dispatcher.UIThread.Invoke(
                 new Action(() => SettingsService.AddSettingsOverlay(g, binding, value)),
                 DispatcherPriority.Render);
         }
 
         void Remove(string g, string binding)
         {
-            App.Current.Dispatcher.Invoke(
+            Dispatcher.UIThread.Invoke(
                 new Action(() => SettingsService.RemoveSettingsOverlay(g, binding)),
                 DispatcherPriority.Render);
         }

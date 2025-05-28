@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 
 using ClassIsland.Models;
 
@@ -220,3 +221,4 @@ public class WelcomeViewModel : ObservableRecipient
 
     public SnackbarMessageQueue SnackbarQueue { get; } = new();
 }
+#endif

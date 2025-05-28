@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -106,7 +107,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
 
     private void ShowWeatherForecastCore()
     {
-        ShowNotification(new Core.Models.Notification.NotificationRequest()
+        ShowNotification(new NotificationRequest()
         {
             MaskContent = new NotificationContent(new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo)),
             OverlayContent = new NotificationContent(new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo))
@@ -127,7 +128,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
     {
         var baseTime = SettingsService.Settings.LastWeatherInfo.UpdateTime;
         baseTime = RoundUpToHour(baseTime);
-        ShowNotification(new Core.Models.Notification.NotificationRequest()
+        ShowNotification(new NotificationRequest()
         {
             MaskContent = new NotificationContent(new WeatherHourlyForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo, baseTime)),
             OverlayContent = new NotificationContent(new WeatherHourlyForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo, baseTime))
@@ -169,7 +170,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
             if (t >= 90) t = 90.0;
             var ts = TimeSpanHelper.FromSecondsSafe(t);
             IAppHost.GetService<ILogger<WeatherNotificationProvider>>().LogTrace("单次预警显示时长：{}", ts);
-            ShowNotification(new Core.Models.Notification.NotificationRequest()
+            ShowNotification(new NotificationRequest()
             {
                 MaskContent = new NotificationContent(new WeatherNotificationProviderControl(true, i, ts))
                 {
@@ -195,3 +196,4 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
     {
     }
 }
+#endif

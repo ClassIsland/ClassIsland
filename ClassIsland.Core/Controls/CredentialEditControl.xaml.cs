@@ -1,17 +1,10 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
-
-
-
-
-
-
-
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 
@@ -56,3 +49,5 @@ public partial class CredentialEditControl : UserControl
         CredentialString = "";
     }
 }
+
+#endif

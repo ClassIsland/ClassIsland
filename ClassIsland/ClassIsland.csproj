@@ -2,7 +2,7 @@
     <PropertyGroup>
         <Nullable>enable</Nullable>
         <UseWPF>false</UseWPF>
-        <UseWindowsForms>True</UseWindowsForms>
+        <UseWindowsForms>false</UseWindowsForms>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
 <!--        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>-->

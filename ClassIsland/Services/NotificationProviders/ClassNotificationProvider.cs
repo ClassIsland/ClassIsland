@@ -1,10 +1,9 @@
-﻿using System;
+﻿#if false
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ClassIsland.Controls.AttachedSettingsControls;
-using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
@@ -17,7 +16,7 @@ using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Shared.Models.Profile;
-
+using Material.Icons;
 using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services.NotificationProviders;
@@ -314,3 +313,5 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         return new Task(() => { });
     }
 }
+
+#endif

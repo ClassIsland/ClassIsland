@@ -1,4 +1,5 @@
-﻿using System.Windows.Documents;
+﻿#if false
+using System.Windows.Documents;
 using ClassIsland.Core.Models.Updating;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -42,3 +43,4 @@ public class UpdateSettingsViewModel : ObservableRecipient
         }
     }
 }
+#endif

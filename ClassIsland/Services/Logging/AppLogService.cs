@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.Logging;
 using ClassIsland.Core.Models.Logging;
 
@@ -13,7 +14,7 @@ public class AppLogService : IAppLogService
 
     public void AddLog(LogEntry log)
     {
-        var dispatcher = Application.Current?.Dispatcher;
+        var dispatcher = Dispatcher.UIThread;
         _ = dispatcher?.InvokeAsync(() =>
         {
             Logs.Add(log);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -64,3 +65,4 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
         return false;
     }
 }
+#endif

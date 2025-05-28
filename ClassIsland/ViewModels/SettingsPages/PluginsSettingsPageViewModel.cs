@@ -1,4 +1,5 @@
-﻿using System.Windows.Documents;
+﻿#if false
+using System.Windows.Documents;
 using ClassIsland.Core.Models.Plugin;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -151,3 +152,4 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
         }
     }
 }
+#endif

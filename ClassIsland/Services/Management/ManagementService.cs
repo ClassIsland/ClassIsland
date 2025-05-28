@@ -17,7 +17,7 @@ using ClassIsland.Models.Authorize;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Client;
 using ClassIsland.Shared.Protobuf.Service;
-
+using Material.Icons;
 using Microsoft.Extensions.Logging;
 
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
@@ -231,7 +231,7 @@ public class ManagementService : IManagementService
             .AddCancelAction()
             .AddAction("加入", MaterialIconKind.Check, true);
 
-        var result = dialogBuilder.ShowDialog();
+        var result = await dialogBuilder.ShowDialog();
         if (result != 1)
             return;
 
@@ -247,7 +247,7 @@ public class ManagementService : IManagementService
             }
         }
         SaveConfig(ManagementSettingsPath, w);
-        CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
+        await CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
         await SetupManagement();
 
         AppBase.Current.Restart();
@@ -271,7 +271,7 @@ public class ManagementService : IManagementService
             .AddCancelAction()
             .AddAction("退出", MaterialIconKind.ExitRun, true);
 
-        var result = dialogBuilder.ShowDialog();
+        var result = await dialogBuilder.ShowDialog();
         if (result != 1)
             return;
         Settings.IsManagementEnabled = false;

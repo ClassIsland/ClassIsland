@@ -2,6 +2,7 @@
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Models.EventArgs;
+using Material.Icons;
 
 namespace ClassIsland.Services.Automation.Triggers;
 

@@ -20,7 +20,7 @@
         </DataTriggerBehavior>
     </Interaction.Behaviors>
     <local:LessonControlBase.Styles>
-        <Style Selector="local|LessonControlBase.ChangedClass.HighlightChangedClass > TextBlock#Text">
+        <Style Selector="local|LessonControlBase.ChangedClass.HighlightChangedClass TextBlock#Text">
             <Setter Property="Effect">
                 <Setter.Value>
                     <DropShadowEffect BlurRadius="3"
@@ -30,21 +30,21 @@
             </Setter>
         </Style>
         
-        <Style Selector="local|LessonControlBase.Breaking > TextBlock#Text">
+        <Style Selector="local|LessonControlBase.Breaking TextBlock#Text">
             <Setter Property="Text" Value="{Binding CurrentTimeLayoutItem.BreakNameText, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
         </Style>
         
-        <Style Selector="local|LessonControlBase:not(.Breaking) > TextBlock#Text">
+        <Style Selector="local|LessonControlBase:not(.Breaking) TextBlock#Text">
             <Setter Property="Text" Value="{Binding CurrentSubject.Name, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
         </Style>
         
         <Style Selector="TabControl#DetailedInfoTabControl">
             <Setter Property="SelectedIndex" Value="{Binding SettingsSource.ExtraInfoType, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}" />
         </Style>
-        <Style Selector="local|LessonControlExpanded[IsLiveUpdatingEnabled=False] > TabControl#DetailedInfoTabControl">
+        <Style Selector="local|LessonControlExpanded[IsLiveUpdatingEnabled=False] TabControl#DetailedInfoTabControl">
             <Setter Property="SelectedIndex" Value="0" />
         </Style>
-        <Style Selector="local|LessonControlExpanded.ExtraInfo4ShowSeconds > TabControl#DetailedInfoTabControl">
+        <Style Selector="local|LessonControlExpanded.ExtraInfo4ShowSeconds TabControl#DetailedInfoTabControl">
             <Setter Property="SelectedIndex" Value="5" />
         </Style>
     </local:LessonControlBase.Styles>

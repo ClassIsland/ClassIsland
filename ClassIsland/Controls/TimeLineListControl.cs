@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -145,3 +146,5 @@ public class TimeLineListControl : ListBox
         base.OnItemsSourceChanged(oldValue, newValue);
     }
 }
+
+#endif

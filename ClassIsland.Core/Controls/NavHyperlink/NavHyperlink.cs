@@ -1,3 +1,4 @@
+#if false
 using System.Windows;
 using System.Windows.Documents;
 using Avalonia.Controls;
@@ -33,3 +34,4 @@ public class NavHyperlink : HyperlinkButton
         Command = UriNavigationCommands.UriNavigationCommand;
     }
 }
+#endif

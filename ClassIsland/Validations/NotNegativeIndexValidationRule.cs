@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿#if false
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Windows.Controls;
 
 namespace ClassIsland.Validations;
@@ -19,3 +21,4 @@ public class NotNegativeIndexValidationRule : ValidationRule
         return ValidationResult.ValidResult;
     }
 }
+#endif

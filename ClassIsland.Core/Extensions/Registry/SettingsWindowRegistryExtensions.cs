@@ -1,3 +1,4 @@
+#if false
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Services.Registry;
@@ -35,3 +36,4 @@ public static class SettingsWindowRegistryExtensions
         return services;
     }
 }
+#endif

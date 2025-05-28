@@ -2,11 +2,14 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
-
-
+using Material.Styles.Themes;
+using Material.Styles.Themes.Base;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -38,11 +41,11 @@ public class ThemeService : IHostedService, IThemeService
 
     public void SetTheme(int themeMode, Color primary, Color secondary)
     {
-        var paletteHelper = new PaletteHelper();
-        var theme = paletteHelper.GetTheme();
-        var lastPrimary = theme.PrimaryMid.Color;
-        var lastSecondary = theme.SecondaryMid.Color;
-        var lastBaseTheme = theme.GetBaseTheme();
+        var theme = Application.Current!.LocateMaterialTheme<CustomMaterialTheme>();
+        var themeBootstrap = Application.Current!.LocateMaterialTheme<MaterialThemeBase>();
+        var lastPrimary = theme.PrimaryColor;
+        var lastSecondary = theme.SecondaryColor;
+        var useDarkTheme = false;
         switch (themeMode)
         {
             case 0:
@@ -54,66 +57,60 @@ public class ThemeService : IHostedService, IThemeService
                     {
                         if ((int?)key.GetValue("AppsUseLightTheme") == 0)
                         {
-                            theme.SetBaseTheme(new MaterialDesignDarkTheme());
+                            useDarkTheme = true;
                         }
                         else
                         {
-                            theme.SetBaseTheme(new MaterialDesignLightTheme());
+                            useDarkTheme = false;
                         }
                     }
                 }
                 catch(Exception ex)
                 {
                     Logger.LogError(ex, "无法获取系统明暗主题，使用默认（亮色）主题。");
-                    theme.SetBaseTheme(new MaterialDesignLightTheme());
+                    useDarkTheme = false;
                 }
                 break;
 
             case 1:
-                theme.SetBaseTheme(new MaterialDesignLightTheme());
+                useDarkTheme = false;
                 break;
             case 2:
-                theme.SetBaseTheme(new MaterialDesignDarkTheme());
+                useDarkTheme = true;
                 break;
         }
         
-        ((Theme)theme).ColorAdjustment = new ColorAdjustment()
-        {
-            DesiredContrastRatio = 4.5F,
-            Contrast = Contrast.Medium,
-            Colors = ColorSelection.All
-        };
+        // TODO: 实现颜色调整
+        // ((Theme)theme).ColorAdjustment = new ColorAdjustment()
+        // {
+        //     DesiredContrastRatio = 4.5F,
+        //     Contrast = Contrast.Medium,
+        //     Colors = ColorSelection.All
+        // };
         
-        theme.SetPrimaryColor(primary);
-        theme.SetSecondaryColor(secondary);
-        var lastTheme = paletteHelper.GetTheme();
-
-        if (lastPrimary == theme.PrimaryMid.Color &&
-            lastSecondary == theme.SecondaryMid.Color &&
-            lastBaseTheme == theme.GetBaseTheme())
+        if (lastPrimary == primary &&
+            lastSecondary == secondary &&
+            useDarkTheme == (theme.BaseTheme == BaseThemeMode.Dark ))
         {
             return;
         }
 
-
-        paletteHelper.SetTheme(theme);
-        CurrentTheme = theme;
+        var newTheme = Theme.Create(useDarkTheme ? Theme.Dark : Theme.Light, primary, secondary);
+        themeBootstrap.CurrentTheme = newTheme;
+        CurrentTheme = newTheme;
         Logger.LogInformation("设置主题：{}", theme);
-        CurrentRealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1;
+        CurrentRealThemeMode = useDarkTheme ? 1 : 0;
         ThemeUpdated?.Invoke(this, new ThemeUpdatedEventArgs
         {
             ThemeMode = themeMode,
             Primary = primary,
             Secondary = secondary,
-            RealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1
+            RealThemeMode = useDarkTheme ? 1 : 0
         });
 
-        var resource = new ResourceDictionary
-        {
-            Source = CurrentRealThemeMode == 0 ?
-                new Uri("pack://application:,,,/ClassIsland;component/Themes/LightTheme.xaml") :
-                new Uri("pack://application:,,,/ClassIsland;component/Themes/DarkTheme.xaml")
-        };
-        Application.Current.Resources.MergedDictionaries[0] = resource;
+        var resource = new ResourceInclude(CurrentRealThemeMode == 0
+            ? new Uri("pack://application:,,,/ClassIsland;component/Themes/LightTheme.axaml")
+            : new Uri("pack://application:,,,/ClassIsland;component/Themes/DarkTheme.axaml"));
+        Application.Current!.Resources.MergedDictionaries[0] = resource;
     }
 }

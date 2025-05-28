@@ -7,6 +7,7 @@
          xmlns:converters="clr-namespace:ClassIsland.Converters">
     <ci:AppBase.Styles>
         <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
+        <StyleInclude Source="/Controls/MainWindowLine.axaml"/>
     </ci:AppBase.Styles>
     <Application.Resources>
         <ResourceDictionary>
@@ -18,8 +19,8 @@
             
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>
             <ci:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
-            
-            <converters:MainWindowIsMainLineConverter x:Key="MainWindowIsMainLineConverter" />
+            <ci:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
+
         </ResourceDictionary>
     </Application.Resources>
 </ci:AppBase>

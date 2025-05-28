@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Models.Plugin;
+﻿#if false
+using ClassIsland.Core.Models.Plugin;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Documents;
 using ClassIsland.Core.Models.XamlTheme;
@@ -16,3 +17,4 @@ public partial class ThemesSettingsViewModel : ObservableObject
     [ObservableProperty] private SnackbarMessageQueue _messageQueue = new();
     [ObservableProperty] private bool _isDragEntering = false;
 }
+#endif

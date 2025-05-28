@@ -1,3 +1,4 @@
+#if false
 using Avalonia.Controls;
 using DialogHostAvalonia;
 
@@ -70,3 +71,4 @@ public abstract class SettingsPageBase : UserControl
         RequestRestartCommand.Execute(null);
     }
 }
+#endif

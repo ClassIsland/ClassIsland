@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿#if false
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using ClassIsland.Core;
@@ -75,3 +76,4 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
         layer?.Add(_adorner);
     }
 }
+#endif

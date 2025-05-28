@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿#if false
+using System.Windows;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Shared;
 
@@ -31,3 +32,4 @@ public class StickerControl : IconControl.IconControl
         set { SetValue(StickerToolTipProperty, value); }
     }
 }
+#endif

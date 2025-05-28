@@ -1,3 +1,4 @@
+#if false
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared;
 using System.Diagnostics.CodeAnalysis;
@@ -80,3 +81,4 @@ public abstract class AuthorizeProviderControlBase<T> : AuthorizeProviderControl
     /// </summary>
     public T Settings => (SettingsInternal as T)!;
 }
+#endif

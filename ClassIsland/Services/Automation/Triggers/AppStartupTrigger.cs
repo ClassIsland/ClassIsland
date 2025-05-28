@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Linq;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
+using Material.Icons;
 
 namespace ClassIsland.Services.Automation.Triggers;
 

@@ -11,5 +11,6 @@ public class UriNavigationCommands
     /// <summary>
     /// Uri 导航命令。
     /// </summary>
-    public static readonly ICommand UriNavigationCommand = new RoutedUICommand();
+    /// TODO: 将此命令实现为其他适合的命令类型。
+    public static readonly ICommand UriNavigationCommand = null!;
 }

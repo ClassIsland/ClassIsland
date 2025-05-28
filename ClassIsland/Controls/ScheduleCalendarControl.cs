@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Windows.Controls;
 
@@ -12,3 +13,4 @@ public class ScheduleCalendarControl : Calendar
         ScheduleUpdated?.Invoke(this, EventArgs.Empty);
     }
 }
+#endif

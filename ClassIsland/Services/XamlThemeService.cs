@@ -5,8 +5,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml.Styling;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
@@ -62,7 +62,8 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         {
             return;
         }
-        var resourceBoarder = VisualTreeUtils.FindChildVisualByName<Border>(MainWindow, "ResourceLoaderBorder");
+
+        var resourceBoarder = MainWindow.FindControl<Border>("ResourceLoaderBorder");
         resourceBoarder?.Resources.MergedDictionaries.Add(RootResourceDictionary);
 
         ProcessThemeInstall();
@@ -92,10 +93,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
     public void LoadTheme(string themePath)
     {
         Logger.LogInformation("正在加载主题 {}", themePath);
-        var themeResourceDictionary = new ResourceDictionary
-        {
-            Source = new Uri(Path.GetFullPath(themePath))
-        };
+        var themeResourceDictionary = new ResourceInclude(new Uri(Path.GetFullPath(themePath)));
         RootResourceDictionary.MergedDictionaries.Add(themeResourceDictionary);
     }
 

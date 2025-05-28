@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -74,3 +75,4 @@ public class FileBrowserButton : Button
         FileSelected?.Invoke(this, EventArgs.Empty);
     }
 }
+#endif

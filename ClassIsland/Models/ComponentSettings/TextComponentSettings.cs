@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Media;
+using Avalonia.Media;
 
 namespace ClassIsland.Models.ComponentSettings;
 

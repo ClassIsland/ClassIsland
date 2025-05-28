@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System;
-using System.Windows.Media;
+using Avalonia.Media;
 using ColorHelper;
 using ColorConverter = ColorHelper.ColorConverter;
 
@@ -46,10 +46,7 @@ internal static class AccentColorHelper
 
             int c = (width / 2) * (height / 2);
             Unsafe.SkipInit(out Color color);
-            color.B = (byte)(b / c);
-            color.G = (byte)(g / c);
-            color.R = (byte)(r / c);
-            color.A = 255;
+            color = new Color(255, (byte)(b / c), (byte)(g / c), (byte)(r / c));
             HSV hsv = ColorConverter.RgbToHsv(new RGB(color.R, color.G, color.B));
 
             var result = ColorConverter.HsvToRgb(new HSV(hsv.H, 60, hsv.V));

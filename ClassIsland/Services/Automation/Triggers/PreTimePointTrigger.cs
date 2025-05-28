@@ -6,6 +6,7 @@ using ClassIsland.Helpers;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
+using Material.Icons;
 
 namespace ClassIsland.Services.Automation.Triggers;
 

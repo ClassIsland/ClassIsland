@@ -1,37 +1,60 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
-
-using Microsoft.Xaml.Behaviors;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Reactive;
+using Avalonia.Xaml.Interactivity;
 
 namespace ClassIsland.Behaviors;
 
 public class AllCollectionBehavior : Behavior<ListBoxItem>
 {
-    public static readonly DependencyProperty AllCollectionProperty = DependencyProperty.Register(
-        nameof(AllCollection), typeof(ObservableCollection<string>), typeof(AllCollectionBehavior), new PropertyMetadata(default(ObservableCollection<string>)));
-
+    public static readonly StyledProperty<ObservableCollection<string>> AllCollectionProperty = AvaloniaProperty.Register<AllCollectionBehavior, ObservableCollection<string>>(
+        nameof(AllCollection));
     public ObservableCollection<string> AllCollection
     {
-        get { return (ObservableCollection<string>)GetValue(AllCollectionProperty); }
-        set { SetValue(AllCollectionProperty, value); }
+        get => GetValue(AllCollectionProperty);
+        set => SetValue(AllCollectionProperty, value);
+    
     }
 
-    public static readonly DependencyProperty CurrentValueProperty = DependencyProperty.Register(
-        nameof(CurrentValue), typeof(string), typeof(AllCollectionBehavior), new PropertyMetadata(default(string)));
-
+    public static readonly StyledProperty<string> CurrentValueProperty = AvaloniaProperty.Register<AllCollectionBehavior, string>(
+        nameof(CurrentValue));
     public string CurrentValue
     {
-        get { return (string)GetValue(CurrentValueProperty); }
-        set { SetValue(CurrentValueProperty, value); }
+        get => GetValue(CurrentValueProperty);
+        set => SetValue(CurrentValueProperty, value);
+    
     }
+    
+    private IDisposable? Subscription { get; set; }
 
     protected override void OnAttached()
     {
-        AssociatedObject.Selected += AssociatedObjectOnSelected;
-        AssociatedObject.Unselected += AssociatedObjectOnUnselected;
+        Subscription = AssociatedObject?.GetObservable(ListBoxItem.IsSelectedProperty)
+            .Subscribe(new AnonymousObserver<bool>(ListBoxItemIsSelectedChanged));
         UpdateValue();
         base.OnAttached();
+    }
+
+    private void ListBoxItemIsSelectedChanged(bool value)
+    {
+        if (value)
+        {
+            if (!AllCollection.Contains(CurrentValue))
+            {
+                AllCollection.Add(CurrentValue);
+            }
+        }
+        else
+        {
+            if (AllCollection.Contains(CurrentValue))
+            {
+                AllCollection.Remove(CurrentValue);
+            }
+        }
     }
 
     protected override void OnDetaching()
@@ -40,8 +63,8 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
         {
             return;
         }
-        AssociatedObject.Selected -= AssociatedObjectOnSelected;
-        AssociatedObject.Unselected -= AssociatedObjectOnUnselected;
+        Subscription?.Dispose();
+        Subscription = null;
         base.OnDetaching();
     }
 
@@ -52,7 +75,7 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
         AssociatedObject.IsSelected = AllCollection.Contains(CurrentValue);
     }
 
-    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Property == AllCollectionProperty)
         {
@@ -60,20 +83,5 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
         }
         base.OnPropertyChanged(e);
     }
-
-    private void AssociatedObjectOnUnselected(object sender, RoutedEventArgs e)
-    {
-        if (AllCollection.Contains(CurrentValue))
-        {
-            AllCollection.Remove(CurrentValue);
-        }
-    }
-
-    private void AssociatedObjectOnSelected(object sender, RoutedEventArgs e)
-    {
-        if (!AllCollection.Contains(CurrentValue))
-        {
-            AllCollection.Add(CurrentValue);
-        }
-    }
+    
 }

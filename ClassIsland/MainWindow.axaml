@@ -13,7 +13,6 @@
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
@@ -36,97 +35,11 @@
         Loaded="MainWindow_OnLoaded"
         SizeToContent="Height"
         ShowActivated="False"
-        materialDesign:ShadowAssist.CacheMode="{x:Null}"
         x:Name="MainWindow">
     <Window.Resources>
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
         <profile:ClassPlan x:Key="FallbackClassPlan"/>
-        
-        <converters1:BooleanToVisibilityReConverter x:Key="BooleanToVisibilityReConverter"/>
-        <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu"
-                     StaysOpen="True"
-                     IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InvertBooleanConverter}}">
-            <ContextMenu.Resources>
-                <converters1:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
-            </ContextMenu.Resources>
-            <MenuItem Header="ClassIsland" Click="MenuItemAbout_OnClick" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed}">
-                <MenuItem.Icon>
-                    <Image Source="/Assets/AppLogo.ico"/>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="更新可用…" Click="MenuItemUpdates_OnClick" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed}">
-                <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="UploadOutline"/>
-                </MenuItem.Icon>
-                <MenuItem.Style>
-                    <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ViewModel.Settings.LastUpdateStatus}" Value="UpToDate">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </MenuItem.Style>
-            </MenuItem>
-            <MenuItem Icon="{materialDesign:PackIcon HelpCircleOutline}" Header="帮助…" Click="MenuItemHelps_OnClick" 
-                      Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <Separator/>
-            <MenuItem Icon="{materialDesign:PackIcon EyeOutLine}" Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
-                <MenuItem.Visibility>
-                    <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
-                        <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}" />
-                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
-                    </MultiBinding>
-                </MenuItem.Visibility>
-            </MenuItem>
-            <MenuItem Icon="{materialDesign:PackIcon EyeOffOutline}" Header="隐藏主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
-                <MenuItem.Visibility>
-                    <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
-                        <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay"/>
-                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
-                    </MultiBinding>
-                </MenuItem.Visibility>
-            </MenuItem>
-            <MenuItem Icon="{materialDesign:PackIcon NotificationClearAll}" Header="清除全部提醒" Click="MenuItemClearAllNotifications_OnClick">
-                <MenuItem.Visibility>
-                    <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
-                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
-                        <Binding Path="ViewModel.IsOverlayOpened" Mode="OneWay"/>
-                    </MultiBinding>
-                </MenuItem.Visibility>
-            </MenuItem>
-            <Separator Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="应用设置…" Click="MenuItemSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <MenuItem Icon="{materialDesign:PackIcon FileChartOutline}" Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}">
-            </MenuItem>
-            <MenuItem Icon="{materialDesign:PackIcon SwapHorizontal}" Header="换课…" Click="MenuItemClassSwap_OnClick">
-                <MenuItem.Style>
-                    <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                        <Setter Property="Visibility" Value="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                    </Style>
-                </MenuItem.Style>
-            </MenuItem>
-            <Separator Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <MenuItem Icon="{materialDesign:PackIcon Restart}"  Header="重启" Click="MenuItemRestartApp_OnClick"/>
-            <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出" Click="MenuItemExitApp_OnClick"/>
-            <Separator Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <MenuItem Icon="{materialDesign:PackIcon BugOutline}" Header="调试"
-                      Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <MenuItem Header="SizeToContentTest" Click="ButtonResizeDebug_OnClick"/>
-                <Separator/>
-                <MenuItem Header="WelcomeWindow" Click="MenuItemDebugWelcomeWindow_OnClick"/>
-                <MenuItem Header="WelcomeWindow (Full)" Click="MenuItemDebugWelcomeWindow2_OnClick"/>
-                <Separator/>
-                <MenuItem Header="FitSize" Click="MenuItemDebugFitSize_OnClick"/>
-            </MenuItem>
-        </ContextMenu>
     </Window.Resources>
     <Window.Styles>
         <Style Selector="Grid#GridRoot">

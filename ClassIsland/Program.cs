@@ -19,7 +19,7 @@ namespace ClassIsland;
 public static class Program
 {
     [STAThread]
-    public static async Task Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
         Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
@@ -85,15 +85,15 @@ public static class Program
                 s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
             });
         }
-        var app = new App()
-        {
-            Mutex = mutex,
-            IsMutexCreateNew = createNew,
-            IsSentryEnabled = sentryEnabled
-        };
-        app.InitializeComponent();
-        new Thread(StartAvaloniaApp).Start();
-        app.Run();
+        return AppBuilder.Configure<App>(() => new App()
+            {
+                Mutex = mutex,
+                IsMutexCreateNew = createNew,
+                IsSentryEnabled = sentryEnabled
+            })
+            .UsePlatformDetect()
+            .LogToTrace()
+            .StartWithClassicDesktopLifetime(args);
     }
     
     private static async Task ProcessUriNavigationAsync()
@@ -144,16 +144,5 @@ public static class Program
         options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
     }
     
-    private static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<AppNew>()
-            .UsePlatformDetect()
-            .LogToTrace();
-
-    [STAThread]
-    private static void StartAvaloniaApp()
-    {
-        BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime([]);
-    }
 }
 

@@ -20,7 +20,7 @@
                 <Setter Property="Width" Value="{Binding Settings.FixedWidth , RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
             </Style>
             
-            <Style Selector="^ > ContentPresenter#MainContentPresenter">
+            <Style Selector="^ ContentPresenter#MainContentPresenter">
                 <Setter Property="HorizontalAlignment" Value="{Binding Settings.HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
             </Style>
         </Style>

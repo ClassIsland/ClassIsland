@@ -1,5 +1,4 @@
-﻿using System.Windows.Controls;
-using ClassIsland.Core.Abstractions.Controls;
+﻿using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;

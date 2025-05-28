@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Windows.Threading;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using CommunityToolkit.Mvvm.ComponentModel;

@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -86,3 +87,4 @@ public partial class TimeRuleEditControl : UserControl
         TimeRule.WeekCountDiv = w;
     }
 }
+#endif

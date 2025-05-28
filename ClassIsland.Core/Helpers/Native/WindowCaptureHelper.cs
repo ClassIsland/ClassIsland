@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿#if false
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
@@ -100,3 +101,4 @@ public static class WindowCaptureHelper
         }
     }
 }
+#endif

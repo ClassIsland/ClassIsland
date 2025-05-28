@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Attributes;
@@ -10,7 +9,7 @@ using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
-
+using Material.Icons;
 using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
 
 namespace ClassIsland.Services.NotificationProviders;
