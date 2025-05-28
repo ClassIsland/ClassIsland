@@ -19,10 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.ExamplePlugin",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{D97171AD-1C66-4A93-9D48-7BEC798ADAA6}"
 	ProjectSection(SolutionItems) = preProject
-		tools\appcenter-upload.ps1 = tools\appcenter-upload.ps1
 		tools\build-appveyor.ps1 = tools\build-appveyor.ps1
 		tools\generate-md5.ps1 = tools\generate-md5.ps1
-		tools\pre-appcenter-upload.ps1 = tools\pre-appcenter-upload.ps1
 		tools\pre-publish.ps1 = tools\pre-publish.ps1
 		tools\publish-nupkg.ps1 = tools\publish-nupkg.ps1
 		tools\publish.ps1 = tools\publish.ps1
