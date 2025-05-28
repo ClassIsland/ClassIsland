@@ -8,221 +8,23 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <local:SfSymbolIcon HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                      Width="{Binding Width, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                      Height="{Binding Height, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                      ToolTip="{Binding WeatherName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}">
-            <local:SfSymbolIcon.Style>
-                <Style TargetType="local:SfSymbolIcon" BasedOn="{StaticResource SfSymbolIconBaseStyle}">
+        <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          ContentTemplate="{Binding WeatherService.SelectedWeatherIconTemplate, RelativeSource={RelativeSource AncestorType=local:WeatherPackIconControl}}"
+                          Content="{Binding Code, RelativeSource={RelativeSource AncestorType=local:WeatherPackIconControl}}"
+                          Width="{Binding Width, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                          Height="{Binding Height, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                          ToolTip="{Binding WeatherName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                          Tag="{Binding Tag, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}">
+            <ContentPresenter.Style>
+                <Style TargetType="ContentPresenter" >
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding WeatherColor, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                                      Value="Rainy">
                             <Setter Property="TextElement.Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
-                        <!-- 晴 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="0">
-                            <Setter Property="Kind" Value="SunMax"/>
-                        </DataTrigger>
-                        <!-- 多云 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="1">
-                            <Setter Property="Kind" Value="CloudSun"/>
-                        </DataTrigger>
-                        <!-- 阴 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="2">
-                            <Setter Property="Kind" Value="Cloud"/>
-                        </DataTrigger>
-                        <!-- 阵雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="3">
-                            <Setter Property="Kind" Value="CloudSunRain"/>
-                        </DataTrigger>
-                        <!-- 雷阵雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="4">
-                            <Setter Property="Kind" Value="CloudBoltRain"/>
-                        </DataTrigger>
-                        <!-- 雷阵雨并伴有冰雹 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="5">
-                            <Setter Property="Kind" Value="CloudHail"/>
-                        </DataTrigger>
-                        <!-- 雨夹雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="6">
-                            <Setter Property="Kind" Value="CloudSleet"/>
-                        </DataTrigger>
-                        <!-- 小雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="7">
-                            <Setter Property="Kind" Value="CloudDrizzle"/>
-                        </DataTrigger>
-                        <!-- 中雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="8">
-                            <Setter Property="Kind" Value="CloudRain"/>
-                        </DataTrigger>
-                        <!-- 大雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="9">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
-                        </DataTrigger>
-                        <!-- 暴雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="10">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
-                        </DataTrigger>
-                        <!-- 大暴雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="11">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
-                        </DataTrigger>
-                        <!-- 特大暴雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="12">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
-                        </DataTrigger>
-                        <!-- 阵雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="13">
-                            <Setter Property="Kind" Value="CloudSnow"/>
-                        </DataTrigger>
-                        <!-- 小雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="14">
-                            <Setter Property="Kind" Value="Snowflake"/>
-                        </DataTrigger>
-                        <!-- 中雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="15">
-                            <Setter Property="Kind" Value="Snowflake"/>
-                        </DataTrigger>
-                        <!-- 大雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="16">
-                            <Setter Property="Kind" Value="CloudSnow"/>
-                        </DataTrigger>
-                        <!-- 暴雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="17">
-                            <Setter Property="Kind" Value="CloudSnow"/>
-                        </DataTrigger>
-                        <!-- 雾 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="18">
-                            <Setter Property="Kind" Value="CloudFog"/>
-                        </DataTrigger>
-                        <!-- 冻雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="19">
-                            <Setter Property="Kind" Value="CloudSleet"/>
-                        </DataTrigger>
-                        <!-- 沙尘暴 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="20">
-                            <Setter Property="Kind" Value="Tornado"/>
-                        </DataTrigger>
-                        <!-- 小雨-中雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="21">
-                            <Setter Property="Kind" Value="CloudDrizzle"/>
-                        </DataTrigger>
-                        <!-- 中雨-大雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="22">
-                            <Setter Property="Kind" Value="CloudRain"/>
-                        </DataTrigger>
-                        <!-- 大雨-暴雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="23">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
-                        </DataTrigger>
-                        <!-- 暴雨-大暴雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="24">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
-                        </DataTrigger>
-                        <!-- 大暴雨-特大暴雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="25">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
-                        </DataTrigger>
-                        <!-- 小雪-中雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="26">
-                            <Setter Property="Kind" Value="Snowflake"/>
-                        </DataTrigger>
-                        <!-- 中雪-大雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="27">
-                            <Setter Property="Kind" Value="CloudSnow"/>
-                        </DataTrigger>
-                        <!-- 大雪-暴雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="28">
-                            <Setter Property="Kind" Value="CloudSnow"/>
-                        </DataTrigger>
-                        <!-- 浮尘 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="29">
-                            <Setter Property="Kind" Value="SunDust"/>
-                        </DataTrigger>
-                        <!-- 扬沙 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="30">
-                            <Setter Property="Kind" Value="SunDust"/>
-                        </DataTrigger>
-                        <!-- 强沙尘暴 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="31">
-                            <Setter Property="Kind" Value="Tornado"/>
-                        </DataTrigger>
-                        <!-- 飑 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="32">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
-                        </DataTrigger>
-                        <!-- 龙卷风 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="33">
-                            <Setter Property="Kind" Value="Tornado"/>
-                        </DataTrigger>
-                        <!-- 弱高吹雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="34">
-                            <Setter Property="Kind" Value="WindSnow"/>
-                        </DataTrigger>
-                        <!-- 轻雾 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="35">
-                            <Setter Property="Kind" Value="CloudFog"/>
-                        </DataTrigger>
-                        <!-- 霾 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="53">
-                            <Setter Property="Kind" Value="SunHaze"/>
-                        </DataTrigger>
-                        <!-- 雨 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="301">
-                            <Setter Property="Kind" Value="CloudRain"/>
-                        </DataTrigger>
-                        <!-- 雪 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="302">
-                            <Setter Property="Kind" Value="CloudSnow"/>
-                        </DataTrigger>
-                        <!-- 未知 -->
-                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                         Value="99">
-                            <Setter Property="Kind" Value="Cloud"/>
-                        </DataTrigger>
                     </Style.Triggers>
-                    <Setter Property="Kind" Value="Cloud"/>
                 </Style>
-            </local:SfSymbolIcon.Style>
-        </local:SfSymbolIcon>
+            </ContentPresenter.Style>
+        </ContentPresenter>
     </Grid>
 </UserControl>

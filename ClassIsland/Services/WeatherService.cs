@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -14,13 +15,15 @@ using ClassIsland.Core.Models.Weather;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
-public class WeatherService : IHostedService, IWeatherService
+public class WeatherService : ObservableRecipient, IHostedService, IWeatherService
 {
+    private DataTemplate? _selectedWeatherIconTemplate;
     private SettingsService SettingsService { get; }
 
     private Settings Settings => SettingsService.Settings;
@@ -46,13 +49,34 @@ public class WeatherService : IHostedService, IWeatherService
         RulesetService = rulesetService;
         LocationService = locationService;
         SettingsService = settingsService;
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         LoadData();
+        LoadWeatherIconTemplate();
         RulesetService.RegisterRuleHandler("classisland.weather.currentWeather", CurrentWeatherRuleHandler);
         RulesetService.RegisterRuleHandler("classisland.weather.hasWeatherAlert", HasAlertRuleHandler);
         RulesetService.RegisterRuleHandler("classisland.weather.rainTime", RainTimeRuleHandler);
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Start();
         _ = QueryWeatherAsync();
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is not nameof(Settings.WeatherIconId))
+        {
+            return;
+        }
+
+        LoadWeatherIconTemplate();
+    }
+
+    private void LoadWeatherIconTemplate()
+    {
+        SelectedWeatherIconTemplate = IWeatherService.RegisteredTemplates.FirstOrDefault(x => x.Id == Settings.WeatherIconId)?.Template;
+        if (SelectedWeatherIconTemplate == null)
+        {
+            Logger.LogWarning("未找到 ID 为 {} 的天气图标模板", Settings.WeatherIconId);
+        }
     }
 
     private bool RainTimeRuleHandler(object? o)
@@ -217,6 +241,12 @@ public class WeatherService : IHostedService, IWeatherService
             Logger.LogError(ex, "{}失败。", logText);
             return [];
         }
+    }
+
+    public DataTemplate? SelectedWeatherIconTemplate
+    {
+        get => _selectedWeatherIconTemplate;
+        private set => SetProperty(ref _selectedWeatherIconTemplate, value);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)

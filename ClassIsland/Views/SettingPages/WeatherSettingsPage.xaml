@@ -12,6 +12,8 @@
       xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:classIsland="clr-namespace:ClassIsland"
       xmlns:validations="clr-namespace:ClassIsland.Validations"
+      xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="天气"
@@ -271,7 +273,7 @@
                 </Expander>
             </materialDesign:Card>
             <!-- 排除预警 -->
-            <materialDesign:Card Margin="0 0 0 8">
+            <materialDesign:Card Margin="0 0 0 6">
                 <Expander Background="Transparent"
                           IsExpanded="True"
                           TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
@@ -294,8 +296,31 @@
                     </Grid>
                 </Expander>
             </materialDesign:Card>
+            <!-- 天气图标包 -->
+            <controls1:SettingsCard IconGlyph="WeatherPartlyCloudy"
+                                    Header="天气图标包"
+                                    Description="调整在显示天气类型时使用的图标外观。"
+                                    Margin="0 0 0 6"
+                                    IsOn="{Binding SettingsService.Settings.ShowExtraInfoOnTimePoint, Mode=TwoWay}">
+                <controls1:SettingsCard.Switcher>
+                    <Grid>
+                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                  ItemsSource="{x:Static services:IWeatherService.RegisteredTemplates}"
+                                  HorizontalContentAlignment="Left"
+                                  MinWidth="120"
+                                  SelectedValuePath="Id"
+                                  SelectedValue="{Binding SettingsService.Settings.WeatherIconId}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
             <TextBlock TextWrapping="Wrap" FontWeight="Regular" Margin="0 8 0 0">
-                要调整天气提醒设置，请转到【提醒】选项卡。要调整主界面上的天气快速信息，请在【组件】中配置天气简报组件。
+                要调整天气提醒设置，请转到<ci:NavHyperlink CommandParameter="classisland://app/settings/notification">【提醒】页面</ci:NavHyperlink>。要调整主界面上的天气快速信息，请在<ci:NavHyperlink CommandParameter="classisland://app/settings/components">【组件】页面</ci:NavHyperlink>中配置天气简报组件。
             </TextBlock>
         </StackPanel>
     </ScrollViewer>

@@ -497,6 +497,12 @@ public partial class MainWindow : Window
             AutoSetNotificationEffectRenderingScale();
         }
 
+        if (App.ApplicationCommand.SkipOobe)
+        {
+            ViewModel.Settings.IsWelcomeWindowShowed = true;
+            SettingsService.SaveSettings("Skipped OOBE via command-line.");
+        }
+
         if (!ViewModel.Settings.IsWelcomeWindowShowed)
         {
             if (ViewModel.Settings.IsSplashEnabled)

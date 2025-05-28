@@ -1745,6 +1745,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
     private string _selectedSpeechProvider = "classisland.speech.edgeTts";
     private bool _isThemeWarningVisible = true;
+    private string _weatherIconId = "classisland.weatherIcons.materialDesign";
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -1930,6 +1931,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (Equals(value, _excludedWeatherAlerts)) return;
             _excludedWeatherAlerts = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string WeatherIconId
+    {
+        get => _weatherIconId;
+        set
+        {
+            if (value == _weatherIconId) return;
+            _weatherIconId = value;
             OnPropertyChanged();
         }
     }
