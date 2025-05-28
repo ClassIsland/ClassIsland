@@ -17,6 +17,7 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Models.Components;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Services;
 using ClassIsland.Shared;
@@ -123,6 +124,15 @@ public class MainWindowLine : TemplatedControl
     
 }
 
+    public static readonly StyledProperty<MainWindowLineSettings> SettingsProperty = AvaloniaProperty.Register<MainWindowLine, MainWindowLineSettings>(
+        nameof(Settings));
+
+    public MainWindowLineSettings Settings
+    {
+        get => GetValue(SettingsProperty);
+        set => SetValue(SettingsProperty, value);
+    }
+
     private bool _isLoadCompleted = false;
 
     private bool _isTemplateApplied = false;
@@ -150,7 +160,7 @@ public class MainWindowLine : TemplatedControl
     private void UpdateVisibilityState(object? sender, RoutedEventArgs args)
     {
         Logger.LogTrace("ComponentVisibilityChangedEvent handled");
-        IsAllComponentsHid = ComponentsService.CurrentComponents
+        IsAllComponentsHid = Settings.Children
             .Where(x => x.RelativeLineNumber == LineNumber)
             .FirstOrDefault(x => x.IsVisible) == null;
     }

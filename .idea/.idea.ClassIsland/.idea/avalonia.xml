@@ -19,8 +19,15 @@
         <entry key="ClassIsland.Core/Controls/IconText.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/InfoCard.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonControlExpanded.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/LessonsControls/LessonControlMinimized.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonsListBox.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/NotificationTemplates/RollingTextTemplate.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/NotificationTemplates/Templates.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/NotificationTemplates/TwoIconsMaskTemplate.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/RootAttachedSettingsDependencyControl.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/Ruleset/RulesetControl.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/Ruleset/RulesetSettingsControlPresenter.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/Ruleset/RulesetStringMatchingSettingsControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/SettingsCard.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/SettingsControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/StarRailLoadingControl.axaml" value="ClassIsland/ClassIsland.csproj" />
@@ -34,7 +41,10 @@
         <entry key="ClassIsland/App.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/AppNew.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Assets/Fonts/Fonts.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Controls/MainWindowLine.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Themes/Styles.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Views/CrashWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
       </map>
     </option>
   </component>

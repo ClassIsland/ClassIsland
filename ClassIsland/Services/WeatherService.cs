@@ -122,8 +122,8 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
     private async void LoadData()
     {
-        var w = AssetLoader.Open(new Uri("/Assets/XiaomiWeather/xiaomi_weather_status.json",
-            UriKind.Relative));
+        var w = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/XiaomiWeather/xiaomi_weather_status.json",
+            UriKind.Absolute));
         var codes = await JsonSerializer.DeserializeAsync<XiaomiWeatherStatusCodes>(w);
         WeatherStatusList = codes!.WeatherInfo;
     }

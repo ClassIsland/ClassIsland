@@ -28,14 +28,13 @@
         SystemDecorations="None"
         ShowInTaskbar="False"
         d:Width="600"
-        Closing="MainWindow_OnClosing"
+        Background="Transparent"
         SizeChanged="MainWindow_OnSizeChanged"
         Activated="MainWindow_OnActivated"
         Icon="/Assets/AppLogo.ico"
         Loaded="MainWindow_OnLoaded"
         SizeToContent="Height"
-        ShowActivated="False"
-        x:Name="MainWindow">
+        ShowActivated="False">
     <Window.Resources>
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
@@ -116,7 +115,6 @@
                 </Interaction.Behaviors>
                 <Grid.Effect>
                     <DropShadowEffect BlurRadius="8" Opacity="0" 
-                                      x:Name="RootDropShadowEffect"
                                       Color="Black"/>
                 </Grid.Effect>
 
@@ -141,6 +139,7 @@
                                                                  LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
                                                                  IsMainLine="{Binding IsMainLine}"
                                                                  LineNumber="0"
+                                                                 Settings="{Binding}"
                                                                  IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
                                             <ItemsControl ItemsSource="{Binding Children}">
                                                 <ItemsControl.ItemsPanel>
@@ -192,7 +191,7 @@
             <Run Text="{Binding ActualHeight, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}"/>
             <LineBreak/>
             <Run Text="CurrentTime:"/>
-            <Run Text="{Binding ViewModel.DebugCurrentTime, ConverterCulture=zh-CN}"/>
+            <Run Text="{Binding ViewModel.DebugCurrentTime}"/>
         </TextBlock>
         <TextBlock Foreground="Cyan" 
                    HorizontalAlignment="Right"

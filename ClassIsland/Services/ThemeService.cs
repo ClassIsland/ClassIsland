@@ -42,7 +42,6 @@ public class ThemeService : IHostedService, IThemeService
     public void SetTheme(int themeMode, Color primary, Color secondary)
     {
         var theme = Application.Current!.LocateMaterialTheme<CustomMaterialTheme>();
-        var themeBootstrap = Application.Current!.LocateMaterialTheme<MaterialThemeBase>();
         var lastPrimary = theme.PrimaryColor;
         var lastSecondary = theme.SecondaryColor;
         var useDarkTheme = false;
@@ -96,7 +95,7 @@ public class ThemeService : IHostedService, IThemeService
         }
 
         var newTheme = Theme.Create(useDarkTheme ? Theme.Dark : Theme.Light, primary, secondary);
-        themeBootstrap.CurrentTheme = newTheme;
+        theme.CurrentTheme = newTheme;
         CurrentTheme = newTheme;
         Logger.LogInformation("设置主题：{}", theme);
         CurrentRealThemeMode = useDarkTheme ? 1 : 0;
@@ -108,9 +107,9 @@ public class ThemeService : IHostedService, IThemeService
             RealThemeMode = useDarkTheme ? 1 : 0
         });
 
-        var resource = new ResourceInclude(CurrentRealThemeMode == 0
-            ? new Uri("pack://application:,,,/ClassIsland;component/Themes/LightTheme.axaml")
-            : new Uri("pack://application:,,,/ClassIsland;component/Themes/DarkTheme.axaml"));
-        Application.Current!.Resources.MergedDictionaries[0] = resource;
+        // var resource = new ResourceInclude(CurrentRealThemeMode == 0
+        //     ? new Uri("avares://ClassIsland/Themes/LightTheme.axaml")
+        //     : new Uri("avares://ClassIsland/Themes/DarkTheme.axaml"));
+        // Application.Current!.Resources.MergedDictionaries[0] = resource;
     }
 }

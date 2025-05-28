@@ -20,7 +20,7 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
         get;
     } = new()
     {
-        Icon = new WindowIcon("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png"),
+        Icon = new WindowIcon("Assets/AppLogo.png"),
         ToolTipText = "ClassIsland"
     };
 

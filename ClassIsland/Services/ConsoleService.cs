@@ -26,7 +26,7 @@ public class ConsoleService
 
     public static void PrintAppInfo()
     {
-        var s = AssetLoader.Open(new Uri("/Assets/AsciiLogo.txt", UriKind.RelativeOrAbsolute));
+        var s = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/AsciiLogo.txt", UriKind.RelativeOrAbsolute));
         AsciiLogo = new StreamReader(s).ReadToEnd();
         Console.WriteLine(AsciiLogo.Pastel("#00bfff"));
         Console.WriteLine($"ClassIsland {App.AppVersionLong}");

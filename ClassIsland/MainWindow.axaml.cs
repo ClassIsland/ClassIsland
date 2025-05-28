@@ -5,13 +5,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-
+using System.Windows.Input;
 using Windows.Win32.UI.Accessibility;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
+using Avalonia.Data.Core;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform;
-using ClassIsland.Controls.NotificationEffects;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -33,10 +36,9 @@ using Microsoft.Win32;
 
 using NAudio.Wave;
 using Sentry;
-using Application = System.Windows.Application;
 using NAudio.Wave.SampleProviders;
 using Linearstar.Windows.RawInput;
-using WindowChrome = System.Windows.Shell.WindowChrome;
+using Material.Ripple;
 using YamlDotNet.Core;
 
 
@@ -51,7 +53,7 @@ namespace ClassIsland;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
+    // public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
 
     public event EventHandler? StartupCompleted;
 
@@ -61,7 +63,7 @@ public partial class MainWindow : Window
         set;
     }
 
-    private Storyboard NotificationProgressBar { get; set; } = new Storyboard();
+    // private Storyboard NotificationProgressBar { get; set; } = new Storyboard();
 
     private SettingsService SettingsService
     {
@@ -90,7 +92,7 @@ public partial class MainWindow : Window
 
     public ILessonsService LessonsService { get; }
 
-    public TopmostEffectWindow TopmostEffectWindow { get; }
+    // public TopmostEffectWindow TopmostEffectWindow { get; }
 
     private bool IsRunningCompatibleMode { get; set; } = false;
 
@@ -114,7 +116,7 @@ public partial class MainWindow : Window
 
     private Stopwatch RawInputUpdateStopWatch { get; } = new();
 
-    public ClassChangingWindow? ClassChangingWindow { get; set; }
+    // public ClassChangingWindow? ClassChangingWindow { get; set; }
     
     private IUriNavigationService UriNavigationService { get; }
     public IRulesetService RulesetService { get; }
@@ -139,13 +141,13 @@ public partial class MainWindow : Window
         set => SetValue(BackgroundWidthProperty, value);
     }
 
-    public static readonly DependencyProperty NotificationProgressBarValueProperty = DependencyProperty.Register(
-        nameof(NotificationProgressBarValue), typeof(double), typeof(MainWindow), new PropertyMetadata(default(double)));
-
+    public static readonly StyledProperty<double> NotificationProgressBarValueProperty = AvaloniaProperty.Register<MainWindow, double>(
+        nameof(NotificationProgressBarValue));
     public double NotificationProgressBarValue
     {
-        get { return (double)GetValue(NotificationProgressBarValueProperty); }
-        set { SetValue(NotificationProgressBarValueProperty, value); }
+        get => GetValue(NotificationProgressBarValueProperty);
+        set => SetValue(NotificationProgressBarValueProperty, value);
+    
     }
 
     public MainWindow(SettingsService settingsService, 
@@ -156,7 +158,6 @@ public partial class MainWindow : Window
         ILogger<MainWindow> logger, 
         ISpeechService speechService,
         IExactTimeService exactTimeService,
-        TopmostEffectWindow topmostEffectWindow,
         IComponentsService componentsService,
         ILessonsService lessonsService,
         IUriNavigationService uriNavigationService,
@@ -172,7 +173,7 @@ public partial class MainWindow : Window
         ThemeService = themeService;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
-        TopmostEffectWindow = topmostEffectWindow;
+        // TopmostEffectWindow = topmostEffectWindow;
         ComponentsService = componentsService;
         LessonsService = lessonsService;
         UriNavigationService = uriNavigationService;
@@ -271,7 +272,7 @@ public partial class MainWindow : Window
     {
         GetCurrentDpi(out var dpi, out _);
         
-        if (VisualTreeUtils.FindChildVisualByName<Grid>(this, "PART_GridWrapper") is not { } gridWrapper) 
+        if (this.Find<Grid>("PART_GridWrapper") is not { } gridWrapper) 
             return _centerPointCache;  // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
         var p = gridWrapper.TranslatePoint(new Point(gridWrapper.Bounds.Width / 2, gridWrapper.Bounds.Height / 2), this);
         if (p == null)
@@ -353,7 +354,7 @@ public partial class MainWindow : Window
                     {
                         var provider = string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
                             ? new StreamMediaFoundationReader(
-                                Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream).ToSampleProvider()
+                                AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)).ToSampleProvider()
                             : new AudioFileReader(settings.NotificationSoundPath);
                         var volume = new VolumeSampleProvider(provider)
                         {
@@ -372,14 +373,14 @@ public partial class MainWindow : Window
                     GridRoot.IsVisible && ViewModel.Settings.IsMainWindowVisible && !IsRunningCompatibleMode)
                 {
                     var center = GetCenter();
-                    TopmostEffectWindow.Dispatcher.Invoke(() =>
-                    {
-                        TopmostEffectWindow.PlayEffect(new RippleEffect()
-                        {
-                            CenterX = center.X,
-                            CenterY = center.Y
-                        });
-                    });
+                    // TopmostEffectWindow.Dispatcher.Invoke(() =>
+                    // {
+                    //     TopmostEffectWindow.PlayEffect(new RippleEffect()
+                    //     {
+                    //         CenterX = center.X,
+                    //         CenterY = center.Y
+                    //     });
+                    // });
                 }
 
                 if (!cancellationToken.IsCancellationRequested)
@@ -401,25 +402,25 @@ public partial class MainWindow : Window
                     BeginStoryboardInLine("OverlayMaskOut");
                     ViewModel.OverlayRemainStopwatch.Restart();
                     // 倒计时动画
-                    var da = new DoubleAnimation()
-                    {
-                        From = 1.0,
-                        To = 0.0,
-                        Duration = new Duration(overlay.Duration),
-                    };
-                    var storyboard = new Storyboard()
-                    {
-                    };
-                    Storyboard.SetTarget(da, this);
-                    Storyboard.SetTargetProperty(da, new PropertyPath(NotificationProgressBarValueProperty));
-                    storyboard.Children.Add(da);
-                    storyboard.Begin();
-                    if (!cancellationToken.IsCancellationRequested)
-                    {
-                        await Task.Run(() => cancellationToken.WaitHandle.WaitOne(overlay.Duration),
-                            cancellationToken);
-                    }
-                    storyboard.Stop();
+                    // var da = new DoubleAnimation()
+                    // {
+                    //     From = 1.0,
+                    //     To = 0.0,
+                    //     Duration = new Duration(overlay.Duration),
+                    // };
+                    // var storyboard = new Storyboard()
+                    // {
+                    // };
+                    // Storyboard.SetTarget(da, this);
+                    // Storyboard.SetTargetProperty(da, new PropertyPath(NotificationProgressBarValueProperty));
+                    // storyboard.Children.Add(da);
+                    // storyboard.Begin();
+                    // if (!cancellationToken.IsCancellationRequested)
+                    // {
+                    //     await Task.Run(() => cancellationToken.WaitHandle.WaitOne(overlay.Duration),
+                    //         cancellationToken);
+                    // }
+                    // storyboard.Stop();
                     ViewModel.OverlayRemainStopwatch.Stop();
                 }
                 SpeechService.ClearSpeechQueue();
@@ -449,12 +450,7 @@ public partial class MainWindow : Window
         UpdateTheme();
         IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化托盘菜单");
-        var menu = (ContextMenu)FindResource("AppContextMenu");
-        menu.DataContext = this;
-        TaskBarIconService.MainTaskBarIcon.DataContext = this;
-        TaskBarIconService.MainTaskBarIcon.ContextMenu = menu;
-        TaskBarIconService.MainTaskBarIcon.LeftClickCommand = TrayIconLeftClickedCommand;
-        TaskBarIconService.MainTaskBarIcon.TrayLeftMouseUp += MainTaskBarIconOnTrayLeftMouseUp;
+
         ViewModel.OverlayRemainTimePercents = 0.5;
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         DiagnosticService.EndStartup();
@@ -470,19 +466,20 @@ public partial class MainWindow : Window
             {
                 App.GetService<ISplashService>().EndSplash();
             }
-            var w = new WelcomeWindow()
-            {
-                ViewModel =
-                {
-                    Settings = ViewModel.Settings
-                }
-            };
-            var r = w.ShowDialog();
-            if (r == false)
-            {
-                ViewModel.IsClosing = true;
-                Close();
-            }
+            // TODO: welcome window
+            // var w = new WelcomeWindow()
+            // {
+            //     ViewModel =
+            //     {
+            //         Settings = ViewModel.Settings
+            //     }
+            // };
+            // var r = w.ShowDialog();
+            // if (r == false)
+            // {
+            //     ViewModel.IsClosing = true;
+            //     Close();
+            // }
             else
             {
                 ViewModel.Settings.IsWelcomeWindowShowed = true;
@@ -559,8 +556,8 @@ public partial class MainWindow : Window
             RawInputDeviceFlags.InputSink, handle);
 
         RawInputUpdateStopWatch.Start();
-        var hWndSource = HwndSource.FromHwnd(handle);
-        hWndSource?.AddHook(ProcWnd);
+        // var hWndSource = HwndSource.FromHwnd(handle);
+        // hWndSource?.AddHook(ProcWnd);
     }
 
     private void ProcessMousePos(object? sender, EventArgs e)
@@ -629,35 +626,6 @@ public partial class MainWindow : Window
             : Screens.Primary;
     }
 
-    private void MainTaskBarIconOnTrayLeftMouseUp(object sender, RoutedEventArgs e)
-    {
-        switch (ViewModel.Settings.TaskBarIconClickBehavior)
-        {
-            case 0:
-                if (TaskBarIconService.MainTaskBarIcon.ContextMenu != null)
-                {
-                    GetCursorPos(out var ptr);
-                    if (PresentationSource.FromVisual(this) == null)
-                    {
-                        break;
-                    }
-                    GetCurrentDpi(out var dpiX, out var dpiY, TaskBarIconService.MainTaskBarIcon.ContextMenu);
-                    TaskBarIconService.MainTaskBarIcon.ShowContextMenu(new System.Drawing.Point((int)(ptr.X / dpiX), (int)
-                        (ptr.Y / dpiY)));
-                }
-                break;
-            case 1:
-                OpenProfileSettingsWindow();
-                break;
-            case 2:
-                ViewModel.Settings.IsMainWindowVisible = !ViewModel.Settings.IsMainWindowVisible;
-                break;
-            case 3:
-                OpenClassSwapWindow();
-                break;
-        }
-    }
-
     public void LoadProfile()
     {
         //ProfileService.LoadProfile();
@@ -711,7 +679,7 @@ public partial class MainWindow : Window
         //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
         LoadProfile();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（1）");
-        UpdateTheme();
+        // UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();
         SystemEvents.UserPreferenceChanged += OnSystemEventsOnUserPreferenceChanged;
         AppBase.Current.AppStopping += (sender, args) => SystemEvents.UserPreferenceChanged -= OnSystemEventsOnUserPreferenceChanged;
@@ -731,7 +699,7 @@ public partial class MainWindow : Window
 
     private void SetBottom()
     {
-        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+        var hWnd = (HWND)TryGetPlatformHandle()!.Handle;
         if (ViewModel.Settings.WindowLayer != 0)
         {
             return;
@@ -749,7 +717,7 @@ public partial class MainWindow : Window
     private async void UpdateTheme()
     {
         UpdateWindowPos();
-        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+        var hWnd = (HWND)TryGetPlatformHandle()!.Handle;
         var style = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
         style |= NativeWindowHelper.WS_EX_TOOLWINDOW;
         if (!ViewModel.Settings.IsMouseClickingEnabled)
@@ -779,9 +747,9 @@ public partial class MainWindow : Window
             case 2:
                 try
                 {
-                    DwmGetColorizationColor(out var color, out _);
-                    var c = NativeWindowHelper.GetColor((int)color);
-                    primary = secondary = c;
+                    // DwmGetColorizationColor(out var color, out _);
+                    // var c = NativeWindowHelper.GetColor((int)color);
+                    // primary = secondary = c;
                 }
                 catch (Exception ex)
                 {
@@ -809,12 +777,12 @@ public partial class MainWindow : Window
         }
         else
         {
-            if (ResourceLoaderBorder.Resources.Contains("MaterialDesignBody"))
+            if (ResourceLoaderBorder.Resources.ContainsKey("MaterialDesignBody"))
             {
                 ResourceLoaderBorder.Resources.Remove("MaterialDesignBody");
             }
-            ResourceLoaderBorder.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
-            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, DependencyProperty.UnsetValue);
+            ResourceLoaderBorder.SetValue(ForegroundProperty, AvaloniaProperty.UnsetValue);
+            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, AvaloniaProperty.UnsetValue);
         }
 
         App._isCriticalSafeModeEnabled = ViewModel.Settings.IsCriticalSafeMode;
@@ -845,7 +813,7 @@ public partial class MainWindow : Window
 
     private void MenuItemSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<SettingsWindowNew>().Open();
+        // App.GetService<SettingsWindowNew>().Open();
     }
 
 
@@ -918,13 +886,13 @@ public partial class MainWindow : Window
         };
         Position = new PixelPoint((int)x, (int)y);
 
-        if (updateEffectWindow)
-        {
-            TopmostEffectWindow.Dispatcher.Invoke(() =>
-            {
-                TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
-            });
-        }
+        // if (updateEffectWindow)
+        // {
+        //     TopmostEffectWindow.Dispatcher.Invoke(() =>
+        //     {
+        //         TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
+        //     });
+        // }
     }
 
     public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)
@@ -934,11 +902,11 @@ public partial class MainWindow : Window
         var realVisual = visual ?? this;
         try
         {
-            var source = PresentationSource.FromVisual(realVisual);
-            if (source?.CompositionTarget == null) 
-                return;
-            _latestDpiX = dpiX = 1.0 * source.CompositionTarget.TransformToDevice.M11;
-            _latestDpiY = dpiY = 1.0 * source.CompositionTarget.TransformToDevice.M22;
+            // var source = PresentationSource.FromVisual(realVisual);
+            // if (source?.CompositionTarget == null) 
+            //     return;
+            // _latestDpiX = dpiX = 1.0 * source.CompositionTarget.TransformToDevice.M11;
+            // _latestDpiY = dpiY = 1.0 * source.CompositionTarget.TransformToDevice.M22;
         }
         catch(Exception ex)
         {
@@ -963,24 +931,24 @@ public partial class MainWindow : Window
 
     private void MenuItemTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
+        // App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
         OpenProfileSettingsWindow();
     }
 
     public void OpenProfileSettingsWindow()
     {
-        App.GetService<ProfileSettingsWindow>().Open();
+        // App.GetService<ProfileSettingsWindow>().Open();
     }
 
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<SettingsWindowNew>().Open("about");
+        // App.GetService<SettingsWindowNew>().Open("about");
     }
 
     private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)
     {
-        var ww = new WelcomeWindow();
-        ww.ShowDialog();
+        // var ww = new WelcomeWindow();
+        // ww.ShowDialog();
     }
 
     private void MenuItemDebugWelcomeWindow2_OnClick(object sender, RoutedEventArgs e)
@@ -995,7 +963,7 @@ public partial class MainWindow : Window
 
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<SettingsWindowNew>().Open("update");
+        // App.GetService<SettingsWindowNew>().Open("update");
     }
 
     private void GridRoot_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -1016,7 +984,7 @@ public partial class MainWindow : Window
 
     private void MenuItemNotificationSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<SettingsWindowNew>().Open("notification");
+        // App.GetService<SettingsWindowNew>().Open("notification");
     }
 
     private void MenuItemSwitchMainWindowVisibility_OnClick(object sender, RoutedEventArgs e)
@@ -1037,24 +1005,24 @@ public partial class MainWindow : Window
         }
         if (LessonsService.CurrentClassPlan == null) // 如果今天没有课程，则选择临时课表
         {
-            App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
+            // App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
             OpenProfileSettingsWindow();
             return;
         }
 
-        if (ClassChangingWindow != null)
-        {
-            return;
-        }
+        // if (ClassChangingWindow != null)
+        // {
+        //     return;
+        // }
 
         // ViewModel.IsBusy = true;
-        ClassChangingWindow = new ClassChangingWindow()
-        {
-            ClassPlan = LessonsService.CurrentClassPlan
-        };
-        ClassChangingWindow.ShowDialog();
-        ClassChangingWindow.DataContext = null;
-        ClassChangingWindow = null;
+        // ClassChangingWindow = new ClassChangingWindow()
+        // {
+        //     ClassPlan = LessonsService.CurrentClassPlan
+        // };
+        // ClassChangingWindow.ShowDialog();
+        // ClassChangingWindow.DataContext = null;
+        // ClassChangingWindow = null;
         // ViewModel.IsBusy = false;
     }
 
@@ -1065,6 +1033,6 @@ public partial class MainWindow : Window
 
     private void MenuItemSettingsWindow2_OnClick(object sender, RoutedEventArgs e)
     {
-        IAppHost.GetService<SettingsWindowNew>().Open();
+        // IAppHost.GetService<SettingsWindowNew>().Open();
     }
 }

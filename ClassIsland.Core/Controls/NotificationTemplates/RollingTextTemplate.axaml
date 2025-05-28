@@ -25,7 +25,9 @@
                        Canvas.Right="0"
                        VerticalAlignment="Center">
                 <TextBlock.RenderTransform>
-                    <TranslateTransform x:Name="AnimatedTranslateTransform" />
+                    <TransformGroup>
+                        <TranslateTransform/>
+                    </TransformGroup>
                 </TextBlock.RenderTransform>
             </TextBlock>
         </Canvas>

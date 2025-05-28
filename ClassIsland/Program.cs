@@ -12,6 +12,7 @@ using ClassIsland.Services;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
+using HotAvalonia;
 using Sentry;
 
 namespace ClassIsland;
@@ -93,6 +94,7 @@ public static class Program
             })
             .UsePlatformDetect()
             .LogToTrace()
+            .UseHotReload()
             .StartWithClassicDesktopLifetime(args);
     }
     

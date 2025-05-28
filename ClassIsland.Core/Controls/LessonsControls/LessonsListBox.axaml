@@ -115,5 +115,6 @@
     </ControlTheme>
 
     <ControlTheme TargetType="lessonsControls:LessonsListBox"
+                  x:Key="{x:Type lessonsControls:LessonsListBox}"
                   BasedOn="{StaticResource ClassIsland.LessonsListBox}"/>
 </ResourceDictionary>

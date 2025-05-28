@@ -104,13 +104,13 @@ public class CommonDialogBuilder
             }
             : kind switch
             {
-                CommonDialogIconKind.Information => SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_点赞.png",
+                CommonDialogIconKind.Information => SetBitmapIcon(new Uri("avares://ClassIsland/Assets/HoYoStickers/帕姆_点赞.png",
                     UriKind.RelativeOrAbsolute)),
-                CommonDialogIconKind.Hint => SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_注意.png",
+                CommonDialogIconKind.Hint => SetBitmapIcon(new Uri("avares://ClassIsland/Assets/HoYoStickers/帕姆_注意.png",
                     UriKind.RelativeOrAbsolute)),
-                CommonDialogIconKind.Forbidden => SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_不可以.png",
+                CommonDialogIconKind.Forbidden => SetBitmapIcon(new Uri("avares://ClassIsland/Assets/HoYoStickers/帕姆_不可以.png",
                     UriKind.RelativeOrAbsolute)),
-                CommonDialogIconKind.Error => SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_哭哭.png",
+                CommonDialogIconKind.Error => SetBitmapIcon(new Uri("avares://ClassIsland/Assets/HoYoStickers/帕姆_哭哭.png",
                     UriKind.RelativeOrAbsolute)),
                 _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
             };

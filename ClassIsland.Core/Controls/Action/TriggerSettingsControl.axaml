@@ -27,7 +27,7 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Button Grid.Column="0"
-                                    Content="{avalonia:MaterialIcon Remove}"
+                                    Content="{avalonia:MaterialIconExt Remove}"
                                     Theme="{StaticResource MaterialFlatButton}"
                                     Classes="circle"
                                     ToolTip.Tip="删除"

@@ -149,7 +149,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Logger.LogInformation("档案不存在：{}", path);
             if (!ManagementService.IsManagementEnabled)  // 在集控模式下不需要默认科目
             {
-                var subject = new StreamReader(AssetLoader.Open(new Uri("/Assets/default-subjects.json", UriKind.Relative))).ReadToEnd();
+                var subject = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json", UriKind.Relative))).ReadToEnd();
                 Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
             }
             SaveProfile(filename);

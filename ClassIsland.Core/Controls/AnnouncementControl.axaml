@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Core.Controls"
-             xmlns:navHyperlink="clr-namespace:ClassIsland.Core.Controls.NavHyperlink"
              xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
              xmlns:materialDesign="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -74,7 +73,7 @@
             </DataTriggerBehavior>
         </Interaction.Behaviors>
         <materialDesign:ColorZone Margin="0 0 0 4"
-                                  Panel.ZIndex="1" x:Name="Background">
+                                  x:Name="Background">
             <StackPanel Margin="8 4">
                 <Grid ColumnDefinitions="Auto,*,Auto">
                     <avalonia:MaterialIcon Grid.Column="0" Height="20" Width="20" x:Name="Icon"/>

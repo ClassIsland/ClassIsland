@@ -4,16 +4,18 @@
          xmlns:ci="http://classisland.tech/schemas/xaml/core"
          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
          xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
-         xmlns:converters="clr-namespace:ClassIsland.Converters">
+         xmlns:converters="clr-namespace:ClassIsland.Converters"
+         xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles">
     <ci:AppBase.Styles>
         <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
-        <StyleInclude Source="/Controls/MainWindowLine.axaml"/>
+        <themes:CustomMaterialTheme BaseTheme="Dark" PrimaryColor="DodgerBlue" SecondaryColor="DodgerBlue" />
     </ci:AppBase.Styles>
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Assets/Fonts/Fonts.axaml"/>
-                <ResourceInclude Source="/Themes/Generic.axaml"/>
+                <!-- <ResourceInclude Source="/Themes/Generic.axaml"/> -->
+                <ResourceInclude Source="/Controls/MainWindowLine.axaml"/>
                 <ResourceInclude Source="avares://ClassIsland.Core/ThemeBase.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             

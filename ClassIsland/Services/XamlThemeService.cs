@@ -92,9 +92,9 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     public void LoadTheme(string themePath)
     {
-        Logger.LogInformation("正在加载主题 {}", themePath);
-        var themeResourceDictionary = new ResourceInclude(new Uri(Path.GetFullPath(themePath)));
-        RootResourceDictionary.MergedDictionaries.Add(themeResourceDictionary);
+        // Logger.LogInformation("正在加载主题 {}", themePath);
+        // var themeResourceDictionary = new ResourceInclude(new Uri(Path.GetFullPath(themePath)));
+        // RootResourceDictionary.MergedDictionaries.Add(themeResourceDictionary);
     }
 
     public void LoadThemeSource()

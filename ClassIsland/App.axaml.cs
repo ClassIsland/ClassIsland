@@ -66,6 +66,8 @@ using Microsoft.Extensions.Logging.Console;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
@@ -73,6 +75,7 @@ using ClassIsland.Helpers;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using Google.Protobuf.WellKnownTypes;
+using HotAvalonia;
 using Material.Icons;
 using Material.Styles.Assists;
 
@@ -188,6 +191,13 @@ public partial class App : AppBase, IAppHost
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
         //TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+    }
+
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+        DesktopLifetime.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        base.Initialize();
     }
 
     private static void CurrentDomainOnProcessExit(object? sender, EventArgs e)
@@ -532,7 +542,7 @@ public partial class App : AppBase, IAppHost
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 services.AddSingleton<IProfileAnalyzeService, ProfileAnalyzeService>();
                 services.AddSingleton<IIpcService, IpcService>();
-                // services.AddSingleton<IAuthorizeService, AuthorizeService>();
+                services.AddSingleton<IAuthorizeService, AuthorizeService>();
                 services.AddSingleton<UriTriggerHandlerService>();
                 services.AddSingleton<SignalTriggerHandlerService>();
                 services.AddSingleton<IAnnouncementService, AnnouncementService>();
@@ -683,13 +693,13 @@ public partial class App : AppBase, IAppHost
                 // // 天气图标模板
                 // var materialDesignWeatherIconTemplateDictionary = new ResourceDictionary()
                 // {
-                //     Source = new Uri("pack://application:,,,/ClassIsland;component/Controls/WeatherIcons/MaterialDesignWeatherIconTemplate.xaml")
+                //     Source = new Uri("avares://ClassIsland/Controls/WeatherIcons/MaterialDesignWeatherIconTemplate.xaml")
                 // };
                 // services.AddWeatherIconTemplate("classisland.weatherIcons.materialDesign", "Material Design（默认）",
                 //     (DataTemplate)materialDesignWeatherIconTemplateDictionary["MaterialDesignWeatherIconTemplate"]!);
                 // var simpleTextWeatherIconTemplateDictionary = new ResourceDictionary()
                 // {
-                //     Source = new Uri("pack://application:,,,/ClassIsland;component/Controls/WeatherIcons/SimpleTextWeatherIconTemplate.xaml")
+                //     Source = new Uri("avares://ClassIsland/Controls/WeatherIcons/SimpleTextWeatherIconTemplate.xaml")
                 // };
                 // services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本",
                 //     (DataTemplate)simpleTextWeatherIconTemplateDictionary["SimpleTextWeatherIconTemplate"]!);
@@ -985,7 +995,7 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
-            Dispatcher.UIThread.InvokeShutdown();
+            DesktopLifetime.Shutdown();
             try
             {
                 //ReleaseLock();

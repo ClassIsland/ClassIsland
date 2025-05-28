@@ -7,6 +7,12 @@
              mc:Ignorable="d" 
              d:Foreground="Aqua"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Styles>
+        <Style Selector="Grid#TeyvatRoot Image">
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+        </Style>
+    </UserControl.Styles>
     <UserControl.Resources>
 
         <DrawingImage x:Key="SourcePyro">
@@ -100,11 +106,6 @@
                 </DrawingGroup>
             </DrawingImage.Drawing>
         </DrawingImage>
-
-        <Style Selector="Grid#TeyvatRoot Image">
-            <Setter Property="Width" Value="24"/>
-            <Setter Property="Height" Value="24"/>
-        </Style>
     </UserControl.Resources>
     <Grid VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="TeyvatRoot">
         <StackPanel Orientation="Horizontal" Opacity="0.15">

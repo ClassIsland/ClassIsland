@@ -48,7 +48,7 @@
                       ItemsSource="{Binding Actions, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True"/>
+                    <WrapPanel/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -58,7 +58,7 @@
                             CommandParameter="{Binding}"
                             Theme="{StaticResource MaterialFlatButton}" Classes="primary"
                             Margin="4 0 0 0">
-                        <avalonia:MaterialIconText Kind="{Binding PackIconKind}"
+                        <avalonia:MaterialIconText Kind="{Binding MaterialIconKind}"
                                         Text="{Binding Name}"/>
                     </Button>
 

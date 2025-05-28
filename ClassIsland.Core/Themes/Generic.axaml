@@ -9,9 +9,8 @@
     xmlns:iconControl="clr-namespace:ClassIsland.Core.Controls.IconControl"
     mc:Ignorable="d">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="avares://ClassIsland.Core/Controls/LessonsControls/LessonsListBox.axaml"/>
-        <ResourceInclude Source="avares://ClassIsland.Core/Controls/IconControl/IconControl.axaml"/>
-        <ResourceInclude Source="avares://ClassIsland.Core/Controls/StickerControl/StickerControl.axaml"/>
+        <!-- <ResourceInclude Source="avares://ClassIsland.Core/Controls/IconControl/IconControl.axaml"/> -->
+        <!-- <ResourceInclude Source="avares://ClassIsland.Core/Controls/StickerControl/StickerControl.axaml"/> -->
         <ResourceInclude Source="avares://ClassIsland.Core/Controls/DevelopmentBuildAdorner.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

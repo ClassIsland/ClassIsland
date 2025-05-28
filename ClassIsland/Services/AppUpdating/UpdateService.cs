@@ -105,7 +105,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         SplashService = splashService;
         Logger = logger;
 
-        var keyStream = AssetLoader.Open(new Uri("/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute));
+        var keyStream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute));
         MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
 
         Index = ConfigureFileHelper.LoadConfig<VersionsIndex>(Path.Combine(UpdateCachePath, "Index.json"));

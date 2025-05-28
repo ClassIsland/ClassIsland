@@ -91,42 +91,46 @@
                             <TabItem>
                                 <TextBlock VerticalAlignment="Bottom">
                                     <Run
-                                        Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
+                                        Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat='HH:mm'}">
                                     </Run><Run Text="-">
                                     </Run><Run
-                                              Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}" />
+                                              Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat='HH:mm'}" />
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
                                 <TextBlock VerticalAlignment="Bottom">
                                     <Run>
-                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay">
-                                            <Binding Path="Seconds" Mode="OneWay" />
-                                            <Binding Path="TotalSeconds" Mode="OneWay" />
-                                        </MultiBinding>
+                                        <Run.Text>
+                                            <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay">
+                                                <Binding Path="Seconds" Mode="OneWay" />
+                                                <Binding Path="TotalSeconds" Mode="OneWay" />
+                                            </MultiBinding>
+                                        </Run.Text>
                                     </Run>
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
                                 <TextBlock VerticalAlignment="Bottom">
                                     <Run Text="-"/><Run>
-                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay"
-                                                      ConverterParameter="1">
-                                            <Binding Path="LeftSeconds" Mode="OneWay" />
-                                            <Binding Path="TotalSeconds" Mode="OneWay" />
-                                        </MultiBinding>
+                                        <Run.Text>
+                                            <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay"
+                                                          ConverterParameter="1">
+                                                <Binding Path="LeftSeconds" Mode="OneWay" />
+                                                <Binding Path="TotalSeconds" Mode="OneWay" />
+                                            </MultiBinding>
+                                        </Run.Text>
                                     </Run>
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
                                 <TextBlock VerticalAlignment="Bottom">
-                                    <Run>
+                                    <TextBlock.Text>
                                         <MultiBinding Converter="{StaticResource TimeLongToPercentMultiConverter}"
                                                       Mode="OneWay">
-                                            <Binding Path="Seconds" Mode="OneWay" />
-                                            <Binding Path="TotalSeconds" Mode="OneWay" />
+                                                <Binding Path="Seconds" Mode="OneWay" />
+                                                <Binding Path="TotalSeconds" Mode="OneWay" />
                                         </MultiBinding>
-                                    </Run>
+                                    </TextBlock.Text>
                                 </TextBlock>
                             </TabItem>
                             <TabItem>

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Web;
 using System.Windows;
+using Avalonia;
 using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Controls;
@@ -14,11 +15,14 @@ namespace ClassIsland.Views;
 /// </summary>
 public partial class CrashWindow : MyWindow
 {
-    public string? CrashInfo
+    public static readonly StyledProperty<string> CrashInfoProperty = AvaloniaProperty.Register<CrashWindow, string>(
+        nameof(CrashInfo));
+
+    public string CrashInfo
     {
-        get;
-        set;
-    } = "";
+        get => GetValue(CrashInfoProperty);
+        set => SetValue(CrashInfoProperty, value);
+    }
 
     public bool IsCritical { get; set; } = false;
 

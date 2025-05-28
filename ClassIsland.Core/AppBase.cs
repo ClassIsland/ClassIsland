@@ -1,6 +1,7 @@
 using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
 
@@ -110,4 +111,10 @@ public abstract class AppBase : Application, IAppHost
     /// 应用当前的主窗口
     /// </summary>
     public Window? MainWindow { get; internal set; }
+
+    /// <summary>
+    /// 桌面生命周期对象
+    /// </summary>
+    public IClassicDesktopStyleApplicationLifetime DesktopLifetime =>
+        (ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!;
 }

@@ -10,7 +10,6 @@
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-    <themes:MaterialTheme BaseTheme="Dark" PrimaryColor="Purple" SecondaryColor="Lime" />
     <avalonia:MaterialIconStyles />
     <dialogHostAvalonia:DialogHostStyles />
     
