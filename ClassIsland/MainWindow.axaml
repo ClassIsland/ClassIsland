@@ -128,33 +128,7 @@
                     </Border.Resources>
                     <Grid>
                         <ItemsControl Grid.Column="0"
-                                      ItemsSource="{Binding Source={StaticResource ComponentsCollectionViewSource}}">
-                            <ItemsControl.GroupStyle>
-                                <GroupStyle>
-                                    <GroupStyle.Panel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel IsItemsHost="True"/>
-                                        </ItemsPanelTemplate>
-                                    </GroupStyle.Panel>
-                                    <GroupStyle.ContainerStyle>
-                                        <Style TargetType="{x:Type GroupItem}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type GroupItem}">
-                                                        <controls:MainWindowLine WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                            LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                            IsMainLine="{Binding Converter={StaticResource MainWindowIsMainLineConverter}, ConverterParameter={StaticResource ComponentsCollectionViewSource}}"
-                                                            LineNumber="{Binding Name}"
-                                                            IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
-                                                            <ItemsPresenter/>
-                                                        </controls:MainWindowLine>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </GroupStyle.ContainerStyle>
-                                </GroupStyle>
-                            </ItemsControl.GroupStyle>
+                                      ItemsSource="{Binding ComponentsService.CurrentComponents.Lines}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" />
@@ -163,12 +137,29 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>
-                                        <ci:ComponentPresenter IsOnMainWindow="True" 
-                                                               IsRootComponent="True"
-                                                               Settings="{Binding}"
-                                                               HidingRules="{Binding HidingRules, Mode=OneWay}"
-                                                               HideOnRule="{Binding HideOnRule, Mode=OneWay}"
-                                                               Margin="6 0" />
+                                        <controls:MainWindowLine WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                                 LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                                 IsMainLine="{Binding IsMainLine}"
+                                                                 LineNumber="0"
+                                                                 IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
+                                            <ItemsControl ItemsSource="{Binding Children}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <ci:ComponentPresenter IsOnMainWindow="True" 
+                                                                               IsRootComponent="True"
+                                                                               Settings="{Binding}"
+                                                                               HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                                               HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                                               Margin="6 0" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </controls:MainWindowLine>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

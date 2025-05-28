@@ -3,7 +3,6 @@
                     xmlns:gif="http://wpfanimatedgif.codeplex.com"
                     xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
                     xmlns:extensions="clr-namespace:ClassIsland.Core.Extensions;assembly=ClassIsland.Core"
-                    xmlns:navHyperlink="clr-namespace:ClassIsland.Core.Controls.NavHyperlink"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime">
     
 <!--     <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph"> -->

@@ -14,7 +14,7 @@ public interface IComponentsService : INotifyPropertyChanged
     /// <summary>
     /// 当前显示的所有组件
     /// </summary>
-    public ObservableCollection<ComponentSettings> CurrentComponents { get; set; }
+    public ComponentProfile CurrentComponents { get; set; }
 
     /// <summary>
     /// 获取组件实例
