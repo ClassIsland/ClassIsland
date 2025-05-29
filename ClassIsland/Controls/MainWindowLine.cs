@@ -25,6 +25,7 @@ using ClassIsland.Services;
 using ClassIsland.Shared;
 using Linearstar.Windows.RawInput;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Bcpg.Sig;
 
 namespace ClassIsland.Controls;
 
@@ -336,7 +337,7 @@ public class MainWindowLine : TemplatedControl
         _isTemplateApplied = false;
     }
 
-    private void WrapperOnSizeChanged(object? sender, SizeChangedEventArgs e)
+    private async void WrapperOnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
         if (double.IsNaN(e.NewSize.Width))
             return;
@@ -345,7 +346,7 @@ public class MainWindowLine : TemplatedControl
             BackgroundWidth = e.NewSize.Width;
             return;
         }
-
+        
         var m = e.NewSize.Width > BackgroundWidth;
         var s = 1.0;  // TODO: 适配 debug 动画缩放
         var t = m ? 600 * s : 800 * s;
@@ -353,6 +354,9 @@ public class MainWindowLine : TemplatedControl
         {
             Duration = TimeSpan.FromMilliseconds(t),
             Easing = new BackEaseOut(),
+            FillMode = FillMode.Forward,
+            IterationCount = new IterationCount(1),
+            PlaybackDirection = PlaybackDirection.Normal,
             Children =
             {
                 new KeyFrame()
@@ -361,7 +365,7 @@ public class MainWindowLine : TemplatedControl
                     {
                         new Setter(BackgroundWidthProperty, BackgroundWidth)
                     },
-                    Cue = new Cue(0.0)
+                    KeyTime = TimeSpan.FromMilliseconds(0)
                 },
                 new KeyFrame()
                 {
@@ -369,11 +373,11 @@ public class MainWindowLine : TemplatedControl
                     {
                         new Setter(BackgroundWidthProperty, e.NewSize.Width)
                     },
-                    Cue = new Cue(1.0)
+                    KeyTime = TimeSpan.FromMilliseconds(t)
                 }
             }
         };
-        anim.RunAsync(this);
+        await anim.RunAsync(this);
     }
 
     private bool GetMouseStatusByPos(System.Drawing.Point ptr)

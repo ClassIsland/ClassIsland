@@ -17,7 +17,7 @@
     <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
     <system:Double x:Key="IslandContainerHeight">40</system:Double>
 
-    <ControlTemplate x:Key="MainWindowLineFullControlTemplate">
+    <ControlTemplate x:Key="MainWindowLineFullControlTemplate" TargetType="controls:MainWindowLine">
         <Grid>
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="8" Opacity="0"
@@ -43,7 +43,7 @@
                 <!-- Background -->
                 <Border x:Name="BackgroundBorder"
                         Classes="docking background"
-                        Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                        Width="{TemplateBinding BackgroundWidth, Mode=OneWay}"
                         Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                         Height="{DynamicResource IslandContainerHeight}" />
                 <Border x:Name="BackgroundBorderOverlay"
@@ -127,7 +127,7 @@
             </Grid>
         </Grid>
     </ControlTemplate>
-    <ControlTemplate x:Key="MainWindowLineMinControlTemplate">
+    <ControlTemplate x:Key="MainWindowLineMinControlTemplate" TargetType="controls:MainWindowLine">
         <Grid
             ClipToBounds="True"
             Classes="docking">
@@ -148,7 +148,7 @@
             <!-- Background -->
             <Border x:Name="BackgroundBorder"
                     Classes="docking background"
-                    Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                    Width="{TemplateBinding BackgroundWidth, Mode=OneWay}"
                     Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                     Height="{DynamicResource IslandContainerHeight}" />
 
