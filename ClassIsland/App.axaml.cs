@@ -766,16 +766,6 @@ public partial class App : AppBase, IAppHost
 
         GetService<ISplashService>().SetDetailedStatus("正在创建任务栏图标");
         var spanCreateTaskbarIcon = spanLaunching.StartChild("startup-create-taskbar-icon");
-        try
-        {
-            GetService<ITaskBarIconService>().MainTaskBarIcon.IsVisible = true;
-            spanCreateTaskbarIcon.Finish();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "创建任务栏图标失败。");
-            spanCreateTaskbarIcon.Finish(ex);
-        }
 
         if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
         {

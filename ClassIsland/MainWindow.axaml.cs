@@ -452,7 +452,8 @@ public partial class MainWindow : Window
         UpdateTheme();
         IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化托盘菜单");
-
+        TaskBarIconService.MainTaskBarIcon.Menu = this.FindResource("AppMenu") as NativeMenu;
+        TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         ViewModel.OverlayRemainTimePercents = 0.5;
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         DiagnosticService.EndStartup();
@@ -803,7 +804,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonSettings_OnClick(object sender, EventArgs e)
     {
         OpenProfileSettingsWindow();
     }
@@ -813,22 +814,24 @@ public partial class MainWindow : Window
         SizeToContent = SizeToContent.WidthAndHeight;
     }
 
-    private void MenuItemSettings_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemSettings_OnClick(object sender, EventArgs e)
     {
         // App.GetService<SettingsWindowNew>().Open();
     }
 
 
-    private async void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
+    private async void MenuItemExitApp_OnClick(object sender, EventArgs e)
     {
         if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
         {
             return;
         }
+        
         ViewModel.IsClosing = true;
         Close();
+        AppBase.Current.Stop();
     }
-    private void MenuItemRestartApp_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemRestartApp_OnClick(object sender, EventArgs e)
     {
         AppBase.Current.Restart();
     }
@@ -840,7 +843,7 @@ public partial class MainWindow : Window
             e.Cancel = true;
             return;
         }
-        AppBase.Current.Stop();
+
     }
 
     private void UpdateWindowPos(bool updateEffectWindow=false)
@@ -901,14 +904,15 @@ public partial class MainWindow : Window
     {
         dpiX = _latestDpiX;
         dpiY = _latestDpiY;
-        var realVisual = visual ?? this;
+        if (ViewModel.IsClosing)
+        {
+            return;
+        }
         try
         {
-            // var source = PresentationSource.FromVisual(realVisual);
-            // if (source?.CompositionTarget == null) 
-            //     return;
-            // _latestDpiX = dpiX = 1.0 * source.CompositionTarget.TransformToDevice.M11;
-            // _latestDpiY = dpiY = 1.0 * source.CompositionTarget.TransformToDevice.M22;
+            var screen = Screens.ScreenFromWindow(this);
+            dpiX = screen?.Scaling ?? 1.0;
+            dpiY = screen?.Scaling ?? 1.0;
         }
         catch(Exception ex)
         {
@@ -931,7 +935,7 @@ public partial class MainWindow : Window
         SetBottom();
     }
 
-    private void MenuItemTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemTemporaryClassPlan_OnClick(object sender, EventArgs e)
     {
         // App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
         OpenProfileSettingsWindow();
@@ -953,17 +957,17 @@ public partial class MainWindow : Window
         // ww.ShowDialog();
     }
 
-    private void MenuItemDebugWelcomeWindow2_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemDebugWelcomeWindow2_OnClick(object sender, EventArgs e)
     {
         ViewModel.Settings.IsWelcomeWindowShowed = false;
     }
 
-    private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemHelps_OnClick(object sender, EventArgs e)
     {
         UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/"));
     }
 
-    private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemUpdates_OnClick(object sender, EventArgs e)
     {
         // App.GetService<SettingsWindowNew>().Open("update");
     }
@@ -979,7 +983,7 @@ public partial class MainWindow : Window
         ViewModel.OverlayRemainTimePercents = 0.5;
     }
 
-    private void MenuItemClearAllNotifications_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemClearAllNotifications_OnClick(object sender, EventArgs e)
     {
         NotificationHostService.CancelAllNotifications();
     }
@@ -989,12 +993,12 @@ public partial class MainWindow : Window
         // App.GetService<SettingsWindowNew>().Open("notification");
     }
 
-    private void MenuItemSwitchMainWindowVisibility_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemSwitchMainWindowVisibility_OnClick(object sender, EventArgs e)
     {
         ViewModel.Settings.IsMainWindowVisible = !ViewModel.Settings.IsMainWindowVisible;
     }
 
-    private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemClassSwap_OnClick(object sender, EventArgs e)
     {
         OpenClassSwapWindow();
     }

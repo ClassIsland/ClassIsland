@@ -38,6 +38,48 @@
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
         <profile:ClassPlan x:Key="FallbackClassPlan"/>
+        
+        <NativeMenu x:Key="AppMenu">
+            <NativeMenuItem Icon="Assets/AppLogo.png" Header="ClassIsland"/>
+            <NativeMenuItem Header="帮助…"
+                            Click="MenuItemHelps_OnClick" 
+                            IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
+            <NativeMenuItemSeparator/>
+            <NativeMenuItem Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
+                <MenuItem.IsVisible>
+                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                        <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}" />
+                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                    </MultiBinding>
+                </MenuItem.IsVisible>
+            </NativeMenuItem>
+            <NativeMenuItem Header="隐藏主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
+                <MenuItem.IsVisible>
+                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                        <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                    </MultiBinding>
+                </MenuItem.IsVisible>
+            </NativeMenuItem>
+            <NativeMenuItem Header="清除全部提醒" Click="MenuItemClearAllNotifications_OnClick">
+                <MenuItem.IsVisible>
+                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                        <Binding Path="ViewModel.IsOverlayOpened" Mode="OneWay"/>
+                    </MultiBinding>
+                </MenuItem.IsVisible>
+            </NativeMenuItem>
+            <NativeMenuItemSeparator/>
+            <NativeMenuItem Header="编辑档案…" Click="ButtonSettings_OnClick" />
+            <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" />
+            <NativeMenuItem Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick" >
+            </NativeMenuItem>
+            <NativeMenuItem Header="换课…" Click="MenuItemClassSwap_OnClick">
+            </NativeMenuItem>
+            <NativeMenuItemSeparator />
+            <NativeMenuItem  Header="重启" Click="MenuItemRestartApp_OnClick"/>
+            <NativeMenuItem  Header="退出" Click="MenuItemExitApp_OnClick"/>
+        </NativeMenu>
     </Window.Resources>
     <Window.Styles>
         <Style Selector="Grid#GridRoot">

@@ -15,6 +15,7 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
 {
     public ILogger<TaskBarIconService> Logger { get; }
 
+    // TODO: 实现托盘图标交互
     public TrayIcon MainTaskBarIcon
     {
         get;
