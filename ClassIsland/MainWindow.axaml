@@ -79,6 +79,8 @@
             <NativeMenuItemSeparator />
             <NativeMenuItem  Header="重启" Click="MenuItemRestartApp_OnClick"/>
             <NativeMenuItem  Header="退出" Click="MenuItemExitApp_OnClick"/>
+            <NativeMenuItemSeparator />
+            <NativeMenuItem  Header="(Debug) DevTools" Click="NativeMenuItemDebugDevTools_OnClick"/>
         </NativeMenu>
     </Window.Resources>
     <Window.Styles>

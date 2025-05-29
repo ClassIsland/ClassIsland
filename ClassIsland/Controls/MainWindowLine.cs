@@ -162,6 +162,9 @@ public class MainWindowLine : TemplatedControl
         this.GetObservable(WindowDockingLocationProperty)
             .Skip(1)
             .Subscribe(_ => UpdateStyleStates());
+        this.GetObservable(IsMouseInProperty)
+            .Skip(1)
+            .Subscribe(_ => UpdateFadeStatus());
     }
 
     private void UpdateStyleStates()

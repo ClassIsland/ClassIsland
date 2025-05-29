@@ -179,6 +179,13 @@
                 </MultiBinding>
             </Setter.Value>
         </Setter>
+        <Setter Property="Transitions">
+            <Setter.Value>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.100"/>
+                </Transitions>
+            </Setter.Value>
+        </Setter>
         
         <Style Selector="^:dock-left /template/:is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -222,6 +229,9 @@
         <Style Selector="^[IsMainLine=False]">
             <Setter Property="Template" Value="{StaticResource MainWindowLineMinControlTemplate}"/>
             <Setter Property="IsVisible" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InvertBooleanConverter}}"/>
+        </Style>
+        <Style Selector="^[IsLineFaded=True]">
+            <Setter Property="Opacity" Value="0.05"/>
         </Style>
     </ControlTheme>
 

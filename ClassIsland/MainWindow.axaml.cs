@@ -559,8 +559,7 @@ public partial class MainWindow : Window
             RawInputDeviceFlags.InputSink, handle);
 
         RawInputUpdateStopWatch.Start();
-        // var hWndSource = HwndSource.FromHwnd(handle);
-        // hWndSource?.AddHook(ProcWnd);
+        Win32Properties.AddWndProcHookCallback(this, ProcWnd);
     }
 
     private void ProcessMousePos(object? sender, EventArgs e)
@@ -568,7 +567,7 @@ public partial class MainWindow : Window
         UpdateMouseStatus();
     }
 
-    private IntPtr ProcWnd(IntPtr hwnd, int msg, IntPtr param, IntPtr lParam, ref bool handled)
+    private IntPtr ProcWnd(IntPtr hwnd, uint msg, IntPtr param, IntPtr lParam, ref bool handled)
     {
         if (msg == 0x00FF) // WM_INPUT
         {
@@ -721,11 +720,12 @@ public partial class MainWindow : Window
     {
         UpdateWindowPos();
         var hWnd = (HWND)TryGetPlatformHandle()!.Handle;
+        SetLayeredWindowAttributes(hWnd, new COLORREF(0), 255, (LAYERED_WINDOW_ATTRIBUTES_FLAGS)0x2);
         var style = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
         style |= NativeWindowHelper.WS_EX_TOOLWINDOW;
         if (!ViewModel.Settings.IsMouseClickingEnabled)
         {
-            var r = SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
+            var r = SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style | (int)WINDOW_EX_STYLE.WS_EX_LAYERED | (int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT);
         }
         else
         {
@@ -1040,5 +1040,10 @@ public partial class MainWindow : Window
     private void MenuItemSettingsWindow2_OnClick(object sender, RoutedEventArgs e)
     {
         // IAppHost.GetService<SettingsWindowNew>().Open();
+    }
+
+    private void NativeMenuItemDebugDevTools_OnClick(object? sender, EventArgs e)
+    {
+        this.AttachDevTools();
     }
 }
