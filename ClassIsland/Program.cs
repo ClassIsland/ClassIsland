@@ -8,6 +8,7 @@ using Avalonia;
 using ClassIsland;
 using ClassIsland.Core;
 using ClassIsland.Core.Enums;
+using ClassIsland.Extensions;
 using ClassIsland.Services;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
@@ -93,7 +94,7 @@ public static class Program
                 IsSentryEnabled = sentryEnabled
             })
             .UsePlatformDetect()
-            .LogToTrace()
+            .LogToHostSink()
             .StartWithClassicDesktopLifetime(args);
     }
     
