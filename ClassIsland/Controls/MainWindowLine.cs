@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Xml.Linq;
 using Avalonia;
@@ -13,6 +14,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data.Core;
 using Avalonia.Interactivity;
 using Avalonia.Metadata;
+using Avalonia.Reactive;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
@@ -155,6 +157,19 @@ public class MainWindowLine : TemplatedControl
         Unloaded += OnUnloaded;
         ComponentPresenter.ComponentVisibilityChangedEvent.AddClassHandler(typeof(MainWindowLine), 
             UpdateVisibilityState, RoutingStrategies.Tunnel);
+
+        this.GetObservable(WindowDockingLocationProperty)
+            .Skip(1)
+            .Subscribe(_ => UpdateStyleStates());
+    }
+
+    private void UpdateStyleStates()
+    {
+        PseudoClasses.Set(":dock-left", WindowDockingLocation is 0 or 3);
+        PseudoClasses.Set(":dock-center", WindowDockingLocation is 1 or 4);
+        PseudoClasses.Set(":dock-right", WindowDockingLocation is 2 or 5);
+        PseudoClasses.Set(":dock-top", WindowDockingLocation is 0 or 1 or 2);
+        PseudoClasses.Set(":dock-bottom", WindowDockingLocation is 3 or 4 or 5);
     }
 
     private void UpdateVisibilityState(object? sender, RoutedEventArgs args)

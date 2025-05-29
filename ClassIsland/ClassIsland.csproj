@@ -15,7 +15,7 @@
 		<IsMsix>$(IsMsix)</IsMsix>
 		<Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-        <HotAvaloniaAutoEnable>false</HotAvaloniaAutoEnable>
+        <HotAvaloniaIncludeExtensions>True</HotAvaloniaIncludeExtensions>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX'">
         <OutputType>WinExe</OutputType>

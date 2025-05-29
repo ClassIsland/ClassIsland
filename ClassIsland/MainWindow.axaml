@@ -22,7 +22,6 @@
         xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
-        TextElement.FontSize="14"
         d:DataContext="{d:DesignInstance local:MainWindow}"
         FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay}"
         SystemDecorations="None"
@@ -126,7 +125,7 @@
                     </Border.Resources>
                     <Grid>
                         <ItemsControl Grid.Column="0"
-                                      ItemsSource="{Binding ComponentsService.CurrentComponents.Lines}">
+                                      ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" />

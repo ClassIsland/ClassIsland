@@ -94,7 +94,6 @@ public static class Program
             })
             .UsePlatformDetect()
             .LogToTrace()
-            .UseHotReload()
             .StartWithClassicDesktopLifetime(args);
     }
     

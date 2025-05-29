@@ -170,15 +170,23 @@
 
     <ControlTheme x:Key="MainWindowLineBaseStyle" TargetType="controls:MainWindowLine">
         <Setter Property="Template" Value="{StaticResource MainWindowLineFullControlTemplate}"/>
+        <Setter Property="IsVisible">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
+                    <Binding Path="IsAllComponentsHid" RelativeSource="{RelativeSource Self}" 
+                             Converter="{StaticResource InvertBooleanConverter}"/>
+                    <Binding Path="ViewModel.IsOverlayOpened" RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
         
-        <Style Selector="controls|MainWindowLine">
-        <Style Selector="^:dock-left :is(Control).docking">
+        <Style Selector="^:dock-left /template/:is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
-        <Style Selector="^:dock-center :is(Control).docking">
+        <Style Selector="^:dock-center /template/ :is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
-        <Style Selector="^:dock-right :is(Control).docking">
+        <Style Selector="^:dock-right /template/ :is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
         <Style Selector="^:dock-top">
@@ -205,29 +213,16 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
-        <Style Selector="^ Border#BackgroundBorder">
+        <Style Selector="^ /template/ Border#BackgroundBorder">
             <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
         </Style>
-        <Style Selector="^:custom-background Border.background">
+        <Style Selector="^:custom-background /template/ Border.background">
             <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"/>
         </Style>
-        
-        <Setter Property="Template" Value="{StaticResource MainWindowLineFullControlTemplate}"/>
-        <Setter Property="IsVisible">
-            <Setter.Value>
-                <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
-                    <Binding Path="IsAllComponentsHid" RelativeSource="{RelativeSource Self}" 
-                             Converter="{StaticResource InvertBooleanConverter}"/>
-                    <Binding Path="ViewModel.IsOverlayOpened" RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
-                </MultiBinding>
-            </Setter.Value>
-        </Setter>
         <Style Selector="^[IsMainLine=False]">
             <Setter Property="Template" Value="{StaticResource MainWindowLineMinControlTemplate}"/>
             <Setter Property="IsVisible" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InvertBooleanConverter}}"/>
         </Style>
-    </Style>
     </ControlTheme>
 
     

@@ -9,7 +9,6 @@
     <Description>ClassIsland 应用核心依赖库，包括 ClassIsland 封装的一些常用控件和方法。</Description>
     <PackageTags>classisland;avalonia;material design</PackageTags>
     <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
-    <AvaloniaVersion>11.3.0</AvaloniaVersion>
   </PropertyGroup>
 
   <!-- <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -38,11 +37,13 @@
     </PackageReference>
 
     <PackageReference Include="Octokit" Version="9.1.0" />
+
+    <PackageReference Include="ReactiveUI" Version="20.2.45" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
-    <PackageReference Include="Xaml.Behaviors" Version="11.3.0.8" />
+    <PackageReference Include="Xaml.Behaviors" Version="11.2.0.14" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
 
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />

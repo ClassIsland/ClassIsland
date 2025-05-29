@@ -67,6 +67,7 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Threading;
@@ -195,6 +196,7 @@ public partial class App : AppBase, IAppHost
 
     public override void Initialize()
     {
+        this.EnableHotReload();
         AvaloniaXamlLoader.Load(this);
         DesktopLifetime.ShutdownMode = ShutdownMode.OnExplicitShutdown;
         base.Initialize();

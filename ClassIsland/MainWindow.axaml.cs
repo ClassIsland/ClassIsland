@@ -181,6 +181,8 @@ public partial class MainWindow : Window
         WindowRuleService = windowRuleService;
         ManagementService = managementService;
 
+        DataContext = this;
+
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         SettingsService.PropertyChanged += (sender, args) =>
         {
