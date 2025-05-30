@@ -1,16 +1,19 @@
-#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Avalonia;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Core.Models.AttachedSettings;
+using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
+using Material.Icons;
 
 namespace ClassIsland.Controls.Components;
 
@@ -19,7 +22,7 @@ namespace ClassIsland.Controls.Components;
 /// </summary>
 [MigrateFrom("E7831603-61A0-4180-B51B-54AD75B1A4D3")]  // 课程表（旧）
 [ComponentInfo("1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8", "课程表", MaterialIconKind.Schedule, "显示当前的课程表信息。")]
-public partial class ScheduleComponent : INotifyPropertyChanged
+public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, INotifyPropertyChanged
 {
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isAfterSchool = false;
@@ -31,6 +34,15 @@ public partial class ScheduleComponent : INotifyPropertyChanged
 
     public IProfileService ProfileService { get; }
     public IExactTimeService ExactTimeService { get; }
+
+    public static readonly StyledProperty<int> LessonsListBoxSelectedIndexProperty = AvaloniaProperty.Register<ScheduleComponent, int>(
+        nameof(LessonsListBoxSelectedIndex));
+
+    public int LessonsListBoxSelectedIndex
+    {
+        get => GetValue(LessonsListBoxSelectedIndexProperty);
+        set => SetValue(LessonsListBoxSelectedIndexProperty, value);
+    }
 
     public bool IsAfterSchool
     {
@@ -71,7 +83,7 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         SettingsService = settingsService;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
-
+        
         Loaded += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         Loaded += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged;
         Loaded += (_, _) => LessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
@@ -79,6 +91,7 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged;
         Unloaded += (_, _) => LessonsService.PropertyChanged -= LessonsServiceOnPropertyChanged;
         InitializeComponent();
+        DataContext = this;
         CurrentTimeStateChanged();
     }
 
@@ -142,4 +155,3 @@ public partial class ScheduleComponent : INotifyPropertyChanged
     }
 }
 
-#endif

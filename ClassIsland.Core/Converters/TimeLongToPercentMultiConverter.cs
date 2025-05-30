@@ -8,8 +8,8 @@ public class TimeLongToPercentMultiConverter : IMultiValueConverter
 {
     public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
-        var a = (long)values[0];
-        var b = (long)values[1];
+        var a = values[0] as long?;
+        var b = values[1] as long?;
         return $"{(a*1.0)/(b*1.0):P0}";
     }
 

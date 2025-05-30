@@ -63,7 +63,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<DebugType>embedded</DebugType>
+		<DebugType Condition="'$(Configuration)'=='Release' OR '$(Configuration)'=='Release_MSIX'">embedded</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>

@@ -37,15 +37,6 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private bool _extraInfo4ShowSeconds = false;
     private ILessonControlSettings? _settingsSource;
 
-    public static readonly StyledProperty<TimeLayoutItem> CurrentTimeLayoutItemProperty = AvaloniaProperty.Register<LessonControlExpanded, TimeLayoutItem>(
-        nameof(CurrentTimeLayoutItem));
-    public TimeLayoutItem CurrentTimeLayoutItem
-    {
-        get => GetValue(CurrentTimeLayoutItemProperty);
-        set => SetValue(CurrentTimeLayoutItemProperty, value);
-    
-    }
-
     public static readonly StyledProperty<ILessonControlSettings> DefaultLessonControlSettingsProperty = AvaloniaProperty.Register<LessonControlExpanded, ILessonControlSettings>(
         nameof(DefaultLessonControlSettings));
     public ILessonControlSettings DefaultLessonControlSettings
@@ -62,6 +53,15 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         get => GetValue(CurrentClassPlanProperty);
         set => SetValue(CurrentClassPlanProperty, value);
     
+    }
+
+    public static readonly StyledProperty<int> DetailIndexProperty = AvaloniaProperty.Register<LessonControlExpanded, int>(
+        nameof(DetailIndex));
+
+    public int DetailIndex
+    {
+        get => GetValue(DetailIndexProperty);
+        set => SetValue(DetailIndexProperty, value);
     }
 
     public ILessonsService? LessonsService { get; set; }

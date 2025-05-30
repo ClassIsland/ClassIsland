@@ -24,6 +24,7 @@
     <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
 	    <OutputType>Exe</OutputType>
 	    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+        <DebugType>full</DebugType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug_MSIX' Or '$(Configuration)'=='Release_MSIX'">
       <IsMsix>true</IsMsix>
@@ -137,16 +138,6 @@
 		<Message Text="IsMsix: $(IsMsix)" Importance="high" />
 		<Message Text="TargetFramework: $(TargetFramework)" Importance="high" />
     </Target>
-
-    <!-- HOT RELOAD -->
-    <PropertyGroup>
-        <HotAvaloniaAutoEnable>False</HotAvaloniaAutoEnable>
-        <HotAvalonia Condition="'$(Configuration)' == 'Debug'">True</HotAvalonia>
-        <AvaloniaVersion>11.2.0</AvaloniaVersion>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="HotAvalonia" Version="3.0.0" PrivateAssets="All" Publish="True" />
-    </ItemGroup>
 
 	<Import Project="..\Global.props" />
     <Import Project="..\AvaloniaShared.props"/>

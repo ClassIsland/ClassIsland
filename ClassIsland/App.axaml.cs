@@ -71,6 +71,7 @@ using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Threading;
+using ClassIsland.Controls.Components;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Helpers;
 using ClassIsland.Shared.Protobuf.AuditEvent;
@@ -589,7 +590,7 @@ public partial class App : AppBase, IAppHost
                 // // 主界面组件
                 // services.AddComponent<TextComponent, TextComponentSettingsControl>();
                 // services.AddComponent<SeparatorComponent>();
-                // services.AddComponent<ScheduleComponent, ScheduleComponentSettingsControl>();
+                services.AddComponent<ScheduleComponent, ScheduleComponentSettingsControl>();
                 // services.AddComponent<DateComponent>();
                 // services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
                 // services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();

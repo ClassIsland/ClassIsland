@@ -2,73 +2,44 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:lessonsControls="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
                     xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
-                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core">
 
     <ControlTheme TargetType="{x:Type lessonsControls:LessonsListBox}"
            BasedOn="{StaticResource MaterialListBox}"
            x:Key="ClassIsland.LessonsListBox">
         <ControlTheme.Resources>
             <lessonsControls:ClassInfoMultiConverter x:Key="ClassInfoMultiConverter"/>
+
+            <DataTemplate DataType="{x:Type profile:TimeLayoutItem}"
+                          x:Key="{x:Static lessonsControls:LessonsListBox.SeparatorLessonControlResourceKey}">
+                <ci:LessonControlSeparator LessonControlSettings="{Binding $parent[lessonsControls:LessonsListBox].LessonControlSettings, Mode=OneWay}"/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type profile:TimeLayoutItem}"
+                          x:Key="{x:Static lessonsControls:LessonsListBox.ExpandedLessonControlResourceKey}">
+                <lessonsControls:LessonControlExpanded IsLiveUpdatingEnabled="{Binding $parent[lessonsControls:LessonsListBox].IsLiveUpdatingEnabled}"
+                                                       Subjects="{Binding $parent[lessonsControls:LessonsListBox].Subjects}"
+                                                       DefaultLessonControlSettings="{Binding $parent[lessonsControls:LessonsListBox].LessonControlSettings, Mode=OneWay}"
+                                                       CurrentClassPlan="{Binding $parent[lessonsControls:LessonsListBox].ClassPlan, Mode=OneWay}"
+                                                       CurrentTimeLayoutItem="{Binding Mode=OneWay}"
+                                                       ClassPlan="{Binding ClassPlan, RelativeSource={RelativeSource AncestorType=lessonsControls:LessonsListBox}, Mode=OneWay}">
+                </lessonsControls:LessonControlExpanded>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type profile:TimeLayoutItem}"
+                          x:Key="{x:Static lessonsControls:LessonsListBox.MinimizedLessonControlResourceKey}">
+                <lessonsControls:LessonControlMinimized
+                    Subjects="{Binding Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
+                    DefaultLessonControlSettings="{Binding LessonControlSettings, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
+                    ClassPlan="{Binding ClassPlan, RelativeSource={RelativeSource AncestorType=lessonsControls:LessonsListBox}, Mode=OneWay}"
+                    CurrentTimeLayoutItem="{Binding Mode=OneWay}">
+                </lessonsControls:LessonControlMinimized>
+            </DataTemplate>
+            
             <lessonsControls:LessonsListBoxItemTemplateMultiConverter
-                x:Key="LessonsListBoxItemTemplateMultiConverter">
-                <lessonsControls:LessonsListBoxItemTemplateMultiConverter.SeparatorDataTemplate>
-                    <DataTemplate DataType="{x:Type lessonsControls:LessonsListBox}">
-                        <StackPanel Orientation="Horizontal">
-                            <LayoutTransformControl>
-                                <LayoutTransformControl.LayoutTransform>
-                                    <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
-                                </LayoutTransformControl.LayoutTransform>
-                                <Border Width="10"/>
-                            </LayoutTransformControl>
-
-                            <Line VerticalAlignment="Center" Stroke="{DynamicResource MaterialDesignBody}" StrokeThickness="2"
-                                  HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" Opacity="0.8">
-                            </Line>
-
-                            <LayoutTransformControl>
-                                <LayoutTransformControl.LayoutTransform>
-                                    <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
-                                </LayoutTransformControl.LayoutTransform>
-                                <Border Width="10"/>
-                            </LayoutTransformControl>
-                        </StackPanel>
-                    </DataTemplate>
-                </lessonsControls:LessonsListBoxItemTemplateMultiConverter.SeparatorDataTemplate>
-                <lessonsControls:LessonsListBoxItemTemplateMultiConverter.ExpandedDataTemplate>
-                    <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
-                        <lessonsControls:LessonControlExpanded IsLiveUpdatingEnabled="{Binding IsLiveUpdatingEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
-                                                               Subjects="{Binding Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
-                                                               DefaultLessonControlSettings="{Binding LessonControlSettings, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
-                                                               CurrentClassPlan="{Binding ClassPlan, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
-                                                               CurrentTimeLayoutItem="{Binding Mode=OneWay}">
-                            <lessonsControls:LessonControlExpanded.ClassInfo>
-                                <MultiBinding Converter="{StaticResource ClassInfoMultiConverter}">
-                                    <Binding/>
-                                    <Binding Path="SelectedIndex" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}"/>
-                                    <Binding Path="Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}"/>
-                                    <Binding Path="ClassPlan" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}"/>
-                                </MultiBinding>
-                            </lessonsControls:LessonControlExpanded.ClassInfo>
-                        </lessonsControls:LessonControlExpanded>
-                    </DataTemplate>
-                </lessonsControls:LessonsListBoxItemTemplateMultiConverter.ExpandedDataTemplate>
-                <lessonsControls:LessonsListBoxItemTemplateMultiConverter.MinimizedDataTemplate>
-                    <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
-                        <lessonsControls:LessonControlMinimized
-                            Subjects="{Binding Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
-                            DefaultLessonControlSettings="{Binding LessonControlSettings, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}">
-                            <lessonsControls:LessonControlMinimized.ClassInfo>
-                                <MultiBinding Converter="{StaticResource ClassInfoMultiConverter}">
-                                    <Binding Mode="OneWay"/>
-                                    <Binding Path="SelectedIndex" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
-                                    <Binding Path="Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
-                                    <Binding Path="ClassPlan" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
-                                </MultiBinding>
-                            </lessonsControls:LessonControlMinimized.ClassInfo>
-                        </lessonsControls:LessonControlMinimized>
-                    </DataTemplate>
-                </lessonsControls:LessonsListBoxItemTemplateMultiConverter.MinimizedDataTemplate>
-            </lessonsControls:LessonsListBoxItemTemplateMultiConverter>
+                x:Key="LessonsListBoxItemTemplateMultiConverter"
+                SeparatorDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.SeparatorLessonControlResourceKey}}"
+                ExpandedDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.ExpandedLessonControlResourceKey}}"
+                MinimizedDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.MinimizedLessonControlResourceKey}}"/>
         </ControlTheme.Resources>
         <Setter Property="Height" Value="40"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
@@ -76,31 +47,33 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel Orientation="Horizontal"/>
+                    <StackPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
-                    <ContentPresenter>
-                        <ContentPresenter.Content>
-                            <Binding/>
-                        </ContentPresenter.Content>
-                        <ContentPresenter.ContentTemplate>
-                            <MultiBinding Converter="{StaticResource LessonsListBoxItemTemplateMultiConverter}"
-                                              Mode="OneWay">
-                                <Binding Path="TimeType" Mode="OneWay"/>
-                                <Binding Path="IsHideDefault" Mode="OneWay"/>
-                                <Binding Path="SelectedItem" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                    <Grid>
+                        <ContentPresenter>
+                            <ContentPresenter.Content>
                                 <Binding/>
-                                <Binding Path="DiscardHidingDefault" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
-                                <Binding Path="ShowCurrentTimeLayoutItemOnlyOnClass" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
-                                <Binding Path="HideFinishedClass" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
-                                <Binding Path="ClassPlan.ValidTimeLayoutItems" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
-                            </MultiBinding>
-                        </ContentPresenter.ContentTemplate>
-                    </ContentPresenter>
+                            </ContentPresenter.Content>
+                            <ContentPresenter.ContentTemplate>
+                                <MultiBinding Converter="{StaticResource LessonsListBoxItemTemplateMultiConverter}"
+                                              Mode="OneWay">
+                                    <Binding Path="TimeType" Mode="OneWay"/>
+                                    <Binding Path="IsHideDefault" Mode="OneWay"/>
+                                    <Binding Path="$parent[lessonsControls:LessonsListBox].SelectedItem" RelativeSource="{RelativeSource AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                    <Binding/>
+                                    <Binding Path="$parent[lessonsControls:LessonsListBox].DiscardHidingDefault" Mode="OneWay"/>
+                                    <Binding Path="$parent[lessonsControls:LessonsListBox].ShowCurrentTimeLayoutItemOnlyOnClass" Mode="OneWay"/>
+                                    <Binding Path="$parent[lessonsControls:LessonsListBox].HideFinishedClass" Mode="OneWay"/>
+                                    <Binding Path="$parent[lessonsControls:LessonsListBox].ClassPlan.ValidTimeLayoutItems" Mode="OneWay"/>
+                                </MultiBinding>
+                            </ContentPresenter.ContentTemplate>
+                        </ContentPresenter>
+                    </Grid>
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -111,6 +84,11 @@
                     <Setter Property="MaxHeight" Value="40"/>
                 </ControlTheme>
             </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="lessonsControls:LessonsListBox">
+                <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+            </ControlTemplate>
         </Setter>
     </ControlTheme>
 

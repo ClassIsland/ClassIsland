@@ -11,6 +11,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Data.Core;
+using Avalonia.Diagnostics;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform;
@@ -1044,6 +1046,10 @@ public partial class MainWindow : Window
 
     private void NativeMenuItemDebugDevTools_OnClick(object? sender, EventArgs e)
     {
-        this.AttachDevTools();
+        RaiseEvent(new KeyEventArgs()
+        {
+            Key = Key.F12,
+            RoutedEvent = KeyDownEvent
+        });
     }
 }

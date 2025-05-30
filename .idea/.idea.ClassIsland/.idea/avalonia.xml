@@ -20,6 +20,7 @@
         <entry key="ClassIsland.Core/Controls/InfoCard.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonControlExpanded.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonControlMinimized.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/LessonsControls/LessonControlSeperator.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonsListBox.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/NotificationTemplates/RollingTextTemplate.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/NotificationTemplates/Templates.axaml" value="ClassIsland/ClassIsland.csproj" />
@@ -41,6 +42,8 @@
         <entry key="ClassIsland/App.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/AppNew.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Assets/Fonts/Fonts.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Controls/Components/ScheduleComponent.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Controls/Components/ScheduleComponentSettingsControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Controls/MainWindowLine.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Themes/Styles.axaml" value="ClassIsland/ClassIsland.csproj" />
