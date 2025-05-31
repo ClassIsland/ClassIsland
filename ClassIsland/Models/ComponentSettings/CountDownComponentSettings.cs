@@ -15,7 +15,8 @@ public class CountDownComponentSettings : ObservableRecipient
     private bool _isCompactModeEnabled = false;
     private string _countDownConnector = "还有";
     private bool _isConnectorColorEmphasized = false;
-    private System.Windows.Media.Color _connectorColor = (System.Windows.Media.Color)System.Windows.Application.Current.TryFindResource("MaterialDesignBody");
+    private System.Windows.Media.Color _connectorColor = 
+        ((System.Windows.Media.SolidColorBrush)System.Windows.Application.Current.TryFindResource("MaterialDesignBody")).Color;
 
     public string CountDownName
     {
@@ -107,7 +108,6 @@ public class CountDownComponentSettings : ObservableRecipient
             if (value == _isConnectorColorEmphasized) return;
             _isConnectorColorEmphasized = value;
             OnPropertyChanged();
-            UpdateConnectorColor();
         }
     }
 
@@ -119,30 +119,6 @@ public class CountDownComponentSettings : ObservableRecipient
             if (value.Equals(_connectorColor)) return;
             _connectorColor = value;
             OnPropertyChanged();
-        }
-    }
-
-    private void UpdateConnectorColor()
-    {
-        if (IsConnectorColorEmphasized)
-        {
-            ConnectorColor = FontColor;
-        }
-        else
-        {
-            var colorObj = System.Windows.Application.Current.TryFindResource("MaterialDesignBody");
-            if (colorObj is System.Windows.Media.Color color)
-                ConnectorColor = color;
-            else if (colorObj is System.Windows.Media.SolidColorBrush brush)
-                ConnectorColor = brush.Color;
-        }
-    }
-
-    partial void OnFontColorChanged()
-    {
-        if (IsConnectorColorEmphasized)
-        {
-            ConnectorColor = FontColor;
         }
     }
 }

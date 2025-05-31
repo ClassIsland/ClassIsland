@@ -41,8 +41,38 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         {
             UpdateContent();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+            Settings.PropertyChanged += SettingsOnPropertyChanged;
+            UpdateConnectorColor();
         };
-        Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        Unloaded += (_, _) => {
+            LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+            Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        };
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Settings.IsConnectorColorEmphasized) ||
+            e.PropertyName == nameof(Settings.FontColor))
+        {
+            UpdateConnectorColor();
+        }
+    }
+
+    private void UpdateConnectorColor()
+    {
+        if (Settings.IsConnectorColorEmphasized)
+        {
+            Settings.ConnectorColor = Settings.FontColor;
+        }
+        else
+        {
+            var colorObj = System.Windows.Application.Current.TryFindResource("MaterialDesignBody");
+            if (colorObj is System.Windows.Media.Color color)
+                Settings.ConnectorColor = color;
+            else if (colorObj is System.Windows.Media.SolidColorBrush brush)
+                Settings.ConnectorColor = brush.Color;
+        }
     }
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
