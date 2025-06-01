@@ -53,18 +53,6 @@ public class CountDownComponentSettings : ObservableRecipient
         }
     }
 
-    public Color FontColor
-    {
-        get => _fontColor;
-        set
-        {
-            if (value == null) return;
-            if (value.Equals(_fontColor)) return;
-            _fontColor = value;
-            OnPropertyChanged();
-        }
-    }
-
     public int FontSize
     {
         get => _fontSize;
@@ -100,6 +88,27 @@ public class CountDownComponentSettings : ObservableRecipient
         }
     }
 
+    public CountDownComponentSettings()
+    {
+        UpdateConnectorColor();
+    }
+
+    private void UpdateConnectorColor()
+    {
+        if (IsConnectorColorEmphasized)
+        {
+            ConnectorColor = FontColor;
+        }
+        else
+        {
+            var colorObj = System.Windows.Application.Current.TryFindResource("MaterialDesignBody");
+            if (colorObj is System.Windows.Media.Color color)
+                ConnectorColor = color;
+            else if (colorObj is System.Windows.Media.SolidColorBrush brush)
+                ConnectorColor = brush.Color;
+        }
+    }
+
     public bool IsConnectorColorEmphasized
     {
         get => _isConnectorColorEmphasized;
@@ -108,6 +117,7 @@ public class CountDownComponentSettings : ObservableRecipient
             if (value == _isConnectorColorEmphasized) return;
             _isConnectorColorEmphasized = value;
             OnPropertyChanged();
+            UpdateConnectorColor();
         }
     }
 
@@ -119,6 +129,22 @@ public class CountDownComponentSettings : ObservableRecipient
             if (value.Equals(_connectorColor)) return;
             _connectorColor = value;
             OnPropertyChanged();
+        }
+    }
+
+    public Color FontColor
+    {
+        get => _fontColor;
+        set
+        {
+            if (value == null) return;
+            if (value.Equals(_fontColor)) return;
+            _fontColor = value;
+            OnPropertyChanged();
+            if (IsConnectorColorEmphasized)
+            {
+                UpdateConnectorColor();
+            }
         }
     }
 }
