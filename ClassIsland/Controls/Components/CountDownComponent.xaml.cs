@@ -42,7 +42,6 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
             UpdateContent();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
             Settings.PropertyChanged += SettingsOnPropertyChanged;
-            UpdateConnectorColor();
         };
         Unloaded += (_, _) => {
             LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
@@ -55,23 +54,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         if (e.PropertyName == nameof(Settings.IsConnectorColorEmphasized) ||
             e.PropertyName == nameof(Settings.FontColor))
         {
-            UpdateConnectorColor();
-        }
-    }
-
-    private void UpdateConnectorColor()
-    {
-        if (Settings.IsConnectorColorEmphasized)
-        {
-            Settings.ConnectorColor = Settings.FontColor;
-        }
-        else
-        {
-            var colorObj = System.Windows.Application.Current.TryFindResource("MaterialDesignBody");
-            if (colorObj is System.Windows.Media.Color color)
-                Settings.ConnectorColor = color;
-            else if (colorObj is System.Windows.Media.SolidColorBrush brush)
-                Settings.ConnectorColor = brush.Color;
+            OnPropertyChanged(nameof(Settings.ConnectorColor));
         }
     }
 
