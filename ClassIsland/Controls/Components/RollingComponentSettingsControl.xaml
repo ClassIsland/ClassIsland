@@ -19,6 +19,33 @@
             <StackPanel.Resources>
 
             </StackPanel.Resources>
+
+            <materialDesign:ColorZone Background="#204169e1" 
+                                      Panel.ZIndex="1" 
+                                      Margin="0 0 0 5"
+                                      Visibility="{Binding SettingsService.Settings.IsRollingComponentWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <DockPanel Margin="8 4">
+                        <materialDesign:PackIcon Kind="InfoOutline"
+                                                 Height="20" Width="20"/>
+                        <TextBlock TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Margin="4 0 0 0" >
+                            <Run Text="滚动组件仅在组件内容超出滚动组件宽度时才会开始滚动。您可能需要在【高级设置】中为本组件设置【最大宽度】或【固定宽度】以限制组件的宽度，这样在组件内容超出限制的宽度时内容才会开始滚动。"/>
+                        </TextBlock>
+                    </DockPanel>
+                    <Button Content="{materialDesign:PackIcon Close}"
+                            Grid.Column="1" Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Margin="0 -8"
+                            ToolTip="关闭"
+                            Click="ButtonCloseWarningTip_OnClick"/>
+                </Grid>
+            </materialDesign:ColorZone>
+
             <!-- 滚动速度 -->
             <ci:SettingsCard IconGlyph="CarSpeedLimiter"
                              Header="滚动速度"
