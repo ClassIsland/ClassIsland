@@ -117,21 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LangName_string" xml:space="preserve">
-    <value>English</value>
-  </data>
-  <data name="Startup_string" xml:space="preserve">
-    <value>Starting</value>
-  </data>
-  <data name="Settings_string" xml:space="preserve">
-    <value>Settings</value>
-  </data>
-  <data name="Restart_string" xml:space="preserve">
-    <value>Restart</value>
-  </data>
-  <data name="Quit_string" xml:space="preserve">
-    <value>Quit</value>
-  </data>
   <data name="General_string" xml:space="preserve">
     <value>General</value>
   </data>
@@ -171,31 +156,46 @@
   <data name="Theme_string" xml:space="preserve">
     <value>Theme</value>
   </data>
-  <data name="LoadOnBoot_string" xml:space="preserve">
-    <value>Start on Boot</value>
-  </data>
-  <data name="RegURLProto_string" xml:space="preserve">
-    <value>Register URL Protocol</value>
-  </data>
-  <data name="LoadOnBoot_Description" xml:space="preserve">
-    <value>Automatically run this application when your system starts.</value>
-  </data>
-  <data name="RegURLProto_Description" xml:space="preserve">
-    <value>Allows third-party applications or web pages to call some functions of this application through the URL protocol classisland://. See the help documentation for details.</value>
-  </data>
   <data name="Behavior_string" xml:space="preserve">
     <value>Behavior</value>
   </data>
-  <data name="SemesterStartDate_string" xml:space="preserve">
-    <value>Semester Start Date</value>
+  <data name="OpenSourceStatement" xml:space="preserve">
+    <value>ClassIsland is an open source and free software, and the official does not provide any form of paid support services. The source code is hosted at {sourcecodeurl}.If you obtain this application through paid assistance or other payment methods, please prioritize seeking help from the seller within the service framework agreed upon with them when encountering problems. If the seller does not provide the service you expected, please refund or actively protect your legitimate rights and interests through other ways.</value>
   </data>
-  <data name="SemesterStartDate_Description" xml:space="preserve">
-    <value>This date will be considered the first day of the semester, used for calculating multiple-week rotating schedules. It should be set as the first day of the week.</value>
+  <data name="ExperimentalFeature_string" xml:space="preserve">
+    <value>Experimental feature</value>
   </data>
-  <data name="HideWindow_string" xml:space="preserve">
-    <value>Hide window</value>
+  <data name="DebuggingWindowRules_string" xml:space="preserve">
+    <value>Debugging window rules</value>
   </data>
-  <data name="HideWindow_Description" xml:space="preserve">
-    <value>Hide the main interface in the selected situations to prevent it from obstructing the screen and affecting teaching.</value>
+  <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
+    <value>Create a quick adjust course shortcut</value>
+  </data>
+  <data name="ManagementOptions_string" xml:space="preserve">
+    <value>Management options</value>
+  </data>
+  <data name="JoinManagement_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ViewAppLog_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ExportDiagData_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RestartToRecoveryMode_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OpenLogDir_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OpenDataDir_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OpenAppDir_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value />
   </data>
 </root>

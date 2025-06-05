@@ -91,6 +91,16 @@
         <PackageReference Include="ColorHelper" Version="1.8.1" />
 	</ItemGroup>
     <ItemGroup>
+        <Folder Include="Assets\Localization\SettingsPage\Component\" />
+        <Folder Include="Assets\Localization\SettingsPage\Appearance\" />
+        <Folder Include="Assets\Localization\SettingsPage\Notification\" />
+        <Folder Include="Assets\Localization\SettingsPage\Window\" />
+        <Folder Include="Assets\Localization\SettingsPage\Weather\" />
+        <Folder Include="Assets\Localization\SettingsPage\Update\" />
+        <Folder Include="Assets\Localization\SettingsPage\Automation\" />
+        <Folder Include="Assets\Localization\SettingsPage\Storage\" />
+        <Folder Include="Assets\Localization\SettingsPage\Privacy\" />
+        <Folder Include="Assets\Localization\SettingsPage\About\" />
         <Folder Include="Models\Logging\" />
         <Folder Include="Models\Native\" />
         <Folder Include="Models\TimeRules\" />
@@ -121,6 +131,20 @@
 	<PropertyGroup Condition="'$(IsMsix)' == 'true'">
 		<DefineConstants>$(DefineConstants);IsMsix</DefineConstants>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.Designer.cs" />
+	  <Compile Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.Designer.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.en.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.zh-Hans.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.zh-Hant.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.en.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.zh-Hans.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.zh-Hant.resx" />
+	</ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />

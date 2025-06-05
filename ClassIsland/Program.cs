@@ -12,6 +12,7 @@ using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Sentry;
+using System.Diagnostics;
 
 Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
 Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
@@ -68,6 +69,30 @@ if (!createNew)
         }
     }
 }
+
+void SetProcessPriority(uint priority)
+{
+    Process.GetCurrentProcess().PriorityClass = priority switch
+    {
+        0 => ProcessPriorityClass.Idle,
+        1 => ProcessPriorityClass.BelowNormal,
+        2 => ProcessPriorityClass.Normal,
+        3 => ProcessPriorityClass.AboveNormal,
+        4 => ProcessPriorityClass.High,
+        5 => ProcessPriorityClass.RealTime,
+        _ => ProcessPriorityClass.Normal,
+    };
+}
+
+if(Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is not null)
+{
+    if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is string priorityStr && uint.TryParse(priorityStr, out var priority))
+    {
+        SetProcessPriority(priority);
+    }
+    else SetProcessPriority(2);
+}
+
 
 void ConfigureSentry(SentryOptions options)
 {
