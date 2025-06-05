@@ -84,14 +84,11 @@ void SetProcessPriority(uint priority)
     };
 }
 
-if(Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is not null)
+if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is string priorityStr && uint.TryParse(priorityStr, out uint priority))
 {
-    if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is string priorityStr && uint.TryParse(priorityStr, out var priority))
-    {
-        SetProcessPriority(priority);
-    }
-    else SetProcessPriority(2);
+    SetProcessPriority(priority);
 }
+else SetProcessPriority(2); //If not set or invalid, default to Normal priority (2).
 
 
 void ConfigureSentry(SentryOptions options)
