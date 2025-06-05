@@ -92,7 +92,6 @@ public class CountDownComponentSettings : ObservableRecipient
             if (value == _isConnectorColorEmphasized) return;
             _isConnectorColorEmphasized = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(ConnectorColor));
         }
     }
 
@@ -104,25 +103,6 @@ public class CountDownComponentSettings : ObservableRecipient
             if (value.Equals(_fontColor)) return;
             _fontColor = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(ConnectorColor));
-        }
-    }
-
-    [System.Text.Json.Serialization.JsonIgnore]
-    public Brush ConnectorColor
-    {
-        get
-        {
-            if (IsConnectorColorEmphasized)
-            {
-                return new SolidColorBrush(FontColor);
-            }
-            var colorObj = System.Windows.Application.Current.TryFindResource("MaterialDesignBody");
-            if (colorObj is Color color)
-                return new SolidColorBrush(color);
-            if (colorObj is SolidColorBrush brush)
-                return brush;
-            return new SolidColorBrush(Colors.Gray);
         }
     }
 }

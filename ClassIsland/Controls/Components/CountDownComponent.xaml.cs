@@ -7,6 +7,8 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
 using MaterialDesignThemes.Wpf;
+using System.Windows.Media;
+using System.Windows;
 
 namespace ClassIsland.Controls.Components;
 
@@ -32,6 +34,23 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         }
     }
 
+    public Brush ConnectorColor
+    {
+        get
+        {
+            if (Settings.IsConnectorColorEmphasized)
+            {
+                return new SolidColorBrush(Settings.FontColor);
+            }
+            var colorObj = Application.Current.TryFindResource("MaterialDesignBody");
+            if (colorObj is Color color)
+                return new SolidColorBrush(color);
+            if (colorObj is SolidColorBrush brush)
+                return brush;
+            return new SolidColorBrush(Colors.Gray);
+        }
+    }
+
     public CountDownComponent(ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         InitializeComponent();
@@ -54,7 +73,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         if (e.PropertyName == nameof(Settings.IsConnectorColorEmphasized) ||
             e.PropertyName == nameof(Settings.FontColor))
         {
-            OnPropertyChanged(nameof(Settings.ConnectorColor));
+            OnPropertyChanged(nameof(ConnectorColor));
         }
     }
 
