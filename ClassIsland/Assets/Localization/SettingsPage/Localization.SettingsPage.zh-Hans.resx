@@ -117,21 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LangName_string" xml:space="preserve">
-    <value>中文(简体)</value>
-  </data>
-  <data name="Startup_string" xml:space="preserve">
-    <value>正在启动</value>
-  </data>
-  <data name="Settings_string" xml:space="preserve">
-    <value>应用设置</value>
-  </data>
-  <data name="Restart_string" xml:space="preserve">
-    <value>重启</value>
-  </data>
-  <data name="Quit_string" xml:space="preserve">
-    <value>退出</value>
-  </data>
   <data name="General_string" xml:space="preserve">
     <value>基本</value>
   </data>
@@ -171,31 +156,46 @@
   <data name="Theme_string" xml:space="preserve">
     <value>主题</value>
   </data>
-  <data name="LoadOnBoot_string" xml:space="preserve">
-    <value>开机自启</value>
-  </data>
-  <data name="RegURLProto_string" xml:space="preserve">
-    <value>注册URL协议</value>
-  </data>
-  <data name="LoadOnBoot_Description" xml:space="preserve">
-    <value>在您的系统启动时自动运行本应用</value>
-  </data>
-  <data name="RegURLProto_Description" xml:space="preserve">
-    <value>允许第三方应用或网页通过URL协议(classisland://)调用本应用的部分功能，详见帮助文档</value>
-  </data>
   <data name="Behavior_string" xml:space="preserve">
     <value>行为</value>
   </data>
-  <data name="SemesterStartDate_string" xml:space="preserve">
-    <value>学期开始时间</value>
+  <data name="OpenSourceStatement" xml:space="preserve">
+    <value>ClassIsland 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在{sourcecodeurl}。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。</value>
   </data>
-  <data name="SemesterStartDate_Description" xml:space="preserve">
-    <value>此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。</value>
+  <data name="ExperimentalFeature_string" xml:space="preserve">
+    <value>实验性功能</value>
   </data>
-  <data name="HideWindow_string" xml:space="preserve">
-    <value>隐藏窗口</value>
+  <data name="DebuggingWindowRules_string" xml:space="preserve">
+    <value>调试窗口规则</value>
   </data>
-  <data name="HideWindow_Description" xml:space="preserve">
-    <value>将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。</value>
+  <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
+    <value>创建快捷换课图标</value>
+  </data>
+  <data name="ManagementOptions_string" xml:space="preserve">
+    <value>集控选项</value>
+  </data>
+  <data name="JoinManagement_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ViewAppLog_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ExportDiagData_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="RestartToRecoveryMode_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OpenLogDir_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OpenDataDir_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OpenAppDir_string" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value />
   </data>
 </root>

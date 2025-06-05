@@ -106,6 +106,10 @@
                             <Run Text="上次成功自动备份："/>
                             <Run Text="{Binding SettingsService.Settings.LastAutoBackupTime, ConverterCulture=zh-cn}"/>
                         </TextBlock>
+                        <TextBlock TextWrapping="Wrap" TextAlignment="Left">
+                            <Run Text="备份占用：" Foreground="White"/>
+                            <Run Text="{Binding SettingsService.Settings.BackupFilesSize, ConverterCulture=zh-cn}"/>
+                        </TextBlock>
                     </StackPanel>
                 </Expander>
             </materialDesign:Card>
