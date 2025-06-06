@@ -7,6 +7,8 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
 using MaterialDesignThemes.Wpf;
+using System.Windows.Media;
+using System.Windows;
 
 namespace ClassIsland.Controls.Components;
 
@@ -42,7 +44,9 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
             UpdateContent();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         };
-        Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        Unloaded += (_, _) => {
+            LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        };
     }
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
