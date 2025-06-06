@@ -21,18 +21,38 @@
           VerticalAlignment="Center" TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="距离"
-                       Foreground="{Binding Settings.ConnectorColor}"
                        Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
-                       VerticalAlignment="Center" Margin="0 0 2 0" />
+                       VerticalAlignment="Center" Margin="0 0 2 0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Settings.IsConnectorColorEmphasized}" Value="True">
+                                <Setter Property="Foreground" Value="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
             <TextBlock Text="{Binding Settings.CountDownName}"
                        Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                        FontSize="{Binding Settings.FontSize}"
                        VerticalAlignment="Center" Margin="0 0 2 0"
                        FontWeight="Medium" />
             <TextBlock Text="{Binding Settings.CountDownConnector}"
-                       Foreground="{Binding Settings.ConnectorColor}"
                        VerticalAlignment="Center"
-                       Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}"/>
+                       Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Settings.IsConnectorColorEmphasized}" Value="True">
+                                <Setter Property="Foreground" Value="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
             <TextBlock Text="{Binding DaysLeft, Mode=OneWay}" 
                        Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                        FontSize="{Binding Settings.FontSize}"
@@ -40,10 +60,20 @@
                        FontWeight="Medium"
                        Margin="2 0 2 0" />
             <TextBlock Text="天"
-                       Foreground="{Binding Settings.ConnectorColor}"
                        FontSize="{Binding Settings.FontSize}"
                        VerticalAlignment="Center"
-                       FontWeight="Medium"/>
+                       FontWeight="Medium">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Settings.IsConnectorColorEmphasized}" Value="True">
+                                <Setter Property="Foreground" Value="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </StackPanel>
     </Grid>
 </controls:ComponentBase>

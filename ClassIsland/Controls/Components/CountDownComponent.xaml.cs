@@ -34,23 +34,6 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         }
     }
 
-    public Brush ConnectorColor
-    {
-        get
-        {
-            if (Settings.IsConnectorColorEmphasized)
-            {
-                return new SolidColorBrush(Settings.FontColor);
-            }
-            var colorObj = Application.Current.TryFindResource("MaterialDesignBody");
-            if (colorObj is Color color)
-                return new SolidColorBrush(color);
-            if (colorObj is SolidColorBrush brush)
-                return brush;
-            return new SolidColorBrush(Colors.Gray);
-        }
-    }
-
     public CountDownComponent(ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         InitializeComponent();
@@ -60,21 +43,10 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         {
             UpdateContent();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-            Settings.PropertyChanged += SettingsOnPropertyChanged;
         };
         Unloaded += (_, _) => {
             LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
-            Settings.PropertyChanged -= SettingsOnPropertyChanged;
         };
-    }
-
-    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(Settings.IsConnectorColorEmphasized) ||
-            e.PropertyName == nameof(Settings.FontColor))
-        {
-            OnPropertyChanged(nameof(ConnectorColor));
-        }
     }
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
