@@ -34,10 +34,10 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     {
         var size = Process.GetCurrentProcess().PrivateMemorySize64;
         //Console.WriteLine(size);
-        Logger.LogInformation("当前内存使用: {}", Helpers.StorageSizeHelper.FormatSize(size)+$"({size} Bytes)");
+        Logger.LogInformation("当前内存使用: {}", Helpers.StorageSizeHelper.FormatSize((ulong)size)+$"({size} Bytes)");
         if (size < MemoryLimitBytes) 
             return;
-        Logger.LogCritical("达到内存使用上限！ {} / {}", Helpers.StorageSizeHelper.FormatSize(size)+$"({size} Bytes)", Helpers.StorageSizeHelper.FormatSize(MemoryLimitBytes)+$"({MemoryLimitBytes} Bytes)");
+        Logger.LogCritical("达到内存使用上限！ {} / {}", Helpers.StorageSizeHelper.FormatSize((ulong)size)+$"({size} Bytes)", Helpers.StorageSizeHelper.FormatSize((ulong)MemoryLimitBytes)+$"({MemoryLimitBytes} Bytes)");
         //var startInfo = Process.GetCurrentProcess().StartInfo;
         var path = Environment.ProcessPath;
         if (path != null)
