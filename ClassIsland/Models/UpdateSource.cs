@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ClassIsland.Core.Models;
-using ClassIsland.Shared.Enums;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -8,7 +7,6 @@ namespace ClassIsland.Models;
 
 public class UpdateSource: ObservableRecipient
 {
-    private UpdateSourceKind _kind = UpdateSourceKind.None;
     private string _name = "";
     private List<string> _speedTestSources = new();
     private SpeedTestResult _speedTestResult = new();
@@ -20,17 +18,6 @@ public class UpdateSource: ObservableRecipient
         {
             if (value == _name) return;
             _name = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public UpdateSourceKind Kind
-    {
-        get => _kind;
-        set
-        {
-            if (value == _kind) return;
-            _kind = value;
             OnPropertyChanged();
         }
     }
