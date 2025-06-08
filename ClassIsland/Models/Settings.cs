@@ -183,7 +183,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Ruleset _hiedRules = new();
     private bool _isAutoBackupEnabled = true;
     private DateTime _lastAutoBackupTime = DateTime.Now;
-    private string _backupFilesSize = Helpers.StorageSizeHelper.FormatSize(Helpers.StorageSizeHelper.GetFolderStorageSize(Path.Combine(App.AppRootFolderPath, "Backups/")));
+    private string _backupFilesSize = "计算中...";
     private int _autoBackupLimit = 16;
     private int _autoBackupIntervalDays = 7;
     private bool _useRawInput = false;
