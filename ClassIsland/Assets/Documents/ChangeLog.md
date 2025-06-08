@@ -52,6 +52,32 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 
 ***
 
+# 1.7.0.1
+
+1.7 -RyouYamada
+
+## 🚀 新增功能与优化
+
+- 【天气】天气图标包支持
+- 【组件】添加滚动组件使用方法提示
+- 【组件/倒计时】倒计时连接词可选强调色 ([#1077](https://github.com/ClassIsland/ClassIsland/issues/1077))
+
+## 🐛 Bug 修复
+
+- 【提醒】([#1052](https://github.com/ClassIsland/ClassIsland/issues/1052)) 修复切换组件的同时播放提醒崩溃的问题
+- 【提醒】缓解切换组件配置时水波纹特效错位的问题
+- 【应用设置/主题】([#1067](https://github.com/ClassIsland/ClassIsland/issues/1067)) 修复主题界面 Ripple 渲染异常的问题
+- 【组件/天气】([#1068](https://github.com/ClassIsland/ClassIsland/issues/1068)) 修复非天气类型的天气简报图标在自定义字体的情况下不居中的问题
+- 【组件/滚动组件】([#1079](https://github.com/ClassIsland/ClassIsland/issues/1079)) ([#1069](https://github.com/ClassIsland/ClassIsland/issues/1069)) 修复滚动组件显示大小错误问题
+- 【课程服务】([#1061](https://github.com/ClassIsland/ClassIsland/issues/1061)) 修复当当前课程为空课程时时间状态没有设置为上课的问题
+- 【诊断服务】修复插件异常分析时没有分析内部异常堆栈信息的问题
+
+## ◀️ 回滚的功能
+
+- 【天气】移除 SfSymbol Icon，天气图标恢复为 MaterialDesign 图标包
+
+***
+
 # 1.7.0.0
 
 1.7 -RyouYamada
