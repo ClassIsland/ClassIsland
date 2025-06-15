@@ -1,3 +1,8 @@
+> [!NOTE] 
+>
+> 此仓库为 [repo: `ClassIsland/Classisland`](/Classisland/Classisland) 的分支，仅供本人 PR 使用，若有其余任何需求，请移步[源仓库](/Classisland/Classisland)。  
+> This repository is forked from [repo: `ClassIsland/Classisland`](/Classisland/Classisland), only for me to pull requests. Please go to [the oringinal repository](/Classisland/Classisland) for any other needs. 
+
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
 
 <div align="center">
