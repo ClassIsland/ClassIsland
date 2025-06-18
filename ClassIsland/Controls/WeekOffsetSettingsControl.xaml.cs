@@ -71,10 +71,15 @@ public partial class WeekOffsetSettingsControl
                     })
             );
 
-
-    static ObservableCollection<string> CreateWeekItems(int cycleWeeks) =>
-        new(Enumerable.Range(1, count: cycleWeeks).Select(i => $"{i}/{cycleWeeks}周"));
-
+    static ObservableCollection<string> CreateWeekItems(int cycleWeeks)
+    {
+        if (cycleWeeks == 2)
+            return new ObservableCollection<string> { "单周", "双周" };
+        return new ObservableCollection<string>(
+            Enumerable.Range(1, cycleWeeks)
+                      .Select(i => $"{i}/{cycleWeeks}周")
+        );
+    }
 
     void ButtonFinish_OnClick(object _, RoutedEventArgs e) => SetMultiWeekRotationOffset();
 
