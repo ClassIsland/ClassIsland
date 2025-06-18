@@ -146,6 +146,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         if (!File.Exists(path))
         {
             Logger.LogInformation("档案不存在：{}", path);
+            TrustCurrentProfile();
             if (!ManagementService.IsManagementEnabled)  // 在集控模式下不需要默认科目
             {
                 var subject = new StreamReader(Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative))!.Stream).ReadToEnd();

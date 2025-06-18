@@ -121,7 +121,7 @@
                     <StackPanel Margin="36 0 48 12">
                         <!-- 多周轮换周数 -->
                         <controls1:SettingsControl IconGlyph="CalendarMultiple" Header="多周轮换周数"
-                                    Description="多周轮换课表的最大允许轮换数。">
+                                    Description="设定多周轮换课表的最大允许轮换数。">
                             <controls1:SettingsControl.Switcher>
                                 <ci:NumbericTextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
                                                     Style="{StaticResource MaterialDesignTextBox}"

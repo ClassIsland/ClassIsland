@@ -265,8 +265,19 @@
                            Visibility="{Binding IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}"
                            TextWrapping="Wrap"/>
 
-                <StackPanel IsEnabled="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}" 
-                            Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsOverlay}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
                     <controls:TimeRuleEditControl TimeRule="{Binding TimeRule, Mode=OneWay}"/>
                 </StackPanel>
                 <!-- 附加属性 -->

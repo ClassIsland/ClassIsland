@@ -1,6 +1,7 @@
 using ClassIsland.Core.Extensions;
 using ClassIsland.Services;
 using ClassIsland.Shared.Models.Profile;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
@@ -15,6 +16,7 @@ namespace ClassIsland.Controls;
 public partial class TimeRuleEditControl
 {
     public TimeRuleEditControl() => InitializeComponent();
+    public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
     public static readonly DependencyProperty TimeRuleProperty =
         DependencyProperty.Register(nameof(TimeRule), typeof(TimeRule), typeof(TimeRuleEditControl),
@@ -68,10 +70,11 @@ public partial class TimeRuleEditControl
 
         var divTotalList = new ObservableCollection<ListBoxItem> {
             new() { Visibility = Visibility.Collapsed },
-            new() { Visibility = Visibility.Collapsed } };
+            new() { Visibility = Visibility.Collapsed },
+            new() { Content = "两周" }, };
 
-        var maxCycle = App.GetService<SettingsService>().Settings.MultiWeekRotationMaxCycle;
-        for (var i = 2; i <= maxCycle; i++)
+        var maxCycle = Math.Max(SettingsService.Settings.MultiWeekRotationMaxCycle, TimeRule.WeekCountDivTotal);
+        for (var i = 3; i <= maxCycle; i++)
         {
             divTotalList.Add(new ListBoxItem() { Content = $"{i.ToChinese()}周" });
         }
