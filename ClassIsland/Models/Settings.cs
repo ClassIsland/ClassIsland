@@ -55,6 +55,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         "explorer"
     };
     private ObservableCollection<int> _multiWeekRotationOffset = [-1, -1, 0, 0, 0];
+    private int _multiWeekRotationMaxCycle = 7;
+
 
     private bool _hideOnMaxWindow = false;
     private double _opacity = 0.5;
@@ -324,6 +326,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    /// <remarks> 2-first, 0-based </remarks>
     public ObservableCollection<int> MultiWeekRotationOffset
     {
         get => _multiWeekRotationOffset;
@@ -331,6 +334,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_multiWeekRotationOffset)) return;
             _multiWeekRotationOffset = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int MultiWeekRotationMaxCycle
+    {
+        get => _multiWeekRotationMaxCycle;
+        set
+        {
+            if (value == _multiWeekRotationMaxCycle) return;
+            _multiWeekRotationMaxCycle = value;
             OnPropertyChanged();
         }
     }

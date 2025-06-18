@@ -267,7 +267,7 @@
 
                 <StackPanel IsEnabled="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}" 
                             Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <controls1:TimeRuleEditControl TimeRule="{Binding TimeRule, Mode=OneWay}"/>
+                    <controls:TimeRuleEditControl TimeRule="{Binding TimeRule, Mode=OneWay}"/>
                 </StackPanel>
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>
@@ -396,11 +396,11 @@
                 </ListBox>
                 <StackPanel Grid.Row="2">
                     <Separator Margin="0 16 0 4" />
-                    <controls1:IconText Kind="CalendarOutline" Text="多周轮换偏移" Margin="0 0 0 8" />
+                    <controls1:IconText Kind="CalendarOutline" Text="多周轮换" Margin="0 0 0 8" />
                     <Button Style="{StaticResource MaterialDesignFlatButton}"
                             HorizontalAlignment="Left"
                             Click="ButtonOpenWeekOffsetSettings_OnClick">
-                        <ci:IconText Kind="CalendarMultiple" Text="调整多周轮换偏移…"/>
+                        <ci:IconText Kind="CalendarMultiple" Text="调整多周轮换位置…"/>
                     </Button>
                 </StackPanel>
                 <materialDesign:PopupEx Grid.Row="2"

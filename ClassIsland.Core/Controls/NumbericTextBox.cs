@@ -147,6 +147,9 @@ public class NumbericTextBox : TextBox
         // 处理小数点的标志
         bool handledDot = false;
 
+        // 负数数字的标志
+        bool isNegative = false;
+
         // 当前位对应的基数
         double baseNumber = 1;
 
@@ -162,8 +165,9 @@ public class NumbericTextBox : TextBox
         {
             if (!handledSybmol && (c == '-'))
             {
-                baseNumber = -1;
+                isNegative = true;
                 handledSybmol = true;
+                continue;
             }
 
             if ((c >= '0') && (c <= '9'))
@@ -208,6 +212,11 @@ public class NumbericTextBox : TextBox
             }
 
             lastNumber = number;
+        }
+
+        if (isNegative)
+        {
+            number = -number;
         }
 
         this.Text = number.ToString(CultureInfo.InvariantCulture);
@@ -370,6 +379,11 @@ public class NumbericTextBox : TextBox
         if (e.Key == Key.Space)
         {
             e.Handled = true;
+        }
+        // 过滤删除
+        else if (e.Key == Key.Delete || e.Key == Key.Back)
+        {
+            this.isPaste = false;
         }
     }
 

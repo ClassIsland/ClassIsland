@@ -1,87 +1,103 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Services;
-using ClassIsland.Shared.Helpers;
-
+using ClassIsland.ViewModels;
+using Microsoft.Extensions.Logging;
 namespace ClassIsland.Controls;
 
 /// <summary>
 /// WeekOffsetSettingsControl.xaml 的交互逻辑
 /// </summary>
-public partial class WeekOffsetSettingsControl : UserControl, INotifyPropertyChanged
+public partial class WeekOffsetSettingsControl
 {
-    private ObservableCollection<int> _currentWeeks = [-1, -1, 0, 0, 0];
+    readonly Style ListBoxStyle =
+        (Style)Application.Current.FindResource("MaterialDesignChoiceChipPrimaryOutlineListBox");
+    static IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
+    static ILessonsService LessonsService { get; } = App.GetService<ILessonsService>();
+    static ILogger<WeekOffsetSettingsControl> Logger { get; } = App.GetService<ILogger<WeekOffsetSettingsControl>>();
+    static SettingsService SettingsService { get; } = App.GetService<SettingsService>();
+    static readonly WeekOffsetSettingsControlViewModel ViewModel = new(); // 此 ViewModel 为静态。
 
-    private IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
-
-    public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
-    public ILessonsService LessonsService { get; } = App.GetService<ILessonsService>();
-
-    public ObservableCollection<int> CurrentWeeks
-    {
-        get => _currentWeeks;
-        set
-        {
-            if (Equals(value, _currentWeeks)) return;
-            _currentWeeks = value;
-            OnPropertyChanged();
-        }
-    }
-
-    /// <summary>
-    /// 初始化一个 <see cref="WeekOffsetSettingsControl"/> 对象。
-    /// </summary>
     public WeekOffsetSettingsControl()
     {
         InitializeComponent();
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
-    }
-
-    private void WeekOffsetSettingsControl_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-    {
-        Init();
-    }
-
-    private void Init()
-    {
-        CurrentWeeks = ConfigureFileHelper.CopyObject(LessonsService.MultiWeekRotation);
-    }
-
-    private void ButtonFinish_OnClick(object sender, RoutedEventArgs e)
-    {
-        var settings = SettingsService.Settings;
-
-        var dd = (ExactTimeService.GetCurrentLocalDateTime().Date - settings.SingleWeekStartTime).TotalDays;
-        for (int i = 2; i < 5; i++)
+        IsVisibleChanged += delegate
         {
-            int dw = (int)Math.Floor(dd / 7);
-            int w = (dw - (CurrentWeeks[i] - 1) + i) % i;
-            settings.MultiWeekRotationOffset[i] = w;
-        }
+            if (!IsVisible)
+            {
+                // Logger.LogTrace("WeekOffsetSettingsControl.Hide.CyclePositions: [{}]", ViewModel.CyclePositionIndexes.Select(x => x + 1));
+                return;
+            }
+            UpdateIndexes();
+            // Logger.LogTrace("WeekOffsetSettingsControl.Show.CyclePositions: [{}]", LessonsService.GetCyclePositionsByDate());
+            GenerateWeekContentPanel();
+        };
     }
 
-    private void ButtonClear_OnClick(object sender, RoutedEventArgs e)
+    void UpdateIndexes() => ViewModel.CyclePositionIndexes = new(LessonsService.GetCyclePositionsByDate().Select(x => x - 1));
+
+    void GenerateWeekContentPanel()
     {
-        SettingsService.Settings.MultiWeekRotationOffset = [-1, -1, 0, 0, 0];
+         if (ContentPanel.Children.Count == SettingsService.Settings.MultiWeekRotationMaxCycle - 1) return;
+
+        ContentPanel.Children.Clear();
+        ContentPanel.AddChildren(Enumerable.Range(2, count: SettingsService.Settings.MultiWeekRotationMaxCycle - 1).Select(CreateWeekSelectorPanel).ToArray<UIElement>());
+    }
+
+    StackPanel CreateWeekSelectorPanel(int cycleWeeks) =>
+        new StackPanel { Margin = new Thickness(0, 8, 0, 0) }
+            .AddChildren(
+                new TextBlock { Text = cycleWeeks == 2 ? "单双周：" : $"{cycleWeeks.ToChinese()}周轮换：" },
+                new NonScrollingListBox
+                {
+                    Style = ListBoxStyle,
+                    ItemsSource = CreateWeekItems(cycleWeeks),
+                    // SelectedIndex = ViewModel.CyclePositionIndexes[cycleWeeks],
+                    MaxWidth=400
+                }.ApplyBinding(Selector.SelectedIndexProperty,
+                    new Binding(nameof(ViewModel.CyclePositionIndexes) + $"[{cycleWeeks}]")
+                    {
+                        Source = ViewModel,
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                    })
+            );
+
+
+    static ObservableCollection<string> CreateWeekItems(int cycleWeeks) =>
+        new(Enumerable.Range(1, count: cycleWeeks).Select(i => $"{i}/{cycleWeeks}周"));
+
+
+    void ButtonFinish_OnClick(object _, RoutedEventArgs e) => SetMultiWeekRotationOffset();
+
+    // 对称逻辑：LessonsService.GetMultiWeekRotationByTime(now)
+    static void SetMultiWeekRotationOffset()
+    {
+        var cyclePositionOffset = new ObservableCollection<int>([-1, -1]);
+        var totalElapsedWeeks = (int)Math.Floor((ExactTimeService.GetCurrentLocalDateTime().Date - SettingsService.Settings.SingleWeekStartTime).TotalDays / 7);
+
+        for (int cycleLength = 2; cycleLength <= SettingsService.Settings.MultiWeekRotationMaxCycle; cycleLength++)
+        {
+            int cycleOffset = (ViewModel.CyclePositionIndexes.GetValueOrDefault(cycleLength) - totalElapsedWeeks) % cycleLength;
+            if (cycleOffset < 0) cycleOffset += cycleLength;
+            cyclePositionOffset.Add(cycleOffset);
+        }
+
+        SettingsService.Settings.MultiWeekRotationOffset = cyclePositionOffset;
+    }
+
+    void ButtonClear_OnClick(object _, RoutedEventArgs e)
+    {
+        SettingsService.Settings.MultiWeekRotationOffset.Clear();
+        UpdateIndexes();
+        e.Handled = true;
     }
 }

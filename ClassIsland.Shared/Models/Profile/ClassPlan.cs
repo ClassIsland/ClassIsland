@@ -315,7 +315,7 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 当前课表的时间表
     /// </summary>
-    [JsonIgnore] public TimeLayout TimeLayout => TimeLayouts[TimeLayoutId];
+    [JsonIgnore] public TimeLayout? TimeLayout => TimeLayouts[TimeLayoutId];
 
     /// <summary>
     /// 当前课表的时间表ID

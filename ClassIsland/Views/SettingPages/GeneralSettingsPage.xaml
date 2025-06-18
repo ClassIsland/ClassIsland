@@ -80,39 +80,62 @@
             <controls1:SettingsCard IconGlyph="Code" Header="注册 Url 协议"
                                     Description="允许第三方应用或网页通过 Url 协议 classisland:// 调用本应用的部分功能，详见帮助文档。"
                                     IsOn="{Binding SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}" />
-            <!-- 学期开始时间 -->
-            <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
-                                    Description="此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。">
-                <controls1:SettingsCard.Switcher>
-                    <StackPanel Orientation="Horizontal">
-                        <DatePicker SelectedDate="{Binding SettingsService.Settings.SingleWeekStartTime}"
+            <!-- 学期开始日期 -->
+            <materialDesign:Card Margin="0 0 0 6">
+                <Expander Background="Transparent" IsExpanded="False">
+                    <Expander.Header>
+                        <controls1:SettingsControl IconGlyph="CalendarStart" Header="学期开始日期"
+                                                   Description="设置学期首日，该日期将作为多周轮换课表的计算起点和每周的第一天。"
+                                                   Margin="-12 0" >
+                            <controls1:SettingsControl.Switcher>
+                                <StackPanel Orientation="Horizontal">
+                                    <DatePicker SelectedDate="{Binding SettingsService.Settings.SingleWeekStartTime}"
                                     Width="120"
                                     Foreground="{DynamicResource MaterialDesignBody}" />
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
                                 Content="{materialDesign:PackIcon CalendarMultiple}"
                                 Click="ButtonWeekOffsetSettingsOpen_OnClick"
-                                ToolTip="调整偏移…"/>
-                        <materialDesign:PopupEx Grid.Row="2"
+                                ToolTip="调整多周轮换位置…"/>
+                                    <materialDesign:PopupEx Grid.Row="2"
                                                 AllowsTransparency="True"
                                                 StaysOpen="False"
                                                 Placement="Mouse"
                                                 IsOpen="{Binding ViewModel.IsWeekOffsetSettingsOpen}"
                                                 PopupAnimation="Fade">
-                            <Border Background="{DynamicResource MaterialDesignPaper}"
+                                        <Border Background="{DynamicResource MaterialDesignPaper}"
                                     Margin="8"
                                     Button.Click="ButtonWeekOffsetSettingsButtons_OnClick">
-                                <Border.Effect>
-                                    <DropShadowEffect Direction="0"
+                                            <Border.Effect>
+                                                <DropShadowEffect Direction="0"
                                                       ShadowDepth="0"
                                                       BlurRadius="8"
                                                       Opacity="0.5"/>
-                                </Border.Effect>
-                                <controls2:WeekOffsetSettingsControl/>
-                            </Border>
-                        </materialDesign:PopupEx>
+                                            </Border.Effect>
+                                            <controls2:WeekOffsetSettingsControl/>
+                                        </Border>
+                                    </materialDesign:PopupEx>
+                                </StackPanel>
+                            </controls1:SettingsControl.Switcher>
+                        </controls1:SettingsControl>
+                    </Expander.Header>
+                    <StackPanel Margin="36 0 48 12">
+                        <!-- 多周轮换周数 -->
+                        <controls1:SettingsControl IconGlyph="CalendarMultiple" Header="多周轮换周数"
+                                    Description="多周轮换课表的最大允许轮换数。">
+                            <controls1:SettingsControl.Switcher>
+                                <ci:NumbericTextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
+                                                    Style="{StaticResource MaterialDesignTextBox}"
+                                                    MaxValue="8"
+                                                    MinValue="2"
+                                         materialDesign:TextFieldAssist.SuffixText="周"
+                                         MinWidth="100"
+                                                    Precision="0"
+                                         Text="{Binding SettingsService.Settings.MultiWeekRotationMaxCycle, Converter={StaticResource IntToStringConverter}}"/>
+                            </controls1:SettingsControl.Switcher>
+                        </controls1:SettingsControl>
                     </StackPanel>
-                </controls1:SettingsCard.Switcher>
-            </controls1:SettingsCard>
+                </Expander>
+            </materialDesign:Card>
             <!-- 隐藏窗口 -->
             <materialDesign:Card Margin="0 0 0 6">
                 <Expander Background="Transparent" IsExpanded="True">
