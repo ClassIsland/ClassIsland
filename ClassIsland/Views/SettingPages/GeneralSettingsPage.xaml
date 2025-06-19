@@ -125,7 +125,7 @@
                             <controls1:SettingsControl.Switcher>
                                 <ci:NumbericTextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
                                                     Style="{StaticResource MaterialDesignTextBox}"
-                                                    MaxValue="8"
+                                                    MaxValue="9"
                                                     MinValue="2"
                                          materialDesign:TextFieldAssist.SuffixText="周"
                                          MinWidth="100"

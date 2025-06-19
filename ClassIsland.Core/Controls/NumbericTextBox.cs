@@ -381,7 +381,7 @@ public class NumbericTextBox : TextBox
             e.Handled = true;
         }
         // 过滤删除
-        else if (e.Key == Key.Delete || e.Key == Key.Back)
+        else if ((e.Key == Key.Delete) || (e.Key == Key.Back))
         {
             this.isPaste = false;
         }
@@ -396,7 +396,7 @@ public class NumbericTextBox : TextBox
     {
         if (string.IsNullOrEmpty(this.Text))
         {
-            this.Text = this.lastLegalText;
+            this.Text = "";
         }
     }
 

@@ -18,7 +18,8 @@
             <Button HorizontalAlignment="Left" Click="ButtonFinish_OnClick" Margin="0 0 6 0">
                 <ci:IconText Kind="Check" Text="应用" />
             </Button>
-            <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonClear_OnClick">
+            <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonClear_OnClick"
+                    ToolTip="使用学期开始日期重置所有多周轮换位置。">
                 <ci:IconText Kind="Refresh" Text="重置"/>
             </Button>
         </WrapPanel>

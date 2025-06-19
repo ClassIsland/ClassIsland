@@ -74,17 +74,17 @@ public partial class WeekOffsetSettingsControl
     static ObservableCollection<string> CreateWeekItems(int cycleWeeks)
     {
         if (cycleWeeks == 2)
-            return new ObservableCollection<string> { "单周", "双周" };
+            return ["单周", "双周"];
         return new ObservableCollection<string>(
             Enumerable.Range(1, cycleWeeks)
                       .Select(i => $"{i}/{cycleWeeks}周")
         );
     }
 
-    void ButtonFinish_OnClick(object _, RoutedEventArgs e) => SetMultiWeekRotationOffset();
+    void ButtonFinish_OnClick(object _, RoutedEventArgs e) => SetCyclePositionsOffset();
 
-    // 对称逻辑：LessonsService.GetMultiWeekRotationByTime(now)
-    static void SetMultiWeekRotationOffset()
+    // 对称逻辑：LessonsService.GetCyclePositionsByDate(now)
+    static void SetCyclePositionsOffset()
     {
         var cyclePositionOffset = new ObservableCollection<int>([-1, -1]);
         var totalElapsedWeeks = (int)Math.Floor((ExactTimeService.GetCurrentLocalDateTime().Date - SettingsService.Settings.SingleWeekStartTime).TotalDays / 7);
