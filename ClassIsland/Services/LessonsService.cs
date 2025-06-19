@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
 using ClassIsland.Shared.Enums;
@@ -34,9 +34,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private bool _isLessonConfirmed = false;
     private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
     private TimeLayoutItem _nextClassTimeLayoutItem = TimeLayoutItem.Empty;
-    private ObservableCollection<int> _multiWeekRotation = [0, 0, 1, 1, 1];
-
-    private static readonly ObservableCollection<int> DefaultMultiWeekRotation = [0, 0, 1, 1, 1];
 
     private DispatcherTimer MainTimer
     {
@@ -139,11 +136,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
         get => _onBreakingTimeLeftTime;
         set => SetProperty(ref _onBreakingTimeLeftTime, value);
     }
-    public ObservableCollection<int> MultiWeekRotation
-    {
-        get => _multiWeekRotation;
-        set => SetProperty(ref _multiWeekRotation, value);
-    }
 
     public ClassPlan? GetClassPlanByDate(DateTime date) => GetClassPlanByDate(date, out _);
 
@@ -221,8 +213,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private IProfileService ProfileService { get; }
     private ILogger<LessonsService> Logger { get; }
     private IExactTimeService ExactTimeService { get; }
-    public IRulesetService RulesetService { get; }
-    public IIpcService IpcService { get; }
+    private IRulesetService RulesetService { get; }
+    private IIpcService IpcService { get; }
 
     private Profile Profile => ProfileService.Profile;
     private Settings Settings => SettingsService.Settings;
@@ -430,7 +422,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         isClassPlanLoaded = true;
         // Activate selected item
         CurrentClassPlan!.IsActivated = true;
-        CurrentClassPlan.TimeLayout.IsActivated = true;
+        CurrentClassPlan.TimeLayout!.IsActivated = true;
 
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         var validTimeLayoutItems = CurrentClassPlan.ValidTimeLayoutItems;
@@ -534,12 +526,12 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private int GetClassIndex(int index)
     {
-        if (index < 0 || index >= CurrentClassPlan?.TimeLayout.Layouts.Count )
+        if (index < 0 || index >= CurrentClassPlan?.TimeLayout?.Layouts.Count )
         {
             return -1;
         }
-        var k = CurrentClassPlan?.TimeLayout.Layouts[index];
-        var l = (from t in CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
+        var k = CurrentClassPlan?.TimeLayout?.Layouts[index];
+        var l = (from t in CurrentClassPlan?.TimeLayout?.Layouts where t.TimeType == 0 select t).ToList();
         var i = l.IndexOf(k);
         return i;
     }
@@ -553,7 +545,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private void LoadCurrentClassPlan()
     {
         ProfileService.Profile.RefreshTimeLayouts();
-        RefreshMultiWeekRotation();
         var currentTime = ExactTimeService.GetCurrentLocalDateTime();
         if (Profile.TempClassPlanSetupTime.Date < currentTime.Date)  // 清除过期临时课表
         {
@@ -606,31 +597,36 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return true;
 
         // RefreshMultiWeekRotation();
-        var rotation = GetMultiWeekRotationByTime(time);
+        var rotation = GetCyclePositionsByDate(time);
         return plan.TimeRule.WeekCountDiv == rotation[plan.TimeRule.WeekCountDivTotal];
     }
 
-    public void RefreshMultiWeekRotation()
+    /// <summary>
+    /// 计算从指定时间起，在多个周期（2周 ~ 最大周期）中的循环位置。
+    /// </summary>
+    /// <param name="referenceTime">基准时间点。默认为当前时间。</param>
+    /// <returns>
+    /// 2-first, 1-based
+    /// </returns>
+    /// <remarks>
+    /// 对称逻辑：WeekOffsetSettingsControl.SetMultiWeekRotationOffset()
+    /// </remarks>
+    public ObservableCollection<int> GetCyclePositionsByDate(DateTime? referenceTime = null)
     {
-        MultiWeekRotation = GetMultiWeekRotationByTime(ExactTimeService.GetCurrentLocalDateTime());
-    }
+        referenceTime ??= ExactTimeService.GetCurrentLocalDateTime();
+        var cyclePositions = new ObservableCollection<int>([-1, -1]);
+        var totalElapsedWeeks = (int)Math.Floor((referenceTime.Value.Date - Settings.SingleWeekStartTime.Date).TotalDays / 7);
 
-    private ObservableCollection<int> GetMultiWeekRotationByTime(DateTime time)
-    {
-        var rotation = new ObservableCollection<int>(DefaultMultiWeekRotation);
-        var deltaDays = (time.Date - Settings.SingleWeekStartTime.Date).TotalDays;
-        var deltaWeeks = (int)Math.Floor(deltaDays / 7);
-        for (var i = 2; i <= 4; i++)
+        foreach (var cycleLength in Enumerable.Range(2, count: Settings.MultiWeekRotationMaxCycle - 1))
         {
-            var w = (deltaWeeks - Settings.MultiWeekRotationOffset[i] + i) % i;
-            if (w < 0)
-            {
-                w += i;
-            }
-            rotation[i] = w + 1;
+            int cycleOffset = Settings.MultiWeekRotationOffset.GetValueOrDefault(cycleLength);
+            int positionInCycle = (totalElapsedWeeks + cycleOffset) % cycleLength;
+            // 在 C# 中，负数取模为负。
+            if (positionInCycle < 0)
+                positionInCycle += cycleLength;
+            cyclePositions.Add(positionInCycle + 1);
         }
-
-        return rotation;
+        return cyclePositions;
     }
 
     public void StartMainTimer()

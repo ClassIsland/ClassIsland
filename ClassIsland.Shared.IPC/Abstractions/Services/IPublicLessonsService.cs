@@ -85,16 +85,11 @@ public interface IPublicLessonsService
     bool IsLessonConfirmed { get; set; }
 
     /// <summary>
-    /// 本周多周轮换周数。
+    /// 计算指定日期所在周在多周轮换（2周 ~ 最大周期）中的位置。
     /// </summary>
-    /// <value>
-    /// 第 x 位数字是 y（MultiWeekRotation[x]=y）— 本周是 x 周轮换中的第 y 周。<br/>
-    /// <br/>
-    /// 例：<br/>
-    /// 第 2 位数字是 1（MultiWeekRotation[2]=1）— 本周是 2 周轮换中的第 1 周。<br/>
-    /// 第 4 位数字是 3（MultiWeekRotation[4]=3）— 本周是 4 周轮换中的第 3 周。<br/>
-    /// </value>
-    ObservableCollection<int> MultiWeekRotation { get; set; }
+    /// <param name="referenceTime">指定日期。默认为当前日期。</param>
+    /// <remarks> 2-first, 1-based </remarks>
+    ObservableCollection<int> GetCyclePositionsByDate(DateTime? referenceTime = null);
 
     /// <summary>
     /// 根据日期获取当天的课表<see cref="ClassPlan"/>。如果那天没有课表安排，则返回 null

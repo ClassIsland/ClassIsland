@@ -891,7 +891,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonConvertToStdClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        ProfileService.ConvertToStdClassPlan();
+        var kvp = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem);
+        ProfileService.ConvertToStdClassPlan(kvp.Key);
     }
 
     private void ButtonTimeLayoutEditScrollToContent_OnClick(object sender, RoutedEventArgs e)
