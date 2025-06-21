@@ -16,6 +16,7 @@
                              IsVisible="{Binding $parent[ci:IconText].UseFontIcon, Converter={StaticResource InvertBooleanConverter}}"/>
         <TextBlock Text="{Binding $parent[ci:IconText].Text}"
                    VerticalAlignment="Center"
+                   LineSpacing="0"
                    Margin="0 0 0 -4"/>
     </StackPanel>
 </UserControl>

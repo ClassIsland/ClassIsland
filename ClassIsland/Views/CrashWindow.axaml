@@ -14,19 +14,26 @@
                    Icon="/Assets/AppLogo.ico"
                    Title="ClassIsland 崩溃报告" Height="450" Width="800">
     <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
-        <TextBlock Text="ClassIsland 发生错误 ヽ(*。>Д&lt;)o゜" Classes="Headline6"
+        <Image Grid.Row="0" Grid.Column="0"
+               Source="/Assets/HoYoStickers/光辉矢愿_不可以看.png"
+               Width="48" Height="48"
+               Margin="0 -8 0 0"
+               VerticalAlignment="Top"/>
+        <TextBlock Text="ClassIsland 发生错误 ヽ(*。>Д&lt;)o゜"
+                   Grid.Row="0" Grid.Column="1"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Center"
-                   Margin="0 0 16 0"/>
-        <TextBlock Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" FontSize="14">
+                   Theme="{StaticResource TitleTextBlockStyle}"
+                   Margin="8 0 16 16"/>
+        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" TextWrapping="Wrap" FontSize="14"
+                   Margin="0 0 0 6">
             <Run Text="ClassIsland 碰到了严重错误而无法正常运行。您可以保存下方的错误信息并向他人寻求帮助。如果您认为这是由软件本身的错误所致，请点击下方“反馈问题”按钮。"/>
         </TextBlock>
-        <TextBox Grid.Column="1"
+        <TextBox Grid.Column="0" Grid.ColumnSpan="2"
                  x:Name="TextBoxCrashInfo" Grid.Row="2" 
                  FontSize="13"
                  BorderThickness="0"
                  Padding="0"
-                 Classes="solo"
                  Margin="0 6 0 0" AcceptsReturn="True"
                  VerticalContentAlignment="Top"
                  IsReadOnly="True" Text="{Binding CrashInfo, Mode=OneWay}"

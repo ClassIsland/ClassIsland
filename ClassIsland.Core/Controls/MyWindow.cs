@@ -7,13 +7,14 @@ using Avalonia.Interactivity;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
+using FluentAvalonia.UI.Windowing;
 
 namespace ClassIsland.Core.Controls;
 
 /// <summary>
 /// 通用窗口基类
 /// </summary>
-public class MyWindow : Window
+public class MyWindow : AppWindow
 {
     private bool _isAdornerAdded;
 
@@ -22,8 +23,6 @@ public class MyWindow : Window
     /// </summary>
     public static bool ShowOssWatermark { get; internal set; } = false;
 
-    private IThemeService? ThemeService { get; }
-
     /// <summary>
     /// 构造函数
     /// </summary>
@@ -31,8 +30,6 @@ public class MyWindow : Window
     {
         try
         {
-            ThemeService = IAppHost.GetService<IThemeService>();
-            ThemeService.ThemeUpdated += ThemeServiceOnThemeUpdated;
             IAppHost.GetService<IHangService>().AssumeHang();
         }
         catch
@@ -44,8 +41,6 @@ public class MyWindow : Window
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
-
         if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark)&& Content is Control element && !_isAdornerAdded)
         {
             var layer = AdornerLayer.GetAdornerLayer(element);
@@ -56,52 +51,4 @@ public class MyWindow : Window
         }
     }
 
-    private void ThemeServiceOnThemeUpdated(object? sender, ThemeUpdatedEventArgs e)
-    {
-        UpdateImmersiveDarkMode(e.RealThemeMode);
-    }
-
-    /// <inheritdoc />
-    public override void Show()
-    {
-        UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
-        Debug.WriteLine("rendered.");
-        base.Show();
-    }
-
-    private unsafe void UpdateImmersiveDarkMode(int mode)
-    {
-        var trueVal = 0x01;
-        var falseVal = 0x00;
-        var hWnd = (HWND)(TryGetPlatformHandle()?.Handle ?? nint.Zero);
-        var build = Environment.OSVersion.Version.Build;
-        if (build < 17763)
-        {
-            return;
-        }
-        //Debug.WriteLine(build);
-
-        if (mode == 0)
-        {
-            PInvoke.DwmSetWindowAttribute(hWnd,
-                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
-                &falseVal,
-                (uint)Marshal.SizeOf(typeof(int)));
-        }
-        else
-        {
-            PInvoke.DwmSetWindowAttribute(hWnd,
-                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
-                &trueVal,
-                (uint)Marshal.SizeOf(typeof(int)));
-        }
-
-        // 在Windows10系统上强制刷新标题栏
-        if (build < 22000)
-        {
-            uint WM_NCACTIVATE = 0x0086;
-            PInvoke.SendMessage(hWnd, WM_NCACTIVATE, new WPARAM((nuint)(!IsActive ? 1 : 0)), 0);
-            PInvoke.SendMessage(hWnd, WM_NCACTIVATE, new WPARAM((nuint)(IsActive ? 1 : 0)), 0);
-        }
-    }
 }
