@@ -11,7 +11,6 @@
                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                   xmlns:converters="clr-namespace:ClassIsland.Converters"
                   mc:Ignorable="d"
-                  d:DataContext="{d:DesignInstance local:ScheduleComponent}"
                   d:DesignHeight="450" d:DesignWidth="800"
                   x:Name="ScheduleComponentRoot"
                   Classes.AfterSchool="{Binding IsAfterSchool, RelativeSource={RelativeSource Self}}"
@@ -53,17 +52,17 @@
             <Setter Property="IsLiveUpdatingEnabled" Value="True"/>
         </Style>
         <Style Selector="local|ScheduleComponent">
-            <Setter Property="LessonsListBoxSelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}, Mode=TwoWay}"/>
-        </Style>
-        <Style Selector="local|ScheduleComponent.HideFinishedClass.AfterSchool">
-            <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
-                <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="LessonsListBoxSelectedIndex" Value="{Binding $self.LessonsService.CurrentSelectedIndex, Mode=TwoWay}"/>
+            <Style Selector="^.HideFinishedClass.AfterSchool">
+                <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+                <Style Selector="^ TextBlock#EmptyPlaceholder">
+                    <Setter Property="IsVisible" Value="True"/>
+                    <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"/>
+                </Style>
+                <Setter Property="LessonsListBoxSelectedIndex" Value="-1"/>
             </Style>
-            <Style Selector="^ TextBlock#EmptyPlaceholder">
-                <Setter Property="IsVisible" Value="True"/>
-                <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"/>
-            </Style>
-            <Setter Property="LessonsListBoxSelectedIndex" Value="-1"/>
         </Style>
         <Style Selector="local|ScheduleComponent.TodayScheduleEmpty">
             <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
@@ -91,7 +90,7 @@
             </Style>
         </Style>
     </ci:ComponentBase.Styles>
-    <Grid ColumnDefinitions="Auto,*" DataContext="{Binding $parent[local:ScheduleComponent]}">
+    <Grid ColumnDefinitions="Auto,*">
         <Border 
             Grid.Column="0"
             Margin="0 0 2 0"
@@ -103,14 +102,22 @@
             <TextBlock Text="明天" Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
         </Border>
         <ci:LessonsListBox Grid.Column="1" 
-                           Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
-                           LessonControlSettings="{Binding Settings, Mode=OneWay}"
-                           ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}"
-                           HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}"
+                           Subjects="{Binding $parent[local:ScheduleComponent].ProfileService.Profile.Subjects, Mode=OneWay}"
+                           LessonControlSettings="{Binding $parent[local:ScheduleComponent].Settings, Mode=OneWay}"
+                           ShowCurrentTimeLayoutItemOnlyOnClass="{Binding $parent[local:ScheduleComponent].ShowCurrentLessonOnlyOnClass, Mode=OneWay}"
+                           HighlightChangedClass="{Binding $parent[local:ScheduleComponent].Settings.HighlightChangedClass, Mode=OneWay}"
                            x:Name="MainLessonsListBox"
-                           SelectedIndex="{Binding LessonsListBoxSelectedIndex, Mode=TwoWay}"/>
+                           SelectedIndex="{Binding $parent[local:ScheduleComponent].LessonsListBoxSelectedIndex, Mode=OneWay}"/>
         <Grid Grid.Column="0" Grid.ColumnSpan="2">
             <TextBlock VerticalAlignment="Center" x:Name="EmptyPlaceholder"/>
         </Grid>
+        <!-- <StackPanel Grid.Column="1"> -->
+        <!--     <TextBlock Text="{Binding $parent[local:ScheduleComponent].LessonsListBoxSelectedIndex, Mode=OneWay}" -->
+        <!--                Foreground="Aqua"/> -->
+        <!--     <TextBlock> -->
+        <!--         <Run Text="{Binding LessonsService.CurrentSelectedIndex, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}, Mode=TwoWay}" -->
+        <!--              Foreground="Aqua"/> -->
+        <!--     </TextBlock> -->
+        <!-- </StackPanel> -->
     </Grid>
 </ci:ComponentBase>

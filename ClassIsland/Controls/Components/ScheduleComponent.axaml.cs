@@ -90,7 +90,6 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged;
         Unloaded += (_, _) => LessonsService.PropertyChanged -= LessonsServiceOnPropertyChanged;
         InitializeComponent();
-        DataContext = this;
         CurrentTimeStateChanged();
     }
 

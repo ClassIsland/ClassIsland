@@ -36,6 +36,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private int _masterTabIndex = 0;
     private bool _extraInfo4ShowSeconds = false;
     private ILessonControlSettings? _settingsSource;
+    private Subject _displayingSubject = Subject.Empty;
 
     public static readonly StyledProperty<ILessonControlSettings> DefaultLessonControlSettingsProperty = AvaloniaProperty.Register<LessonControlExpanded, ILessonControlSettings>(
         nameof(DefaultLessonControlSettings));
@@ -119,6 +120,22 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         set => SetField(ref _settingsSource, value);
     }
 
+    public Subject DisplayingSubject
+    {
+        get => _displayingSubject;
+        set => SetField(ref _displayingSubject, value);
+    }
+
+    private void UpdateSubject()
+    {
+        if (CurrentTimeLayoutItem == null)
+        {
+            return;
+        }
+
+        DisplayingSubject = CurrentTimeLayoutItem.TimeType == 1 ? Subject.Breaking : CurrentSubject;
+    }
+
     private IExactTimeService? ExactTimeService { get; set; }
 
     /// <inheritdoc />
@@ -128,6 +145,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
 
         this.GetObservable(IsLiveUpdatingEnabledProperty)
             .Subscribe(new AnonymousObserver<bool>(_ => OnIsLiveUpdatePropertyChanged()));
+        this.GetObservable(CurrentTimeLayoutItemProperty).Subscribe(_ => UpdateSubject());
     }
 
     ~LessonControlExpanded()
@@ -138,7 +156,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         }
     }
 
-    private Subject CurrentSubject => Subjects.TryGetValue(ClassInfo?.SubjectId ?? "", out var value) ? value : Subject.Breaking;
+    private Subject CurrentSubject => Subjects?.TryGetValue(ClassInfo?.SubjectId ?? "", out var value) == true ? value : Subject.Breaking;
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {

@@ -13,7 +13,7 @@
             <Border Width="10"/>
         </LayoutTransformControl>
 
-        <Line VerticalAlignment="Center" Stroke="{DynamicResource MaterialDesignBody}" StrokeThickness="2"
+        <Line VerticalAlignment="Center" Stroke="{DynamicResource TextFillColorSecondaryBrush}" StrokeThickness="2"
               HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" Opacity="0.8">
         </Line>
 

@@ -80,7 +80,13 @@
             <NativeMenuItem  Header="重启" Click="MenuItemRestartApp_OnClick"/>
             <NativeMenuItem  Header="退出" Click="MenuItemExitApp_OnClick"/>
             <NativeMenuItemSeparator />
-            <NativeMenuItem  Header="(Debug) DevTools" Click="NativeMenuItemDebugDevTools_OnClick"/>
+            <NativeMenuItem Header="dev_Debug">
+                <NativeMenu>
+                    <NativeMenuItem Header="DevTools" Click="NativeMenuItemDebugDevTools_OnClick"/>
+                    <NativeMenuItemSeparator/>
+                    <NativeMenuItem  Header="启用课表" Click="NativeMenuItemDebugEnableTempClassPlan_OnClick"/>
+                </NativeMenu>
+            </NativeMenuItem>
         </NativeMenu>
     </Window.Resources>
     <Window.Styles>

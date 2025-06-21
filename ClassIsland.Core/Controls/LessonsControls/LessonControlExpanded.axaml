@@ -30,14 +30,6 @@
             </Setter>
         </Style>
         
-        <Style Selector="local|LessonControlBase.Breaking TextBlock#Text">
-            <Setter Property="Text" Value="{Binding CurrentTimeLayoutItem.BreakNameText, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
-        </Style>
-        
-        <Style Selector="local|LessonControlBase:not(.Breaking) TextBlock#Text">
-            <Setter Property="Text" Value="{Binding CurrentSubject.Name, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
-        </Style>
-        
         <Style Selector="local|LessonControlExpanded">
             <Setter Property="DetailIndex" Value="{Binding SettingsSource.ExtraInfoType, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}" />
         </Style>
@@ -50,6 +42,9 @@
         <Style Selector="TabItem">
             <Setter Property="IsVisible" Value="False"></Setter>
         </Style>
+        <Style Selector="TabControl">
+            <Setter Property="Padding" Value="0"/>
+        </Style>
     </local:LessonControlBase.Styles>
     <local:LessonControlBase.Resources>
         <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
@@ -59,7 +54,7 @@
         <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
         <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
     </local:LessonControlBase.Resources>
-    <Grid DataContext="{Binding $parent[local:LessonControlExpanded]}">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=local:LessonControlExpanded}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
             <LayoutTransformControl>
                 <LayoutTransformControl.LayoutTransform>
@@ -76,12 +71,13 @@
                 <!--     </MultiBinding> -->
                 <!-- </Grid.DataContext> -->
                 <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
-                           FontWeight="Bold" x:Name="Text"/>
+                           FontWeight="Bold" x:Name="Text" Text="{Binding CurrentSubject.Name, Mode=OneWay}"/>
             </Grid>
             
             <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
                 <TabControl SelectedIndex="{Binding MasterTabIndex}" Margin="6 0 0 0"
-                            IsVisible="{Binding SettingsSource.ShowExtraInfoOnTimePoint}">
+                            IsVisible="{Binding SettingsSource.ShowExtraInfoOnTimePoint}"
+                            >
                     <TabControl.Styles>
                         <Style Selector="TabControl Rectangle#PART_Separator">
                             <Setter Property="Fill" Value="{x:Null}"/>
@@ -93,11 +89,6 @@
                         <TabControl VerticalAlignment="Bottom" FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                     x:Name="DetailedInfoTabControl"
                                     SelectedIndex="{Binding DetailIndex}">
-                            <TabControl.Styles>
-                                <Style Selector="TabControl Rectangle#PART_Separator">
-                                    <Setter Property="Fill" Value="{x:Null}"/>
-                                </Style>
-                            </TabControl.Styles>
                             <TabItem>
                                 <TextBlock VerticalAlignment="Bottom">
                                     <Run
@@ -205,8 +196,9 @@
             </LayoutTransformControl>
         </StackPanel>
         <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                     MinWidth="0"
                      Value="{Binding Seconds}" Maximum="{Binding TotalSeconds}"/>
-        <!-- <TextBlock Text="{Binding Index}" VerticalAlignment="Bottom" HorizontalAlignment="Center"/> -->
+        
     </Grid>
 </local:LessonControlBase>
 

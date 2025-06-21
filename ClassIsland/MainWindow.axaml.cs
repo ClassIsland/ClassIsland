@@ -32,7 +32,7 @@ using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
-
+using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
@@ -1050,5 +1050,35 @@ public partial class MainWindow : Window
             Key = Key.F12,
             RoutedEvent = KeyDownEvent
         });
+    }
+
+    private async void NativeMenuItemDebugEnableTempClassPlan_OnClick(object? sender, EventArgs e)
+    {
+        var input = new TextBox();
+        var dialog = new TaskDialog()
+        {
+            Header = "启用临时课表",
+            Content = new StackPanel()
+            {
+                Spacing = 4,
+                Children =
+                {
+                    new TextBlock()
+                    {
+                        Text = $"输入课表 GUID，当前档案为 {ProfileService.CurrentProfilePath}"
+                    },
+                    input
+                }
+            },
+            XamlRoot = this,
+            Buttons =
+            {
+                TaskDialogButton.OKButton
+            }
+        };
+        await dialog.ShowAsync();
+
+        ProfileService.Profile.TempClassPlanId = input.Text;
+        ProfileService.Profile.TempClassPlanSetupTime = ExactTimeService.GetCurrentLocalDateTime();
     }
 }
