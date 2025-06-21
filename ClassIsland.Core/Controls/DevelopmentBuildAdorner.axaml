@@ -22,11 +22,15 @@
                        HorizontalAlignment="Right"
                        TextAlignment="Right"
                        FontSize="12"
-                       Foreground="{DynamicResource PrimaryHueMidBrush}"
                        FontFamily="JetBrains Mono, Consolas,  黑体"
                        IsVisible="{Binding ShowOssWatermark, RelativeSource={RelativeSource TemplatedParent}}">
                 <Run Text="https://www.classisland.tech"/>
             </TextBlock>
         </Grid>
     </ControlTemplate>
+    
+    <ControlTheme TargetType="ci:DevelopmentBuildAdorner"
+                  x:Key="{x:Type ci:DevelopmentBuildAdorner}">
+        <Setter Property="Template" Value="{StaticResource DevelopmentBuildAdornerControlTemplate}"/>
+    </ControlTheme>
 </ResourceDictionary>
