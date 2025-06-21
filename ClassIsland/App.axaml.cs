@@ -580,7 +580,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddComponent<TextComponent, TextComponentSettingsControl>();
                 // services.AddComponent<SeparatorComponent>();
                 services.AddComponent<ScheduleComponent, ScheduleComponentSettingsControl>();
-                // services.AddComponent<DateComponent>();
+                services.AddComponent<DateComponent>();
                 // services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
                 // services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();
                 // services.AddComponent<CountDownComponent, CountDownComponentSettingsControl>();

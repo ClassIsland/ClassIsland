@@ -44,6 +44,7 @@
         <entry key="ClassIsland/App.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/AppNew.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Assets/Fonts/Fonts.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Controls/Components/DateComponent.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Controls/Components/ScheduleComponent.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Controls/Components/ScheduleComponentSettingsControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Controls/MainWindowLine.axaml" value="ClassIsland/ClassIsland.csproj" />
