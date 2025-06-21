@@ -51,7 +51,7 @@
                             <Run Text="。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。" />
                         </TextBlock>
                     </DockPanel>
-                    <Button Style="{StaticResource MaterialFlatButton}" HorizontalAlignment="Left"
+                    <Button Style="{StaticResource TransparentButton}" HorizontalAlignment="Left"
                             Margin="24 6 0 0" Foreground="{DynamicResource MaterialDesignBody}"
                             materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
                             Click="ButtonCloseSellingAnnouncementBanner_OnClick">
@@ -88,7 +88,7 @@
                         <DatePicker SelectedDate="{Binding SettingsService.Settings.SingleWeekStartTime}"
                                     Width="120"
                                     Foreground="{DynamicResource MaterialDesignBody}" />
-                        <Button Style="{StaticResource MaterialFlatButton}"
+                        <Button Style="{StaticResource TransparentButton}"
                                 Content="{materialDesign:PackIcon CalendarMultiple}"
                                 Click="ButtonWeekOffsetSettingsOpen_OnClick"
                                 ToolTip.Tip="调整偏移…"/>
@@ -143,7 +143,7 @@
                         </TabItem>
                         <TabItem Header="高级模式">
                             <StackPanel>
-                                <Button HorizontalAlignment="Left" Style="{StaticResource MaterialFlatButton}"
+                                <Button HorizontalAlignment="Left" Style="{StaticResource TransparentButton}"
                                         Command="{x:Static ci:SettingsPageBase.OpenDrawerCommand}"
                                         CommandParameter="{StaticResource RulesetControl}">
                                     <controls1:IconText Kind="TagMultipleOutline" Text="编辑规则集…"/>
@@ -256,7 +256,7 @@
                         </materialDesign:ColorZone>
 
                         <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0">
-                            <Button Margin="0 6 0 0" Style="{StaticResource MaterialFlatButton}"
+                            <Button Margin="0 6 0 0" Style="{StaticResource TransparentButton}"
                                     HorizontalAlignment="Left" Click="ButtonRefreshSplashPreview_OnClick">
                                 <ci:IconText Kind="EyeOutline" Text="预览"/>
                             </Button>
@@ -314,7 +314,7 @@
                                                         Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
                                                         HorizontalAlignment="Left"
                                                         Click="ButtonSyncTimeNow_OnClick"
-                                                        Style="{StaticResource MaterialFlatButton}">
+                                                        Style="{StaticResource TransparentButton}">
                             <controls1:IconText Kind="Refresh" Text="立即同步"/>
                         </Button>
                     </Grid>
@@ -359,7 +359,7 @@
                             </controls1:SettingsControl.Switcher>
                         </controls1:SettingsControl>
 
-                        <Button Style="{StaticResource MaterialFlatButton}"
+                        <Button Style="{StaticResource TransparentButton}"
                                 HorizontalAlignment="Left"
                                 Margin="0 6 0 0"
                                 Click="ButtonAdjustTime_OnClick">
@@ -387,7 +387,7 @@
                             【快速信息】功能已被【组件】取代，您在先前版本中的快速信息和课表显示设置已经转移到【组件】中，请前往【组件】页面调整相关设置。
                             利用组件功能，您可以更自由地定制 ClassIsland 主界面上显示的内容。
                         </TextBlock>
-                        <Button Style="{StaticResource MaterialFlatButton}"
+                        <Button Style="{StaticResource TransparentButton}"
                                 HorizontalAlignment="Left"
                                 Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                 CommandParameter="classisland://app/settings/components"

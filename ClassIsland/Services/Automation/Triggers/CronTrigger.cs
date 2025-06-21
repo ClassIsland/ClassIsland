@@ -3,16 +3,14 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Automation.Triggers;
-using Material.Icons;
 using TimeCrontab;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
-[TriggerInfo("classisland.cron", "cron", MaterialIconKind.Repeat)]
+[TriggerInfo("classisland.cron", "cron", "\ue125")]
 public class CronTrigger : TriggerBase<CronTriggerSettings>
 {
     private Crontab? _crontab;

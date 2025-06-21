@@ -48,7 +48,7 @@
                 <Button HorizontalAlignment="Left" Click="ButtonFinish_OnClick">
                     <ci:IconText Kind="Check" Text="应用" />
                 </Button>
-                <Button Style="{StaticResource MaterialFlatButton}"
+                <Button Style="{StaticResource TransparentButton}"
                         Click="ButtonClear_OnClick">
                     <ci:IconText Kind="Refresh" Text="重置偏移"/>
                 </Button>

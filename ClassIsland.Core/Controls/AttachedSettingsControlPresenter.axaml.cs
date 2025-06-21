@@ -14,7 +14,7 @@ using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Profile;
-using Material.Icons;
+
 
 namespace ClassIsland.Core.Controls;
 
@@ -84,7 +84,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     private ObservableCollection<AttachableObjectNode> _nextItems = new();
     private ObservableCollection<AttachableObjectNode> _previousItems = new();
-    private MaterialIconKind _dependencyItemPackIconKind = MaterialIconKind.CogOutline;
+    private char _dependencyItemPackIconKind = '\0';
     private string _dependencyItemTitle = "";
     private bool _isLoading = false;
 
@@ -128,7 +128,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         }
     }
 
-    public MaterialIconKind DependencyItemPackIconKind
+    public char DependencyItemPackIconKind
     {
         get => _dependencyItemPackIconKind;
         set
@@ -244,12 +244,12 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
         DependencyItemPackIconKind = node.Target switch
         {
-            AttachedSettingsTargets.Lesson => MaterialIconKind.TextBoxOutline,
-            AttachedSettingsTargets.Subject => MaterialIconKind.BookOutline,
-            AttachedSettingsTargets.ClassPlan => MaterialIconKind.FileChartOutline,
-            AttachedSettingsTargets.TimePoint => MaterialIconKind.TimelineOutline,
-            AttachedSettingsTargets.TimeLayout => MaterialIconKind.TableClock,
-            _ => MaterialIconKind.CogOutline
+            AttachedSettingsTargets.Lesson => '\uEFD7',
+            AttachedSettingsTargets.Subject => '\uE47A',
+            AttachedSettingsTargets.ClassPlan => '\ue6b1',
+            AttachedSettingsTargets.TimePoint => '\uf35b',
+            AttachedSettingsTargets.TimeLayout => '\uf0eb',
+            _ => '\uef27'
         };
         var policy = ManagementService.Policy;
         IsEnabled = !policy.DisableProfileEditing;

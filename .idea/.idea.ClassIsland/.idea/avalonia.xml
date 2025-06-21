@@ -15,6 +15,8 @@
         <entry key="ClassIsland.Core/Controls/CredentialEditControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/DevelopmentBuildAdorner.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/DocumentReaderWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/Field.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/FluentIcon.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/IconControl/IconControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/IconText.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/InfoCard.axaml" value="ClassIsland/ClassIsland.csproj" />

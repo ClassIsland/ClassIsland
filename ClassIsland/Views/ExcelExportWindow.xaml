@@ -182,7 +182,7 @@
                              SelectionMode="Multiple">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem"
-                                   BasedOn="{StaticResource MaterialListBoxItem}">
+                                   >
                                 <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
                                     <Setter.Value>
                                         <materialDesign:BehaviorCollection>

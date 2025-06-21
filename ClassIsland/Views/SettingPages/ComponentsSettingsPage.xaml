@@ -106,7 +106,7 @@
             </Setter>
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
-                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                    <Style TargetType="ListBoxItem" >
                         <Setter Property="ContextMenu" Value="{StaticResource ComponentOperationContextMenu}"/>
                     </Style>
                 </Setter.Value>
@@ -310,7 +310,7 @@
                             </DataTemplate>
                         </dd:DragDrop.EffectCopyAdornerTemplate>
                         <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                            <Style TargetType="ListBoxItem" >
                                 
                             </Style>
                         </ListBox.ItemContainerStyle>
@@ -379,7 +379,7 @@
                                             <controls2:SettingsCard.Switcher>
                                                 <StackPanel Orientation="Horizontal">
                                                     <Button HorizontalAlignment="Left"
-                                                            Style="{StaticResource MaterialFlatButton}"
+                                                            Style="{StaticResource TransparentButton}"
                                                             Click="ButtonOpenRuleset_OnClick"
                                                             Visibility="{Binding HideOnRule, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                         <controls2:IconText Kind="TagMultipleOutline" Text="编辑规则集…" />
@@ -482,7 +482,7 @@
                                                 <Grid>
                                                     <ListBox SelectedIndex="{Binding HorizontalAlignment, Converter={StaticResource HorizontalAlignmentToIntConverter}}">
                                                         <ListBox.ItemContainerStyle>
-                                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                                                            <Style TargetType="ListBoxItem" >
                                                                 <Style.Triggers>
                                                                     <Trigger Property="IsSelected" Value="True">
                                                                         <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>

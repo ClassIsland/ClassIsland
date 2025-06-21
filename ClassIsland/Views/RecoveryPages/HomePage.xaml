@@ -18,7 +18,7 @@
       TextOptions.TextRenderingMode="Auto">
 
     <Page.Resources>
-        <Style x:Key="LinkButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
+        <Style x:Key="LinkButtonStyle" TargetType="Button" BasedOn="{StaticResource TransparentButton}">
             <Style.Resources>
                 <Style TargetType="materialDesign:PackIcon">
                     <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"></Setter>

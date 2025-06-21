@@ -1,17 +1,20 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:templates="clr-namespace:ClassIsland.Core.Models.Notification.Templates"
-                    xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+                    xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
     <DataTemplate x:Key="{x:Static templates:TwoIconsMaskTemplateData.TemplateResourceKey}"
                   DataType="{x:Type templates:TwoIconsMaskTemplateData}">
         <StackPanel Orientation="Horizontal" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
-            <avalonia:MaterialIcon Kind="{Binding LeftIconKind}" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+            <controls:FontIcon Glyph="{Binding LeftIconGlyph}" VerticalAlignment="Center"
+                               FontFamily="{StaticResource FluentIcons}"
+                               Height="20" Width="20"/>
             <TextBlock Text="{Binding Text}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" 
                        Margin="8 0" FontWeight="Bold"/>
-            <avalonia:MaterialIcon Kind="{Binding RightIconKind}" VerticalAlignment="Center"
-                                   Height="20" Width="20" IsVisible="{Binding HasRightIcon}"/>
+            <controls:FontIcon Glyph="{Binding RightIconGlyph}"
+                               VerticalAlignment="Center"
+                               FontFamily="{StaticResource FluentIcons}"
+                               Height="20" Width="20" IsVisible="{Binding HasRightIcon}"/>
         </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

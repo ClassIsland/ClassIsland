@@ -5,11 +5,11 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
-using Material.Icons.Avalonia;
 using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
@@ -100,9 +100,9 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
         }
         else
         {
-            IconElement = new MaterialIcon()
+            IconElement = new FluentIcon()
             {
-                Kind = info.PackIcon,
+                Glyph = info.IconGlyph,
                 Width = 24,
                 Height = 24
             };

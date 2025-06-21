@@ -2,11 +2,10 @@
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
-using Material.Icons;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
-[TriggerInfo("classisland.ruleSet.rulesetChanged", "规则集更新时", MaterialIconKind.TagMultipleOutline)]
+[TriggerInfo("classisland.ruleSet.rulesetChanged", "规则集更新时", "\uf17e")]
 public class RulesetChangedTrigger(IRulesetService rulesetService) : TriggerBase
 {
     private IRulesetService RulesetService { get; } = rulesetService;

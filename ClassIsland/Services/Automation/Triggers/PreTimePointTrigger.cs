@@ -6,11 +6,10 @@ using ClassIsland.Helpers;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
-using Material.Icons;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
-[TriggerInfo("classisland.lessons.preTimePoint", "特定时间点前", MaterialIconKind.ClockEnd)]
+[TriggerInfo("classisland.lessons.preTimePoint", "特定时间点前", "\ue4c6")]
 public class PreTimePointTrigger(ILessonsService lessonsService, IExactTimeService exactTimeService) : TriggerBase<PreTimePointTriggerSettings>
 {
     private ILessonsService LessonsService { get; } = lessonsService;

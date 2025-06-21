@@ -4,7 +4,7 @@ using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Core.Abstractions.Controls;
-using Material.Icons.Avalonia;
+using ClassIsland.Core.Controls;
 
 namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 
@@ -61,9 +61,9 @@ public class NotificationChannel : INotificationSender, INotificationProvider
         var info = ChannelInfo;
         Name = info.Name;
         Description = info.Description;
-        IconElement = new MaterialIcon()
+        IconElement = new FluentIcon()
         {
-            Kind = info.PackIcon,
+            Glyph = info.IconGlyph,
             Width = 24,
             Height = 24
         };

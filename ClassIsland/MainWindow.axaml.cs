@@ -40,7 +40,6 @@ using NAudio.Wave;
 using Sentry;
 using NAudio.Wave.SampleProviders;
 using Linearstar.Windows.RawInput;
-using Material.Ripple;
 using YamlDotNet.Core;
 
 
@@ -762,7 +761,7 @@ public partial class MainWindow : Window
                 }
                 break;
         }
-        ThemeService.SetTheme(ViewModel.Settings.Theme, primary, secondary);
+        ThemeService.SetTheme(ViewModel.Settings.Theme, primary);
 
         ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize)] =
             SettingsService.Settings.MainWindowSecondaryFontSize;

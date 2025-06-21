@@ -35,4 +35,14 @@
     
     <system:Boolean x:Key="TrueValue">True</system:Boolean>
     <system:Boolean x:Key="FalseValue">False</system:Boolean>
+    
+    <!-- IconFonts -->
+    <FontFamily x:Key="FluentIcons">avares://ClassIsland.Core/Assets/Fonts/FluentSystemIcons-Resizable.ttf#FluentSystemIcons-Resizable</FontFamily>
+    
+    <!-- DataTemplates -->
+    <DataTemplate DataType="system:Boolean" x:Key="SwitcherTemplate">
+        <ToggleSwitch IsChecked="{Binding}"
+                      OnContent="开"
+                      OffContent="关"/>
+    </DataTemplate>
 </ResourceDictionary>

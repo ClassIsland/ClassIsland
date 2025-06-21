@@ -31,7 +31,7 @@
                                           Margin="0 0 0 4">
                     <Grid>
                         <DockPanel Margin="8 0 4 0">
-                            <Button Style="{StaticResource MaterialFlatButton}"
+                            <Button Style="{StaticResource TransparentButton}"
                                     DockPanel.Dock="Right"
                                     materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
                                     Foreground="{DynamicResource MaterialDesignBody}"

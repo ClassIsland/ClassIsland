@@ -1,6 +1,5 @@
 ﻿using Avalonia.Media;
 using ClassIsland.Core.Models.Theming;
-using Material.Styles.Themes;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Core.Abstractions.Services;
@@ -10,10 +9,6 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface IThemeService
 {
-    /// <summary>
-    /// 当前主题
-    /// </summary>
-    public ITheme? CurrentTheme { get; set; }
 
     /// <summary>
     /// 主题更新事件，当主题更变时会触发此事件。
@@ -36,8 +31,7 @@ public interface IThemeService
     /// </summary>
     /// <param name="themeMode">主题模式</param>
     /// <param name="primary">第一主题色</param>
-    /// <param name="secondary">第二主题色</param>
-    public void SetTheme(int themeMode, Color primary, Color secondary);
+    public void SetTheme(int themeMode, Color primary);
 
     /// <summary>
     /// 是否禁用过渡动画

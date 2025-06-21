@@ -2,11 +2,10 @@ using System;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
-using Material.Icons;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
-[TriggerInfo("classisland.lessons.currentTimeStateChanged", "当前时间状态变化时", MaterialIconKind.ClockAlertOutline)]
+[TriggerInfo("classisland.lessons.currentTimeStateChanged", "当前时间状态变化时", "\ue4d2")]
 public class CurrentTimeStateChangedTrigger(ILessonsService lessonsService) : TriggerBase
 {
     private ILessonsService LessonsService { get; } = lessonsService;

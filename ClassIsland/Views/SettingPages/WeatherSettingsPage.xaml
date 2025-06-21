@@ -102,7 +102,7 @@
                     </Run>
                     <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" />
                 </TextBlock>
-                <Button Content="刷新" Style="{StaticResource MaterialFlatButton}"
+                <Button Content="刷新" Style="{StaticResource TransparentButton}"
                         HorizontalAlignment="Left"
                         Click="ButtonRefreshWeather_OnClick"
                         Margin="6 0 0 0" />
@@ -246,7 +246,7 @@
                                                     materialDesign:TextFieldAssist.PrefixText="纬度"
                                                     materialDesign:TextFieldAssist.SuffixText="°" />
                                             </StackPanel>
-                                            <Button Style="{StaticResource MaterialFlatButton}"
+                                            <Button Style="{StaticResource TransparentButton}"
                                                     VerticalAlignment="Center" HorizontalAlignment="Center"
                                                     Click="ButtonShowPos_OnClick"
                                                     Visibility="{Binding ViewModel.HideLocationPos, Converter={StaticResource BooleanToVisibilityConverter}}">

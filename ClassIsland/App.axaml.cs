@@ -15,7 +15,6 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Commands;
 using ClassIsland.Core.Controls;
-using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Extensions.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Services;
@@ -78,8 +77,6 @@ using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
-using Material.Icons;
-using Material.Styles.Assists;
 
 namespace ClassIsland;
 /// <summary>
@@ -406,7 +403,7 @@ public partial class App : AppBase, IAppHost
         // 检测临时目录
         if (Environment.CurrentDirectory.Contains(Path.GetTempPath()))
         {
-            await CommonDialog.ShowHint("ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
+            await CommonTaskDialogs.ShowDialog("检测到应用正在临时目录下运行", "ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
             Environment.Exit(0);
             return;
         }
@@ -414,8 +411,8 @@ public partial class App : AppBase, IAppHost
         // 检测桌面文件夹
         if (Environment.CurrentDirectory == Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) && !Settings.IsWelcomeWindowShowed)
         {
-            var r = await CommonDialog.ShowHint("ClassIsland正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个单独的文件夹中。");
-            if (r == 0)
+            var r = await CommonTaskDialogs.ShowDialog("检测到正在桌面上运行", "ClassIsland正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个单独的文件夹中。");
+            if (r == (object)true)
             {
                 Environment.Exit(0);
                 return;
@@ -431,16 +428,7 @@ public partial class App : AppBase, IAppHost
         }
         catch (Exception ex)
         {
-            await CommonDialog.ShowError($"ClassIsland无法写入当前目录：{ex.Message}\n\n请将本软件解压到一个合适的位置后再运行。");
-            Environment.Exit(0);
-            return;
-        }
-
-        // 检测 DWM
-        DwmIsCompositionEnabled(out var isDwmEnabled);
-        if (!isDwmEnabled)
-        {
-            await CommonDialog.ShowError("运行ClassIsland需要开启Aero效果。请在【控制面板】->【个性化】中启用Aero主题，然后再尝试运行ClassIsland。");
+            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入当前目录：{ex.Message}\n\n请将本软件解压到一个合适的位置后再运行。");
             Environment.Exit(0);
             return;
         }
@@ -451,16 +439,17 @@ public partial class App : AppBase, IAppHost
             : 1;
         if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
-            var enterRecovery = await new CommonDialogBuilder()
-                .SetIconKind(CommonDialogIconKind.Hint)
-                .SetContent("ClassIsland 多次启动失败，您需要进入恢复模式以尝试修复 ClassIsland 吗？")
-                .AddCancelAction()
-                .AddAction("进入恢复模式", MaterialIconKind.WrenchCheckOutline, true)
-                .ShowDialog();
-            if (enterRecovery == 1)
-            {
-                ApplicationCommand.Recovery = true;
-            }
+            // TODO: 自动恢复
+            // var enterRecovery = await new CommonDialogBuilder()
+            //     .SetIconKind(CommonDialogIconKind.Hint)
+            //     .SetContent("ClassIsland 多次启动失败，您需要进入恢复模式以尝试修复 ClassIsland 吗？")
+            //     .AddCancelAction()
+            //     .AddAction("进入恢复模式", MaterialIconKind.WrenchCheckOutline, true)
+            //     .ShowDialog();
+            // if (enterRecovery == 1)
+            // {
+            //     ApplicationCommand.Recovery = true;
+            // }
         }
         if (ApplicationCommand.Recovery)
         {
@@ -855,7 +844,7 @@ public partial class App : AppBase, IAppHost
 
         // 注册uri导航
         var uriNavigationService = GetService<IUriNavigationService>();
-        uriNavigationService.HandleAppNavigation("test", args => CommonDialog.ShowInfo($"测试导航：{args.Uri}"));
+        uriNavigationService.HandleAppNavigation("test", args => _ = CommonTaskDialogs.ShowDialog("测试导航", $"{args.Uri}"));
         // uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
         // uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
         // uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/")));

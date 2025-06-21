@@ -81,7 +81,7 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
                 <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                    <Style TargetType="ListBoxItem" >
                         <Setter Property="Padding" Value="0 0" />
                     </Style>
                 </ListBox.ItemContainerStyle>
@@ -102,15 +102,15 @@
                                       CornerRadius="4"
                                       Background="{DynamicResource MaterialDesignCardBackground}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Style="{StaticResource MaterialFlatButton}"
+                    <Button Style="{StaticResource TransparentButton}"
                             Click="ButtonBase_OnClick">
                         <ci:IconText Kind="Refresh" Text="刷新市场" />
                     </Button>
-                    <Button Style="{StaticResource MaterialFlatButton}"
+                    <Button Style="{StaticResource TransparentButton}"
                             Click="ButtonLoadThemes_OnClick">
                         <ci:IconText Kind="Restart" Text="重载主题" />
                     </Button>
-                    <Button Style="{StaticResource MaterialFlatButton}"
+                    <Button Style="{StaticResource TransparentButton}"
                             Click="ButtonOpenThemeFolder_OnClick">
                         <ci:IconText Kind="FolderOutline" Text="打开主题文件夹…" />
                     </Button>
@@ -154,7 +154,7 @@
                      materialDesign:ListBoxItemAssist.ShowSelection="False"
                      VerticalContentAlignment="Stretch">
             <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                <Style TargetType="ListBoxItem" >
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="Margin" Value="2"/>
                     <Setter Property="Template">

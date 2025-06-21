@@ -61,7 +61,7 @@
                         <controls:FileBrowserButton Grid.Column="1" CurrentPath="{Binding Settings.CustomSoundEffectPath, Mode=TwoWay}"/>
                     </Grid>
                 </StackPanel>
-                <Button Style="{StaticResource MaterialFlatButton}" Content="确定"
+                <Button Style="{StaticResource TransparentButton}" Content="确定"
                         Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
                         HorizontalAlignment="Right"
                         Visibility="{Binding IsShowInDialog, Converter={StaticResource BooleanToVisibilityConverter}}"/>
@@ -69,7 +69,7 @@
         </ScrollViewer>
     </ci:ActionSettingsControlBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NotificationActionSettingsControl}}">
-        <Button Style="{StaticResource MaterialFlatButton}"
+        <Button Style="{StaticResource TransparentButton}"
                 HorizontalAlignment="Left"
                 Click="ButtonShowSettings_OnClick">
             <ci:IconText Kind="CogOutline" Text="提醒设置…"/>

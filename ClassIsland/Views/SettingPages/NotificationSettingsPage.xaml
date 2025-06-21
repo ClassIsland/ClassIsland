@@ -363,13 +363,13 @@
                                                        Margin="0 6 0 0">
                                                 <Button Click="ButtonTestSpeeching_OnClick"
                                                         HorizontalAlignment="Left"
-                                                        Style="{StaticResource MaterialFlatButton}">
+                                                        Style="{StaticResource TransparentButton}">
                                                     <controls2:IconText Kind="Play"
                                                                         Text="测试语音" />
                                                 </Button>
                                                 <Button Click="ButtonOpenSpeechSettings_OnClick"
                                                         HorizontalAlignment="Left"
-                                                        Style="{StaticResource MaterialFlatButton}">
+                                                        Style="{StaticResource TransparentButton}">
                                                     <controls2:IconText Kind="ExternalLink"
                                                                         Text="系统文本转语音设置" />
                                                 </Button>

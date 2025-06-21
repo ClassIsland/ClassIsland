@@ -1,16 +1,13 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Material.Icons;
-
-namespace ClassIsland.Core.Attributes;
+﻿namespace ClassIsland.Core.Attributes;
 
 /// <summary>
 /// 自动化触发器信息。
 /// </summary>
 /// <param name="id">触发器 ID</param>
 /// <param name="name">触发器名称</param>
-/// <param name="iconKind">触发器图表类型</param>
+/// <param name="iconGlyph">触发器图表类型</param>
 [AttributeUsage(AttributeTargets.Class)]
-public class TriggerInfo(string id, string name, MaterialIconKind iconKind=MaterialIconKind.ClockOutline) : Attribute
+public class TriggerInfo(string id, string name, string iconGlyph="\uED55") : Attribute
 {
     /// <summary>
     /// 触发器 ID
@@ -25,7 +22,7 @@ public class TriggerInfo(string id, string name, MaterialIconKind iconKind=Mater
     /// <summary>
     /// 触发器图标类型
     /// </summary>
-    public MaterialIconKind IconKind { get; } = iconKind;
+    public string IconGlyph { get; } = iconGlyph;
 
     /// <summary>
     /// 触发器类型

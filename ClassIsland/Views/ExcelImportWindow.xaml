@@ -507,7 +507,7 @@
                             </ComboBox>
                             <Button HorizontalAlignment="Left"
                                     Margin="0 8 0 0"
-                                    Style="{StaticResource MaterialFlatButton}"
+                                    Style="{StaticResource TransparentButton}"
                                     Click="ButtonOpenProfileSettingsWindow_OnClick">
                                 <controls1:IconText Kind="FileDocumentEditOutline" Text="打开档案编辑窗口"/>
                             </Button>
@@ -552,11 +552,11 @@
                                          Margin="0 4 0 0"
                                          materialDesign:HintAssist.Hint="时间表名称" />
                                 <WrapPanel Margin="0 4 0 0">
-                                    <Button Style="{StaticResource MaterialFlatButton}"
+                                    <Button Style="{StaticResource TransparentButton}"
                                             Content="刷新"
                                             HorizontalAlignment="Left"
                                             Click="ButtonRefreshTimeLayout_OnClick" />
-                                    <Button Style="{StaticResource MaterialFlatButton}"
+                                    <Button Style="{StaticResource TransparentButton}"
                                             Content="编辑"
                                             HorizontalAlignment="Left"
                                             Visibility="{Binding ImportTimeLayoutOnly, Converter={StaticResource InverseBoolToVisConverter}}"
@@ -582,7 +582,7 @@
                             <controls:NavigationButtonsControl Grid.Row="2" NavigationNextCommandParameter="SelectSubjectsPosition" />
                             <Button Grid.Row="2" HorizontalAlignment="Right"
                                     Click="ButtonSkipImport_OnClick"
-                                    Style="{StaticResource MaterialFlatButton}"
+                                    Style="{StaticResource TransparentButton}"
                                     Content="跳过课表导入"
                                     Visibility="{Binding ImportTimeLayoutOnly, Converter={StaticResource InverseBoolToVisConverter}}"
                                     VerticalAlignment="Bottom"/>
@@ -688,7 +688,7 @@
                                              ItemsSource="{Binding ViewModel.ClassRecognitionRange}">
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem"
-                                                   BasedOn="{StaticResource MaterialListBoxItem}">
+                                                   >
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                         </Style>
                                     </ListBox.ItemContainerStyle>
@@ -710,7 +710,7 @@
                                              ItemsSource="{Binding ViewModel.ClassRecognitionTimePoints}">
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem"
-                                                   BasedOn="{StaticResource MaterialListBoxItem}">
+                                                   >
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                         </Style>
                                     </ListBox.ItemContainerStyle>

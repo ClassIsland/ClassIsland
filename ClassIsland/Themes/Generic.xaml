@@ -27,7 +27,7 @@
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
     </Style>
 
-    <Style TargetType="{x:Type controls:FileBrowserButton}" BasedOn="{StaticResource MaterialFlatButton}">
+    <Style TargetType="{x:Type controls:FileBrowserButton}" BasedOn="{StaticResource TransparentButton}">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Content" Value="{materialDesign:PackIcon Folder}"/>
         <Setter Property="ToolTip" Value="浏览…"/>
@@ -181,7 +181,7 @@
         </Setter>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                <Style TargetType="ListBoxItem" >
                     <Style.Resources>
                         <converters1:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
                         <converters1:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
@@ -391,7 +391,7 @@
            BasedOn="{StaticResource MaterialDesignListBox}">
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                <Style TargetType="ListBoxItem" >
                     <Setter Property="Padding" Value="1"/>
                     <Setter Property="Margin" Value="0 2"/>
                 </Style>

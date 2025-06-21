@@ -1,7 +1,6 @@
 ﻿using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Action;
-using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
 namespace ClassIsland.Core.Extensions.Registry;
 
@@ -16,17 +15,17 @@ public static class ActionRegistryExtensions
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">行动ID，例如“classisland.example”。</param>
     /// <param name="name">行动名称。/</param>
-    /// <param name="iconKind">行动图标。</param>
+    /// <param name="iconGlyph">行动图标。</param>
     /// <param name="onHandle">行动处理程序。</param>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddAction
         (this IServiceCollection services,
          string id,
          string name = "",
-         MaterialIconKind iconKind = MaterialIconKind.BacteriaOutline,
+         string iconGlyph = "\ue01f",
          ActionRegistryInfo.HandleDelegate? onHandle = null)
     {
-        Register(id, name, iconKind, onHandle);
+        Register(id, name, iconGlyph, onHandle);
         return services;
     }
 
@@ -36,7 +35,7 @@ public static class ActionRegistryExtensions
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">行动ID，例如“classisland.example”。</param>
     /// <param name="name">行动名称。/</param>
-    /// <param name="iconKind">行动图标。</param>
+    /// <param name="iconGlyph">行动图标。</param>
     /// <param name="onHandle">行动处理程序。</param>
     /// <typeparam name="TSettings">行动设置类型。</typeparam>
     /// <typeparam name="TSettingsControl">行动设置控件类型。</typeparam>
@@ -45,11 +44,11 @@ public static class ActionRegistryExtensions
         (this IServiceCollection services,
          string id,
          string name = "",
-         MaterialIconKind iconKind = MaterialIconKind.BacteriaOutline,
+         string iconGlyph = "\ue01f",
          ActionRegistryInfo.HandleDelegate? onHandle = null)
          where TSettingsControl : ActionSettingsControlBase
     {
-        var info = Register(id, name, iconKind, onHandle);
+        var info = Register(id, name, iconGlyph, onHandle);
         services.AddKeyedTransient<ActionSettingsControlBase, TSettingsControl>(id);
         info.SettingsType = typeof(TSettings);
         info.SettingsControlType = typeof(TSettingsControl);
@@ -60,7 +59,7 @@ public static class ActionRegistryExtensions
     private static ActionRegistryInfo Register
         (string id,
          string name = "",
-         MaterialIconKind iconKind = MaterialIconKind.BacteriaOutline,
+         string iconKind = "\ue01f",
          ActionRegistryInfo.HandleDelegate? onHandle = null)
     {
         if (IActionService.Actions.ContainsKey(id))

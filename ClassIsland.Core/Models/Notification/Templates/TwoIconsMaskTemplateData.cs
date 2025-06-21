@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Material.Icons;
 
 namespace ClassIsland.Core.Models.Notification.Templates;
 
@@ -11,12 +10,12 @@ public partial class TwoIconsMaskTemplateData : ObservableObject
     /// <summary>
     /// 左侧图标类型
     /// </summary>
-    [ObservableProperty] private MaterialIconKind _leftIconKind = MaterialIconKind.AlertCircleOutline;
+    [ObservableProperty] private string _leftIconGlyph = "\ue809";
 
     /// <summary>
     /// 右侧图标类型
     /// </summary>
-    [ObservableProperty] private MaterialIconKind _rightIconKind = MaterialIconKind.BellRing;
+    [ObservableProperty] private string _rightIconGlyph = "\ue02a";
 
     /// <summary>
     /// 是否拥有右侧图标

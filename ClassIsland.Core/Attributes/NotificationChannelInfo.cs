@@ -1,6 +1,4 @@
-﻿using Material.Icons;
-
-namespace ClassIsland.Core.Attributes;
+﻿namespace ClassIsland.Core.Attributes;
 
 /// <summary>
 /// 代表提醒渠道信息
@@ -17,7 +15,7 @@ public class NotificationChannelInfo(string guid, string name, string descriptio
     /// <summary>
     /// 图表类型
     /// </summary>
-    public MaterialIconKind PackIcon { get; } = MaterialIconKind.BellRing;
+    public string IconGlyph { get; } = "\ue02a";
 
     /// <summary>
     /// 渠道名称
@@ -42,9 +40,9 @@ public class NotificationChannelInfo(string guid, string name, string descriptio
     /// <summary>
     /// 初始化一个 <see cref="NotificationChannelInfo"/> 实例
     /// </summary>
-    public NotificationChannelInfo(string guid, string name, MaterialIconKind icon, string description = "", Type? settingsControlType = null) : this(guid, name,
+    public NotificationChannelInfo(string guid, string name, string iconGlyph, string description = "", Type? settingsControlType = null) : this(guid, name,
         description, settingsControlType)
     {
-        PackIcon = icon;
+        IconGlyph = iconGlyph;
     }
 }

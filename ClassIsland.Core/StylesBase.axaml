@@ -1,8 +1,14 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
-        xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia">
+        xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="./ThemeBase.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
@@ -10,19 +16,22 @@
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-    <avalonia:MaterialIconStyles />
-    <dialogHostAvalonia:DialogHostStyles />
-    
-    <Style Selector="Button.circle">
-        <Setter Property="Width" Value="32"/>
-        <Setter Property="Height" Value="32"/>
-        <Setter Property="CornerRadius" Value="16"/>
-        <Setter Property="Padding" Value="0"/>
-    </Style>
-    
     <Style Selector="StackPanel.settings-container">
         <Setter Property="Margin" Value="12" />
         <Setter Property="MaxWidth" Value="750" />
         <Setter Property="Spacing" Value="6"/>
+    </Style>
+    
+    <Style Selector="controls|FontIcon.fi">
+        <Setter Property="FontFamily" Value="{StaticResource FluentIcons}"/>
+    </Style>
+    
+    <Style Selector="controls|SettingsExpander.switcher controls|SettingsExpanderItem.switcher">
+        <Setter Property="FooterTemplate" Value="{StaticResource SwitcherTemplate}"/>
+    </Style>
+    
+    <Style Selector="Border.primaryColorZone">
+        <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
     </Style>
 </Styles>

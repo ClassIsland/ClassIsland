@@ -61,7 +61,7 @@
                     </mdXaml:MarkdownScrollViewer.Style>
                 </mdXaml:MarkdownScrollViewer>
             </ScrollViewer>
-            <Button Grid.Row="1" Style="{StaticResource MaterialFlatButton}"
+            <Button Grid.Row="1" Style="{StaticResource TransparentButton}"
                     HorizontalAlignment="Right"
                     Margin="0 8 0 0"
                     Click="ButtonClose_OnClick">

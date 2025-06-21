@@ -133,11 +133,11 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                         <StackPanel Orientation="Horizontal" Grid.Row="2">
-                            <Button Style="{StaticResource MaterialFlatButton}"
+                            <Button Style="{StaticResource TransparentButton}"
                                     Click="ButtonConfirmTempClassPlan_OnClick" ClickMode="Press">
                                 <ci:IconText Kind="Check" Text="确定" />
                             </Button>
-                            <Button Style="{StaticResource MaterialFlatButton}"
+                            <Button Style="{StaticResource TransparentButton}"
                                     Click="ButtonClearTempClassPlan_OnClick" ClickMode="Press">
                                 <ci:IconText Kind="Clear" Text="清除" />
                             </Button>

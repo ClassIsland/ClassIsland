@@ -1,6 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using Material.Icons;
-
 namespace ClassIsland.Core.Models.Ruleset;
 
 /// <summary>
@@ -8,8 +5,8 @@ namespace ClassIsland.Core.Models.Ruleset;
 /// </summary>
 /// <param name="id">规则集ID，例如“classisland.example”。</param>
 /// <param name="name">规则集显示名称。</param>
-/// <param name="iconKind">规则集图标。</param>
-public class RuleRegistryInfo(string id, string name = "", MaterialIconKind iconKind = MaterialIconKind.CogOutline)
+/// <param name="iconGlyph">规则集图标。</param>
+public class RuleRegistryInfo(string id, string name = "", string iconGlyph = "\uef27")
 {
     /// <summary>
     /// 规则 ID。
@@ -19,7 +16,7 @@ public class RuleRegistryInfo(string id, string name = "", MaterialIconKind icon
     /// <summary>
     /// 规则显示图标类型。
     /// </summary>
-    public MaterialIconKind IconKind { get; internal set; } = iconKind;
+    public string IconGlyph { get; internal set; } = iconGlyph;
 
 
     /// <summary>

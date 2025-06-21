@@ -5,10 +5,11 @@
          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
          xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
          xmlns:converters="clr-namespace:ClassIsland.Converters"
-         xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles">
+         xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia">
     <ci:AppBase.Styles>
+        <styling:FluentAvaloniaTheme CustomAccentColor="DodgerBlue"/>
+        
         <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
-        <themes:CustomMaterialTheme BaseTheme="Dark" PrimaryColor="DodgerBlue" SecondaryColor="DodgerBlue" />
     </ci:AppBase.Styles>
     <Application.Resources>
         <ResourceDictionary>
@@ -22,7 +23,8 @@
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>
             <ci:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
             <ci:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
-
+            
+            <StaticResource x:Key="ContentControlThemeFontFamily" ResourceKey="AppFont"/>
         </ResourceDictionary>
     </Application.Resources>
 </ci:AppBase>

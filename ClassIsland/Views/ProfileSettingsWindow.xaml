@@ -208,7 +208,7 @@
                         <TextBlock TextWrapping="Wrap" FontSize="13" Margin="0 4 0 0">
                             这是一个临时层课表，将在使用过后自动删除。
                         </TextBlock>
-                        <Button Style="{StaticResource MaterialFlatButton}"
+                        <Button Style="{StaticResource TransparentButton}"
                                 HorizontalAlignment="Left"
                                 Padding="4"
                                 Margin="0 4 0 0"
@@ -217,7 +217,7 @@
                                 ToolTip.Tip="将当前临时层课表转换为正常课表。">
                             <controls1:IconText Kind="CogTransferOutline" Text="转换为普通课表"/>
                         </Button>
-                        <!--<Button Style="{StaticResource MaterialFlatButton}"
+                        <!--<Button Style="{StaticResource TransparentButton}"
                                 HorizontalAlignment="Left"
                                 Padding="4"
                                 Margin="0 2 0 0"
@@ -331,7 +331,7 @@
                                           IsChecked="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled}"/>
                             <TextBlock Text="启用临时层" VerticalAlignment="Center"/>
                         </StackPanel>
-                        <Button Style="{StaticResource MaterialFlatButton}" Margin="0 4 0 0"
+                        <Button Style="{StaticResource TransparentButton}" Margin="0 4 0 0"
                                 HorizontalAlignment="Left"
                                 Click="ButtonClearTempOverlay_OnClick"
                                 ToolTip.Tip="清除临时层课表。">
@@ -342,7 +342,7 @@
                     <Separator Margin="0 16 0 4"/>
                     <controls1:IconText Kind="FileChartOutline" Text="临时课表" Margin="0 0 0 8"/>
                     <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天有效。" TextWrapping="Wrap"/>
-                    <Button Style="{StaticResource MaterialFlatButton}" 
+                    <Button Style="{StaticResource TransparentButton}" 
                             HorizontalAlignment="Left"
                             ToolTip.Tip="清除选择的临时课表，并恢复至正常课表安排。"
                             Margin="0 6 0 0"
@@ -397,7 +397,7 @@
                 <StackPanel Grid.Row="2">
                     <Separator Margin="0 16 0 4" />
                     <controls1:IconText Kind="CalendarOutline" Text="多周轮换偏移" Margin="0 0 0 8" />
-                    <Button Style="{StaticResource MaterialFlatButton}"
+                    <Button Style="{StaticResource TransparentButton}"
                             HorizontalAlignment="Left"
                             Click="ButtonOpenWeekOffsetSettings_OnClick">
                         <ci:IconText Kind="CalendarMultiple" Text="调整多周轮换偏移…"/>
@@ -495,7 +495,7 @@
                 <!--<TextBlock Text="{Binding MainViewModel.Settings.SelectedProfile, Mode=OneWay}"/>-->
                 <WrapPanel Margin="0 6 0 0">
                     <WrapPanel.Resources>
-                        <Style TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
+                        <Style TargetType="Button" BasedOn="{StaticResource TransparentButton}">
                             <Setter Property="Margin" Value="0 0 6 0"/>
                         </Style>
                     </WrapPanel.Resources>
@@ -592,7 +592,7 @@
                                         <TextBlock Text="当前：" VerticalAlignment="Center" />
                                         <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"
                                                    VerticalAlignment="Center" />
-                                        <Button Style="{StaticResource MaterialFlatButton}"
+                                        <Button Style="{StaticResource TransparentButton}"
                                                 VerticalAlignment="Center"
                                                 Click="ButtonClearTempClassPlanGroup_OnClick">
                                             <controls1:IconText Kind="Clear" Text="清除" />
@@ -638,7 +638,7 @@
                     <controls1:IconText Kind="Group" Text="管理课表群" Margin="0 0 0 4"/>
                     
                     <WrapPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource MaterialFlatButton}" 
+                        <Button Style="{StaticResource TransparentButton}" 
                                 HorizontalAlignment="Left"
                                 ToolTip.Tip="创建一个新的课表群。"
                                 Margin="2"
@@ -1246,7 +1246,7 @@
                                                                             DockPanel.Dock="Right"
                                                                             ToolTip.Tip="关闭"
                                                                             Click="ButtonCloseCompleteTip_OnClick"/>
-                                                                    <Button Style="{StaticResource MaterialFlatButton}"
+                                                                    <Button Style="{StaticResource TransparentButton}"
                                                                             DockPanel.Dock="Right"
                                                                             Click="ButtonAddClassPlanFromCompletedTip_OnClick"
                                                                             materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
@@ -1627,7 +1627,7 @@
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemContainerStyle>
-                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                                            <Style TargetType="ListBoxItem" >
                                                 <Setter Property="Padding" Value="0"/>
                                             </Style>
                                         </ListBox.ItemContainerStyle>
@@ -1757,7 +1757,7 @@
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
                                                 <WrapPanel Orientation="Horizontal" Margin="0 4 0 0">
-                                                    <Button Style="{StaticResource MaterialFlatButton}"
+                                                    <Button Style="{StaticResource TransparentButton}"
                                                             Click="ButtonOverwriteClasses_OnClick"
                                                             IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
                                                         <controls1:IconText Kind="Upload" Text="覆盖现有课程"/>
@@ -1823,7 +1823,7 @@
                                                     </Style>
                                                 </StackPanel.Style>
                                                 <controls1:IconText Kind="Airplane" Text="行动" Margin="0 0 0 8" />
-                                                <Button Style="{StaticResource MaterialFlatButton}" HorizontalAlignment="Left"
+                                                <Button Style="{StaticResource TransparentButton}" HorizontalAlignment="Left"
                                                         Click="ButtonDebugTriggerAction_OnClick"
                                                         IsEnabled="{Binding ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}"
                                                         Margin="0 0 0 2">
@@ -2158,7 +2158,7 @@
                                                                 HorizontalAlignment="Left">
                                                             <Button.Style>
                                                                 <Style TargetType="Button"
-                                                                       BasedOn="{StaticResource MaterialFlatButton}">
+                                                                       BasedOn="{StaticResource TransparentButton}">
                                                                     <Style.Triggers>
                                                                         <DataTrigger
                                                                             Binding="{Binding ViewModel.TargetSubjectIndex}"
@@ -2476,7 +2476,7 @@
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemContainerStyle>
-                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                                        <Style TargetType="ListBoxItem" >
                                             <Setter Property="Padding" Value="0"/>
                                         </Style>
                                     </ListBox.ItemContainerStyle>
@@ -2642,7 +2642,7 @@
                                     </ItemsPanelTemplate>
                                 </ListBox.ItemsPanel>
                                 <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                                    <Style TargetType="ListBoxItem" >
                                         <Setter Property="Padding" Value="0"/>
                                     </Style>
                                 </ListBox.ItemContainerStyle>

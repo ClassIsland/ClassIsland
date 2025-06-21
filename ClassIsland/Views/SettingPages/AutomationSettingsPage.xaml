@@ -107,7 +107,7 @@
                         <Grid Grid.Row="1">
 
                             <!-- 添加自动化 -->
-                            <Button Style="{StaticResource MaterialFlatButton}"
+                            <Button Style="{StaticResource TransparentButton}"
                                     Click="ButtonAdd_OnClick"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Bottom"
@@ -265,7 +265,7 @@
                                     CommandParameter="{Binding ActionSet}"
                                     Padding="12 0">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
+                                    <Style TargetType="Button" BasedOn="{StaticResource TransparentButton}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ActionSet.IsOn}" Value="True">
                                                 <Setter Property="Opacity" Value="0.56" />
@@ -281,7 +281,7 @@
                                     Padding="12 0"
                                     Margin="0 0 8 0">
                                 <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
+                                    <Style TargetType="Button" BasedOn="{StaticResource TransparentButton}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ActionSet.IsOn}" Value="False">
                                                 <Setter Property="Opacity" Value="0.56" />

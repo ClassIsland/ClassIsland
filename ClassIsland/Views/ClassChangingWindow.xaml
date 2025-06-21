@@ -29,7 +29,7 @@
         d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
         WindowStartupLocation="CenterScreen">
     <controls1:MyWindow.Resources>
-        <Style x:Key="ClassPlanListBoxItemStyle" BasedOn="{StaticResource MaterialListBoxItem}"
+        <Style x:Key="ClassPlanListBoxItemStyle" 
                TargetType="{x:Type ListBoxItem}">
             <Setter Property="Padding" Value="0" />
             <Setter Property="IsTabStop" Value="False" />

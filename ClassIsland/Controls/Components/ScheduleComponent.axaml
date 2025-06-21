@@ -10,7 +10,6 @@
                   xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                   xmlns:converters="clr-namespace:ClassIsland.Converters"
-                  xmlns:controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
                   mc:Ignorable="d"
                   d:DataContext="{d:DesignInstance local:ScheduleComponent}"
                   d:DesignHeight="450" d:DesignWidth="800"
@@ -42,7 +41,7 @@
         <converters:ObjectIsNullConverter x:Key="ObjectIsNullConverter" />
     </ci:ComponentBase.Resources>
     <ci:ComponentBase.Styles>
-        <Style Selector="controls|ColorZone#Tomorrow">
+        <Style Selector="Border#Tomorrow">
             <Setter Property="IsVisible" Value="False"/>
         </Style>
         <Style Selector="TextBlock#EmptyPlaceholder">
@@ -78,7 +77,7 @@
         
         <Style Selector="local|ScheduleComponent.ShowTomorrowSchedule:not(.TomorrowScheduleEmpty)">
             <Style Selector="^.ShowTomorrowScheduleAfterSchool.AfterSchool, ^.ShowTomorrowScheduleAlways">
-                <Style Selector="^ controls|ColorZone#Tomorrow">
+                <Style Selector="^ Border#Tomorrow">
                     <Setter Property="IsVisible" Value="True"/>
                 </Style>
                 <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
@@ -93,16 +92,16 @@
         </Style>
     </ci:ComponentBase.Styles>
     <Grid ColumnDefinitions="Auto,*" DataContext="{Binding $parent[local:ScheduleComponent]}">
-        <controls:ColorZone 
+        <Border 
             Grid.Column="0"
             Margin="0 0 2 0"
             VerticalAlignment="Center"
-            Mode="PrimaryMid"
+            Background="{DynamicResource AccentFillColorDefaultBrush}"
             Padding="8 2"
             CornerRadius="16"
             x:Name="Tomorrow">
-            <TextBlock Text="明天"/>
-        </controls:ColorZone>
+            <TextBlock Text="明天" Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+        </Border>
         <ci:LessonsListBox Grid.Column="1" 
                            Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
                            LessonControlSettings="{Binding Settings, Mode=OneWay}"

@@ -2,6 +2,7 @@ using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
 
@@ -117,4 +118,9 @@ public abstract class AppBase : Application, IAppHost
     /// </summary>
     public IClassicDesktopStyleApplicationLifetime DesktopLifetime =>
         (ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!;
+
+    /// <summary>
+    /// Fluent Icons 字体
+    /// </summary>
+    public static FontFamily FluentIconsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/FluentSystemIcons-Resizable.ttf#FluentSystemIcons-Resizable");
 }

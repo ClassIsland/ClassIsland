@@ -92,14 +92,14 @@
                             <CheckBox Content="已启用" Margin="0 0 6  0"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{Binding IsEnabled}"/>
-                            <Button Style="{StaticResource MaterialFlatButton}" 
+                            <Button Style="{StaticResource TransparentButton}" 
                                                     VerticalAlignment="Center"
                                                     Margin="0 0 6  0"
                                                     Click="ButtonUninstall_OnClick"
                                                     Visibility="{Binding IsUninstalling, Converter={StaticResource InverseBoolToVisConverter}}">
                                 <ci:IconText Kind="Remove" Text="卸载"/>
                             </Button>
-                            <Button Style="{StaticResource MaterialFlatButton}" 
+                            <Button Style="{StaticResource TransparentButton}" 
                                                     VerticalAlignment="Center"
                                                     Margin="0 0 6  0"
                                                     Click="ButtonUndoUninstall_OnClick"
@@ -330,10 +330,10 @@
                 <Separator Margin="0 16 0 8"/>
                 <ci:IconText Kind="SourceRepositoryMultiple" Text="自定义插件源" Margin="0 0 0 8"/>
                 <WrapPanel Margin="0 0 0 0">
-                    <Button Style="{StaticResource MaterialFlatButton}" Click="ButtonAddPluginSource_OnClick">
+                    <Button Style="{StaticResource TransparentButton}" Click="ButtonAddPluginSource_OnClick">
                         <ci:IconText Kind="Add" Text="添加"/>
                     </Button>
-                    <Button Style="{StaticResource MaterialFlatButton}" Click="ButtonRemovePluginSource_OnClick">
+                    <Button Style="{StaticResource TransparentButton}" Click="ButtonRemovePluginSource_OnClick">
                         <ci:IconText Kind="Remove" Text="删除"/>
                     </Button>
                 </WrapPanel>
@@ -406,7 +406,7 @@
                     </TextBlock>
                     <Button HorizontalAlignment="Center" Click="ButtonOpenMarket_OnClick">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource MaterialFlatButton}">
+                            <Style TargetType="Button" BasedOn="{StaticResource TransparentButton}">
                                 <Style.Triggers>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
@@ -466,7 +466,7 @@
                                     </ItemsPanelTemplate>
                                 </ListBox.ItemsPanel>
                                 <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                                    <Style TargetType="ListBoxItem" >
                                         <Setter Property="Padding" Value="0 0" />
                                     </Style>
                                 </ListBox.ItemContainerStyle>
@@ -504,7 +504,7 @@
                                 </StackPanel>
                             </materialDesign:PopupBox>
                             <Button DockPanel.Dock="Right" 
-                                    Style="{StaticResource MaterialFlatButton}"
+                                    Style="{StaticResource TransparentButton}"
                                     Click="ButtonBaseRefreshPlugins_OnClick"
                                     IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}">
                                 <ci:IconText Kind="Refresh" Text="刷新"/>

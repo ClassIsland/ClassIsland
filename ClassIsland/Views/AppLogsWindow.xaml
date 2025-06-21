@@ -80,7 +80,7 @@
                             x:Name="MainListView"
                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <controls1:AutoScrollListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                <Style TargetType="ListViewItem" >
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding LogLevel}" Value="Trace">
                             <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
@@ -151,15 +151,15 @@
         </controls1:AutoScrollListView>
 
         <WrapPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource MaterialFlatButton}"
+            <Button Style="{StaticResource TransparentButton}"
                     Click="ButtonClearLogs_OnClick">
                 <controls1:IconText Kind="Clear" Text="清空日志"/>
             </Button>
-            <!--<Button Style="{StaticResource MaterialFlatButton}"
+            <!--<Button Style="{StaticResource TransparentButton}"
                     Click="ButtonScrollToBottom_OnClick">
                 <controls:IconText Kind="ArrowBottom" Text="滚动到最底"/>
             </Button>-->
-            <Button Style="{StaticResource MaterialFlatButton}"
+            <Button Style="{StaticResource TransparentButton}"
                     Click="ButtonCopySelectedLogs_OnClick">
                 <controls1:IconText Kind="ContentCopy" Text="复制选中"/>
             </Button>

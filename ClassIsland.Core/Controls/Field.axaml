@@ -1,0 +1,26 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls">
+    <Design.PreviewWith>
+        <controls:Field />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|Field">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="Auto,*">
+                    <Label Grid.Row="0"
+                           Target="MainContent"
+                           Content="{TemplateBinding Label}"
+                           VerticalAlignment="Center"
+                           Margin="0 0 0 2" />
+                    <ContentPresenter Grid.Row="1"
+                                      x:Name="MainContent"
+                                      Content="{TemplateBinding Content}"
+                                      VerticalAlignment="Center" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

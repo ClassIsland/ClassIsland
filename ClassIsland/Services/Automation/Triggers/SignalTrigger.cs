@@ -2,11 +2,10 @@
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Models.EventArgs;
-using Material.Icons;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
-[TriggerInfo("classisland.signal", "收到信号时", MaterialIconKind.AlertOctagramOutline)]
+[TriggerInfo("classisland.signal", "收到信号时", "\ue40e")]
 public class SignalTrigger(SignalTriggerHandlerService signalTriggerHandlerService) : TriggerBase<SignalTriggerSettings>
 {
     public SignalTriggerHandlerService SignalTriggerHandlerService { get; } = signalTriggerHandlerService;

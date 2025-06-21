@@ -6,7 +6,6 @@
                     xmlns:ci="http://classisland.tech/schemas/xaml/core">
 
     <ControlTheme TargetType="{x:Type lessonsControls:LessonsListBox}"
-           BasedOn="{StaticResource MaterialListBox}"
            x:Key="ClassIsland.LessonsListBox">
         <ControlTheme.Resources>
             <lessonsControls:ClassInfoMultiConverter x:Key="ClassInfoMultiConverter"/>
@@ -79,7 +78,7 @@
         </Setter>
         <Setter Property="ItemContainerTheme">
             <Setter.Value>
-                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                <ControlTheme TargetType="ListBoxItem" >
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="MaxHeight" Value="40"/>
                 </ControlTheme>

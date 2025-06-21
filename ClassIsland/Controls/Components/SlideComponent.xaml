@@ -95,7 +95,7 @@
                         </Style>
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialListBoxItem}">
+                        <Style TargetType="ListBoxItem" >
                             <Style.Triggers>
                                 <!-- 无动画隐藏状态 -->
                                 <MultiDataTrigger>

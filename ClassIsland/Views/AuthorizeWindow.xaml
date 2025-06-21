@@ -53,7 +53,7 @@
                     Visibility="{Binding ViewModel.IsEditingMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AuthorizeWindow}, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
                     Margin="0 0 0 8">
-            <Button Style="{StaticResource MaterialFlatButton}"
+            <Button Style="{StaticResource TransparentButton}"
                     Click="ButtonAddAuthorizeMethod_OnClick">
                 <Button.Content>
                     <ci:IconText Kind="Add" Text="添加认证方式"></ci:IconText>

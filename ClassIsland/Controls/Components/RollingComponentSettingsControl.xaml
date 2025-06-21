@@ -88,7 +88,7 @@
                 <ci:SettingsCard.Switcher>
                     <StackPanel Orientation="Horizontal">
                         <Button HorizontalAlignment="Left"
-                                Style="{StaticResource MaterialFlatButton}"
+                                Style="{StaticResource TransparentButton}"
                                 Click="ButtonOpenStopRuleset_OnClick"
                                 Visibility="{Binding Settings.StopOnRule, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <ci:IconText Kind="TagMultipleOutline" Text="编辑规则集…" />

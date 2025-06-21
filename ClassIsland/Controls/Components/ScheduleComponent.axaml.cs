@@ -13,7 +13,6 @@ using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
-using Material.Icons;
 
 namespace ClassIsland.Controls.Components;
 
@@ -21,7 +20,7 @@ namespace ClassIsland.Controls.Components;
 /// ScheduleComponent.xaml 的交互逻辑
 /// </summary>
 [MigrateFrom("E7831603-61A0-4180-B51B-54AD75B1A4D3")]  // 课程表（旧）
-[ComponentInfo("1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8", "课程表", MaterialIconKind.Schedule, "显示当前的课程表信息。")]
+[ComponentInfo("1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8", "课程表", "\ue751", "显示当前的课程表信息。")]
 public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, INotifyPropertyChanged
 {
     private bool _showCurrentLessonOnlyOnClass = false;

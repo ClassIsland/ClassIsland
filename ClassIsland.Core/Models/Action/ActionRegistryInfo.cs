@@ -1,4 +1,4 @@
-﻿using Material.Icons;
+﻿using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Models.Action;
 
@@ -7,8 +7,8 @@ namespace ClassIsland.Core.Models.Action;
 /// </summary>
 /// <param name="id">行动ID，例如“classisland.example”。</param>
 /// <param name="name">行动显示名称。</param>
-/// <param name="iconKind">行动图标。</param>
-public class ActionRegistryInfo(string id, string name = "", MaterialIconKind iconKind = MaterialIconKind.BacteriaOutline)
+/// <param name="iconGlyph">行动图标。</param>
+public class ActionRegistryInfo(string id, string name = "", string iconGlyph = "\uE01F")
 {
     /// <summary>
     /// 行动 ID。
@@ -18,7 +18,7 @@ public class ActionRegistryInfo(string id, string name = "", MaterialIconKind ic
     /// <summary>
     /// 行动显示图标类型。
     /// </summary>
-    public MaterialIconKind IconKind { get; internal set; } = iconKind;
+    public string IconGlyph { get; internal set; } = iconGlyph;
 
     /// <summary>
     /// 行动显示名称。

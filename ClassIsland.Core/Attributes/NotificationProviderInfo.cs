@@ -1,6 +1,4 @@
-﻿using Material.Icons;
-
-namespace ClassIsland.Core.Attributes;
+﻿namespace ClassIsland.Core.Attributes;
 
 /// <summary>
 /// 提醒提供方信息
@@ -21,7 +19,7 @@ public class NotificationProviderInfo : Attribute
     /// <summary>
     /// 提醒提供方图标
     /// </summary>
-    public MaterialIconKind PackIcon { get; } = MaterialIconKind.BellRing;
+    public string IconGlyph { get; } = "\ue02a";
 
     /// <summary>
     /// 提醒提供方位图图标uri
@@ -60,18 +58,10 @@ public class NotificationProviderInfo : Attribute
 
 
     /// <inheritdoc />
-    public NotificationProviderInfo(string guid, string name, MaterialIconKind icon, string description = "") : this(guid, name,
+    public NotificationProviderInfo(string guid, string name, string iconGlyph, string description = "") : this(guid, name,
         description)
     {
-        PackIcon = icon;
-    }
-
-    /// <inheritdoc />
-    public NotificationProviderInfo(string guid, string name, string bitmapIconUri, string description = "") : this(guid, name,
-        description)
-    {
-        BitmapIconUri = bitmapIconUri;
-        UseBitmapIcon = true;
+        IconGlyph = iconGlyph;
     }
 
     /// <inheritdoc />

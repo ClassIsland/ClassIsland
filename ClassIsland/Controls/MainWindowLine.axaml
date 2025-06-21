@@ -5,8 +5,7 @@
                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
                     xmlns:classIsland="clr-namespace:ClassIsland"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:notification="clr-namespace:ClassIsland.Core.Models.Notification;assembly=ClassIsland.Core"
-                    xmlns:controls1="clr-namespace:Material.Styles.Controls;assembly=Material.Styles">
+                    xmlns:notification="clr-namespace:ClassIsland.Core.Models.Notification;assembly=ClassIsland.Core">
     <!--#region StoryBoards-->
     <ci:IntToStringConverter x:Key="IntToStringConverter" />
     <ci:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
@@ -57,18 +56,19 @@
                     Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
                     Height="{DynamicResource IslandContainerHeight}"
                     ClipToBounds="True">
-                    <controls1:ColorZone x:Name="BackgroundBorderOverlayMask" Mode="PrimaryMid"
-                                              VerticalAlignment="Stretch"
-                                              RenderTransformOrigin="0.5,0.5">
-                        <controls1:ColorZone.RenderTransform>
+                    <Border x:Name="BackgroundBorderOverlayMask" 
+                            Classes="primaryColorZone"
+                            VerticalAlignment="Stretch"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform />
                                 <SkewTransform />
                                 <RotateTransform />
                                 <TranslateTransform Y="-50" />
                             </TransformGroup>
-                        </controls1:ColorZone.RenderTransform>
-                    </controls1:ColorZone>
+                        </Border.RenderTransform>
+                    </Border>
                 </Grid>
 
                 <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
@@ -107,22 +107,22 @@
                     </Grid>
 
                     <!-- Mask -->
-                    <controls1:ColorZone x:Name="OverlayMask" Mode="PrimaryMid" HorizontalAlignment="Stretch"
-                                              VerticalAlignment="Stretch"
-                                              RenderTransformOrigin="0.5,0.5"
-                                              >
-                        <controls1:ColorZone.RenderTransform>
+                    <Border x:Name="OverlayMask" Classes="primaryColorZone"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform />
                                 <SkewTransform />
                                 <RotateTransform />
                                 <TranslateTransform Y="-50" />
                             </TransformGroup>
-                        </controls1:ColorZone.RenderTransform>
+                        </Border.RenderTransform>
                         <ContentPresenter x:Name="OverlayMaskContent"
                                           Content="{Binding ViewModel.CurrentMaskContent.Content, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}" 
                                           ContentTemplate="{Binding ViewModel.CurrentMaskContent.ContentTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"/>
-                    </controls1:ColorZone>
+                    </Border>
                 </Grid>
             </Grid>
         </Grid>

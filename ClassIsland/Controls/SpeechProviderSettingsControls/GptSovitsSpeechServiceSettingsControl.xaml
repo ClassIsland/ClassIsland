@@ -22,7 +22,7 @@
                 <TextBlock Text="管理 GPT-SoVITS 语音预设。" TextWrapping="Wrap"
                            Margin="0 0 0 4" />
                 <WrapPanel>
-                    <Button Style="{StaticResource MaterialFlatButton}"
+                    <Button Style="{StaticResource TransparentButton}"
                             HorizontalAlignment="Left"
                             Click="ButtonSaveGptSovitsPreset_OnClick">
                         <ci:IconText Kind="Floppy" Text="保存预设"/>
@@ -89,12 +89,12 @@
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:GptSovitsSpeechServiceSettingsControl}}" Margin="0 6 0 6">
 
         <WrapPanel>
-            <Button Style="{StaticResource MaterialFlatButton}"
+            <Button Style="{StaticResource TransparentButton}"
                     HorizontalAlignment="Left"
                     Click="ButtonOpenGptSovitsPresetsDrawer_OnClick">
                 <ci:IconText Kind="ListBoxOutline" Text="语音预设…" />
             </Button>
-            <Button Style="{StaticResource MaterialFlatButton}"
+            <Button Style="{StaticResource TransparentButton}"
                     HorizontalAlignment="Left"
                     Click="ButtonSaveGptSovitsPreset2_OnClick">
                 <ci:IconText Kind="Floppy" Text="保存预设" />

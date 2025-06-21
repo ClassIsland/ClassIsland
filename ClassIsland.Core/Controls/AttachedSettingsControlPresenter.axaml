@@ -4,12 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Core.Controls"
-             xmlns:materialDesign="using:Material.Styles.Controls"
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
              xmlns:converters1="clr-namespace:ClassIsland.Core.Converters"
              xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
              xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
-             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -31,15 +30,20 @@
                     <ToggleButton DockPanel.Dock="Right"
                                   IsChecked="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled}"
                                   ToolTip.Tip="是否在此处启用特定的设置"
-                                  Content="{avalonia:MaterialIconExt LayersOutline}"
-                                  IsEnabled="{Binding ControlInfo.HasEnabledState, Mode=OneWay}"/>
+                                  IsEnabled="{Binding ControlInfo.HasEnabledState, Mode=OneWay}">
+                        <ToggleButton.Content>
+                            <controls1:FontIcon Glyph="&#xE81E;" />
+                        </ToggleButton.Content>
+                    </ToggleButton>
                     <Button DockPanel.Dock="Right"  
-                            Theme="{StaticResource MaterialFlatButton}"
+                            Theme="{StaticResource TransparentButton}"
                             Classes="circle"
                             Margin="4 -4"
                             ToolTip.Tip="查看此设置的继承情况…"
-                            Content="{avalonia:MaterialIconExt LayersSearchOutline}"
                             Click="ButtonShowDetails_OnClick">
+                        <Button.Content>
+                            <controls1:FontIcon Glyph="&#xE81E;" />
+                        </Button.Content>
                         <Button.IsVisible>
                             <MultiBinding Converter="{StaticResource BooleanAndConverter}" Mode="OneWay">
                                 <Binding Path="ControlInfo.HasEnabledState" Mode="OneWay"/>
@@ -59,7 +63,7 @@
                                                     <ListBox Grid.Row="1" ItemsSource="{Binding NextItems}">
                                                         <ListBox.ItemContainerTheme>
                                                             <ControlTheme TargetType="ListBoxItem"
-                                                                   BasedOn="{StaticResource MaterialListBoxItem}">
+                                                                   >
                                                                 <Setter Property="Template">
                                                                     <Setter.Value>
                                                                         <ControlTemplate>
@@ -84,7 +88,7 @@
                                                     <ListBox Grid.Row="1" ItemsSource="{Binding PreviousItems}">
                                                         <ListBox.ItemContainerTheme>
                                                             <ControlTheme TargetType="ListBoxItem"
-                                                                          BasedOn="{StaticResource MaterialListBoxItem}">
+                                                                          >
                                                                 <Setter Property="Template">
                                                                     <Setter.Value>
                                                                         <ControlTemplate>
@@ -107,20 +111,26 @@
                                         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal"
                                                    Margin="4 0 4 4">
                                             <Button HorizontalAlignment="Left"
-                                                    Content="{avalonia:MaterialIconExt HelpCircleOutline}"
                                                     ToolTip.Tip="附加设置帮助…"
                                                     Margin="4 0 0 0"
                                                     Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                                     CommandParameter="https://docs.classisland.tech/app/advanced#%E9%99%84%E5%8A%A0%E8%AE%BE%E7%BD%AE"
-                                                    Theme="{StaticResource MaterialFlatButton}"
-                                                    Classes="circle"/>
+                                                    Theme="{StaticResource TransparentButton}"
+                                                    Classes="circle">
+                                                <Button.Content>
+                                                    <controls1:FontIcon Glyph="&#xE897;" />
+                                                </Button.Content>
+                                            </Button>
                                             <Button HorizontalAlignment="Left"
-                                                    Content="{avalonia:MaterialIconExt Refresh}"
                                                     ToolTip.Tip="刷新"
                                                     Margin="4 0 0 0"
                                                     Click="ButtonRefresh_OnClick"
-                                                    Theme="{StaticResource MaterialFlatButton}" 
-                                                    Classes="circle"/>
+                                                    Theme="{StaticResource TransparentButton}" 
+                                                    Classes="circle">
+                                                <Button.Content>
+                                                    <controls1:FontIcon Glyph="&#xE72C;" />
+                                                </Button.Content>
+                                            </Button>
                                         </WrapPanel>
                                         <ProgressBar Grid.Row="0"
                                                      IsIndeterminate="True"
@@ -132,12 +142,14 @@
                         </Button.Flyout>
                     </Button>
                     <Grid>
-                        <avalonia:MaterialIconText Kind="{Binding ControlInfo.IconKind, Mode=OneWay}"
-                                     Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"
-                                     IsVisible="{Binding IsDependencyMode, Converter={StaticResource InvertBooleanConverter}}"/>
-                        <avalonia:MaterialIconText Kind="{Binding DependencyItemPackIconKind, Mode=OneWay}"
-                                     Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
-                                     IsVisible="{Binding IsDependencyMode}">
+                        <controls:IconText Glyph="{Binding ControlInfo.IconGlyph, Mode=OneWay}"
+                                           UseFontIcon="True"
+                                           Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"
+                                           IsVisible="{Binding IsDependencyMode, Converter={StaticResource InvertBooleanConverter}}"/>
+                        <controls:IconText Glyph="{Binding DependencyItemPackIconKind, Mode=OneWay}"
+                                           UseFontIcon="True"
+                                           Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
+                                           IsVisible="{Binding IsDependencyMode}">
                             <!-- TODO: P2 完成依赖状态样式 -->
                             <!-- <avalonia:MaterialIconText.Style> -->
                             <!--     <Style TargetType="local:IconText"> -->
@@ -164,7 +176,7 @@
                             <!--         </Style.Triggers> -->
                             <!--     </Style> -->
                             <!-- </avalonia:MaterialIconText.Style> -->
-                        </avalonia:MaterialIconText>
+                        </controls:IconText>
 
                     </Grid>
                 </DockPanel>

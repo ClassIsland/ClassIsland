@@ -1,7 +1,4 @@
-﻿
-using Material.Icons;
-
-namespace ClassIsland.Core.Attributes;
+﻿namespace ClassIsland.Core.Attributes;
 
 
 /// <summary>
@@ -11,7 +8,7 @@ namespace ClassIsland.Core.Attributes;
 /// <param name="name">此认证提供方的名称</param>
 /// <param name="iconKind">此认证提供方的图标</param>
 [AttributeUsage(AttributeTargets.Class)]
-public class AuthorizeProviderInfo(string id, string name, MaterialIconKind iconKind) : Attribute
+public class AuthorizeProviderInfo(string id, string name, string iconKind) : Attribute
 {
     /// <summary>
     /// 此认证提供方的 ID
@@ -26,7 +23,7 @@ public class AuthorizeProviderInfo(string id, string name, MaterialIconKind icon
     /// <summary>
     /// 此认证提供方的图标
     /// </summary>
-    public MaterialIconKind IconKind { get; } = iconKind;
+    public string IconKind { get; } = iconKind;
 
     /// <summary>
     /// 认证提供方类型

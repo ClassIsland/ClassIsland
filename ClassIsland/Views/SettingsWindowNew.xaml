@@ -92,7 +92,7 @@
                           Margin="0 24 0 0"
                           Visibility="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource InverseBoolToVisConverter}}">
                     
-                    <Button Style="{StaticResource MaterialFlatButton}"
+                    <Button Style="{StaticResource TransparentButton}"
                             Click="ButtonDoNotClickVeryDangerous_OnClick"
                             Foreground="Red"
                             materialDesign:RippleAssist.Feedback="Red"
