@@ -18,7 +18,7 @@
                            d:DesignHeight="450" d:DesignWidth="800"
                            Title="提醒"
                            TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                           Background="{DynamicResource MaterialDesignPaper}"
+                           Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                            FontFamily="{StaticResource HarmonyOsSans}"
                            TextElement.FontWeight="Regular"
                            TextElement.FontSize="14"
@@ -36,7 +36,7 @@
         <ci:BindingProxy x:Key="DataProxy"
                          Data="{Binding}"/>
 
-        <ScrollViewer Background="{DynamicResource MaterialDesignPaper}"
+        <ScrollViewer Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                       x:Key="NotificationSettingsDrawer"
                       DataContext="{Binding ViewModel.SelectedRegisterInfo}"
                       Width="500">
@@ -275,7 +275,7 @@
                     </TabItem>
 
                     <TabItem Header="高级设置">
-                        <ScrollViewer Background="{DynamicResource MaterialDesignPaper}">
+                        <ScrollViewer Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
                             <StackPanel Margin="0 0 0 8">
                                 
                                 <!-- 启用提醒语音 -->

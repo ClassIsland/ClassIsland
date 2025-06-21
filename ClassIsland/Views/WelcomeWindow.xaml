@@ -19,7 +19,7 @@
                    mc:Ignorable="d"
                    Height="600" Width="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                   Background="{DynamicResource MaterialDesignPaper}"
+                   Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                    TextElement.FontWeight="Regular"
                    TextElement.FontSize="14"
                    FontFamily="{StaticResource HarmonyOsSans}"
@@ -294,7 +294,7 @@
                                                            Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
                                 </StackPanel>
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Style="{StaticResource MaterialDesignPaperButton}"
+                                    <Button Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                                             Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
                                             Margin="0 0 6 0">
                                         <controls1:IconText Kind="ArrowLeft" Text="上一步" />
@@ -397,7 +397,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Style="{StaticResource MaterialDesignPaperButton}"
+                                    <Button Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                                             Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
                                             Margin="0 0 6 0">
                                         <controls1:IconText Kind="ArrowLeft" Text="上一步" />
@@ -473,7 +473,7 @@
                                     </StackPanel>
                                 </ScrollViewer>
                                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Style="{StaticResource MaterialDesignPaperButton}"
+                                    <Button Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                                             Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
                                             Margin="0 0 6 0">
                                         <controls1:IconText Kind="ArrowLeft" Text="上一步" />
@@ -615,7 +615,7 @@
                                     </Grid>
                                 </ScrollViewer>
                                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Style="{StaticResource MaterialDesignPaperButton}"
+                                    <Button Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                                             Click="ButtonCompleteFlipBack_OnClick">
                                         <controls1:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>

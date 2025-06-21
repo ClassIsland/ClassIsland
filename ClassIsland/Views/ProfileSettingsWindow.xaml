@@ -28,7 +28,7 @@
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                   Background="{DynamicResource MaterialDesignPaper}"
+                   Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                    TextElement.FontWeight="Regular"
                    TextElement.FontSize="14"
                    FontFamily="{StaticResource HarmonyOsSans}"
@@ -409,7 +409,7 @@
                                         Placement="Mouse"
                                         IsOpen="{Binding ViewModel.IsWeekOffsetSettingsOpen}"
                                         PopupAnimation="Fade">
-                    <Border Background="{DynamicResource MaterialDesignPaper}"
+                    <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                             Margin="8"
                             Button.Click="ButtonWeekOffsetSettingsButtons_OnClick">
                         <Border.Effect>
@@ -848,7 +848,7 @@
                                                                     <Style.Triggers>
                                                                         <DataTrigger Binding="{Binding Value.IsActivated}" Value="True">
                                                                             <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                                                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignPaper}"/>
+                                                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
                                                                             <Setter Property="BorderThickness" Value="0"/>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
@@ -1033,7 +1033,7 @@
                                                                     StaysOpen="False"
                                                                     AllowsTransparency="True"
                                                                     PopupAnimation="Fade">
-                                                <Border Background="{DynamicResource MaterialDesignPaper}" Width="320"
+                                                <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}" Width="320"
                                                         Margin="8">
                                                     <Border.Effect>
                                                         <DropShadowEffect BlurRadius="8"
@@ -1834,7 +1834,7 @@
                                         </StackPanel>
                                     </ScrollViewer>
                                     <Grid Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" 
-                                          Background="{DynamicResource MaterialDesignPaper}">
+                                          Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
                                         <Grid.Style>
                                             <Style TargetType="Grid">
                                                 <Style.Triggers>
@@ -1861,7 +1861,7 @@
                                     <!--<Grid Grid.Row="0" Grid.RowSpan="4"
                                           Grid.Column="0" Grid.ColumnSpan="3"
                                           Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                        <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
+                                        <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}" Opacity="0.8"/>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <Image Source="/Assets/HoYoStickers/帕姆_震惊.png" Width="78"  Margin="0 0 0 8"
                                                    ToolTip.Tip="帕姆_震惊"/>
@@ -2129,7 +2129,7 @@
                                                                     StaysOpen="False"
                                                                     PopupAnimation="Fade"
                                                                     IsOpen="{Binding ViewModel.IsClassPlanTempEditPopupOpen}">
-                                                <materialDesign:Card Background="{DynamicResource MaterialDesignPaper}"
+                                                <materialDesign:Card Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                                                      Margin="8"
                                                                      materialDesign:ElevationAssist.Elevation="Dp8">
                                                     <StackPanel Margin="12" Width="250">
@@ -2502,7 +2502,7 @@
 
                     </TabControl>
 
-                    <Border Grid.Row="2" Background="{DynamicResource MaterialDesignPaper}" 
+                    <Border Grid.Row="2" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}" 
                             Visibility="{Binding ManagementService.Policy.DisableProfileEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" >
                             <materialDesign:PackIcon Width="64" Height="64" Kind="Work" HorizontalAlignment="Center"/>
@@ -2719,7 +2719,7 @@
                                         <materialDesign:Card
                                             MenuItem.Click="MenuItemImports_OnClick"
                                             Margin="16"
-                                            Background="{DynamicResource MaterialDesignPaper}"
+                                            Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                             materialDesign:ElevationAssist.Elevation="Dp4"
                                             TextElement.Foreground="{DynamicResource MaterialDesignBody}">
                                             <StackPanel Margin="0 4">
@@ -2784,7 +2784,7 @@
             </materialDesign:DrawerHost>
         </materialDesign:DialogHost>
         <Grid Visibility="{Binding ViewModel.IsDragEntering, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Border Background="{DynamicResource MaterialDesignBackground}"
+            <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                     Opacity="0.75"/>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <materialDesign:PackIcon Kind="FileImport"

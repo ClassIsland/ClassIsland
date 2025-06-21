@@ -16,7 +16,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="更新"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-      Background="{DynamicResource MaterialDesignPaper}"
+      Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
       FontFamily="{StaticResource HarmonyOsSans}"
       TextElement.FontWeight="Regular"
       TextElement.FontSize="14"
@@ -412,7 +412,7 @@
                             Click="ButtonCheckUpdate_OnClick">
                         <Button.Style>
                             <Style TargetType="Button"
-                                   BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                   BasedOn="{StaticResource SolidBackgroundFillColorBaseBrushButton}">
                                 <Style.Triggers>
                                     <DataTrigger
                                         Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
@@ -451,7 +451,7 @@
                     <Button Margin="0 0 6 0" Click="ButtonCancelUpdate_OnClick">
                         <Button.Style>
                             <Style TargetType="Button"
-                                   BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                   BasedOn="{StaticResource SolidBackgroundFillColorBaseBrushButton}">
                                 <Style.Triggers>
                                     <DataTrigger
                                         Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
@@ -599,7 +599,7 @@
                                 </Style>
                             </Grid.Style>
                             <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                    Background="{DynamicResource MaterialDesignPaper}"
+                                    Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                     Opacity="0.8" />
                             <controls1:StarRailLoadingControl />
                         </Grid>

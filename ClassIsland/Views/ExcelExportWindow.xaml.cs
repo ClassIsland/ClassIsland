@@ -68,7 +68,7 @@ public partial class ExcelExportWindow
         var rgcs = ControlAppearanceStyle.CreateDefaultControlStyle();
         var primary = (SolidColorBrush)FindResource("PrimaryHueMidBrush");
         var body = (SolidColorBrush)FindResource("MaterialDesignBody");
-        var paper = (SolidColorBrush)FindResource("MaterialDesignPaper");
+        var paper = (SolidColorBrush)FindResource("SolidBackgroundFillColorBaseBrush");
         var divider = (SolidColorBrush)FindResource("MaterialDesignDivider");
         var c = primary.Color;
         var sc = new SolidColor(c.R, c.G, c.B);

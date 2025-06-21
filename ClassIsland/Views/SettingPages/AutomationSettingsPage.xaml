@@ -17,7 +17,7 @@
                      xmlns:dd="urn:gong-wpf-dragdrop"
                      xmlns:models="clr-namespace:ClassIsland.Core.Models;assembly=ClassIsland.Core"
                      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                     Background="{DynamicResource MaterialDesignPaper}"
+                     Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                      FontFamily="{StaticResource HarmonyOsSans}"
                      TextElement.FontWeight="Regular"
                      TextElement.FontSize="14"
@@ -421,7 +421,7 @@
         </Grid>
 
         <!-- 自动化使用前须知 -->
-        <Border Background="{DynamicResource MaterialDesignPaper}"
+        <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                 Visibility="{Binding SettingsService.Settings.IsAutomationWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <ScrollViewer>
                 <StackPanel VerticalAlignment="Center"

@@ -38,7 +38,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Border Grid.Column="1" Margin="-1" BorderThickness="1" 
-                BorderBrush="{DynamicResource MaterialDesignPaper}"/>
+                BorderBrush="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
         <Border Grid.Column="1" Margin="-3" BorderThickness="2" 
                 CornerRadius="1"
                 BorderBrush="{DynamicResource MaterialDesignBody}"/>

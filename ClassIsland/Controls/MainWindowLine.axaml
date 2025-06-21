@@ -221,7 +221,7 @@
             </Setter>
         </Style>
         <Style Selector="^ /template/ Border#BackgroundBorder">
-            <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
+            <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
         </Style>
         <Style Selector="^:custom-background /template/ Border.background">
             <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"/>

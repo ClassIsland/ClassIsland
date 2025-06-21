@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -45,7 +45,7 @@
                                         StaysOpen="False"
                                         AllowsTransparency="True"
                                         IsOpen="{Binding ViewModel.IsClockOpen}">
-                    <Border Background="{DynamicResource MaterialDesignPaper}"
+                    <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                             Margin="16">
                         <Border.Effect>
                             <DropShadowEffect ShadowDepth="0"

@@ -20,7 +20,7 @@
       Title="插件"
       d:DataContext="{d:DesignInstance local:PluginsSettingsPage}"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-      Background="{DynamicResource MaterialDesignPaper}"
+      Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
       FontFamily="{StaticResource HarmonyOsSans}"
       TextElement.FontWeight="Regular"
       TextElement.FontSize="14"
@@ -764,7 +764,7 @@
                 </Grid>
             </controls1:ListDetailView.RightContent>
         </controls1:ListDetailView>
-        <Border Background="{DynamicResource MaterialDesignPaper}"
+        <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                 Visibility="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <ScrollViewer>
                 <StackPanel VerticalAlignment="Center"
@@ -824,7 +824,7 @@
         </Border>
         <Grid Grid.Row="0"
               Visibility="{Binding ViewModel.IsDragEntering, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Border Background="{DynamicResource MaterialDesignBackground}"
+            <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                     Opacity="0.75"/>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <materialDesign:PackIcon Kind="FileImport"

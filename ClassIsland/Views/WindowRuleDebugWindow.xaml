@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="窗口规则调试工具" Height="200" Width="400"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         SizeToContent="Height"
         TextElement.FontWeight="Regular"

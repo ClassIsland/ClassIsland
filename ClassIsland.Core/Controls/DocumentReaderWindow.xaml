@@ -8,7 +8,7 @@
             mc:Ignorable="d"
             d:DataContext="{d:DesignInstance local:DocumentReaderWindow}"
             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-            Background="{DynamicResource MaterialDesignPaper}"
+            Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
             FontFamily="{StaticResource HarmonyOsSans}"
             TextElement.FontWeight="Regular"
             TextElement.FontSize="14"
@@ -71,7 +71,7 @@
                   Grid.RowSpan="2"
                   Margin="-8"
                   Visibility="{Binding IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Border Background="{DynamicResource MaterialDesignBackground}" Opacity="0.5"/>
+                <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}" Opacity="0.5"/>
                 <local:StarRailLoadingControl VerticalAlignment="Center"
                                               HorizontalAlignment="Center"/>
             </Grid>

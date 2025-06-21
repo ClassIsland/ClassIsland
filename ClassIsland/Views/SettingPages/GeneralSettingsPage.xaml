@@ -17,7 +17,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="GeneralSettingsPage"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-      Background="{DynamicResource MaterialDesignPaper}"
+      Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
       FontFamily="{StaticResource HarmonyOsSans}"
       TextElement.FontWeight="Regular"
       TextElement.FontSize="14"
@@ -98,7 +98,7 @@
                                                 Placement="Mouse"
                                                 IsOpen="{Binding ViewModel.IsWeekOffsetSettingsOpen}"
                                                 PopupAnimation="Fade">
-                            <Border Background="{DynamicResource MaterialDesignPaper}"
+                            <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                     Margin="8"
                                     Button.Click="ButtonWeekOffsetSettingsButtons_OnClick">
                                 <Border.Effect>

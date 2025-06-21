@@ -14,7 +14,7 @@
                      d:DesignHeight="450" d:DesignWidth="800"
                      Title="ThemesSettingsPage"
                      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                     Background="{DynamicResource MaterialDesignPaper}"
+                     Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                      FontFamily="{StaticResource HarmonyOsSans}"
                      TextElement.FontWeight="Regular"
                      TextElement.FontSize="14"
@@ -149,7 +149,7 @@
         
 
         <ListBox Grid.Row="2" HorizontalContentAlignment="Stretch"
-                     Background="{DynamicResource MaterialDesignPaper}"
+                     Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                      ItemsSource="{Binding Source={StaticResource ThemeSource}}"
                      materialDesign:ListBoxItemAssist.ShowSelection="False"
                      VerticalContentAlignment="Stretch">
@@ -180,7 +180,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <materialDesign:Card Background="{DynamicResource MaterialDesignBackground}"
+                    <materialDesign:Card Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                          SnapsToDevicePixels="True"
                                          UseLayoutRounding="True"
                                          RenderOptions.EdgeMode="Aliased">
@@ -350,7 +350,7 @@
         </ListBox>
 
         <Border Grid.Row="0" Grid.RowSpan="3" 
-                Background="{DynamicResource MaterialDesignPaper}"
+                Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                 Visibility="{Binding SettingsService.Settings.IsThemeWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <ScrollViewer>
                 <StackPanel VerticalAlignment="Center"

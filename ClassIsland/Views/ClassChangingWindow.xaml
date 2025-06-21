@@ -20,7 +20,7 @@
         MinWidth="730"
         MinHeight="230"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
         FontFamily="{StaticResource HarmonyOsSans}"
@@ -213,7 +213,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Bottom"
                         Margin="6">
-                <Button Style="{StaticResource MaterialDesignPaperButton}"
+                <Button Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                         Margin="0 0 4 0"
                         IsCancel="True"
                         ToolTip.Tip="取消换课操作。">
@@ -223,7 +223,7 @@
                         Click="ButtonPrev_OnClick"
                         ToolTip.Tip="返回上一步。">
                     <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignPaperButton}">
+                        <Style TargetType="Button" BasedOn="{StaticResource SolidBackgroundFillColorBaseBrushButton}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ViewModel.SlideIndex}" Value="0">
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -374,7 +374,7 @@
                     d:Visibility="Visible"
                     Cursor="Wait"
                     x:Name="LoadingOverlay"
-                    Background="{DynamicResource MaterialDesignPaper}">
+                    Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Style.Triggers>

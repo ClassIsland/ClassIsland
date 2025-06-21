@@ -21,7 +21,7 @@
         SizeToContent="Height"
         MinHeight="300"
         MaxHeight="700"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         Title="ClassIsland">
     <ci:MyWindow.CommandBindings>
@@ -145,7 +145,7 @@
         </ListBox>
 
         <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left"
-                Style="{StaticResource MaterialDesignPaperButton}"
+                Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                 IsCancel="True">
             <ci:IconText Kind="Cancel" Text="取消"/>
         </Button>

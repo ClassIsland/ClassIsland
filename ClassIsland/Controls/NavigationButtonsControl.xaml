@@ -12,7 +12,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
         <Button HorizontalAlignment="Left"
-                Style="{StaticResource MaterialDesignPaperButton}"
+                Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                 IsEnabled="{Binding IsNavigateBackButtonEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:NavigationButtonsControl}}"
                 Command="{x:Static views:ExcelImportWindow.NavigateBackCommand}">
             <controls:IconText Kind="ArrowLeft" Text="上一步"/>

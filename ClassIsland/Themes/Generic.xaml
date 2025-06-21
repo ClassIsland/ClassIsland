@@ -205,7 +205,7 @@
                                                             IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                             TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                             Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
-                                                        <Border Background="{DynamicResource MaterialDesignPaper}"
+                                                        <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                                                 HorizontalAlignment="Right"
                                                                 VerticalAlignment="Center"
                                                                 Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}"
@@ -255,7 +255,7 @@
                                                             IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                             TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                             Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
-                                                        <Border Background="{DynamicResource MaterialDesignPaper}"
+                                                        <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                                                 HorizontalAlignment="Right"
                                                                 VerticalAlignment="Center"
                                                                 Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}"
@@ -340,7 +340,7 @@
                                                     TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                     TimeLayout="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                     Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
-                                                <Border Background="{DynamicResource MaterialDesignPaper}"
+                                                <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                                         HorizontalAlignment="Right"
                                                         VerticalAlignment="Center"
                                                         Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}"

@@ -18,7 +18,7 @@
         xmlns:commands="http://classisland.tech/schemas/xaml/core"
         d:DataContext="{d:DesignInstance local:SettingsWindowNew}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -288,7 +288,7 @@
                                            Margin="4 0 0 0"/>
                             </Grid>
                             <Frame Content="{Binding ViewModel.FrameContent}"
-                                   Background="{DynamicResource MaterialDesignPaper}"
+                                   Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                    NavigationUIVisibility="Hidden"
                                    x:Name="NavigationFrame" RenderTransformOrigin="0.5,0.5">
                                 <Frame.RenderTransform>

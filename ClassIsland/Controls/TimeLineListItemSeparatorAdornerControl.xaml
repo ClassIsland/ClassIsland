@@ -12,7 +12,7 @@
     <Grid>
         <Grid SnapsToDevicePixels="True">
             <Border Margin="-1" BorderThickness="1"
-                    BorderBrush="{DynamicResource MaterialDesignPaper}"/>
+                    BorderBrush="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
             <Border Margin="-3" BorderThickness="2" 
                     CornerRadius="1"
                     BorderBrush="{DynamicResource MaterialDesignBody}">

@@ -38,7 +38,7 @@
             </ContentPresenter.Style>
         </ContentPresenter>
         <!-- Right -->
-        <Grid Background="{DynamicResource MaterialDesignPaper}">
+        <Grid Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />

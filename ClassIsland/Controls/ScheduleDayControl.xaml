@@ -83,7 +83,7 @@
                                     StaysOpen="True"
                                     PopupAnimation="Fade"
                                     IsOpen="{Binding IsClassPlanSelectionPopupOpen, Mode=TwoWay}">
-                <materialDesign:Card Background="{DynamicResource MaterialDesignPaper}"
+                <materialDesign:Card Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                      Margin="8"
                                      PreviewMouseDown="UIElement_OnPreviewMouseDown"
                                      MouseDown="UIElement_OnMouseDown"

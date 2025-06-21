@@ -12,7 +12,7 @@
         WindowStartupLocation="CenterOwner"
         d:DataContext="{d:DesignInstance local:WallpaperPreviewWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -25,7 +25,7 @@
                StretchDirection="Both"/>
         <Grid HorizontalAlignment="Stretch"
               VerticalAlignment="Bottom">
-            <Border Background="{DynamicResource MaterialDesignPaper}"
+            <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                     Opacity="0.8"/>
             <Button Style="{StaticResource TransparentButton}"
                     Click="ButtonRefresh_OnClick"
@@ -54,7 +54,7 @@
                 d:Visibility="Visible"
                 Cursor="Wait"
                 x:Name="LoadingOverlay"
-                Background="{DynamicResource MaterialDesignPaper}">
+                Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
             <Border.Style>
                 <Style TargetType="Border">
                     <Style.Triggers>

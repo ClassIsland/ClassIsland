@@ -11,7 +11,7 @@
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:ManagementSettingsPage}"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-      Background="{DynamicResource MaterialDesignPaper}"
+      Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
       FontFamily="{StaticResource HarmonyOsSans}"
       TextElement.FontWeight="Regular"
       TextElement.FontSize="14"

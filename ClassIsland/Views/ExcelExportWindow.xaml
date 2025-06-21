@@ -14,7 +14,7 @@
         Title="导出到 Excel 表格" Height="700" Width="1400"
         WindowState="Maximized"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -284,7 +284,7 @@
                                    TextWrapping="Wrap"/>
 
                         <Button Margin="0 12 0 0" HorizontalAlignment="Left"
-                                Style="{StaticResource MaterialDesignPaperButton}"
+                                Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                                 Click="ButtonSaveAndOpenInExcel_OnClick">
                             <ci:IconText Kind="MicrosoftExcel" Text="保存并在默认 Excel 文件编辑器中打开"/>
                         </Button>
