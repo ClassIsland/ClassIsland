@@ -7,8 +7,15 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Core.Controls.IconText">
     <StackPanel Orientation="Horizontal" Spacing="{Binding $parent[ci:IconText].Spacing, Mode=OneWay}">
+        <ci:FluentIcon Glyph="{Binding $parent[ci:IconText].Glyph, Mode=OneWay}"
+                       VerticalAlignment="Center"
+                       FontSize="16"
+                       IsVisible="{Binding $parent[ci:IconText].UseFontIcon}"/>
         <controls:SymbolIcon Symbol="{Binding $parent[ci:IconText].Symbol, Mode=OneWay}"
-                             VerticalAlignment="Center"/>
-        <TextBlock Text="{Binding $parent[ci:IconText].Text}"/>
+                             VerticalAlignment="Center"
+                             IsVisible="{Binding $parent[ci:IconText].UseFontIcon, Converter={StaticResource InvertBooleanConverter}}"/>
+        <TextBlock Text="{Binding $parent[ci:IconText].Text}"
+                   VerticalAlignment="Center"
+                   Margin="0 0 0 -4"/>
     </StackPanel>
 </UserControl>

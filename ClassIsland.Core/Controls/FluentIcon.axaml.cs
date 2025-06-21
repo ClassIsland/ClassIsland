@@ -9,7 +9,7 @@ public class FluentIcon : FontIcon
 {
     public FluentIcon()
     {
-        
+        FontFamily = AppBase.FluentIconsFontFamily;
     }
     
     public FluentIcon(string glyph) : base()

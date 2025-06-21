@@ -1081,4 +1081,10 @@ public partial class MainWindow : Window
         ProfileService.Profile.TempClassPlanId = input.Text;
         ProfileService.Profile.TempClassPlanSetupTime = ExactTimeService.GetCurrentLocalDateTime();
     }
+
+    private void NativeMenuItemDebugCrashTest_OnClick(object? sender, EventArgs e)
+    {
+        var window = new CrashWindow();
+        window.Show();
+    }
 }

@@ -37,7 +37,7 @@
     <system:Boolean x:Key="FalseValue">False</system:Boolean>
     
     <!-- IconFonts -->
-    <FontFamily x:Key="FluentIcons">avares://ClassIsland.Core/Assets/Fonts/FluentSystemIcons-Resizable.ttf#FluentSystemIcons-Resizable</FontFamily>
+    <FontFamily x:Key="FluentIcons">avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable</FontFamily>
     
     <!-- DataTemplates -->
     <DataTemplate DataType="system:Boolean" x:Key="SwitcherTemplate">
