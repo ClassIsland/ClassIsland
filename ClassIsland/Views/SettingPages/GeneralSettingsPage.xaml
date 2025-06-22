@@ -130,6 +130,7 @@
                                          materialDesign:TextFieldAssist.SuffixText="周"
                                          MinWidth="100"
                                                     Precision="0"
+                                                    Foreground="{DynamicResource MaterialDesignBody}"
                                          Text="{Binding SettingsService.Settings.MultiWeekRotationMaxCycle, Converter={StaticResource IntToStringConverter}}"/>
                             </controls1:SettingsControl.Switcher>
                         </controls1:SettingsControl>
