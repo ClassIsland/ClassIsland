@@ -75,6 +75,7 @@ using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Helpers;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
+using ClassIsland.Views.SettingPages;
 using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
 
@@ -546,7 +547,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddTransient<FeatureDebugWindow>();
                 // services.AddSingleton<TopmostEffectWindow>(BuildTopmostEffectWindow);
                 // services.AddSingleton<AppLogsWindow>();
-                // services.AddSingleton<SettingsWindowNew>();
+                services.AddSingleton<SettingsWindowNew>();
                 // services.AddSingleton<ProfileSettingsWindow>((s) => new ProfileSettingsWindow()
                 // {
                 //     MainViewModel = s.GetService<MainWindow>()?.ViewModel ?? new()
@@ -569,7 +570,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddSettingsPage<PrivacySettingsPage>();
                 // services.AddSettingsPage<PluginsSettingsPage>();
                 // services.AddSettingsPage<ThemesSettingsPage>();
-                // services.AddSettingsPage<TestSettingsPage>();
+                services.AddSettingsPage<TestSettingsPage>();
                 // services.AddSettingsPage<DebugPage>();
                 // services.AddSettingsPage<DebugBrushesSettingsPage>();
                 // services.AddSettingsPage<AboutSettingsPage>();

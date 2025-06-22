@@ -1,7 +1,8 @@
-﻿#if false
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using ClassIsland.Core.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.ViewModels;
 
@@ -13,7 +14,6 @@ public class SettingsNewViewModel : ObservableRecipient
     private bool _isNavigationDrawerOpened = true;
     private bool _canGoBack = false;
     private object? _drawerContent;
-    private SnackbarMessageQueue _snackbarMessageQueue = new();
     private bool _isDrawerOpen = false;
     private bool _isRequestedRestart = false;
     private bool _isNavigating = false;
@@ -85,17 +85,6 @@ public class SettingsNewViewModel : ObservableRecipient
         {
             if (Equals(value, _drawerContent)) return;
             _drawerContent = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public SnackbarMessageQueue SnackbarMessageQueue
-    {
-        get => _snackbarMessageQueue;
-        set
-        {
-            if (Equals(value, _snackbarMessageQueue)) return;
-            _snackbarMessageQueue = value;
             OnPropertyChanged();
         }
     }
@@ -189,5 +178,6 @@ public class SettingsNewViewModel : ObservableRecipient
     }
 
     public List<SettingsPageInfo> SideBarPages { get; } = [];
+
+    public ObservableCollection<object> NavigationViewItems { get; } = [];
 }
-#endif

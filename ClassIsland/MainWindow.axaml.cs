@@ -817,7 +817,7 @@ public partial class MainWindow : Window
 
     private void MenuItemSettings_OnClick(object sender, EventArgs e)
     {
-        // App.GetService<SettingsWindowNew>().Open();
+        App.GetService<SettingsWindowNew>().Open();
     }
 
 

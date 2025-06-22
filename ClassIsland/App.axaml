@@ -8,9 +8,12 @@
          xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia">
     <ci:AppBase.Styles>
         <styling:FluentAvaloniaTheme CustomAccentColor="DodgerBlue"
-                                     TextVerticalAlignmentOverrideBehavior="AlwaysEnabled"/>
+                                     TextVerticalAlignmentOverrideBehavior="Disabled"/>
         
         <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
+        <Style Selector=":is(ci|MyWindow)">
+            <Setter Property="Icon" Value="/Assets/AppLogo.png"/>
+        </Style>
     </ci:AppBase.Styles>
     <Application.Resources>
         <ResourceDictionary>

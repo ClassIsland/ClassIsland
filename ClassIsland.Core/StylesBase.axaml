@@ -1,7 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
-        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core">
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -33,5 +35,12 @@
     <Style Selector="Border.primaryColorZone">
         <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
         <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+    </Style>
+    
+    <Style Selector=":is(windowing|AppWindow).micaWindow">
+        <Style Selector="^[IsActive=True]">
+            <Setter Property="TransparencyLevelHint" Value="Mica"/>
+        </Style>
+        <Setter Property="TransparencyLevelHint" Value="None"/>
     </Style>
 </Styles>

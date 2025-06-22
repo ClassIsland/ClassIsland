@@ -51,6 +51,7 @@
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
     <PackageReference Include="FluentAvaloniaUI" Version="2.3.0" />
+    <PackageReference Include="Avalonia.Labs.CommandManager" Version="11.3.0" />
   </ItemGroup>
 
   <ItemGroup>

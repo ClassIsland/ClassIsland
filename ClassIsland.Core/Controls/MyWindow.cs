@@ -4,6 +4,7 @@ using Windows.Win32;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
+using Avalonia.Media.Imaging;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
@@ -37,6 +38,7 @@ public class MyWindow : AppWindow
             // ignored
         }
         Loaded += OnLoaded;
+        Avalonia.Media.RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

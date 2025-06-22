@@ -1,4 +1,3 @@
-#if false
 using ClassIsland.Core.Controls;
 using System;
 using System.Collections.Generic;
@@ -9,14 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Navigation;
-using System.Windows.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -29,7 +20,6 @@ using ClassIsland.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Services;
-using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Sentry;
 using System.IO;
 using ClassIsland.Controls;
@@ -37,23 +27,38 @@ using Path = System.IO.Path;
 using System.Web;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.SettingsWindow;
-using Application = System.Windows.Application;
 using ClassIsland.Helpers;
 using System.Transactions;
+using System.Windows.Forms;
+using Avalonia.Controls;
+using Avalonia.Data.Core;
+using Avalonia.Interactivity;
+using Avalonia.Labs.Input;
+using Avalonia.Media;
+using Avalonia.Platform;
+using Avalonia.Platform.Storage;
+using Avalonia.Threading;
+using DynamicData;
+using FluentAvalonia.UI.Controls;
+using FluentAvalonia.UI.Data;
+using FluentAvalonia.UI.Navigation;
+using FluentAvalonia.UI.Windowing;
+using Control = Avalonia.Controls.Control;
+using SaveFileDialog = Avalonia.Controls.SaveFileDialog;
+using TaskDialog = FluentAvalonia.UI.Controls.TaskDialog;
+using TaskDialogButton = FluentAvalonia.UI.Controls.TaskDialogButton;
 
 namespace ClassIsland.Views;
 
 /// <summary>
 /// SettingsWindowNew.xaml 的交互逻辑
 /// </summary>
-public partial class SettingsWindowNew : MyWindow
+public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 {
     private const string KeepHistoryParameterName = "ci_keepHistory";
 
     public SettingsNewViewModel ViewModel { get; } = new();
 
-    [NotNull]
-    public NavigationService? NavigationService { get; set; }
 
     private bool IsOpened { get; set; } = false;
 
@@ -89,14 +94,42 @@ public partial class SettingsWindowNew : MyWindow
         SettingsService = settingsService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         InitializeComponent();
-        NavigationService = NavigationFrame.NavigationService;
-        NavigationService.LoadCompleted += NavigationServiceOnLoadCompleted;
-        NavigationService.Navigating += NavigationServiceOnNavigating;
+
+        TitleBar.ExtendsContentIntoTitleBar = true;
+        TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+        NavigationFrame.NavigationPageFactory = this;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
 
         if (ManagementService.Policy.DisableSettingsEditing)
         {
             LaunchSettingsPage = "about";
+        }
+
+        BuildNavigationMenuItems();
+    }
+
+    private void BuildNavigationMenuItems()
+    {
+        NavigationView.MenuItems.Clear();
+
+        var infos = SettingsWindowRegistryService.Registered
+            .OrderBy(x => x.Category)
+            .GroupBy(x => x.Category)
+            .ToList();
+        foreach (var info in infos)
+        {
+            NavigationView.MenuItems.AddRange(info.Select(x => new NavigationViewItem()
+            {
+                IconSource = new FluentIconSource(x.UnSelectedIconGlyph),
+                Content = x.Name,
+                Tag = x
+            }));
+            if (info == infos.Last())
+            {
+                continue;
+            }
+            
+            NavigationView.MenuItems.Add(new NavigationViewItemSeparator());
         }
     }
 
@@ -112,57 +145,16 @@ public partial class SettingsWindowNew : MyWindow
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(SettingsService.Settings.IsDebugOptionsEnabled))
-        {
-            if (FindResource("NavigationCollectionViewSource") is CollectionViewSource source)
-            {
-                source.View.Refresh();
-            }
-        }
+        
     }
 
-    protected override async void OnContentRendered(EventArgs e)
+    public override async void EndInit()
     {
-        base.OnContentRendered(e);
         var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
         ViewModel.IsRendered = true;
         await CoreNavigate(page);
-        //await CoreNavigate(ViewModel.SelectedPageInfo);
-    }
-
-    private async Task BeginStoryboardAsync(string key)
-    {
-        BeginStoryboard(key, out var complete);
-        if (!complete.IsCancellationRequested)
-        {
-            try
-            {
-                await Task.Run(() => complete.WaitHandle.WaitOne(), complete);
-            }
-            catch (TaskCanceledException)
-            {
-                // ignored
-            }
-        }
-        if (!IThemeService.IsWaitForTransientDisabled)
-        {
-            await Dispatcher.Yield();
-        }
-    }
-
-    private void BeginStoryboard(string key, out CancellationToken cancellationToken)
-    {
-        var complete = new CancellationTokenSource();
-        cancellationToken = complete.Token;
-        if (!IsInitialized)
-            return;
-        if (FindResource(key) is not Storyboard sb)
-            return;
-        sb.Completed += (sender, args) =>
-        {
-            complete.Cancel();
-        };
-        sb.Begin();
+        base.EndInit();
+        // await CoreNavigate(ViewModel.SelectedPageInfo);
     }
 
     private async void NavigationServiceOnNavigating(object sender, NavigatingCancelEventArgs e)
@@ -174,11 +166,7 @@ public partial class SettingsWindowNew : MyWindow
     {
         if (ViewModel.EchoCaveTextsAll.Count <= 0)
         {
-            var stream = Application.GetResourceStream(new Uri("/Assets/Tellings.txt", UriKind.Relative))?.Stream;
-            if (stream == null)
-            {
-                return;
-            }
+            var stream = AssetLoader.Open(new Uri("/Assets/Tellings.txt", UriKind.Relative));
 
             var sayings = await new StreamReader(stream).ReadToEndAsync();
             ViewModel.EchoCaveTextsAll = [..sayings.Split("\r\n")];
@@ -204,7 +192,7 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
     {
-        if (e.ExtraData is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true } data)
+        if (e.Parameter is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true } data)
         {
             var transaction = data.Transaction as ITransactionTracer;
             var span = data.Span as ISpan;
@@ -213,21 +201,10 @@ public partial class SettingsWindowNew : MyWindow
                 // 如果是从设置导航栏导航的，并且没有要求保留历史记录，那么就要清除掉返回项目
                 if (!data.KeepHistory)
                 {
-                    NavigationService.RemoveBackEntry();
-                }
-
-                if (!IThemeService.IsWaitForTransientDisabled)
-                {
-                    await Dispatcher.Yield();
+                    NavigationFrame.BackStack.Clear();
                 }
 
                 ViewModel.IsNavigating = false;
-                var child = LoadingAsyncBox.LoadingView as LoadingMask;
-                child?.FinishFakeLoading();
-                if (!IThemeService.IsTransientDisabled)
-                {
-                    await BeginStoryboardAsync("NavigationEntering");
-                }
                 span?.Finish(SpanStatus.Ok);
                 transaction?.Finish(SpanStatus.Ok);
             }
@@ -239,7 +216,7 @@ public partial class SettingsWindowNew : MyWindow
             }
         }
         ViewModel.IsNavigating = false;
-        ViewModel.CanGoBack = NavigationService.CanGoBack;
+        ViewModel.CanGoBack = NavigationFrame.CanGoBack;
     }
 
 
@@ -278,46 +255,34 @@ public partial class SettingsWindowNew : MyWindow
         ViewModel.IsNavigating = true;
         try
         {
-            if (ViewModel.IsViewCompressed)
-            {
-                ViewModel.IsNavigationDrawerOpened = false;
-            }
+            NavigationView.SelectedItem = NavigationView.MenuItems
+                .OfType<NavigationViewItem>()
+                .FirstOrDefault(x => Equals(x.Tag, info));
 
             ViewModel.SelectedPageInfo = info;
 
             var uriQuery = HttpUtility.ParseQueryString(uri?.Query ?? "");
             var keepHistory = uriQuery[KeepHistoryParameterName] == "true";
-            var child = LoadingAsyncBox.LoadingView as LoadingMask;
-            child?.StartFakeLoading();
             if (SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading)
             {
                 await UpdateEchoCaveAsync();
             }
-
-            if (!IThemeService.IsTransientDisabled)
-            {
-                await BeginStoryboardAsync("NavigationLeaving");
-            }
-
+            
             HangService.AssumeHang();
-            // 从ioc容器获取页面
-            var page = GetPage(info.Id, out var cached);
-            transaction.SetTag("cache.hit", cached.ToString());
-            transaction.SetTag("cache.policy", SettingsService.Settings.SettingsPagesCachePolicy.ToString());
             // 清空抽屉
             ViewModel.IsDrawerOpen = false;
             ViewModel.DrawerContent = null;
             // 进行导航
             if (!keepHistory)
             {
-                NavigationService.RemoveBackEntry();
+                NavigationFrame.BackStack.Clear();
             }
             var spanLoadPhase2 = transaction.StartChild("frameNavigate");
-            NavigationService.Navigate(page, new SettingsWindowNavigationData(true, uri != null, uri, keepHistory, transaction, spanLoadPhase2));
+            NavigationFrame.NavigateFromObject(new SettingsWindowNavigationData(true, uri != null, uri, keepHistory, transaction, spanLoadPhase2, info));
             //ViewModel.FrameContent;
             if (!keepHistory)
             {
-                NavigationService.RemoveBackEntry();
+                NavigationFrame.BackStack.Clear();
             }
             spanLoadPhase1.Finish(SpanStatus.Ok);
         }
@@ -369,7 +334,7 @@ public partial class SettingsWindowNew : MyWindow
 
     private void ButtonGoBack_OnClick(object sender, RoutedEventArgs e)
     {
-        NavigationService.GoBack();
+        NavigationFrame.GoBack();
     }
 
     public async void Open()
@@ -414,7 +379,7 @@ public partial class SettingsWindowNew : MyWindow
             Open();
     }
 
-    private void SettingsWindowNew_OnClosing(object? sender, CancelEventArgs e)
+    private void SettingsWindowNew_OnClosing(object? sender, WindowClosingEventArgs e)
     {
         e.Cancel = true;
         IsOpened = false;
@@ -447,9 +412,20 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void ShowRestartDialog()
     {
-        if (DialogHost.IsDialogOpen(SettingsPageBase.DialogHostIdentifier))
-            return;
-        var r = await DialogHost.Show(FindResource("RestartDialog"), SettingsPageBase.DialogHostIdentifier);
+        var r = await new TaskDialog()
+        {
+            XamlRoot = this,
+            Header = "需要重启",
+            Content = "部分设置需要重启以应用",
+            Buttons =
+            {
+                new TaskDialogButton("取消", false),
+                new TaskDialogButton("重启", true)
+                {
+                    IsDefault = true
+                }
+            }
+        }.ShowAsync(true);
         if (r as bool? != true)
             return;
         AppBase.Current.Restart();
@@ -468,7 +444,7 @@ public partial class SettingsWindowNew : MyWindow
 
     private void OpenDrawer(string key)
     {
-        ViewModel.DrawerContent = FindResource(key);
+        ViewModel.DrawerContent = this.FindResource(key);
         ViewModel.IsDrawerOpen = true;
     }
 
@@ -487,68 +463,56 @@ public partial class SettingsWindowNew : MyWindow
         catch (Exception ex)
         {
             Logger.LogError(ex, "无法退出管理。");
-            CommonDialog.ShowError($"无法退出管理：{ex.Message}");
+            _ = CommonTaskDialogs.ShowDialog("无法退出管理", $"无法退出管理：{ex.Message}", this);
         }
     }
 
     private void MenuItemAppLogs_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<AppLogsWindow>().Open();
+        // App.GetService<AppLogsWindow>().Open();
     }
 
     private async void MenuItemExportDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
     {
         try
         {
-            var r = new CommonDialogBuilder()
-                .SetContent("您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。")
-                .SetIconKind(CommonDialogIconKind.Hint)
-                .AddCancelAction()
-                .AddAction("继续", MaterialIconKind.Check, true)
-                .ShowDialog();
+            var r = await new TaskDialog()
+            {
+                Header = "导出诊断信息",
+                Content = "您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。",
+                XamlRoot = this,
+                Buttons =
+                {
+                    new TaskDialogButton("取消", false),
+                    new TaskDialogButton("继续", true)
+                    {
+                        IsDefault = true
+                    }
+                }
+            }.ShowAsync(true);
             
-            if (r != 1)
+            if (r != (object)true)
                 return;
-            var dialog = new SaveFileDialog()
+
+            var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
             {
                 Title = "导出诊断数据",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                Filter = "压缩文件(*.zip)|*.zip"
-            };
-            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                SuggestedStartLocation =
+                    await StorageProvider.TryGetFolderFromPathAsync(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
+                FileTypeChoices = [
+                    new FilePickerFileType("压缩文件(*.zip)|*.zip")
+                ]
+            });
+            if (file == null)
+            {
                 return;
-            await DiagnosticService.ExportDiagnosticData(dialog.FileName);
+            }
+            await DiagnosticService.ExportDiagnosticData(file.Path.LocalPath);
         }
         catch (Exception exception)
         {
-            CommonDialog.ShowError($"导出失败：{exception.Message}");
-        }
-    }
-
-    private void NavigationCollectionViewSource_OnFilter(object sender, FilterEventArgs e)
-    {
-        if (e.Item is not SettingsPageInfo item)
-            return;
-        if (item.HideDefault)
-        {
-            e.Accepted = false;
-            return;
-        }
-        if (item.Category is SettingsPageCategory.Internal or SettingsPageCategory.External && ManagementService.Policy.DisableSettingsEditing)
-        {
-            e.Accepted = false;
-            return;
-        }
-        if (item.Category == SettingsPageCategory.Debug && ManagementService.Policy.DisableDebugMenu)
-        {
-            e.Accepted = false;
-            return;
-        }
-
-        if (item.Category == SettingsPageCategory.Debug && !SettingsService.Settings.IsDebugOptionsEnabled)
-        {
-            e.Accepted = false;
-            return;
+            await CommonTaskDialogs.ShowDialog("无法导出诊断信息", $"{exception.Message}", this);
         }
     }
 
@@ -572,7 +536,7 @@ public partial class SettingsWindowNew : MyWindow
 
     private void MenuItemDebugWindowRule_OnClick(object sender, RoutedEventArgs e)
     {
-        IAppHost.GetService<WindowRuleDebugWindow>().Show();
+        // IAppHost.GetService<WindowRuleDebugWindow>().Show();
     }
 
     private void MenuItemOpenDataFolder_OnClick(object sender, RoutedEventArgs e)
@@ -588,34 +552,44 @@ public partial class SettingsWindowNew : MyWindow
     {
         if (!SettingsService.Settings.IsUrlProtocolRegistered)
         {
-            var urlDialogResult = new CommonDialogBuilder()
-                .SetContent("快捷换课快捷方式需要启用【注册 Url 协议】选项才能工作。您要启用它吗？")
-                .AddCancelAction()
-                .AddAction("启用", MaterialIconKind.Check, true)
-                .SetIconKind(CommonDialogIconKind.Hint)
-                .ShowDialog(this);
-            if (urlDialogResult == 0)
+            var urlDialogResult = await new TaskDialog()
+            {
+                Header = "创建快捷换课快捷方式",
+                Content = "快捷换课快捷方式需要启用【注册 Url 协议】选项才能工作。您要启用它吗？",
+                XamlRoot = this,
+                Buttons =
+                {
+                    new TaskDialogButton("取消", false),
+                    new TaskDialogButton("启用", true)
+                    {
+                        IsDefault = true
+                    }
+                }
+            }.ShowAsync(true);
+            if (urlDialogResult != (object)true)
             {
                 return;
             }
 
             SettingsService.Settings.IsUrlProtocolRegistered = true;
         }
-        var dialog = new SaveFileDialog()
+        var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
         {
-            Filter = "快捷方式（*.url）|*.url",
-            FileName = "快捷换课.url",
-            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
-        };
-
-        if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            SuggestedFileName = "快捷换课.url",
+            SuggestedStartLocation =
+                await StorageProvider.TryGetFolderFromPathAsync(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
+            FileTypeChoices = [
+                new FilePickerFileType("快捷方式（*.url）|*.url")
+            ]
+        });
+        if (file == null)
         {
             return;
         }
 
-        await ShortcutHelpers.CreateClassSwapShortcutAsync(dialog.FileName);
-
-        ViewModel.SnackbarMessageQueue.Enqueue("快捷换课图标创建成功。");
+        await ShortcutHelpers.CreateClassSwapShortcutAsync(file.Path.LocalPath);
+        
     }
 
     private async void MenuItemRestartToRecovery_OnClick(object sender, RoutedEventArgs e)
@@ -627,100 +601,37 @@ public partial class SettingsWindowNew : MyWindow
         AppBase.Current.Restart(["-m", "-r"]);
     }
 
-    private void ButtonDoNotClickVeryDangerous_OnClick(object sender, RoutedEventArgs e)
+    public Control? GetPage(Type srcType)
     {
-        var result = new CommonDialogBuilder()
-            .SetIconKind(CommonDialogIconKind.Hint)
-            .SetContent("警告！ClassIsland 开发者不对应用接下来的行为造成的任何后果负责，并且不接受有关这些行为的任何 Bug 反馈。您确定要继续吗？")
-            .AddAction("OK", MaterialIconKind.HandOkay)
-            .AddAction("搞定", MaterialIconKind.ThumbUpOutline)
-            .AddAction("继续", MaterialIconKind.ArrowRight)
-            .AddAction("确定", MaterialIconKind.Check, true)
-            .ShowDialog();
+        return Activator.CreateInstance(srcType) as Control;
+    }
 
-        var random = new Random();
-        var value = random.Next(0, 65535) % 4;
-        Console.WriteLine(value);
-        switch (value)
+    public Control? GetPageFromObject(object target)
+    {
+        if (target is not SettingsWindowNavigationData data)
         {
-            case 0:
-                BeginScaleEffect(0.25);
-                break;
-            case 1:
-                BeginScaleEffect(2);
-                break;
-            case 2:
-                BeginRotateEffect();
-                break;
-            case 3:
-                BeginFlipEffect();
-                break;
+            return null;
         }
-        
+
+        var page = GetPage(data.Info.Id, out var cached);
+        if (data.Transaction is ITransactionTracer transaction)
+        {
+            transaction.SetTag("cache.hit", cached.ToString());
+            transaction.SetTag("cache.policy", SettingsService.Settings.SettingsPagesCachePolicy.ToString());
+        }
+        return page;
     }
 
-    private void BeginScaleEffect(double scale)
+    private async void NavigationView_OnItemInvoked(object? sender, NavigationViewItemInvokedEventArgs e)
     {
-        MinWidth = 0;
-        var sb = new Storyboard();
-        var daX = new DoubleAnimation(1, scale, TimeSpan.FromSeconds(1))
+        if (e.InvokedItemContainer is NavigationViewItem navItem && navItem.Tag is SettingsPageInfo info)
         {
-            EasingFunction = new CircleEase()
-        };
-        Storyboard.SetTarget(daX, RootGrid);
-        Storyboard.SetTargetProperty(daX, new PropertyPath("(0).(1)[0].(2)", [LayoutTransformProperty, TransformGroup.ChildrenProperty, ScaleTransform.ScaleXProperty]));
-        var daY = new DoubleAnimation(1, scale, TimeSpan.FromSeconds(1))
-        {
-            EasingFunction = new CircleEase()
-        };
-        Storyboard.SetTarget(daY, RootGrid);
-        Storyboard.SetTargetProperty(daY, new PropertyPath("(0).(1)[0].(2)", [LayoutTransformProperty, TransformGroup.ChildrenProperty, ScaleTransform.ScaleYProperty]));
-
-        var wX = new DoubleAnimation(ActualWidth, ActualWidth * scale, TimeSpan.FromSeconds(1))
-        {
-            EasingFunction = new CircleEase()
-        };
-        Storyboard.SetTarget(wX, this);
-        Storyboard.SetTargetProperty(wX, new PropertyPath(WidthProperty));
-        var wY = new DoubleAnimation(ActualHeight, ActualHeight * scale, TimeSpan.FromSeconds(1))
-        {
-            EasingFunction = new CircleEase()
-        };
-        Storyboard.SetTarget(wY, this);
-        Storyboard.SetTargetProperty(wY, new PropertyPath(HeightProperty));
-        sb.Children.Add(daX);
-        sb.Children.Add(daY);
-        sb.Children.Add(wX);
-        sb.Children.Add(wY);
-        sb.Begin(this);
+            await CoreNavigate(info);
+        }
     }
 
-    private void BeginRotateEffect()
+    private void NavigationView_OnBackRequested(object? sender, NavigationViewBackRequestedEventArgs e)
     {
-        var sb = new Storyboard();
-        var daX = new DoubleAnimation(0, Random.Shared.Next(0, 3600) / 10.0, TimeSpan.FromSeconds(1))
-        {
-            EasingFunction = new CircleEase()
-        };
-        Storyboard.SetTarget(daX, RootGrid);
-        Storyboard.SetTargetProperty(daX, new PropertyPath("(0).(1)[2].(2)", [LayoutTransformProperty, TransformGroup.ChildrenProperty, RotateTransform.AngleProperty]));
-        
-        sb.Children.Add(daX);
-        sb.Begin(this);
-    }
-
-    private void BeginFlipEffect()
-    {
-        var sb = new Storyboard();
-        var daX = new DoubleAnimation(1, -1, TimeSpan.FromSeconds(1))
-        {
-            EasingFunction = new CircleEase()
-        };
-        Storyboard.SetTarget(daX, RootGrid);
-        Storyboard.SetTargetProperty(daX, new PropertyPath("(0).(1)[0].(2)", [LayoutTransformProperty, TransformGroup.ChildrenProperty, ScaleTransform.ScaleXProperty]));
-
-        sb.Children.Add(daX);
-        sb.Begin(this);
+        NavigationFrame.GoBack();
     }
 }
-#endif

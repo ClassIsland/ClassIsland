@@ -1,6 +1,7 @@
-#if false
+using System.Windows.Input;
 using Avalonia.Controls;
-using DialogHostAvalonia;
+using Avalonia.Labs.Input;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Abstractions.Controls;
 
@@ -17,17 +18,17 @@ public abstract class SettingsPageBase : UserControl
     /// <summary>
     /// 打开设置窗口抽屉命令
     /// </summary>
-    public static readonly ICommand OpenDrawerCommand = new RoutedCommand();
+    public static readonly ICommand OpenDrawerCommand = new RoutedCommand(nameof(OpenDrawerCommand));
 
     /// <summary>
     /// 关闭设置窗口抽屉命令
     /// </summary>
-    public static readonly ICommand CloseDrawerCommand = new RoutedCommand();
+    public static readonly ICommand CloseDrawerCommand = new RoutedCommand(nameof(CloseDrawerCommand));
 
     /// <summary>
     /// 请求重启应用命令
     /// </summary>
-    public static readonly ICommand RequestRestartCommand = new RoutedCommand();
+    public static readonly ICommand RequestRestartCommand = new RoutedCommand(nameof(RequestRestartCommand));
 
     /// <summary>
     /// 在设置窗口打开指定的抽屉。
@@ -71,4 +72,3 @@ public abstract class SettingsPageBase : UserControl
         RequestRestartCommand.Execute(null);
     }
 }
-#endif
