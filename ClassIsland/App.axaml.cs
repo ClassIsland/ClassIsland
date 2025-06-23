@@ -75,6 +75,7 @@ using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Helpers;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
+using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Views.SettingPages;
 using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
@@ -544,6 +545,8 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IAnnouncementService, AnnouncementService>();
                 services.AddSingleton<ILocationService, LocationService>();
                 services.AddSingleton<IXamlThemeService, XamlThemeService>();
+                // ViewModels
+                services.AddTransient<GeneralSettingsViewModel>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 // services.AddTransient<SplashWindowBase, SplashWindow>();

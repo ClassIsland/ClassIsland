@@ -23,12 +23,12 @@
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
 
         <ci:RulesetControl x:Key="RulesetControl"
-                           Ruleset="{Binding SettingsService.Settings.HiedRules, Mode=TwoWay}"/>
+                           Ruleset="{Binding ViewModel.SettingsService.Settings.HiedRules, Mode=TwoWay}"/>
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Classes="settings-container">
-            <controls3:InfoBar IsOpen="{Binding SettingsService.Settings.ShowSellingAnnouncement, Mode=TwoWay}"
-                               IsVisible="{Binding SettingsService.Settings.ShowSellingAnnouncement}"
+            <controls3:InfoBar IsOpen="{Binding ViewModel.SettingsService.Settings.ShowSellingAnnouncement, Mode=TwoWay}"
+                               IsVisible="{Binding ViewModel.SettingsService.Settings.ShowSellingAnnouncement}"
                                Severity="Warning">
                 <TextBlock TextWrapping="Wrap"
                            VerticalAlignment="Center"
@@ -40,7 +40,7 @@
             </controls3:InfoBar>
 
             <!-- Announcements -->
-            <ItemsControl ItemsSource="{Binding AnnouncementService.Announcements, Mode=OneWay}"
+            <ItemsControl ItemsSource="{Binding ViewModel.AnnouncementService.Announcements, Mode=OneWay}"
                           Margin="0 0 0 8">
                 <ItemsControl.Styles>
                     <Style Selector="ItemsControl:empty">
@@ -61,7 +61,7 @@
                                         Description="在您的系统启动时自动运行本应用。"
                                         >
                 <controls3:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding SettingsService.Settings.IsAutoStartEnabled, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsAutoStartEnabled, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
             <!-- 注册 Url 协议 -->
@@ -70,7 +70,7 @@
                                         Description="允许第三方应用或网页通过 Url 协议 classisland:// 调用本应用的部分功能，详见帮助文档。"
                                         >
                 <controls3:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
             <!-- 学期开始时间 -->
@@ -79,7 +79,7 @@
                                         Description="此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。">
                 <controls3:SettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <CalendarDatePicker SelectedDate="{Binding SettingsService.Settings.SingleWeekStartTime}"
+                        <CalendarDatePicker SelectedDate="{Binding ViewModel.SettingsService.Settings.SingleWeekStartTime}"
                                     Width="120"/>
                         <Button Theme="{StaticResource TransparentButton}"
                                 Classes="accent"
@@ -104,16 +104,16 @@
                                         Description="将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。">
                 <controls3:SettingsExpanderItem>
                     <TabControl HorizontalContentAlignment="Left"
-                                SelectedIndex="{Binding SettingsService.Settings.HideMode}"
+                                SelectedIndex="{Binding ViewModel.SettingsService.Settings.HideMode}"
                                 Classes="compact">
                         <TabItem Header="基础模式">
                             <StackPanel Margin="6 6 0 0" Spacing="2">
                                 <CheckBox Content="上课时"
-                                          IsChecked="{Binding SettingsService.Settings.HideOnClass}"/>
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnClass}"/>
                                 <CheckBox Content="前台是最大化窗口时"
-                                          IsChecked="{Binding SettingsService.Settings.HideOnMaxWindow}" />
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnMaxWindow}" />
                                 <CheckBox Content="前台是全屏窗口时"
-                                          IsChecked="{Binding SettingsService.Settings.HideOnFullscreen}" />
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnFullscreen}" />
                             </StackPanel>
                         </TabItem>
                         <TabItem Header="高级模式">
@@ -135,7 +135,7 @@
                                         Description="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。">
                 <controls3:SettingsExpander.Footer>
                     <Grid>
-                        <ComboBox SelectedIndex="{Binding SettingsService.Settings.TaskBarIconClickBehavior}"
+                        <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.TaskBarIconClickBehavior}"
                                   HorizontalContentAlignment="Left">
                             <ComboBoxItem HorizontalContentAlignment="Left">
                                 <controls1:IconText Glyph="&#xE075;" Text="打开主菜单" />
@@ -160,13 +160,14 @@
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE4C8;}" 
                                         Header="使用精确时间"
                                         Description="启用后，应用将使用从指定服务器同步的精确时间，而不是使用系统时间。"
-                                        Classes="switcher"
-                                        IsExpanded="{Binding $parent[local:GeneralSettingsPage].SettingsService.Settings.IsExactTimeEnabled, Mode=OneWay}"
-                                        Footer="{Binding $parent[local:GeneralSettingsPage].SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}">
+                                        IsExpanded="{Binding $parent[local:GeneralSettingsPage].ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=OneWay}">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding $parent[local:GeneralSettingsPage].ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
                 <controls3:SettingsExpanderItem Content="时间服务器">
                     <controls3:SettingsExpanderItem.Footer>
                         <TextBox VerticalAlignment="Stretch"
-                              Text="{Binding SettingsService.Settings.ExactTimeServer}"
+                              Text="{Binding ViewModel.SettingsService.Settings.ExactTimeServer}"
                               HorizontalContentAlignment="Left"
                               
                               Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
@@ -182,7 +183,7 @@
                             <controls1:IconText Glyph="&#xE0B5;" Text="立即同步"/>
                         </Button>
                     </controls3:SettingsExpanderItem.Footer>
-                    <TextBlock Margin="0 6 0 0" Text="{Binding ExactTimeService.SyncStatusMessage}"
+                    <TextBlock Margin="0 6 0 0" Text="{Binding ViewModel.ExactTimeService.SyncStatusMessage}"
                                TextWrapping="Wrap"/>
                 </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
@@ -197,7 +198,7 @@
                         <controls3:NumberBox VerticalAlignment="Center"
                                              MinWidth="147"
                                              SpinButtonPlacementMode="Inline"
-                                             Value="{Binding SettingsService.Settings.TimeOffsetSeconds}" />
+                                             Value="{Binding ViewModel.SettingsService.Settings.TimeOffsetSeconds}" />
                     </ci:Field>
                 </controls3:SettingsExpander.Footer>
                 <controls3:SettingsExpanderItem Content="自动时间偏移"
@@ -208,13 +209,13 @@
                         <DockPanel Width="150">
                             <ToggleSwitch DockPanel.Dock="Right"
                                           Margin="8 0 0 0"
-                                          IsChecked="{Binding SettingsService.Settings.IsTimeAutoAdjustEnabled}"/>
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"/>
                             <ci:Field Suffix="秒">
                                 <controls3:NumberBox
                                     MinWidth="147"
                                     SpinButtonPlacementMode="Inline"
-                                    IsEnabled="{Binding SettingsService.Settings.IsTimeAutoAdjustEnabled}"
-                                    Value="{Binding SettingsService.Settings.TimeAutoAdjustSeconds}"/>
+                                    IsEnabled="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"
+                                    Value="{Binding ViewModel.SettingsService.Settings.TimeAutoAdjustSeconds}"/>
                             </ci:Field>
                         </DockPanel>
                     </controls3:SettingsExpanderItem.Footer>
@@ -232,7 +233,7 @@
                                         Description="启用后，ClassIsland 将自动禁用导致应用崩溃的插件，以避免异常插件进一步影响后续使用。"
                                         >
                 <controls3:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding SettingsService.Settings.AutoDisableCorruptPlugins, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AutoDisableCorruptPlugins, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
             <!-- 禁用过渡动画 -->
@@ -241,7 +242,7 @@
                                         Description="此选项将禁用部分控件的过渡动画，以提升性能和操作效率。"
                                         >
                 <controls3:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding SettingsService.Settings.IsTransientDisabled, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTransientDisabled, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
             <!-- 禁用动画等待 -->
@@ -250,7 +251,7 @@
                                         Description="默认情况下 ClassIsland 在进行阻塞 UI 线程的操作时，会确保动画播放完成。启用此选项后将不会等待动画播放完成，可以一定程度上地提升加载速度。"
                                         >
                 <controls3:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding SettingsService.Settings.IsWaitForTransientDisabled, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsWaitForTransientDisabled, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
             <!-- 教学安全模式 -->
@@ -261,10 +262,10 @@
                     <DockPanel>
                         <ToggleSwitch DockPanel.Dock="Right"
                                       Margin="8 0 0 0"
-                                      IsChecked="{Binding SettingsService.Settings.IsCriticalSafeMode}"/>
+                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"/>
                         <ComboBox Width="120"
-                                  IsVisible="{Binding SettingsService.Settings.IsCriticalSafeMode}"
-                                  SelectedIndex="{Binding SettingsService.Settings.CriticalSafeModeMethod}">
+                                  IsVisible="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"
+                                  SelectedIndex="{Binding ViewModel.SettingsService.Settings.CriticalSafeModeMethod}">
                             <ComboBoxItem>退出应用</ComboBoxItem>
                             <ComboBoxItem>静默重启应用</ComboBoxItem>
                             <ComboBoxItem>显示通知</ComboBoxItem>

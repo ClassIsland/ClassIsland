@@ -41,7 +41,7 @@
     
     <!-- DataTemplates -->
     <DataTemplate DataType="system:Boolean" x:Key="SwitcherTemplate">
-        <ToggleSwitch IsChecked="{Binding}"
+        <ToggleSwitch IsChecked="{Binding Mode=TwoWay}"
                       OnContent="开"
                       OffContent="关"/>
     </DataTemplate>

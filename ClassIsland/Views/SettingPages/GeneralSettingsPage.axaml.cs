@@ -23,28 +23,12 @@ namespace ClassIsland.Views.SettingPages;
 [SettingsPageInfo("general", "基本", SettingsPageCategory.Internal)]
 public partial class GeneralSettingsPage : SettingsPageBase
 {
-    public SettingsService SettingsService { get; }
+    public GeneralSettingsViewModel ViewModel { get; } = IAppHost.GetService<GeneralSettingsViewModel>();
 
-    public IManagementService ManagementService { get; }
-
-    public IExactTimeService ExactTimeService { get; }
-
-    public MiniInfoProviderHostService MiniInfoProviderHostService { get; }
-    public ISplashService SplashService { get; }
-    public IAnnouncementService AnnouncementService { get; }
-
-    public GeneralSettingsViewModel ViewModel { get; } = new();
-
-    public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService, IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService, ISplashService splashService, IAnnouncementService announcementService)
+    public GeneralSettingsPage()
     {
         InitializeComponent();
         DataContext = this;
-        SettingsService = settingsService;
-        ManagementService = managementService;
-        ExactTimeService = exactTimeService;
-        MiniInfoProviderHostService = miniInfoProviderHostService;
-        SplashService = splashService;
-        AnnouncementService = announcementService;
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -57,12 +41,12 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void ButtonSyncTimeNow_OnClick(object sender, RoutedEventArgs e)
     {
-        _ = Task.Run(ExactTimeService.Sync);
+        _ = Task.Run(ViewModel.ExactTimeService.Sync);
     }
 
     private void ButtonCloseMigrationTip_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsService.Settings.ShowComponentsMigrateTip = false;
+        ViewModel.SettingsService.Settings.ShowComponentsMigrateTip = false;
     }
 
     private void ButtonWeekOffsetSettingsButtons_OnClick(object sender, RoutedEventArgs e)
@@ -77,26 +61,17 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void ButtonCloseSellingAnnouncementBanner_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsService.Settings.ShowSellingAnnouncement = false;
-    }
-
-    private async void ButtonRefreshSplashPreview_OnClick(object sender, RoutedEventArgs e)
-    {
-        SplashService.ResetSplashText();
-        var splashWindow = IAppHost.GetService<SplashWindowBase>();
-        splashWindow.Show();
-        await Task.Delay(TimeSpan.FromSeconds(3));
-        SplashService.EndSplash();
+        ViewModel.SettingsService.Settings.ShowSellingAnnouncement = false;
     }
 
     private void GeneralSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        ViewModel.SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
     private void GeneralSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
     {
-        SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        ViewModel.SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
     }
 
     private void ButtonAdjustTime_OnClick(object sender, RoutedEventArgs e)
