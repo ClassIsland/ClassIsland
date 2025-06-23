@@ -28,7 +28,7 @@
     },
     "ClassIsland (启动指定 Uri)": {
       "commandName": "Project",
-      "commandLineArgs": "--uri classisland://app/settings/automation"
+      "commandLineArgs": "--uri classisland://app/profile/"
     },
     "ClassIsland (禁用集控) verbose": {
       "commandName": "Project",

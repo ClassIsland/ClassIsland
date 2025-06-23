@@ -33,11 +33,6 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
     /// </summary>
     public void StopMainTimer();
 
-    /// <summary>
-    /// 刷新多周轮换周数。
-    /// </summary>
-    public void RefreshMultiWeekRotation();
-
     #endregion
 
     #region LessonsProperties

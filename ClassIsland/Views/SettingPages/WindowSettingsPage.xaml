@@ -95,13 +95,15 @@
                                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                                    Padding="6" Margin="0 0 4 0"
                                                    materialDesign:HintAssist.Hint="向右偏移"
-                                                   Text="{Binding SettingsService.Settings.WindowDockingOffsetX, Converter={StaticResource IntToStringConverter}}" />
+                                                   Precision="0"
+                                                   Text="{Binding SettingsService.Settings.WindowDockingOffsetX, Converter={StaticResource IntToStringConverter}, UpdateSourceTrigger=PropertyChanged}" />
                         <!-- 向下偏移 -->
                         <ci:NumbericTextBox Grid.Column="1"
                                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                                    Padding="6" Margin="4 0 0 0"
                                                    materialDesign:HintAssist.Hint="向下偏移"
-                                                   Text="{Binding SettingsService.Settings.WindowDockingOffsetY, Converter={StaticResource IntToStringConverter}}" />
+                                                   Precision="0"
+                                                   Text="{Binding SettingsService.Settings.WindowDockingOffsetY, Converter={StaticResource IntToStringConverter}, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                     <!-- 显示器 -->
                     <ComboBox Margin="0 12 0 0"

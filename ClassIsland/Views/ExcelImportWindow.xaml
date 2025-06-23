@@ -878,7 +878,7 @@
                                            TextWrapping="Wrap" />
                                 <StackPanel
                                     Visibility="{Binding ViewModel.CurrentClassPlan.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <controls1:TimeRuleEditControl TimeRule="{Binding ViewModel.CurrentClassPlan.TimeRule, Mode=OneWay}"/>
+                                    <controls:TimeRuleEditControl TimeRule="{Binding ViewModel.CurrentClassPlan.TimeRule, Mode=OneWay}"/>
                                 </StackPanel>
                                 <controls:NavigationButtonsControl NavigationNextCommandParameter="AllClassPlansView"
                                                                    IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}" />
