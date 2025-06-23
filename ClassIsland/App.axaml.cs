@@ -547,6 +547,8 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IXamlThemeService, XamlThemeService>();
                 // ViewModels
                 services.AddTransient<GeneralSettingsViewModel>();
+                services.AddTransient<AboutSettingsViewModel>();
+                services.AddTransient<AppearanceSettingsViewModel>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 // services.AddTransient<SplashWindowBase, SplashWindow>();
@@ -566,7 +568,7 @@ public partial class App : AppBase, IAppHost
                 // // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 // services.AddSettingsPage<ComponentsSettingsPage>();
-                // services.AddSettingsPage<AppearanceSettingsPage>();
+                services.AddSettingsPage<AppearanceSettingsPage>();
                 // services.AddSettingsPage<NotificationSettingsPage>();
                 // services.AddSettingsPage<WindowSettingsPage>();
                 // services.AddSettingsPage<WeatherSettingsPage>();
@@ -579,7 +581,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<TestSettingsPage>();
                 // services.AddSettingsPage<DebugPage>();
                 // services.AddSettingsPage<DebugBrushesSettingsPage>();
-                // services.AddSettingsPage<AboutSettingsPage>();
+                services.AddSettingsPage<AboutSettingsPage>();
                 // services.AddSettingsPage<ManagementSettingsPage>();
                 // services.AddSettingsPage<ManagementCredentialsSettingsPage>();
                 // services.AddSettingsPage<ManagementPolicySettingsPage>();

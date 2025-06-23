@@ -12,9 +12,14 @@ public class FluentIcon : FontIcon
         FontFamily = AppBase.FluentIconsFontFamily;
     }
     
-    public FluentIcon(string glyph) : base()
+    public FluentIcon(string glyph) : this()
     {
         Glyph = glyph;
+    }
+    
+    public FluentIcon(string glyph, double size) : this(glyph)
+    {
+        Width = Height = size;
     }
     
     public object ProvideValue() => this;

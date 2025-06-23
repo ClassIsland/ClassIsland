@@ -1,17 +1,12 @@
-﻿#if false
-using System.Collections.Generic;
-using System.Windows.Media;
+﻿using System.Collections.Generic;
 using Avalonia.Media;
 using ClassIsland.Core;
+using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class AppearanceSettingsViewModel : ObservableRecipient
+public class AppearanceSettingsViewModel(SettingsService settingsService) : ObservableRecipient
 {
-    public List<FontFamily> FontFamilies { get; } =
-        AppBase.Current.IsAssetsTrimmed() ? [..Fonts] 
-            :
-            [..Fonts.SystemFontFamilies, new FontFamily("/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC")];
+    public SettingsService SettingsService { get; } = settingsService;
 }
-#endif

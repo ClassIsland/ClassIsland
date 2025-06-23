@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class AboutSettingsViewModel : ObservableRecipient
+public class AboutSettingsViewModel(IManagementService managementService, SettingsService settingsService, DiagnosticService diagnosticService) : ObservableRecipient
 {
+    public IManagementService ManagementService { get; } = managementService;
+    public SettingsService SettingsService { get; } = settingsService;
+    public DiagnosticService DiagnosticService { get; } = diagnosticService;
     private int _appIconClickCount = 0;
     private string _diagnosticInfo = "";
     private bool _isRefreshingContributors;

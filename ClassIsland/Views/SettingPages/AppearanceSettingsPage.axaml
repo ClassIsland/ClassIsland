@@ -1,0 +1,518 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AppearanceSettingsPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+      xmlns:controls2="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance local:AppearanceSettingsPage}">
+
+    <controls:SettingsPageBase.Resources>
+        <converters:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
+    </controls:SettingsPageBase.Resources>
+    <ScrollViewer>
+        <StackPanel Classes="settings-container">
+            <controls1:IconText Glyph="&#xEF27;" Text="基本" Margin="0 0 0 4" />
+            <!-- 界面缩放 -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF4D1;}"
+                                        Header="界面缩放"
+                                        Description="主界面的缩放大小。">
+                <controls2:SettingsExpander.Footer>
+                    <Slider Width="180" Minimum="0.75" Maximum="2.5"
+                            VerticalAlignment="Center"
+                            Value="{Binding ViewModel.SettingsService.Settings.Scale}"
+                            TickFrequency="0.05"
+                            TickPlacement="None"
+                            IsSnapToTickEnabled="True"/>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            
+            <!--背景颜色-->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE523;}"
+                                        Header="背景颜色"
+                                        Description="主界面背景颜色，禁用时将根据应用主题自动选择颜色。">
+                <controls2:SettingsExpander.Footer>
+                    <StackPanel Orientation="Horizontal">
+                    
+                        <controls2:ColorPickerButton
+                            VerticalAlignment="Center"
+                            Margin="0 0 6 0"
+                            Color="{Binding ViewModel.SettingsService.Settings.BackgroundColor, Mode=TwoWay}"
+                            IsVisible="{Binding ViewModel.SettingsService.Settings.IsCustomBackgroundColorEnabled}"/>
+                        <ToggleSwitch VerticalAlignment="Center"
+                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsCustomBackgroundColorEnabled}" />
+                    </StackPanel>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            
+            <!-- 背景不透明度 -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF37D;}"
+                                        Header="背景不透明度"
+                                        Description="主界面背景的不透明度。">
+                <controls2:SettingsExpander.Footer>
+                    <Slider Width="180" Minimum="0" Maximum="1"
+                            Value="{Binding ViewModel.SettingsService.Settings.Opacity}"
+                            TickFrequency="0.05"
+                            IsSnapToTickEnabled="True"/>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            
+            <!-- 圆角半径 -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF031;}"
+                                        Header="圆角半径"
+                                        Description="主界面圆角半径，调至最大数值时左右边缘为半圆。">
+                <controls2:SettingsExpander.Footer>
+                    <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
+                            Value="{Binding ViewModel.SettingsService.Settings.RadiusX}"
+                            TickFrequency="0.5"
+                            IsSnapToTickEnabled="True"
+                            VerticalAlignment="Center"/>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            
+            <!-- 行间隔 -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE6EF;}"
+                                        Header="行间隔"
+                                        Description="主界面行间间隔。">
+                <controls2:SettingsExpander.Footer>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Width="130" Minimum="0" Maximum="150"
+                                Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
+                                TickFrequency="5"
+                                IsSnapToTickEnabled="True"/>
+                        <TextBox Text="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={StaticResource IntToStringConverter}}"
+                                 Width="50"/>
+                    </StackPanel>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            
+            <Separator Margin="0 12 0 4" />
+            <controls1:IconText Glyph="&#xE51E;" Text="主题" Margin="0 0 0 4" />
+            <!-- 应用主题 -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE5CB;}"
+                                        Header="应用主题"
+                                        Description="控制应用的明暗主题。">
+                <controls2:SettingsExpander.Footer>
+                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}"
+                              HorizontalContentAlignment="Left">
+                        <controls1:IconText Glyph="&#xE5CB;" Text="跟随系统" />
+                        <controls1:IconText Glyph="&#xF465;" Text="明亮" />
+                        <controls1:IconText Glyph="&#xF44B;" Text="黑暗" />
+                    </ComboBox>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            
+            <!-- 主题色来源 -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xEC50;}"
+                                        Header="主题色来源"
+                                        Description="控制应用选取主题色的途径。">
+                <controls2:SettingsExpander.Footer>
+                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                              SelectionChanged="ButtonUpdateWallpaper_OnClick"
+                              HorizontalContentAlignment="Left"
+                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.ColorSource}">
+                        <controls1:IconText Glyph="&#xED39;" Text="自定义" />
+                        <controls1:IconText Glyph="&#xF42D;" Text="系统壁纸" />
+                        <controls1:IconText Glyph="&#xEA1D;" Text="系统" />
+                        <controls1:IconText Glyph="&#xEEED;" Text="屏幕主题色" />
+                    </ComboBox>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            
+            <StackPanel>
+                <!-- todo: 仅在使用自定义主题色时显示 -->
+                <!-- 第一主题色 -->
+                <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE51E;}"
+                                            Header="强调色"
+                                            Description="应用显示强调元素时所使用的颜色。">
+                    <controls2:SettingsExpander.Footer>
+                        <controls2:ColorPickerButton
+                            Color="{Binding ViewModel.SettingsService.Settings.PrimaryColor, Mode=TwoWay}" />
+                    </controls2:SettingsExpander.Footer>
+                </controls2:SettingsExpander>
+                
+            </StackPanel>
+            <!-- 壁纸主题色 -->
+            <!-- <StackPanel> -->
+            <!--     ~1~ todo: 仅在使用自壁纸主题色时显示 @1@ -->
+            <!--     <Separator Margin="0 16 0 8" /> -->
+            <!--     <controls1:IconText Kind="Wallpaper" Text="壁纸主题色" Margin="0 0 0 8" /> -->
+            <!--     ~1~ 壁纸主题色 @1@ -->
+            <!--     <materialDesign:Card> -->
+            <!--         <Grid> -->
+            <!--             <StackPanel Margin="12"> -->
+            <!--                 <controls1:IconText Kind="PaletteOutline" Text="选择主题色" /> -->
+            <!--                 <Grid VerticalAlignment="Bottom" -->
+            <!--                                               IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}"> -->
+            <!--                     <Grid.ColumnDefinitions> -->
+            <!--                         <ColumnDefinition Width="Auto" /> -->
+            <!--                         <ColumnDefinition /> -->
+            <!--                     </Grid.ColumnDefinitions> -->
+            <!--                     <WrapPanel HorizontalAlignment="Right" -->
+            <!--                                                        VerticalAlignment="Center" -->
+            <!--                                                        Grid.Column="1"> -->
+            <!--                         ~1~ 刷新 @1@ -->
+            <!--                         <Button Style="{StaticResource TransparentButton}" -->
+            <!--                                                         Click="ButtonUpdateWallpaper_OnClick" -->
+            <!--                                                         VerticalAlignment="Center" -->
+            <!--                                                         Margin="2 0"> -->
+            <!--                             <controls1:IconText Kind="Refresh" Text="刷新" /> -->
+            <!--                         </Button> -->
+            <!--                         ~1~ 预览提取结果 @1@ -->
+            <!--                         <Button Style="{StaticResource TransparentButton}" -->
+            <!--                                                         Click="ButtonPreviewWallpaper_OnClick" -->
+            <!--                                                         VerticalAlignment="Center" -->
+            <!--                                                         Margin="2 0"> -->
+            <!--                             <controls1:IconText Kind="EyeOutline" Text="预览提取结果" /> -->
+            <!--                         </Button> -->
+            <!--                     </WrapPanel> -->
+            <!--                     ~1~ 颜色选择 @1@ -->
+            <!--                     <ListBox Grid.Column="0" -->
+            <!--                              ItemsSource="{Binding ViewModel.SettingsService.Settings.WallpaperColorPlatte, Mode=OneWay}" -->
+            <!--                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.SelectedPlatteIndex}" -->
+            <!--                              materialDesign:ScrollViewerAssist.BubbleVerticalScroll="True" -->
+            <!--                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel" -->
+            <!--                              HorizontalAlignment="Left"> -->
+            <!--                         <ListBox.ItemsPanel> -->
+            <!--                             <ItemsPanelTemplate> -->
+            <!--                                 <WrapPanel IsItemsHost="True" /> -->
+            <!--                             </ItemsPanelTemplate> -->
+            <!--                         </ListBox.ItemsPanel> -->
+            <!--                         <ListBox.ItemTemplate> -->
+            <!--                             <DataTemplate> -->
+            <!--                                 <materialDesign:ColorZone -->
+            <!--                                                             Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}" -->
+            <!--                                                             Width="32" Height="32" -->
+            <!--                                                             Mode="Custom"> -->
+            <!--                                     <materialDesign:PackIcon Kind="Check" -->
+            <!--                                                                 VerticalAlignment="Bottom" -->
+            <!--                                                                 HorizontalAlignment="Right" -->
+            <!--                                                                 Width="14" Height="14" -->
+            <!--                                                                 Background="White" -->
+            <!--                                                                 Foreground="Black" -->
+            <!--                                                                 Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}" /> -->
+            <!--                                 </materialDesign:ColorZone> -->
+            <!--                             </DataTemplate> -->
+            <!--                         </ListBox.ItemTemplate> -->
+            <!--                     </ListBox> -->
+            <!--                 </Grid> -->
+            <!--             </StackPanel> -->
+            <!--             <ProgressBar -->
+            <!--                                         Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" -->
+            <!--                                         IsIndeterminate="True" -->
+            <!--                                         VerticalAlignment="Top" /> -->
+            <!--         </Grid> -->
+            <!--     </materialDesign:Card> -->
+            <!--     ~1~ 启用自动提取主题色 @1@ -->
+            <!--     <materialDesign:Card Margin="0 6 0 6"> -->
+            <!--         <Expander Background="Transparent" -->
+            <!--                                           IsExpanded="{Binding ViewModel.SettingsService.Settings.IsWallpaperAutoUpdateEnabled, Mode=OneWay}" -->
+            <!--                                           TextBlock.Foreground="{DynamicResource MaterialDesignBody}"> -->
+            <!--             <Expander.Header> -->
+            <!--                 <controls1:SettingsControl IconGlyph="RefreshAuto" -->
+            <!--                                                                   Foreground="{DynamicResource MaterialDesignBody}" -->
+            <!--                                                                   Header="启用自动提取主题色" -->
+            <!--                                                                   Description="若启用，将会在每分钟刷新一次壁纸主题色，适用于会随时间大幅变化主题色的动态壁纸。" -->
+            <!--                                                                   IsOn="{Binding ViewModel.SettingsService.Settings.IsWallpaperAutoUpdateEnabled, Mode=TwoWay}" -->
+            <!--                                                                   Margin="-12 0" /> -->
+            <!--             </Expander.Header> -->
+            <!--             <Grid Margin="36 0 48 12" -->
+            <!--                                           IsEnabled="{Binding ViewModel.SettingsService.Settings.IsWallpaperAutoUpdateEnabled, Mode=OneWay}"> -->
+            <!--                 ~1~ 自动提取主题色间隔 @1@ -->
+            <!--                 <controls1:SettingsControl IconGlyph="ClockOutline" -->
+            <!--                                                                   Header="自动提取主题色间隔" -->
+            <!--                                                                   Description="自动从壁纸提取主题色时间隔的时间，建议根据动态壁纸更新速度按需设置，不宜低于10秒。"> -->
+            <!--                     <controls1:SettingsControl.Switcher> -->
+            <!--                         <Grid> -->
+            <!--                             <controls1:NumbericTextBox MaxValue="36000" MinValue="0" -->
+            <!--                                                        Width="150" -->
+            <!--                                                        materialDesign:TextFieldAssist.SuffixText="秒" -->
+            <!--                                                        Foreground="{DynamicResource MaterialDesignBody}" -->
+            <!--                                                        Style="{StaticResource MaterialDesignTextBox}" -->
+            <!--                                                        Text="{Binding ViewModel.SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" /> -->
+            <!--                         </Grid> -->
+            <!--                     </controls1:SettingsControl.Switcher> -->
+            <!--                 </controls1:SettingsControl> -->
+            <!--             </Grid> -->
+            <!--         </Expander> -->
+            <!--     </materialDesign:Card> -->
+            <!-- -->
+            <!--     ~1~ 兼容模式 @1@ -->
+            <!--     <controls1:SettingsCard IconGlyph="CogOutline" Header="启用兼容模式" -->
+            <!--                                                    Description="若启用，将从注册表提取壁纸，而非桌面句柄。不兼容动态壁纸。可能会解决一些与壁纸提取相关的玄学问题。" -->
+            <!--                                                    IsOn="{Binding ViewModel.SettingsService.Settings.IsFallbackModeEnabled, Mode=TwoWay}" /> -->
+            <!-- -->
+            <!--     ~1~ 实验性取色算法 @1@ -->
+            <!--     <controls1:SettingsCard IconGlyph="FlaskOutline" Header="实验性取色算法" -->
+            <!--                             Description="启用后将使用实验性的取色算法进行取色，取色性能更好。" -->
+            <!--                             IsOn="{Binding ViewModel.SettingsService.Settings.UseExperimentColorPickingMethod, Mode=TwoWay}" /> -->
+            <!--     ~1~ 壁纸层窗口类名 @1@ -->
+            <!--     <controls1:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名" -->
+            <!--                                                    Visibility="{Binding ViewModel.SettingsService.Settings.IsFallbackModeEnabled, Mode=OneWay, Converter={StaticResource InverseBoolToVisConverter}}" -->
+            <!--                                                    Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。"> -->
+            <!--         <controls1:SettingsCard.Switcher> -->
+            <!--             <DockPanel Width="150"> -->
+            <!--                 <Button Style="{StaticResource TransparentButton}" -->
+            <!--                                                 Content="{materialDesign:PackIcon WindowMaximize}" -->
+            <!--                                                 ToolTip.Tip="浏览…" -->
+            <!--                                                 DockPanel.Dock="Right" -->
+            <!--                                                 Click="ButtonBrowseWindows_OnClick" /> -->
+            <!--                 <TextBox Foreground="{DynamicResource MaterialDesignBody}" -->
+            <!--                                                  Text="{Binding ViewModel.SettingsService.Settings.WallpaperClassName}" /> -->
+            <!--             </DockPanel> -->
+            <!--         </controls1:SettingsCard.Switcher> -->
+            <!--     </controls1:SettingsCard> -->
+            <!--     ~1~ 取色亮度波峰 @1@ -->
+            <!--     <controls1:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰" -->
+            <!--                             Visibility="{Binding ViewModel.SettingsService.Settings.UseExperimentColorPickingMethod, Converter={StaticResource InverseBoolToVisConverter}}" -->
+            <!--                             Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）"> -->
+            <!--         <controls1:SettingsCard.Switcher> -->
+            <!--             <Grid> -->
+            <!--                 <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="150" -->
+            <!--                                            Foreground="{DynamicResource MaterialDesignBody}" -->
+            <!--                                            Style="{StaticResource MaterialDesignTextBox}" -->
+            <!--                                            Text="{Binding ViewModel.SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" /> -->
+            <!--             </Grid> -->
+            <!--         </controls1:SettingsCard.Switcher> -->
+            <!--     </controls1:SettingsCard> -->
+            <!-- </StackPanel> -->
+            <!-- 屏幕主题色 -->
+            <!-- <StackPanel> -->
+            <!--     <StackPanel.Style> -->
+            <!--         <Style TargetType="StackPanel"> -->
+            <!--             <Style.Triggers> -->
+            <!--                 <DataTrigger Binding="{Binding ViewModel.SettingsService.Settings.ColorSource}" Value="3"> -->
+            <!--                     <Setter Property="Visibility" Value="Visible" /> -->
+            <!--                 </DataTrigger> -->
+            <!--             </Style.Triggers> -->
+            <!--             <Setter Property="Visibility" Value="Collapsed" /> -->
+            <!--         </Style> -->
+            <!--     </StackPanel.Style> -->
+            <!--     <Separator Margin="0 16 0 8" /> -->
+            <!--     <controls1:IconText Kind="PanoramaVariantOutline" Text="屏幕主题色" Margin="0 0 0 8" /> -->
+            <!--     <materialDesign:Card> -->
+            <!--         <Grid> -->
+            <!--             <ProgressBar Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" IsIndeterminate="True" VerticalAlignment="Top"/> -->
+            <!--             <StackPanel Margin="12"> -->
+            <!--                 <controls1:IconText Kind="PaletteOutline" Text="选择主题色" /> -->
+            <!--                 <Grid VerticalAlignment="Bottom" IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}"> -->
+            <!--                     <Grid.ColumnDefinitions> -->
+            <!--                         <ColumnDefinition Width="Auto"/> -->
+            <!--                         <ColumnDefinition/> -->
+            <!--                     </Grid.ColumnDefinitions> -->
+            <!--                     ~1~ 颜色选择 @1@ -->
+            <!--                     <ListBox Grid.Column="0" HorizontalAlignment="Left" materialDesign:ScrollViewerAssist.BubbleVerticalScroll="True" -->
+            <!--                              ItemsSource="{Binding ViewModel.SettingsService.Settings.WallpaperColorPlatte, Mode=OneWay}" -->
+            <!--                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.SelectedPlatteIndex}" -->
+            <!--                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel"> -->
+            <!--                         <ListBox.ItemsPanel> -->
+            <!--                             <ItemsPanelTemplate> -->
+            <!--                                 <WrapPanel IsItemsHost="True"/> -->
+            <!--                             </ItemsPanelTemplate> -->
+            <!--                         </ListBox.ItemsPanel> -->
+            <!--                         <ListBox.ItemTemplate> -->
+            <!--                             <DataTemplate> -->
+            <!--                                 <materialDesign:ColorZone Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}" Width="32" Height="32" Mode="Custom"> -->
+            <!--                                     <materialDesign:PackIcon Kind="Check" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="14" Height="14" Background="White" Foreground="Black" -->
+            <!--                                         Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}"/> -->
+            <!--                                 </materialDesign:ColorZone> -->
+            <!--                             </DataTemplate> -->
+            <!--                         </ListBox.ItemTemplate> -->
+            <!--                     </ListBox> -->
+            <!--                     <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1"> -->
+            <!--                         ~1~ 刷新 @1@ -->
+            <!--                         <Button Click="ButtonUpdateWallpaper_OnClick" Style="{StaticResource TransparentButton}" VerticalAlignment="Center" Margin="2 0"> -->
+            <!--                             <controls1:IconText Kind="Refresh" Text="刷新"/> -->
+            <!--                         </Button> -->
+            <!--                         ~1~ 预览提取结果 @1@ -->
+            <!--                         <Button Click="ButtonPreviewWallpaper_OnClick" Style="{StaticResource TransparentButton}" VerticalAlignment="Center" Margin="2 0"> -->
+            <!--                             <controls1:IconText Kind="EyeOutline" Text="预览提取结果"/> -->
+            <!--                         </Button> -->
+            <!--                     </WrapPanel> -->
+            <!--                 </Grid> -->
+            <!--             </StackPanel> -->
+            <!--         </Grid> -->
+            <!--     </materialDesign:Card> -->
+            <!--     ~1~ 自动提取主题色 @1@ -->
+            <!--     <controls1:SettingsCard Margin="0 6" IconGlyph="ClockOutline" Header="自动提取主题色间隔" Description="自动从屏幕上提取主题色时间隔的时间，建议设为10秒左右。"> -->
+            <!--         <controls1:SettingsCard.Switcher> -->
+            <!--             <Grid> -->
+            <!--                 <controls1:NumbericTextBox MaxValue="300" MinValue="0" Width="100" materialDesign:TextFieldAssist.SuffixText="秒" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}" -->
+            <!--                                            Text="{Binding ViewModel.SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/> -->
+            <!--             </Grid> -->
+            <!--         </controls1:SettingsCard.Switcher> -->
+            <!--     </controls1:SettingsCard> -->
+            <!--     ~1~ 取色亮度波峰 @1@ -->
+            <!--     <controls1:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰" Description="取色时为亮度更接近此值的颜色赋予更高的权重。（默认值：0.6）"> -->
+            <!--         <controls1:SettingsCard.Switcher> -->
+            <!--             <Grid> -->
+            <!--                 <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="100" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}" -->
+            <!--                                            Text="{Binding ViewModel.SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" /> -->
+            <!--             </Grid> -->
+            <!--         </controls1:SettingsCard.Switcher> -->
+            <!--     </controls1:SettingsCard> -->
+            <!-- </StackPanel> -->
+            <Separator Margin="0 16 0 8" />
+            <controls1:IconText Glyph="&#xF26F;" Text="字体" Margin="0 0 0 8" />
+            <!-- TODO: 自定义字体 -->
+            <!-- <controls1:SettingsCard IconGlyph="FormatFont" Header="自定义字体" -->
+            <!--                                                Description="自定义主界面显示课表的字体。"> -->
+            <!--     <controls1:SettingsCard.Switcher> -->
+            <!--         <Grid> -->
+            <!--             <ComboBox ItemsSource="{Binding ViewModel.FontFamilies}" -->
+            <!--                       Foreground="{DynamicResource MaterialDesignBody}" -->
+            <!--                       SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}"> -->
+            <!--                 <ComboBox.ItemTemplate> -->
+            <!--                     <DataTemplate> -->
+            <!--                         <TextBlock FontFamily="{Binding}" FontWeight="Normal" -->
+            <!--                                    ToolTip.Tip="{Binding Source}"> -->
+            <!--                             <TextBlock.Style> -->
+            <!--                                 <Style TargetType="TextBlock"> -->
+            <!--                                     <Style.Triggers> -->
+            <!--                                         <DataTrigger Binding="{Binding Source}" -->
+            <!--                                                      Value="/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC"> -->
+            <!--                                             <Setter Property="Text" -->
+            <!--                                                     Value="（默认）HarmonyOS Sans SC" /> -->
+            <!--                                         </DataTrigger> -->
+            <!--                                     </Style.Triggers> -->
+            <!--                                     <Setter Property="Text" Value="{Binding Source}" /> -->
+            <!--                                 </Style> -->
+            <!--                             </TextBlock.Style> -->
+            <!--                         </TextBlock> -->
+            <!--                     </DataTemplate> -->
+            <!--                 </ComboBox.ItemTemplate> -->
+            <!--             </ComboBox> -->
+            <!--         </Grid> -->
+            <!--     </controls1:SettingsCard.Switcher> -->
+            <!-- </controls1:SettingsCard> -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF26F;}"
+                                        Header="自定义字重"
+                                        Description="自定义主界面显示的字体的字重，需要对应字体支持。">
+                <controls2:SettingsExpander.Footer>
+                    <ComboBox
+                        SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
+                        Foreground="{DynamicResource MaterialDesignBody}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontWeight="{Binding}"
+                                           ToolTip.Tip="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <x:Static Member="FontWeight.Thin" />
+                        <!--<x:Static Member="FontWeights.UltraLight"/>-->
+                        <x:Static Member="FontWeight.ExtraLight" />
+                        <x:Static Member="FontWeight.Light" />
+                        <x:Static Member="FontWeight.Normal" />
+                        <!--<x:Static Member="FontWeights.Regular"/>-->
+                        <x:Static Member="FontWeight.Medium" />
+                        <!--<x:Static Member="FontWeights.DemiBold"/>-->
+                        <x:Static Member="FontWeight.SemiBold" />
+                        <x:Static Member="FontWeight.Bold" />
+                        <x:Static Member="FontWeight.ExtraBold" />
+                        <!--<x:Static Member="FontWeights.UltraBold"/>-->
+                        <x:Static Member="FontWeight.Black" />
+                        <!--<x:Static Member="FontWeights.Heavy"/>-->
+                        <x:Static Member="FontWeight.ExtraBlack" />
+                        <!--<x:Static Member="FontWeights.UltraBlack"/>-->
+                    </ComboBox>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            <!-- 字体大小 -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF273;}"
+                                        Header="字体大小"
+                                        Description="调整主界面上各类字体的大小。"
+                                        IsExpanded="True">
+                <controls2:SettingsExpander.Styles>
+                    <Style Selector="controls1|Field">
+                        <Setter Property="Width" Value="175"/>
+                        <Setter Property="Suffix" Value="px"/>
+                        <Style Selector="^ controls2|NumberBox">
+                            <Setter Property="SpinButtonPlacementMode" Value="Inline"/>
+                            <Setter Property="Minimum" Value="1"/>
+                            <Setter Property="Maximum" Value="40"/>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        </Style>
+                    </Style>
+                </controls2:SettingsExpander.Styles>
+                <controls2:SettingsExpanderItem Content="次级字体大小"
+                                                Description="时间点附加信息等">
+
+                    <controls2:SettingsExpanderItem.Footer>
+                        <controls1:Field>
+                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowSecondaryFontSize}"/>
+                        </controls1:Field>
+                    </controls2:SettingsExpanderItem.Footer>
+                </controls2:SettingsExpanderItem>
+                <controls2:SettingsExpanderItem Content="正文字体大小"
+                                                Description="主界面默认字体大小">
+
+                    <controls2:SettingsExpanderItem.Footer>
+                        <controls1:Field>
+                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowBodyFontSize}"/>
+                        </controls1:Field>
+                    </controls2:SettingsExpanderItem.Footer>
+                </controls2:SettingsExpanderItem>
+                <controls2:SettingsExpanderItem Content="强调字体大小"
+                                                Description="课程表、时钟、提醒标题、天气预报等内容">
+
+                    <controls2:SettingsExpanderItem.Footer>
+                        <controls1:Field>
+                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowEmphasizedFontSize}"/>
+                        </controls1:Field>
+                    </controls2:SettingsExpanderItem.Footer>
+                </controls2:SettingsExpanderItem>
+                <controls2:SettingsExpanderItem Content="大号字体大小"
+                                                Description="课程预报等内容">
+
+                    <controls2:SettingsExpanderItem.Footer>
+                        <controls1:Field>
+                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowLargeFontSize}"/>
+                        </controls1:Field>
+                    </controls2:SettingsExpanderItem.Footer>
+                </controls2:SettingsExpanderItem>
+            </controls2:SettingsExpander>
+            
+            <!-- 字体颜色 -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF22A;}"
+                                        Header="字体颜色"
+                                        Description="调整字体颜色，将覆盖主题默认值。">
+                <controls2:SettingsExpander.Footer>
+                    <StackPanel Orientation="Horizontal">
+                    
+                        <controls2:ColorPickerButton
+                            VerticalAlignment="Center"
+                            Margin="0 0 6 0"
+                            Color="{Binding ViewModel.SettingsService.Settings.CustomForegroundColor, Mode=TwoWay}"
+                            IsVisible="{Binding ViewModel.SettingsService.Settings.IsCustomForegroundColorEnabled}"/>
+                        <ToggleSwitch VerticalAlignment="Center"
+                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsCustomForegroundColorEnabled}" />
+                    </StackPanel>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            <!-- 字体预览 -->
+            <controls1:Field Label="字体预览">
+                <TextBox
+                    FontWeight="{Binding ViewModel.SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
+                    FontSize="17"
+                    Padding="8"
+                    IsReadOnly="False"
+                    AcceptsReturn="True"
+                    FontFamily="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Mode=OneWay}"
+                    Margin="0 4 0 0"
+                    TextAlignment="Center"
+                    xml:space="preserve">我是…终将升起的烈阳！
+语文 数学 英语 历史 物理 政治 化学 生物 地理
+the quick brown fox jumps over a lazy dog
+THE QUICK BROWN FOX JUMPS OVER A LAZY DOG
+8:00-12:00 1234567890 +-*/</TextBox>
+            </controls1:Field>
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

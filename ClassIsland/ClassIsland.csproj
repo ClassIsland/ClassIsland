@@ -131,6 +131,9 @@
         <ProjectReference Include="..\vendors\System.Device.Location\System.Device.Location.csproj" />
     </ItemGroup>
 	<ItemGroup>
+	  <Reference Include="AsyncImageLoader.Avalonia">
+	    <HintPath>D:\Programs\NugetPackages\asyncimageloader.avalonia\3.3.0\lib\netstandard2.1\AsyncImageLoader.Avalonia.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
     <Target Name="PrintConstants" AfterTargets="Build">
