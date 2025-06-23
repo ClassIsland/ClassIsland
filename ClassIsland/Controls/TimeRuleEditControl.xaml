@@ -7,16 +7,15 @@
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <StackPanel DataContext="{Binding TimeRule, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeRuleEditControl}}">
+    <StackPanel DataContext="{Binding ViewModel, RelativeSource={RelativeSource AncestorType=controls:TimeRuleEditControl}}">
         <Separator Margin="0 20 0 8" />
         <ci:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
-        <!--<TextBlock Text="{Binding}"/>-->
         <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
 
         <TextBlock Text="当今天是：" Margin="0 8 0 0" />
         <ci:NonScrollingListBox
             Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-            SelectedIndex="{Binding WeekDay}">
+            SelectedIndex="{Binding EditingTimeRule.WeekDay}">
             <ListBoxItem Content="周日" />
             <ListBoxItem Content="周一" />
             <ListBoxItem Content="周二" />
@@ -28,25 +27,29 @@
 
         <TextBlock Text="当本周是：" Margin="0 8 0 0" />
         <ci:NonScrollingListBox x:Name="DivListBox"
+            ItemsSource="{Binding WeekCountDivOptions}"
+            SelectedIndex="{Binding EditingTimeRule.WeekCountDiv}"
             Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"/>
 
         <StackPanel>
+            <TextBlock Text="每轮周数：" Margin="0 8 0 0" />
+            <ci:NonScrollingListBox x:Name="DivTotalListBox"
+                ItemsSource="{Binding WeekCountDivTotalOptions}"
+                SelectedIndex="{Binding EditingTimeRule.WeekCountDivTotal}"
+                Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"/>
             <StackPanel.Style>
                 <Style TargetType="StackPanel">
                     <Style.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding SettingsService.Settings.MultiWeekRotationMaxCycle, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeRuleEditControl}}" Value="2"/>
-                                <Condition Binding="{Binding TimeRule.WeekCountDivTotal, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeRuleEditControl}}" Value="2"/>
+                                <Condition Binding="{Binding ViewModel.Settings.MultiWeekRotationMaxCycle, RelativeSource={RelativeSource AncestorType=controls:TimeRuleEditControl}}" Value="2"/>
+                                <Condition Binding="{Binding ViewModel.TimeRule.WeekCountDivTotal, RelativeSource={RelativeSource AncestorType=controls:TimeRuleEditControl}}" Value="2"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </MultiDataTrigger>
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
-            <TextBlock Text="每轮周数：" Margin="0 8 0 0" />
-            <ci:NonScrollingListBox x:Name="DivTotalListBox"
-                Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"/>
         </StackPanel>
     </StackPanel>
 </UserControl>

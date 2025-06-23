@@ -593,6 +593,9 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
+        if (plan.TimeRule.WeekCountDivTotal > Settings.MultiWeekRotationMaxCycle)
+            return false;
+
         if (plan.TimeRule.WeekCountDiv == 0)
             return true;
 

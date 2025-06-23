@@ -7,7 +7,7 @@ namespace ClassIsland.Shared.Models.Profile;
 /// </summary>
 public class TimeRule : ObservableRecipient
 {
-    private int _weekDay = new();
+    private int _weekDay = 0;
     private int _weekCountDiv = 0;
     private int _weekCountDivTotal = 2;
 
@@ -19,7 +19,7 @@ public class TimeRule : ObservableRecipient
         get => _weekDay;
         set
         {
-            if (Equals(value, _weekDay)) return;
+            if (value == _weekDay) return;
             _weekDay = value;
             OnPropertyChanged();
         }
@@ -38,8 +38,7 @@ public class TimeRule : ObservableRecipient
         set
         {
             if (value == _weekCountDiv) return;
-            // _weekCountDiv = Math.Clamp(value, 0, WeekCountDivTotal);
-            _weekCountDiv = value > WeekCountDivTotal ? 0 : value;
+            _weekCountDiv = value;
             OnPropertyChanged();
         }
     }
@@ -53,7 +52,7 @@ public class TimeRule : ObservableRecipient
         set
         {
             if (value == _weekCountDivTotal) return;
-            _weekCountDivTotal = value < 2 ? 2 : value;
+            _weekCountDivTotal = value;
             OnPropertyChanged();
         }
     }

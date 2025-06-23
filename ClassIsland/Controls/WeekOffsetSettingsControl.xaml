@@ -19,7 +19,7 @@
                 <ci:IconText Kind="Check" Text="应用" />
             </Button>
             <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonClear_OnClick"
-                    ToolTip="使用学期开始日期重置所有多周轮换位置。">
+                    ToolTip="将多周轮换偏移重置为学期开始日期。">
                 <ci:IconText Kind="Refresh" Text="重置"/>
             </Button>
         </WrapPanel>
