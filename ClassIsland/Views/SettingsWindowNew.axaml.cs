@@ -80,7 +80,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private readonly Dictionary<string, SettingsPageBase?> _cachedPages = new();
 
-
     public SettingsWindowNew(IManagementService managementService, IHangService hangService,
         ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService,
         IComponentsService componentsService, IUriNavigationService uriNavigationService)
@@ -148,12 +147,12 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         
     }
 
-    public override async void EndInit()
+    public override async void Show()
     {
+        base.Show();
         var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
         ViewModel.IsRendered = true;
         await CoreNavigate(page);
-        base.EndInit();
         // await CoreNavigate(ViewModel.SelectedPageInfo);
     }
 

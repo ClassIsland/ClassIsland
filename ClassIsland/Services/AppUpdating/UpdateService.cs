@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Threading;
 #if IsMsix
@@ -318,6 +319,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task DownloadUpdateAsync()
     {
+        if (Design.IsDesignMode)
+        {
+            return;
+        }
         var transaction = SentrySdk.StartTransaction("Download Update", "appUpdating.download");
         var spanDeletePreviousFile = transaction.StartChild("deletePreviousFile");
         try

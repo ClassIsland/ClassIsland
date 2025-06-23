@@ -1,5 +1,6 @@
 ﻿using ClassIsland.Models;
 using System;
+using System.Collections.Generic;
 using System.CommandLine.NamingConventionBinder;
 using System.CommandLine;
 using System.Threading;
@@ -97,6 +98,11 @@ public static class Program
             .LogToHostSink()
             .StartWithClassicDesktopLifetime(args);
     }
+
+    // AppBuilder for designer
+    public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
+        .UsePlatformDetect()
+        .LogToHostSink();
     
     private static async Task ProcessUriNavigationAsync()
     {

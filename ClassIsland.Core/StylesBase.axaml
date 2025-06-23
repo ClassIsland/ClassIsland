@@ -16,19 +16,24 @@
             <!-- Add Controls for Previewer Here -->
         </Border>
     </Design.PreviewWith>
+    
+    <StyleInclude Source="/Controls/Field.axaml"/>
 
     <!-- Add Styles Here -->
     <Style Selector="StackPanel.settings-container">
-        <Setter Property="Margin" Value="12" />
-        <Setter Property="MaxWidth" Value="750" />
-        <Setter Property="Spacing" Value="6"/>
+        <Setter Property="Margin" Value="12 12 18 12" />
+        <Setter Property="MaxWidth" Value="960" />
+        <Setter Property="Spacing" Value="4"/>
     </Style>
     
-    <Style Selector="controls|FontIcon.fi">
+    <Style Selector="controls|FontIcon.fi, ci|FluentIcon">
         <Setter Property="FontFamily" Value="{StaticResource FluentIcons}"/>
     </Style>
     
-    <Style Selector="controls|SettingsExpander.switcher controls|SettingsExpanderItem.switcher">
+    <Style Selector="controls|SettingsExpander.switcher">
+        <Setter Property="FooterTemplate" Value="{StaticResource SwitcherTemplate}"/>
+    </Style>
+    <Style Selector="controls|SettingsExpanderItem.switcher">
         <Setter Property="FooterTemplate" Value="{StaticResource SwitcherTemplate}"/>
     </Style>
     
@@ -43,4 +48,20 @@
         </Style>
         <Setter Property="TransparencyLevelHint" Value="None"/>
     </Style>
+    
+    <Style Selector="ToggleSwitch">
+        <Setter Property="OnContent" Value="开"/>
+        <Setter Property="OffContent" Value="关"/>
+    </Style>
+    
+    <Style Selector="TabControl.compact TabItem">
+        <Style Selector="^ TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
+        <Setter Property="MinHeight" Value="28"/>
+    </Style>
+    
+    <!-- 修复字体飞上去的问题 -->
+    <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

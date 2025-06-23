@@ -197,7 +197,10 @@ public partial class App : AppBase, IAppHost
     {
         this.EnableHotReload();
         AvaloniaXamlLoader.Load(this);
-        DesktopLifetime.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        if (DesktopLifetime != null)
+        {
+            DesktopLifetime.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        }
         base.Initialize();
     }
 
@@ -390,7 +393,7 @@ public partial class App : AppBase, IAppHost
         Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-CN");
 
         // 检测Mutex
-        if (!IsMutexCreateNew)
+        if (!IsMutexCreateNew && !Design.IsDesignMode)
         {
             if (!ApplicationCommand.WaitMutex)
             {
@@ -558,7 +561,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddTransient<TimeAdjustmentWindow>();
                 // services.AddTransient<ExcelExportWindow>();
                 // // 设置页面
-                // services.AddSettingsPage<GeneralSettingsPage>();
+                services.AddSettingsPage<GeneralSettingsPage>();
                 // services.AddSettingsPage<ComponentsSettingsPage>();
                 // services.AddSettingsPage<AppearanceSettingsPage>();
                 // services.AddSettingsPage<NotificationSettingsPage>();
@@ -839,7 +842,10 @@ public partial class App : AppBase, IAppHost
 #endif
         GetService<ISplashService>().CurrentProgress = 80;
         GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 2/2）");
-        GetService<MainWindow>().Show();
+        if (!Design.IsDesignMode)
+        {
+            GetService<MainWindow>().Show();
+        }
         GetService<IWindowRuleService>();
         GetService<SignalTriggerHandlerService>();
 
@@ -978,7 +984,7 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
-            DesktopLifetime.Shutdown();
+            DesktopLifetime?.Shutdown();
             try
             {
                 //ReleaseLock();

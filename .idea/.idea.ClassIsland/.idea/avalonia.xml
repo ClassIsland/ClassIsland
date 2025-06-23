@@ -41,6 +41,7 @@
         <entry key="ClassIsland.Core/ThemeBase.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Themes/Generic.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Themes/RichTextStyles.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Themes/TextBaselineFixes.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/App.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/AppNew.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Assets/Fonts/Fonts.axaml" value="ClassIsland/ClassIsland.csproj" />
@@ -51,6 +52,7 @@
         <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Themes/Styles.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/CrashWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Views/SettingPages/GeneralSettingsPage.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/SettingsWindowNew.axaml" value="ClassIsland/ClassIsland.csproj" />
       </map>
     </option>

@@ -63,8 +63,8 @@
                            PanePlacement="Right"
                            Pane="{Binding ViewModel.DrawerContent}"
                            PaneBackground="{DynamicResource SolidBackgroundFillColorBaseAltBrush}">
-                    <Grid>
-                        <Grid
+                    <Grid RowDefinitions="Auto, *">
+                        <Grid Grid.Row="1"
                             HorizontalAlignment="Left"
                                     VerticalAlignment="Bottom"
                             Margin="32 8 8 16"
@@ -84,11 +84,15 @@
                                        VerticalAlignment="Center"
                                        Margin="4 0 0 0"/>
                         </Grid>
-                        <controls3:Frame Content="{Binding ViewModel.FrameContent}"
-                               Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
-                               Navigated="NavigationServiceOnLoadCompleted"
-                               Navigating="NavigationServiceOnNavigating"
-                               x:Name="NavigationFrame">
+                        <Grid Grid.Row="0" Margin="12 16 18 0" MaxWidth="960">
+                            <TextBlock FontWeight="Normal"
+                                       Text="{Binding ViewModel.SelectedPageInfo.Name}"
+                                       Theme="{StaticResource TitleTextBlockStyle}"/>
+                        </Grid>
+                        <controls3:Frame Grid.Row="1" Content="{Binding ViewModel.FrameContent}"
+                                         Navigated="NavigationServiceOnLoadCompleted"
+                                         Navigating="NavigationServiceOnNavigating"
+                                         x:Name="NavigationFrame">
                         </controls3:Frame>
                     </Grid>
                 </SplitView>

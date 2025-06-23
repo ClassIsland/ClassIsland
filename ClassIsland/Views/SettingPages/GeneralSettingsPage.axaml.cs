@@ -1,9 +1,9 @@
-#if false
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -67,10 +67,6 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void ButtonWeekOffsetSettingsButtons_OnClick(object sender, RoutedEventArgs e)
     {
-        if (e.OriginalSource is not Button)
-        {
-            return;
-        }
         ViewModel.IsWeekOffsetSettingsOpen = false;
     }
 
@@ -105,9 +101,10 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void ButtonAdjustTime_OnClick(object sender, RoutedEventArgs e)
     {
-        var window = IAppHost.GetService<TimeAdjustmentWindow>();
-        window.Owner = Window.GetWindow(this);
-        window.ShowDialog();
+        // todo: 时间校准窗口
+        // var window = IAppHost.GetService<TimeAdjustmentWindow>();
+        // window.Owner = Window.GetWindow(this);
+        // window.ShowDialog();
     }
 }
-#endif
+

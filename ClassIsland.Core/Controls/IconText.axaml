@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="40"
              x:Class="ClassIsland.Core.Controls.IconText">
     <StackPanel Orientation="Horizontal" Spacing="{Binding $parent[ci:IconText].Spacing, Mode=OneWay}">
         <ci:FluentIcon Glyph="{Binding $parent[ci:IconText].Glyph, Mode=OneWay}"

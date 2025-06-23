@@ -16,6 +16,7 @@ using ClassIsland.Models.ComponentSettings;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared.Protobuf.AuditEvent;
@@ -61,6 +62,12 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
 
     public async Task LoadSettingsAsync()
     {
+        if (Design.IsDesignMode)
+        {
+            // 设计时不加载设置
+            Logger.LogInformation("检测到应用以设计模式运行，跳过配置加载");
+            return;
+        }
         try
         {
             if (!File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json")))
@@ -137,6 +144,10 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
 
     public void SaveSettings(string note = "")
     {
+        if (Design.IsDesignMode)
+        {
+            return;
+        }
         Logger.LogInformation(note == "" ? "写入配置文件。" : $"写入配置文件：{note}");
         ConfigureFileHelper.SaveConfig(Path.Combine(App.AppRootFolderPath, "Settings.json"), Settings);
     }

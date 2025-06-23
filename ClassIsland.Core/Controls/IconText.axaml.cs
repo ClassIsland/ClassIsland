@@ -35,7 +35,7 @@ public partial class IconText : UserControl
     }
 
     public static readonly StyledProperty<double> SpacingProperty = AvaloniaProperty.Register<IconText, double>(
-        nameof(Spacing));
+        nameof(Spacing), 4);
 
     public double Spacing
     {

@@ -116,8 +116,8 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 桌面生命周期对象
     /// </summary>
-    public IClassicDesktopStyleApplicationLifetime DesktopLifetime =>
-        (ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!;
+    public IClassicDesktopStyleApplicationLifetime? DesktopLifetime =>
+        (ApplicationLifetime as IClassicDesktopStyleApplicationLifetime);
 
     /// <summary>
     /// Fluent Icons 字体
