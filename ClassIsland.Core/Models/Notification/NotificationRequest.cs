@@ -118,6 +118,8 @@ public class NotificationRequest : ObservableRecipient
     /// 发送提醒的提醒渠道 ID
     /// </summary>
     public Guid ChannelId { get; set; }
+    
+    internal NotificationRequest? ChainedNextRequest { get; set; }
 
     internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;
 
@@ -152,34 +154,4 @@ public class NotificationRequest : ObservableRecipient
     /// </summary>
     public event EventHandler? Completed;
 
-
-#pragma warning disable CS0618 // 类型或成员已过时
-    internal static NotificationRequest ConvertFromOldNotificationRequest(ClassIsland.Shared.Models.Notification.NotificationRequest oldRequest)
-    {
-        var newRequest = new NotificationRequest()
-        {
-            MaskContent = new NotificationContent()
-            {
-                Content = oldRequest.MaskContent,
-                SpeechContent = oldRequest.MaskSpeechContent,
-                Duration = oldRequest.MaskDuration,
-                EndTime = oldRequest.TargetMaskEndTime,
-                IsSpeechEnabled = oldRequest.IsSpeechEnabled
-            },
-            OverlayContent = oldRequest.OverlayContent != null ? new NotificationContent()
-            {
-                Content = oldRequest.OverlayContent,
-                SpeechContent = oldRequest.OverlaySpeechContent,
-                Duration = oldRequest.OverlayDuration,
-                EndTime = oldRequest.TargetOverlayEndTime,
-                IsSpeechEnabled = oldRequest.IsSpeechEnabled
-            } : null,
-            IsPriorityOverride = oldRequest.IsPriorityOverride,
-            RequestNotificationSettings = oldRequest.RequestNotificationSettings,
-            CancellationTokenSource = oldRequest.CancellationTokenSource,
-            CompletedTokenSource = oldRequest.CompletedTokenSource
-        };
-        return newRequest;
-    }
-#pragma warning restore CS0618 // 类型或成员已过时
 }

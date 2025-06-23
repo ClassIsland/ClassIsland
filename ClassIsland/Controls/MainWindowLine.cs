@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
 using Avalonia;
@@ -14,18 +16,30 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data.Core;
 using Avalonia.Interactivity;
 using Avalonia.Metadata;
+using Avalonia.Platform;
 using Avalonia.Reactive;
 using Avalonia.Styling;
 using Avalonia.Threading;
+using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Components;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Services;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Interfaces;
+using ClassIsland.Shared.Models.Notification;
 using Linearstar.Windows.RawInput;
 using Microsoft.Extensions.Logging;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using Org.BouncyCastle.Bcpg.Sig;
+using Animation = Avalonia.Animation.Animation;
+using Cue = Avalonia.Animation.Cue;
+using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
 
 namespace ClassIsland.Controls;
 
@@ -33,7 +47,7 @@ namespace ClassIsland.Controls;
 [TemplatePart(Name = "PART_GridWrapper", Type = typeof(Grid))]
 [PseudoClasses(":dock-left", ":dock-right", ":dock-center", ":dock-top", ":dock-bottom",
     "faded", "mask-open", "overlay-open", "custom-background")]
-public class MainWindowLine : TemplatedControl
+public class MainWindowLine : TemplatedControl, INotificationConsumer
 {
     public static readonly StyledProperty<object> ContentProperty = AvaloniaProperty.Register<MainWindowLine, object>(
         nameof(Content));
@@ -136,6 +150,47 @@ public class MainWindowLine : TemplatedControl
         set => SetValue(SettingsProperty, value);
     }
 
+    private NotificationContent? _maskContent;
+
+    public static readonly DirectProperty<MainWindowLine, NotificationContent?> MaskContentProperty = AvaloniaProperty.RegisterDirect<MainWindowLine, NotificationContent?>(
+        nameof(MaskContent), o => o.MaskContent, (o, v) => o.MaskContent = v);
+
+    public NotificationContent? MaskContent
+    {
+        get => _maskContent;
+        set => SetAndRaise(MaskContentProperty, ref _maskContent, value);
+    }
+
+    private NotificationContent? _overlayContent;
+
+    public static readonly DirectProperty<MainWindowLine, NotificationContent?> OverlayContentProperty = AvaloniaProperty.RegisterDirect<MainWindowLine, NotificationContent?>(
+        nameof(OverlayContent), o => o.OverlayContent, (o, v) => o.OverlayContent = v);
+
+    public NotificationContent? OverlayContent
+    {
+        get => _overlayContent;
+        set => SetAndRaise(OverlayContentProperty, ref _overlayContent, value);
+    }
+
+    private double _countdownProgressValue;
+
+    public static readonly DirectProperty<MainWindowLine, double> CountdownProgressValueProperty = AvaloniaProperty.RegisterDirect<MainWindowLine, double>(
+        nameof(CountdownProgressValue), o => o.CountdownProgressValue, (o, v) => o.CountdownProgressValue = v);
+
+    public double CountdownProgressValue
+    {
+        get => _countdownProgressValue;
+        set => SetAndRaise(CountdownProgressValueProperty, ref _countdownProgressValue, value);
+    }
+
+    private bool _isOverlayOpen = false;
+    
+    private DateTime _firstProcessNotificationsTime = DateTime.MinValue;
+
+    private INotificationHostService NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
+
+    private Queue<NotificationRequest> _notificationQueue = new();
+
     private bool _isLoadCompleted = false;
 
     private bool _isTemplateApplied = false;
@@ -149,6 +204,10 @@ public class MainWindowLine : TemplatedControl
     private ILogger<MainWindowLine> Logger { get; } = IAppHost.GetService<ILogger<MainWindowLine>>();
 
     private IComponentsService ComponentsService { get; } = IAppHost.GetService<IComponentsService>();
+
+    private IExactTimeService ExactTimeService { get; } = IAppHost.GetService<IExactTimeService>();
+
+    private ISpeechService SpeechService { get; } = IAppHost.GetService<ISpeechService>();
 
     private Grid? GridWrapper;
 
@@ -191,6 +250,7 @@ public class MainWindowLine : TemplatedControl
         MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateFadeStatus();
+        NotificationHostService.RegisterNotificationConsumer(this, Settings.IsMainLine ? -1 : LineNumber);
 
         _isLoadCompleted = true;
     }
@@ -202,6 +262,7 @@ public class MainWindowLine : TemplatedControl
         MainWindow.RawInputEvent -= MainWindowOnRawInputEvent;
         MainWindow.MainWindowAnimationEvent -= MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        NotificationHostService.UnregisterNotificationConsumer(this);
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -352,7 +413,7 @@ public class MainWindowLine : TemplatedControl
             return false;
         }
         MainWindow.GetCurrentDpi(out var dpiX, out var dpiY);
-        var scale = MainWindow.ViewModel.Settings.Scale;
+        var scale = SettingsService.Settings.Scale;
         //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
         var root = GridWrapper.PointToScreen(new Point(0, 0));
         var cx = root.X;
@@ -364,4 +425,197 @@ public class MainWindowLine : TemplatedControl
 
         return (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
     }
+
+    public void ReceiveNotifications(IReadOnlyList<NotificationRequest> notificationRequests)
+    {
+        foreach (var newRequest in notificationRequests)
+        {
+            _notificationQueue.Enqueue(newRequest);
+        }
+
+        ProcessNotification();
+    }
+    
+    private void PreProcessNotificationContent(NotificationContent content)
+    {
+        if (content.EndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
+        {
+            var rawTime = content.EndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
+            content.Duration = rawTime > TimeSpan.Zero ? rawTime : TimeSpan.Zero;
+        }
+    }
+
+    private async void ProcessNotification()
+    {
+        if (_isOverlayOpen)
+        {
+            return;
+        }
+        _isOverlayOpen = true;  // 上锁
+
+        var notificationsShowed = false;
+
+        if (_firstProcessNotificationsTime == DateTime.MinValue)
+            _firstProcessNotificationsTime = ExactTimeService.GetCurrentLocalDateTime();
+        if (!SettingsService.Settings.IsNotificationEnabled ||
+            (ExactTimeService.GetCurrentLocalDateTime() - _firstProcessNotificationsTime <= TimeSpan.FromSeconds(10) &&
+             App.ApplicationCommand.Quiet) // 静默启动
+           )
+        {
+            NotificationHostService.RequestQueue.Clear();
+        }
+
+        while (_notificationQueue.Count > 0)
+        {
+            using var player = new DirectSoundOut();
+            var request = _notificationQueue.Dequeue();
+            INotificationSettings settings = SettingsService.Settings;
+            foreach (var i in new List<NotificationSettings?>([request.ChannelSettings, request.ProviderSettings, request.RequestNotificationSettings]).OfType<NotificationSettings>().Where(i => i.IsSettingsEnabled))
+            {
+                settings = i;
+                break;
+            }
+            var mask = request.MaskContent;
+            var overlay = request.OverlayContent;
+            var isMaskSpeechEnabled = settings.IsSpeechEnabled && request.MaskContent.IsSpeechEnabled && SettingsService.Settings.AllowNotificationSpeech;
+            var isOverlaySpeechEnabled = request.OverlayContent != null && settings.IsSpeechEnabled && request.OverlayContent.IsSpeechEnabled && SettingsService.Settings.AllowNotificationSpeech;
+            Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
+            var cancellationToken = request.CancellationTokenSource.Token;
+
+            PreProcessNotificationContent(mask);
+
+
+            if (request.MaskContent.Duration > TimeSpan.Zero && !cancellationToken.IsCancellationRequested)
+            {
+                notificationsShowed = true;
+                MaskContent = request.MaskContent;  // 加载Mask元素
+                // TODO: 向上级传递置顶要求
+                // ViewModel.IsNotificationWindowExplicitShowed = settings.IsNotificationTopmostEnabled && SettingsService.Settings.AllowNotificationTopmost;
+                // if (ViewModel.IsNotificationWindowExplicitShowed && SettingsService.Settings.WindowLayer == 0)  // 如果处于置底状态，还需要激活窗口来强制显示窗口。
+                // {
+                //     UpdateWindowLayer();
+                //     ReCheckTopmostState();
+                // }
+
+                if (isMaskSpeechEnabled)
+                {
+                    SpeechService.EnqueueSpeechQueue(request.MaskContent.SpeechContent);
+                }
+                PseudoClasses.Set(":mask-open", true);
+                // 播放提醒音效
+                if (settings.IsNotificationSoundEnabled && SettingsService.Settings.AllowNotificationSound)
+                {
+                    try
+                    {
+                        var provider = string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                            ? new StreamMediaFoundationReader(
+                                AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)).ToSampleProvider()
+                            : new AudioFileReader(settings.NotificationSoundPath);
+                        var volume = new VolumeSampleProvider(provider)
+                        {
+                            Volume = (float)SettingsService.Settings.NotificationSoundVolume
+                        };
+                        player.Init(volume);
+                        player.Play();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError(e, "无法播放提醒音效：{}", settings.NotificationSoundPath);
+                    }
+                }
+                // 播放提醒特效
+                // if (settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
+                //     GridRoot.IsVisible && SettingsService.Settings.IsMainWindowVisible && !IsRunningCompatibleMode)
+                // {
+                //     var center = GetCenter();
+                //     // TopmostEffectWindow.Dispatcher.Invoke(() =>
+                //     // {
+                //     //     TopmostEffectWindow.PlayEffect(new RippleEffect()
+                //     //     {
+                //     //         CenterX = center.X,
+                //     //         CenterY = center.Y
+                //     //     });
+                //     // });
+                // }
+
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskContent.Duration), cancellationToken);
+                }
+                if (overlay is null || cancellationToken.IsCancellationRequested || overlay.Duration <= TimeSpan.Zero)
+                {
+                    PseudoClasses.Set(":mask-open", false);
+                    PseudoClasses.Set(":overlay-open", false);
+                }
+                else
+                {
+                    PreProcessNotificationContent(overlay);
+                    OverlayContent = overlay;
+                    if (isOverlaySpeechEnabled)
+                    {
+                        SpeechService.EnqueueSpeechQueue(overlay.SpeechContent);
+                    }
+                    PseudoClasses.Set(":mask-open", false);
+                    PseudoClasses.Set(":overlay-open", true);
+                    var animation = new Animation()
+                    {
+                        Duration = overlay.Duration,
+                        Children =
+                        {
+                            new KeyFrame()
+                            {
+                                Cue = new Cue(0.0),
+                                Setters =
+                                {
+                                    new Setter(CountdownProgressValueProperty, 1.0)
+                                }
+                            },
+                            new KeyFrame()
+                            {
+                                Cue = new Cue(0.0),
+                                Setters =
+                                {
+                                    new Setter(CountdownProgressValueProperty, 0.0)
+                                }
+                            }
+                        }
+                    };
+                    _ = animation.RunAsync(this, cancellationToken);
+                    if (!cancellationToken.IsCancellationRequested)
+                    {
+                        await Task.Run(() => cancellationToken.WaitHandle.WaitOne(overlay.Duration),
+                            cancellationToken);
+                    }
+                }
+                SpeechService.ClearSpeechQueue();
+            }
+
+            if (NotificationHostService.RequestQueue.Count < 1 && notificationsShowed)
+            {
+                PseudoClasses.Set(":mask-open", false);
+                PseudoClasses.Set(":overlay-open", false);
+            }
+            await request.CompletedTokenSource.CancelAsync();
+
+            var notifications = NotificationHostService.PullNotificationRequests();
+            foreach (var newRequest in notifications)
+            {
+                _notificationQueue.Enqueue(newRequest);
+            }
+        }
+
+        OverlayContent = null;
+        MaskContent = null;
+        _isOverlayOpen = false;
+        // TODO: 恢复主界面置顶状态
+        // if (ViewModel.IsNotificationWindowExplicitShowed)
+        // {
+        //     ViewModel.IsNotificationWindowExplicitShowed = false;
+        //     SetBottom();
+        //     UpdateWindowLayer();
+        // }
+    }
+
+    public int QueuedNotificationCount => _notificationQueue.Count;
+    public bool AcceptsNotificationRequests => !IsAllComponentsHid && !_isOverlayOpen;
 }

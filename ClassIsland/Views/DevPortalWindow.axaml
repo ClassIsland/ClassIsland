@@ -1,0 +1,45 @@
+<ci:MyWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:views="clr-namespace:ClassIsland.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ClassIsland.Views.DevPortalWindow"
+        Title="DevPortal"
+        Height="700" Width="1200"
+        EnableMicaWindow="True"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        d:DataContext="{d:DesignInstance views:DevPortalWindow}">
+    <Grid RowDefinitions="48, *">
+        <!-- Background Layer -->
+        <Border Grid.Row="1" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"/>
+        
+        <TabControl Grid.Row="0" Grid.RowSpan="2">
+            <TabItem Header="首页">
+                <Grid>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Spacing="4">
+                        <TextBlock Text="欢迎使用 ClassIsland 开发门户" Theme="{StaticResource SubtitleTextBlockStyle}"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="提醒">
+                <StackPanel Spacing="6" Width="400" HorizontalAlignment="Left">
+                    <ci:Field Label="提醒标题">
+                        <TextBox Text="{Binding ViewModel.NotificationMaskText}"/>
+                    </ci:Field>
+                    <ci:Field Label="提醒正文">
+                        <TextBox Text="{Binding ViewModel.NotificationOverlayText}"/>
+                    </ci:Field>
+                    <Button Content="发送！" Classes="accent"
+                            Click="ButtonSendNotification_OnClick"/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ci:MyWindow>

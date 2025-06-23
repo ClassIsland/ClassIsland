@@ -52,6 +52,7 @@
         <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Themes/Styles.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/CrashWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Views/DevProtal.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/SettingPages/GeneralSettingsPage.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/SettingsWindowNew.axaml" value="ClassIsland/ClassIsland.csproj" />
       </map>

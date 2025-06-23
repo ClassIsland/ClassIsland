@@ -80,7 +80,7 @@ public class NotificationChannel : INotificationSender, INotificationProvider
     /// <inheritdoc />
     public void ShowNotification(NotificationRequest request)
     {
-        __NotificationHostService.ShowNotification(request, ProviderGuid, ChannelGuid);
+        __NotificationHostService.ShowNotification(request, ProviderGuid, ChannelGuid, true);
     }
 
     /// <inheritdoc />

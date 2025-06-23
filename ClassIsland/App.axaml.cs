@@ -75,6 +75,7 @@ using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Helpers;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
+using ClassIsland.ViewModels;
 using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Views.SettingPages;
 using Google.Protobuf.WellKnownTypes;
@@ -546,6 +547,8 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<ILocationService, LocationService>();
                 services.AddSingleton<IXamlThemeService, XamlThemeService>();
                 // ViewModels
+                services.AddTransient<DevPortalViewModel>();
+                // ViewModels/SettingsPages
                 services.AddTransient<GeneralSettingsViewModel>();
                 services.AddTransient<AboutSettingsViewModel>();
                 services.AddTransient<AppearanceSettingsViewModel>();
@@ -565,7 +568,8 @@ public partial class App : AppBase, IAppHost
                 // services.AddTransient<ConfigErrorsWindow>();
                 // services.AddTransient<TimeAdjustmentWindow>();
                 // services.AddTransient<ExcelExportWindow>();
-                // // 设置页面
+                services.AddTransient<DevPortalWindow>();
+                // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 // services.AddSettingsPage<ComponentsSettingsPage>();
                 services.AddSettingsPage<AppearanceSettingsPage>();
