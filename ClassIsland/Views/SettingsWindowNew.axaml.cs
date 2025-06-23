@@ -411,21 +411,16 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private async void ShowRestartDialog()
     {
-        var r = await new TaskDialog()
+        var r = await new ContentDialog()
         {
-            XamlRoot = this,
-            Header = "需要重启",
+            
+            Title = "需要重启",
             Content = "部分设置需要重启以应用",
-            Buttons =
-            {
-                new TaskDialogButton("取消", false),
-                new TaskDialogButton("重启", true)
-                {
-                    IsDefault = true
-                }
-            }
-        }.ShowAsync(true);
-        if (r as bool? != true)
+            PrimaryButtonText = "重启",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary,
+        }.ShowAsync();
+        if (r != ContentDialogResult.Primary)
             return;
         AppBase.Current.Restart();
     }
@@ -488,7 +483,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                         IsDefault = true
                     }
                 }
-            }.ShowAsync(true);
+            }.ShowAsync();
             
             if (r != (object)true)
                 return;
@@ -564,7 +559,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                         IsDefault = true
                     }
                 }
-            }.ShowAsync(true);
+            }.ShowAsync();
             if (urlDialogResult != (object)true)
             {
                 return;

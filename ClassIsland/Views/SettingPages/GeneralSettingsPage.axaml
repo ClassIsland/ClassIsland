@@ -206,11 +206,12 @@
                                                 IconSource="{ci:FluentIconSource &#xE4D2;}">
 
                     <controls3:SettingsExpanderItem.Footer>
-                        <DockPanel Width="150">
+                        <DockPanel>
                             <ToggleSwitch DockPanel.Dock="Right"
-                                          Margin="8 0 0 0"
+                                          Margin="8 -8 0 0"
+                                          VerticalAlignment="Center"
                                           IsChecked="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"/>
-                            <ci:Field Suffix="秒">
+                            <ci:Field Suffix="秒" VerticalAlignment="Center">
                                 <controls3:NumberBox
                                     MinWidth="147"
                                     SpinButtonPlacementMode="Inline"
@@ -261,9 +262,11 @@
                 <controls3:SettingsExpander.Footer>
                     <DockPanel>
                         <ToggleSwitch DockPanel.Dock="Right"
+                                      VerticalAlignment="Center"
                                       Margin="8 0 0 0"
                                       IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"/>
                         <ComboBox Width="120"
+                                  VerticalAlignment="Center"
                                   IsVisible="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"
                                   SelectedIndex="{Binding ViewModel.SettingsService.Settings.CriticalSafeModeMethod}">
                             <ComboBoxItem>退出应用</ComboBoxItem>

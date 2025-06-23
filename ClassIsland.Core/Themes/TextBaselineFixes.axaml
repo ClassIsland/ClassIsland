@@ -6,6 +6,12 @@
             <!-- Add Controls for Previewer Here -->
             <StackPanel Spacing="6">
                 <CheckBox>我是，终将升起的烈阳！</CheckBox>
+                <ComboBox SelectedIndex="0">
+                    <ComboBoxItem>测试1</ComboBoxItem>
+                    <ComboBoxItem>测试2</ComboBoxItem>
+                    <ComboBoxItem>测试3</ComboBoxItem>
+                </ComboBox>
+                <Button>测试文本</Button>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -13,13 +19,15 @@
     <!-- Add Styles Here -->
     <Style Selector="controls|NavigationViewItem TextBlock,
                      ToggleSwitch TextBlock,
-                     ComboBox TextBlock,
                      CheckBox TextBlock,
                      Control.textFix TextBlock">
         <Setter Property="Margin" Value="0 0 0 -3"/>
     </Style>
-    
     <Style Selector="CheckBox /template/ ContentPresenter#ContentPresenter TextBlock">
         <Setter Property="Margin" Value="0 3 0 0"/>
+    </Style>
+    <Style Selector="ComboBox TextBlock,
+                     Button AccessText">
+        <Setter Property="Margin" Value="0 1.5 0 -1.5"/>
     </Style>
 </Styles>

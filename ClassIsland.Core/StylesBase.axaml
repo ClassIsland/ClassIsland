@@ -13,7 +13,7 @@
     </Styles.Resources>
     <Design.PreviewWith>
         <Border Padding="20">
-            <!-- Add Controls for Previewer Here -->
+            <ToggleSwitch/>
         </Border>
     </Design.PreviewWith>
     
@@ -45,6 +45,13 @@
     <Style Selector="ToggleSwitch">
         <Setter Property="OnContent" Value="开"/>
         <Setter Property="OffContent" Value="关"/>
+    </Style>
+    
+    <Style Selector="controls|SettingsExpanderItem ToggleSwitch">
+        <Setter Property="Margin" Value="0 -12"/>
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
     </Style>
     
     <Style Selector="TabControl.compact TabItem">
