@@ -15,7 +15,7 @@
         mc:Ignorable="d"
         MinWidth="560"
         Title="应用设置" Height="550" Width="1200"
-        Classes="micaWindow"
+        EnableMicaWindow="True"
         Background="Transparent"
         windowing:AppWindow.AllowInteractionInTitleBar="True"
         SizeChanged="SettingsWindowNew_OnSizeChanged"

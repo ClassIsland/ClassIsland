@@ -42,13 +42,6 @@
         <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
     </Style>
     
-    <Style Selector=":is(windowing|AppWindow).micaWindow">
-        <Style Selector="^[IsActive=True]">
-            <Setter Property="TransparencyLevelHint" Value="Mica"/>
-        </Style>
-        <Setter Property="TransparencyLevelHint" Value="None"/>
-    </Style>
-    
     <Style Selector="ToggleSwitch">
         <Setter Property="OnContent" Value="开"/>
         <Setter Property="OffContent" Value="关"/>
