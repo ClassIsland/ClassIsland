@@ -78,6 +78,8 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private string LaunchSettingsPage { get; set; } = StartupSettingsPage;
 
+    private bool _isFirstNavigated = false;
+
     private readonly Dictionary<string, SettingsPageBase?> _cachedPages = new();
 
     public SettingsWindowNew(IManagementService managementService, IHangService hangService,
@@ -151,10 +153,15 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     protected override async void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
+        if (_isFirstNavigated)
+        {
+            return;
+        }
         var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
         ViewModel.IsRendered = true;
         await CoreNavigate(page);
         ViewModel.IsCoverVisible = false;
+        _isFirstNavigated = true;
         // await CoreNavigate(ViewModel.SelectedPageInfo);
     }
 
