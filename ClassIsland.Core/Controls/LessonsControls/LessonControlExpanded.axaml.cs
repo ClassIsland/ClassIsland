@@ -39,7 +39,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private Subject _displayingSubject = Subject.Empty;
 
     public static readonly StyledProperty<ILessonControlSettings> DefaultLessonControlSettingsProperty = AvaloniaProperty.Register<LessonControlExpanded, ILessonControlSettings>(
-        nameof(DefaultLessonControlSettings));
+        nameof(DefaultLessonControlSettings), new LessonControlAttachedSettings());
     public ILessonControlSettings DefaultLessonControlSettings
     {
         get => GetValue(DefaultLessonControlSettingsProperty);
