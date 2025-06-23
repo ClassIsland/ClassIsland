@@ -183,6 +183,11 @@
             <Setter.Value>
                 <Transitions>
                     <DoubleTransition Property="Opacity" Duration="0:0:0.100"/>
+                    <DoubleTransition Property="BackgroundWidth" Duration="0:0:0.550">
+                        <DoubleTransition.Easing>
+                            <BackEaseOut/>
+                        </DoubleTransition.Easing>
+                    </DoubleTransition>
                 </Transitions>
             </Setter.Value>
         </Setter>

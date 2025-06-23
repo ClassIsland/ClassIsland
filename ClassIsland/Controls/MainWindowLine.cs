@@ -342,45 +342,7 @@ public class MainWindowLine : TemplatedControl
 
     private async void WrapperOnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        if (double.IsNaN(e.NewSize.Width))
-            return;
-        if (double.IsNaN(BackgroundWidth))
-        {
-            BackgroundWidth = e.NewSize.Width;
-            return;
-        }
-        
-        var m = e.NewSize.Width > BackgroundWidth;
-        var s = 1.0;  // TODO: 适配 debug 动画缩放
-        var t = m ? 600 * s : 800 * s;
-        var anim = new Animation()
-        {
-            Duration = TimeSpan.FromMilliseconds(t),
-            Easing = new BackEaseOut(),
-            FillMode = FillMode.Forward,
-            IterationCount = new IterationCount(1),
-            PlaybackDirection = PlaybackDirection.Normal,
-            Children =
-            {
-                new KeyFrame()
-                {
-                    Setters =
-                    {
-                        new Setter(BackgroundWidthProperty, BackgroundWidth)
-                    },
-                    KeyTime = TimeSpan.FromMilliseconds(0)
-                },
-                new KeyFrame()
-                {
-                    Setters =
-                    {
-                        new Setter(BackgroundWidthProperty, e.NewSize.Width)
-                    },
-                    KeyTime = TimeSpan.FromMilliseconds(t)
-                }
-            }
-        };
-        await anim.RunAsync(this);
+        BackgroundWidth = e.NewSize.Width;
     }
 
     private bool GetMouseStatusByPos(System.Drawing.Point ptr)
