@@ -253,5 +253,13 @@
                 </Grid>
             </Border>
         </Grid>
+        
+        <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                IsVisible="{Binding ViewModel.IsCoverVisible}"
+                Background="{DynamicResource SolidBackgroundFillColorBaseBrush}">
+            <Image Source="/Assets/AppLogo@384w.png"
+                   Height="96" Width="96"
+                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
     </Grid>
 </controls:MyWindow>

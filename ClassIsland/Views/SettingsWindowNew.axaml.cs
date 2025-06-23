@@ -93,6 +93,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         SettingsService = settingsService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         InitializeComponent();
+        // SplashScreen = new EmptySplashScreen();
 
         TitleBar.ExtendsContentIntoTitleBar = true;
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
@@ -147,12 +148,13 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         
     }
 
-    public override async void Show()
+    protected override async void OnOpened(EventArgs e)
     {
-        base.Show();
+        base.OnOpened(e);
         var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
         ViewModel.IsRendered = true;
         await CoreNavigate(page);
+        ViewModel.IsCoverVisible = false;
         // await CoreNavigate(ViewModel.SelectedPageInfo);
     }
 

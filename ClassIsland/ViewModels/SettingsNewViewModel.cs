@@ -22,6 +22,7 @@ public class SettingsNewViewModel : ObservableRecipient
     private string _currentEchoCaveText = "";
     private List<string> _echoCaveTexts = [];
     private List<string> _echoCaveTextsAll = [];
+    private bool _isCoverVisible = true;
 
     public object? FrameContent
     {
@@ -180,4 +181,15 @@ public class SettingsNewViewModel : ObservableRecipient
     public List<SettingsPageInfo> SideBarPages { get; } = [];
 
     public ObservableCollection<object> NavigationViewItems { get; } = [];
+
+    public bool IsCoverVisible
+    {
+        get => _isCoverVisible;
+        set
+        {
+            if (value == _isCoverVisible) return;
+            _isCoverVisible = value;
+            OnPropertyChanged();
+        }
+    }
 }
