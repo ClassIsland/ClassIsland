@@ -64,7 +64,7 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用打包类型
     /// </summary>
-    public string PackagingType => IsMsix ? "msix" : "singleFile";
+    public string PackagingType => IsMsix ? "msix" : "folder";
 
     /// <summary>
     /// 应用二进制文件的平台架构
