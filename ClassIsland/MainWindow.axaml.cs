@@ -123,6 +123,8 @@ public partial class MainWindow : Window
     public IRulesetService RulesetService { get; }
     public IWindowRuleService WindowRuleService { get; }
     public IManagementService ManagementService { get; }
+    
+    private TopmostEffectWindow TopmostEffectWindow { get; }
 
     public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
 
@@ -164,7 +166,8 @@ public partial class MainWindow : Window
         IUriNavigationService uriNavigationService,
         IRulesetService rulesetService,
         IWindowRuleService windowRuleService,
-        IManagementService managementService)
+        IManagementService managementService,
+        TopmostEffectWindow topmostEffectWindow)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -174,7 +177,7 @@ public partial class MainWindow : Window
         ThemeService = themeService;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
-        // TopmostEffectWindow = topmostEffectWindow;
+        TopmostEffectWindow = topmostEffectWindow;
         ComponentsService = componentsService;
         LessonsService = lessonsService;
         UriNavigationService = uriNavigationService;
@@ -261,12 +264,6 @@ public partial class MainWindow : Window
         {
             Logger.LogError(ex, "无法更新鼠标状态。");
         }
-    }
-
-    [Obsolete]
-    private bool GetMouseStatusByPos(System.Drawing.Point ptr)
-    {
-        return false;
     }
 
     public Point GetCenter()
@@ -728,13 +725,10 @@ public partial class MainWindow : Window
         };
         Position = new PixelPoint((int)x, (int)y);
 
-        // if (updateEffectWindow)
-        // {
-        //     TopmostEffectWindow.Dispatcher.Invoke(() =>
-        //     {
-        //         TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
-        //     });
-        // }
+        if (updateEffectWindow)
+        {
+            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
+        }
     }
 
     public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)

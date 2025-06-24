@@ -125,12 +125,12 @@
                     </Border>
                 </Grid>
             </Grid>
-            <TextBlock Foreground="Yellow">
-                <Run Text="ML(N) #"/><Run Text="{Binding LineNumber, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/>
-                <Run Text="Mask"/><Run Text="{Binding #OverlayMaskContent.Opacity}"/>
-                <Run Text="Overlay"/><Run Text="{Binding #GridOverlay.Opacity}"/>
-                <Run Text="Content"/><Run Text="{Binding #GridContentRoot.Opacity}"/>
-            </TextBlock>
+            <!-- <TextBlock Foreground="Yellow"> -->
+            <!--     <Run Text="ML(N) #"/><Run Text="{Binding LineNumber, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/> -->
+            <!--     <Run Text="Mask"/><Run Text="{Binding #OverlayMaskContent.Opacity}"/> -->
+            <!--     <Run Text="Overlay"/><Run Text="{Binding #GridOverlay.Opacity}"/> -->
+            <!--     <Run Text="Content"/><Run Text="{Binding #GridContentRoot.Opacity}"/> -->
+            <!-- </TextBlock> -->
         </Grid>
     </ControlTemplate>
     <ControlTemplate x:Key="MainWindowLineMinControlTemplate" TargetType="controls:MainWindowLine">

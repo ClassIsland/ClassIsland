@@ -21,6 +21,7 @@ using Avalonia.Platform;
 using Avalonia.Reactive;
 using Avalonia.Styling;
 using Avalonia.Threading;
+using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
@@ -33,6 +34,7 @@ using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Views;
 using Linearstar.Windows.RawInput;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
@@ -208,7 +210,11 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
     private ISpeechService SpeechService { get; } = IAppHost.GetService<ISpeechService>();
 
+    private TopmostEffectWindow TopmostEffectWindow { get; } = IAppHost.GetService<TopmostEffectWindow>();
+
     private Grid? GridWrapper;
+    
+    private Point _centerPointCache = new Point(0, 0);
 
     public MainWindowLine()
     {
@@ -449,6 +455,18 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
             content.ContentTemplate = template as DataTemplate;
         }
     }
+    
+    private Point GetCenter()
+    {
+        var scale = SettingsService.Settings.Scale;
+        // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
+        var p = GridWrapper?.TranslatePoint(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2), this);
+        if (p == null)
+        {
+            return _centerPointCache;
+        }
+        return _centerPointCache = new Point(p.Value.X * scale, (Bounds.Top + (Bounds.Height / 2)) * scale);
+    }
 
     private async void ProcessNotification()
     {
@@ -535,19 +553,16 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                     }
                 }
                 // 播放提醒特效
-                // if (settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
-                //     GridRoot.IsVisible && SettingsService.Settings.IsMainWindowVisible && !IsRunningCompatibleMode)
-                // {
-                //     var center = GetCenter();
-                //     // TopmostEffectWindow.Dispatcher.Invoke(() =>
-                //     // {
-                //     //     TopmostEffectWindow.PlayEffect(new RippleEffect()
-                //     //     {
-                //     //         CenterX = center.X,
-                //     //         CenterY = center.Y
-                //     //     });
-                //     // });
-                // }
+                if (settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
+                    !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible)
+                {
+                    var center = GetCenter();
+                    TopmostEffectWindow.PlayEffect(new RippleEffect()
+                    {
+                        CenterX = center.X,
+                        CenterY = center.Y
+                    });
+                }
 
                 if (!cancellationToken.IsCancellationRequested)
                 {

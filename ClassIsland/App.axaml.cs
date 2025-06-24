@@ -556,7 +556,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<MainWindow>();
                 // services.AddTransient<SplashWindowBase, SplashWindow>();
                 // services.AddTransient<FeatureDebugWindow>();
-                // services.AddSingleton<TopmostEffectWindow>(BuildTopmostEffectWindow);
+                services.AddSingleton<TopmostEffectWindow>();
                 // services.AddSingleton<AppLogsWindow>();
                 services.AddSingleton<SettingsWindowNew>();
                 // services.AddSingleton<ProfileSettingsWindow>((s) => new ProfileSettingsWindow()
@@ -904,18 +904,6 @@ public partial class App : AppBase, IAppHost
         return new BlankSpeechService();
         
     }
-
-    // private TopmostEffectWindow BuildTopmostEffectWindow(IServiceProvider x)
-    // {
-    //     var dispatcher = (Settings.NotificationUseStandaloneEffectUiThread ? ThreadedUiDispatcher : Dispatcher) 
-    //                      ?? Dispatcher;
-    //     return dispatcher.Invoke(() =>
-    //     {
-    //         var window = new TopmostEffectWindow(x.GetRequiredService<ILogger<TopmostEffectWindow>>(), x.GetRequiredService<SettingsService>());
-    //         return window;
-    //     });
-    //     
-    // }
 
     // private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)
     // {

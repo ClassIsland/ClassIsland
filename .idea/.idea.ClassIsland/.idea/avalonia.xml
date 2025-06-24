@@ -50,6 +50,7 @@
         <entry key="ClassIsland/Controls/Components/ScheduleComponent.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Controls/Components/ScheduleComponentSettingsControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Controls/MainWindowLine.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Controls/NotificationEffects/RippleEffect.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Themes/Styles.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/CrashWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
@@ -57,6 +58,7 @@
         <entry key="ClassIsland/Views/DevProtal.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/SettingPages/GeneralSettingsPage.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/SettingsWindowNew.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Views/TopmostEffectWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
       </map>
     </option>
   </component>
