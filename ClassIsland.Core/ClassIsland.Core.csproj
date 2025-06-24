@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <UserSecretsId>d3a133e8-8208-4210-818a-e5c3335f8cbf</UserSecretsId>
     <Description>ClassIsland 应用核心依赖库，包括 ClassIsland 封装的一些常用控件和方法。</Description>
-    <PackageTags>classisland;avalonia;material design</PackageTags>
+    <PackageTags>classisland;avalonia</PackageTags>
     <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
   </PropertyGroup>
 
@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared.IPC\ClassIsland.Shared.IPC.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
   </ItemGroup>
@@ -68,6 +69,7 @@
     <Compile Update="Controls\TeyvatLoadingControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <AvaloniaResource Include="Assets/**"/>
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Core.Models;
+﻿namespace ClassIsland.Platforms.Abstraction.Models;
 
 /// <summary>
 /// 代表一个位置坐标

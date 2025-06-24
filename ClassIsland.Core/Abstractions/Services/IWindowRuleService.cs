@@ -1,4 +1,5 @@
 ﻿using Windows.Win32.UI.Accessibility;
+using ClassIsland.Platforms.Abstraction.Models;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -10,12 +11,12 @@ public interface IWindowRuleService
     /// <summary>
     /// 当焦点窗口发生变化时触发
     /// </summary>
-    event WINEVENTPROC? ForegroundWindowChanged;
+    event EventHandler<ForegroundWindowChangedEventArgs>? ForegroundWindowChanged;
 
     /// <summary>
     /// 焦点窗口的 HWND。
     /// </summary>
-    HWND ForegroundHwnd { get; set; }
+    nint ForegroundHwnd { get; set; }
 
     /// <summary>
     /// 判断前台窗口是否属于 ClassIsland。

@@ -8,8 +8,8 @@ using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core;
 using ClassIsland.Models.Rules;
-using System.Windows.Forms;
 using Avalonia.Threading;
+using ClassIsland.Platforms.Abstraction.Models;
 
 namespace ClassIsland.Services;
 
@@ -18,8 +18,8 @@ public class WindowRuleService : IWindowRuleService
     public ILogger<WindowRuleService> Logger { get; }
     public IRulesetService RulesetService { get; }
 
-    public event WINEVENTPROC? ForegroundWindowChanged;
-    public HWND ForegroundHwnd { get; set; }
+    public event EventHandler<ForegroundWindowChangedEventArgs>? ForegroundWindowChanged;
+    public nint ForegroundHwnd { get; set; }
 
     private List<HWINEVENTHOOK> _hooks = new();
 
@@ -46,7 +46,7 @@ public class WindowRuleService : IWindowRuleService
                 flags);
             _hooks.Add(hook);
         }
-        ForegroundWindowChanged += ((_, _, _, _, _, _, _) => RulesetService.NotifyStatusChanged());
+        ForegroundWindowChanged += ((_, _) => RulesetService.NotifyStatusChanged());
 
         RulesetService.RegisterRuleHandler("classisland.windows.className", ClassNameHandler);
         RulesetService.RegisterRuleHandler("classisland.windows.text", TextHandler);
@@ -58,7 +58,7 @@ public class WindowRuleService : IWindowRuleService
     {
         if (settings is not StringMatchingSettings s) return false;
         uint pid = 0;
-        GetWindowThreadProcessId(ForegroundHwnd, &pid);
+        GetWindowThreadProcessId((HWND)ForegroundHwnd, &pid);
         var process = Process.GetProcessById((int)pid);
         return s.IsMatching(process.ProcessName);
     }
@@ -66,7 +66,7 @@ public class WindowRuleService : IWindowRuleService
     private bool StatusHandler(object? settings)
     {
         if (settings is not WindowStatusRuleSettings s) return false;
-        GetWindowRect(ForegroundHwnd, out var rect);
+        GetWindowRect((HWND)ForegroundHwnd, out var rect);
         var mw = App.GetService<MainWindow>();
         var screen = mw.GetSelectedScreenSafe();
         if (screen == null)
@@ -75,8 +75,8 @@ public class WindowRuleService : IWindowRuleService
         }
 
         var fullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
-        var maximize = IsZoomed(ForegroundHwnd);
-        var minimize = IsIconic(ForegroundHwnd);
+        var maximize = IsZoomed((HWND)ForegroundHwnd);
+        var minimize = IsIconic((HWND)ForegroundHwnd);
         return s.State switch
         {
             0 => !(fullscreen || maximize || minimize),
@@ -91,7 +91,7 @@ public class WindowRuleService : IWindowRuleService
     {
         if (settings is not StringMatchingSettings s) return false;
         using var className = new DisposablePWSTR(256);
-        GetWindowText(ForegroundHwnd, className.PWSTR, 256);
+        GetWindowText((HWND)ForegroundHwnd, className.PWSTR, 256);
         return s.IsMatching(className.ToString());
     }
 
@@ -99,7 +99,7 @@ public class WindowRuleService : IWindowRuleService
     {
         if (settings is not StringMatchingSettings s) return false;
         using var className = new DisposablePWSTR(256);
-        GetClassName(ForegroundHwnd, className.PWSTR, 256);
+        GetClassName((HWND)ForegroundHwnd, className.PWSTR, 256);
         return s.IsMatching(className.ToString());
     }
 
@@ -136,14 +136,14 @@ public class WindowRuleService : IWindowRuleService
         //Logger.LogTrace("Window event: {} HWND:{} {}", @event, hwnd, hook.Value);
         _ = Dispatcher.UIThread.InvokeAsync(() =>
         {
-            ForegroundWindowChanged?.Invoke(hook, @event, hwnd, idObject, child, thread, time);
+            ForegroundWindowChanged?.Invoke(this, new ForegroundWindowChangedEventArgs(hwnd));
         });
     }
 
     public unsafe bool IsForegroundWindowClassIsland()
     {
         uint pid = 0;
-        GetWindowThreadProcessId(ForegroundHwnd, &pid);
+        GetWindowThreadProcessId((HWND)ForegroundHwnd, &pid);
         var process = Process.GetProcessById((int)pid);
         return process.Id == Environment.ProcessId;
     }

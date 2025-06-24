@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <PlatformNames_Windows>windows</PlatformNames_Windows>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
+      <ProjectReference Include="..\ClassIsland\ClassIsland.csproj" />
+    </ItemGroup>
+    
+    <PropertyGroup Condition="'$(TargetFramework.Contains($(PlatformNames_Windows)))'">
+        <Platforms_Windows>true</Platforms_Windows>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Platforms_Windows)'=='true'">
+        <DefineConstants>$(DefineConstants);Platforms_Windows</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Platforms_Windows)'=='true' And ('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX')">
+        <OutputType>WinExe</OutputType>
+    </PropertyGroup>
+    
+    <ItemGroup Condition="'$(Platforms_Windows)'=='true'">
+        <ProjectReference Include="..\platforms\ClassIsland.Platforms.Windows\ClassIsland.Platforms.Windows.csproj" />
+    </ItemGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
+        <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+    <Import Project="../Global.props"/>
+    <Import Project="../AvaloniaShared.props"/>
+</Project>

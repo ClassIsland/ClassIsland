@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using ClassIsland.Core;
-using System.Windows.Forms.Design.Behavior;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;

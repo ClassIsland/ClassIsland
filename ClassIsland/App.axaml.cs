@@ -73,6 +73,8 @@ using Avalonia.Threading;
 using ClassIsland.Controls.Components;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Helpers;
+using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.ViewModels;
@@ -378,10 +380,9 @@ public partial class App : AppBase, IAppHost
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
-        Environment.CurrentDirectory = System.Windows.Forms.Application.StartupPath;
+        Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ".";
 
         //ConsoleService.InitializeConsole();
-        System.Windows.Forms.Application.EnableVisualStyles();
         DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -544,7 +545,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<UriTriggerHandlerService>();
                 services.AddSingleton<SignalTriggerHandlerService>();
                 services.AddSingleton<IAnnouncementService, AnnouncementService>();
-                services.AddSingleton<ILocationService, LocationService>();
+                services.AddSingleton<ILocationService>(PlatformServices.LocationService);
                 services.AddSingleton<IXamlThemeService, XamlThemeService>();
                 // ViewModels
                 services.AddTransient<DevPortalViewModel>();

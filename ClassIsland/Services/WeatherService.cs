@@ -17,6 +17,7 @@ using ClassIsland.Core.Models.Weather;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
+using ClassIsland.Platforms.Abstraction.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

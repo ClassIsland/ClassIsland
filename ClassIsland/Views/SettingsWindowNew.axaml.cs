@@ -29,7 +29,6 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.SettingsWindow;
 using ClassIsland.Helpers;
 using System.Transactions;
-using System.Windows.Forms;
 using Avalonia.Controls;
 using Avalonia.Data.Core;
 using Avalonia.Interactivity;

@@ -291,7 +291,6 @@ public partial class MainWindow : Window
         TaskBarIconService.MainTaskBarIcon.Menu = this.FindResource("AppMenu") as NativeMenu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         ViewModel.OverlayRemainTimePercents = 0.5;
-        WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         DiagnosticService.EndStartup();
 
         if (!ViewModel.Settings.IsNotificationEffectRenderingScaleAutoSet)
@@ -363,16 +362,6 @@ public partial class MainWindow : Window
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
         base.Show();
-    }
-
-    private void WindowRuleServiceOnForegroundWindowChanged(HWINEVENTHOOK hwineventhook, uint @event, HWND hwnd, int idobject, int idchild, uint ideventthread, uint dwmseventtime)
-    {
-        //if (@event is not (EVENT_SYSTEM_FOREGROUND))
-        //{
-        //    return;
-        //}
-
-        //ReCheckTopmostState();
     }
 
     private void ReCheckTopmostState()

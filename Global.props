@@ -11,7 +11,7 @@
 		<PackageReference Include="GitInfo" Version="2.3.0">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<Compile Include="..\AssemblyInfo.cs">
+		<Compile Include="$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)'))/AssemblyInfo.cs">
 			<LinkBase>Properties</LinkBase>
 		</Compile>
 	</ItemGroup>
@@ -63,7 +63,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<DebugType Condition="'$(Configuration)'=='Release' OR '$(Configuration)'=='Release_MSIX'">embedded</DebugType>
+		<DebugType>full</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>

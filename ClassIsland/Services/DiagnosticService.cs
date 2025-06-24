@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
@@ -19,7 +18,6 @@ using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
-using Clipboard = System.Windows.Forms.Clipboard;
 
 namespace ClassIsland.Services;
 
@@ -185,7 +183,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             return;
         }
 
-        CopyException();
+        // CopyException();
         List<PluginInfo> plugins = [];
         if (ex != null)
         {
@@ -204,25 +202,26 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                        """;
         
         
-            
-        var r = MessageBox.Show(message, "ClassIsland", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-        if (r == DialogResult.Cancel)
-        {
-            Debugger.Launch();
-        }
-        return;
-
-        void CopyException()
-        {
-            try
-            {
-                Clipboard.SetDataObject(ex?.ToString() ?? "");
-            }
-            catch (Exception e)
-            {
-                // ignored
-            }
-        }
+        
+        // TODO: 实现对话框
+        // var r = MessageBox.Show(message, "ClassIsland", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+        // if (r == DialogResult.Cancel)
+        // {
+        //     Debugger.Launch();
+        // }
+        // return;
+        //
+        // void CopyException()
+        // {
+        //     try
+        //     {
+        //         Clipboard.SetDataObject(ex?.ToString() ?? "");
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         // ignored
+        //     }
+        // }
     }
 
     public static List<PluginInfo> GetPluginsByStacktrace(Exception exception)

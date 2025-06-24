@@ -1,6 +1,6 @@
-﻿using ClassIsland.Core.Models;
+﻿using ClassIsland.Platforms.Abstraction.Models;
 
-namespace ClassIsland.Core.Abstractions.Services;
+namespace ClassIsland.Platforms.Abstraction.Services;
 
 /// <summary>
 /// 位置获取服务

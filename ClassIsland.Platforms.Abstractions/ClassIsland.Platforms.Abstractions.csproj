@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>ClassIsland 应用跨平台抽象基类。</Description>
+        <PackageTags>classisland;avalonia;</PackageTags>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <RootNamespace>ClassIsland.Platforms.Abstraction</RootNamespace>
+        
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    </ItemGroup>
+    
+    <Import Project="../Global.props"/>
+    <Import Project="../GeneratePackage.props"/>
+    <Import Project="../AvaloniaShared.props"/>
+</Project>

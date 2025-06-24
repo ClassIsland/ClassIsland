@@ -22,7 +22,7 @@ namespace ClassIsland;
 public static class Program
 {
     [STAThread]
-    public static async Task<int> Main(string[] args)
+    public static async Task<int> AppEntry(string[] args)
     {
         Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
         Thread.CurrentThread.SetApartmentState(ApartmentState.STA);

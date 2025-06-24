@@ -1,11 +1,8 @@
-﻿using System;
-using System.Device.Location;
-using System.Threading;
-using System.Threading.Tasks;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Models;
+﻿using System.Device.Location;
+using ClassIsland.Platforms.Abstraction.Models;
+using ClassIsland.Platforms.Abstraction.Services;
 
-namespace ClassIsland.Services;
+namespace ClassIsland.Platform.Windows.Services;
 
 public class LocationService : ILocationService
 {
