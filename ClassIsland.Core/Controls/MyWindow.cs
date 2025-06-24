@@ -37,6 +37,17 @@ public class MyWindow : AppWindow
     public static readonly DirectProperty<MyWindow, bool> EnableMicaWindowProperty = AvaloniaProperty.RegisterDirect<MyWindow, bool>(
         nameof(EnableMicaWindow), o => o.EnableMicaWindow, (o, v) => o.EnableMicaWindow = v);
 
+    private bool _isMicaSupported;
+
+    public static readonly DirectProperty<MyWindow, bool> IsMicaSupportedProperty = AvaloniaProperty.RegisterDirect<MyWindow, bool>(
+        nameof(IsMicaSupported), o => o.IsMicaSupported, (o, v) => o.IsMicaSupported = v);
+
+    public bool IsMicaSupported
+    {
+        get => _isMicaSupported;
+        set => SetAndRaise(IsMicaSupportedProperty, ref _isMicaSupported, value);
+    }
+
     
     /// <summary>
     /// 启用云母窗口背景
@@ -60,6 +71,8 @@ public class MyWindow : AppWindow
         {
             // ignored
         }
+
+        IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version.Build > 22000;
         Loaded += OnLoaded;
         Activated += OnActivated;
         Deactivated += OnDeactivated;
@@ -96,7 +109,7 @@ public class MyWindow : AppWindow
 
     private void OnDeactivated(object? sender, EventArgs e)
     {
-        if (EnableMicaWindow)
+        if (EnableMicaWindow && IsMicaSupported)
         {
             TransparencyLevelHint = [WindowTransparencyLevel.None];
         }
@@ -104,7 +117,7 @@ public class MyWindow : AppWindow
 
     private void OnActivated(object? sender, EventArgs e)
     {
-        if (EnableMicaWindow)
+        if (EnableMicaWindow && IsMicaSupported)
         {
             TransparencyLevelHint = [WindowTransparencyLevel.Mica];
         }

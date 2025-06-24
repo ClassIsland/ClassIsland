@@ -25,6 +25,6 @@ public static class UriProtocolRegisterHelper
 
     public static bool IsRegistered()
     {
-        return Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Classes")?.GetSubKeyNames().Count(x => x == IUriNavigationService.UriScheme) > 0;
+        return Microsoft.Win32.Registry.CurrentUser?.OpenSubKey("Software\\Classes")?.GetSubKeyNames().Count(x => x == IUriNavigationService.UriScheme) > 0;
     }
 }

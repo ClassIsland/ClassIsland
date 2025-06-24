@@ -77,8 +77,11 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
         Task.Run(() => {
             Sync();
             UpdateTimerStatus();
-            SystemEvents.TimeChanged += SystemEventsOnTimeChanged;
-            AppBase.Current.AppStopping += (sender, args) => SystemEvents.TimeChanged -= SystemEventsOnTimeChanged; ;
+            if (OperatingSystem.IsWindows())
+            {
+                SystemEvents.TimeChanged += SystemEventsOnTimeChanged;
+                AppBase.Current.AppStopping += (sender, args) => SystemEvents.TimeChanged -= SystemEventsOnTimeChanged; ;
+            }
         });
 
         if (SettingsService.Settings.IsTimeAutoAdjustEnabled)

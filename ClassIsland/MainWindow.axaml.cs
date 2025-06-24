@@ -509,12 +509,12 @@ public partial class MainWindow : Window
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（1）");
         // UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();
-        SystemEvents.UserPreferenceChanged += OnSystemEventsOnUserPreferenceChanged;
-        AppBase.Current.AppStopping += (sender, args) => SystemEvents.UserPreferenceChanged -= OnSystemEventsOnUserPreferenceChanged;
+        AppBase.Current.PlatformSettings!.ColorValuesChanged += OnSystemEventsOnUserPreferenceChanged;
+        AppBase.Current.AppStopping += (sender, args) => AppBase.Current.PlatformSettings!.ColorValuesChanged -= OnSystemEventsOnUserPreferenceChanged;
         span?.Finish();
     }
 
-    private void OnSystemEventsOnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs args)
+    private void OnSystemEventsOnUserPreferenceChanged(object? sender, PlatformColorValues args)
     {
         if (UserPrefrenceUpdateStopwatch.ElapsedMilliseconds < 1000)
         {

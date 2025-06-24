@@ -24,9 +24,6 @@ public static class Program
     [STAThread]
     public static async Task<int> AppEntry(string[] args)
     {
-        Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
-        Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
-        
         AppDomain.CurrentDomain.UnhandledException += DiagnosticService.ProcessDomainUnhandledException;
         AppBase.CurrentLifetime = ApplicationLifetime.EarlyLoading;
 
