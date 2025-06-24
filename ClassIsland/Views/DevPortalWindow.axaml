@@ -38,6 +38,8 @@
                     </ci:Field>
                     <Button Content="发送！" Classes="accent"
                             Click="ButtonSendNotification_OnClick"/>
+                    <Button Content="Run chain" Classes=""
+                            Click="ButtonRunChain_OnClick"/>
                 </StackPanel>
             </TabItem>
         </TabControl>

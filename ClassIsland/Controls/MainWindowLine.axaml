@@ -1,11 +1,18 @@
 ﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:ClassIsland.Controls"
+                    xmlns:controls="using:ClassIsland.Controls"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
-                    xmlns:classIsland="clr-namespace:ClassIsland"
+                    xmlns:classIsland="using:ClassIsland"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:notification="clr-namespace:ClassIsland.Core.Models.Notification;assembly=ClassIsland.Core">
+    <Design.PreviewWith>
+        <controls:MainWindowLine WindowDockingLocation="1"
+                                 LineNumber="0"
+                                 IsMainLine="True">
+            <TextBlock Text="123"/>
+        </controls:MainWindowLine>
+    </Design.PreviewWith>
     <!--#region StoryBoards-->
     <ci:IntToStringConverter x:Key="IntToStringConverter" />
     <ci:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
@@ -42,7 +49,7 @@
                 <!-- Background -->
                 <Border x:Name="BackgroundBorder"
                         Classes="docking background"
-                        Width="{TemplateBinding BackgroundWidth, Mode=OneWay}"
+                        Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
                         Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                         Height="{DynamicResource IslandContainerHeight}" />
                 <Border x:Name="BackgroundBorderOverlay"
@@ -84,25 +91,22 @@
 
                     <!-- Overlay View -->
                     <Grid x:Name="GridOverlay"
-                          ClipToBounds="True">
+                          ClipToBounds="True"
+                          Opacity="0">
                         <Border CornerRadius="20"
                                 ClipToBounds="True"
                                 IsHitTestVisible="False">
 
-                            <ProgressBar VerticalAlignment="Stretch"
+                            <ProgressBar VerticalAlignment="Bottom"
                                          Maximum="1"
-                                         Value="{Binding NotificationProgressBarValue, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"
+                                         Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
                                          x:Name="OverlayTimeProgressBar"
-                                         Height="{Binding Height, ElementName=PART_GridWrapper}"
-                                         Foreground="{DynamicResource MaterialDesignBody}"
-                                         Background="Transparent"
-                                         BorderBrush="Transparent"
-                                         Opacity="0.16">
+                                         MinWidth="0">
                             </ProgressBar>
                         </Border>
                         <ContentPresenter
-                            Content="{Binding ViewModel.CurrentOverlayContent.Content, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}" 
-                            ContentTemplate="{Binding ViewModel.CurrentOverlayContent.ContentTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"/>
+                            Content="{Binding OverlayContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" 
+                            ContentTemplate="{Binding OverlayContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/>
 
                     </Grid>
 
@@ -112,19 +116,21 @@
                             VerticalAlignment="Stretch"
                             RenderTransformOrigin="0.5,0.5">
                         <Border.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform />
-                                <SkewTransform />
-                                <RotateTransform />
-                                <TranslateTransform Y="-50" />
-                            </TransformGroup>
+                            <TranslateTransform Y="-50"/>
                         </Border.RenderTransform>
                         <ContentPresenter x:Name="OverlayMaskContent"
-                                          Content="{Binding ViewModel.CurrentMaskContent.Content, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}" 
-                                          ContentTemplate="{Binding ViewModel.CurrentMaskContent.ContentTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"/>
+                                          Opacity="0"
+                                          Content="{Binding MaskContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" 
+                                          ContentTemplate="{Binding MaskContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/>
                     </Border>
                 </Grid>
             </Grid>
+            <TextBlock Foreground="Yellow">
+                <Run Text="ML(N) #"/><Run Text="{Binding LineNumber, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/>
+                <Run Text="Mask"/><Run Text="{Binding #OverlayMaskContent.Opacity}"/>
+                <Run Text="Overlay"/><Run Text="{Binding #GridOverlay.Opacity}"/>
+                <Run Text="Content"/><Run Text="{Binding #GridContentRoot.Opacity}"/>
+            </TextBlock>
         </Grid>
     </ControlTemplate>
     <ControlTemplate x:Key="MainWindowLineMinControlTemplate" TargetType="controls:MainWindowLine">
@@ -148,7 +154,7 @@
             <!-- Background -->
             <Border x:Name="BackgroundBorder"
                     Classes="docking background"
-                    Width="{TemplateBinding BackgroundWidth, Mode=OneWay}"
+                    Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
                     Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                     Height="{DynamicResource IslandContainerHeight}" />
 
@@ -238,6 +244,154 @@
         <Style Selector="^[IsLineFaded=True]">
             <Setter Property="Opacity" Value="0.05"/>
         </Style>
+        <Style Selector="^[IsMainLine=True]">
+            <Style Selector="^ /template/ ContentPresenter#OverlayMaskContent">
+                <!-- <Setter Property="Transitions"> -->
+                <!--     <Transitions> -->
+                <!--         <DoubleTransition Property="Opacity" -->
+                <!--                           Duration="0:0:0.2"> -->
+                <!--             <DoubleTransition.Easing> -->
+                <!--                 <SineEaseIn/> -->
+                <!--             </DoubleTransition.Easing> -->
+                <!--         </DoubleTransition> -->
+                <!--     </Transitions> -->
+                <!-- </Setter> -->
+            </Style>
+            <Style Selector="^ /template/ Grid#GridContentRoot">
+                <Setter Property="Transitions">
+                    <Transitions>
+                        <DoubleTransition Property="Opacity"
+                                          Duration="0:0:0.2">
+                            <DoubleTransition.Easing>
+                                <SineEaseIn/>
+                            </DoubleTransition.Easing>
+                        </DoubleTransition>
+                    </Transitions>
+                </Setter>
+                <Setter Property="Opacity" Value="1"/>
+            </Style>
+            
+            <Style Selector="^:mask-anim">
+                <Style Selector="^ /template/ Border#OverlayMask">
+                    <!-- <Setter Property="Transitions"> -->
+                    <!--     <Transitions> -->
+                    <!--         <TransformOperationsTransition Property="RenderTransform" -->
+                    <!--                                        Duration="0:0:0.2"> -->
+                    <!--             <TransformOperationsTransition.Easing> -->
+                    <!--                 <SineEaseIn/> -->
+                    <!--             </TransformOperationsTransition.Easing> -->
+                    <!--         </TransformOperationsTransition> -->
+                    <!--     </Transitions> -->
+                    <!-- </Setter> -->
+                </Style>
+                
+                <Style Selector="^:mask-in">
+                    <Style Selector="^ /template/ Border#OverlayMask">
+                        <Style.Animations>
+                            <Animation Duration="0:0:0.2" IterationCount="1"
+                                       FillMode="Both">
+                                <Animation.Easing>
+                                    <QuadraticEaseIn/>
+                                </Animation.Easing>
+                                <KeyFrame Cue="0%">
+                                    <Setter Property="TranslateTransform.Y" Value="-50"/>
+                                </KeyFrame>
+                                <KeyFrame Cue="100%">
+                                    <Setter Property="TranslateTransform.Y" Value="0"/>
+                                </KeyFrame>
+                            </Animation>
+                        </Style.Animations>
+                    </Style>
+                    <Style Selector="^ /template/ ContentPresenter#OverlayMaskContent">
+                        <Style.Animations>
+                            <Animation Delay="0:0:0.2" Duration="0:0:0.1" IterationCount="1"
+                                       FillMode="Both">
+                                <KeyFrame Cue="0%">
+                                    <Setter Property="Opacity" Value="0"/>
+                                </KeyFrame>
+                                <KeyFrame Cue="100%">
+                                    <Setter Property="Opacity" Value="1.0"/>
+                                </KeyFrame>
+                            </Animation>
+                        </Style.Animations>
+                    </Style>
+                    <Style Selector="^ /template/ Grid#GridContentRoot">
+                        <Setter Property="Opacity" Value="0"/>
+                    </Style>
+                </Style>
+                <Style Selector="^:mask-out">
+                    <Style Selector="^ /template/ Border#OverlayMask">
+                        <Style.Animations>
+                            <Animation Duration="0:0:0.2" Delay="0:0:0.1" IterationCount="1"
+                                       FillMode="Both">
+                                <Animation.Easing>
+                                    <QuadraticEaseIn/>
+                                </Animation.Easing>
+                                <KeyFrame Cue="0%">
+                                    <Setter Property="TranslateTransform.Y" Value="0"/>
+                                </KeyFrame>
+                                <KeyFrame Cue="100%">
+                                    <Setter Property="TranslateTransform.Y" Value="50"/>
+                                </KeyFrame>
+                            </Animation>
+                        </Style.Animations>
+                    </Style>
+                    <Style Selector="^ /template/ ContentPresenter#OverlayMaskContent">
+                        <Style.Animations>
+                            <Animation Duration="0:0:0.1" IterationCount="1"
+                                       FillMode="Both">
+                                <KeyFrame Cue="0%">
+                                    <Setter Property="Opacity" Value="1.0"/>
+                                </KeyFrame>
+                                <KeyFrame Cue="100%">
+                                    <Setter Property="Opacity" Value="0"/>
+                                </KeyFrame>
+                            </Animation>
+                        </Style.Animations>
+                    </Style>
+                    <Style Selector="^ /template/ Grid#GridContentRoot">
+                        <Setter Property="Opacity" Value="0"/>
+                    </Style>
+                </Style>
+            </Style>
+            <Style Selector="^:overlay-anim">
+                <Style Selector="^ /template/ Grid#GridOverlay">
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <DoubleTransition Property="Opacity"
+                                              Duration="0:0:0.2">
+                                <DoubleTransition.Easing>
+                                    <SineEaseIn/>
+                                </DoubleTransition.Easing>
+                            </DoubleTransition>
+                        </Transitions>
+                    </Setter>
+                    <Setter Property="Opacity" Value="0"/>
+                </Style>
+                
+                <Style Selector="^:overlay-out">
+                    <Style Selector="^ /template/ Grid#GridOverlay">
+                        <Setter Property="Opacity" Value="0"/>
+                    </Style>
+                    <Style Selector="^ /template/ Grid#GridContentRoot">
+                        <Setter Property="Opacity" Value="1"/>
+                    </Style>
+                </Style>
+            </Style>
+            
+            <Style Selector="^:overlay-in">
+                <Style Selector="^ /template/ Grid#GridOverlay">
+                    <Setter Property="Opacity" Value="1"/>
+                </Style>
+                <Style Selector="^ /template/ Grid#GridContentRoot">
+                    <Setter Property="Opacity" Value="0"/>
+                </Style>
+            </Style>
+            <Style Selector="^ /template/ ProgressBar#OverlayTimeProgressBar">
+                <Setter Property="MinWidth" Value="0"/>
+            </Style>
+        </Style>
+        
     </ControlTheme>
 
     

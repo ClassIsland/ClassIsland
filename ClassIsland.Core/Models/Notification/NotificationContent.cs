@@ -43,6 +43,19 @@ public class NotificationContent : ObservableRecipient
     }
 
     /// <summary>
+    /// 提醒内容模板资源键，可选。如果此值不为 null，将在呈现提醒内容 <see cref="Content"/> 时使用。
+    /// </summary>
+    /// <remarks>
+    /// 即使不设置此属性，ContentPresenter 也会根据设置的数据类型选择资源中对应的数据模板进行呈现。设置此属性后，将覆盖在
+    /// <see cref="ContentTemplate"/> 上设置的值。
+    /// </remarks>
+    public object? ContentTemplateResourceKey
+    {
+        get => _contentTemplateResourceKey;
+        set => SetProperty(ref _contentTemplateResourceKey, value);
+    }
+
+    /// <summary>
     /// 显示此部分的提醒时是否启用语音。
     /// </summary>
     public bool IsSpeechEnabled
@@ -125,6 +138,7 @@ public class NotificationContent : ObservableRecipient
                 Text = text
             },
             SpeechContent = text,
+            ContentTemplateResourceKey = TwoIconsMaskTemplateData.TemplateResourceKey
         };
         factory?.Invoke(content);
         return content;
@@ -146,6 +160,7 @@ public class NotificationContent : ObservableRecipient
                 Text = text
             },
             SpeechContent = text,
+            ContentTemplateResourceKey = SimpleTextTemplateData.TemplateResourceKey
         };
         factory?.Invoke(content);
         return content;

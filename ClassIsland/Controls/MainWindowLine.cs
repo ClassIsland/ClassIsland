@@ -15,6 +15,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data.Core;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Metadata;
 using Avalonia.Platform;
 using Avalonia.Reactive;
@@ -46,7 +47,7 @@ namespace ClassIsland.Controls;
 // [ContentProperty("Content")]
 [TemplatePart(Name = "PART_GridWrapper", Type = typeof(Grid))]
 [PseudoClasses(":dock-left", ":dock-right", ":dock-center", ":dock-top", ":dock-bottom",
-    "faded", "mask-open", "overlay-open", "custom-background")]
+    ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out", ":custom-background")]
 public class MainWindowLine : TemplatedControl, INotificationConsumer
 {
     public static readonly StyledProperty<object> ContentProperty = AvaloniaProperty.Register<MainWindowLine, object>(
@@ -172,15 +173,13 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         set => SetAndRaise(OverlayContentProperty, ref _overlayContent, value);
     }
 
-    private double _countdownProgressValue;
-
-    public static readonly DirectProperty<MainWindowLine, double> CountdownProgressValueProperty = AvaloniaProperty.RegisterDirect<MainWindowLine, double>(
-        nameof(CountdownProgressValue), o => o.CountdownProgressValue, (o, v) => o.CountdownProgressValue = v);
+    public static readonly StyledProperty<double> CountdownProgressValueProperty = AvaloniaProperty.Register<MainWindowLine, double>(
+        nameof(CountdownProgressValue));
 
     public double CountdownProgressValue
     {
-        get => _countdownProgressValue;
-        set => SetAndRaise(CountdownProgressValueProperty, ref _countdownProgressValue, value);
+        get => GetValue(CountdownProgressValueProperty);
+        set => SetValue(CountdownProgressValueProperty, value);
     }
 
     private bool _isOverlayOpen = false;
@@ -443,6 +442,12 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
             var rawTime = content.EndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
             content.Duration = rawTime > TimeSpan.Zero ? rawTime : TimeSpan.Zero;
         }
+
+        if (content.ContentTemplateResourceKey != null && 
+            this.TryFindResource(content.ContentTemplateResourceKey, out var template))
+        {
+            content.ContentTemplate = template as DataTemplate;
+        }
     }
 
     private async void ProcessNotification()
@@ -487,6 +492,10 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
             if (request.MaskContent.Duration > TimeSpan.Zero && !cancellationToken.IsCancellationRequested)
             {
+                PseudoClasses.Set(":mask-anim", false);
+                PseudoClasses.Set(":overlay-out", false);
+                PseudoClasses.Set(":mask-in", false);
+                PseudoClasses.Set(":mask-out", false);
                 notificationsShowed = true;
                 MaskContent = request.MaskContent;  // 加载Mask元素
                 // TODO: 向上级传递置顶要求
@@ -501,7 +510,9 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                 {
                     SpeechService.EnqueueSpeechQueue(request.MaskContent.SpeechContent);
                 }
-                PseudoClasses.Set(":mask-open", true);
+                PseudoClasses.Set(":mask-anim", true);
+                PseudoClasses.Set(":mask-in", true);
+                PseudoClasses.Set(":overlay-anim", false);
                 // 播放提醒音效
                 if (settings.IsNotificationSoundEnabled && SettingsService.Settings.AllowNotificationSound)
                 {
@@ -544,8 +555,11 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                 }
                 if (overlay is null || cancellationToken.IsCancellationRequested || overlay.Duration <= TimeSpan.Zero)
                 {
-                    PseudoClasses.Set(":mask-open", false);
-                    PseudoClasses.Set(":overlay-open", false);
+                    PseudoClasses.Set(":overlay-anim", true);
+                    PseudoClasses.Set(":mask-in", false);
+                    PseudoClasses.Set(":mask-out", true);
+                    PseudoClasses.Set(":overlay-in", false);
+                    PseudoClasses.Set(":overlay-out", true);
                 }
                 else
                 {
@@ -555,8 +569,10 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                     {
                         SpeechService.EnqueueSpeechQueue(overlay.SpeechContent);
                     }
-                    PseudoClasses.Set(":mask-open", false);
-                    PseudoClasses.Set(":overlay-open", true);
+                    PseudoClasses.Set(":mask-out", true);
+                    PseudoClasses.Set(":mask-in", false);
+                    PseudoClasses.Set(":overlay-out", false);
+                    PseudoClasses.Set(":overlay-in", true);
                     var animation = new Animation()
                     {
                         Duration = overlay.Duration,
@@ -572,7 +588,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                             },
                             new KeyFrame()
                             {
-                                Cue = new Cue(0.0),
+                                Cue = new Cue(1.0),
                                 Setters =
                                 {
                                     new Setter(CountdownProgressValueProperty, 0.0)
@@ -592,8 +608,9 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
             if (NotificationHostService.RequestQueue.Count < 1 && notificationsShowed)
             {
-                PseudoClasses.Set(":mask-open", false);
-                PseudoClasses.Set(":overlay-open", false);
+                PseudoClasses.Set(":overlay-anim", true);
+                PseudoClasses.Set(":overlay-out", true);
+                PseudoClasses.Set(":overlay-in", false);
             }
             await request.CompletedTokenSource.CancelAsync();
 

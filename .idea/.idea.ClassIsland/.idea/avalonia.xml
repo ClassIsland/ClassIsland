@@ -25,6 +25,7 @@
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonControlSeperator.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonsListBox.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/NotificationTemplates/RollingTextTemplate.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/NotificationTemplates/SimpleTextOverlayTemplate.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/NotificationTemplates/Templates.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/NotificationTemplates/TwoIconsMaskTemplate.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/RootAttachedSettingsDependencyControl.axaml" value="ClassIsland/ClassIsland.csproj" />
@@ -52,6 +53,7 @@
         <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Themes/Styles.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/CrashWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/Views/DevPortalWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/DevProtal.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/SettingPages/GeneralSettingsPage.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/SettingsWindowNew.axaml" value="ClassIsland/ClassIsland.csproj" />
