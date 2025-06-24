@@ -26,19 +26,20 @@ jobs:
     runs-on: windows-latest  # For a list of available runner types, refer to
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     env:
-      artifact_name: out_app_windows_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
+      artifact_name: out_app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
         trim_assets: ['false']
-        package: ['singleFile']
+        package: ['folder']
         arch: ['x64', 'x86', 'arm64']
-        include:
-          - arch: 'x64' 
-            trim_assets: 'true'
-            package: 'singleFile'
-    name: Build_windows_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
+        os: ['windows', 'linux']
+        exclude: 
+          - os: linux
+            arch: x86
+      
+    name: Build_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -69,14 +70,15 @@ jobs:
           API_SIGNING_KEY: ${{ secrets.API_SIGNING_KEY}}
           API_SIGNING_KEY_PS: ${{ secrets.API_SIGNING_KEY_PS }}
           arch: ${{ matrix.arch }}
+          os: ${{ matrix.os }}
         run: |
           ls
           if ($env:package -eq "wap") {  
             # WAP
             pwsh -ep Bypass -c ./tools/release-gen/publish-wap.ps1 false $env:is_release
           } else {  
-            # Single File
-            pwsh -ep Bypass -c ./tools/release-gen/publish.ps1 $env:trim_assets $env:arch
+            # Folder
+            pwsh -ep Bypass -c ./tools/release-gen/publish.ps1 $env:trim_assets $env:arch $env:os
           }
 
       - name: Upload Unsigned APP to artifacts

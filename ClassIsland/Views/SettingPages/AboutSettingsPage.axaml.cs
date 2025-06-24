@@ -52,7 +52,7 @@ public partial class AboutSettingsPage : SettingsPageBase
                 _ = CommonTaskDialogs.ShowDialog("调试菜单已禁用", "您的组织禁用了调试菜单。", this);
                 return;
             }
-#if !DEBUG
+#if false
             var r1 = new CommonDialogBuilder()
                 .SetPackIcon(MaterialIconKind.Bug)
                 .SetCaption("启用调试菜单")
