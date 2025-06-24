@@ -14,70 +14,6 @@ namespace ClassIsland.Core.Helpers.Native;
 
 public static class NativeWindowHelper
 {
-    #region 常量
-    public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
-    public static readonly HWND HWND_TOPMOST = new(-1);
-    public static readonly HWND HWND_BOTTOM = (HWND)new IntPtr(1);
-
-    public const int OF_READWRITE = 2;
-    public const int OF_SHARE_DENY_NONE = 0x40;
-
-    public const int WS_EX_DLGMODALFRAME = 0x0001;
-    public const int WS_EX_LAYERED = 0x00080000;
-    public const int WS_EX_TOOLWINDOW = 0x00000080;
-    public const int WS_EX_TRANSPARENT = 0x20;
-    public const int WS_SYSMENU = 0x80000;
-
-    public const int HWND_BROADCAST = 0xffff;
-
-    [Flags]
-    internal enum DesktopFlags : uint
-    {
-        ReadObjects = 0x0001,
-        CreateWindow = 0x0002,
-        CreateMenu = 0x0004,
-        HookControl = 0x0008,
-        JournalRecord = 0x0010,
-        JournalPlayback = 0x0020,
-        Enumerate = 0x0040,
-        WriteObjects = 0x0080,
-        SwitchDesktop = 0x0100,
-    }
-    #endregion
-
-    public static bool IsForegroundFullScreen(Screen screen)
-    {
-        var win = GetForegroundWindow();
-        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
-        var pClassName = BuildPWSTR(256, out var nClassName);
-        GetClassName(win, pClassName, 255);
-        //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        var className = pClassName.ToString();
-        Marshal.FreeHGlobal(nClassName);
-        if (className == "WorkerW" || className == "Progman")
-        {
-            return false;
-        }
-        return new PixelRect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.Bounds);
-    }
-
-    public static bool IsForegroundMaxWindow(Screen screen)
-    {
-        
-        var win = GetForegroundWindow();
-        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
-        var pClassName = BuildPWSTR(256, out var nClassName);
-        GetClassName(win, pClassName, 255);
-        var className = pClassName.ToString();
-        Marshal.FreeHGlobal(nClassName);
-        //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        if (className == "WorkerW" || className == "Progman")
-        {
-            return false;
-        }
-        return new PixelRect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.WorkingArea);
-    }
-
     public static bool IsOccupied(string filePath)
     {
         try
@@ -159,15 +95,4 @@ public static class NativeWindowHelper
     }
 #endif
 
-    public static unsafe PWSTR BuildPWSTR(int bufferSize, out nint ptr)
-    {
-        ptr = Marshal.AllocHGlobal(bufferSize * sizeof(char));
-        return new PWSTR((char*)ptr.ToPointer());
-    }
-
-    public struct StyleStruct
-    {
-        public int styleOld;
-        public int styleNew;
-    }
 }

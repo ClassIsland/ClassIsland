@@ -9,24 +9,15 @@ namespace ClassIsland.Services;
 public class ConsoleService
 {
     public static string AsciiLogo = "";
-    public static HWND ConsoleHWnd { get; private set; }
 
     public static void InitializeConsole()
     {
-#if DEBUG
-        if (ConsoleHWnd == nint.Zero)
-        {
-            AllocConsole();
-        }
-        ConsoleHWnd = GetConsoleWindow();
-        SetWindowText(ConsoleHWnd, "ClassIsland 输出");
-#endif
         PrintAppInfo();
     }
 
     public static void PrintAppInfo()
     {
-        var s = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/AsciiLogo.txt", UriKind.RelativeOrAbsolute));
+        var s = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/AsciiLogo.txt"));
         AsciiLogo = new StreamReader(s).ReadToEnd();
         Console.WriteLine(AsciiLogo.Pastel("#00bfff"));
         Console.WriteLine($"ClassIsland {App.AppVersionLong}");

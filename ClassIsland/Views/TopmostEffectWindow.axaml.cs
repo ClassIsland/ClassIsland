@@ -7,6 +7,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Shared.Interfaces.Controls;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
@@ -41,6 +43,13 @@ public partial class TopmostEffectWindow : Window
             Show();
             Hide();
         }
+    }
+
+    public override void EndInit()
+    {
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, 
+            WindowFeatures.Transparent | WindowFeatures.ToolWindow, true);
+        base.EndInit();
     }
 
     private void EffectControlsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -97,14 +106,6 @@ public partial class TopmostEffectWindow : Window
         Width = bounds.Width * scale;
         Height = bounds.Height * scale;
         Position = new PixelPoint((int)(bounds.X * scale), (int)(bounds.Y * scale));
-    }
-
-    private void TopmostEffectWindow_OnContentRendered(object? sender, EventArgs e)
-    {
-        var hWnd = (HWND)(TryGetPlatformHandle()?.Handle ?? nint.Zero);
-        var style = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
-        style |= NativeWindowHelper.WS_EX_TOOLWINDOW;
-        var r = SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
     }
 
     private void TopmostEffectWindow_OnClosing(object? sender, WindowClosingEventArgs e)

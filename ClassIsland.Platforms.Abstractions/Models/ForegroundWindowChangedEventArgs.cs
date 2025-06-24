@@ -6,11 +6,15 @@ namespace ClassIsland.Platforms.Abstraction.Models;
 public class ForegroundWindowChangedEventArgs
 {
     /// <summary>
-    /// 平台句柄
+    /// 前台窗口句柄
     /// </summary>
     public nint Handle { get; }
 
-    internal ForegroundWindowChangedEventArgs(nint handle)
+    /// <summary>
+    /// 初始化一个<see cref="ForegroundWindowChangedEventArgs"/>对象。
+    /// </summary>
+    /// <param name="handle">前台窗口句柄</param>
+    public ForegroundWindowChangedEventArgs(nint handle)
     {
         Handle = handle;
     }

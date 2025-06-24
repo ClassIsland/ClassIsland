@@ -41,12 +41,10 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     public string GetDiagnosticInfo()
     {
         var settings = SettingsService.Settings;
-        DwmIsCompositionEnabled(out BOOL isCompositionEnabled);
         GetDeviceInfo(out var name, out var vendor);
         var list = new Dictionary<string, string>
         {
             {"SystemOsVersion",  RuntimeInformation.OSDescription},
-            {"SystemIsCompositionEnabled", isCompositionEnabled.ToString()},
             {"SystemDeviceName", name},
             {"SystemDeviceVendor", vendor},
             {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},

@@ -14,6 +14,7 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data.Core;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Metadata;
@@ -22,6 +23,7 @@ using Avalonia.Reactive;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using ClassIsland.Controls.NotificationEffects;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
@@ -29,6 +31,7 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models.EventArgs;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
@@ -306,7 +309,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                 var contacts = digitizerData.Contacts;
                 //Logger.LogTrace("TOUCH {}", string.Join(", ", contacts.ToList().Select(x => $"({x.X}, {x.Y} + {x.Width})")));
                 var r = IsMouseIn =
-                    contacts.ToList().Exists(x => GetMouseStatusByPos(new System.Drawing.Point(x.X, x.Y)));
+                    contacts.ToList().Exists(x => GetMouseStatusByPos(new Point(x.X, x.Y)));
                 if (SettingsService.Settings.TouchInFadingDurationMs > 0 && r)
                 {
                     TouchInFadingTimer.Stop();
@@ -338,7 +341,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
         try
         {
-            GetCursorPos(out var ptr);
+            var ptr = PlatformServices.WindowPlatformService.GetMousePos();
             IsMouseIn = GetMouseStatusByPos(ptr);
         }
         catch (Exception ex)
@@ -413,7 +416,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         BackgroundWidth = e.NewSize.Width;
     }
 
-    private bool GetMouseStatusByPos(System.Drawing.Point ptr)
+    private bool GetMouseStatusByPos(Point ptr)
     {
         if (GridWrapper == null)
         {

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Windows.Win32.UI.Accessibility;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
@@ -24,6 +23,8 @@ using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models.EventArgs;
+using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Interfaces;
@@ -220,8 +221,8 @@ public partial class MainWindow : Window
         var screen = GetSelectedScreenSafe();
         if (screen != null)
         {
-            ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
-            ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
+            ViewModel.IsForegroundFullscreen = PlatformServices.WindowPlatformService.IsForegroundWindowFullscreen(screen);
+            ViewModel.IsForegroundMaxWindow = PlatformServices.WindowPlatformService.IsForegroundWindowMaximized(screen);
         }
     }
 
@@ -259,7 +260,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            GetCursorPos(out var ptr);
+            var ptr = PlatformServices.WindowPlatformService.GetMousePos();
             MousePosChanged?.Invoke(this, new MousePosChangedEventArgs(ptr));
         }
         catch (Exception ex)
@@ -369,8 +370,7 @@ public partial class MainWindow : Window
         var handle = TryGetPlatformHandle()?.Handle ?? nint.Zero;
         if (ViewModel.IsNotificationWindowExplicitShowed || ViewModel.Settings.WindowLayer == 1)
         {
-            SetWindowPos((HWND)handle, NativeWindowHelper.HWND_TOPMOST, 0, 0, 0, 0,
-                SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING);
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, true);
             //Topmost = true;
         }
     }
@@ -406,24 +406,25 @@ public partial class MainWindow : Window
             RawInputEvent?.Invoke(this, new RawInputEventArgs(data));
         }
 
-        if (msg == 0x0047) // WM_WINDOWPOSCHANGED
-        {
-            var pos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
-            Logger.LogTrace("WM_WINDOWPOSCHANGED {}", pos.flags);
-            if ((pos.flags & SET_WINDOW_POS_FLAGS.SWP_NOZORDER) == 0) // SWP_NOZORDER
-            {
-                Logger.LogTrace("Z order changed");
-                if (pos.hwndInsertAfter != NativeWindowHelper.HWND_TOPMOST)
-                {
-                    ReCheckTopmostState();
-                }
-
-                if (pos.hwndInsertAfter != NativeWindowHelper.HWND_BOTTOM)
-                {
-                    SetBottom();
-                }
-            }
-        }
+        // TODO: 实现在窗口层级变化后重新设置 Z 序
+        // if (msg == 0x0047) // WM_WINDOWPOSCHANGED
+        // {
+        //     var pos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
+        //     Logger.LogTrace("WM_WINDOWPOSCHANGED {}", pos.flags);
+        //     if ((pos.flags & SET_WINDOW_POS_FLAGS.SWP_NOZORDER) == 0) // SWP_NOZORDER
+        //     {
+        //         Logger.LogTrace("Z order changed");
+        //         if (pos.hwndInsertAfter != NativeWindowHelper.HWND_TOPMOST)
+        //         {
+        //             ReCheckTopmostState();
+        //         }
+        //
+        //         if (pos.hwndInsertAfter != NativeWindowHelper.HWND_BOTTOM)
+        //         {
+        //             SetBottom();
+        //         }
+        //     }
+        // }
 
         return nint.Zero;
     }
@@ -526,7 +527,6 @@ public partial class MainWindow : Window
 
     private void SetBottom()
     {
-        var hWnd = (HWND)TryGetPlatformHandle()!.Handle;
         if (ViewModel.Settings.WindowLayer != 0)
         {
             return;
@@ -537,25 +537,20 @@ public partial class MainWindow : Window
             //    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
             return;
         }
-        SetWindowPos(hWnd, NativeWindowHelper.HWND_BOTTOM, 0, 0, 0, 0,
-            SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost, true);
     }
 
     private async void UpdateTheme()
     {
         UpdateWindowPos();
-        var hWnd = (HWND)TryGetPlatformHandle()!.Handle;
-        SetLayeredWindowAttributes(hWnd, new COLORREF(0), 255, (LAYERED_WINDOW_ATTRIBUTES_FLAGS)0x2);
-        var style = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
-        style |= NativeWindowHelper.WS_EX_TOOLWINDOW;
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, true);
         if (!ViewModel.Settings.IsMouseClickingEnabled)
         {
-            var r = SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style | (int)WINDOW_EX_STYLE.WS_EX_LAYERED | (int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT);
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);
         }
         else
         {
-            style &= ~NativeWindowHelper.WS_EX_TRANSPARENT;
-            var r = SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, false);
         }
 
         UpdateWindowLayer();

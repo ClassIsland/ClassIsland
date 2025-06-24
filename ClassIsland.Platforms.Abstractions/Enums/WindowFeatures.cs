@@ -22,4 +22,8 @@ public enum WindowFeatures
     /// 隐私窗口，窗口内容只对屏幕可见，对截图工具等不可见
     /// </summary>
     Private = 8,
+    /// <summary>
+    /// 工具窗口
+    /// </summary>
+    ToolWindow = 16
 }

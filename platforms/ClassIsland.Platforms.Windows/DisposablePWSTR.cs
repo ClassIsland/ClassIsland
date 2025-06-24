@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using ClassIsland.Core.Helpers.Native;
 
-namespace ClassIsland.Core;
+namespace ClassIsland.Platform.Windows;
 
 /// <summary>
 /// 可以自动释放的 <see cref="PWSTR"/>。
@@ -21,7 +20,7 @@ public class DisposablePWSTR : IDisposable
     /// <param name="size">缓冲区大小。</param>
     public DisposablePWSTR(int size)
     {
-        PWSTR = NativeWindowHelper.BuildPWSTR(size, out var ptr);
+        PWSTR = NativeHelpers.BuildPWSTR(size, out var ptr);
         Pointer = ptr;
     }
 

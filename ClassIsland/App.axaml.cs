@@ -746,7 +746,6 @@ public partial class App : AppBase, IAppHost
         await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
-        Settings.IsNetworkConnect = InternetGetConnectedState(out var _);
         Settings.DiagnosticStartupCount++;
         // 记录MLE
         if (ApplicationCommand.PrevSessionMemoryKilled)

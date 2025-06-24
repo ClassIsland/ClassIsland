@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+﻿using Avalonia;
 
 namespace ClassIsland.Models.EventArgs;
 

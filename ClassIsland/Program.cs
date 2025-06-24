@@ -52,7 +52,8 @@ public static class Program
 
         if (App.ApplicationCommand.Diagnostic)
         {
-            AllocConsole();
+            // TODO: 实现 AllocConsole
+            // AllocConsole();
         }
 
         var mutex = new Mutex(true, "ClassIsland.Lock", out var createNew);
