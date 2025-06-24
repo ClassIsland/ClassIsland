@@ -134,6 +134,8 @@ public partial class MainWindow : Window
 
     private Point _centerPointCache = new Point(0, 0);
 
+    private List<object> TopmostLocks { get; } = [];
+
 
     public static readonly StyledProperty<double> BackgroundWidthProperty = AvaloniaProperty.Register<MainWindow, double>(
         nameof(BackgroundWidth));
@@ -921,5 +923,39 @@ public partial class MainWindow : Window
     private void NativeMenuItemDebugDevPortal_OnClick(object? sender, EventArgs e)
     {
         IAppHost.GetService<DevPortalWindow>().Show();
+    }
+
+    public void AcquireTopmostLock(object o)
+    {
+        var prevEmpty = TopmostLocks.Count <= 0;
+        TopmostLocks.Add(o);
+        if (!prevEmpty)
+        {
+            return;
+        }
+
+        ViewModel.IsNotificationWindowExplicitShowed = true;
+        if (ViewModel.IsNotificationWindowExplicitShowed && SettingsService.Settings.WindowLayer == 0)
+        {
+            UpdateWindowLayer();
+            ReCheckTopmostState();
+        }
+    }
+
+    public void ReleaseTopmostLock(object o)
+    {
+        TopmostLocks.Remove(o);
+
+        if (TopmostLocks.Count > 0)
+        {
+            return;
+        }
+        
+        if (ViewModel.IsNotificationWindowExplicitShowed)
+        {
+            ViewModel.IsNotificationWindowExplicitShowed = false;
+            SetBottom();
+            UpdateWindowLayer();
+        }
     }
 }

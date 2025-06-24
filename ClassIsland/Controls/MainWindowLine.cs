@@ -216,6 +216,8 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     
     private Point _centerPointCache = new Point(0, 0);
 
+    private object TopmostLock { get; } = new();
+
     public MainWindowLine()
     {
         Loaded += OnLoaded;
@@ -516,13 +518,14 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                 PseudoClasses.Set(":mask-out", false);
                 notificationsShowed = true;
                 MaskContent = request.MaskContent;  // 加载Mask元素
-                // TODO: 向上级传递置顶要求
-                // ViewModel.IsNotificationWindowExplicitShowed = settings.IsNotificationTopmostEnabled && SettingsService.Settings.AllowNotificationTopmost;
-                // if (ViewModel.IsNotificationWindowExplicitShowed && SettingsService.Settings.WindowLayer == 0)  // 如果处于置底状态，还需要激活窗口来强制显示窗口。
-                // {
-                //     UpdateWindowLayer();
-                //     ReCheckTopmostState();
-                // }
+                if (settings.IsNotificationTopmostEnabled && SettingsService.Settings.AllowNotificationTopmost)
+                {
+                    MainWindow.AcquireTopmostLock(TopmostLock);
+                }
+                else
+                {
+                    MainWindow.ReleaseTopmostLock(TopmostLock);
+                }
 
                 if (isMaskSpeechEnabled)
                 {
@@ -639,13 +642,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         OverlayContent = null;
         MaskContent = null;
         _isOverlayOpen = false;
-        // TODO: 恢复主界面置顶状态
-        // if (ViewModel.IsNotificationWindowExplicitShowed)
-        // {
-        //     ViewModel.IsNotificationWindowExplicitShowed = false;
-        //     SetBottom();
-        //     UpdateWindowLayer();
-        // }
+        MainWindow.ReleaseTopmostLock(TopmostLock);
     }
 
     public int QueuedNotificationCount => _notificationQueue.Count;
