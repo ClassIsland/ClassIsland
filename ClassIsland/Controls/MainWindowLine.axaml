@@ -286,7 +286,7 @@
                 </Style>
                 
                 <Style Selector="^:mask-in">
-                    <Style Selector="^ /template/ Border#OverlayMask">
+                    <Style Selector="^ /template/ Border#OverlayMask, ^ /template/ Border#BackgroundBorderOverlayMask">
                         <Style.Animations>
                             <Animation Duration="0:0:0.2" IterationCount="1"
                                        FillMode="Both">
@@ -320,7 +320,7 @@
                     </Style>
                 </Style>
                 <Style Selector="^:mask-out">
-                    <Style Selector="^ /template/ Border#OverlayMask">
+                    <Style Selector="^ /template/ Border#OverlayMask, ^ /template/ Border#BackgroundBorderOverlayMask">
                         <Style.Animations>
                             <Animation Duration="0:0:0.2" Delay="0:0:0.1" IterationCount="1"
                                        FillMode="Both">

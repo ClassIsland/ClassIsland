@@ -8,7 +8,7 @@
         d:DataContext="{d:DesignInstance local:TopmostEffectWindow}"
         Topmost="True"
         ShowActivated="False"
-        Title="顶层效果窗口" Height="0" Width="0"
+        Title="顶层效果窗口" Height="1" Width="1"
         Background="Transparent"
         Closing="TopmostEffectWindow_OnClosing"
         ShowInTaskbar="False"
