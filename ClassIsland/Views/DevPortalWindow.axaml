@@ -19,13 +19,20 @@
         
         <TabControl Grid.Row="0" Grid.RowSpan="2">
             <TabItem Header="首页">
-                <Grid>
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
-                                Spacing="4">
-                        <TextBlock Text="欢迎使用 ClassIsland 开发门户" Theme="{StaticResource SubtitleTextBlockStyle}"
-                                   HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Grid>
+                <StackPanel Spacing="6">
+                    <ci:Field Label="调试时间偏移">
+                        <StackPanel Orientation="Horizontal" Spacing="4" Loaded="TargetTime_OnLoaded">
+                            <CalendarDatePicker SelectedDate="{Binding ViewModel.TargetDate}"
+                                        SelectedDateChanged="DatePicker_OnSelectedDateChanged"
+                                        Loaded="TargetDate_OnLoaded"/>
+                            <TimePicker SelectedTime="{Binding ViewModel.TargetTime}"
+                                        SelectedTimeChanged="TimePicker_OnSelectedTimeChanged"
+                                        Loaded="TargetTime_OnLoaded"
+                                        UseSeconds="True"/>
+                            <Button Content="重置" Click="ButtonReset_OnClick"/>
+                        </StackPanel>
+                    </ci:Field>
+                </StackPanel>
             </TabItem>
             <TabItem Header="提醒">
                 <StackPanel Spacing="6" Width="400" HorizontalAlignment="Left">

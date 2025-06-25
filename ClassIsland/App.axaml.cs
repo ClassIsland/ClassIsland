@@ -624,11 +624,11 @@ public partial class App : AppBase, IAppHost
                 // services.AddComponent<RollingComponent, RollingComponentSettingsControl>();
                 // services.AddComponent<GroupComponent>();
                 // // 提醒提供方
-                // services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
-                // services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
+                services.AddNotificationProvider<ClassNotificationProvider>();
+                services.AddNotificationProvider<AfterSchoolNotificationProvider>();
                 // services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
                 // services.AddNotificationProvider<ManagementNotificationProvider>();
-                // services.AddNotificationProvider<ActionNotificationProvider>();
+                services.AddNotificationProvider<ActionNotificationProvider>();
                 // // Transients
                 // services.AddTransient<ExcelImportWindow>();
                 // services.AddTransient<WallpaperPreviewWindow>();

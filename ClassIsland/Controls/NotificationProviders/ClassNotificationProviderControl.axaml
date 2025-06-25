@@ -1,5 +1,5 @@
 <UserControl x:Class="ClassIsland.Controls.NotificationProviders.ClassNotificationProviderControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,18 +8,20 @@
              xmlns:converters="clr-namespace:ClassIsland.Converters"
              xmlns:classIsland="clr-namespace:ClassIsland"
              xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
              d:DataContext="{d:DesignInstance local:ClassNotificationProviderControl}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <!-- 准备上课 遮罩 -->
         <StackPanel Orientation="Horizontal" x:Key="ClassPrepareNotifyMask" 
+                    TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                     VerticalAlignment="Center" HorizontalAlignment="Center">
-            <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center"
+                           Height="20" Width="20"/>
             <TextBlock Text="{Binding MaskMessage}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
-            <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+            <ci:FluentIcon Glyph="&#xE479;" VerticalAlignment="Center"
+                           Height="20" Width="20"/>
         </StackPanel>
         <converters1:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
 
@@ -45,33 +47,35 @@
                 <TextBlock Text="{Binding LessonsService.NextClassSubject.Name}" FontWeight="Bold" FontSize="{DynamicResource MainWindowLargeFontSize}" VerticalAlignment="Center"/>
                 <TextBlock Margin="6 0 0 0" FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom"
                            Text="{Binding LessonsService.NextClassSubject.TeacherName}"
-                           Visibility="{Binding ShowTeacherName, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                           IsVisible="{Binding ShowTeacherName}"/>
                 <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom" Margin="2 0 0 0">
-                    <Run Text="{Binding LessonsService.NextClassTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
+                    <Run Text="{Binding LessonsService.NextClassTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm}}">
                     </Run><Run Text="-">
-                    </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
+                    </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm}}"/>
                 </TextBlock>
             </StackPanel>
         </Grid>
 
         <!-- 上课遮罩 -->
         <StackPanel Orientation="Horizontal" x:Key="ClassOnNotification" 
+                    TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                     VerticalAlignment="Center" HorizontalAlignment="Center">
-            <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center"
+                           Height="20" Width="20"/>
             <TextBlock Text="{Binding MaskMessage}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
-            <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+            <ci:FluentIcon Glyph="&#xE479;" VerticalAlignment="Center"
+                           Height="20" Width="20"/>
         </StackPanel>
 
         <!-- 下课遮罩 -->
         <StackPanel Orientation="Horizontal" x:Key="ClassOffNotification" 
+                    TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                     VerticalAlignment="Center" HorizontalAlignment="Center">
-            <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center"
+                           Height="20" Width="20"/>
             <TextBlock Text="{Binding LessonsService.CurrentTimeLayoutItem.BreakNameText}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
-            <materialDesign:PackIcon Kind="Clock" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+            <ci:FluentIcon Glyph="&#xE4C3;" VerticalAlignment="Center"
+                           Height="20" Width="20"/>
         </StackPanel>
 
         <!-- 下课提醒 -->
@@ -94,37 +98,37 @@
                 <TextBlock Text="{Binding LessonsService.NextClassSubject.Name}" FontWeight="Bold" FontSize="{DynamicResource MainWindowLargeFontSize}" VerticalAlignment="Center"/>
                 <TextBlock Margin="6 0 0 0" FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom"
                            Text="{Binding LessonsService.NextClassSubject.TeacherName}"
-                           Visibility="{Binding ShowTeacherName, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                           IsVisible="{Binding ShowTeacherName}"/>
                 <TextBlock Margin="2 0 0 0" FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
-                    <Run Text="{Binding LessonsService.NextClassTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
+                    <Run Text="{Binding LessonsService.NextClassTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm}}">
                     </Run><Run Text="-">
-                    </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
+                    </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm}}"/>
                 </TextBlock>
             </StackPanel>
         </Grid>
     </UserControl.Resources>
     <Grid Margin="16 0" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}">
-        <materialDesign:Transitioner SelectedIndex="{Binding SlideIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}, Mode=OneWay}">
-            <materialDesign:TransitionerSlide>
-                <materialDesign:TransitionerSlide.BackwardWipe>
-                    <materialDesign:SlideOutWipe/>
-                </materialDesign:TransitionerSlide.BackwardWipe>
-                <materialDesign:TransitionerSlide.ForwardWipe>
-                    <materialDesign:SlideOutWipe/>
-                </materialDesign:TransitionerSlide.ForwardWipe>
+        <!-- TODO: 添加动画 -->
+        <ListBox
+            SelectedIndex="{Binding SlideIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}, Mode=OneWay}">
+            <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="IsVisible" Value="{Binding $self.IsSelected}"/>
+                    <Setter Property="Template">
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <ContentPresenter Content="{TemplateBinding Content}"/>
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
+            </ListBox.Styles>
+            <ListBoxItem>
                 <ContentPresenter Content="{Binding Element, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}"/>
-            </materialDesign:TransitionerSlide>
-            <materialDesign:TransitionerSlide>
-                <materialDesign:TransitionerSlide.BackwardWipe>
-                    <materialDesign:SlideOutWipe/>
-                </materialDesign:TransitionerSlide.BackwardWipe>
-                <materialDesign:TransitionerSlide.ForwardWipe>
-                    <materialDesign:SlideOutWipe/>
-                </materialDesign:TransitionerSlide.ForwardWipe>
+            </ListBoxItem>
+            <ListBoxItem>
                 <TextBlock Text="{Binding Message, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"/>
-            </materialDesign:TransitionerSlide>
-        </materialDesign:Transitioner>
+            </ListBoxItem>
+        </ListBox>
     </Grid>
 </UserControl>

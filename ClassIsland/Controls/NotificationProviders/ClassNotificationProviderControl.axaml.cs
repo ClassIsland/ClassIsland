@@ -1,11 +1,10 @@
-#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
+using Avalonia.Controls;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Controls.NotificationProviders;
@@ -83,7 +82,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
     public ClassNotificationProviderControl(string key)
     {
         InitializeComponent();
-        var visual = FindResource(key) as FrameworkElement;
+        var visual = this.FindResource(key) as Control;
         Element = visual;
         Timer.Tick += TimerOnTick;
         if (key is "ClassPrepareNotifyOverlay" or "ClassOffOverlay")
@@ -139,5 +138,3 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         return string.Join(" ", parts);
     }
 }
-
-#endif

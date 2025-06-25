@@ -1,5 +1,5 @@
-#if false
-using System.Windows.Controls;
+
+using Avalonia.Controls;
 
 namespace ClassIsland.Controls.NotificationProviders;
 
@@ -16,7 +16,6 @@ public partial class AfterSchoolNotificationProviderControl : UserControl
     {
         Message = message;
         InitializeComponent();
-        ShowContent = FindResource(key);
+        ShowContent = this.FindResource(key);
     }
 }
-#endif

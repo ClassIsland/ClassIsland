@@ -46,4 +46,45 @@ public partial class DevPortalWindow : MyWindow
             }
         ], new Guid("4B12F124-8585-43C7-AFC5-7BBB7CBE60D6"), Guid.Empty);
     }
+    
+    private void ButtonReset_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.SettingsService.Settings.DebugTimeOffsetSeconds = 0;
+        ViewModel.IsTargetDateLoaded = ViewModel.IsTargetTimeLoaded = false;
+        ViewModel.TargetDate = ViewModel.ExactTimeService.GetCurrentLocalDateTime().Date;
+        ViewModel.TargetTime = ViewModel.ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
+        ViewModel.IsTargetDateLoaded = ViewModel.IsTargetTimeLoaded = true;
+    }
+
+    private void TargetTime_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.TargetTime = ViewModel.ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
+        ViewModel.IsTargetTimeLoaded = true;
+    }
+
+    private void TimePicker_OnSelectedTimeChanged(object? sender, TimePickerSelectedValueChangedEventArgs e)
+    {
+        if (!ViewModel.IsTargetDateTimeLoaded) return;
+
+        DateTime now = ViewModel.ExactTimeService.GetCurrentLocalDateTime();
+        DateTime tar = new(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(e.NewTime ?? TimeSpan.Zero));
+
+        ViewModel.SettingsService.Settings.DebugTimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
+    }
+
+    private void DatePicker_OnSelectedDateChanged(object? sender, SelectionChangedEventArgs selectionChangedEventArgs)
+    {
+        if (!ViewModel.IsTargetDateTimeLoaded) return;
+
+        DateTime now = ViewModel.ExactTimeService.GetCurrentLocalDateTime().Date;
+        DateTime tar = new(DateOnly.FromDateTime(ViewModel.TargetDate), TimeOnly.FromTimeSpan(now.TimeOfDay));
+
+        ViewModel.SettingsService.Settings.DebugTimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
+    }
+
+    private void TargetDate_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.TargetDate = ViewModel.ExactTimeService.GetCurrentLocalDateTime().Date;
+        ViewModel.IsTargetDateLoaded = true;
+    }
 }
