@@ -6,10 +6,12 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Labs.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Commands;
 using ClassIsland.Core.Models.Theming;
 using FluentAvalonia.UI.Windowing;
 
@@ -125,6 +127,14 @@ public class MyWindow : AppWindow
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
+        // TODO: 实现导航命令注册
+        var commands = CommandManager.GetCommandBindings(this);
+        commands.Add(new CommandBinding(UriNavigationCommands.UriNavigationCommand,
+            (_, args) => IAppHost.TryGetService<IUriNavigationService>()
+                ?.NavigateWrapped(new Uri(args.Parameter?.ToString() ?? "classisland:")),
+            (_, args) => args.CanExecute = true));
+        CommandManager.SetCommandBindings(this, commands);
+        
         if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark)&& Content is Control element && !_isAdornerAdded)
         {
             var layer = AdornerLayer.GetAdornerLayer(element);

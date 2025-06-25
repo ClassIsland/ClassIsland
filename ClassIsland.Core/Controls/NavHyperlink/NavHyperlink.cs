@@ -1,37 +1,37 @@
-#if false
 using System.Windows;
-using System.Windows.Documents;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Commands;
+using ClassIsland.Shared;
 
 namespace ClassIsland.Core.Controls.NavHyperlink;
 
 /// <summary>
-/// 可调用应用 Uri 导航的 <see cref="Hyperlink"/>
+/// 可调用应用 Uri 导航的 <see cref="HyperlinkButton"/>
 /// </summary>
 public class NavHyperlink : HyperlinkButton
 {
-    public static readonly DependencyProperty NavigateTargetProperty = DependencyProperty.Register(
-        nameof(NavigateTarget), typeof(string), typeof(NavHyperlink), new PropertyMetadata(default(Uri), (o, args) =>
-        {
-            if (o is not NavHyperlink link)
-            {
-                return;
-            }
+    public static readonly StyledProperty<string> NavTargetProperty = AvaloniaProperty.Register<NavHyperlink, string>(
+        nameof(NavTarget));
 
-            link.CommandParameter = link.NavigateTarget;
-        }));
-
-    public string NavigateTarget
+    public string NavTarget
     {
-        get { return (string)GetValue(NavigateTargetProperty); }
-        set { SetValue(NavigateTargetProperty, value); }
+        get => GetValue(NavTargetProperty);
+        set => SetValue(NavTargetProperty, value);
     }
+
+    protected override Type StyleKeyOverride { get; } = typeof(HyperlinkButton);
 
     /// <inheritdoc />
     public NavHyperlink()
     {
-        Command = UriNavigationCommands.UriNavigationCommand;
+        Click += OnClick;
+    }
+
+    private void OnClick(object? sender, RoutedEventArgs e)
+    {
+        IAppHost.TryGetService<IUriNavigationService>()?.NavigateWrapped(new Uri(NavTarget));
     }
 }
-#endif

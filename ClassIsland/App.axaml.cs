@@ -67,6 +67,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data;
+using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Media;
@@ -84,6 +85,7 @@ using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Views.SettingPages;
 using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
+using ReactiveUI;
 
 namespace ClassIsland;
 /// <summary>

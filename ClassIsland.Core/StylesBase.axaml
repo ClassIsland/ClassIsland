@@ -13,7 +13,10 @@
     </Styles.Resources>
     <Design.PreviewWith>
         <Border Padding="20">
-            <ToggleSwitch/>
+            <StackPanel Spacing="6">
+                <ToggleSwitch />
+                <ci:NavHyperlink Content="Hello!"/>
+            </StackPanel>
         </Border>
     </Design.PreviewWith>
     
@@ -82,6 +85,15 @@
             <Setter Property="FontWeight" Value="Medium"/>
         </Style>
         <Setter Property="MinHeight" Value="28"/>
+    </Style>
+    
+    <Style Selector="TextBlock :is(HyperlinkButton)">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="TextBlock.LineHeight" Value="NaN"/>
+        <Style Selector="^ TextBlock">
+            <!-- 修复字体飞上去的问题 -->
+            <Setter Property="Margin" Value="0 0 0 -1"/>
+        </Style>
     </Style>
     
     <!-- 修复字体飞上去的问题 -->

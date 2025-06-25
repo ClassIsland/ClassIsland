@@ -87,7 +87,8 @@
             <ListBox Grid.Row="1" Margin="0 6 0 0">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:ContributionLabel}">
-                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto"
+                              Margin="0 4">
                             <controls1:FluentIcon Grid.Row="0" Grid.Column="0"
                                                   Glyph="&#xE07D;" VerticalAlignment="Center"
                                                   Margin="0 0 6 0" />
@@ -95,19 +96,18 @@
                                        Text="{Binding Title}"
                                        VerticalAlignment="Center" FontSize="14"
                                        FontWeight="Bold" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="1" Grid.Column="1"
-                                       VerticalAlignment="Center" FontSize="14"
-                                       TextWrapping="Wrap" 
+                            <WrapPanel Grid.Row="1" Grid.Column="1"
+                                       VerticalAlignment="Center" 
                                        IsVisible="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}">
-                                <!-- <commands:NavHyperlink CommandParameter="{Binding Website}" -->
-                                <!--                        ToolTip.Tip="{Binding Website}"> -->
-                                <!--     网站… -->
-                                <!-- </commands:NavHyperlink> -->
-                                <!-- <commands:NavHyperlink CommandParameter="{Binding LicenseUrl}" -->
-                                <!--                        ToolTip.Tip="{Binding LicenseUrl}"> -->
-                                <!--     查看许可证… -->
-                                <!-- </commands:NavHyperlink> -->
-                            </TextBlock>
+                                <commands:NavHyperlink NavTarget="{Binding Website}"
+                                                       ToolTip.Tip="{Binding Website}">
+                                    网站…
+                                </commands:NavHyperlink>
+                                <commands:NavHyperlink NavTarget="{Binding LicenseUrl}"
+                                                       ToolTip.Tip="{Binding LicenseUrl}">
+                                    查看许可证…
+                                </commands:NavHyperlink>
+                            </WrapPanel>
                             <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}"  Margin="0 3 0 0" TextWrapping="Wrap"/>-->
                         </Grid>
                     </DataTemplate>
@@ -337,7 +337,7 @@
                         界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。<LineBreak/>
                         应用字体使用了华为出品的 HarmonyOS Sans。<LineBreak/>
                         感谢协助本应用测试的同学。<LineBreak/>
-                        感谢<HyperlinkButton CommandParameter="https://forum.smart-teach.cn/">智教联盟</HyperlinkButton>提供服务器资源，<HyperlinkButton CommandParameter="https://xiaowuap.com/">吴恩泽</HyperlinkButton>提供 TTS、遥测等服务资源。<LineBreak/>
+                        感谢<commands:NavHyperlink NavTarget="https://forum.smart-teach.cn/">智教联盟</commands:NavHyperlink>提供服务器资源，<commands:NavHyperlink NavTarget="https://xiaowuap.com/">吴恩泽</commands:NavHyperlink>提供 TTS、遥测等服务资源。<LineBreak/>
                         天气数据来源于小米天气。<LineBreak/>
                         部分图像资源（/Assets/HoYoStickers/*）来自米游社和 Bilibili 装扮表情包，版权归 miHoYo 所有。<LineBreak/>
                         感谢其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
