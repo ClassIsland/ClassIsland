@@ -319,7 +319,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task DownloadUpdateAsync()
     {
-        if (Design.IsDesignMode)
+        if (Design.IsDesignMode || true)
         {
             return;
         }
