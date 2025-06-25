@@ -93,8 +93,7 @@
                     <Grid x:Name="GridOverlay"
                           ClipToBounds="True"
                           Opacity="0">
-                        <Border CornerRadius="20"
-                                ClipToBounds="True"
+                        <Border ClipToBounds="True"
                                 IsHitTestVisible="False">
 
                             <ProgressBar VerticalAlignment="Bottom"

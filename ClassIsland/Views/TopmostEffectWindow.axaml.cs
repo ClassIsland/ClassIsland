@@ -106,7 +106,7 @@ public partial class TopmostEffectWindow : Window
         Width = bounds.Width * scale;
         Height = bounds.Height * scale;
         Position = new PixelPoint((int)(bounds.X * scale), (int)(bounds.Y * scale));
-        Logger.LogTrace("Updated Window Pos: w:{} h:{} x:{} y:{}", Width, Height, Position.X, Position.Y);
+        // Logger.LogTrace("Updated Window Pos: w:{} h:{} x:{} y:{}", Width, Height, Position.X, Position.Y);
     }
 
     private void TopmostEffectWindow_OnClosing(object? sender, WindowClosingEventArgs e)
