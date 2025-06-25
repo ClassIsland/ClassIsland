@@ -543,7 +543,8 @@ public partial class MainWindow : Window
     private async void UpdateTheme()
     {
         UpdateWindowPos();
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, true);
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow 
+                                                                      | WindowFeatures.SkipManagement, true);
         if (!ViewModel.Settings.IsMouseClickingEnabled)
         {
             PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);

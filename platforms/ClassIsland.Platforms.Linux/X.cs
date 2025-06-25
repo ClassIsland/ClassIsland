@@ -36,7 +36,7 @@ public partial class X
     public static extern void XLowerWindow(IntPtr display, IntPtr window);
 
     [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void XSelectInput(IntPtr display, IntPtr window, long event_mask);
+    public static extern void XSelectInput(IntPtr display, IntPtr window, XEventMask event_mask);
 
     [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
     public static extern void XChangeWindowAttributes(IntPtr display, IntPtr window, uint valueMask, ref XSetWindowAttributes attributes);
@@ -50,6 +50,9 @@ public partial class X
     [DllImport("libXfixes.so.3")]
     public static extern void XFixesSetWindowShapeRegion(IntPtr display, IntPtr window, int shape_type, int x_offset,
         int y_offset, IntPtr region);
+    
+    [DllImport(X11)]
+    public static extern int XSetErrorHandler(nint handler);
 
     [DllImport(X11)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -131,6 +134,7 @@ public partial class X
         public IntPtr colormap;
         public uint map_installed;
         public uint map_state;
+        public int override_redirect;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -760,6 +764,37 @@ public partial class X
 	}
 
     #endregion
+    
+    [Flags]
+    public enum XEventMask : int
+    {
+	    NoEventMask = 0,
+	    KeyPressMask = (1 << 0),
+	    KeyReleaseMask = (1 << 1),
+	    ButtonPressMask = (1 << 2),
+	    ButtonReleaseMask = (1 << 3),
+	    EnterWindowMask = (1 << 4),
+	    LeaveWindowMask = (1 << 5),
+	    PointerMotionMask = (1 << 6),
+	    PointerMotionHintMask = (1 << 7),
+	    Button1MotionMask = (1 << 8),
+	    Button2MotionMask = (1 << 9),
+	    Button3MotionMask = (1 << 10),
+	    Button4MotionMask = (1 << 11),
+	    Button5MotionMask = (1 << 12),
+	    ButtonMotionMask = (1 << 13),
+	    KeymapStateMask = (1 << 14),
+	    ExposureMask = (1 << 15),
+	    VisibilityChangeMask = (1 << 16),
+	    StructureNotifyMask = (1 << 17),
+	    ResizeRedirectMask = (1 << 18),
+	    SubstructureNotifyMask = (1 << 19),
+	    SubstructureRedirectMask = (1 << 20),
+	    FocusChangeMask = (1 << 21),
+	    PropertyChangeMask = (1 << 22),
+	    ColormapChangeMask = (1 << 23),
+	    OwnerGrabButtonMask = (1 << 24)
+    }
 
     public const int ShapeSet = 0;
     public const int ShapeUnion = 1;

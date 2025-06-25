@@ -29,5 +29,9 @@ public enum WindowFeatures
     /// <summary>
     /// 工具窗口
     /// </summary>
-    ToolWindow = 16
+    ToolWindow = 16,
+    /// <summary>
+    /// 跳过窗口管理器
+    /// </summary>
+    SkipManagement = 32,
 }

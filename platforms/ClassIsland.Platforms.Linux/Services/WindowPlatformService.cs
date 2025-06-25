@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Platform;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -20,20 +21,35 @@ public class WindowPlatformService : IWindowPlatformService
 
     private static WindowPlatformService self = null!;
     
+    public delegate int XErrorHandlerDelegate(IntPtr display, IntPtr errorEvent);
+
+    
+    private static int XErrorHandler(IntPtr display, IntPtr errorEvent)
+    {
+        if (display != self?._display)
+        {
+            return 0;
+        }
+        Console.WriteLine("X Error occurred");
+        display = XOpenDisplay(null);
+        return 0;
+    }
+
+    private static Delegate _xErrorHandlerDelegate = new XErrorHandlerDelegate(XErrorHandler);
+    
     public WindowPlatformService()
     {
-        // XInitThreads();
+        XInitThreads();
         
         _display = XOpenDisplay(null);
         self = this;
         
         XExtensions.Init(_display);
         
+        XSetErrorHandler(Marshal.GetFunctionPointerForDelegate(_xErrorHandlerDelegate));
         _root = XDefaultRootWindow(_display);
         _atomActiveWindow = XInternAtom(_display, "_NET_ACTIVE_WINDOW", false);
-
-        // 订阅根窗口的 PropertyNotify 事件
-        XSelectInput(_display, _root, (1 << 22));
+        
     }
 
     public void PostInit()
@@ -43,11 +59,17 @@ public class WindowPlatformService : IWindowPlatformService
     
     private static void XEventLoop()
     {
+        XInitThreads();
+        
+        var display = XOpenDisplay(null);
+        var root = XDefaultRootWindow(display);
+        var atomActiveWindow = XInternAtom(display, "_NET_ACTIVE_WINDOW", false);
+        XSelectInput(display, root, XEventMask.PropertyChangeMask);
         try
         {
             while (true)
             {
-                var status  = XNextEvent(self._display, out var ev);
+                var status  = XNextEvent(display, out var ev);
                 if (status != 0)
                 {
                     continue;
@@ -55,14 +77,14 @@ public class WindowPlatformService : IWindowPlatformService
 
                 if (ev.type != XEventName.PropertyNotify /* PropertyNotify */)
                     continue;
-                var atom = self._atomActiveWindow;
+                var atom = atomActiveWindow;
                 IntPtr actualType;
                 int actualFormat;
                 ulong nitems, bytesAfter;
                 IntPtr propPtr;
                 var result = XGetWindowProperty(
-                    self._display,
-                    self._root,
+                    display,
+                    root,
                     atom,
                     0,
                     1,
@@ -121,9 +143,16 @@ public class WindowPlatformService : IWindowPlatformService
         {
             
         }
-        if ((features & WindowFeatures.ToolWindow) > 0)
+        if ((features & WindowFeatures.ToolWindow) > 0 && toplevel is Window window)
         {
-            
+            X11Properties.SetNetWmWindowType(window, X11NetWmWindowType.Utility);
+        }
+        if ((features & WindowFeatures.SkipManagement) > 0)
+        {
+            var attributes = new XSetWindowAttributes();
+            attributes.override_redirect = 1;
+            XChangeWindowAttributes(display, handle, 0, ref attributes);
+            XMapWindow(display, handle);
         }
 
         XCloseDisplay(display);

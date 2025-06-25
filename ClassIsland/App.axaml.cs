@@ -69,11 +69,13 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Controls.Components;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
@@ -211,15 +213,17 @@ public partial class App : AppBase, IAppHost
 
         PhonyRootWindow = new Window()
         {
-            Width = 0,
-            Height = 0,
+            Width = 1,
+            Height = 1,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             ShowActivated = false,
             SystemDecorations = SystemDecorations.None,
-            ShowInTaskbar = false
+            ShowInTaskbar = false,
+            Background = Brushes.Transparent
         };
+        PhonyRootWindow.Closing += (sender, args) => args.Cancel = true;
         PhonyRootWindow.Show();
-        PhonyRootWindow.Hide();
+        PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         base.Initialize();
     }
 
