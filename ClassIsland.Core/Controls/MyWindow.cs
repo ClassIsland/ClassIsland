@@ -7,6 +7,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
 using ClassIsland.Shared;
@@ -76,8 +77,6 @@ public class MyWindow : AppWindow
 
         IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version.Build > 22000;
         Loaded += OnLoaded;
-        Activated += OnActivated;
-        Deactivated += OnDeactivated;
         Avalonia.Media.RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
         
         KeyDown += OnKeyDown;
@@ -109,22 +108,6 @@ public class MyWindow : AppWindow
         };
     }
 
-    private void OnDeactivated(object? sender, EventArgs e)
-    {
-        if (EnableMicaWindow && IsMicaSupported)
-        {
-            TransparencyLevelHint = [WindowTransparencyLevel.None];
-        }
-    }
-
-    private void OnActivated(object? sender, EventArgs e)
-    {
-        if (EnableMicaWindow && IsMicaSupported)
-        {
-            TransparencyLevelHint = [WindowTransparencyLevel.Mica];
-        }
-    }
-
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         // TODO: 实现导航命令注册
@@ -134,6 +117,12 @@ public class MyWindow : AppWindow
                 ?.NavigateWrapped(new Uri(args.Parameter?.ToString() ?? "classisland:")),
             (_, args) => args.CanExecute = true));
         CommandManager.SetCommandBindings(this, commands);
+        
+        if (EnableMicaWindow && IsMicaSupported)
+        {
+            TransparencyLevelHint = [WindowTransparencyLevel.Mica];
+            Background = Brushes.Transparent;
+        }
         
         if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark)&& Content is Control element && !_isAdornerAdded)
         {

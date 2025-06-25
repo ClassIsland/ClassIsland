@@ -29,23 +29,6 @@
         <Setter Property="Spacing" Value="4"/>
     </Style>
     
-    <Style Selector="ci|MyWindow[EnableMicaWindow=True][IsMicaSupported=True]">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Transitions">
-            <Setter.Value>
-                <BrushTransition Property="Background"
-                                 Duration="0:0:0.2">
-                    <BrushTransition.Easing>
-                        <CircularEaseInOut/>
-                    </BrushTransition.Easing>
-                </BrushTransition>
-            </Setter.Value>
-        </Setter>
-        <Style Selector="^[IsActive=False]">
-            <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
-        </Style>
-    </Style>
-    
     <Style Selector="controls|FontIcon.fi, ci|FluentIcon">
         <Setter Property="FontFamily" Value="{StaticResource FluentIcons}"/>
     </Style>

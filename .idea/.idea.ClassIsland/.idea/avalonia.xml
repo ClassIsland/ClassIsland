@@ -24,6 +24,7 @@
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonControlMinimized.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonControlSeperator.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/LessonsControls/LessonsListBox.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/MyWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland.Core/Controls/NotificationTemplates/RollingTextTemplate.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/NotificationTemplates/SimpleTextOverlayTemplate.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/NotificationTemplates/Templates.axaml" value="ClassIsland/ClassIsland.csproj" />
@@ -39,7 +40,7 @@
         <entry key="ClassIsland.Core/Controls/TeyvatLoadingControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/TimeRuleEditControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/StylesBase.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
-        <entry key="ClassIsland.Core/ThemeBase.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/ThemeBase.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland.Core/Themes/Generic.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Themes/RichTextStyles.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Themes/TextBaselineFixes.axaml" value="ClassIsland/ClassIsland.csproj" />
