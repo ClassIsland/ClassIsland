@@ -65,7 +65,7 @@
                 <MenuItem.IsVisible>
                     <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
-                        <Binding Path="ViewModel.IsOverlayOpened" Mode="OneWay"/>
+                        <Binding Path="NotificationHostService.IsNotificationsPlaying" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>

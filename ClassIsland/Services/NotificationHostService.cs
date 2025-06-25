@@ -37,26 +37,13 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     public PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; } = new();
 
     private int _queueIndex = 0;
+    private bool _isNotificationsPlaying = false;
 
     public ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; } = new();
 
     private List<NotificationConsumerRegisterInfo> RegisteredConsumers { get; } = [];
 
-    #region Events
-
-    public event EventHandler? UpdateTimerTick;
-    public void OnUpdateTimerTick(object sender, EventArgs args) => UpdateTimerTick?.Invoke(sender, args);
-    
-    public event EventHandler? OnClass;
-    public void OnOnClass(object sender, EventArgs args) => OnClass?.Invoke(sender, args);
-
-    public event EventHandler? OnBreakingTime;
-    public void OnOnBreakingTime(object sender, EventArgs args) => OnBreakingTime?.Invoke(sender, args);
-
-    public event EventHandler? CurrentStateChanged;
-    public void OnCurrentStateChanged(object sender, EventArgs args) => CurrentStateChanged?.Invoke(sender, args);
-
-    #endregion
+    private List<NotificationRequest> PlayingNotifications { get; } = [];
 
     public NotificationRequest? CurrentRequest { get; set; }
 
@@ -112,6 +99,17 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
     }
 
+    private void UpdateNotificationPlayingState()
+    {
+        IsNotificationsPlaying = PlayingNotifications.Count > 0;
+    }
+
+    private void FinishNotificationPlaying(NotificationRequest request)
+    {
+        PlayingNotifications.Remove(request);
+        UpdateNotificationPlayingState();
+    }
+
     public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications)
     {
         request.NotificationSourceGuid = providerGuid;
@@ -133,6 +131,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         var channel =
             request.NotificationSource?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid == channelGuid);
         request.ChannelSettings = channel?.ProviderSettings;
+        UpdateNotificationPlayingState();
+        request.CompletedToken.Register(() => FinishNotificationPlaying(request));
         if (pushNotifications && PushNotificationRequests([request]))
         {
             return;
@@ -255,11 +255,15 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     public void CancelAllNotifications()
     {
-        CurrentRequest?.CancellationTokenSource.Cancel();
         while (RequestQueue.Count > 0)
         {
             var r = RequestQueue.Dequeue();
             r.CompletedTokenSource.Cancel();
+        }
+        foreach (var request in PlayingNotifications.ToList())
+        {
+            request.CancellationTokenSource.Cancel();
+            request.CompletedTokenSource.Cancel();
         }
     }
 
@@ -272,6 +276,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         if (consumer != null)
         {
             Logger.LogTrace("将推送的提醒消费者：{}(#{})", consumer.Consumer, consumer.Consumer.GetHashCode());
+            foreach (var request in requests)
+            {
+                PlayingNotifications.Add(request);
+            }
+            UpdateNotificationPlayingState();
             consumer.Consumer.ReceiveNotifications(requests);
             return true;
         }
@@ -293,9 +302,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         while (head != null)
         {
             requests.Add(head);
+            PlayingNotifications.Add(head);
             head = head.ChainedNextRequest;
         }
-
+        
+        UpdateNotificationPlayingState();
         return requests;
     }
 
@@ -318,7 +329,10 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
         
         RegisteredConsumers.Add(registerInfo);  // 当列表中什么都没有或者插入项的优先级比列表里所有元素都大时，插入到最后一项。
-        PopRequestsToConsumers();
+        if (consumer.AcceptsNotificationRequests && consumer.QueuedNotificationCount <= 0)
+        {
+            consumer.ReceiveNotifications(PopRequests());
+        }
     }
 
     public void UnregisterNotificationConsumer(INotificationConsumer consumer)
@@ -335,6 +349,17 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     public IList<NotificationRequest> PullNotificationRequests()
     {
         return PopRequests();
+    }
+
+    public bool IsNotificationsPlaying
+    {
+        get => _isNotificationsPlaying;
+        set
+        {
+            if (value == _isNotificationsPlaying) return;
+            _isNotificationsPlaying = value;
+            OnPropertyChanged();
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

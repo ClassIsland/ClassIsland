@@ -319,10 +319,10 @@ public partial class MainWindow : Window
             //     ViewModel.IsClosing = true;
             //     Close();
             // }
-            else
-            {
-                ViewModel.Settings.IsWelcomeWindowShowed = true;
-            }
+            // else
+            // {
+            ViewModel.Settings.IsWelcomeWindowShowed = true;
+            // }
         }
 
         UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());

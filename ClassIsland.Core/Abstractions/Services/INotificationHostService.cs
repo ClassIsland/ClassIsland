@@ -82,4 +82,9 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     /// </remarks>
     /// <returns>获得的提醒</returns>
     public IList<NotificationRequest> PullNotificationRequests();
+    
+    /// <summary>
+    /// 当前是否正在播放提醒
+    /// </summary>
+    public bool IsNotificationsPlaying { get; }
 }

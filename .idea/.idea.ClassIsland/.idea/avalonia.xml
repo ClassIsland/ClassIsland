@@ -53,7 +53,7 @@
         <entry key="ClassIsland/Controls/MainWindowLine.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Controls/NotificationEffects/RippleEffect.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Controls/NotificationProviders/ClassNotificationProviderControl.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
-        <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Themes/Styles.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/CrashWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/DevPortalWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
