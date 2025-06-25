@@ -182,19 +182,19 @@ jobs:
           name: sign-bundle
           path: ./ci_tmp/sign_bundle/*
 
-      - name: Sign Application
-        uses: signpath/github-action-submit-signing-request@v1
-        with:
-          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
-          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
-          project-slug: 'ClassIsland'
-          artifact-configuration-slug: 'sign_bundle'
-          signing-policy-slug: release-signing
-          github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
-          wait-for-completion: true
-          output-artifact-directory: './out_signed'
-          parameters: |
-            version: ${{ toJSON(steps.commit.outputs.long) }}
+#      - name: Sign Application
+#        uses: signpath/github-action-submit-signing-request@v1
+#        with:
+#          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
+#          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
+#          project-slug: 'ClassIsland'
+#          artifact-configuration-slug: 'sign_bundle'
+#          signing-policy-slug: release-signing
+#          github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
+#          wait-for-completion: true
+#          output-artifact-directory: './out_signed'
+#          parameters: |
+#            version: ${{ toJSON(steps.commit.outputs.long) }}
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2

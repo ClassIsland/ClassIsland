@@ -4,7 +4,7 @@ Import-Module ./tools/release-gen/alist-utils.psm1
 
 # Generate metadata & upload artifacts
 Write-Output "Generating metadata & uploading artifacts"
-Copy-Item ./out_signed/* -Destination ./out/ -Recurse -Force
+#Copy-Item ./out_signed/* -Destination ./out/ -Recurse -Force
 
 $version = $(git describe --abbrev=0 --tags)
 $gitCommitId = $(git rev-parse HEAD)
