@@ -310,12 +310,14 @@
 
             <StackPanel Margin="0 12 0 0" Classes="cardContainer">
                 <controls3:SettingsExpanderItem 
-                    IsClickEnabled="True">
+                    IsClickEnabled="True"
+                    Click="Sayings_OnMouseLeftButtonDown">
                     <StackPanel>
                         <TextBlock Text="回声洞" FontWeight="Bold"/>
             
-                        <!-- <controls2:TypingControl Margin="24 8 16 12" Text="{Binding ViewModel.Sayings, Mode=OneWay}" -->
-                        <!--                          IsBusy="{Binding ViewModel.IsSayingBusy, Mode=OneWayToSource}"/> -->
+                        <controls2:TypingControl Margin="0 8 0 0"
+                                                 Text="{Binding ViewModel.Sayings, Mode=OneWay}"
+                                                 IsBusy="{Binding ViewModel.IsSayingBusy, Mode=OneWayToSource}"/>
                     </StackPanel>
                 </controls3:SettingsExpanderItem>
             </StackPanel>

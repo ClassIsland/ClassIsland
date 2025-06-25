@@ -158,7 +158,16 @@ public partial class AboutSettingsPage : SettingsPageBase
             var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/Tellings.txt"));
 
             var sayings = await new StreamReader(stream).ReadToEndAsync();
-            var collection = new ObservableCollection<string>(sayings.Split("\r\n"));
+            string[] sayingsArray;
+            if (sayings.Contains("\r\n"))
+            {
+               sayingsArray = sayings.Split("\r\n");
+            }
+            else
+            {
+                sayingsArray = sayings.Split("\n");
+            }
+            var collection = new ObservableCollection<string>(sayingsArray);
             var countRaw = collection.Count;
             for (var i = 0; i < countRaw; i++)
             {
