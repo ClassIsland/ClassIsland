@@ -10,7 +10,6 @@
         Height="700" Width="1200"
         EnableMicaWindow="True"
         WindowStartupLocation="CenterScreen"
-        Background="Transparent"
         d:DataContext="{d:DesignInstance views:DevPortalWindow}">
     <Grid RowDefinitions="48, *">
         <!-- Background Layer -->

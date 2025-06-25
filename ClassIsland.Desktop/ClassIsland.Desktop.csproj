@@ -9,7 +9,7 @@
     <PropertyGroup>
         <PlatformNames_Windows>windows</PlatformNames_Windows>
         <Os_IsWindows>$([System.OperatingSystem]::IsWindows())</Os_IsWindows>
-        <Os_IsLinux>$([System.OperatingSystem]::IsWindows())</Os_IsLinux>
+        <Os_IsLinux>$([System.OperatingSystem]::IsLinux())</Os_IsLinux>
     </PropertyGroup>
     
     <!-- 发布时使用的平台设置，根据 CI 传入的参数自动设定相关设置 -->
@@ -38,6 +38,9 @@
     <PropertyGroup Condition="'$(Platforms_Windows)'=='true' And ('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX')">
         <OutputType>WinExe</OutputType>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Platforms_Linux)'=='true'">
+        <DefineConstants>$(DefineConstants);Platforms_Linux</DefineConstants>
+    </PropertyGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
@@ -47,6 +50,9 @@
     
     <ItemGroup Condition="'$(Platforms_Windows)'=='true'">
         <ProjectReference Include="..\platforms\ClassIsland.Platforms.Windows\ClassIsland.Platforms.Windows.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Platforms_Linux)'=='true'">
+        <ProjectReference Include="..\platforms\ClassIsland.Platforms.Linux\ClassIsland.Platforms.Linux.csproj" />
     </ItemGroup>
     
     <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">

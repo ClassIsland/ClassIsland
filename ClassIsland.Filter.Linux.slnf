@@ -1,0 +1,19 @@
+﻿{
+  "solution": {
+    "path": "ClassIsland.sln",
+    "projects": [
+      "ClassIsland.Core\\ClassIsland.Core.csproj",
+      "ClassIsland.Desktop\\ClassIsland.Desktop.csproj",
+      "ClassIsland.DocsGenerator\\ClassIsland.DocsGenerator.csproj",
+      "ClassIsland.ExamplePlugin\\ClassIsland.ExamplePlugin.csproj",
+      "ClassIsland.Launcher\\ClassIsland.Launcher.csproj",
+      "ClassIsland.Platforms.Abstractions\\ClassIsland.Platforms.Abstractions.csproj",
+      "ClassIsland.PluginSdk\\ClassIsland.PluginSdk.csproj",
+      "ClassIsland.Shared.IPC\\ClassIsland.Shared.IPC.csproj",
+      "ClassIsland.Shared\\ClassIsland.Shared.csproj",
+      "ClassIsland\\ClassIsland.csproj",
+      "platforms\\ClassIsland.Platforms.Linux\\ClassIsland.Platforms.Linux.csproj",
+      "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj"
+    ]
+  }
+}

@@ -123,4 +123,9 @@ public abstract class AppBase : Application, IAppHost
     /// Fluent Icons 字体
     /// </summary>
     public static FontFamily FluentIconsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable");
+
+    /// <summary>
+    /// 虚根窗口
+    /// </summary>
+    public Window PhonyRootWindow = null!;
 }

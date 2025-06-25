@@ -609,6 +609,7 @@ public partial class MainWindow : Window
         }
 
         App._isCriticalSafeModeEnabled = ViewModel.Settings.IsCriticalSafeMode;
+        SizeToContent = SizeToContent.Height;
     }
 
     private void UpdateWindowLayer()

@@ -191,6 +191,9 @@ public partial class App : AppBase, IAppHost
     "unknown"
 #endif
         ;
+
+    public EventHandler? Initialized;
+    
     public App()
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
@@ -205,6 +208,18 @@ public partial class App : AppBase, IAppHost
         {
             DesktopLifetime.ShutdownMode = ShutdownMode.OnExplicitShutdown;
         }
+
+        PhonyRootWindow = new Window()
+        {
+            Width = 0,
+            Height = 0,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            ShowActivated = false,
+            SystemDecorations = SystemDecorations.None,
+            ShowInTaskbar = false
+        };
+        PhonyRootWindow.Show();
+        PhonyRootWindow.Hide();
         base.Initialize();
     }
 
@@ -274,7 +289,7 @@ public partial class App : AppBase, IAppHost
         Stop();
     }
 
-    internal void ProcessUnhandledException(Exception e, bool critical=false)
+    internal async void ProcessUnhandledException(Exception e, bool critical=false)
     {
 #if DEBUG
         // if (e.GetType() == typeof(ResourceReferenceKeyNotFoundException))
@@ -337,7 +352,7 @@ public partial class App : AppBase, IAppHost
                 AllowIgnore = _isStartedCompleted && !critical,
                 IsCritical = critical
             };
-            CrashWindow.Show();
+            await CrashWindow.ShowDialog(PhonyRootWindow);
             return;
         }
 
@@ -368,6 +383,7 @@ public partial class App : AppBase, IAppHost
 
     public async override void OnFrameworkInitializationCompleted()
     {
+        Initialized?.Invoke(this, EventArgs.Empty);
         var transaction = SentrySdk.StartTransaction(
             "startup",
             "startup"

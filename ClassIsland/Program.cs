@@ -22,7 +22,7 @@ namespace ClassIsland;
 public static class Program
 {
     [STAThread]
-    public static async Task<int> AppEntry(string[] args)
+    public static async Task<Func<App>> AppEntry(string[] args, Action? postInit = null)
     {
         AppDomain.CurrentDomain.UnhandledException += DiagnosticService.ProcessDomainUnhandledException;
         AppBase.CurrentLifetime = ApplicationLifetime.EarlyLoading;
@@ -86,21 +86,14 @@ public static class Program
                 s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
             });
         }
-        return AppBuilder.Configure<App>(() => new App()
-            {
-                Mutex = mutex,
-                IsMutexCreateNew = createNew,
-                IsSentryEnabled = sentryEnabled
-            })
-            .UsePlatformDetect()
-            .LogToHostSink()
-            .StartWithClassicDesktopLifetime(args);
-    }
 
-    // AppBuilder for designer
-    public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
-        .UsePlatformDetect()
-        .LogToHostSink();
+        return () => new App()
+        {
+            Mutex = mutex,
+            IsMutexCreateNew = createNew,
+            IsSentryEnabled = sentryEnabled
+        };
+    }
     
     private static async Task ProcessUriNavigationAsync()
     {

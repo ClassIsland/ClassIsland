@@ -7,6 +7,10 @@ namespace ClassIsland.Platforms.Abstraction.Enums;
 public enum WindowFeatures
 {
     /// <summary>
+    /// 无
+    /// </summary>
+    None = 0,
+    /// <summary>
     /// 窗口可以穿透指针
     /// </summary>
     Transparent = 1,

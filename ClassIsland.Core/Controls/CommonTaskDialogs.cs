@@ -30,7 +30,7 @@ public static class CommonTaskDialogs
                     IsDefault = true,
                 }
             },
-            XamlRoot = xamlRoot ?? AppBase.Current.MainWindow ?? PhonyXamlRootWindow
+            XamlRoot = xamlRoot ?? AppBase.Current.PhonyRootWindow
         };
         
         return await dialog.ShowAsync();
