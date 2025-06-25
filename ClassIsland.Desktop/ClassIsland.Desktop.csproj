@@ -34,6 +34,8 @@
     <PropertyGroup Condition="'$(Platforms_Windows)'=='true'">
         <TargetFramework>net8.0-windows7</TargetFramework>
         <DefineConstants>$(DefineConstants);Platforms_Windows</DefineConstants>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Platforms_Windows)'=='true' And ('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX')">
         <OutputType>WinExe</OutputType>
@@ -53,6 +55,9 @@
     </ItemGroup>
     <ItemGroup Condition="'$(Platforms_Linux)'=='true'">
         <ProjectReference Include="..\platforms\ClassIsland.Platforms.Linux\ClassIsland.Platforms.Linux.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <AvaloniaResource Include="Assets\AppLogo.ico" />
     </ItemGroup>
     
     <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
