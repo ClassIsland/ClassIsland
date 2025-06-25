@@ -18,7 +18,8 @@
         EnableMicaWindow="True"
         windowing:AppWindow.AllowInteractionInTitleBar="True"
         SizeChanged="SettingsWindowNew_OnSizeChanged"
-        Closing="SettingsWindowNew_OnClosing">
+        Closing="SettingsWindowNew_OnClosing"
+        Icon="/Assets/AppLogo.ico">
     <controls:MyWindow.Resources>
         <ScrollViewer Width="332" x:Key="ExperimentalSettings"
                       VerticalScrollBarVisibility="Auto">
@@ -97,8 +98,8 @@
                 </SplitView>
             </controls3:NavigationView>
             <Border Grid.Column="0" Grid.Row="0" Padding="0 8"
-                                      Margin="0 0 150 4">
-                <Grid Margin="0 0 0 0" ColumnDefinitions="Auto,Auto,*">
+                                      Margin="0 0 8 4">
+                <Grid Margin="0 0 0 0" ColumnDefinitions="Auto,Auto,*,Auto">
                     <StackPanel Orientation="Horizontal" Grid.Column="1"
                                 VerticalAlignment="Center">
                         <Image Margin="12 4"
@@ -177,6 +178,14 @@
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>
+                    <!-- 金刚键空位 -->
+                    <Border Grid.Column="3" Width="140">
+                        <Border.IsVisible>
+                            <OnPlatform Default="False">
+                                <On Options="Windows" Content="True" />
+                            </OnPlatform>
+                        </Border.IsVisible>
+                    </Border>
                     <!--     <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" -->
                 <!--                 Margin="0 -16"> -->
                 <!--         <Button ToolTip.Tip="返回" -->

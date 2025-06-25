@@ -7,6 +7,7 @@
         <entry key="ClassIsland/Controls/NotificationEffects/RippleEffect.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/DevPortalWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
+        <entry key="ClassIsland/Views/SettingsWindowNew.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/TopmostEffectWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
       </map>
     </option>
