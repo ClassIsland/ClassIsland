@@ -11,6 +11,9 @@ foreach ($artifact in $artifacts) {
         continue
     }
     Copy-Item ./out_artifacts/$($artifact.Name)/* -Destination ./out/ -Recurse -Force
+    if ($artifact.Name.Contains('windows') -eq $false) {
+        continue
+    }
     Copy-Item ./out_artifacts/$($artifact.Name)/* -Destination ./ci_tmp/sign_bundle/ -Recurse -Force
 }
 

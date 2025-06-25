@@ -233,12 +233,12 @@ jobs:
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
-      - name: Upload Nuget packages to NuGet Gallery
-        if: ${{ github.event_name != 'pull_request' }}
-        env:
-          NUGET_KEY: ${{ secrets.NUGET_KEY }}
-        run: |
-          ls
-          cd out
-          dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
+#      - name: Upload Nuget packages to NuGet Gallery
+#        if: ${{ github.event_name != 'pull_request' }}
+#        env:
+#          NUGET_KEY: ${{ secrets.NUGET_KEY }}
+#        run: |
+#          ls
+#          cd out
+#          dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
 

@@ -10,5 +10,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
     </ItemGroup>
+    <Import Project="../../Global.props"/>
 
 </Project>
