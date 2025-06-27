@@ -82,5 +82,5 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
     /// <param name="date">要获取课表的日期</param>
     /// <param name="guid">获取到的课表的 GUID</param>
     /// <returns>获取到的课表</returns>
-    ClassPlan? GetClassPlanByDate(DateTime date, out string? guid);
+    ClassPlan? GetClassPlanByDate(DateTime date, out Guid? guid);
 }

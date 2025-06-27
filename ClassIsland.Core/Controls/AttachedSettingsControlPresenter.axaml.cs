@@ -63,10 +63,10 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         set => SetValue(AssociatedAttachedSettingsProperty, value);
     }
 
-    public static readonly StyledProperty<string> ContentIdProperty = AvaloniaProperty.Register<AttachedSettingsControlPresenter, string>(
+    public static readonly StyledProperty<Guid> ContentIdProperty = AvaloniaProperty.Register<AttachedSettingsControlPresenter, Guid>(
         nameof(ContentId));
 
-    public string ContentId
+    public Guid ContentId
     {
         get => GetValue(ContentIdProperty);
         set => SetValue(ContentIdProperty, value);

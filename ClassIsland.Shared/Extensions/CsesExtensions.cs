@@ -23,7 +23,7 @@ public static class CsesExtensions
     public static Profile ToClassIslandObject(this CsesSharp.Models.Profile profile, Profile? mergeProfile=null)
     {
         var result = mergeProfile ?? new Profile();
-        var subjectsCache = new Dictionary<string, string>();
+        var subjectsCache = new Dictionary<string, Guid>();
 
         foreach (var i in result.Subjects)
         {
@@ -33,7 +33,7 @@ public static class CsesExtensions
         {
             if (!subjectsCache.TryGetValue(i.Name, out var id))
             {
-                id = Guid.NewGuid().ToString();
+                id = Guid.NewGuid();
                 subjectsCache[i.Name] = id;
                 result.Subjects[id] = new Subject();
             }
@@ -62,8 +62,8 @@ public static class CsesExtensions
                 }
 
                 return true;
-            }).Key ?? null;
-            var timeLayout = timeLayoutKey == null ? new TimeLayout() : result.TimeLayouts[timeLayoutKey];
+            }).Key;
+            var timeLayout = timeLayoutKey == Guid.Empty ? new TimeLayout() : result.TimeLayouts[timeLayoutKey];
 
             var classPlan = new ClassPlan();
             for (var j = 0; j < i.Classes.Count; j++)
@@ -71,7 +71,7 @@ public static class CsesExtensions
                 subjectsCache.TryGetValue(i.Classes[j].Subject, out var subjectId);
                 classPlan.Classes.Add(new ClassInfo()
                 {
-                    SubjectId = subjectId ?? "",
+                    SubjectId = subjectId,
                 });
 
                 if (timeLayoutKey != null)
@@ -96,7 +96,7 @@ public static class CsesExtensions
             }
             if (timeLayoutKey == null)
             {
-                timeLayoutKey = Guid.NewGuid().ToString();
+                timeLayoutKey = Guid.NewGuid();
                 result.TimeLayouts[timeLayoutKey] = timeLayout;
             }
 
@@ -104,7 +104,7 @@ public static class CsesExtensions
             classPlan.TimeRule.WeekCountDiv = (int)i.Weeks;
             classPlan.TimeRule.WeekDay = (int)i.EnableDay;
             classPlan.Name = i.Name;
-            result.ClassPlans[Guid.NewGuid().ToString()] = classPlan;
+            result.ClassPlans[Guid.NewGuid()] = classPlan;
         }
 
         return result;

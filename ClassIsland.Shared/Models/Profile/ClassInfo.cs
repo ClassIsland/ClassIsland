@@ -9,7 +9,7 @@ namespace ClassIsland.Shared.Models.Profile;
 /// </summary>
 public class ClassInfo : AttachableSettingsObject
 {
-    private string _subjectId = "";
+    private Guid _subjectId = Guid.Empty;
     private int _index = 0;
     private TimeLayout _currentTimeLayout = new();
     private bool _isChangedClass = false;
@@ -67,13 +67,13 @@ public class ClassInfo : AttachableSettingsObject
     /// <summary>
     /// 课程ID
     /// </summary>
-    public string SubjectId
+    public Guid SubjectId
     {
         get => _subjectId;
         set
         {
             if (value == _subjectId) return;
-            _subjectId = value ?? "";
+            _subjectId = value;
             OnPropertyChanged();
         }
     }

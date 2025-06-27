@@ -156,7 +156,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         }
     }
 
-    private Subject CurrentSubject => Subjects?.TryGetValue(ClassInfo?.SubjectId ?? "", out var value) == true ? value : Subject.Breaking;
+    private Subject CurrentSubject => Subjects?.TryGetValue(ClassInfo?.SubjectId ?? Guid.Empty, out var value) == true ? value : Subject.Breaking;
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {

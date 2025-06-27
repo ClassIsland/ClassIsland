@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
+using ClassIsland.Shared.ComponentModels;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -10,19 +11,19 @@ namespace ClassIsland.Shared.Models.Profile;
 /// </summary>
 public class ClassPlan : AttachableSettingsObject
 {
-    private string _timeLayoutId = "";
+    private Guid _timeLayoutId = Guid.Empty;
     private ObservableCollection<ClassInfo> _classes = new();
     private string _name = "新课表";
-    private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
-    private ObservableDictionary<string, ClassPlan> _classPlans = new();
+    private ObservableOrderedDictionary<Guid, TimeLayout> _timeLayouts = new();
+    private ObservableOrderedDictionary<Guid, ClassPlan> _classPlans = new();
     private TimeRule _timeRule = new();
     private bool _isActivated = false;
     private bool _isOverlay = false;
-    private string? _overlaySourceId;
+    private Guid? _overlaySourceId;
     private bool _isEnabled = true;
     private DateTime _overlaySetupTime = DateTime.Now;
     private int _lastTimeLayoutCount = -1;
-    private string _associatedGroup = ClassPlanGroup.DefaultGroupGuid.ToString();
+    private Guid _associatedGroup = ClassPlanGroup.DefaultGroupGuid;
 
     private bool _isValidTimeLayoutItemsDirty = true;
     private ObservableCollection<TimeLayoutItem> _validTimeLayoutItems = [];
@@ -288,7 +289,7 @@ public class ClassPlan : AttachableSettingsObject
     }
 
     [JsonIgnore]
-    internal ObservableDictionary<string, ClassPlan> ClassPlans
+    internal ObservableOrderedDictionary<Guid, ClassPlan> ClassPlans
     {
         get => _classPlans;
         set
@@ -300,7 +301,7 @@ public class ClassPlan : AttachableSettingsObject
     }
 
     [JsonIgnore]
-    internal ObservableDictionary<string, TimeLayout> TimeLayouts
+    internal ObservableOrderedDictionary<Guid, TimeLayout> TimeLayouts
     {
         get => _timeLayouts;
         set
@@ -320,7 +321,7 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 当前课表的时间表ID
     /// </summary>
-    public string TimeLayoutId
+    public Guid TimeLayoutId
     {
         get => _timeLayoutId;
         set
@@ -407,7 +408,7 @@ public class ClassPlan : AttachableSettingsObject
         {
             Classes[i].Index = i;
             Classes[i].CurrentTimeLayout = TimeLayout;
-            if (Classes[i].SubjectId == "" && Classes[i].CurrentTimeLayoutItem.DefaultClassId != "")
+            if (Classes[i].SubjectId == Guid.Empty && Classes[i].CurrentTimeLayoutItem.DefaultClassId != Guid.Empty)
             {
                 Classes[i].SubjectId = Classes[i].CurrentTimeLayoutItem.DefaultClassId;
             }
@@ -422,7 +423,7 @@ public class ClassPlan : AttachableSettingsObject
     internal void RefreshIsChangedClass()
     {
         if (OverlaySourceId == null ||
-            !ClassPlans.TryGetValue(OverlaySourceId, out var overlaySource) ||
+            !ClassPlans.TryGetValue(OverlaySourceId ?? Guid.Empty, out var overlaySource) ||
             Classes.Count != overlaySource.Classes.Count)
         {
             foreach (var classInfo in Classes)
@@ -479,7 +480,7 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 临时层课表对应的源课表ID
     /// </summary>
-    public string? OverlaySourceId
+    public Guid? OverlaySourceId
     {
         get => _overlaySourceId;
         set
@@ -521,7 +522,7 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 该课表关联的课表群。
     /// </summary>
-    public string AssociatedGroup
+    public Guid AssociatedGroup
     {
         get => _associatedGroup;
         set

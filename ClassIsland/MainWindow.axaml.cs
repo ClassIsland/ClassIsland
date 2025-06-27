@@ -896,7 +896,7 @@ public partial class MainWindow : Window
         };
         await dialog.ShowAsync();
 
-        ProfileService.Profile.TempClassPlanId = input.Text;
+        ProfileService.Profile.TempClassPlanId = Guid.TryParse(input.Text, out var guid) ? guid : Guid.Empty;
         ProfileService.Profile.TempClassPlanSetupTime = ExactTimeService.GetCurrentLocalDateTime();
     }
 

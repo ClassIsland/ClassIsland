@@ -7,12 +7,12 @@ namespace ClassIsland.Shared.Models.Profile;
 /// </summary>
 public class OrderedSchedule : ObservableRecipient
 {
-    private string _classPlanId = "";
+    private Guid _classPlanId = Guid.Empty;
 
     /// <summary>
     /// 预定课表 ID
     /// </summary>
-    public string ClassPlanId
+    public Guid ClassPlanId
     {
         get => _classPlanId;
         set

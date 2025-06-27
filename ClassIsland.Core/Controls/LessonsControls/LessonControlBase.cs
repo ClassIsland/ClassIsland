@@ -29,10 +29,10 @@ public abstract class LessonControlBase : UserControl
         set => SetValue(ClassPlanProperty, value);
     }
 
-    public static readonly StyledProperty<ObservableDictionary<string, Subject>> SubjectsProperty = AvaloniaProperty.Register<LessonControlBase, ObservableDictionary<string, Subject>>(
+    public static readonly StyledProperty<ObservableDictionary<Guid, Subject>> SubjectsProperty = AvaloniaProperty.Register<LessonControlBase, ObservableDictionary<Guid, Subject>>(
         nameof(Subjects));
 
-    public ObservableDictionary<string, Subject> Subjects
+    public ObservableDictionary<Guid, Subject> Subjects
     {
         get => GetValue(SubjectsProperty);
         set => SetValue(SubjectsProperty, value);

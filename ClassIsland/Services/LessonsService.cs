@@ -147,7 +147,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     public ClassPlan? GetClassPlanByDate(DateTime date) => GetClassPlanByDate(date, out _);
 
-    public ClassPlan? GetClassPlanByDate(DateTime date, out string? guid)
+    public ClassPlan? GetClassPlanByDate(DateTime date, out Guid? guid)
     {
         guid = null;
         // 加载临时层（弃用）
@@ -168,7 +168,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
         // 加载临时课表
         if (Profile.TempClassPlanId != null &&
-            Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId, out var tempClassPlan) &&
+            Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId ?? Guid.Empty, out var tempClassPlan) &&
             Profile.TempClassPlanSetupTime.Date >= date.Date)
         {
             guid = Profile.TempClassPlanId;
@@ -179,7 +179,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             .Where(x =>
             {
                 var group = x.Value.AssociatedGroup;
-                var matchGlobal = new Guid(group) == ClassPlanGroup.GlobalGroupGuid;
+                var matchGlobal = group == ClassPlanGroup.GlobalGroupGuid;
                 var matchDefault = group == Profile.SelectedClassPlanGroupId;
                 if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null } 
                     || Profile.TempClassPlanGroupExpireTime.Date < date.Date)
@@ -197,7 +197,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 var group = x.Value.AssociatedGroup;
                 if (group == Profile.TempClassPlanGroupId) return 3;
                 if (group == Profile.SelectedClassPlanGroupId) return 2;
-                if (group == ClassPlanGroup.GlobalGroupGuid.ToString()) return 1;
+                if (group == ClassPlanGroup.GlobalGroupGuid) return 1;
                 return 0;
             })
             .Where(p => CheckClassPlan(p.Value, date))
@@ -572,12 +572,11 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
 
         CurrentClassPlan = GetClassPlanByDate(currentTime);
-        var orderedClassPlanId = Profile.OrderedSchedules[currentTime.Date]?.ClassPlanId;
-        if (orderedClassPlanId != null 
-            && Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan)
+        if (Profile.OrderedSchedules.TryGetValue(currentTime.Date, out var orderedSchedule) 
+            && Profile.ClassPlans.TryGetValue(orderedSchedule.ClassPlanId, out var classPlan)
             && classPlan.IsOverlay)
         {
-            Profile.OverlayClassPlanId = orderedClassPlanId;
+            Profile.OverlayClassPlanId = orderedSchedule.ClassPlanId;
         }
         else
         {
@@ -595,7 +594,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
-        if (plan.AssociatedGroup != ClassPlanGroup.GlobalGroupGuid.ToString() &&
+        if (plan.AssociatedGroup != ClassPlanGroup.GlobalGroupGuid &&
             plan.AssociatedGroup != Profile.SelectedClassPlanGroupId &&
             plan.AssociatedGroup != Profile.TempClassPlanGroupId)
         {

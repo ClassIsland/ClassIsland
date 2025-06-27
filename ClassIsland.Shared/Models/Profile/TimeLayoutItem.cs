@@ -13,7 +13,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     private bool _isOnClass = true;
     private int _timeType = 0;
     private bool _isHideDefault = false;
-    private string _defaultClassId = "";
+    private Guid _defaultClassId = Guid.Empty;
     private string _breakName = "";
     private ActionSet? _actionSet;
 
@@ -115,7 +115,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     /// <summary>
     /// 默认科目ID
     /// </summary>
-    public string DefaultClassId
+    public Guid DefaultClassId
     {
         get => _defaultClassId;
         set
