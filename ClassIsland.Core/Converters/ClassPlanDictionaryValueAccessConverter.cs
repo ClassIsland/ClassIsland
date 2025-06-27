@@ -1,13 +1,14 @@
 ﻿using System.Globalization;
 using Avalonia.Data.Converters;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Converters;
 
 public class ClassPlanDictionaryValueAccessConverter : IValueConverter
 {
-    public ObservableDictionary<string, TimeLayout> SourceDictionary
+    public ObservableOrderedDictionary<string, TimeLayout> SourceDictionary
     {
         get;
         set;

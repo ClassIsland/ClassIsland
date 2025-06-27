@@ -762,12 +762,12 @@ public partial class MainWindow : Window
 
     public void OpenProfileSettingsWindow()
     {
-        // App.GetService<ProfileSettingsWindow>().Open();
+        App.GetService<ProfileSettingsWindow>().Open();
     }
 
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
     {
-        // App.GetService<SettingsWindowNew>().Open("about");
+        App.GetService<SettingsWindowNew>().Open("about");
     }
 
     private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)

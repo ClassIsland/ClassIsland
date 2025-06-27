@@ -2,6 +2,7 @@
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -32,7 +33,7 @@ public interface IXamlThemeService
     /// <summary>
     /// 已将主题仓库与本地主题合并的全部主题
     /// </summary>
-    public ObservableDictionary<string, ThemeInfo> MergedThemes { get; }
+    public ObservableOrderedDictionary<string, ThemeInfo> MergedThemes { get; }
 
 
     /// <summary>

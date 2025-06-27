@@ -1,5 +1,6 @@
 ﻿using ClassIsland.Shared;
 using ClassIsland.Core.Models.Action;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Action;
 using Action = ClassIsland.Shared.Models.Action.Action;
 
@@ -13,7 +14,7 @@ public interface IActionService
     /// <summary>
     /// 已注册的行动。
     /// </summary>
-    static ObservableDictionary<string, ActionRegistryInfo> Actions { get; } = [];
+    static ObservableOrderedDictionary<string, ActionRegistryInfo> Actions { get; } = [];
 
     /// <summary>
     /// 注册指定行动的处理方法。

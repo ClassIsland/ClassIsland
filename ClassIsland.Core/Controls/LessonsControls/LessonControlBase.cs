@@ -3,6 +3,7 @@ using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
@@ -29,10 +30,10 @@ public abstract class LessonControlBase : UserControl
         set => SetValue(ClassPlanProperty, value);
     }
 
-    public static readonly StyledProperty<ObservableDictionary<Guid, Subject>> SubjectsProperty = AvaloniaProperty.Register<LessonControlBase, ObservableDictionary<Guid, Subject>>(
+    public static readonly StyledProperty<ObservableOrderedDictionary<Guid, Subject>> SubjectsProperty = AvaloniaProperty.Register<LessonControlBase, ObservableOrderedDictionary<Guid, Subject>>(
         nameof(Subjects));
 
-    public ObservableDictionary<Guid, Subject> Subjects
+    public ObservableOrderedDictionary<Guid, Subject> Subjects
     {
         get => GetValue(SubjectsProperty);
         set => SetValue(SubjectsProperty, value);

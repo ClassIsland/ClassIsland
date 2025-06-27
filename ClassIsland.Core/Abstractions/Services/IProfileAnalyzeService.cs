@@ -2,11 +2,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Interfaces;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
-using AttachableObjectNodeDictionary = ObservableDictionary<AttachableObjectAddress, AttachableObjectNode>;
+using AttachableObjectNodeDictionary = ObservableOrderedDictionary<AttachableObjectAddress, AttachableObjectNode>;
 
 /// <summary>
 /// 档案分析服务，用于分析档案中附加信息关系。

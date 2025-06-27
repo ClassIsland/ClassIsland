@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models;
-
+using ClassIsland.Shared.ComponentModels;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +18,7 @@ public class MiniInfoProviderHostService : IHostedService
     private ILogger<MiniInfoProviderHostService> Logger { get; }
 
     private Settings Settings => SettingsService.Settings;
-    public ObservableDictionary<string, IMiniInfoProvider> Providers { get; } = new();
+    public ObservableOrderedDictionary<string, IMiniInfoProvider> Providers { get; } = new();
 
     public MiniInfoProviderHostService(SettingsService settingsService, ILogger<MiniInfoProviderHostService> logger)
     {

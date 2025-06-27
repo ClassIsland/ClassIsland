@@ -64,11 +64,11 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     }
 
     public static readonly DependencyProperty SubjectsProperty = DependencyProperty.Register(
-        nameof(Subjects), typeof(ObservableDictionary<string, Subject>), typeof(LessonControl), new PropertyMetadata(default(ObservableCollection<Subject>)));
+        nameof(Subjects), typeof(ObservableOrderedDictionary<string, Subject>), typeof(LessonControl), new PropertyMetadata(default(ObservableCollection<Subject>)));
 
-    public ObservableDictionary<string, Subject> Subjects
+    public ObservableOrderedDictionary<string, Subject> Subjects
     {
-        get => (ObservableDictionary<string, Subject>)GetValue(SubjectsProperty);
+        get => (ObservableOrderedDictionary<string, Subject>)GetValue(SubjectsProperty);
         set => SetValue(SubjectsProperty, value);
     }
 

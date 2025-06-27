@@ -26,6 +26,7 @@ using WindowsShortcutFactory;
 using File = System.IO.File;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Abstractions.Models.Speech;
+using ClassIsland.Shared.ComponentModels;
 
 namespace ClassIsland.Models;
 
@@ -82,15 +83,15 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _targetLightValue = 0.6;
     private double _scale = 1.0;
     private bool _isMainWindowDebugEnabled = false;
-    private ObservableDictionary<string, bool> _notificationProvidersEnableStates = new();
+    private ObservableOrderedDictionary<string, bool> _notificationProvidersEnableStates = new();
     private ObservableCollection<string> _notificationProvidersPriority = new();
-    private ObservableDictionary<string, object?> _notificationProvidersSettings = new();
+    private ObservableOrderedDictionary<string, object?> _notificationProvidersSettings = new();
     private bool _isNotificationEnabled = true;
     private bool _isWallpaperAutoUpdateEnabled = false;
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
     private bool _isFallbackModeEnabled = true;
     private string _mainWindowFont = App.IsAssetsTrimmedInternal ? "Microsoft YaHei UI" : "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
-    private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
+    private ObservableOrderedDictionary<string, object?> _miniInfoProviderSettings = new();
     private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";
     private WeatherInfo _lastWeatherInfo = new();
     private string _cityId = "weathercn:101010100";
@@ -138,7 +139,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isExactTimeEnabled = true;
     private double _timeOffsetSeconds = 0.0;
     private bool _isNotificationEffectEnabled = true;
-    private ObservableDictionary<string, NotificationSettings> _notificationProvidersNotifySettings = new();
+    private ObservableOrderedDictionary<string, NotificationSettings> _notificationProvidersNotifySettings = new();
     private bool _isNotificationSoundEnabled = true;
     private string _notificationSoundPath = "";
     private bool _isTimeAutoAdjustEnabled = false;
@@ -161,12 +162,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Version _lastAppVersion = new Version("0.0.0.0");
     private bool _showComponentsMigrateTip = false;
     private bool _expAllowEditingActivatedTimeLayout = false;
-    private ObservableDictionary<string, string> _pluginIndexSelectedMirrors = new();
+    private ObservableOrderedDictionary<string, string> _pluginIndexSelectedMirrors = new();
     private ObservableCollection<string> _userPluginIndexes = new();
-    private ObservableDictionary<string, string> _additionalPluginIndexes = new();
+    private ObservableOrderedDictionary<string, string> _additionalPluginIndexes = new();
     private ObservableCollection<PluginIndexInfo> _pluginIndexes = new();
     private string _officialSelectedMirror = "github";
-    private ObservableDictionary<string, string> _officialIndexMirrors = new()
+    private ObservableOrderedDictionary<string, string> _officialIndexMirrors = new()
     {
         { "github", "https://github.com" },
         { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
@@ -357,7 +358,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public ObservableDictionary<string, object?> MiniInfoProviderSettings
+    public ObservableOrderedDictionary<string, object?> MiniInfoProviderSettings
     {
         get => _miniInfoProviderSettings;
         set
@@ -1205,7 +1206,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public ObservableDictionary<string, bool> NotificationProvidersEnableStates
+    public ObservableOrderedDictionary<string, bool> NotificationProvidersEnableStates
     {
         get => _notificationProvidersEnableStates;
         set
@@ -1227,7 +1228,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public ObservableDictionary<string, object?> NotificationProvidersSettings
+    public ObservableOrderedDictionary<string, object?> NotificationProvidersSettings
     {
         get => _notificationProvidersSettings;
         set
@@ -1238,7 +1239,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public ObservableDictionary<string, NotificationSettings> NotificationProvidersNotifySettings
+    public ObservableOrderedDictionary<string, NotificationSettings> NotificationProvidersNotifySettings
     {
         get => _notificationProvidersNotifySettings;
         set
@@ -1249,7 +1250,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public ObservableDictionary<string, NotificationSettings> NotificationChannelsNotifySettings
+    public ObservableOrderedDictionary<string, NotificationSettings> NotificationChannelsNotifySettings
     {
         get => _notificationChannelsNotifySettings;
         set
@@ -1756,7 +1757,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _useExperimentColorPickingMethod = false;
     private bool _autoDisableCorruptPlugins = true;
     private bool _corruptPluginsDisabledLastSession = false;
-    private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
+    private ObservableOrderedDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
     private string _selectedSpeechProvider = "classisland.speech.edgeTts";
     private bool _isThemeWarningVisible = true;
     private string _weatherIconId = "classisland.weatherIcons.materialDesign";
@@ -2123,7 +2124,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Plugins
 
-    public ObservableDictionary<string, string> OfficialIndexMirrors
+    public ObservableOrderedDictionary<string, string> OfficialIndexMirrors
     {
         get => _officialIndexMirrors;
         set

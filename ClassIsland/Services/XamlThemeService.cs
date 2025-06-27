@@ -14,6 +14,7 @@ using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Downloader;
@@ -37,18 +38,18 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     public ObservableCollection<ThemeInfo> Themes { get; } = [];
 
-    public ObservableDictionary<string, ThemeInfo> MergedThemes
+    public ObservableOrderedDictionary<string, ThemeInfo> MergedThemes
     {
         get => _mergedThemes;
         set => SetProperty(ref _mergedThemes, value);
     }
 
-    public ObservableDictionary<string, ThemeIndex> Indexes { get; } = [];
+    public ObservableOrderedDictionary<string, ThemeIndex> Indexes { get; } = [];
 
-    public ObservableDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
+    public ObservableOrderedDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
 
     public static readonly string ThemesPkgRootPath = Path.Combine(App.AppCacheFolderPath, "ThemePackages");
-    private ObservableDictionary<string, ThemeInfo> _mergedThemes = [];
+    private ObservableOrderedDictionary<string, ThemeInfo> _mergedThemes = [];
 
     public event EventHandler? RestartRequested;
 
@@ -102,7 +103,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         Logger.LogInformation("正在加载主题源");
         LoadLocalThemes();
         PluginMarketService.LoadPluginSource();
-        var merged = new ObservableDictionary<string, ThemeInfo>();
+        var merged = new ObservableOrderedDictionary<string, ThemeInfo>();
         Indexes.Clear();
 
         foreach (var pluginLocal in Themes)

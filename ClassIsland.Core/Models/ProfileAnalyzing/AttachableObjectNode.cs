@@ -1,11 +1,12 @@
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.ProfileAnalyzing;
 
-using AttachableObjectNodeDictionary = ObservableDictionary<AttachableObjectAddress, AttachableObjectNode>;
+using AttachableObjectNodeDictionary = ObservableOrderedDictionary<AttachableObjectAddress, AttachableObjectNode>;
 
 
 /// <summary>

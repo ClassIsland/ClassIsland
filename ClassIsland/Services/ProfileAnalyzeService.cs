@@ -7,6 +7,7 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Core.Extensions;
 using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ using Sentry;
 
 namespace ClassIsland.Services;
 
-using AttachableObjectNodeDictionary = ObservableDictionary<AttachableObjectAddress, AttachableObjectNode>;
+using AttachableObjectNodeDictionary = ObservableOrderedDictionary<AttachableObjectAddress, AttachableObjectNode>;
 
 public class ProfileAnalyzeService(IProfileService profileService, ILogger<ProfileAnalyzeService> logger) : ObservableRecipient, IProfileAnalyzeService
 {

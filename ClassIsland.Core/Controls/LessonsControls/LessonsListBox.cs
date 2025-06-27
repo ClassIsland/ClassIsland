@@ -10,6 +10,7 @@ using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
@@ -39,11 +40,11 @@ public class LessonsListBox : ListBox
         set => SetValue(ClassPlanProperty, value);
     }
 
-    public static readonly StyledProperty<ObservableDictionary<string, Subject>> SubjectsProperty =
-        AvaloniaProperty.Register<LessonsListBox, ObservableDictionary<string, Subject>>(
+    public static readonly StyledProperty<ObservableOrderedDictionary<string, Subject>> SubjectsProperty =
+        AvaloniaProperty.Register<LessonsListBox, ObservableOrderedDictionary<string, Subject>>(
             nameof(Subjects));
 
-    public ObservableDictionary<string, Subject> Subjects
+    public ObservableOrderedDictionary<string, Subject> Subjects
     {
         get => GetValue(SubjectsProperty);
         set => SetValue(SubjectsProperty, value);

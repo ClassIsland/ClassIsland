@@ -30,4 +30,7 @@
                      Button AccessText">
         <Setter Property="Margin" Value="0 1.5 0 -1.5"/>
     </Style>
+    <Style Selector="controls|CommandBarButton /template/ TextBlock#TextLabel">
+        <Setter Property="Margin" Value="8,18,12,10"></Setter>
+    </Style>
 </Styles>

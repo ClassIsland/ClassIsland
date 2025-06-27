@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Plugin;
@@ -12,7 +13,7 @@ public class PluginIndexInfo : ObservableRecipient
     private string _id = Guid.NewGuid().ToString();
     private string _url = "";
     private string _selectedMirror = "";
-    private ObservableDictionary<string, string> _mirrors = new();
+    private ObservableOrderedDictionary<string, string> _mirrors = new();
 
     /// <summary>
     /// 插件索引 Guid
@@ -60,7 +61,7 @@ public class PluginIndexInfo : ObservableRecipient
     /// 此插件源的镜像列表
     /// </summary>
     [JsonIgnore]
-    public ObservableDictionary<string, string> Mirrors
+    public ObservableOrderedDictionary<string, string> Mirrors
     {
         get => _mirrors;
         set

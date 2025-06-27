@@ -1,13 +1,14 @@
 ﻿using System.Globalization;
 using Avalonia.Data.Converters;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Converters;
 
 public class SubjectsDictionaryValueAccessConverter : IValueConverter
 {
-    public ObservableDictionary<string, Subject> SourceDictionary
+    public ObservableOrderedDictionary<string, Subject> SourceDictionary
     {
         get;
         set;
