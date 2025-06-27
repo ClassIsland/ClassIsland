@@ -40,11 +40,11 @@ public class LessonsListBox : ListBox
         set => SetValue(ClassPlanProperty, value);
     }
 
-    public static readonly StyledProperty<ObservableOrderedDictionary<string, Subject>> SubjectsProperty =
-        AvaloniaProperty.Register<LessonsListBox, ObservableOrderedDictionary<string, Subject>>(
+    public static readonly StyledProperty<ObservableOrderedDictionary<Guid, Subject>> SubjectsProperty =
+        AvaloniaProperty.Register<LessonsListBox, ObservableOrderedDictionary<Guid, Subject>>(
             nameof(Subjects));
 
-    public ObservableOrderedDictionary<string, Subject> Subjects
+    public ObservableOrderedDictionary<Guid, Subject> Subjects
     {
         get => GetValue(SubjectsProperty);
         set => SetValue(SubjectsProperty, value);

@@ -6,6 +6,7 @@
                    xmlns:local="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
                    xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+                   xmlns:system="clr-namespace:System;assembly=System.Runtime"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    x:Name="LessonControlMinimizedRoot"
@@ -23,7 +24,8 @@
         </Style>
     </local:LessonControlBase.Styles>
     <local:LessonControlBase.Resources>
-        <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
+        <converters:CustomKeyDictionaryValueConverter 
+            x:TypeArguments="system:Guid, profile:Subject" x:Key="SubjectIdToSubjectConverter" />
     </local:LessonControlBase.Resources>
     <StackPanel DataContext="{Binding $parent[local:LessonControlMinimized]}"
                 Orientation="Horizontal">
