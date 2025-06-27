@@ -570,6 +570,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<ILocationService>(PlatformServices.LocationService);
                 services.AddSingleton<IXamlThemeService, XamlThemeService>();
                 // ViewModels
+                services.AddTransient<ProfileSettingsViewModel>();
                 services.AddTransient<DevPortalViewModel>();
                 // ViewModels/SettingsPages
                 services.AddTransient<GeneralSettingsViewModel>();
@@ -582,10 +583,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<TopmostEffectWindow>();
                 // services.AddSingleton<AppLogsWindow>();
                 services.AddSingleton<SettingsWindowNew>();
-                // services.AddSingleton<ProfileSettingsWindow>((s) => new ProfileSettingsWindow()
-                // {
-                //     MainViewModel = s.GetService<MainWindow>()?.ViewModel ?? new()
-                // });
+                services.AddSingleton<ProfileSettingsWindow>();
                 // services.AddTransient<ClassPlanDetailsWindow>();
                 // services.AddTransient<WindowRuleDebugWindow>();
                 // services.AddTransient<ConfigErrorsWindow>();

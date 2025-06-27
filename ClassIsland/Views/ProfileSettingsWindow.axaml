@@ -1,0 +1,58 @@
+<ci:MyWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:views="clr-namespace:ClassIsland.Views"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ClassIsland.Views.ProfileSettingsWindow"
+        Title="档案编辑"
+        d:DataContext="{d:DesignInstance views:ProfileSettingsWindow}"
+        Icon="/Assets/AppLogo.ico"
+        MinWidth="750"
+        Width="1100" Height="600"
+        Closing="Window_OnClosing">
+    <Grid RowDefinitions="48, *">
+        <!-- Background Layer -->
+        <Border Grid.Row="1" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"/>
+        
+        <TabControl Grid.Row="0" Grid.RowSpan="2">
+            <TabItem Header="课表">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- 课表选择区域 -->
+                    <Grid Grid.Column="0" RowDefinitions="Auto, *">
+                        <controls:CommandBar Grid.Row="0" 
+                                             DefaultLabelPosition="Right">
+                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe00d;}" Label="添加"/>
+                        </controls:CommandBar>
+                        <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.ProfileService.Profile.ClassPlans}">
+                            
+                        </ListBox>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="时间表">
+                
+            </TabItem>
+            <TabItem Header="科目">
+                
+            </TabItem>
+            <TabItem Header="调课">
+                
+            </TabItem>
+        </TabControl>
+        
+        <!-- 信息栏 -->
+        <controls:CommandBar Grid.Row="0" HorizontalAlignment="Right" DefaultLabelPosition="Right">
+            
+        </controls:CommandBar>
+    </Grid>
+</ci:MyWindow>

@@ -4,11 +4,13 @@
     <option name="projectPerEditor">
       <map>
         <entry key="ClassIsland.Core/StylesBase.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
+        <entry key="ClassIsland.Core/Themes/TextBaselineFixes.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Controls/MainWindowLine.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Controls/NotificationEffects/RippleEffect.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Controls/TypingControl.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/MainWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/DevPortalWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
+        <entry key="ClassIsland/Views/ProfileSettingsWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/SettingPages/AboutSettingsPage.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/SettingPages/GeneralSettingsPage.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/SettingsWindowNew.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
