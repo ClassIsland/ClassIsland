@@ -12,9 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="AttachedObject\" />
     <Folder Include="Helpers\" />
-    <Folder Include="Attributes\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
