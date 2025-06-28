@@ -1,5 +1,5 @@
 ﻿<ci:MyWindow x:Class="ClassIsland.Views.WindowRuleDebugWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,20 +7,14 @@
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         mc:Ignorable="d"
         Title="窗口规则调试工具" Height="200" Width="400"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
-        FontFamily="{StaticResource HarmonyOsSans}"
         SizeToContent="Height"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="14"
-        TextOptions.TextFormattingMode="Ideal"
         Topmost="True"
-        TextOptions.TextRenderingMode="Auto"
         Loaded="WindowRuleDebugWindow_OnLoaded"
         Unloaded="WindowRuleDebugWindow_OnUnloaded"
+        EnableMicaWindow="True"
         d:DataContext="{d:DesignInstance local:WindowRuleDebugWindow}">
     <StackPanel>
-        <TextBlock TextWrapping="Wrap">
+        <SelectableTextBlock TextWrapping="Wrap">
             <Run Text="窗口句柄："/><Run Text="{Binding ViewModel.ForegroundWindowHandle}"/>
             <LineBreak/>
             <Run Text="窗口类名："/><Run Text="{Binding ViewModel.ForegroundWindowClassName}"/>
@@ -31,6 +25,6 @@
             <LineBreak/>
             <Run Text="窗口进程名："/><Run Text="{Binding ViewModel.ForegroundWindowProcessName}"/>
             <LineBreak/>
-        </TextBlock>
+        </SelectableTextBlock>
     </StackPanel>
 </ci:MyWindow>

@@ -52,6 +52,11 @@ public class WindowPlatformService : IWindowPlatformService
         
     }
 
+    ~WindowPlatformService()
+    {
+        XCloseDisplay(_display);
+    }
+
     public void PostInit()
     {
         new Thread(XEventLoop).Start();
@@ -123,21 +128,19 @@ public class WindowPlatformService : IWindowPlatformService
         {
             return;
         }
-
-        var display = XOpenDisplay(null);
         
         if ((features & WindowFeatures.Transparent) > 0)
         {
-            var region = XFixesCreateRegion(display, 0, 0);
-            XFixesSetWindowShapeRegion(display, handle, ShapeInput, 0, 0, region);
+            var region = XFixesCreateRegion(_display, 0, 0);
+            XFixesSetWindowShapeRegion(_display, handle, ShapeInput, 0, 0, region);
         }
         if ((features & WindowFeatures.Bottommost) > 0)
         {
-            XLowerWindow(display, handle);
+            XLowerWindow(_display, handle);
         }
         if ((features & WindowFeatures.Topmost) > 0)
         {
-            XRaiseWindow(display, handle);
+            XRaiseWindow(_display, handle);
         }
         if ((features & WindowFeatures.Private) > 0)
         {
@@ -151,11 +154,10 @@ public class WindowPlatformService : IWindowPlatformService
         {
             var attributes = new XSetWindowAttributes();
             attributes.override_redirect = 1;
-            XChangeWindowAttributes(display, handle, 0, ref attributes);
-            XMapWindow(display, handle);
+            XChangeWindowAttributes(_display, handle, 0, ref attributes);
+            XMapWindow(_display, handle);
         }
-
-        XCloseDisplay(display);
+        
     }
 
     public WindowFeatures GetWindowFeatures(TopLevel topLevel)
@@ -175,13 +177,12 @@ public class WindowPlatformService : IWindowPlatformService
 
     public string GetWindowTitle(IntPtr handle)
     {
-        var display = XOpenDisplay(null);
         XTextProperty textProp;
-        var atomNetName = XInternAtom(display, "_NET_WM_NAME", false);
-        if (XGetTextProperty(display, handle, out textProp, atomNetName) == 0)
+        var atomNetName = XInternAtom(_display, "_NET_WM_NAME", false);
+        if (XGetTextProperty(_display, handle, out textProp, atomNetName) == 0)
         {
-            IntPtr atomWmName = XInternAtom(display, "WM_NAME", false);
-            XGetTextProperty(display, handle, out textProp, atomWmName);
+            IntPtr atomWmName = XInternAtom(_display, "WM_NAME", false);
+            XGetTextProperty(_display, handle, out textProp, atomWmName);
         }
         var title = textProp.value != IntPtr.Zero 
             ? Marshal.PtrToStringAnsi(textProp.value) ?? "" 
@@ -192,8 +193,7 @@ public class WindowPlatformService : IWindowPlatformService
 
     public string GetWindowClassName(IntPtr handle)
     {
-        var display = XOpenDisplay(null);
-        if (XGetClassHint(display, handle, out var hint) == 0)
+        if (XGetClassHint(_display, handle, out var hint) == 0)
             throw new Exception("无法获取 ClassHint");
 
         var cls   = Marshal.PtrToStringAnsi(hint.res_class);
@@ -225,14 +225,10 @@ public class WindowPlatformService : IWindowPlatformService
 
     public Point GetMousePos()
     {
-        var display = XOpenDisplay(null);
-        if (display == IntPtr.Zero)
-            throw new InvalidOperationException("无法打开 X11 显示");
-        
         var root = _root;
 
         var success = XQueryPointer(
-            display,
+            _display,
             root,
             out _,
             out _,
@@ -242,15 +238,43 @@ public class WindowPlatformService : IWindowPlatformService
             out _,
             out _);
 
-        XCloseDisplay(display);
-
         return new Point(rootX, rootY);
     }
 
     public IntPtr ForegroundWindowHandle { get; set; }
     public int GetWindowPid(IntPtr handle)
     {
-        return 0;
+        IntPtr pidAtom       = XInternAtom(_display, "_NET_WM_PID",    false);
+        IntPtr cardinalAtom  = XInternAtom(_display, "CARDINAL",       false);
+        if (pidAtom == IntPtr.Zero || cardinalAtom == IntPtr.Zero)
+            return -1;
+
+        IntPtr actualType;
+        int    actualFormat;
+        ulong  nItems, bytesAfter;
+        IntPtr propPid;
+
+        int status = XGetWindowProperty(
+            _display,
+            handle,
+            pidAtom,
+            0,      // long_offset
+            1,      // long_length
+            false,  // delete
+            cardinalAtom,
+            out actualType,
+            out actualFormat,
+            out nItems,
+            out bytesAfter,
+            out propPid);
+
+        if (status != 0 || propPid == IntPtr.Zero || nItems == 0)
+            return 0;
+
+        // 读取第一个（也是唯一一个）32 位整数
+        int pid = Marshal.ReadInt32(propPid);
+        XFree(propPid);
+        return pid;
     }
     
     

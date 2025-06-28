@@ -1,28 +1,32 @@
-#if false
 using System;
 using System.Diagnostics;
 using System.Windows;
-using Windows.Win32.UI.Accessibility;
+using Avalonia.Controls;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.ViewModels;
-using ClassIsland.Core.Helpers.Native;
-using System.Windows.Forms;
+using Avalonia.Interactivity;
+using Avalonia.Platform;
+using ClassIsland.Core.Controls;
+using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Models;
 
 namespace ClassIsland.Views;
 
 /// <summary>
 /// WindowRuleDebugWindow.xaml 的交互逻辑
 /// </summary>
-public partial class WindowRuleDebugWindow
+public partial class WindowRuleDebugWindow : MyWindow
 {
     public IWindowRuleService WindowRuleService { get; }
+    public MainWindow MainWindow { get; }
 
     public WindowRuleDebugViewModel ViewModel { get; } = new();
 
-    public WindowRuleDebugWindow(IWindowRuleService windowRuleService)
+    public WindowRuleDebugWindow(IWindowRuleService windowRuleService, MainWindow mainWindow)
     {
         WindowRuleService = windowRuleService;
+        MainWindow = mainWindow;
         InitializeComponent();
         DataContext = this;
     }
@@ -33,10 +37,11 @@ public partial class WindowRuleDebugWindow
         UpdateInfo();
     }
 
-    private void WindowRuleServiceOnForegroundWindowChanged(HWINEVENTHOOK hwineventhook, uint @event, HWND hwnd, int idobject, int idchild, uint ideventthread, uint dwmseventtime)
+    private void WindowRuleServiceOnForegroundWindowChanged(object? sender, ForegroundWindowChangedEventArgs e)
     {
         UpdateInfo();
     }
+
 
     private void WindowRuleDebugWindow_OnUnloaded(object sender, RoutedEventArgs e)
     {
@@ -45,24 +50,17 @@ public partial class WindowRuleDebugWindow
 
     private unsafe void UpdateInfo()
     {
-        var hWnd = GetForegroundWindow();
+        var hWnd = PlatformServices.WindowPlatformService.ForegroundWindowHandle;
         ViewModel.ForegroundWindowHandle = Convert.ToString(hWnd);
         try
         {
-            const int nMaxCount = 256;
-            using var className = new DisposablePWSTR(nMaxCount);
-            using var title = new DisposablePWSTR(nMaxCount);
-            uint pid = 0;
-
-            ViewModel.ForegroundWindowClassName =
-                GetClassName(hWnd, className.PWSTR, nMaxCount) != 0 ? className.ToString() : "";
-            ViewModel.ForegroundWindowTitle =
-                GetWindowText(hWnd, title.PWSTR, nMaxCount) != 0 ? title.ToString() : "";
+            ViewModel.ForegroundWindowClassName = PlatformServices.WindowPlatformService.GetWindowClassName(hWnd);
+            ViewModel.ForegroundWindowTitle = PlatformServices.WindowPlatformService.GetWindowTitle(hWnd);
             UpdateWindowState(hWnd);
-
-            if (GetWindowThreadProcessId(hWnd, &pid) != 0)
+            var pid = PlatformServices.WindowPlatformService.GetWindowPid(hWnd);
+            if (pid != 0)
             {
-                var process = Process.GetProcessById((int)pid);
+                var process = Process.GetProcessById(pid);
                 ViewModel.ForegroundWindowProcessName = process.ProcessName;
             }
             else
@@ -77,21 +75,16 @@ public partial class WindowRuleDebugWindow
         }
     }
 
-    private void UpdateWindowState(HWND hWnd)
+    private void UpdateWindowState(nint hWnd)
     {
-        GetWindowRect(hWnd, out var rect);
-        var mw = App.GetService<MainWindow>();
-        var screen = mw.ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
-                     mw.ViewModel.Settings.WindowDockingMonitorIndex >= 0 ?
-            Screen.AllScreens[mw.ViewModel.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen;
+        var screen = MainWindow.GetSelectedScreenSafe();
         if (screen == null)
         {
             return;
         }
-
-        var fullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
-        var maximize = IsZoomed(hWnd);
-        var minimize = IsIconic(hWnd);
+        var fullscreen = PlatformServices.WindowPlatformService.IsForegroundWindowFullscreen(screen);
+        var maximize = PlatformServices.WindowPlatformService.IsForegroundWindowMaximized(screen);
+        var minimize = PlatformServices.WindowPlatformService.IsWindowMinimized(hWnd);
 
         if (fullscreen)
         {
@@ -111,4 +104,3 @@ public partial class WindowRuleDebugWindow
         ViewModel.ForegroundWindowState = "正常";
     }
 }
-#endif
