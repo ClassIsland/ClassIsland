@@ -546,7 +546,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private void MenuItemDebugWindowRule_OnClick(object sender, RoutedEventArgs e)
     {
-        // IAppHost.GetService<WindowRuleDebugWindow>().Show();
+        IAppHost.GetService<WindowRuleDebugWindow>().Show();
     }
 
     private void MenuItemOpenDataFolder_OnClick(object sender, RoutedEventArgs e)

@@ -586,7 +586,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<SettingsWindowNew>();
                 services.AddSingleton<ProfileSettingsWindow>();
                 // services.AddTransient<ClassPlanDetailsWindow>();
-                // services.AddTransient<WindowRuleDebugWindow>();
+                services.AddTransient<WindowRuleDebugWindow>();
                 // services.AddTransient<ConfigErrorsWindow>();
                 // services.AddTransient<TimeAdjustmentWindow>();
                 // services.AddTransient<ExcelExportWindow>();
@@ -779,8 +779,9 @@ public partial class App : AppBase, IAppHost
         
         Logger.LogInformation("初始化应用。");
         
-        IThemeService.IsTransientDisabled = Settings.IsTransientDisabled;
-        IThemeService.IsWaitForTransientDisabled = Settings.IsWaitForTransientDisabled;
+        IThemeService.IsTransientDisabled = Settings.AnimationLevel < 1;
+        IThemeService.IsWaitForTransientDisabled = Settings.AnimationLevel >= 1;
+        IThemeService.AnimationLevel = Settings.AnimationLevel;
         GetService<ISplashService>().CurrentProgress = 30;
         GetService<ISplashService>().SetDetailedStatus("正在启动挂起检查服务");
 

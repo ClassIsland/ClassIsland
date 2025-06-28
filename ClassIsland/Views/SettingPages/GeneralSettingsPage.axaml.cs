@@ -33,7 +33,7 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(SettingsService.Settings.IsTransientDisabled) or nameof(SettingsService.Settings.IsWaitForTransientDisabled))
+        if (e.PropertyName is nameof(SettingsService.Settings.IsWaitForTransientDisabled) or nameof(SettingsService.Settings.AnimationLevel))
         {
             RequestRestart();
         }

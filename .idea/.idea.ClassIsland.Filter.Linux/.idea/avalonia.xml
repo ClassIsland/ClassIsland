@@ -11,6 +11,7 @@
         <entry key="ClassIsland.Core/StylesBase.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland.Core/ThemeBase.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland.Core/Themes/ChipListBox.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
+        <entry key="ClassIsland.Core/Themes/StackPanelIntroAnimation.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland.Core/Themes/TextBaselineFixes.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Controls/MainWindowLine.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Controls/NotificationEffects/RippleEffect.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
@@ -19,6 +20,7 @@
         <entry key="ClassIsland/Views/DevPortalWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/ProfileSettingsWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/SettingPages/AboutSettingsPage.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
+        <entry key="ClassIsland/Views/SettingPages/AppearanceSettingsPage.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/SettingPages/GeneralSettingsPage.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/SettingsWindowNew.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/TopmostEffectWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />

@@ -793,17 +793,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public bool IsTransientDisabled
-    {
-        get => _isTransientDisabled;
-        set
-        {
-            if (value == _isTransientDisabled) return;
-            _isTransientDisabled = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool IsWaitForTransientDisabled
     {
         get => _isWaitForTransientDisabled;
@@ -811,6 +800,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isWaitForTransientDisabled) return;
             _isWaitForTransientDisabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int AnimationLevel
+    {
+        get => _animationLevel;
+        set
+        {
+            if (value == _animationLevel) return;
+            _animationLevel = value;
             OnPropertyChanged();
         }
     }
@@ -1761,6 +1761,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _selectedSpeechProvider = "classisland.speech.edgeTts";
     private bool _isThemeWarningVisible = true;
     private string _weatherIconId = "classisland.weatherIcons.materialDesign";
+    private int _animationLevel = 1;
 
     public bool IsIgnoreWorkAreaEnabled
     {

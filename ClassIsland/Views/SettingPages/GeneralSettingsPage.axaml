@@ -26,7 +26,7 @@
                            Ruleset="{Binding ViewModel.SettingsService.Settings.HiedRules, Mode=TwoWay}"/>
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
-        <StackPanel Classes="settings-container">
+        <StackPanel Classes="settings-container animated-intro">
             <controls3:InfoBar IsOpen="{Binding ViewModel.SettingsService.Settings.ShowSellingAnnouncement, Mode=TwoWay}"
                                IsVisible="{Binding ViewModel.SettingsService.Settings.ShowSellingAnnouncement}"
                                Severity="Warning"
@@ -231,13 +231,19 @@
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AutoDisableCorruptPlugins, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
-            <!-- 禁用过渡动画 -->
+            <!-- 动画级别 -->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEDC1;}" 
-                                        Header="禁用过渡动画"
-                                        Description="此选项将禁用部分控件的过渡动画，以提升性能和操作效率。"
+                                        Header="动画级别"
+                                        Description="控制应用界面的动画级别，禁用动画选项不适用于应用主界面和部分控件。"
                                         >
                 <controls3:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTransientDisabled, Mode=TwoWay}"/>
+                    <ComboBox Width="120"
+                              VerticalAlignment="Center"
+                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.AnimationLevel}">
+                        <ComboBoxItem>禁用</ComboBoxItem>
+                        <ComboBoxItem>标准</ComboBoxItem>
+                        <ComboBoxItem>华丽</ComboBoxItem>
+                    </ComboBox>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
             <!-- 禁用动画等待 -->

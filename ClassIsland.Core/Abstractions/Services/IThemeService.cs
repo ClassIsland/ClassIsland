@@ -34,6 +34,11 @@ public interface IThemeService
     public void SetTheme(int themeMode, Color primary);
 
     /// <summary>
+    /// 动画等级
+    /// </summary>
+    public static int AnimationLevel { get; internal set; } = 1;
+
+    /// <summary>
     /// 是否禁用过渡动画
     /// </summary>
     public static bool IsTransientDisabled { get; internal set; } = false;

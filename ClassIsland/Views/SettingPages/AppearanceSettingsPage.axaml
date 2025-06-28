@@ -17,7 +17,7 @@
         <converters:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
-        <StackPanel Classes="settings-container">
+        <StackPanel Classes="settings-container animated-intro">
             <controls1:IconText Glyph="&#xEF27;" Text="基本" Margin="0 0 0 4" />
             <!-- 界面缩放 -->
             <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF4D1;}"
