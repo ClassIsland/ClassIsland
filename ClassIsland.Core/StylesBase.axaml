@@ -21,6 +21,8 @@
     </Design.PreviewWith>
     
     <StyleInclude Source="/Controls/Field.axaml"/>
+    <StyleInclude Source="/Controls/Emptiable.axaml"/>
+    <StyleInclude Source="/Controls/Empty.axaml"/>
 
     <!-- Add Styles Here -->
     <Style Selector="StackPanel.settings-container">
@@ -62,10 +64,20 @@
         </Style>
     </Style>
     
-    <Style Selector="TabControl.compact TabItem">
+    <Style Selector="TabControl TabItem">
         <Style Selector="^ TextBlock">
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontWeight" Value="Regular"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="TabControl.navigation TabItem /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextElement.FontSize" Value="20"/>
+    </Style>
+    
+    <Style Selector="TabControl.compact TabItem">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="TextElement.FontSize" Value="14"/>
+            <Setter Property="TextElement.FontWeight" Value="Medium"/>
         </Style>
         <Setter Property="MinHeight" Value="28"/>
     </Style>

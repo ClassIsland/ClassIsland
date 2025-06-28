@@ -21,6 +21,8 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public IProfileService ProfileService { get; }
     public IManagementService ManagementService { get; }
     public SettingsService SettingsService { get; }
+    public ILessonsService LessonsService { get; }
+    public IExactTimeService ExactTimeService { get; }
 
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
     public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
@@ -43,7 +45,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private Subject? _selectedSubject;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
-    [ObservableProperty] private string _tempOverlayClassPlanTimeLayoutId = "";
+    [ObservableProperty] private Guid _tempOverlayClassPlanTimeLayoutId = Guid.Empty;
     [ObservableProperty] private ClassInfo? _selectedClassInfo;
     [ObservableProperty] private int _selectedClassIndex = -1;
     [ObservableProperty] private ClassPlan? _selectedClassPlan = null;
@@ -69,11 +71,13 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
     /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
-        SettingsService settingsService)
+        SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         ProfileService = profileService;
         ManagementService = managementService;
         SettingsService = settingsService;
+        LessonsService = lessonsService;
+        ExactTimeService = exactTimeService;
 
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
         TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);

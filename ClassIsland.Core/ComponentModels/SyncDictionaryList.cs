@@ -65,9 +65,9 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     {
                         break;
                     }
-                    foreach (var i in e.OldItems)
+                    foreach (var i in e.OldItems.OfType<KeyValuePair<TKey, TValue>>())
                     {
-                        foreach (var k in List.Where(k => k.Value?.Equals(i) ?? false))
+                        foreach (var k in List.Where(k => k.Key.Equals(i.Key)))
                         {
                             List.Remove(k);
                             break;

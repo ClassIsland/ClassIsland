@@ -1,0 +1,36 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls">
+    <Design.PreviewWith>
+        <controls:Emptiable />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|Emptiable">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <ContentPresenter x:Name="MainContentPresenter" 
+                                      Content="{TemplateBinding Content, Mode=OneWay}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate, Mode=OneWay}"/>
+                    <ContentPresenter x:Name="EmptyContentPresenter" 
+                                      IsVisible="False"
+                                      Content="{TemplateBinding EmptyContent}"
+                                      ContentTemplate="{TemplateBinding EmptyContentTemplate}"/>
+                    <controls:Empty x:Name="DefaultEmpty"
+                                    IsVisible="False"/>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^:empty /template/ ContentPresenter#MainContentPresenter">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="^:empty /template/ ContentPresenter#EmptyContentPresenter">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="^:empty:default-empty-content controls|Empty#DefaultEmpty">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+    </Style>
+</Styles>

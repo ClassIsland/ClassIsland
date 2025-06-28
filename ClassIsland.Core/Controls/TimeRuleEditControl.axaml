@@ -9,7 +9,7 @@
              Loaded="TimeRuleEditControl_OnLoaded">
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TimeRuleEditControl}}">
         <StackPanel DataContext="{Binding TimeRule}">
-            <Separator Margin="0 20 0 8" />
+            <Separator Margin="0 8 0 8" />
             <local:IconText Glyph="&#xf17e;" Text="触发规则" Margin="0 0 0 8" />
             <!--<TextBlock Text="{Binding}"/>-->
             <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
