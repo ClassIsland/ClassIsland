@@ -7,7 +7,7 @@ using ClassIsland.Shared.Interfaces;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
-using AttachableObjectNodeDictionary = ObservableOrderedDictionary<AttachableObjectAddress, AttachableObjectNode>;
+using AttachableObjectNodeDictionary = ObservableDictionary<AttachableObjectAddress, AttachableObjectNode>;
 
 /// <summary>
 /// 档案分析服务，用于分析档案中附加信息关系。

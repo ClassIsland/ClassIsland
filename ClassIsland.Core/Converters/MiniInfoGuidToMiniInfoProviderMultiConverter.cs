@@ -13,7 +13,7 @@ public class MiniInfoGuidToMiniInfoProviderMultiConverter : IMultiValueConverter
     {
         var guid = (string?)values[0];
         if (guid == null) return null;
-        var providers = (ObservableOrderedDictionary<string, IMiniInfoProvider>)values[1];
+        var providers = (ObservableDictionary<string, IMiniInfoProvider>)values[1];
         if (!providers.ContainsKey(guid)) return null;
         return providers[guid];
     }

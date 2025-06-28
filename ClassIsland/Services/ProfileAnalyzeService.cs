@@ -15,7 +15,7 @@ using Sentry;
 
 namespace ClassIsland.Services;
 
-using AttachableObjectNodeDictionary = ObservableOrderedDictionary<AttachableObjectAddress, AttachableObjectNode>;
+using AttachableObjectNodeDictionary = ObservableDictionary<AttachableObjectAddress, AttachableObjectNode>;
 
 public class ProfileAnalyzeService(IProfileService profileService, ILogger<ProfileAnalyzeService> logger) : ObservableRecipient, IProfileAnalyzeService
 {

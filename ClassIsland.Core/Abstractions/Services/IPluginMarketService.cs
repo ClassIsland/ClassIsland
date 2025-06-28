@@ -18,7 +18,7 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// <summary>
     /// 已将插件仓库与本地插件合并的全部插件
     /// </summary>
-    public ObservableOrderedDictionary<string, PluginInfo> MergedPlugins { get; set; }
+    public ObservableDictionary<string, PluginInfo> MergedPlugins { get; set; }
 
     /// <summary>
     /// 是否正在加载插件源
@@ -66,7 +66,7 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// <summary>
     /// 已加载的插件源
     /// </summary>
-    public ObservableOrderedDictionary<string, PluginIndex> Indexes { get; }
+    public ObservableDictionary<string, PluginIndex> Indexes { get; }
 
     /// <summary>
     /// 获取索引信息

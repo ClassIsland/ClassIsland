@@ -31,12 +31,23 @@
                     <Grid Grid.Column="0" RowDefinitions="Auto, *">
                         <controls:CommandBar Grid.Row="0" 
                                              DefaultLabelPosition="Right">
-                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe00d;}" Label="添加"/>
+                            <controls:CommandBar.PrimaryCommands>
+                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe00d;}" Label="添加"/>
+                                <controls:CommandBarSeparator/>
+                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe58d;}" Label="复制"/>
+                            </controls:CommandBar.PrimaryCommands>
                         </controls:CommandBar>
-                        <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.ProfileService.Profile.ClassPlans}">
-                            
+                        <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.ClassPlans.List, Mode=OneWay}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <WrapPanel Orientation="Horizontal" >
+                                        <TextBlock Text="{Binding Value.Name}" Classes="textFix" />
+                                    </WrapPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
                         </ListBox>
                     </Grid>
+                    
                 </Grid>
             </TabItem>
             <TabItem Header="时间表">

@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.ProfileAnalyzing;
 
-using AttachableObjectNodeDictionary = ObservableOrderedDictionary<AttachableObjectAddress, AttachableObjectNode>;
+using AttachableObjectNodeDictionary = ObservableDictionary<AttachableObjectAddress, AttachableObjectNode>;
 
 
 /// <summary>

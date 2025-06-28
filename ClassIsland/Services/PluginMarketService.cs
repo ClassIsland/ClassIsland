@@ -28,24 +28,24 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
     public SettingsService SettingsService { get; } = settingsService;
     public IPluginService PluginService { get; } = pluginService;
 
-    public ObservableOrderedDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
+    public ObservableDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
 
-    public ObservableOrderedDictionary<string, PluginIndex> Indexes { get; } = new();
+    public ObservableDictionary<string, PluginIndex> Indexes { get; } = new();
     public ILogger<PluginMarketService> Logger { get; } = logger;
 
-    public ObservableOrderedDictionary<string, string> FallbackMirrors { get; } = new()
+    public ObservableDictionary<string, string> FallbackMirrors { get; } = new()
     {
         { "github", "https://github.com" },
         { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
         { "moeyy", "https://github.moeyy.xyz/https://github.com" }
     };
 
-private ObservableOrderedDictionary<string, PluginInfo> _mergedPlugins = new();
+private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
     private bool _isLoadingPluginSource = false;
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
 
-    public ObservableOrderedDictionary<string, PluginInfo> MergedPlugins
+    public ObservableDictionary<string, PluginInfo> MergedPlugins
     {
         get => _mergedPlugins;
         set

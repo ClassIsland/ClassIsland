@@ -8,7 +8,7 @@ namespace ClassIsland.Core.Converters;
 
 public class ClassPlanDictionaryValueAccessConverter : IValueConverter
 {
-    public ObservableOrderedDictionary<string, TimeLayout> SourceDictionary
+    public ObservableDictionary<string, TimeLayout> SourceDictionary
     {
         get;
         set;

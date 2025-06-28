@@ -14,22 +14,22 @@ namespace ClassIsland.Shared.Models.Profile;
 public class Profile : ObservableRecipient
 {
     private string _name = "";
-    private ObservableOrderedDictionary<Guid, TimeLayout> _timeLayouts = new();
-    private ObservableOrderedDictionary<Guid, ClassPlan> _classPlans = new();
-    private ObservableOrderedDictionary<Guid, Subject> _subjects = new();
+    private ObservableDictionary<Guid, TimeLayout> _timeLayouts = new();
+    private ObservableDictionary<Guid, ClassPlan> _classPlans = new();
+    private ObservableDictionary<Guid, Subject> _subjects = new();
     private bool _isOverlayClassPlanEnabled = false;
     private Guid? _overlayClassPlanId = null;
     private ObservableCollection<Subject> _editingSubjects = new();
     private Guid? _tempClassPlanId;
     private DateTime _tempClassPlanSetupTime = DateTime.Now;
-    private ObservableOrderedDictionary<Guid, ClassPlanGroup> _classPlanGroups = new();
+    private ObservableDictionary<Guid, ClassPlanGroup> _classPlanGroups = new();
     private Guid _selectedClassPlanGroupId = ClassPlanGroup.DefaultGroupGuid;
     private Guid? _tempClassPlanGroupId;
     private DateTime _tempClassPlanGroupExpireTime = DateTime.Now;
     private bool _isTempClassPlanGroupEnabled = false;
     private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
     private Guid _id = Guid.NewGuid();
-    private ObservableOrderedDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
+    private ObservableDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
 
     /// <summary>
     /// 实例化对象
@@ -238,7 +238,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 存储的时间表字典，键为GUID
     /// </summary>
-    public ObservableOrderedDictionary<Guid, TimeLayout> TimeLayouts
+    public ObservableDictionary<Guid, TimeLayout> TimeLayouts
     {
         get => _timeLayouts;
         set
@@ -252,7 +252,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 存储的课表字典，键为GUID
     /// </summary>
-    public ObservableOrderedDictionary<Guid, ClassPlan> ClassPlans
+    public ObservableDictionary<Guid, ClassPlan> ClassPlans
     {
         get => _classPlans;
         set
@@ -281,7 +281,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 存储的科目字典，键为GUID
     /// </summary>
-    public ObservableOrderedDictionary<Guid, Subject> Subjects
+    public ObservableDictionary<Guid, Subject> Subjects
     {
         get => _subjects;
         set
@@ -367,7 +367,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 该档案包含的课表群。
     /// </summary>
-    public ObservableOrderedDictionary<Guid, ClassPlanGroup> ClassPlanGroups
+    public ObservableDictionary<Guid, ClassPlanGroup> ClassPlanGroups
     {
         get => _classPlanGroups;
         set
@@ -465,7 +465,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 已预定启用的课表
     /// </summary>
-    public ObservableOrderedDictionary<DateTime, OrderedSchedule> OrderedSchedules
+    public ObservableDictionary<DateTime, OrderedSchedule> OrderedSchedules
     {
         get => _orderedSchedules;
         set

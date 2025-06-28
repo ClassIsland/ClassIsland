@@ -33,7 +33,7 @@ public interface IXamlThemeService
     /// <summary>
     /// 已将主题仓库与本地主题合并的全部主题
     /// </summary>
-    public ObservableOrderedDictionary<string, ThemeInfo> MergedThemes { get; }
+    public ObservableDictionary<string, ThemeInfo> MergedThemes { get; }
 
 
     /// <summary>

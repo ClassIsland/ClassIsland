@@ -14,8 +14,8 @@ public class ClassPlan : AttachableSettingsObject
     private Guid _timeLayoutId = Guid.Empty;
     private ObservableCollection<ClassInfo> _classes = new();
     private string _name = "新课表";
-    private ObservableOrderedDictionary<Guid, TimeLayout> _timeLayouts = new();
-    private ObservableOrderedDictionary<Guid, ClassPlan> _classPlans = new();
+    private ObservableDictionary<Guid, TimeLayout> _timeLayouts = new();
+    private ObservableDictionary<Guid, ClassPlan> _classPlans = new();
     private TimeRule _timeRule = new();
     private bool _isActivated = false;
     private bool _isOverlay = false;
@@ -289,7 +289,7 @@ public class ClassPlan : AttachableSettingsObject
     }
 
     [JsonIgnore]
-    internal ObservableOrderedDictionary<Guid, ClassPlan> ClassPlans
+    internal ObservableDictionary<Guid, ClassPlan> ClassPlans
     {
         get => _classPlans;
         set
@@ -301,7 +301,7 @@ public class ClassPlan : AttachableSettingsObject
     }
 
     [JsonIgnore]
-    internal ObservableOrderedDictionary<Guid, TimeLayout> TimeLayouts
+    internal ObservableDictionary<Guid, TimeLayout> TimeLayouts
     {
         get => _timeLayouts;
         set

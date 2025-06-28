@@ -18,7 +18,7 @@ public class MiniInfoProviderHostService : IHostedService
     private ILogger<MiniInfoProviderHostService> Logger { get; }
 
     private Settings Settings => SettingsService.Settings;
-    public ObservableOrderedDictionary<string, IMiniInfoProvider> Providers { get; } = new();
+    public ObservableDictionary<string, IMiniInfoProvider> Providers { get; } = new();
 
     public MiniInfoProviderHostService(SettingsService settingsService, ILogger<MiniInfoProviderHostService> logger)
     {

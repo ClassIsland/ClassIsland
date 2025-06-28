@@ -18,5 +18,5 @@ public class PluginIndex : ObservableRecipient
     /// <summary>
     /// 插件下载镜像列表，键为镜像名，值为镜像根。镜像根在下载时会替换<see cref="PluginInfo"/>中下载链接的{root}模板。
     /// </summary>
-    public ObservableOrderedDictionary<string, string> DownloadMirrors { get; set; } = new();
+    public ObservableDictionary<string, string> DownloadMirrors { get; set; } = new();
 }

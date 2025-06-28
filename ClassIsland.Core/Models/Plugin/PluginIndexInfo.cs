@@ -13,7 +13,7 @@ public class PluginIndexInfo : ObservableRecipient
     private string _id = Guid.NewGuid().ToString();
     private string _url = "";
     private string _selectedMirror = "";
-    private ObservableOrderedDictionary<string, string> _mirrors = new();
+    private ObservableDictionary<string, string> _mirrors = new();
 
     /// <summary>
     /// 插件索引 Guid
@@ -61,7 +61,7 @@ public class PluginIndexInfo : ObservableRecipient
     /// 此插件源的镜像列表
     /// </summary>
     [JsonIgnore]
-    public ObservableOrderedDictionary<string, string> Mirrors
+    public ObservableDictionary<string, string> Mirrors
     {
         get => _mirrors;
         set

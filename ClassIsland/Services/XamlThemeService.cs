@@ -38,18 +38,18 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     public ObservableCollection<ThemeInfo> Themes { get; } = [];
 
-    public ObservableOrderedDictionary<string, ThemeInfo> MergedThemes
+    public ObservableDictionary<string, ThemeInfo> MergedThemes
     {
         get => _mergedThemes;
         set => SetProperty(ref _mergedThemes, value);
     }
 
-    public ObservableOrderedDictionary<string, ThemeIndex> Indexes { get; } = [];
+    public ObservableDictionary<string, ThemeIndex> Indexes { get; } = [];
 
-    public ObservableOrderedDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
+    public ObservableDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
 
     public static readonly string ThemesPkgRootPath = Path.Combine(App.AppCacheFolderPath, "ThemePackages");
-    private ObservableOrderedDictionary<string, ThemeInfo> _mergedThemes = [];
+    private ObservableDictionary<string, ThemeInfo> _mergedThemes = [];
 
     public event EventHandler? RestartRequested;
 
@@ -103,7 +103,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         Logger.LogInformation("正在加载主题源");
         LoadLocalThemes();
         PluginMarketService.LoadPluginSource();
-        var merged = new ObservableOrderedDictionary<string, ThemeInfo>();
+        var merged = new ObservableDictionary<string, ThemeInfo>();
         Indexes.Clear();
 
         foreach (var pluginLocal in Themes)

@@ -8,7 +8,7 @@ namespace ClassIsland.Core.Converters;
 
 public class SubjectsDictionaryValueAccessConverter : IValueConverter
 {
-    public ObservableOrderedDictionary<string, Subject> SourceDictionary
+    public ObservableDictionary<string, Subject> SourceDictionary
     {
         get;
         set;

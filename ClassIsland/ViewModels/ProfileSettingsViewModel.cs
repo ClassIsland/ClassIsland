@@ -1,21 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reactive.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.ComponentModels;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using DynamicData;
+using DynamicData.Binding;
 
 
 namespace ClassIsland.ViewModels;
 
-public partial class ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService, SettingsService settingsService) : ObservableRecipient
+public partial class ProfileSettingsViewModel : ObservableRecipient
 {
-    public IProfileService ProfileService { get; } = profileService;
-    public IManagementService ManagementService { get; } = managementService;
-    public SettingsService SettingsService { get; } = settingsService;
+    public IProfileService ProfileService { get; }
+    public IManagementService ManagementService { get; }
+    public SettingsService SettingsService { get; }
+
+    public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
+
+    
     [ObservableProperty] private object _drawerContent = new();
     [ObservableProperty] private bool _isClassPlansEditing = false;
     [ObservableProperty] private ObservableCollection<string> _profiles = new();
@@ -53,4 +63,13 @@ public partial class ProfileSettingsViewModel(IProfileService profileService, IM
     [ObservableProperty] private string _targetSubjectIndex = "";
     [ObservableProperty] private bool _isTimeLineSticky = true;
 
+    /// <inheritdoc/>
+    public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService, SettingsService settingsService)
+    {
+        ProfileService = profileService;
+        ManagementService = managementService;
+        SettingsService = settingsService;
+        
+        ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
+    }
 }
