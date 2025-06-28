@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using ClassIsland.Core.Controls;
 using ClassIsland.Shared;
@@ -18,6 +19,15 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         DataContext = this;
         InitializeComponent();
+    }
+
+    private void OpenDrawer(string key)
+    {
+        ViewModel.IsDrawerOpen = true;
+        if (this.FindResource(key) is {} o)
+        {
+            ViewModel.DrawerContent = o;
+        }
     }
     
     public async void Open()
@@ -47,5 +57,15 @@ public partial class ProfileSettingsWindow : MyWindow
         e.Cancel = true;
         _isOpen = false;
         Hide();
+    }
+
+    private void ButtonCreateTempOverlayClassPlan_OnClick(object? sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    private void ButtonOpenClassPlanDetails_OnClick(object? sender, RoutedEventArgs e)
+    {
+        OpenDrawer("ClassPlansInfoEditor");
     }
 }

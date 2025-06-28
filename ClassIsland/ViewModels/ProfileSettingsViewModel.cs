@@ -9,7 +9,6 @@ using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using DynamicData.Binding;
@@ -24,8 +23,12 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public SettingsService SettingsService { get; }
 
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
+    public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
+    public SyncDictionaryList<Guid, Subject> Subjects { get; }
 
-    
+    public SyncDictionaryList<Guid, ClassPlanGroup> ClassPlanGroups { get; }
+
+
     [ObservableProperty] private object _drawerContent = new();
     [ObservableProperty] private bool _isClassPlansEditing = false;
     [ObservableProperty] private ObservableCollection<string> _profiles = new();
@@ -41,9 +44,9 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
     [ObservableProperty] private string _tempOverlayClassPlanTimeLayoutId = "";
-    [ObservableProperty] private ClassInfo?  _selectedClassInfo;
+    [ObservableProperty] private ClassInfo? _selectedClassInfo;
     [ObservableProperty] private int _selectedClassIndex = -1;
-    [ObservableProperty] private ClassPlan _selectedClassPlan = new();
+    [ObservableProperty] private ClassPlan? _selectedClassPlan = null;
     [ObservableProperty] private bool _isUpdatingClassInfoIndexInBackend = false;
     [ObservableProperty] private bool _isClassPlanEditComplete = false;
     [ObservableProperty] private bool _isWeekOffsetSettingsOpen = false;
@@ -62,14 +65,20 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isClassPlanTempEditPopupOpen = false;
     [ObservableProperty] private string _targetSubjectIndex = "";
     [ObservableProperty] private bool _isTimeLineSticky = true;
+    [ObservableProperty] private bool _isDrawerOpen = false;
 
     /// <inheritdoc/>
-    public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService, SettingsService settingsService)
+    public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
+        SettingsService settingsService)
     {
         ProfileService = profileService;
         ManagementService = managementService;
         SettingsService = settingsService;
-        
+
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
+        TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);
+        Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
+        ClassPlanGroups =
+            new SyncDictionaryList<Guid, ClassPlanGroup>(ProfileService.Profile.ClassPlanGroups, Guid.NewGuid);
     }
 }

@@ -1,6 +1,10 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Styles.Resources>
+        <Thickness x:Key="AppBarButtonTextLabelOnRightMargin">8 18 12 10</Thickness>
+        <Thickness x:Key="AppBarButtonContentViewboxMargin">10,11.5,0,8.5</Thickness>
+    </Styles.Resources>
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
@@ -20,6 +24,7 @@
     <Style Selector="controls|NavigationViewItem TextBlock,
                      ToggleSwitch TextBlock,
                      CheckBox TextBlock,
+                     ListBoxItem TextBlock,
                      Control.textFix TextBlock">
         <Setter Property="Margin" Value="0 0 0 -3"/>
     </Style>
@@ -29,8 +34,5 @@
     <Style Selector="ComboBox TextBlock,
                      Button AccessText">
         <Setter Property="Margin" Value="0 1.5 0 -1.5"/>
-    </Style>
-    <Style Selector="controls|CommandBarButton /template/ TextBlock#TextLabel">
-        <Setter Property="Margin" Value="8,18,12,10"></Setter>
     </Style>
 </Styles>

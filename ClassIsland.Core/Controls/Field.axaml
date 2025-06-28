@@ -26,6 +26,7 @@
                                x:Name="PrefixTextBlock"/>
                     <ContentPresenter Grid.Row="1" Grid.Column="1"
                                       x:Name="MainContent"
+                                      HorizontalAlignment="Stretch"
                                       Content="{TemplateBinding Content}"
                                       VerticalAlignment="Center" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="{TemplateBinding Suffix, Mode=OneWay}"
@@ -50,6 +51,10 @@
         </Style>
         <Style Selector="^:has-suffix /template/ TextBlock#SuffixTextBlock">
             <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        
+        <Style Selector="^ /template/ ContentPresenter#MainContent ComboBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
     </Style>
 </Styles>

@@ -8,12 +8,12 @@ public class SizeDoubleToCornerRadiusConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is double v)
+        return value switch
         {
-            return v / 2;
-        }
-
-        return null;
+            double v1 => v1 / 2,
+            int v2 => v2 / 2,
+            _ => null
+        };
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

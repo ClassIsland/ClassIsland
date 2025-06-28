@@ -1,8 +1,8 @@
-#if false
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Shared.Models.Profile;
@@ -14,23 +14,16 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public partial class TimeRuleEditControl : UserControl
 {
-    public static readonly DependencyProperty TimeRuleProperty = DependencyProperty.Register(
-        nameof(TimeRule), typeof(TimeRule), typeof(TimeRuleEditControl), new PropertyMetadata(default(TimeRule),
-            (o, args) =>
-            {
-                if (o is not TimeRuleEditControl control) 
-                    return;
-                if (args.NewValue is TimeRule newRule)
-                {
-                    newRule.PropertyChanged += control.RuleOnPropertyChanged;
-                }
+    private TimeRule? _oldTimeRule;
+    
+    public static readonly StyledProperty<TimeRule?> TimeRuleProperty = AvaloniaProperty.Register<TimeRuleEditControl, TimeRule?>(
+        nameof(TimeRule));
 
-                if (args.OldValue is TimeRule oldRule)
-                {
-                    oldRule.PropertyChanged -= control.RuleOnPropertyChanged;
-                }
-                control.UpdateWeekCountDivs();
-            }));
+    public TimeRule? TimeRule
+    {
+        get => GetValue(TimeRuleProperty);
+        set => SetValue(TimeRuleProperty, value);
+    }
 
     private void RuleOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -42,15 +35,24 @@ public partial class TimeRuleEditControl : UserControl
         }
     }
 
-    public TimeRule? TimeRule
-    {
-        get { return (TimeRule)GetValue(TimeRuleProperty); }
-        set { SetValue(TimeRuleProperty, value); }
-    }
-
     /// <inheritdoc />
     public TimeRuleEditControl()
     {
+        this.GetObservable(TimeRuleProperty).Subscribe(newRule =>
+        {
+            if (newRule != null)
+            {
+                newRule.PropertyChanged += RuleOnPropertyChanged;
+            }
+
+            if (_oldTimeRule != null)
+            {
+                _oldTimeRule.PropertyChanged -= RuleOnPropertyChanged;
+            }
+
+            _oldTimeRule = newRule;
+            UpdateWeekCountDivs();
+        });
         InitializeComponent();
     }
 
@@ -87,4 +89,3 @@ public partial class TimeRuleEditControl : UserControl
         TimeRule.WeekCountDiv = w;
     }
 }
-#endif

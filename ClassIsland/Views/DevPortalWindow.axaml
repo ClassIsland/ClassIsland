@@ -34,6 +34,25 @@
                     </ci:Field>
                 </StackPanel>
             </TabItem>
+            <TabItem Header="控件">
+                <StackPanel Spacing="6">
+                    <ListBox Theme="{StaticResource ChipListBoxTheme}">
+                        <ListBoxItem>大地</ListBoxItem>
+                        <ListBoxItem>海洋</ListBoxItem>
+                        <ListBoxItem>天空</ListBoxItem>
+                        <ListBoxItem IsSelected="True">负世</ListBoxItem>
+                        <ListBoxItem>理性</ListBoxItem>
+                        <ListBoxItem>浪漫</ListBoxItem>
+                        <ListBoxItem>纷争</ListBoxItem>
+                        <ListBoxItem>死亡</ListBoxItem>
+                        <ListBoxItem>诡计</ListBoxItem>
+                        <ListBoxItem>门径</ListBoxItem>
+                        <ListBoxItem>律法</ListBoxItem>
+                        <ListBoxItem>岁月</ListBoxItem>
+                        <ListBoxItem>■■</ListBoxItem>
+                    </ListBox>
+                </StackPanel>
+            </TabItem>
             <TabItem Header="提醒">
                 <StackPanel Spacing="6" Width="400" HorizontalAlignment="Left">
                     <ci:Field Label="提醒标题">

@@ -1,0 +1,96 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    
+    <ControlTheme TargetType="ListBoxItem" x:Key="ChipListBoxItemTheme">
+        <ControlTheme.Resources>
+            <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter"/>
+            <ci:DoubleToThicknessMultiConverter x:Key="DoubleToThicknessMultiConverter"/>
+        </ControlTheme.Resources>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="ContainerBorder"
+                            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            Padding="8 0"
+                            Height="28"
+                            CornerRadius="14"
+                            Background="{DynamicResource ControlFillColorTransparentBrush}">
+                        <Border.Transitions>
+                            <Transitions>
+                                <BrushTransition Property="Background" Duration="0:0:0.1" Easing="0,0 0,1"/>
+                                <BrushTransition Property="BorderBrush" Duration="0:0:0.1" Easing="0,0 0,1"/>
+                                <BrushTransition Property="TextElement.Foreground" Duration="0:0:0.1" Easing="0,0 0,1"/>
+                            </Transitions>
+                        </Border.Transitions>
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="Margin" Value="2"/>
+        
+        
+        <Style Selector="^[IsSelected=True] /template/ Border#ContainerBorder">
+            <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+        </Style>
+        <Style Selector="^[IsSelected=True]:disabled /template/ Border#ContainerBorder">
+            <Setter Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+        </Style>
+        <Style Selector="^:pointerover /template/ Border#ContainerBorder">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+        </Style>
+        <Style Selector="^:disabled /template/ Border#ContainerBorder">
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+        </Style>
+    </ControlTheme>
+    
+    <ControlTheme TargetType="ListBox" x:Key="ChipListBoxTheme">
+        <ControlTheme.Resources>
+            <ControlTheme BasedOn="{StaticResource ChipListBoxItemTheme}"
+                          TargetType="ListBoxItem"
+                          x:Key="{x:Type ListBoxItem}"/>
+        </ControlTheme.Resources>
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="ListBox">
+                <ScrollViewer>
+                    <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                </ScrollViewer>
+            </ControlTemplate>
+        </Setter>
+        <Setter Property="ItemContainerTheme" Value="{StaticResource ChipListBoxItemTheme}"/>
+    </ControlTheme>
+    
+    <Design.PreviewWith>
+        <Border Padding="20" Width="400">
+            <ListBox Theme="{StaticResource ChipListBoxTheme}">
+                <ListBoxItem>大地</ListBoxItem>
+                <ListBoxItem>海洋</ListBoxItem>
+                <ListBoxItem>天空</ListBoxItem>
+                <ListBoxItem IsSelected="True">负世</ListBoxItem>
+                <ListBoxItem>理性</ListBoxItem>
+                <ListBoxItem>浪漫</ListBoxItem>
+                <ListBoxItem>纷争</ListBoxItem>
+                <ListBoxItem>死亡</ListBoxItem>
+                <ListBoxItem>诡计</ListBoxItem>
+                <ListBoxItem>门径</ListBoxItem>
+                <ListBoxItem>律法</ListBoxItem>
+                <ListBoxItem>岁月</ListBoxItem>
+                <ListBoxItem>■■</ListBoxItem>
+            </ListBox>
+        </Border>
+    </Design.PreviewWith>
+</ResourceDictionary>
