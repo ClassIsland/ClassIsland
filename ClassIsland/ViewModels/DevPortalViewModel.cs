@@ -26,5 +26,10 @@ public partial class DevPortalViewModel(
 
     [ObservableProperty] private bool _isTargetTimeLoaded = false;
 
+    [ObservableProperty] private string _toastTitle = "";
+    [ObservableProperty] private string _toastMessage = "";
+    [ObservableProperty] private bool _toastHaveActions = false;
+    [ObservableProperty] private bool _toastCanUserClose = true;
+
     public bool IsTargetDateTimeLoaded => IsTargetDateLoaded && IsTargetTimeLoaded;
 }

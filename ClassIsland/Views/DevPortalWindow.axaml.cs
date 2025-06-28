@@ -4,9 +4,12 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Views;
 
@@ -86,5 +89,16 @@ public partial class DevPortalWindow : MyWindow
     {
         ViewModel.TargetDate = ViewModel.ExactTimeService.GetCurrentLocalDateTime().Date;
         ViewModel.IsTargetDateLoaded = true;
+    }
+
+    private void ButtonSendToast_OnClick(object? sender, RoutedEventArgs e)
+    {
+        this.ShowToast(new ToastMessage()
+        {
+            Title = ViewModel.ToastTitle,
+            Message = ViewModel.ToastMessage,
+            CanUserClose = ViewModel.ToastCanUserClose,
+            ActionContent = ViewModel.ToastHaveActions ? new Button() {Content = "Test"} : null
+        });
     }
 }

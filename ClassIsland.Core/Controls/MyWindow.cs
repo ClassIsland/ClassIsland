@@ -123,15 +123,24 @@ public class MyWindow : AppWindow
             TransparencyLevelHint = [WindowTransparencyLevel.Mica];
             Background = Brushes.Transparent;
         }
-        
-        if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark)&& Content is Control element && !_isAdornerAdded)
+
+        if (Content is not Control element || _isAdornerAdded)
         {
-            var layer = AdornerLayer.GetAdornerLayer(element);
+            return;
+        }
+
+        var layer = AdornerLayer.GetAdornerLayer(element);
+        var appToastAdorner = new AppToastAdorner(this);
+        layer?.Children.Add(appToastAdorner);
+        AdornerLayer.SetAdornedElement(appToastAdorner, this);
+        
+        if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark))
+        {
             var adorner = new DevelopmentBuildAdorner(AppBase.Current.IsDevelopmentBuild, ShowOssWatermark);
             layer?.Children.Add(adorner);
             AdornerLayer.SetAdornedElement(adorner, this);
-            _isAdornerAdded = true;
         }
+        _isAdornerAdded = true;
     }
 
 }

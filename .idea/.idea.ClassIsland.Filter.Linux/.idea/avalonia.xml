@@ -3,6 +3,8 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="ClassIsland.Core/Controls/AppToastAdorner.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
+        <entry key="ClassIsland.Core/Controls/DevelopmentBuildAdorner.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland.Core/Controls/Emptiable.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland.Core/Controls/Empty.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland.Core/Controls/Field.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />

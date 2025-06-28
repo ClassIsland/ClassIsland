@@ -36,21 +36,33 @@
             </TabItem>
             <TabItem Header="控件">
                 <StackPanel Spacing="6">
-                    <ListBox Theme="{StaticResource ChipListBoxTheme}">
-                        <ListBoxItem>大地</ListBoxItem>
-                        <ListBoxItem>海洋</ListBoxItem>
-                        <ListBoxItem>天空</ListBoxItem>
-                        <ListBoxItem IsSelected="True">负世</ListBoxItem>
-                        <ListBoxItem>理性</ListBoxItem>
-                        <ListBoxItem>浪漫</ListBoxItem>
-                        <ListBoxItem>纷争</ListBoxItem>
-                        <ListBoxItem>死亡</ListBoxItem>
-                        <ListBoxItem>诡计</ListBoxItem>
-                        <ListBoxItem>门径</ListBoxItem>
-                        <ListBoxItem>律法</ListBoxItem>
-                        <ListBoxItem>岁月</ListBoxItem>
-                        <ListBoxItem>■■</ListBoxItem>
-                    </ListBox>
+                    <ci:Field Label="ChipListBoxTheme">
+                        <ListBox Theme="{StaticResource ChipListBoxTheme}">
+                            <ListBoxItem>大地</ListBoxItem>
+                            <ListBoxItem>海洋</ListBoxItem>
+                            <ListBoxItem>天空</ListBoxItem>
+                            <ListBoxItem IsSelected="True">负世</ListBoxItem>
+                            <ListBoxItem>理性</ListBoxItem>
+                            <ListBoxItem>浪漫</ListBoxItem>
+                            <ListBoxItem>纷争</ListBoxItem>
+                            <ListBoxItem>死亡</ListBoxItem>
+                            <ListBoxItem>诡计</ListBoxItem>
+                            <ListBoxItem>门径</ListBoxItem>
+                            <ListBoxItem>律法</ListBoxItem>
+                            <ListBoxItem>岁月</ListBoxItem>
+                            <ListBoxItem>■■</ListBoxItem>
+                        </ListBox>
+                    </ci:Field>
+                    <Separator/>
+                    <ci:Field Label="消息标题">
+                        <TextBox Text="{Binding ViewModel.ToastTitle}"/>
+                    </ci:Field>
+                    <ci:Field Label="消息标题">
+                        <TextBox Text="{Binding ViewModel.ToastMessage}"/>
+                    </ci:Field>
+                    <CheckBox Content="用户可以关闭消息" IsChecked="{Binding ViewModel.ToastCanUserClose}"/>
+                    <CheckBox Content="消息有内容" IsChecked="{Binding ViewModel.ToastHaveActions}"/>
+                    <Button Content="发送！" Classes="accnet" Click="ButtonSendToast_OnClick"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="提醒">

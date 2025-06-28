@@ -7,10 +7,12 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
+using FluentAvalonia.UI.Controls;
 using Sentry;
 
 namespace ClassIsland.Views;
@@ -80,7 +82,11 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         else
         {
-            // ViewModel.MessageQueue.Enqueue("在这一天已存在一个临时层课表，无法创建新的临时层课表。");
+            this.ShowToast(new ToastMessage("在这一天已存在一个临时层课表，无法创建新的临时层课表。")
+            {
+                Severity = InfoBarSeverity.Warning,
+                Duration = TimeSpan.FromSeconds(5)
+            });
         }
 
     }
