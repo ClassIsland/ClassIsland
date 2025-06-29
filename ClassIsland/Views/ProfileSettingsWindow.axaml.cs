@@ -29,6 +29,8 @@ public partial class ProfileSettingsWindow : MyWindow
         InitializeComponent();
     }
 
+    #region Misc
+    
     private void OpenDrawer(string key)
     {
         ViewModel.IsDrawerOpen = true;
@@ -66,7 +68,11 @@ public partial class ProfileSettingsWindow : MyWindow
         _isOpen = false;
         Hide();
     }
+    
+    #endregion
 
+    #region ClassPlans
+    
     private void ButtonCreateTempOverlayClassPlan_OnClick(object? sender, RoutedEventArgs e)
     {
         var key = ViewModel.ProfileService.Profile.ClassPlans
@@ -139,4 +145,12 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.SelectedClassPlan = s;
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.classPlan.duplicate");
     }
+
+    #endregion
+
+    #region Subjects
+
+    
+
+    #endregion
 }
