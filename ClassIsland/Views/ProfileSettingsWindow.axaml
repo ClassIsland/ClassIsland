@@ -11,6 +11,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
+        EnableMicaWindow="True"
         d:DataContext="{d:DesignInstance views:ProfileSettingsWindow}"
         Icon="/Assets/AppLogo.ico"
         MinWidth="750"
