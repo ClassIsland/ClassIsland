@@ -20,7 +20,8 @@ public class ClassInfoMultiConverter : IMultiValueConverter
         }
 
         if (values[0] is not TimeLayoutItem selectedItem ||
-            values[1] is not ClassPlan classPlan)
+            values[1] is not ClassPlan classPlan ||
+            classPlan.TimeLayout == null)
         {
             return null;
         }

@@ -56,7 +56,7 @@ public abstract class LessonControlBase : UserControl
 
     private void UpdateClassInfo()
     {
-        if (ClassPlan == null || CurrentTimeLayoutItem == null)
+        if (ClassPlan == null || CurrentTimeLayoutItem == null || ClassPlan.TimeLayout == null)
         {
             return;
         }

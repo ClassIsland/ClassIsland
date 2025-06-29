@@ -430,7 +430,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         isClassPlanLoaded = true;
         // Activate selected item
         CurrentClassPlan!.IsActivated = true;
-        CurrentClassPlan.TimeLayout.IsActivated = true;
+        if (CurrentClassPlan.TimeLayout != null)
+        {
+            CurrentClassPlan.TimeLayout.IsActivated = true;
+        }
 
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         var validTimeLayoutItems = CurrentClassPlan.ValidTimeLayoutItems;
@@ -534,12 +537,12 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private int GetClassIndex(int index)
     {
-        if (index < 0 || index >= CurrentClassPlan?.TimeLayout.Layouts.Count )
+        if (index < 0 || index >= CurrentClassPlan?.TimeLayout?.Layouts.Count )
         {
             return -1;
         }
-        var k = CurrentClassPlan?.TimeLayout.Layouts[index];
-        var l = (from t in CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
+        var k = CurrentClassPlan?.TimeLayout?.Layouts[index];
+        var l = (from t in CurrentClassPlan?.TimeLayout?.Layouts where t.TimeType == 0 select t).ToList();
         var i = l.IndexOf(k);
         return i;
     }

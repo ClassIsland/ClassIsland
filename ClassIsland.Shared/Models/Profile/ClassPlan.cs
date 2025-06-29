@@ -125,7 +125,7 @@ public class ClassPlan : AttachableSettingsObject
     public ClassPlan()
     {
         PropertyChanged += OnPropertyChanged;
-        if (TimeLayouts.ContainsKey(TimeLayoutId))
+        if (TimeLayouts.ContainsKey(TimeLayoutId) && TimeLayout != null)
         {
             TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
             TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
@@ -185,7 +185,10 @@ public class ClassPlan : AttachableSettingsObject
 
     private void TimeLayoutOnLayoutObjectChanged(object? sender, EventArgs e)
     {
-        TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+        if (TimeLayout != null)
+        {
+            TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+        }
         RefreshClassesList(true);
         NotifyClassesChanged();
     }
@@ -197,7 +200,7 @@ public class ClassPlan : AttachableSettingsObject
             case nameof(TimeLayout):
             case nameof(TimeLayoutId):
             {
-                if (TimeLayouts.ContainsKey(TimeLayoutId))
+                if (TimeLayout != null)
                 {
                     RefreshClassesList();
                     TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
@@ -316,7 +319,13 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 当前课表的时间表
     /// </summary>
-    [JsonIgnore] public TimeLayout TimeLayout => TimeLayouts[TimeLayoutId];
+    [JsonIgnore]
+    public TimeLayout? TimeLayout =>
+#if NETCOREAPP
+        TimeLayouts.GetValueOrDefault(TimeLayoutId);
+#else
+        TimeLayouts.TryGetValue(TimeLayoutId, out var value) ? value : null;   
+#endif
 
     /// <summary>
     /// 当前课表的时间表ID
@@ -379,7 +388,7 @@ public class ClassPlan : AttachableSettingsObject
     {
         //App.GetService<ILogger<ClassPlan>>().LogTrace("Calling Refresh ClassesList: \n{}", new StackTrace());
         // 对齐长度
-        if (TimeLayoutId == null || !TimeLayouts.ContainsKey(TimeLayoutId))
+        if (TimeLayout == null)
         {
             return;
         }
