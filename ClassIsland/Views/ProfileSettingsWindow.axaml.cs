@@ -150,7 +150,83 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region Subjects
 
+    private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
+    {
+        //DataGridSubjects.CancelEdit();
+        
+        var isCreating = DataGridSubjects.SelectedIndex == ViewModel.ProfileService.Profile.Subjects.Count;
+        
+        DataGridSubjects.CancelEdit();
+        DataGridSubjects.IsReadOnly = true;
+        ViewModel.ProfileService.Profile.EditingSubjects.Add(new Subject());
+        DataGridSubjects.IsReadOnly = false;
+        DataGridSubjects.SelectedIndex = ViewModel.ProfileService.Profile.Subjects.Count - 1;
+        //TextBoxSubjectName.Focus();
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.create");
+    }
     
+    private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
+    {
+        DataGridSubjects.CancelEdit();
+        DataGridSubjects.IsReadOnly = true;
+        foreach (var i in DataGridSubjects.SelectedItems)
+        {
+            var subject = i as Subject;
+            var o = ConfigureFileHelper.CopyObject(subject);
+            if (o == null)
+            {
+                continue;
+            }
 
+            ViewModel.ProfileService.Profile.EditingSubjects.Add(o);
+        }
+        DataGridSubjects.SelectedItem = ViewModel.ProfileService.Profile.EditingSubjects.Last();
+        DataGridSubjects.IsReadOnly = false;
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.duplicate");
+    }
+
+    private void ButtonDeleteSubject_OnClick(object sender, RoutedEventArgs e)
+    {
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.remove", tags: new Dictionary<string, string>
+        {
+            {"IsSuccess", "true"},
+        });
+
+        DataGridSubjects.CancelEdit();
+        DataGridSubjects.IsReadOnly = true;
+        var rm = new List<Subject>();
+        foreach (var i in DataGridSubjects.SelectedItems)
+        {
+            if (i is Subject o)
+            {
+                rm.Add(o);
+            }
+        }
+        var s = ViewModel.ProfileService.Profile.EditingSubjects;
+        foreach (var t in rm)
+        {
+            s.Remove(t);
+        }
+
+        var revertButton = new Button()
+        {
+            Content = "撤销"
+        };
+        var toastMessage = new ToastMessage($"已删除 {rm.Count} 个科目。")
+        {
+            ActionContent = revertButton,
+            Duration = TimeSpan.FromSeconds(10)
+        };
+        revertButton.Click += (o, args) =>
+        {
+            foreach (var subject in rm)
+            {
+                ViewModel.ProfileService.Profile.EditingSubjects.Add(subject);
+            }
+            toastMessage.Close();
+        };
+        this.ShowToast(toastMessage);
+        DataGridSubjects.IsReadOnly = false;
+    }
     #endregion
 }

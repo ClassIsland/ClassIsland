@@ -47,7 +47,7 @@
             </Button>
             <ListBox Grid.Row="3" Margin="0 2 0 0"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      ItemsSource="{Binding SettingsService.Settings.ContributorsCache.Contributors}">
+                      ItemsSource="{Binding ViewModel.SettingsService.Settings.ContributorsCache.Contributors}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>

@@ -8,6 +8,7 @@
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+        xmlns:converters="clr-namespace:ClassIsland.Converters"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
@@ -86,6 +87,7 @@
                 </ItemsControl>
             </StackPanel>
         </ScrollViewer>
+        <converters:SubjectDictionaryKeyFinderMultiConverter x:Key="SubjectDictionaryKeyFinderMultiConverter" />
     </ci:MyWindow.Resources>
     <SplitView DisplayMode="Overlay" PanePlacement="Right"
                IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
@@ -319,7 +321,154 @@
 
                 </TabItem>
                 <TabItem Header="科目">
+                    <Grid RowDefinitions="Auto,*">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="450" MaxWidth="500" MinWidth="200"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- 科目操作 -->
+                        <controls:CommandBar Grid.Column="0" Grid.ColumnSpan="3"
+                                 Grid.Row="0" DefaultLabelPosition="Right"
+                                 IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource BooleanToBooleanReConverter}}">
+                            <controls:CommandBar.PrimaryCommands>
+                                <controls:CommandBarButton Click="ButtonAddSubject_OnClick" ToolTip.Tip="新建一个科目。"
+                                                           IconSource="{ci:FluentIconSource &#xE00D;}" Label="添加"/>
+                                <controls:CommandBarSeparator/>
+                                <controls:CommandBarButton Click="ButtonDuplicateSubject_OnClick" ToolTip.Tip="复制选中的科目。"
+                                                           IsEnabled="{Binding ViewModel.SelectedSubject, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                           IconSource="{ci:FluentIconSource &#xE58D;}" Label="复制"/>
+                                <controls:CommandBarButton Click="ButtonDeleteSubject_OnClick" ToolTip.Tip="删除选中的科目。"
+                                                           IsEnabled="{Binding ViewModel.SelectedSubject, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                           IconSource="{ci:FluentIconSource &#xE61D;}" Label="删除"/>
+                            </controls:CommandBar.PrimaryCommands>
+                        </controls:CommandBar>
+                        <!-- 科目选择 -->
+                        <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 3 0">
+                            <!-- 科目 -->
+                            <DataGrid Grid.Row="0"
+                                      x:Name="DataGridSubjects"
+                                      ItemsSource="{Binding ViewModel.ProfileService.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing}"
+                                      SelectedItem="{Binding ViewModel.SelectedSubject}"
+                                      GridLinesVisibility="All"
+                                      CanUserSortColumns="False"
+                                      FontSize="13">
+                                <DataGrid.Styles>
+                                    <Style Selector="DataGridRow TextBlock, DataGridRow TextBox">
+                                        <Setter Property="TextElement.FontSize" Value="13"/>
+                                    </Style>
+                                </DataGrid.Styles>
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="" IsReadOnly="True"
+                                                            Width="50">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <ci:FluentIcon>
+                                                        <Interaction.Behaviors>
+                                                            <DataTriggerBehavior Binding="{Binding IsOutDoor}" Value="True">
+                                                                <AddClassAction ClassName="out-door"/>
+                                                            </DataTriggerBehavior>
+                                                            <DataTriggerBehavior Binding="{Binding IsOutDoor}" Value="False">
+                                                                <RemoveClassAction ClassName="out-door"/>
+                                                            </DataTriggerBehavior>
+                                                        </Interaction.Behaviors>
+                                                        <ci:FluentIcon.Styles>
+                                                            <Style Selector="ci|FluentIcon">
+                                                                <Setter Property="Glyph" Value="&#xE47A;"/>
+                                                                <Style Selector="^.out-door">
+                                                                    <Setter Property="Glyph" Value="&#xF02B;"/>                                                     
+                                                                </Style>
+                                                            </Style>
+                                                        </ci:FluentIcon.Styles>
+                                                    </ci:FluentIcon>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}"
+                                                        Header="科目名"/>
+                                    <DataGridTextColumn Binding="{Binding Initial, Mode=TwoWay}"
+                                                            Header="简称"/>
+                                    <DataGridCheckBoxColumn Binding="{Binding IsOutDoor, Mode=TwoWay}"
+                                                                Header="户外课程？"/>
+                                    <DataGridTextColumn Binding="{Binding TeacherName, Mode=TwoWay}"
+                                                            Header="科任老师"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
 
+                        <!-- Gutter -->
+                        <GridSplitter Grid.Row="1"
+                                      Grid.Column="1"
+                                      MaxWidth="500"
+                                      Width="5" HorizontalAlignment="Stretch"/>
+
+                        <!-- 科目编辑 -->
+                        <ci:Emptiable Grid.Row="1" Grid.Column="2" 
+                                      IsDirectContentMode="True"
+                                      Data="{Binding ViewModel.SelectedSubject}">
+                            <Grid Margin="3 0 0 0"
+                                  DataContext="{Binding ViewModel.SelectedSubject}" RowDefinitions="Auto,*">
+                                <!-- 科目编辑 -->
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Spacing="6" Margin="8"
+                                                IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}">
+                                        <TextBlock Text="编辑科目信息"
+                                                   Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                                        <!-- 科目名 & 简称 -->
+                                        <Grid ColumnDefinitions="*,*">
+                                            <!-- 科目名 -->
+                                            <ci:Field Grid.Column="0" Label="科目名" Margin="0 0 2 0">
+                                                <TextBox x:Name="TextBoxSubjectName"
+                                                         Text="{Binding Name}" />
+                                            </ci:Field>
+                                            <!-- 简称 -->
+                                            <ci:Field Grid.Column="1" Label="简称" Margin="2 0 0 0">
+                                                <TextBox Text="{Binding Initial}" />
+                                            </ci:Field>
+                                        </Grid>
+                                        <!-- 科任老师 -->
+                                        <ci:Field Label="科任老师">
+                                            <TextBox Text="{Binding TeacherName}" />
+                                        </ci:Field>
+                                        <!-- 户外课程 -->
+                                        <CheckBox Margin="0 6 0 0"
+                                                  IsChecked="{Binding IsOutDoor}"
+                                                  Content="该科目是户外课程" />
+                                        <!-- 附加属性 -->
+                                        <Separator Margin="0 20 0 8" />
+                                        <ci:IconText Glyph="&#xEF2B;" Text="更多选项" Margin="0 0 0 8" />
+                                        <ItemsControl
+                                            ItemsSource="{x:Static services:IAttachedSettingsHostService.SubjectSettingsAttachedSettingsControls}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <ci:AttachedSettingsControlPresenter ControlInfo="{Binding}"
+                                                        Margin="0 0 0 8"
+                                                        TargetObject="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}">
+                                                        <ci:AttachedSettingsControlPresenter.ContentId>
+                                                            <MultiBinding
+                                                                Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}"
+                                                                Mode="OneWay">
+                                                                <Binding Path="SelectedItem"
+                                                                         ElementName="DataGridSubjects" />
+                                                                <Binding
+                                                                    Path="ViewModel.ProfileService.Profile.Subjects"
+                                                                    RelativeSource="{RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}" />
+                                                            </MultiBinding>
+                                                        </ci:AttachedSettingsControlPresenter.ContentId>
+                                                    </ci:AttachedSettingsControlPresenter>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Grid>
+                        </ci:Emptiable>
+
+                    </Grid>
                 </TabItem>
                 <TabItem Header="调课">
 
