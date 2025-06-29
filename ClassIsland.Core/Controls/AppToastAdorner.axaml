@@ -7,78 +7,91 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Core.Controls.AppToastAdorner"
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-    <ItemsControl ItemsSource="{Binding $parent[ci:AppToastAdorner].Messages}"
-                  HorizontalAlignment="Right"
-                  VerticalAlignment="Bottom"
-                  MaxWidth="400"
-                  ClipToBounds="False"
-                  Margin="4">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <StackPanel/>
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-            <DataTemplate>
-                <Border RenderTransformOrigin="{x:Static RelativePoint.BottomRight}" x:Name="Root">
-                    <Border.Transitions>
-                        <Transitions>
-                            <TransformOperationsTransition Duration="0:0:0.3" Easing="0, 0.5, 0, 1" Property="RenderTransform"/>
-                            <DoubleTransition Duration="0:0:0.3" Property="Opacity"/>
-                        </Transitions>
-                    </Border.Transitions>
-                    <Border.Styles>
-                        <Style Selector="Border#Root">
-                            <Setter Property="Opacity" Value="0"/>
-                            <Setter Property="RenderTransform" Value="translateY(-25px)"/>
-                        </Style>
-                        <Style Selector="Border#Root.open">
-                            <Setter Property="Opacity" Value="1"/>
-                            <Setter Property="RenderTransform" Value="translateY(0px)"/>
-                        </Style>
-                        <Style Selector="Border#Root.open.closed">
-                            <Setter Property="Opacity" Value="0"/>
-                            <Setter Property="RenderTransform" Value="translateY(0px)"/>
-                        </Style>
-                        <Style Selector="controls|InfoBar[Severity=Informational]">
-                            <Setter Property="Background" Value="{DynamicResource SystemFillColorSolidNeutralBackgroundBrush}"/>
-                        </Style>
-                    </Border.Styles>
-                    <Interaction.Behaviors>
-                        <DataTriggerBehavior Binding="{Binding IsOpen}" Value="True">
-                            <AddClassAction ClassName="open"/>
-                        </DataTriggerBehavior>
-                        <DataTriggerBehavior Binding="{Binding IsOpen}" Value="False">
-                            <AddClassAction ClassName="closed"/>
-                        </DataTriggerBehavior>
-                    </Interaction.Behaviors>
-                    <controls:InfoBar Severity="{Binding Severity}"
-                                      Title="{Binding Title}"
-                                      Message="{Binding Message}"
-                                      Content="{Binding ActionContent}"
-                                      IsClosable="{Binding CanUserClose}" 
-                                      IsOpen="True"
-                                      IsVisible="{Binding $self.IsOpen}"
-                                      Margin="0 0 0 4"
-                                      HorizontalAlignment="Right"
-                                      CloseButtonCommand="{Binding CloseToastCommand, RelativeSource={RelativeSource AncestorType=ci:AppToastAdorner}}"
-                                      CloseButtonCommandParameter="{Binding}"/>
-                </Border>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-        <ItemsControl.Template>
-            <ControlTemplate TargetType="ItemsControl">
-                <ScrollViewer VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                              ClipToBounds="False">
-                    <ScrollViewer.Styles>
-                        <Style Selector="ScrollViewer /template/ ScrollContentPresenter#PART_ContentPresenter">
-                            <Setter Property="ClipToBounds" Value="False"/>
-                        </Style>
-                    </ScrollViewer.Styles>
-                    <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"
-                                    ClipToBounds="False"/>
-                </ScrollViewer>
-            </ControlTemplate>
-        </ItemsControl.Template>
-    </ItemsControl>
+    <Grid RowDefinitions="Auto, *">
+        <!-- Gap for Windows title bar -->
+        <Border Height="32" Grid.Row="0">
+            <Border.IsVisible>
+                <OnPlatform Default="False">
+                    <On Options="Windows" Content="True" />
+                </OnPlatform>
+            </Border.IsVisible>
+        </Border>
+        
+        <ItemsControl Grid.Row="1"
+                      ItemsSource="{Binding $parent[ci:AppToastAdorner].Messages}"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Stretch"
+                      MaxWidth="400"
+                      ClipToBounds="True"
+                      Margin="4">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border RenderTransformOrigin="{x:Static RelativePoint.BottomRight}" x:Name="Root">
+                        <Border.Transitions>
+                            <Transitions>
+                                <TransformOperationsTransition Duration="0:0:0.3" Easing="0, 0.5, 0, 1" Property="RenderTransform"/>
+                                <DoubleTransition Duration="0:0:0.3" Property="Opacity"/>
+                            </Transitions>
+                        </Border.Transitions>
+                        <Border.Styles>
+                            <Style Selector="Border#Root">
+                                <Setter Property="Opacity" Value="0"/>
+                                <Setter Property="RenderTransform" Value="translateY(-25px)"/>
+                            </Style>
+                            <Style Selector="Border#Root.open">
+                                <Setter Property="Opacity" Value="1"/>
+                                <Setter Property="RenderTransform" Value="translateY(0px)"/>
+                            </Style>
+                            <Style Selector="Border#Root.open.closed">
+                                <Setter Property="Opacity" Value="0"/>
+                                <Setter Property="RenderTransform" Value="translateY(0px)"/>
+                            </Style>
+                            <Style Selector="controls|InfoBar[Severity=Informational]">
+                                <Setter Property="Background" Value="{DynamicResource SystemFillColorSolidNeutralBackgroundBrush}"/>
+                            </Style>
+                        </Border.Styles>
+                        <Interaction.Behaviors>
+                            <DataTriggerBehavior Binding="{Binding IsOpen}" Value="True">
+                                <AddClassAction ClassName="open"/>
+                            </DataTriggerBehavior>
+                            <DataTriggerBehavior Binding="{Binding IsOpen}" Value="False">
+                                <AddClassAction ClassName="closed"/>
+                            </DataTriggerBehavior>
+                        </Interaction.Behaviors>
+                        <controls:InfoBar Severity="{Binding Severity}"
+                                          Title="{Binding Title}"
+                                          Message="{Binding Message}"
+                                          ActionButton="{Binding ActionContent}"
+                                          IsEnabled="{Binding IsOpen}"
+                                          IsClosable="{Binding CanUserClose}" 
+                                          IsOpen="True"
+                                          IsVisible="{Binding $self.IsOpen}"
+                                          Margin="0 0 0 4"
+                                          HorizontalAlignment="Right"
+                                          CloseButtonCommand="{Binding CloseToastCommand, RelativeSource={RelativeSource AncestorType=ci:AppToastAdorner}}"
+                                          CloseButtonCommandParameter="{Binding}"/>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.Template>
+                <ControlTemplate TargetType="ItemsControl">
+                    <ScrollViewer VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                                  ClipToBounds="False">
+                        <ScrollViewer.Styles>
+                            <Style Selector="ScrollViewer /template/ ScrollContentPresenter#PART_ContentPresenter">
+                                <Setter Property="ClipToBounds" Value="False"/>
+                            </Style>
+                        </ScrollViewer.Styles>
+                        <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"
+                                        ClipToBounds="False"/>
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+        </ItemsControl>
+    </Grid>
 </UserControl>

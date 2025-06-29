@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using ClassIsland.Core.Models.UI;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Helpers.UI;
 
@@ -26,5 +27,22 @@ public static class ToastsHelper
     public static void ShowToast(this Control control, string message)
     {
         control.RaiseEvent(new ShowToastEventArgs(new ToastMessage(message)));
+    }
+    
+    /// <summary>
+    /// 显示一条 Toast 消息
+    /// </summary>
+    /// <param name="control">包含在要显示消息的容器中的控件</param>
+    /// <param name="title">要显示的错误标题</param>
+    /// <param name="exception">异常内容</param>
+    public static void ShowErrorToast(this Control control, string title, Exception exception)
+    {
+        control.RaiseEvent(new ShowToastEventArgs(new ToastMessage()
+        {
+            Title = title,
+            Message = exception.Message,
+            Severity = InfoBarSeverity.Error,
+            AutoClose = false
+        }));
     }
 }

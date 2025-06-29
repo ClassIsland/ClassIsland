@@ -502,6 +502,7 @@
                     <controls:CommandBarSeparator/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xeeb5;}"
                                                Label="保存"
+                                               Click="ButtonSaveProfile_OnClick"
                                                ToolTip.Tip="保存当前档案文件。"/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xee2f;}"
                                                Label="帮助"

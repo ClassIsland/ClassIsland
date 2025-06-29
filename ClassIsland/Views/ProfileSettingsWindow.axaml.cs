@@ -13,6 +13,8 @@ using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
+using Grpc.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Sentry;
 
 namespace ClassIsland.Views;
@@ -22,6 +24,8 @@ public partial class ProfileSettingsWindow : MyWindow
     private bool _isOpen = false;
     
     public ProfileSettingsViewModel ViewModel { get; } = IAppHost.GetService<ProfileSettingsViewModel>();
+
+    private ILogger<ProfileSettingsWindow> Logger => ViewModel.Logger;
     
     public ProfileSettingsWindow()
     {
@@ -229,4 +233,21 @@ public partial class ProfileSettingsWindow : MyWindow
         DataGridSubjects.IsReadOnly = false;
     }
     #endregion
+
+    private void ButtonSaveProfile_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            ViewModel.ProfileService.SaveProfile();
+            this.ShowToast(new ToastMessage($"已保存到 {ViewModel.ProfileService.CurrentProfilePath}")
+            {
+                Severity = InfoBarSeverity.Success
+            });
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "无法保存档案");
+            this.ShowErrorToast("无法保存档案", exception);
+        }
+    }
 }

@@ -16,11 +16,14 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Helpers;
 using ClassIsland.Models.AllContributors;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
+using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 using Sentry;
 
@@ -126,6 +129,13 @@ public partial class AboutSettingsPage : SettingsPageBase
         catch (Exception ex)
         {
             App.GetService<ILogger<AboutSettingsPage>>().LogError(ex, "无法获取贡献者名单。");
+            this.ShowToast(new ToastMessage()
+            {
+                Severity = InfoBarSeverity.Error,
+                Title = "无法获取贡献者名单",
+                Message = ex.Message,
+                AutoClose = false
+            });
         }
         ViewModel.IsRefreshingContributors = false;
     }
