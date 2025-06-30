@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ClassIsland.Shared.JsonConverters;
 using ClassIsland.Shared.Models.Action;
 
 namespace ClassIsland.Shared.Models.Profile;
@@ -10,7 +11,6 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
 {
     private DateTime _startSecond = DateTime.Now;
     private DateTime _endSecond = DateTime.Now;
-    private bool _isOnClass = true;
     private int _timeType = 0;
     private bool _isHideDefault = false;
     private Guid _defaultClassId = Guid.Empty;
@@ -115,6 +115,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     /// <summary>
     /// 默认科目ID
     /// </summary>
+    [JsonConverter(typeof(GuidEmptyFallbackConverter))]
     public Guid DefaultClassId
     {
         get => _defaultClassId;

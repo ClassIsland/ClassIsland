@@ -37,7 +37,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Color _backgroundColor = Colors.Black;
     private Color _primaryColor = Colors.DeepSkyBlue;
     private Color _secondaryColor = Colors.Aquamarine;
-    private DateTime _singleWeekStartTime = DateTime.Now;
+    private DateTime _singleWeekStartTime =
+        DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek); // 取周日
+    //  DateTime.Today.AddDays(-(DateTime.Today.DayOfWeek switch { // 取周一
+    //         DayOfWeek.Sunday => 6,
+    //         _ => (int)DateTime.Today.DayOfWeek - 1
+    //     }));
     private int _classPrepareNotifySeconds = 60;
     private bool _showDate = true;
     private bool _hideOnClass = false;
@@ -56,6 +61,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         "explorer"
     };
     private ObservableCollection<int> _multiWeekRotationOffset = [-1, -1, 0, 0, 0];
+    private int _multiWeekRotationMaxCycle = 4;
 
     private bool _hideOnMaxWindow = false;
     private double _opacity = 0.5;
@@ -332,6 +338,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_multiWeekRotationOffset)) return;
             _multiWeekRotationOffset = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int MultiWeekRotationMaxCycle
+    {
+        get => _multiWeekRotationMaxCycle;
+        set
+        {
+            if (value == _multiWeekRotationMaxCycle) return;
+            _multiWeekRotationMaxCycle = value;
             OnPropertyChanged();
         }
     }

@@ -86,7 +86,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
             return;
         }
 
-        if (!(DateTime.Now.Date - SettingsService.Settings.LastAutoBackupTime.Date >=
+        if (!(DateTime.Today - SettingsService.Settings.LastAutoBackupTime.Date >=
               TimeSpan.FromDays(SettingsService.Settings.AutoBackupIntervalDays)))
         {
             return;

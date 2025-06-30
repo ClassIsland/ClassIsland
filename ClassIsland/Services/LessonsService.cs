@@ -34,9 +34,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private bool _isLessonConfirmed = false;
     private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
     private TimeLayoutItem _nextClassTimeLayoutItem = TimeLayoutItem.Empty;
-    private ObservableCollection<int> _multiWeekRotation = [0, 0, 1, 1, 1];
-
-    private static readonly ObservableCollection<int> DefaultMultiWeekRotation = [0, 0, 1, 1, 1];
 
     private DispatcherTimer MainTimer
     {
@@ -138,11 +135,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         get => _onBreakingTimeLeftTime;
         set => SetProperty(ref _onBreakingTimeLeftTime, value);
-    }
-    public ObservableCollection<int> MultiWeekRotation
-    {
-        get => _multiWeekRotation;
-        set => SetProperty(ref _multiWeekRotation, value);
     }
 
     public ClassPlan? GetClassPlanByDate(DateTime date) => GetClassPlanByDate(date, out _);
@@ -556,7 +548,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private void LoadCurrentClassPlan()
     {
         ProfileService.Profile.RefreshTimeLayouts();
-        RefreshMultiWeekRotation();
         var currentTime = ExactTimeService.GetCurrentLocalDateTime();
         if (Profile.TempClassPlanSetupTime.Date < currentTime.Date)  // 清除过期临时课表
         {
@@ -604,22 +595,19 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
+        if (plan.TimeRule.WeekCountDivTotal > SettingsService.Settings.MultiWeekRotationMaxCycle)
+            return false;
+
         if (plan.TimeRule.WeekCountDiv == 0)
             return true;
 
-        // RefreshMultiWeekRotation();
         var rotation = GetMultiWeekRotationByTime(time);
         return plan.TimeRule.WeekCountDiv == rotation[plan.TimeRule.WeekCountDivTotal];
     }
 
-    public void RefreshMultiWeekRotation()
-    {
-        MultiWeekRotation = GetMultiWeekRotationByTime(ExactTimeService.GetCurrentLocalDateTime());
-    }
-
     private ObservableCollection<int> GetMultiWeekRotationByTime(DateTime time)
     {
-        var rotation = new ObservableCollection<int>(DefaultMultiWeekRotation);
+        var rotation = new ObservableCollection<int>();
         var deltaDays = (time.Date - Settings.SingleWeekStartTime.Date).TotalDays;
         var deltaWeeks = (int)Math.Floor(deltaDays / 7);
         for (var i = 2; i <= 4; i++)
