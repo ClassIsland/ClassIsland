@@ -13,4 +13,10 @@
     <SolidColorBrush x:Key="AqiLevel4Brush">IndianRed</SolidColorBrush>
     <SolidColorBrush x:Key="AqiLevel5Brush">DarkRed</SolidColorBrush>
     <SolidColorBrush x:Key="AqiLevel6Brush">Purple</SolidColorBrush>
+
+    <!-- 天气预警颜色 -->
+    <SolidColorBrush x:Key="WeatherAlertLevelBlueBrush">#03c4fa</SolidColorBrush>
+    <SolidColorBrush x:Key="WeatherAlertLevelYellowBrush">#fcd214</SolidColorBrush>
+    <SolidColorBrush x:Key="WeatherAlertLevelOrangeBrush">#f79d16</SolidColorBrush>
+    <SolidColorBrush x:Key="WeatherAlertLevelRedBrush">#f71631</SolidColorBrush>
 </ResourceDictionary>
