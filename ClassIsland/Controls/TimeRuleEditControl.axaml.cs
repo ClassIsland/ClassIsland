@@ -2,11 +2,11 @@ using System;
 using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using ClassIsland.Core.Extensions;
 using ClassIsland.Services;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
-
 namespace ClassIsland.Controls;
 
 /// <summary>
@@ -27,8 +27,8 @@ public partial class TimeRuleEditControl : UserControl
         SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
         if (newValue != null)
         {
-            UpdateWeekCountDivOptions();
             UpdateWeekCountDivTotalOptions();
+            UpdateWeekCountDivOptions();
 
             ViewModel.WeekCountDivIndex = newValue.WeekCountDiv;
             ViewModel.WeekCountDivTotalIndex = newValue.WeekCountDivTotal - 2;
@@ -43,17 +43,22 @@ public partial class TimeRuleEditControl : UserControl
         if (_updating) return;
         if (e.PropertyName == nameof(ViewModel.WeekCountDivIndex))
         {
-            if (ViewModel.WeekCountDivIndex != -1)
-                TimeRule.WeekCountDiv = ViewModel.WeekCountDivIndex;
-            else;
+            TimeRule.WeekCountDiv = ViewModel.WeekCountDivIndex;
         }
         else if (e.PropertyName == nameof(ViewModel.WeekCountDivTotalIndex))
         {
-            if (TimeRule.WeekCountDivTotal < TimeRule.WeekCountDiv)
-                ViewModel.WeekCountDivIndex = 0;
             TimeRule.WeekCountDivTotal = ViewModel.WeekCountDivTotalIndex + 2;
-            UpdateWeekCountDivOptions();
+            if (TimeRule.WeekCountDivTotal < TimeRule.WeekCountDiv)
+            {
+                _updating = true;
+                ViewModel.WeekCountDivIndex = -1;
+                Dispatcher.UIThread.Post(() =>
+                    ViewModel.WeekCountDivIndex = 0,
+                    DispatcherPriority.Background);
+                _updating = false;
+            }
             UpdateWeekCountDivTotalOptions();
+            UpdateWeekCountDivOptions();
         }
     }
     

@@ -80,12 +80,14 @@
                                 Classes="accent"
                                 Content="{ci:FluentIcon &#xE304;}"
                                 Click="ButtonWeekOffsetSettingsOpen_OnClick"
-                                ToolTip.Tip="调整偏移…">
+                                ToolTip.Tip="调整偏移…"
+                                x:Name="WeekOffsetSettingsControlButton">
                             <Button.Flyout>
-                                <Flyout>
-                                    <Border Margin="8">
-                                        <!--  TODO: 移植多周偏移设置控件  -->
-                                        <!-- <controls2:WeekOffsetSettingsControl/> -->
+                                <Flyout Opening="OnWeekOffsetSettingsControlFlyoutOpening">
+                                    <Border>
+                                        <controls2:WeekOffsetSettingsControl
+                                            x:Name="WeekOffsetSettingsControl"
+                                            CloseRequested="WeekOffsetSettingsControlOnCloseRequested"/>
                                     </Border>
                                 </Flyout>
                             </Button.Flyout>
@@ -99,7 +101,7 @@
                                   Suffix="周">
                             <controls3:NumberBox MinWidth="120"
                                                  Maximum="9"
-                                                 Minimum="1"
+                                                 Minimum="2"
                                                  SpinButtonPlacementMode="Inline"
                                                  Value="{Binding ViewModel.SettingsService.Settings.MultiWeekRotationMaxCycle}" />
                                             <!-- IsClearButtonVisible="False" -->
