@@ -206,6 +206,16 @@
                                          Value="302">
                                 <Setter Property="Kind" Value="WeatherSnowy" />
                             </DataTrigger>
+                            <!-- [夜间] 晴 -->
+                            <DataTrigger Binding="{Binding }"
+                                         Value="10000">
+                                <Setter Property="Kind" Value="WeatherNight" />
+                            </DataTrigger>
+                            <!-- [夜间] 多云 -->
+                            <DataTrigger Binding="{Binding }"
+                                         Value="10001">
+                                <Setter Property="Kind" Value="WeatherNightPartlyCloudy" />
+                            </DataTrigger>
                             <!-- 未知 -->
                             <DataTrigger Binding="{Binding }"
                                          Value="99">
