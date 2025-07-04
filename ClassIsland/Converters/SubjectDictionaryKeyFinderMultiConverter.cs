@@ -12,17 +12,17 @@ public class SubjectDictionaryKeyFinderMultiConverter : IMultiValueConverter
     public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
         // values[0]: Subject                       subject
-        // values[1]: IDictionary<string, Subject>  dict
+        // values[1]: IDictionary<Guid, Subject>    dict
         if (values.Count < 2)
         {
             return "";
         }
 
-        if (values[0] is not Subject subject || values[1] is not IDictionary<string, Subject> dict)
+        if (values[0] is not Subject subject || values[1] is not IDictionary<Guid, Subject> dict)
         {
             return "";
         }
 
-        return dict.FirstOrDefault(x => x.Value == subject).Key ?? "";
+        return dict.FirstOrDefault(x => x.Value == subject).Key;
     }
 }

@@ -87,6 +87,67 @@
                 </ItemsControl>
             </StackPanel>
         </ScrollViewer>
+        
+        <Grid x:Key="ProfileManager" Margin="16" Width="300" RowDefinitions="Auto,*">
+            <StackPanel Grid.Row="0" >
+                <TextBlock Text="管理档案" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock Text="管理与切换保存的档案。切换档案需要重新启动应用。" TextWrapping="Wrap"
+                           Margin="0 6 0 0"/>
+                <!--<TextBlock Text="{Binding MainViewModel.Settings.SelectedProfile, Mode=OneWay}"/>-->
+                <WrapPanel Margin="0 6 0 0">
+                    <Button ToolTip.Tip="新建档案。" Click="ButtonCreateProfile_OnClick"
+                            Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE689;" Text="新建档案"/>
+                    </Button>
+                    <Button ToolTip.Tip="打开档案文件夹。" Click="ButtonOpenProfileFolder_OnClick"
+                            Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE88D;" Text="打开文件夹"/>
+                    </Button>
+                    <Button ToolTip.Tip="重新加载档案列表。" Click="ButtonRefreshProfiles_OnClick"
+                            Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE0B5;" Text="刷新"/>
+                    </Button>
+                </WrapPanel>
+            </StackPanel>
+            <ListBox Grid.Row="1" Margin="0 12 0 0"
+                     SelectedValue="{Binding ViewModel.SelectedProfile, Mode=TwoWay}"
+                     SelectionMode="Single"
+                     ItemsSource="{Binding ViewModel.Profiles, Mode=OneWay}">
+                <ListBox.Styles>
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="ContextFlyout">
+                            <MenuFlyout>
+                                <MenuItem Icon="{ci:FluentIcon &#xEE7D;}" Header="重命名" Click="MenuItemRenameProfile_OnClick"/>
+                                <MenuItem Icon="{ci:FluentIcon &#xE58B;}" Header="复制" Click="MenuItemProfileDuplicate_OnClick"/>
+                                <!--<MenuItem Icon="{materialDesign:PackIcon FileExportOutline}" Header="导出"/>-->
+                                <MenuItem Icon="{ci:FluentIcon &#xE61D;}" Header="删除" Click="MenuItemDeleteProfile_OnClick"/>
+                            </MenuFlyout>
+                        </Setter>
+                    </Style>
+                </ListBox.Styles>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Background="Transparent">
+                            <StackPanel.Resources>
+                                <ci:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                            </StackPanel.Resources>
+                            <RadioButton GroupName="ProfileSelection" VerticalAlignment="Center"
+                                         Command="{Binding $parent[views:ProfileSettingsWindow].ProfileSelectionRadioButtonToggledCommand}"
+                                         CommandParameter="{Binding}">
+                                <RadioButton.IsChecked>
+                                    <MultiBinding Converter="{StaticResource StringToRadioButtonSelectionConverter}">
+                                        <Binding Path="ViewModel.SettingsService.Settings.SelectedProfile" 
+                                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}"/>
+                                        <Binding Mode="OneWay"/>
+                                    </MultiBinding>
+                                </RadioButton.IsChecked>
+                            </RadioButton>
+                            <TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="0 0 0 0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
         <converters:SubjectDictionaryKeyFinderMultiConverter x:Key="SubjectDictionaryKeyFinderMultiConverter" />
     </ci:MyWindow.Resources>
     <SplitView DisplayMode="Overlay" PanePlacement="Right"
@@ -98,7 +159,8 @@
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch" />
 
-            <TabControl Grid.Row="0" Grid.RowSpan="2" Padding="0" Classes="navigation">
+            <TabControl Grid.Row="0" Grid.RowSpan="2" Padding="0" Classes="navigation"
+                        SelectedIndex="{Binding ViewModel.MasterPageTabSelectIndex}">
                 <TabItem Header="课表">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -223,6 +285,53 @@
                                     <!-- Warnings -->
                                     <!-- TODO: 实现 Warnings 显示 -->
                                     <StackPanel Grid.Row="0" Grid.Column="0">
+                                        <StackPanel.Styles>
+                                            <Style Selector="StackPanel">
+                                                <Style Selector="^ controls|InfoBar#InfoBarNoTimeLayoutWarning">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </Style>
+                                                <Style Selector="^ controls|InfoBar#InfoBarEmptyTimeLayoutIdWarning">
+                                                    <Setter Property="IsVisible" Value="{Binding TimeLayout, Converter={x:Static ObjectConverters.IsNull}}"/>
+                                                </Style>
+                                            </Style>
+                                            <Style Selector="StackPanel.no-timeLayouts">
+                                                <Style Selector="^ controls|InfoBar#InfoBarNoTimeLayoutWarning">
+                                                    <Setter Property="IsVisible" Value="True"/>
+                                                </Style>
+                                                <Style Selector="^ controls|InfoBar#InfoBarEmptyTimeLayoutIdWarning">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </Style>
+                                            </Style>
+                                        </StackPanel.Styles>
+                                        <Interaction.Behaviors>
+                                            <DataTriggerBehavior Binding="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.TimeLayouts.Count}"
+                                                                 Value="0">
+                                                <AddClassAction ClassName="no-timeLayouts"/>
+                                            </DataTriggerBehavior>
+                                            <DataTriggerBehavior Binding="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.TimeLayouts.Count}"
+                                                                 Value="0"
+                                                                 ComparisonCondition="NotEqual">
+                                                <RemoveClassAction ClassName="no-timeLayouts"/>
+                                            </DataTriggerBehavior>
+                                        </Interaction.Behaviors>
+                                        <controls:InfoBar Message="在设置课表之前，您需要在【时间表】页面中根据学校的作息安排编排时间表。"
+                                                          Severity="Warning"
+                                                          IsOpen="True"
+                                                          IsClosable="False"
+                                                          x:Name="InfoBarNoTimeLayoutWarning">
+                                            <controls:InfoBar.ActionButton>
+                                                <Button Content="前往编排时间表" Click="ButtonGoToTimeLayoutsPage_OnClick"/>
+                                            </controls:InfoBar.ActionButton>
+                                        </controls:InfoBar>
+                                        <controls:InfoBar Message="您还没有为此课表设置时间表。在编排课程之前，您需要在【课表信息】中为本课表设置一个时间表。"
+                                                          Severity="Warning"
+                                                          IsOpen="True"
+                                                          IsClosable="False"
+                                                          x:Name="InfoBarEmptyTimeLayoutIdWarning">
+                                            <controls:InfoBar.ActionButton>
+                                                <Button Content="前往设置时间表" Click="ButtonOpenClassPlanDetails_OnClick"/>
+                                            </controls:InfoBar.ActionButton>
+                                        </controls:InfoBar>
                                     </StackPanel>
 
                                     <DataGrid Grid.Column="0" Grid.Row="1"
@@ -286,7 +395,8 @@
                                                   Grid.Row="0" Grid.RowSpan="2"
                                                   VerticalAlignment="Stretch" />
 
-                                    <TabControl Grid.Row="1" Grid.Column="2" Classes="compact"
+                                    <TabControl Grid.Row="0" Grid.Column="2" Classes="compact"
+                                                Grid.RowSpan="2"
                                                 Padding="0">
                                         <TabItem Header="编辑科目">
                                             <ListBox
@@ -483,7 +593,8 @@
                 <controls:CommandBar.PrimaryCommands>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe699;}"
                                                Label="{Binding ViewModel.ProfileService.CurrentProfilePath}"
-                                               ToolTip.Tip="当前启用的档案"/>
+                                               ToolTip.Tip="当前启用的档案"
+                                               Click="ButtonOpenProfileManager_OnClick"/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe6b1;}"
                                                Label="{Binding ViewModel.LessonsService.CurrentClassPlan.Name}"
                                                ToolTip.Tip="启用临时课表"/>

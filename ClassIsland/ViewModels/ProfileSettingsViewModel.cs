@@ -72,6 +72,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private string _targetSubjectIndex = "";
     [ObservableProperty] private bool _isTimeLineSticky = true;
     [ObservableProperty] private bool _isDrawerOpen = false;
+    [ObservableProperty] private int _masterPageTabSelectIndex = 0;
 
     /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
