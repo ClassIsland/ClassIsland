@@ -27,6 +27,8 @@ public class ConfigureFileHelper
         }
     }
 
+    internal static JsonSerializerOptions SerializerOptions { get; set; } = new();
+
     /// <summary>
     /// 配置在默认情况下，是否启用配置文件备份
     /// </summary>
@@ -61,7 +63,7 @@ public class ConfigureFileHelper
         try
         {
             var json = File.ReadAllText(path);
-            var r = JsonSerializer.Deserialize<T>(json);
+            var r = JsonSerializer.Deserialize<T>(json, SerializerOptions);
             if (r == null)
                 return Activator.CreateInstance<T>();
             if (backupEnabled.Value)
@@ -112,7 +114,7 @@ public class ConfigureFileHelper
     {
         Logger?.LogInformation("写入 JSON 文件：{}", path);
         // 在保存时不对备份文件进行操作，以防止在保存时发生意外断电时，备份文件也受到损坏。
-        WriteAllTextSafe(path, JsonSerializer.Serialize<T>(o));
+        WriteAllTextSafe(path, JsonSerializer.Serialize<T>(o, SerializerOptions));
     }
 
     /// <summary>
@@ -123,7 +125,7 @@ public class ConfigureFileHelper
     /// <returns>复制后的对象副本</returns>
     public static T CopyObject<T>(T o)
     {
-        return JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(o)) ?? Activator.CreateInstance<T>();
+        return JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(o, SerializerOptions), SerializerOptions) ?? Activator.CreateInstance<T>();
     }
 
     /// <summary>

@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using Avalonia;
 using ClassIsland;
 using ClassIsland.Core;
+using ClassIsland.Core.Converters;
 using ClassIsland.Core.Enums;
 using ClassIsland.Extensions;
 using ClassIsland.Services;
+using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
@@ -26,6 +28,8 @@ public static class Program
     {
         AppDomain.CurrentDomain.UnhandledException += DiagnosticService.ProcessDomainUnhandledException;
         AppBase.CurrentLifetime = ApplicationLifetime.EarlyLoading;
+        
+        ConfigureFileHelper.SerializerOptions.Converters.Add(new ColorHexJsonConverter());
 
         var command = new RootCommand
         {
