@@ -40,7 +40,7 @@ public partial class TimeRuleEditControl : UserControl
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (_updating) return;
+        if (_updating || TimeRule == null) return;
         if (e.PropertyName == nameof(ViewModel.WeekCountDivIndex))
         {
             TimeRule.WeekCountDiv = ViewModel.WeekCountDivIndex;
@@ -64,7 +64,7 @@ public partial class TimeRuleEditControl : UserControl
     
     private void UpdateWeekCountDivOptions()
     {
-        if (_updating) return;      
+        if (_updating || TimeRule == null) return;      
         if (ViewModel.WeekCountDivOptions.Count == TimeRule.WeekCountDivTotal + 1) return;
         _updating = true;
         
