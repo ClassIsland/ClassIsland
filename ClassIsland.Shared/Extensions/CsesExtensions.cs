@@ -54,8 +54,8 @@ public static class CsesExtensions
                 }
                 for (var j = 0; j < Math.Min(validTimeLayout.Count, i.Classes.Count); j++)
                 {
-                    if (validTimeLayout[j].StartSecond.TimeOfDay != i.Classes[j].StartTime ||
-                        validTimeLayout[j].EndSecond.TimeOfDay != i.Classes[j].EndTime)
+                    if (validTimeLayout[j].StartTime != i.Classes[j].StartTime ||
+                        validTimeLayout[j].EndTime != i.Classes[j].EndTime)
                     {
                         return false;
                     }
@@ -81,16 +81,16 @@ public static class CsesExtensions
                 timeLayout.Layouts.Add(new TimeLayoutItem()
                 {
                     TimeType = 0,
-                    StartSecond = TimeSpanToDateTime(i.Classes[j].StartTime),
-                    EndSecond = TimeSpanToDateTime(i.Classes[j].EndTime),
+                    StartTime = i.Classes[j].StartTime,
+                    EndTime = i.Classes[j].EndTime,
                 });
                 if (j < i.Classes.Count - 1)
                 {
                     timeLayout.Layouts.Add(new TimeLayoutItem()
                     {
                         TimeType = 1,
-                        StartSecond = TimeSpanToDateTime(i.Classes[j].EndTime),
-                        EndSecond = TimeSpanToDateTime(i.Classes[j + 1].StartTime),
+                        StartTime = i.Classes[j].EndTime,
+                        EndTime = i.Classes[j + 1].StartTime,
                     });
                 }
             }
@@ -146,8 +146,8 @@ public static class CsesExtensions
                 profile.Subjects.TryGetValue(j.SubjectId, out var subject);
                 schedule.Classes.Add(new CsesSharp.Models.ClassInfo()
                 {
-                    StartTime = j.CurrentTimeLayoutItem.StartSecond.TimeOfDay,
-                    EndTime = j.CurrentTimeLayoutItem.EndSecond.TimeOfDay,
+                    StartTime = j.CurrentTimeLayoutItem.StartTime,
+                    EndTime = j.CurrentTimeLayoutItem.EndTime,
                     Subject = subject?.Name ?? "",
                 });
             }

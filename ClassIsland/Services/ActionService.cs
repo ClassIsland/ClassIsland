@@ -36,8 +36,8 @@ public class ActionService : IActionService
         }
         var currentTime = ExactTimeService.GetCurrentLocalDateTime();
         var triggeredActions = LessonsService.CurrentClassPlan?.TimeLayout?.Layouts
-            .Where(x => x.TimeType == 3 && x.StartSecond.TimeOfDay > LastActionRunTime.TimeOfDay &&
-                        x.StartSecond.TimeOfDay <= currentTime.TimeOfDay)
+            .Where(x => x.TimeType == 3 && x.StartTime > LastActionRunTime.TimeOfDay &&
+                        x.StartTime <= currentTime.TimeOfDay)
             .Select(x => x)
             .ToList();
         LastActionRunTime = currentTime;
@@ -52,7 +52,7 @@ public class ActionService : IActionService
             {
                 continue;
             }
-            Logger.LogInformation("触发时间点行动：{}/[{}]", LessonsService.CurrentClassPlan?.TimeLayout?.Name, i.StartSecond);
+            Logger.LogInformation("触发时间点行动：{}/[{}]", LessonsService.CurrentClassPlan?.TimeLayout?.Name, i.StartTime);
             Invoke(i.ActionSet);
         }
     }

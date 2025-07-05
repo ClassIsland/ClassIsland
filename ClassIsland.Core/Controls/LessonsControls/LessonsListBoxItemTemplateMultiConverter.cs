@@ -79,9 +79,9 @@ internal class LessonsListBoxItemTemplateMultiConverter : AvaloniaObject, IMulti
             return BlankDataTemplate;
         }
 
-        var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartSecond : currentItem?.EndSecond;
-        if ((itemDateTime?.TimeOfDay < selectedItem?.StartSecond.TimeOfDay 
-             || itemDateTime.HasValue && itemDateTime.Value.TimeOfDay <
+        var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartTime : currentItem?.EndTime;
+        if ((itemDateTime < selectedItem?.StartTime 
+             || itemDateTime.HasValue && itemDateTime.Value <
                 IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().TimeOfDay) && hideFinishedClass)
         {
             return BlankDataTemplate;

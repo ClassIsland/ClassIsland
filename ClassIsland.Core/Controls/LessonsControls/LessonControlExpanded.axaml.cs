@@ -169,10 +169,10 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
                 ClassInfo?.CurrentTimeLayout) ??
             DefaultLessonControlSettings;
 
-        if (ExactTimeService != null)
+        if (ExactTimeService != null && CurrentTimeLayoutItem != null)
         {
             TotalSeconds = (long)CurrentTimeLayoutItem.Last.TotalSeconds;
-            Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
+            Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - CurrentTimeLayoutItem.StartTime).TotalSeconds;
             LeftSeconds = TotalSeconds - Seconds;
         }
 

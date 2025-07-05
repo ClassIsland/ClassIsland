@@ -329,7 +329,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             .Reverse()
             .FirstOrDefault(i =>
                 i.TimeType == 0 &&
-                i.EndSecond.TimeOfDay < now);
+                i.EndTime < now);
         if (prevClassTimeItem == null)
         {
             return false;
@@ -434,8 +434,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         // 获取当前时间点信息
         currentTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType is 0 or 1 &&
-            i.StartSecond.TimeOfDay <= now &&
-            i.EndSecond.TimeOfDay >= now);
+            i.StartTime <= now &&
+            i.EndTime >= now);
         if (currentTimeLayoutItem != null)
         {
             currentSelectedIndex = layout.IndexOf(currentTimeLayoutItem);
@@ -462,7 +462,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         // 获取下节时间点信息
         nextClassTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 0 &&
-            i.EndSecond.TimeOfDay >= now);
+            i.EndTime >= now);
         if (nextClassTimeLayoutItem != null)
         {
             var i0 = GetClassIndex(layout.IndexOf(nextClassTimeLayoutItem));
@@ -472,13 +472,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
         nextBreakingTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 1 &&
-            i.EndSecond.TimeOfDay >= now);
+            i.EndTime >= now);
 
         // 获取剩余时间信息
         if (currentState == TimeState.OnClass)
-            onBreakingTimeLeftTime = nextBreakingTimeLayoutItem?.StartSecond.TimeOfDay - now;
+            onBreakingTimeLeftTime = nextBreakingTimeLayoutItem?.StartTime - now;
         else
-            onClassLeftTime = nextClassTimeLayoutItem?.StartSecond.TimeOfDay - now;
+            onClassLeftTime = nextClassTimeLayoutItem?.StartTime - now;
 
         if (nextClassTimeLayoutItem == null &&
             nextBreakingTimeLayoutItem == null)

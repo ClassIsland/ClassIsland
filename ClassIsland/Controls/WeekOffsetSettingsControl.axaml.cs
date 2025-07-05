@@ -47,6 +47,7 @@ public partial class WeekOffsetSettingsControl : UserControl
              ContentPanel.Children.Add(weekSelectorPanel);
          }
          
+         // TODO:FIXME: 修改为 Dispatcher.Yield
          await Task.Delay(1);
          await Task.Delay(1);
          await Task.Delay(1); // 歇会

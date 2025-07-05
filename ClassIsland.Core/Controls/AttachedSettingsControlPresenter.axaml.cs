@@ -279,7 +279,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
             case AttachedSettingsTargets.TimePoint:
                 if (ProfileService.Profile.TimeLayouts.TryGetValue(ContentId, out var timeLayout) && node.Object is TimeLayoutItem item)
                 {
-                    DependencyItemTitle = $"时间表 {timeLayout.Name}，{item.StartSecond:t}-{item.EndSecond:t}";
+                    DependencyItemTitle = $"时间表 {timeLayout.Name}，{item.StartTime:t}-{item.EndTime:t}";
                 }
                 if (policy.DisableProfileTimeLayoutEditing)
                 {

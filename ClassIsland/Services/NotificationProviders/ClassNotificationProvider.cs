@@ -148,7 +148,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             })
             {
                 SpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name}{(Settings.ShowTeacherName ? $"，{FormatTeacher(LessonsService.NextClassSubject)}" : "")}。",
-                EndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
+                EndTime = new DateTime(DateOnly.FromDateTime(ExactTimeService.GetCurrentLocalDateTime()), TimeOnly.FromTimeSpan(LessonsService.NextClassTimeLayoutItem.StartTime)),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             },
             ChannelId = Guid.Parse(PrepareOnClassChannelId)
@@ -192,7 +192,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
         if (!settingsIsClassOffNotificationEnabled ||
             LessonsService.CurrentTimeLayoutItem == TimeLayoutItem.Empty ||
-            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartTime > TimeSpan.FromSeconds(5))
             return;
         var overlayText = settings?.ClassOffOverlayText ?? Settings.ClassOffOverlayText;
         var showOverlayText = !string.IsNullOrWhiteSpace(overlayText);
@@ -244,7 +244,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         if (!settingsIsClassOnNotificationEnabled ||
             IsClassOnNotified ||
             LessonsService.CurrentTimeLayoutItem == TimeLayoutItem.Empty ||
-            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartTime > TimeSpan.FromSeconds(5))
             return;
 
         Channel(OnClassChannelId).ShowNotification(BuildOnClassNotificationRequest(settingsSource));
