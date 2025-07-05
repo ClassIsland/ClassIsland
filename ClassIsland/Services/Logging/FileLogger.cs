@@ -20,7 +20,7 @@ public class FileLogger(FileLoggerProvider provider, string categoryName) : ILog
         List<string> scopes = [];
         if (ScopeStack.Value != null)
         {
-            scopes.AddRange(ScopeStack.Value.Select(scope => (scope.ToString() ?? "") + "=>"));
+            scopes.AddRange(ScopeStack.Value.ToList().Select(scope => (scope.ToString() ?? "") + "=>"));
         }
         var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? "\n" + exception : "");
         message = LogMaskingHelper.MaskLog(message);
