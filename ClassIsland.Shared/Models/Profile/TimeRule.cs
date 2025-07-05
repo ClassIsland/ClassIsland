@@ -59,6 +59,10 @@ public class TimeRule : ObservableRecipient
         set
         {
             if (value == _weekCountDivTotal) return;
+            if (WeekCountDiv > WeekCountDivTotal)
+            {
+                WeekCountDiv = 0;
+            }
             _weekCountDivTotal = value;
             OnPropertyChanged();
         }
