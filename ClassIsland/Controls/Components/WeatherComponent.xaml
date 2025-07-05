@@ -15,7 +15,7 @@
                         d:DesignHeight="450" d:DesignWidth="800">
     <controls:ComponentBase.Resources>
         <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
-        <converters:StringToDoubleConverter x:Key="StringToDoubleConverter" />
+        <converters:WindDirectionConverter x:Key="WindDirectionConverter" />
     </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -55,7 +55,7 @@
                                                  Kind="Navigation"
                                                  VerticalAlignment="Center">
                             <materialDesign:PackIcon.RenderTransform>
-                                <RotateTransform Angle="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Direction.Value, Converter={StaticResource StringToDoubleConverter}}" CenterX="11" CenterY="11"/>
+                                <RotateTransform Angle="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Direction.Value, Converter={StaticResource WindDirectionConverter}}" CenterX="11" CenterY="11"/>
                             </materialDesign:PackIcon.RenderTransform>
                         </materialDesign:PackIcon>
                         <TextBlock VerticalAlignment="Center" Margin="0 0 0 0">
