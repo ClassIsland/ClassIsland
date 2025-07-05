@@ -368,3 +368,5 @@ cipx/
 
 # macOS Desktop Services Store
 .DS_Store
+
+**/.idea/avalonia.xml
