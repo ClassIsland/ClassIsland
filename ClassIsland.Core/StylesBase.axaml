@@ -92,6 +92,13 @@
         </Style>
     </Style>
     
+    <Style Selector="controls|CommandBar.hide-popup-indicator controls|CommandBarButton:labelright /template/ controls|FontIcon#SubItemChevron">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
+    <Style Selector="Control.hidden">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
+    
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

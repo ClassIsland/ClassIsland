@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.ComponentModels;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared.ComponentModels;
@@ -73,6 +74,9 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isTimeLineSticky = true;
     [ObservableProperty] private bool _isDrawerOpen = false;
     [ObservableProperty] private int _masterPageTabSelectIndex = 0;
+    [ObservableProperty] private TimeLayout? _selectedTimeLayout;
+    [ObservableProperty] private int _selectedTimePointIndex = -1;
+    [ObservableProperty] private ToastMessage? _currentTimePointDeleteRevertToast;
 
     /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,

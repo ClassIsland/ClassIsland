@@ -226,4 +226,18 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         }
         return 0;
     }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var timeTypeText = TimeType switch
+        {
+            0 => "上课",
+            1 => "课间休息",
+            2 => "分割线",
+            3 => "行动",
+            _ => "？？？"
+        };
+        return $"{timeTypeText} {StartTime}-{EndTime}";
+    }
 }

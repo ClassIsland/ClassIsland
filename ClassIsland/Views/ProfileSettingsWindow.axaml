@@ -10,6 +10,7 @@
         xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
         xmlns:controls1="clr-namespace:ClassIsland.Controls"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
+        xmlns:action="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
@@ -26,6 +27,7 @@
                                               x:Key="SubjectIdToSubjectConverter"/>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:ClassPlanGroup"
                                               x:Key="ClassPlanGroupIdToClassPlanGroupConverter"/>
+        <converters:SubjectDictionaryKeyFinderMultiConverter x:Key="SubjectDictionaryKeyFinderMultiConverter" />
         
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
                       VerticalScrollBarVisibility="Auto">
@@ -81,8 +83,16 @@
                         <DataTemplate>
                             <ci:AttachedSettingsControlPresenter ControlInfo="{Binding}"
                                                                Margin="0 0 0 8"
-                                                               ContentId="{Binding SelectedItem.Key, ElementName=ListViewClassPlans, Mode=OneWay}"
-                                                               TargetObject="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}"/>
+                                                               TargetObject="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassPlan}">
+                                <ci:AttachedSettingsControlPresenter.ContentId>
+                                    <MultiBinding
+                                        Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}"
+                                        Mode="OneWay">
+                                        <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.SelectedClassPlan"/>
+                                        <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.ClassPlans"/>
+                                    </MultiBinding>
+                                </ci:AttachedSettingsControlPresenter.ContentId>
+                            </ci:AttachedSettingsControlPresenter>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -149,7 +159,41 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <converters:SubjectDictionaryKeyFinderMultiConverter x:Key="SubjectDictionaryKeyFinderMultiConverter" />
+        
+        <!-- 时间表信息 -->
+        <ScrollViewer x:Key="TimeLayoutInfoEditor" Width="332" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16"  
+                        Spacing="8"
+                        DataContext="{Binding ViewModel.SelectedTimeLayout}">
+                <TextBlock Text="时间表信息" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                <ci:Field Label="名称">
+                    <TextBox Margin="0 4 0 0"
+                             Text="{Binding Name}"/>
+                </ci:Field>
+                <!-- 附加属性 -->
+                <Separator Margin="0 8 0 0"/>
+                <ci:IconText Glyph="&#xef2b;" Text="更多选项"/>
+                <ItemsControl ItemsSource="{x:Static services:IAttachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ci:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
+                                                                   Margin="0 0 0 8"
+                                                                   TargetObject="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimeLayout}">
+                                <ci:AttachedSettingsControlPresenter.ContentId>
+                                    <MultiBinding
+                                        Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}"
+                                        Mode="OneWay">
+                                        <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.SelectedTimeLayout"/>
+                                        <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.TimeLayouts"/>
+                                    </MultiBinding>
+                                </ci:AttachedSettingsControlPresenter.ContentId>
+                            </ci:AttachedSettingsControlPresenter>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+        
     </ci:MyWindow.Resources>
     <SplitView DisplayMode="Overlay" PanePlacement="Right"
                IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
@@ -201,12 +245,7 @@
                         <ci:Emptiable Grid.Column="2" Data="{Binding ViewModel.SelectedClassPlan}"
                                       IsDirectContentMode="True">
                             <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto">
-                                <controls:CommandBar Grid.Row="0" DefaultLabelPosition="Right">
-                                    <controls:CommandBar.Styles>
-                                        <Style Selector="controls|CommandBarButton:labelright /template/ controls|FontIcon#SubItemChevron">
-                                            <Setter Property="IsVisible" Value="False"/>
-                                        </Style>
-                                    </controls:CommandBar.Styles>
+                                <controls:CommandBar Grid.Row="0" DefaultLabelPosition="Right" Classes="hide-popup-indicator">
                                     <controls:CommandBar.PrimaryCommands>
                                         <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe9e4;}"
                                                                    Label="详细信息"
@@ -354,11 +393,8 @@
                                                         <TextBlock VerticalAlignment="Center"
                                                                    FontSize="13"
                                                                    Margin="6 0">
-                                                            <Run
-                                                                Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm:ss}, Mode=OneWay}" />
-                                                            <Run Text="-" />
-                                                            <Run
-                                                                Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm:ss}, Mode=OneWay}" />
+                                                            <Run Text="{Binding CurrentTimeLayoutItem.StartTime, Mode=OneWay}" /><Run Text="-" /><Run
+                                                                Text="{Binding CurrentTimeLayoutItem.EndTime, Mode=OneWay}" />
                                                         </TextBlock>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -429,7 +465,347 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="时间表">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <!-- 时间表选择 -->
+                        <Grid Grid.Column="0" Margin="0 0 3 0" RowDefinitions="Auto,*,Auto">
+                            <!-- 时间表操作 -->
+                            <controls:CommandBar Grid.Row="0" 
+                                                 DefaultLabelPosition="Right"
+                                                 IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}">
+                                <controls:CommandBar.PrimaryCommands>
+                                    <controls:CommandBarButton Click="ButtonAddTimeLayout_OnClick" ToolTip.Tip="新建一个时间表。"
+                                                               IconSource="{ci:FluentIconSource &#xE00D;}"
+                                                               Label="添加"/>
+                                    <controls:CommandBarButton Click="ButtonDuplicateTimeLayout_OnClick" ToolTip.Tip="复制选中的时间表。"
+                                                               IconSource="{ci:FluentIconSource &#xE58D;}"
+                                                               IsEnabled="{Binding ViewModel.SelectedTimeLayout, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                               Label="复制"/>
+                                </controls:CommandBar.PrimaryCommands>
+                            </controls:CommandBar>
 
+                            <!-- 时间表 -->
+                            <ListBox Grid.Row="1"
+                                     SelectionMode="Single"
+                                     ItemsSource="{Binding ViewModel.TimeLayouts.List, Mode=OneWay}"
+                                     SelectedValue="{Binding ViewModel.SelectedTimeLayout, Mode=TwoWay}"
+                                     SelectedValueBinding="{Binding Value}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <TextBlock Text="{Binding Value.Name}" HorizontalAlignment="Left"/>
+                                            <ci:FluentIcon Glyph="&#xE4D2;" HorizontalAlignment="Right"
+                                                           ToolTip.Tip="此时间表正在活动。"
+                                                           IsVisible="{Binding Value.IsActivated, Mode=OneWay}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <!-- 时间点时长 -->
+                            <Expander HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Center"
+                                      Padding="12 10 12 10"
+                                      Grid.Row="2"
+                                      ExpandDirection="Up" Header="时间点时长"
+                                      IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}">
+                                <StackPanel Spacing="4">
+                                    <ci:Field Label="默认上课时间点时长" Suffix="分钟">
+                                        <controls:NumberBox
+                                            Maximum="36000" Minimum="0" HorizontalAlignment="Stretch"
+                                            Foreground="{DynamicResource MaterialDesignBody}"
+                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </ci:Field>
+                                    <ci:Field Label="默认课间时间点时长" Suffix="分钟">
+                                        <controls:NumberBox
+                                            Maximum="36000" Minimum="0" HorizontalAlignment="Stretch"
+                                            Foreground="{DynamicResource MaterialDesignBody}"
+                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </ci:Field>
+                                </StackPanel>
+                            </Expander>
+                        </Grid>
+                        
+                        <GridSplitter Grid.Column="1" Margin="2 0" />
+                        
+                        <ci:Emptiable Grid.Column="2" IsDirectContentMode="True" Data="{Binding ViewModel.SelectedTimeLayout, Mode=OneWay}">
+                            <Grid Margin="3 0 0 0" 
+                                  DataContext="{Binding ViewModel.SelectedTimeLayout}"
+                                  RowDefinitions="Auto,Auto,*,Auto">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="375" MinWidth="250" MaxWidth="450"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <controls:CommandBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
+                                                     DefaultLabelPosition="Right"
+                                                     Classes="hide-popup-indicator">
+                                    <controls:CommandBar.PrimaryCommands>
+                                        <controls:CommandBarButton Click="ButtonAddClassTime_OnClick" 
+                                                                   IconSource="{ci:FluentIconSource &#xE47A;}"
+                                                                   ToolTip.Tip="添加上课时间点。"
+                                                                   Label="上课"/>
+                                        <controls:CommandBarButton Click="ButtonAddBreakTime_OnClick" 
+                                                                   IconSource="{ci:FluentIconSource &#xE4C4;}"
+                                                                   ToolTip.Tip="添加课间休息时间点。"
+                                                                   Label="课间"/>
+                                        <controls:CommandBarButton Click="ButtonAddSeparator_OnClick" 
+                                                                   IconSource="{ci:FluentIconSource &#xF021;}"
+                                                                   ToolTip.Tip="添加分割线。"
+                                                                   Label="分割线"/>
+                                        <controls:CommandBarButton Click="ButtonAddActionTimePoint_OnClick" 
+                                                                   IconSource="{ci:FluentIconSource &#xE01F;}"
+                                                                   ToolTip.Tip="添加行动时间点。"
+                                                                   IsEnabled="{Binding ViewModel.ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=views:ProfileSettingsWindow}}"
+                                                                   Label="行动"/>
+                                        <controls:CommandBarSeparator/>
+                                        <controls:CommandBarButton Click="ButtonRemoveTimePoint_OnClick"
+                                                                   ToolTip.Tip="删除选中的时间点。"
+                                                                   IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                                   Label="删除">
+                                            <controls:CommandBarButton.IconSource>
+                                                <controls:SymbolIconSource Symbol="Remove"/>
+                                            </controls:CommandBarButton.IconSource>
+                                        </controls:CommandBarButton>
+                                        <controls:CommandBarButton Click="ButtonRefreshTimeLayout_OnClick" 
+                                                                   IconSource="{ci:FluentIconSource &#xE0B5;}"
+                                                                   ToolTip.Tip="重新排序该时间表中的时间点。"
+                                                                   Label="刷新"/>
+                                        <controls:CommandBarSeparator />
+                                        <controls:CommandBarButton Click="ButtonEditTimeLayoutInfo_OnClick" 
+                                                                   IconSource="{ci:FluentIconSource &#xE9E4;}"
+                                                                   ToolTip.Tip="查看并编辑时间表的基本信息。"
+                                                                   Label="时间表信息"/>
+                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE61D;}"
+                                                                   ToolTip.Tip="删除该时间表。"
+                                                                   Label="删除时间表">
+                                            <controls:CommandBarButton.Flyout>
+                                                <Flyout>
+                                                    <StackPanel Spacing="8">
+                                                        <TextBlock FontWeight="Bold">
+                                                            <Run Text="要删除时间表" />
+                                                            <Run Text="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimeLayout.Name}" />
+                                                            <Run Text="吗？" />
+                                                        </TextBlock>
+                                                        <TextBlock Text="此操作无法撤销。" />
+                                                        <Button Content="删除" Classes="accent" Click="ButtonDeleteTimeLayout_OnClick"/>
+                                                    </StackPanel>   
+                                                </Flyout>
+                                            </controls:CommandBarButton.Flyout>
+                                        </controls:CommandBarButton>
+                                    </controls:CommandBar.PrimaryCommands>
+                                </controls:CommandBar>
+                                
+                                <TabControl Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Classes="compact"
+                                            Padding="0"
+                                            TabStripPlacement="Bottom">
+                                    <TabItem Header="{ci:FluentIcon &#xE075;}">
+                                        <ListBox ItemsSource="{Binding Layouts}"
+                                                 SelectedIndex="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePointIndex}"
+                                                 SelectedItem="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint}">
+                                            
+                                        </ListBox>
+                                    </TabItem>
+                                    <TabItem Header="{ci:FluentIcon &#xF35B;}">
+                                        <Grid>
+                                            <ci:Empty Icon="{ci:FluentIconSource &#xE809;, FontSize=64}"
+                                                      Text="Coming s∞n"/>
+                                        </Grid>
+                                    </TabItem>
+                                </TabControl>
+                                <GridSplitter Grid.Row="2" Grid.Column="1" Margin="2 0"/>
+                                <ci:Emptiable Grid.Row="2" Grid.Column="2" Grid.RowSpan="2"
+                                              IsDirectContentMode="True"
+                                              Data="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <StackPanel Margin="16"
+                                                    Spacing="8"
+                                                    IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}"
+                                                    DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}">
+                                            <StackPanel.Styles>
+                                                <Style Selector="StackPanel.line-timePoint">
+                                                    <Style Selector="^ ci|Field#FieldEndTime">
+                                                        <Setter Property="IsVisible" Value="False" />
+                                                    </Style>
+                                                    <Style Selector="^ ci|Field#FieldTimeLayoutType">
+                                                        <Setter Property="IsVisible" Value="False" />
+                                                    </Style>
+                                                </Style>
+
+                                                <Style Selector="StackPanel#StackPanelClassTimePointSettings">
+                                                    <Setter Property="IsVisible" Value="False" />
+                                                </Style>
+                                                <Style
+                                                    Selector="StackPanel.onClass-timePoint StackPanel#StackPanelClassTimePointSettings">
+                                                    <Setter Property="IsVisible" Value="True" />
+                                                </Style>
+
+                                                <Style Selector="StackPanel#StackPanelBreakingTimePointSettings">
+                                                    <Setter Property="IsVisible" Value="False" />
+                                                </Style>
+                                                <Style
+                                                    Selector="StackPanel.breaking-timePoint StackPanel#StackPanelBreakingTimePointSettings">
+                                                    <Setter Property="IsVisible" Value="True" />
+                                                </Style>
+
+                                                <Style
+                                                    Selector="StackPanel.action-timePoint StackPanel#StackPanelTimePointAttachedSettings">
+                                                    <Setter Property="IsVisible" Value="False" />
+                                                </Style>
+                                            </StackPanel.Styles>
+                                            <Interaction.Behaviors>
+                                                <DataTriggerBehavior
+                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                    Value="0">
+                                                    <AddClassAction ClassName="onClass-timePoint" />
+                                                    <RemoveClassAction ClassName="breaking-timePoint" />
+                                                    <RemoveClassAction ClassName="action-timePoint" />
+                                                    <RemoveClassAction ClassName="line-timePoint" />
+                                                </DataTriggerBehavior>
+                                                <DataTriggerBehavior
+                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                    Value="1">
+                                                    <RemoveClassAction ClassName="onClass-timePoint" />
+                                                    <AddClassAction ClassName="breaking-timePoint" />
+                                                    <RemoveClassAction ClassName="action-timePoint" />
+                                                    <RemoveClassAction ClassName="line-timePoint" />
+                                                </DataTriggerBehavior>
+                                                <DataTriggerBehavior
+                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                    Value="2">
+                                                    <RemoveClassAction ClassName="onClass-timePoint" />
+                                                    <RemoveClassAction ClassName="breaking-timePoint" />
+                                                    <RemoveClassAction ClassName="action-timePoint" />
+                                                    <AddClassAction ClassName="line-timePoint" />
+                                                </DataTriggerBehavior>
+                                                <DataTriggerBehavior
+                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                    Value="3">
+                                                    <RemoveClassAction ClassName="onClass-timePoint" />
+                                                    <RemoveClassAction ClassName="breaking-timePoint" />
+                                                    <AddClassAction ClassName="action-timePoint" />
+                                                    <AddClassAction ClassName="line-timePoint" />
+                                                </DataTriggerBehavior>
+                                            </Interaction.Behaviors>
+                                            <StackPanel Spacing="8">
+                                                <TextBlock Text="编辑时间点"
+                                                           Theme="{StaticResource SubtitleTextBlockStyle}" />
+                                                <!--<TextBlock Text="{Binding}"/>-->
+                                                <ci:Field Label="开始时间">
+                                                    <TimePicker
+                                                        SelectedTime="{Binding ViewModel.SelectedTimePoint.StartTime}"
+                                                        UseSeconds="True" />
+                                                </ci:Field>
+                                                <ci:Field Label="结束时间" x:Name="FieldEndTime">
+                                                    <TimePicker
+                                                        SelectedTime="{Binding ViewModel.SelectedTimePoint.EndTime}"
+                                                        UseSeconds="True">
+                                                    </TimePicker>
+                                                </ci:Field>
+                                                <ci:Field Label="类型" x:Name="FieldTimeLayoutType">
+                                                    <ListBox
+                                                        Theme="{StaticResource ChipListBoxTheme}"
+                                                        SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}">
+                                                        <ListBoxItem>
+                                                            <ci:IconText Glyph="&#xE47A;" Text="上课" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem>
+                                                            <ci:IconText Glyph="&#xE4C4;" Text="课间休息" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem IsVisible="False">
+                                                            <ci:IconText Glyph="&#xF021;" Text="分割线" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem IsVisible="False">
+                                                            <ci:IconText Glyph="&#xE01F;" Text="行动" />
+                                                        </ListBoxItem>
+                                                    </ListBox>
+                                                </ci:Field>
+                                            </StackPanel>
+                                            <StackPanel x:Name="StackPanelClassTimePointSettings" Spacing="8">
+                                                <CheckBox Content="默认隐藏"
+                                                          IsChecked="{Binding ViewModel.SelectedTimePoint.IsHideDefault}" />
+                                                <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap" />
+
+                                                <Separator Margin="0 4 0 0" />
+                                                <ci:IconText Glyph="&#xE47A;" Text="默认课程"  />
+                                                <ComboBox
+                                                    HorizontalAlignment="Stretch"
+                                                    ItemsSource="{Binding ViewModel.Subjects.List, UpdateSourceTrigger=PropertyChanged}"
+                                                    SelectedValueBinding="{Binding Key}"
+                                                    SelectedValue="{Binding ViewModel.SelectedTimePoint.DefaultClassId}">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Value.Name}" />
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                                <WrapPanel Orientation="Horizontal" Margin="0 4 0 0">
+                                                    <Button Theme="{StaticResource TransparentButton}"
+                                                            Click="ButtonOverwriteClasses_OnClick"
+                                                            IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
+                                                        <ci:IconText Glyph="&#xE1A1;" Text="覆盖现有课程" />
+                                                    </Button>
+                                                </WrapPanel>
+                                            </StackPanel>
+                                            <StackPanel x:Name="StackPanelBreakingTimePointSettings">
+                                                <ci:Field Label="课间名称">
+                                                    <TextBox
+                                                        Text="{Binding ViewModel.SelectedTimePoint.BreakName, UpdateSourceTrigger=PropertyChanged}" />
+                                                </ci:Field>
+                                            </StackPanel>
+                                            <Separator Margin="0 4 0 8" />
+                                            <StackPanel x:Name="StackPanelTimePointAttachedSettings">
+                                                <ci:IconText Glyph="&#xEF2B;" Text="更多选项" Margin="0 0 0 8" />
+                                                <ItemsControl
+                                                    ItemsSource="{x:Static services:IAttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <ci:AttachedSettingsControlPresenter
+                                                                ControlInfo="{Binding}"
+                                                                Margin="0 0 0 8"
+                                                                ContentIndex="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePointIndex, Mode=OneWay}"
+                                                                TargetObject="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint}">
+                                                                <ci:AttachedSettingsControlPresenter.ContentId>
+                                                                    <MultiBinding
+                                                                        Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}"
+                                                                        Mode="OneWay">
+                                                                        <Binding
+                                                                            Path="$parent[views:ProfileSettingsWindow].ViewModel.SelectedTimeLayout" />
+                                                                        <Binding
+                                                                            Path="$parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.TimeLayouts" />
+                                                                    </MultiBinding>
+                                                                </ci:AttachedSettingsControlPresenter.ContentId>
+                                                            </ci:AttachedSettingsControlPresenter>
+
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                            <StackPanel x:Name="StackPanelActionTimePointSettings"
+                                                        IsVisible="{Binding ViewModel.SelectedTimePoint.ActionSet, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                                <ci:IconText Glyph="&#xE01F;" Text="行动" Margin="0 0 0 8" />
+                                                <Button Theme="{StaticResource TransparentButton}"
+                                                        HorizontalAlignment="Left"
+                                                        Click="ButtonDebugTriggerAction_OnClick"
+                                                        IsEnabled="{Binding ViewModel.ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=views:ProfileSettingsWindow}}"
+                                                        Margin="0 0 0 2">
+                                                    <ci:IconText Glyph="&#xEDBB;" Text="触发" />
+                                                </Button>
+                                                <action:ActionControl
+                                                    ActionSet="{Binding ViewModel.SelectedTimePoint.ActionSet}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </ci:Emptiable >
+                            </Grid>
+                            
+                        </ci:Emptiable>
+                    </Grid>
                 </TabItem>
                 <TabItem Header="科目">
                     <Grid RowDefinitions="Auto,*">

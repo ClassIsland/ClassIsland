@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
@@ -11,17 +12,20 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
+using ClassIsland.Shared.Models.Action;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
 using Grpc.Core.Logging;
 using Microsoft.Extensions.Logging;
+using ReactiveUI;
 using Sentry;
 
 namespace ClassIsland.Views;
@@ -100,7 +104,7 @@ public partial class ProfileSettingsWindow : MyWindow
         try
         {
             ViewModel.ProfileService.SaveProfile();
-            this.ShowToast(new ToastMessage($"已保存到 {ViewModel.ProfileService.CurrentProfilePath}")
+            this.ShowToast(new ToastMessage($"已保存到 {ViewModel.ProfileService.CurrentProfilePath}。")
             {
                 Severity = InfoBarSeverity.Success
             });
@@ -196,7 +200,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             this.ShowToast(new ToastMessage()
             {
-                Message = "无法重命名档案，因为已存在一个相同名称的档案",
+                Message = "无法重命名档案，因为已存在一个相同名称的档案。",
                 Severity = InfoBarSeverity.Warning
             });
             return;
@@ -225,7 +229,7 @@ public partial class ProfileSettingsWindow : MyWindow
                     { "Reason", "正在删除已加载或将要加载的档案。" },
                     { "IsSuccess", "false" }
                 });
-            this.ShowToast(new ToastMessage("无法删除已加载或将要加载的档案")
+            this.ShowToast(new ToastMessage("无法删除已加载或将要加载的档案。")
             {
                 Severity = InfoBarSeverity.Warning
             });
@@ -292,7 +296,7 @@ public partial class ProfileSettingsWindow : MyWindow
         this.ShowToast(new ToastMessage()
         {
             Title = "需要重启",
-            Message = "切换档案需要重启应用以生效",
+            Message = "切换档案需要重启应用以生效。",
             AutoClose = false,
             ActionContent = action
         });
@@ -378,6 +382,288 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonGoToTimeLayoutsPage_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.MasterPageTabSelectIndex = 1;
+    }
+
+    #endregion
+
+    #region TimeLayouts
+    
+    public void UpdateTimeLayout()
+    {
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        if (timeLayout == null)
+        {
+            return;
+        }
+        var l = timeLayout.Layouts.ToList();
+        l.Sort();
+        l.Reverse();
+        timeLayout.Layouts = new ObservableCollection<TimeLayoutItem>(l);
+        timeLayout.SortCompleted();
+    }
+
+    private void ButtonAddTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    {
+        var timeLayout = new TimeLayout()
+        {
+            Name = "新时间表"
+        };
+        ViewModel.ProfileService.Profile.TimeLayouts.Add(Guid.NewGuid(), timeLayout);
+        OpenDrawer("TimeLayoutInfoEditor");
+        ViewModel.SelectedTimeLayout = timeLayout;
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.create");
+    }
+    
+    private void ButtonDuplicateTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    {
+        var s = ConfigureFileHelper.CopyObject(ViewModel.SelectedTimeLayout);
+        if (s == null)
+        {
+            return;
+        }
+
+        OpenDrawer("TimeLayoutInfoEditor");
+        ViewModel.ProfileService.Profile.TimeLayouts.Add(Guid.NewGuid(), s);
+        ViewModel.SelectedTimeLayout = s;
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.duplicate");
+    }
+    
+    private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    {
+        var key = ViewModel.ProfileService.Profile.TimeLayouts
+            .FirstOrDefault(x => x.Value == ViewModel.SelectedTimeLayout).Key;
+        var c = ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeLayoutId == key);
+        const string eventName = "views.ProfileSettingsWindow.timeLayout.remove";
+        if (c)
+        {
+            this.ShowWarningToast("仍有课表在使用该时间表。删除时间表前需要删除所有使用该时间表的课表。");
+            SentrySdk.Metrics.Increment(eventName, tags: new Dictionary<string, string>
+            {
+                {"IsSuccess", "false"},
+                {"Reason", "仍有课表在使用该时间表。"}
+            });
+            return;
+        }
+
+        SentrySdk.Metrics.Increment(eventName, tags: new Dictionary<string, string>
+        {
+            {"IsSuccess", "true"}
+        });
+        ViewModel.ProfileService.Profile.TimeLayouts.Remove(key);
+        FlyoutHelper.CloseAncestorFlyout(sender);
+    }
+    
+    private void AddTimePoint(TimeLayoutItem item)
+    {
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        if (timeLayout == null)
+        {
+            return;
+        }
+        var l = timeLayout.Layouts;
+        for (var i = 0; i < l.Count - 1; i++)
+        {
+            if (l[i].StartTime <= item.StartTime)
+                continue;
+            timeLayout.InsertTimePoint(i, item);
+            return;
+        }
+        timeLayout.InsertTimePoint(l.Count, item);
+    }
+    
+    private void AddTimeLayoutItem(int timeType)
+    {
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        var selected   = ViewModel.SelectedTimePoint;
+        var baseSec    = (timeType is 0 or 1 ? selected?.EndTime : selected?.StartTime) ?? 
+                         // 根据有关规定，中学最早上课时间不得早于 8:00，故将默认的最早时间设定为这个值。
+                         // 虽然这么说，但至少我上过和见过的学校里，很少有能履行这一规定的。
+                         new TimeSpan(8, 00, 0);
+        var settings   = ViewModel.SettingsService.Settings;
+        var lastTime   = TimeSpan.FromMinutes(timeType switch
+        {
+            0 => settings.DefaultOnClassTimePointMinutes,  // 上课
+            1 => settings.DefaultBreakingTimePointMinutes, // 课间休息
+            2 => 0,  // 分割线
+            3 => 0,  // 行动
+            _ => 0
+        });
+        if (timeLayout == null)
+        {
+            return;
+        }
+        if (selected != null)
+        {
+            var index = timeLayout.Layouts.IndexOf(selected);
+            /*if (selected.TimeType == 2)
+            {
+                // 向前的非线时间段集合
+                // var l = (from i in timeLayout.Layouts.Take(index + 1) where i.TimeType != 2 select i).ToList();
+                selected = l.Count > 0 ? l.Last() : selected;
+            }*/
+            if (timeType != 2 && timeType != 3 && index < timeLayout.Layouts.Count - 1)
+            {
+                var nexts = (from i 
+                            in timeLayout.Layouts.Skip(index + 1) 
+                        where i.TimeType != 2 
+                        select i)
+                    .ToList();
+                if (nexts.Count > 0)
+                {
+                    var next = nexts[0];
+                    if (next.StartTime <= baseSec)
+                    {
+                        if (index != 0)
+                        {
+                            this.ShowWarningToast("没有合适的位置来插入新的时间点。");
+                            return;
+                        }
+                        baseSec = selected.StartTime - lastTime; // 向前插入时间点的简易实现，未考虑分割线
+                        this.ShowToast("已向前插入了新的时间点。");
+                    }
+                    if (next.StartTime < baseSec + lastTime)
+                    {
+                        this.ShowToast("没有足够的空间完全插入该时间点，已缩短时间点长度。");
+                        lastTime = next.StartTime - baseSec;
+                    }
+                }
+            }
+
+            if (timeType == 2)
+            {
+                baseSec = selected.EndTime;
+                if ((from i in timeLayout.Layouts where i.TimeType == 2 select i.StartTime).ToList().Contains(baseSec))
+                {
+                    this.ShowWarningToast("这里已经存在一条分割线。");
+                    return;
+                }
+            }
+
+            if (timeType == 3)
+            {
+                baseSec = selected.EndTime;
+                if ((from i in timeLayout.Layouts where i.TimeType == 3 select i.StartTime).ToList().Contains(baseSec))
+                {
+                    this.ShowWarningToast("这里已经存在一个行动。");
+                    return;
+                }
+            }
+        }
+        var newItem = new TimeLayoutItem()
+        {
+            TimeType = timeType,
+            StartTime = baseSec,
+            EndTime = baseSec + lastTime,
+            ActionSet = timeType == 3 ? new ActionSet() : null
+        };
+        AddTimePoint(newItem);
+        // ReSortTimeLayout(newItem);
+        ViewModel.SelectedTimePoint = newItem;
+        //OpenDrawer("TimePointEditor");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.create", tags: new Dictionary<string, string>()
+        {
+            {"Type", timeType.ToString()},
+            {"Auto", "False"}
+        });
+    }
+
+    
+    private void ButtonAddClassTime_OnClick(object sender, RoutedEventArgs e)
+    {
+        AddTimeLayoutItem(0);
+    }
+    
+    private void ButtonAddBreakTime_OnClick(object sender, RoutedEventArgs e)
+    {
+        AddTimeLayoutItem(1);
+    }
+    
+    private void ButtonAddSeparator_OnClick(object sender, RoutedEventArgs e)
+    {
+        AddTimeLayoutItem(2);
+    }
+    
+    private void ButtonAddActionTimePoint_OnClick(object sender, RoutedEventArgs e)
+    {
+        AddTimeLayoutItem(3);
+    }
+    
+    private void ButtonRemoveTimePoint_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedTimePoint == null) 
+            return;
+        var timePoint = ViewModel.SelectedTimePoint;
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        if (timeLayout == null)
+        {
+            return;
+        }
+        var i = timeLayout.Layouts.IndexOf(timePoint);
+        timeLayout.RemoveTimePoint(timePoint);
+        if (i > 0)
+            ViewModel.SelectedTimePoint = timeLayout.Layouts[i - 1];
+        var revertButton = new Button()
+        {
+            Content = "撤销"
+        };
+
+        ViewModel.CurrentTimePointDeleteRevertToast?.Close();
+        var message = ViewModel.CurrentTimePointDeleteRevertToast = new ToastMessage()
+        {
+            Message = $"已删除时间点 {timePoint}。",
+            Duration = TimeSpan.FromSeconds(10),
+            ActionContent = revertButton
+        };
+        revertButton.Click += RevertButtonOnClick;
+        message.ClosedCancellationTokenSource.Token.Register(() =>
+        {
+            revertButton.Click -= RevertButtonOnClick;
+            ViewModel.CurrentTimePointDeleteRevertToast = null;
+        });
+        ViewModel.ObservableForProperty(x => x.SelectedTimeLayout).Subscribe(_ => message.Close());
+        this.ShowToast(message);
+        
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.remove");
+        return;
+
+        void RevertButtonOnClick(object? o, RoutedEventArgs routedEventArgs)
+        {
+            AddTimePoint(timePoint);
+            message.Close();
+        }
+    }
+    
+    private void ButtonRefreshTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    {
+        UpdateTimeLayout();
+    }
+    
+    private void ButtonEditTimeLayoutInfo_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("TimeLayoutInfoEditor");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.edit");
+    }
+    
+    private void ButtonDebugTriggerAction_OnClick(object sender, RoutedEventArgs e)
+    {
+        var action = ViewModel.SelectedTimePoint?.ActionSet;
+        if (action == null)
+        {
+            return;
+        }
+        IAppHost.GetService<IActionService>().Invoke(action);
+    }
+    
+    private void ButtonOverwriteClasses_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedTimePoint == null)
+            return;
+        var key = ViewModel.ProfileService.Profile.TimeLayouts
+            .FirstOrDefault(x => x.Value == ViewModel.SelectedTimeLayout).Key;
+        ViewModel.ProfileService.Profile.OverwriteAllClassPlanSubject(
+            key,
+            ViewModel.SelectedTimePoint,
+            ViewModel.SelectedTimePoint.DefaultClassId);
     }
 
     #endregion

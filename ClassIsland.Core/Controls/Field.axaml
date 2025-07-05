@@ -27,6 +27,7 @@
                     <ContentPresenter Grid.Row="1" Grid.Column="1"
                                       x:Name="MainContent"
                                       HorizontalAlignment="Stretch"
+                                      HorizontalContentAlignment="Stretch"
                                       Content="{TemplateBinding Content}"
                                       VerticalAlignment="Center" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="{TemplateBinding Suffix, Mode=OneWay}"
@@ -53,7 +54,7 @@
             <Setter Property="IsVisible" Value="True"/>
         </Style>
         
-        <Style Selector="^ /template/ ContentPresenter#MainContent ComboBox">
+        <Style Selector="^ /template/ ContentPresenter#MainContent > :is(Control)">
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
     </Style>

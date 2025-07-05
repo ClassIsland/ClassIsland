@@ -26,11 +26,51 @@ public static class ToastsHelper
     /// <param name="message">要显示的消息</param>
     public static void ShowToast(this Control control, string message)
     {
-        control.RaiseEvent(new ShowToastEventArgs(new ToastMessage(message)));
+        ShowToast(control, new ToastMessage(message));
+    }
+
+    /// <summary>
+    /// 显示一条警告等级的 Toast 消息
+    /// </summary>
+    /// <param name="control">包含在要显示消息的容器中的控件</param>
+    /// <param name="message">要显示的消息</param>
+    public static void ShowWarningToast(this Control control, string message)
+    {
+        ShowToast(control, new ToastMessage(message)
+        {
+            Severity = InfoBarSeverity.Warning
+        });
     }
     
     /// <summary>
-    /// 显示一条 Toast 消息
+    /// 显示一条错误等级的 Toast 消息
+    /// </summary>
+    /// <param name="control">包含在要显示消息的容器中的控件</param>
+    /// <param name="message">要显示的消息</param>
+    public static void ShowErrorToast(this Control control, string message)
+    {
+        ShowToast(control, new ToastMessage(message)
+        {
+            Severity = InfoBarSeverity.Error,
+            Duration = TimeSpan.FromSeconds(10)
+        });
+    }
+    
+    /// <summary>
+    /// 显示一条成功等级的 Toast 消息
+    /// </summary>
+    /// <param name="control">包含在要显示消息的容器中的控件</param>
+    /// <param name="message">要显示的消息</param>
+    public static void ShowSuccessToast(this Control control, string message)
+    {
+        ShowToast(control, new ToastMessage(message)
+        {
+            Severity = InfoBarSeverity.Success
+        });
+    }
+    
+    /// <summary>
+    /// 显示一条错误等级的 Toast 消息，并将异常信息作为正文内容。
     /// </summary>
     /// <param name="control">包含在要显示消息的容器中的控件</param>
     /// <param name="title">要显示的错误标题</param>
