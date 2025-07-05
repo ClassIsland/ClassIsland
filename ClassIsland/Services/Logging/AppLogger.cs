@@ -23,7 +23,7 @@ public class AppLogger(AppLogService appLogService, string categoryName) : ILogg
         List<string> scopes = [];
         if (ScopeStack.Value != null)
         {
-            scopes.AddRange(ScopeStack.Value.Select(scope => (scope.ToString() ?? "") + " => "));
+            scopes.AddRange(ScopeStack.Value.ToArray().Select(scope => (scope.ToString() ?? "") + " => "));
         }
         var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? "\n" + exception : "");
         AppLogService.AddLog(new LogEntry()

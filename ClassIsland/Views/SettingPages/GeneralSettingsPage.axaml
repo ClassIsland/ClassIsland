@@ -67,30 +67,47 @@
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
-            <!-- 学期开始时间 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE304;}" 
+            <!--  学期开始时间  -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE304;}"
                                         Header="学期开始时间"
-                                        Description="此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。">
+                                        Description="设置学期首日，该日期将作为多周轮换课表的计算起点和每周的第一天。">
                 <controls3:SettingsExpander.Footer>
-                    <StackPanel Orientation="Horizontal" Spacing="4">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
                         <CalendarDatePicker SelectedDate="{Binding ViewModel.SettingsService.Settings.SingleWeekStartTime}"
                                     Width="120"/>
                         <Button Theme="{StaticResource TransparentButton}"
                                 Classes="accent"
                                 Content="{ci:FluentIcon &#xE304;}"
                                 Click="ButtonWeekOffsetSettingsOpen_OnClick"
-                                ToolTip.Tip="调整偏移…">
+                                ToolTip.Tip="调整偏移…"
+                                x:Name="WeekOffsetSettingsControlButton">
                             <Button.Flyout>
-                                <Flyout>
-                                    <Border Margin="8">
-                                        <!-- TODO: 移植多周偏移设置控件 -->
-                                        <!-- <controls2:WeekOffsetSettingsControl/> -->
+                                <Flyout Opening="OnWeekOffsetSettingsControlFlyoutOpening">
+                                    <Border>
+                                        <controls2:WeekOffsetSettingsControl
+                                            x:Name="WeekOffsetSettingsControl"
+                                            CloseRequested="WeekOffsetSettingsControlOnCloseRequested"/>
                                     </Border>
                                 </Flyout>
                             </Button.Flyout>
                         </Button>
                     </StackPanel>
                 </controls3:SettingsExpander.Footer>
+                <!--  最大多周轮换周数  -->
+                <controls3:SettingsExpanderItem Content="最大多周轮换周数">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ci:Field VerticalAlignment="Center"
+                                  Suffix="周">
+                            <controls3:NumberBox MinWidth="120"
+                                                 Maximum="9"
+                                                 Minimum="2"
+                                                 SpinButtonPlacementMode="Inline"
+                                                 Value="{Binding ViewModel.SettingsService.Settings.MultiWeekRotationMaxCycle}" />
+                                            <!-- IsClearButtonVisible="False" -->
+                        </ci:Field>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
             <!-- 隐藏窗口 -->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}" 

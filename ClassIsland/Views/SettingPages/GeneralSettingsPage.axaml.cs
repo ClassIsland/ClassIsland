@@ -1,14 +1,8 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Windows;
-using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Abstractions.Services.Management;
-using ClassIsland.Core.Abstractions.Services.Metadata;
-using ClassIsland.Core.Abstractions.Views;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
@@ -80,6 +74,17 @@ public partial class GeneralSettingsPage : SettingsPageBase
         // var window = IAppHost.GetService<TimeAdjustmentWindow>();
         // window.Owner = Window.GetWindow(this);
         // window.ShowDialog();
+    }
+
+    private void OnWeekOffsetSettingsControlFlyoutOpening(object? sender, EventArgs e)
+    {
+        WeekOffsetSettingsControl.InitializeAfterLoad();
+        WeekOffsetSettingsControl.CloseRequested += WeekOffsetSettingsControlOnCloseRequested;
+    }
+
+    private void WeekOffsetSettingsControlOnCloseRequested(object? sender, EventArgs e)
+    {
+        WeekOffsetSettingsControlButton.Flyout.Hide();
     }
 }
 

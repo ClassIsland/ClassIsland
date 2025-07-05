@@ -8,6 +8,7 @@
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+        xmlns:controls1="clr-namespace:ClassIsland.Controls"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
@@ -70,7 +71,7 @@
 
                 <StackPanel IsEnabled="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}" 
                             IsVisible="{Binding IsEnabled}">
-                    <ci:TimeRuleEditControl TimeRule="{Binding TimeRule, Mode=OneWay}"/>
+                    <controls1:TimeRuleEditControl TimeRule="{Binding TimeRule, Mode=OneWay}"/>
                 </StackPanel>
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>
