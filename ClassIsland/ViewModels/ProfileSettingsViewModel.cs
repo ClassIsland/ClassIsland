@@ -9,9 +9,12 @@ using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
+using ClassIsland.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using DynamicData.Binding;
+using Grpc.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 
 namespace ClassIsland.ViewModels;
@@ -23,6 +26,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public SettingsService SettingsService { get; }
     public ILessonsService LessonsService { get; }
     public IExactTimeService ExactTimeService { get; }
+    public ILogger<ProfileSettingsWindow> Logger { get; }
 
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
     public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
@@ -68,16 +72,19 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private string _targetSubjectIndex = "";
     [ObservableProperty] private bool _isTimeLineSticky = true;
     [ObservableProperty] private bool _isDrawerOpen = false;
+    [ObservableProperty] private int _masterPageTabSelectIndex = 0;
 
     /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
-        SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService)
+        SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
+        ILogger<ProfileSettingsWindow> logger)
     {
         ProfileService = profileService;
         ManagementService = managementService;
         SettingsService = settingsService;
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;
+        Logger = logger;
 
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
         TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);

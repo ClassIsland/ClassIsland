@@ -10,24 +10,11 @@ public class StringToRadioButtonSelectionConverter : IMultiValueConverter
 
     public object Convert(IList<object?> value, Type targetType, object parameter, CultureInfo culture)
     {
-        var r = (string)value[0];
-        var p = (string)value[1];
+        if (value[0] is not string r || value[1] is not string p)
+        {
+            return false;
+        }
         _valueRaw = p;
         return r == p;
-    }
-    
-
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    {
-        if ((bool)value)
-        {
-            return new[]
-            {
-                _valueRaw,
-                _valueRaw
-            };
-        }
-
-        return null;
     }
 }

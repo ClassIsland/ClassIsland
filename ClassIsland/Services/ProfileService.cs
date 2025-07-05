@@ -218,7 +218,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         {
             return;
         }
-        if (CurrentProfilePath.Contains(".\\Profiles\\"))
+        if (CurrentProfilePath.Contains(".\\Profiles\\"))  // TODO: 移除路径硬编码
         {
             var splittedFileName = CurrentProfilePath.Split("\\");
             var fileName = splittedFileName[splittedFileName.Length - 1];

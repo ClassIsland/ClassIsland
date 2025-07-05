@@ -8,6 +8,7 @@
         <entry key="ClassIsland.Core/Controls/Action/TriggerSettingsControl.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/Action/TriggerSettingsControlPresenter.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/AnnouncementControl.axaml" value="ClassIsland/ClassIsland.csproj" />
+        <entry key="ClassIsland.Core/Controls/AppToastAdorner.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland.Core/Controls/AttachedSettingsControlPresenter.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/ColorPicker.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland.Core/Controls/CommonDialog/CommonDialog.axaml" value="ClassIsland/ClassIsland.csproj" />
@@ -59,6 +60,7 @@
         <entry key="ClassIsland/Views/DevPortalWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/DevProtal.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/ProfileSettingsWindow.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
+        <entry key="ClassIsland/Views/SettingPages/AboutSettingsPage.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/SettingPages/GeneralSettingsPage.axaml" value="ClassIsland/ClassIsland.csproj" />
         <entry key="ClassIsland/Views/SettingsWindowNew.axaml" value="ClassIsland.Desktop/ClassIsland.Desktop.csproj" />
         <entry key="ClassIsland/Views/TopmostEffectWindow.axaml" value="ClassIsland/ClassIsland.csproj" />
