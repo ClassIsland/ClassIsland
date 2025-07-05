@@ -553,7 +553,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         Process.Start(new ProcessStartInfo()
         {
-            FileName = Path.GetFullPath(App.AppRootFolderPath) ?? "",
+            FileName = Path.GetFullPath(App.AppUserFilePath) ?? "",
             UseShellExecute = true
         });
     }

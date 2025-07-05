@@ -33,7 +33,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     public string CurrentProfilePath { 
         get; 
         set;
-    } = Path.Combine(App.AppRootFolderPath, @"Default.json");
+    } = Path.Combine(App.AppUserFilePath, "Default.json");
 
     public static readonly string ManagementClassPlanPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
@@ -44,7 +44,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     public static readonly string ManagementSubjectsPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
 
-    public static readonly string ProfilePath = Path.Combine(App.AppRootFolderPath, "Profiles");
+    public static readonly string ProfilePath = Path.Combine(App.AppUserFilePath, "Profiles");
 
     public Profile Profile {
         get;

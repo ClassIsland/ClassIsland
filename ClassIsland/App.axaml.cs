@@ -100,39 +100,28 @@ public partial class App : AppBase, IAppHost
 #else
         false;
 #endif
-    
+
     private CrashWindow? CrashWindow;
     public Mutex? Mutex { get; set; }
     public bool IsMutexCreateNew { get; set; } = false;
     private ILogger<App>? Logger { get; set; }
     //public static IHost? Host;
 
-    public static readonly string AppRootFolderPath =
-#if IsMsix
-        ApplicationData.Current.LocalFolder.Path;
-#else
-        "./";
-#endif
-    public static readonly string AppDataFolderPath =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassIsland");
+#pragma warning disable CS8618
+    public static string AppUserFilePath { get; private set; }
 
-    public static readonly string AppLogFolderPath = Path.Combine(AppRootFolderPath, "Logs");
+    public static string AppRootFolderPath { get; private set; }
 
-    public static readonly string AppConfigPath = Path.Combine(AppRootFolderPath, "Config");
+    public static string AppDataFolderPath { get; private set; }
 
-    public static readonly string AppCacheFolderPath =
-#if IsMsix
-        ApplicationData.Current.LocalCacheFolder.Path;
-#else
-        Path.Combine(AppRootFolderPath, "Cache");
-#endif
+    public static string AppLogFolderPath { get; private set; }
 
-    public static readonly string AppTempFolderPath =
-#if IsMsix
-        ApplicationData.Current.TemporaryFolder.Path;
-#else
-        Path.Combine(AppRootFolderPath, "Temp");
-#endif
+    public static string AppConfigPath { get; private set; }
+
+    public static string AppCacheFolderPath { get; private set; }
+
+    public static string AppTempFolderPath { get; private set; }
+#pragma warning restore CS8618
 
     public static T GetService<T>() => IAppHost.GetService<T>();
 
@@ -190,15 +179,15 @@ public partial class App : AppBase, IAppHost
 #elif PLATFORM_Any
     "any"
 #else
-    #if PublishBuilding
-    #error "在发布构建中不应出现未知架构"
-    #endif
+#if PublishBuilding
+#error "在发布构建中不应出现未知架构"
+#endif
     "unknown"
 #endif
         ;
 
     public EventHandler? Initialized;
-    
+
     public App()
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
@@ -296,7 +285,7 @@ public partial class App : AppBase, IAppHost
         Stop();
     }
 
-    internal async void ProcessUnhandledException(Exception e, bool critical=false)
+    internal async void ProcessUnhandledException(Exception e, bool critical = false)
     {
 #if DEBUG
         // if (e.GetType() == typeof(ResourceReferenceKeyNotFoundException))
@@ -413,10 +402,58 @@ public partial class App : AppBase, IAppHost
         //{
         //    Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");
         //}
-        
+
 
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-CN");
         Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-CN");
+
+        // 初始化目录
+        AppRootFolderPath =
+#if IsMsix
+        ApplicationData.Current.LocalFolder.Path;
+#else
+        "./";
+#endif
+        AppDataFolderPath =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassIsland");
+        if (string.IsNullOrEmpty(ApplicationCommand.Userfile))
+        {
+            if (Environment.OSVersion.Platform == PlatformID.Unix)  // Linux: $XDG_CONFIG_HOME/ClassIsland 或 ~/.config/ClassIsland（默认值）
+            {
+                string? configRoot = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME");
+                if (string.IsNullOrEmpty(configRoot))
+                {
+                    configRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config");
+                }
+                AppUserFilePath = Path.Combine(configRoot, "ClassIsland");
+            }
+            else    // Windows: 软件安装位置
+            {
+                AppUserFilePath = AppRootFolderPath;
+            }
+        }
+        else
+        {
+            AppUserFilePath = ApplicationCommand.Userfile;
+        }
+        if (!Directory.Exists(AppUserFilePath))
+        {
+            Directory.CreateDirectory(AppUserFilePath);
+        }
+        AppLogFolderPath = Path.Combine(AppUserFilePath, "Logs");
+        AppConfigPath = Path.Combine(AppUserFilePath, "Config");
+        AppCacheFolderPath =
+#if IsMsix
+        ApplicationData.Current.LocalCacheFolder.Path;
+#else
+        Path.Combine(AppUserFilePath, "Cache");
+#endif
+        AppTempFolderPath =
+#if IsMsix
+        ApplicationData.Current.TemporaryFolder.Path;
+#else
+        Path.Combine(AppUserFilePath, "Temp");
+#endif
 
         // 检测Mutex
         if (!IsMutexCreateNew && !Design.IsDesignMode)
@@ -452,18 +489,18 @@ public partial class App : AppBase, IAppHost
         // 检测目录是否可以访问
         try
         {
-            var testWritePath = Path.Combine(AppRootFolderPath, "./.test-write");
+            var testWritePath = Path.Combine(AppUserFilePath, "./.test-write");
             await File.WriteAllTextAsync(testWritePath, "");
             File.Delete(testWritePath);
         }
         catch (Exception ex)
         {
-            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入当前目录：{ex.Message}\n\n请将本软件解压到一个合适的位置后再运行。");
+            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入用户数据文件目录：{ex.Message}\n\n请将本软件解压到一个合适的位置后再运行，或者使用--userfile命令行参数修改用户数据文件目录。");
             Environment.Exit(0);
             return;
         }
 
-        var startupCountFilePath = Path.Combine(AppRootFolderPath, ".startup-count");
+        var startupCountFilePath = Path.Combine(AppUserFilePath, ".startup-count");
         var startupCount = File.Exists(startupCountFilePath)
             ? (int.TryParse(await File.ReadAllTextAsync(startupCountFilePath), out var count) ? count + 1 : 1)
             : 1;
@@ -487,7 +524,7 @@ public partial class App : AppBase, IAppHost
             {
                 File.Delete(startupCountFilePath);
             }
-            
+
             // TODO: 恢复窗口
             // var recoveryWindow = new RecoveryWindow();
             // recoveryWindow.Show();
@@ -495,7 +532,7 @@ public partial class App : AppBase, IAppHost
             return;
         }
 
-        
+
         await File.WriteAllTextAsync(startupCountFilePath, startupCount.ToString());
         AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
 
@@ -514,7 +551,7 @@ public partial class App : AppBase, IAppHost
             return;
         }
         if (ApplicationCommand.UpdateDeleteTarget != null)
-        {            
+        {
             //MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
             UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
         }
@@ -776,9 +813,9 @@ public partial class App : AppBase, IAppHost
         }
         spanLoadingSettings.Finish();
         //OverrideFocusVisualStyle();
-        
+
         Logger.LogInformation("初始化应用。");
-        
+
         IThemeService.IsTransientDisabled = Settings.AnimationLevel < 1;
         IThemeService.IsWaitForTransientDisabled = Settings.AnimationLevel >= 1;
         IThemeService.AnimationLevel = Settings.AnimationLevel;
@@ -850,7 +887,7 @@ public partial class App : AppBase, IAppHost
             File.Delete(startupCountFilePath);
             if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)
             {
-                GetService<ITaskBarIconService>().ShowNotification("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", clickedCallback:() => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
+                GetService<ITaskBarIconService>().ShowNotification("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", clickedCallback: () => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
             }
             if (Settings.CorruptPluginsDisabledLastSession)
             {
@@ -902,9 +939,9 @@ public partial class App : AppBase, IAppHost
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
-            GetService<ITaskBarIconService>().ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。", clickedCallback:() => uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update")));
+            GetService<ITaskBarIconService>().ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。", clickedCallback: () => uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update")));
         }
-        
+
         base.OnFrameworkInitializationCompleted();
     }
 
@@ -924,7 +961,7 @@ public partial class App : AppBase, IAppHost
             Logger?.LogError(e, "无法初始化语音提供方 {}", Settings.SelectedSpeechProvider);
         }
         return new BlankSpeechService();
-        
+
     }
 
     // private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -1019,7 +1056,7 @@ public partial class App : AppBase, IAppHost
     public override event EventHandler? AppStarted;
     public override event EventHandler? AppStopping;
 
-    public override void Restart(bool quiet=false)
+    public override void Restart(bool quiet = false)
     {
         if (quiet)
         {
@@ -1029,7 +1066,7 @@ public partial class App : AppBase, IAppHost
         {
             Restart(["-m"]);
         }
-        
+
     }
 
     public override void Restart(string[] parameters)

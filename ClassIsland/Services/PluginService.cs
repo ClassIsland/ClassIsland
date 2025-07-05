@@ -27,7 +27,7 @@ namespace ClassIsland.Services;
 
 public class PluginService : IPluginService
 {
-    public static readonly string PluginsRootPath = Path.Combine(App.AppRootFolderPath, @"Plugins\");
+    public static readonly string PluginsRootPath = Path.Combine(App.AppUserFilePath, "Plugins");
 
     public static readonly string PluginsIndexPath = Path.Combine(App.AppConfigPath, "PluginsIndex");
 

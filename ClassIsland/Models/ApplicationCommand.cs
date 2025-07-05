@@ -2,23 +2,11 @@ namespace ClassIsland.Models;
 
 public class ApplicationCommand
 {
-    public string? UpdateReplaceTarget
-    {
-        get;
-        set;
-    }
-    
-    public string? UpdateDeleteTarget
-    {
-        get;
-        set;
-    }
+    public string? UpdateReplaceTarget { get; set; }
 
-    public bool WaitMutex
-    {
-        get;
-        set;
-    } = false;
+    public string? UpdateDeleteTarget { get; set; }
+
+    public bool WaitMutex { get; set; } = false;
 
     public bool Quiet { get; set; } = false;
 
@@ -30,6 +18,8 @@ public class ApplicationCommand
 
     public string ExternalPluginPath { get; set; } = "";
 
+    public string? Userfile { get; set; } = null;
+
     public bool EnableSentryDebug { get; set; } = false;
 
     public bool Verbose { get; set; } = false;
@@ -39,5 +29,6 @@ public class ApplicationCommand
     public bool Recovery { get; set; } = false;
 
     public bool Diagnostic { get; set; } = false;
+    
     public bool Safe { get; set; } = false;
 }

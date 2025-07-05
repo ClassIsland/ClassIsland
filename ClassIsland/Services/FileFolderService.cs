@@ -31,7 +31,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         PluginService.PluginsRootPath,
         PluginService.PluginConfigsFolderPath,
         PluginService.PluginsIndexPath,
-        Path.Combine(App.AppRootFolderPath, "Backups"),
+        Path.Combine(App.AppUserFilePath, "Backups"),
         App.AppLogFolderPath,
         AutomationService.AutomationConfigsFolderPath,
         ManagementService.LocalManagementConfigureFolderPath,
@@ -95,7 +95,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         await CreateBackupAsync(true);
         SettingsService.Settings.LastAutoBackupTime = DateTime.Now;
 
-        if (!Directory.Exists(Path.Combine(App.AppRootFolderPath, "Backups")))
+        if (!Directory.Exists(Path.Combine(App.AppUserFilePath, "Backups")))
         {
             return;
         }
@@ -104,7 +104,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         {
             return;
         }
-        var outdatedBackups = Directory.EnumerateDirectories(Path.Combine(App.AppRootFolderPath, "Backups"), "Auto_*").OrderByDescending(Directory.GetLastWriteTime).Skip(SettingsService.Settings.AutoBackupLimit).ToList();
+        var outdatedBackups = Directory.EnumerateDirectories(Path.Combine(App.AppUserFilePath, "Backups"), "Auto_*").OrderByDescending(Directory.GetLastWriteTime).Skip(SettingsService.Settings.AutoBackupLimit).ToList();
         foreach (var i in outdatedBackups)
         {
             Directory.Delete(i, true);
@@ -122,7 +122,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         [
             "Settings.json"
         ];
-        rootPath ??= App.AppRootFolderPath;
+        rootPath ??= App.AppUserFilePath;
         var backupFolder = Path.Combine(rootPath, "Backups/");
         var backupFilename = string.IsNullOrWhiteSpace(filename) ? $"Backup_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip" : filename + ".zip";
         if (isAuto)

@@ -36,7 +36,7 @@ public class ManagementService : IManagementService
 
     public static ManagementService? Instance { get; private set; }
 
-    public static readonly string ManagementPresetPath = Path.Combine(App.AppRootFolderPath, "./ManagementPreset.json");
+    public static readonly string ManagementPresetPath = Path.Combine(App.AppUserFilePath, "./ManagementPreset.json");
     public static readonly string ManagementConfigureFolderPath =
         Path.Combine(App.AppDataFolderPath, "Management");
     public static readonly string LocalManagementConfigureFolderPath =
@@ -246,7 +246,7 @@ public class ManagementService : IManagementService
         var w = CopyObject(settings);
         w.IsManagementEnabled = true;
         // 清空旧的配置
-        foreach (var i in new List<string>([ManagementManifestPath, ManagementPolicyPath, ManagementVersionsPath, ProfileService.ManagementClassPlanPath, ProfileService.ManagementSubjectsPath, ProfileService.ManagementTimeLayoutPath, Path.Combine(App.AppRootFolderPath, "./Profiles/_management-profile.json"), ManagementCredentialsPath]).Where(File.Exists))
+        foreach (var i in new List<string>([ManagementManifestPath, ManagementPolicyPath, ManagementVersionsPath, ProfileService.ManagementClassPlanPath, ProfileService.ManagementSubjectsPath, ProfileService.ManagementTimeLayoutPath, Path.Combine(App.AppUserFilePath, "./Profiles/_management-profile.json"), ManagementCredentialsPath]).Where(File.Exists))
         {
             File.Delete(i);
             if (File.Exists(i + ".bak"))
