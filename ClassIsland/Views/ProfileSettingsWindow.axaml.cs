@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
@@ -309,6 +310,11 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region ClassPlans
     
+    private void SelectingItemsControlClassPlans_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        ViewModel.CurrentClassPlanEditDoneToast?.Close();
+    }
+    
     private void ButtonCreateTempOverlayClassPlan_OnClick(object? sender, RoutedEventArgs e)
     {
         var key = ViewModel.ProfileService.Profile.ClassPlans
@@ -339,6 +345,11 @@ public partial class ProfileSettingsWindow : MyWindow
     }
 
     private void ButtonAddClassPlan_OnClick(object? sender, RoutedEventArgs e)
+    {
+        CreateClassPlan();
+    }
+
+    private void CreateClassPlan()
     {
         var newClassPlan = new ClassPlan();
         ViewModel.ProfileService.Profile.ClassPlans.Add(Guid.NewGuid(), newClassPlan);
@@ -385,6 +396,43 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonGoToTimeLayoutsPage_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.MasterPageTabSelectIndex = 1;
+    }
+    
+    private void InputElementSubjectItem_OnTapped(object? sender, PointerReleasedEventArgs pointerReleasedEventArgs)
+    {
+        if (!ViewModel.SettingsService.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled)
+            return;
+        if (ViewModel.SelectedClassIndex + 1 >= ViewModel.SelectedClassPlan?.Classes.Count)
+        {
+            ViewModel.IsClassPlanEditComplete = true;
+            if (ViewModel.CurrentClassPlanEditDoneToast != null)
+            {
+                return;
+            }
+            var actionButton = new Button()
+            {
+                Content = "新建课表"
+            };
+            ViewModel.CurrentClassPlanEditDoneToast = new ToastMessage()
+            {
+                Severity = InfoBarSeverity.Success,
+                Message = "已完成此课表的课程录入。",
+                ActionContent = actionButton,
+                AutoClose = false
+            };
+            actionButton.Click += (o, args) =>
+            {
+                ViewModel.CurrentClassPlanEditDoneToast?.Close();
+                CreateClassPlan();
+            };
+            ViewModel.CurrentClassPlanEditDoneToast.ClosedCancellationTokenSource.Token.Register(() =>
+                ViewModel.CurrentClassPlanEditDoneToast = null);
+            this.ShowToast(ViewModel.CurrentClassPlanEditDoneToast);
+            return;
+        }
+        ViewModel.SelectedClassIndex++;
+        
+        DataGridClassPlans.ScrollIntoView(DataGridClassPlans.SelectedItem, DataGridClassPlans.Columns.LastOrDefault());
     }
 
     #endregion

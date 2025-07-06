@@ -235,7 +235,8 @@
                             </controls:CommandBar>
                             <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.ClassPlans.List, Mode=OneWay}"
                                      SelectedValue="{Binding ViewModel.SelectedClassPlan}"
-                                     SelectedValueBinding="{Binding Value}">
+                                     SelectedValueBinding="{Binding Value}"
+                                     SelectionChanged="SelectingItemsControlClassPlans_OnSelectionChanged">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <WrapPanel Orientation="Horizontal">
@@ -329,7 +330,6 @@
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Warnings -->
-                                    <!-- TODO: 实现 Warnings 显示 -->
                                     <StackPanel Grid.Row="0" Grid.Column="0">
                                         <StackPanel.Styles>
                                             <Style Selector="StackPanel">
@@ -442,27 +442,39 @@
                                                 Grid.RowSpan="2"
                                                 Padding="0">
                                         <TabItem Header="编辑科目">
-                                            <ListBox
-                                                ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}">
-                                                <ListBox.Styles>
-                                                    <Style Selector="ListBoxItem">
-                                                        <Setter Property="MinWidth" Value="0"></Setter>
-                                                    </Style>
-                                                </ListBox.Styles>
-                                                <ListBox.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel />
-                                                    </ItemsPanelTemplate>
-                                                </ListBox.ItemsPanel>
-                                                <ListBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Text="{Binding Value.Initial}"
-                                                                   ToolTip.Tip="{Binding Value.Name}"
-                                                                   FontSize="16"
-                                                                   Margin="-4 0 -2 -4" />
-                                                    </DataTemplate>
-                                                </ListBox.ItemTemplate>
-                                            </ListBox>
+                                            <Grid RowDefinitions="*, Auto">
+                                                <ListBox
+                                                    Grid.Row="0"
+                                                    SelectedValue="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.SubjectId}"
+                                                    SelectedValueBinding="{Binding Key}"
+                                                    ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}">
+                                                    <ListBox.Styles>
+                                                        <Style Selector="ListBoxItem">
+                                                            <Setter Property="MinWidth" Value="0"/>
+                                                            <Setter Property="Padding" Value="0"/>
+                                                        </Style>
+                                                    </ListBox.Styles>
+                                                    <ListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel />
+                                                        </ItemsPanelTemplate>
+                                                    </ListBox.ItemsPanel>
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border Background="Transparent" PointerReleased="InputElementSubjectItem_OnTapped"
+                                                                    Padding="8">
+                                                                <TextBlock Text="{Binding Value.Initial}"
+                                                                           ToolTip.Tip="{Binding Value.Name}"
+                                                                           FontSize="16"
+                                                                           IsHitTestVisible="False"
+                                                                           Margin="2 0 0 0" />
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                                <CheckBox Margin="8" Grid.Row="1"
+                                                          IsChecked="{Binding ViewModel.SettingsService.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}"  Content="选完科目自动移动到下一个课程"/>
+                                            </Grid>
                                         </TabItem>
                                     </TabControl>
                                 </Grid>

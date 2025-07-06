@@ -77,8 +77,9 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private TimeLayout? _selectedTimeLayout;
     [ObservableProperty] private int _selectedTimePointIndex = -1;
     [ObservableProperty] private ToastMessage? _currentTimePointDeleteRevertToast;
+    [ObservableProperty] private ToastMessage? _currentClassPlanEditDoneToast = null;
 
-    /// <inheritdoc/>
+/// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
         SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
         ILogger<ProfileSettingsWindow> logger)
