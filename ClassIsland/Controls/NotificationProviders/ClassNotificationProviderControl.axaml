@@ -18,9 +18,11 @@
                     TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                     VerticalAlignment="Center" HorizontalAlignment="Center">
             <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center"
+                           FontSize="20"
                            Height="20" Width="20"/>
             <TextBlock Text="{Binding MaskMessage}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
             <ci:FluentIcon Glyph="&#xE479;" VerticalAlignment="Center"
+                           FontSize="20"
                            Height="20" Width="20"/>
         </StackPanel>
         <converters1:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
@@ -60,10 +62,10 @@
         <StackPanel Orientation="Horizontal" x:Key="ClassOnNotification" 
                     TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                     VerticalAlignment="Center" HorizontalAlignment="Center">
-            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center"
+            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center" FontSize="20"
                            Height="20" Width="20"/>
             <TextBlock Text="{Binding MaskMessage}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
-            <ci:FluentIcon Glyph="&#xE479;" VerticalAlignment="Center"
+            <ci:FluentIcon Glyph="&#xE479;" VerticalAlignment="Center" FontSize="20"
                            Height="20" Width="20"/>
         </StackPanel>
 
@@ -71,10 +73,10 @@
         <StackPanel Orientation="Horizontal" x:Key="ClassOffNotification" 
                     TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                     VerticalAlignment="Center" HorizontalAlignment="Center">
-            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center"
+            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center" FontSize="20"
                            Height="20" Width="20"/>
             <TextBlock Text="{Binding LessonsService.CurrentTimeLayoutItem.BreakNameText}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
-            <ci:FluentIcon Glyph="&#xE4C3;" VerticalAlignment="Center"
+            <ci:FluentIcon Glyph="&#xE4C3;" VerticalAlignment="Center" FontSize="20"
                            Height="20" Width="20"/>
         </StackPanel>
 

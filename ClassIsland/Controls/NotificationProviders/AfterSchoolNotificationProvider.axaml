@@ -15,9 +15,11 @@
         <StackPanel Orientation="Horizontal" x:Key="AfterSchoolMask" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
             <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+                           FontSize="20"
+                           Height="20" Width="20"/>
             <TextBlock Text="放学" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
             <ci:FluentIcon Glyph="&#xED34;" VerticalAlignment="Center"
+                           FontSize="20"
                            Height="20" Width="20"/>
         </StackPanel>
 
