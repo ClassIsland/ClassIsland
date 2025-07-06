@@ -1,9 +1,7 @@
-> [!NOTE] 
->
-> 此仓库为 [repo: `ClassIsland/Classisland`](/Classisland/Classisland) 的分支，仅供本人 PR 使用，若有其余任何需求，请移步[源仓库](/Classisland/Classisland)。  
-> This repository is forked from [repo: `ClassIsland/Classisland`](/Classisland/Classisland), only for me to pull requests. Please go to [the oringinal repository](/Classisland/Classisland) for any other needs. 
-
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
+
+> [!caution]
+> 目前我们正在进行备案更变，2025/6/25-2025/7/29 期间 ClassIsland 所有网络服务可能无法访问，届时可能无法正常下载/更新应用和插件。感谢大家的理解和支持。
 
 <div align="center">
 
@@ -165,7 +163,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 | 分支 | 开发状态 | 信息 |
 | --- | --- | --- |
 | [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) | 正在此分支上维护版本 [1.7 - RyouYamada](https://github.com/ClassIsland/ClassIsland/milestone/8)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=master&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/master)](https://www.codefactor.io/repository/github/classisland/classisland/overview/master) |
-| [`develop/v2/early`](https://github.com/ClassIsland/ClassIsland/tree/develop/v2/early) | 正在此分支上早期开发版本 [2.0 - Kiana](https://github.com/ClassIsland/ClassIsland/milestone/9)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=develop%2Fv2%2Fearly)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)  |
+| [`develop/v2/early`](https://github.com/ClassIsland/ClassIsland/tree/develop/v2/early) | 正在此分支上早期开发版本 [2.0 - Khaslana](https://github.com/ClassIsland/ClassIsland/milestone/9)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=develop%2Fv2%2Fearly)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)  |
 
 要在本地编译应用，请参考文档[配置 ClassIsland 本体开发环境](https://docs.classisland.tech/dev/get-started/devlopment.html)。
 
