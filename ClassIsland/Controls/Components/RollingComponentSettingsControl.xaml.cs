@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Services;
 
 namespace ClassIsland.Controls.Components;
 
@@ -23,8 +24,11 @@ namespace ClassIsland.Controls.Components;
 /// </summary>
 public partial class RollingComponentSettingsControl
 {
-    public RollingComponentSettingsControl()
+    public SettingsService SettingsService { get; }
+
+    public RollingComponentSettingsControl(SettingsService settingsService)
     {
+        SettingsService = settingsService;
         InitializeComponent();
     }
 
@@ -51,6 +55,11 @@ public partial class RollingComponentSettingsControl
         if (FindResource("RulesetControl") is RulesetControl rulesetControl)
             rulesetControl.Ruleset = Settings.StopRule;
         OpenDrawer("RulesetControl");
+    }
+
+    private void ButtonCloseWarningTip_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.IsRollingComponentWarningVisible = false;
     }
 }
 #endif

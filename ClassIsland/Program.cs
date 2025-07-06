@@ -47,6 +47,7 @@ public static class Program
             new Option<bool>(["--recovery", "-r"], "启动时进入恢复模式"),
             new Option<bool>(["--diagnostic", "-d"], "启用诊断模式"),
             new Option<bool>(["--safe", "-s"], "启用安全模式"),
+            new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动")
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);

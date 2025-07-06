@@ -246,6 +246,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             }
         }
 
+        if (exception.InnerException != null)
+        {
+            plugins.AddRange(GetPluginsByStacktrace(exception.InnerException));
+        }
+
         return plugins;
     }
 

@@ -13,6 +13,7 @@ public class CountDownComponentSettings : ObservableRecipient
     private int _fontSize = 16;
     private bool _isCompactModeEnabled = false;
     private string _countDownConnector = "还有";
+    private bool _isConnectorColorEmphasized = false;
 
     public string CountDownName
     {
@@ -31,7 +32,6 @@ public class CountDownComponentSettings : ObservableRecipient
         get => _overTime;
         set
         {
-            if (value == null) return;
             if (value.Equals(_overTime)) return;
             _overTime = value;
             OnPropertyChanged();
@@ -49,24 +49,11 @@ public class CountDownComponentSettings : ObservableRecipient
         }
     }
 
-    public Color FontColor
-    {
-        get => _fontColor;
-        set
-        {
-            if (value == null) return;
-            if (value.Equals(_fontColor)) return;
-            _fontColor = value;
-            OnPropertyChanged();
-        }
-    }
-
     public int FontSize
     {
         get => _fontSize;
         set
         {
-            if (value == null) return;
             if (value.Equals(_fontSize)) return;
             _fontSize = value;
             OnPropertyChanged();
@@ -92,6 +79,28 @@ public class CountDownComponentSettings : ObservableRecipient
             if (value == null) return;
             if (value.Equals(_countDownConnector)) return;
             _countDownConnector = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsConnectorColorEmphasized
+    {
+        get => _isConnectorColorEmphasized;
+        set
+        {
+            if (value == _isConnectorColorEmphasized) return;
+            _isConnectorColorEmphasized = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Color FontColor
+    {
+        get => _fontColor;
+        set
+        {
+            if (value.Equals(_fontColor)) return;
+            _fontColor = value;
             OnPropertyChanged();
         }
     }

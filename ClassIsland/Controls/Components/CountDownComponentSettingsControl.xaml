@@ -67,6 +67,10 @@
                         </ComboBox>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
+
+                <controls1:SettingsCard IconGlyph="PaletteOutline" Header="倒计时连接词使用强调颜色"
+                                        Description="启用后，倒计时连接词颜色与字体颜色一致，否则为默认颜色。"
+                                        IsOn="{Binding Settings.IsConnectorColorEmphasized, Mode=TwoWay}" />
             </StackPanel>
         </Grid>
     </ScrollViewer>
