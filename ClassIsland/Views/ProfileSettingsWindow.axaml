@@ -11,6 +11,8 @@
         xmlns:controls1="clr-namespace:ClassIsland.Controls"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         xmlns:action="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
+        xmlns:timeLine="clr-namespace:ClassIsland.Controls.TimeLine"
+        xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
@@ -20,6 +22,10 @@
         MinWidth="750"
         Width="1100" Height="600"
         Closing="Window_OnClosing">
+    <input:CommandManager.CommandBindings>
+        <input:CommandBinding Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
+                              Executed="CommandBindingRemoveTimePoint_OnExecuted"></input:CommandBinding>
+    </input:CommandManager.CommandBindings>
     <ci:MyWindow.DataTemplates>
     </ci:MyWindow.DataTemplates>
     <ci:MyWindow.Resources>
@@ -612,10 +618,17 @@
                                         </ListBox>
                                     </TabItem>
                                     <TabItem Header="{ci:FluentIcon &#xF35B;}">
-                                        <Grid>
-                                            <ci:Empty Icon="{ci:FluentIconSource &#xE809;, FontSize=64}"
-                                                      Text="Coming s∞n"/>
-                                        </Grid>
+                                        <timeLine:TimeLineListControl SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}, Mode=TwoWay}"
+                                                                      ItemsSource="{Binding Layouts, Mode=OneWay}"
+                                                                      Scale="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}, Mode=OneWay}"
+                                                                      IsSticky="{Binding ViewModel.IsTimeLineSticky, RelativeSource={RelativeSource AncestorType=views:ProfileSettingsWindow}}"
+                                                                      x:Name="TimeLineListControl"
+                                                                      IsPanningModeEnabled="True">
+                                            <!-- 回应我吧，爱莉希雅 -->
+                                            <timeLine:TimeLineListControl.IsReadonly>
+                                                <Binding Path="ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=views:ProfileSettingsWindow}" Mode="OneWay"/>
+                                            </timeLine:TimeLineListControl.IsReadonly>
+                                        </timeLine:TimeLineListControl>
                                     </TabItem>
                                 </TabControl>
                                 <GridSplitter Grid.Row="2" Grid.Column="1" Margin="2 0"/>

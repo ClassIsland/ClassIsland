@@ -1,38 +1,36 @@
-#if false
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Controls;
-
+using Avalonia;
+using Avalonia.Controls;
 using ClassIsland.Shared.Models.Profile;
 
-namespace ClassIsland.Controls;
+namespace ClassIsland.Controls.TimeLine;
 
 /// <summary>
 /// TimeLineListItemControl.xaml 的交互逻辑
 /// </summary>
 public sealed partial class TimeLineListItemControl : UserControl, INotifyPropertyChanged
 {
-    public static readonly DependencyProperty TimePointProperty = DependencyProperty.Register(
-        nameof(TimePoint), typeof(TimeLayoutItem), typeof(TimeLineListItemControl), new PropertyMetadata(default(TimeLayoutItem)));
+    public static readonly StyledProperty<TimeLayoutItem?> TimePointProperty = AvaloniaProperty.Register<TimeLineListItemControl, TimeLayoutItem?>(
+        nameof(TimePoint));
 
-    public static readonly DependencyProperty IsAlwaysExpandedProperty = DependencyProperty.Register(
-        nameof(IsAlwaysExpanded), typeof(bool), typeof(TimeLineListItemControl), new PropertyMetadata(false));
+    public TimeLayoutItem? TimePoint
+    {
+        get => GetValue(TimePointProperty);
+        set => SetValue(TimePointProperty, value);
+    }
+
+    public static readonly StyledProperty<bool> IsAlwaysExpandedProperty = AvaloniaProperty.Register<TimeLineListItemControl, bool>(
+        nameof(IsAlwaysExpanded));
 
     public bool IsAlwaysExpanded
     {
-        get { return (bool)GetValue(IsAlwaysExpandedProperty); }
-        set { SetValue(IsAlwaysExpandedProperty, value); }
+        get => GetValue(IsAlwaysExpandedProperty);
+        set => SetValue(IsAlwaysExpandedProperty, value);
     }
 
     private bool _isExpanded = true;
-
-    public TimeLayoutItem TimePoint
-    {
-        get { return (TimeLayoutItem)GetValue(TimePointProperty); }
-        set { SetValue(TimePointProperty, value); }
-    }
 
     public bool IsExpanded
     {
@@ -52,7 +50,7 @@ public sealed partial class TimeLineListItemControl : UserControl, INotifyProper
 
     private void CheckSize()
     {
-        IsExpanded = IsAlwaysExpanded || ActualHeight >= 16;
+        IsExpanded = IsAlwaysExpanded || Bounds.Height >= 16;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -75,4 +73,3 @@ public sealed partial class TimeLineListItemControl : UserControl, INotifyProper
         CheckSize();
     }
 }
-#endif

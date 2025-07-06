@@ -6,9 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.Json;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using ClassIsland.Core;
@@ -37,6 +39,7 @@ public partial class ProfileSettingsWindow : MyWindow
     public ProfileSettingsViewModel ViewModel { get; } = IAppHost.GetService<ProfileSettingsViewModel>();
 
     private ILogger<ProfileSettingsWindow> Logger => ViewModel.Logger;
+    public static ICommand RemoveSelectedTimeLayoutItemCommand { get; } = new RoutedCommand(nameof(RemoveSelectedTimeLayoutItemCommand));
 
     public ProfileSettingsWindow()
     {
@@ -590,6 +593,11 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void ButtonRemoveTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
+        RemoveSelectedTimePoint();
+    }
+
+    private void RemoveSelectedTimePoint()
+    {
         if (ViewModel.SelectedTimePoint == null) 
             return;
         var timePoint = ViewModel.SelectedTimePoint;
@@ -632,7 +640,7 @@ public partial class ProfileSettingsWindow : MyWindow
             message.Close();
         }
     }
-    
+
     private void ButtonRefreshTimeLayout_OnClick(object sender, RoutedEventArgs e)
     {
         UpdateTimeLayout();
@@ -664,6 +672,11 @@ public partial class ProfileSettingsWindow : MyWindow
             key,
             ViewModel.SelectedTimePoint,
             ViewModel.SelectedTimePoint.DefaultClassId);
+    }
+    
+    private void CommandBindingRemoveTimePoint_OnExecuted(object? sender, ExecutedRoutedEventArgs e)
+    {
+        RemoveSelectedTimePoint();
     }
 
     #endregion
@@ -749,7 +762,5 @@ public partial class ProfileSettingsWindow : MyWindow
         DataGridSubjects.IsReadOnly = false;
     }
     #endregion
-
-
     
 }

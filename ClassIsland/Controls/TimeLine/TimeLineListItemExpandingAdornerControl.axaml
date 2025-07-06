@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="ClassIsland.Controls.TimeLine.TimeLineListItemExpandingAdornerControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:timeLine="clr-namespace:ClassIsland.Controls.TimeLine"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Styles>
+        <StyleInclude Source="./TimeLineListAdornerStyles.axaml"/>
+    </UserControl.Styles>
+    <UserControl.Resources>
+        <ControlTemplate x:Key="ResizeThumbTemplate">
+            <Ellipse Width="16" Height="16" Classes="thumb-content"
+                     Stroke="{DynamicResource AccentFillColorDefaultBrush}">
+            </Ellipse>
+        </ControlTemplate>
+    </UserControl.Resources>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+          Margin="-60 0 0 0" ColumnDefinitions="60,*">
+        <Border Grid.Column="1" Margin="-1" BorderThickness="1" 
+                BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"/>
+        <Border Grid.Column="1" Margin="-3" BorderThickness="2" 
+                CornerRadius="1"
+                BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"/>
+        <Grid Grid.Column="1" Margin="0 -8" IsVisible="{Binding IsReadonly, RelativeSource={RelativeSource FindAncestor, AncestorType=timeLine:TimeLineListItemExpandingAdornerControl}, Converter={StaticResource InvertBooleanConverter}}">
+            <Thumb VerticalAlignment="Stretch"
+                   HorizontalAlignment="Stretch"
+                   Cursor="SizeAll"
+                   DragStarted="Thumb_OnDragStarted"
+                   DragDelta="Thumb_OnDragDelta">
+                <Thumb.Template>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border Background="Transparent"/>
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
+            <Thumb Template="{StaticResource ResizeThumbTemplate}"
+                   VerticalAlignment="Top"
+                   DragStarted="ThumbTop_OnDragStarted"
+                   Cursor="SizeNorthSouth"
+                   DragDelta="ThumbTop_OnDragDelta"
+                   x:Name="ThumbTop"/>
+            <Thumb Template="{StaticResource ResizeThumbTemplate}"
+               VerticalAlignment="Bottom"
+               Cursor="SizeNorthSouth"
+               DragDelta="ThumbBottom_OnDragDelta"
+               x:Name="ThumbBottom"/>
+        </Grid>
+    </Grid>
+</UserControl>

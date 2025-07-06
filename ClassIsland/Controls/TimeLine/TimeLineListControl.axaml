@@ -1,0 +1,276 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:ClassIsland.Controls.TimeLine"
+                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                    xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
+                    xmlns:views="clr-namespace:ClassIsland.Views"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <ControlTheme TargetType="{x:Type controls:TimeLineListControl}" x:Key="{x:Type controls:TimeLineListControl}">
+        <ControlTheme.Resources>
+            <ci:DayTimeSpanToHeightConverter x:Key="DayTimeSpanToHeightConverter" />
+        </ControlTheme.Resources>
+        <Setter Property="ItemTemplate">
+            <controls:TimeLineListControlDataTemplateSelector>
+                <!-- 档案编辑 > 时间线视图 > 上课/课间休息时间块 -->
+                <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}">
+                        <Grid.Resources>
+                            <ci:TimeSpanToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                            <ci:TimeSpanDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                        </Grid.Resources>
+                        <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
+                        <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Classes="timeLineItem-root">
+                            <Classes.timeType-onClass>
+                                <Binding Path="TimeType" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <system:Int32>0</system:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.timeType-onClass>
+                            <Classes.timeType-breaking>
+                                <Binding Path="TimeType" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <system:Int32>1</system:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.timeType-breaking>
+                            <Border.Styles>
+                                <Style Selector="Border.timeLineItem-root">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorSecondaryBrush}"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Style Selector="^.timeType-onClass">
+                                        <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                                    </Style>
+                                    <Style Selector="^.timeType-breaking">
+                                        <Setter Property="Background" Value="{DynamicResource AccentFillColorTertiaryBrush}"/>
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorSecondaryBrush}"/>
+                                    </Style>
+                                </Style>
+                            </Border.Styles>
+                            <ToolTip.Tip>
+                                <controls:TimeLineListItemControl TimePoint="{Binding}" IsAlwaysExpanded="True"/>
+                            </ToolTip.Tip>
+                            <Grid>
+                                <controls:TimeLineListItemControl TimePoint="{Binding}"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+                <!-- 档案编辑 > 时间线视图 > 分割线 -->
+                <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateSeparator">
+                    <Grid VerticalAlignment="Stretch">
+                        <Grid.Resources>
+                            <ci:TimeSpanToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                            <ci:TimeSpanDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                        </Grid.Resources>
+                        <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
+                        <Rectangle Height="6" HorizontalAlignment="Stretch">
+                            <ToolTip.Tip>
+                                <controls:TimeLineListItemControl TimePoint="{Binding}"/>
+                            </ToolTip.Tip>
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="DarkGray"/>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Grid>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateAction">
+                    <Grid VerticalAlignment="Stretch">
+                        <Grid.Resources>
+                            <ci:TimeSpanToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                            <ci:TimeSpanDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                        </Grid.Resources>
+                        <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
+                        <Rectangle Height="6" HorizontalAlignment="Stretch">
+                            <ToolTip.Tip>
+                                <controls:TimeLineListItemControl TimePoint="{Binding}"/>
+                            </ToolTip.Tip>
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="Green"/>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Grid>
+                </DataTemplate>
+            </controls:TimeLineListControlDataTemplateSelector>
+        </Setter>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <Canvas HorizontalAlignment="Stretch"
+                            Margin="60 0 0 0"
+                            Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <Grid>
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                ClipToBounds="False">
+                            <ScrollViewer Padding="{TemplateBinding Padding}"
+                                          ClipToBounds="False"
+                                          Focusable="false">
+                                <Grid>
+                                    <controls:TimeLineBackgroundRulerControl Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
+                                    <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                                    <!--<TextBlock Text="{Binding IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                               Foreground="Red"/>-->
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerTheme">
+            <ControlTheme TargetType="ListBoxItem" >
+                <ControlTheme.Resources>
+                    <ci:TimeSpanToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                    <ci:TimeSpanDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                </ControlTheme.Resources>
+                
+                <Setter Property="ClipToBounds" Value="False"/>
+                <Setter Property="Width" Value="{Binding Bounds.Width, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <!--<Setter Property="Canvas.Top" />-->
+                <Setter Property="Canvas.Top">
+                    <Setter.Value>
+                        <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeToCanvasPosConverter}">
+                            <Binding Path="StartTime"/>
+                            <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Height">
+                    <Setter.Value>
+                        <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeDeltaToCanvasPosConverter}">
+                            <Binding Path="StartTime" Mode="OneWay"/>
+                            <Binding Path="EndTime" Mode="OneWay"/>
+                            <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
+
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+                <!-- 档案编辑 > 时间线视图 > 上课/课间休息时间块装饰器 -->
+                <Setter Property="Interaction.Behaviors">
+                    <BehaviorCollectionTemplate>
+                        <BehaviorCollection>
+                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="2">
+                                <AddClassAction ClassName="timeType-separator"/>
+                            </DataTriggerBehavior>
+                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="3">
+                                <AddClassAction ClassName="timeType-actions"/>
+                            </DataTriggerBehavior>
+                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="2" ComparisonCondition="NotEqual">
+                                <RemoveClassAction ClassName="timeType-separator"/>
+                            </DataTriggerBehavior>
+                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="3" ComparisonCondition="NotEqual">
+                                <RemoveClassAction ClassName="timeType-actions"/>
+                            </DataTriggerBehavior>
+                            
+                            <behaviors:TimeLineListItemBehavior ParentListBox="{Binding Parent}">
+                                <behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                    
+                                </behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                            </behaviors:TimeLineListItemBehavior>
+                        </BehaviorCollection>
+                    </BehaviorCollectionTemplate>
+                </Setter>
+                
+                <Setter Property="Template">
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Margin="-20" Padding="20">
+                            <Interaction.Behaviors>
+                                <behaviors:TimeLineListItemBehavior ListBoxItem="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                                                    ParentListBox="{Binding $parent[controls:TimeLineListControl]}">
+                                    <behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                        <controls:TimeLineListItemAdornerTemplateSelector TimeType="{Binding TimeType}">
+                                            <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.ExpandingTimePointAdornerKey}">
+                                                <Grid>
+                                                    <controls:TimeLineListItemExpandingAdornerControl
+                                                        Margin="20"
+                                                        VerticalAlignment="Stretch"
+                                                        HorizontalAlignment="Stretch"
+                                                        IsSticky="{Binding IsSticky}"
+                                                        IsReadonly="{Binding IsReadonly}"
+                                                        TimePoint="{Binding SelectedItem}"
+                                                        TimeLayout="{Binding ItemsSource}"
+                                                        ClipToBounds="False"
+                                                        Scale="{Binding Scale}" />
+                                                    <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center"
+                                                            IsVisible="{Binding IsReadonly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InvertBooleanConverter}}"
+                                                            Margin="0 0 28 0"
+                                                            Padding="2"
+                                                            CornerRadius="4">
+                                                        <StackPanel Orientation="Horizontal" >
+                                                            <Button Content="{ci:FluentIcon &#xE61C;}"
+                                                                    Foreground="IndianRed"
+                                                                    Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
+                                                                    Theme="{StaticResource TransparentButton}"
+                                                                    ToolTip.Tip="删除时间点" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Grid>
+                                            </ControlTemplate>
+                                            <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.LineTimePointAdornerKey}">
+                                                <Grid>
+                                                    <controls:TimeLineListItemSeparatorAdornerControl
+                                                        Margin="20"
+                                                        VerticalAlignment="Stretch"
+                                                        HorizontalAlignment="Stretch"
+                                                        IsReadonly="{Binding IsReadonly}"
+                                                        TimePoint="{Binding SelectedItem}"
+                                                        ClipToBounds="False"
+                                                        Scale="{Binding Scale}"  />
+                                                    <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center"
+                                                            IsVisible="{Binding IsReadonly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InvertBooleanConverter}}"
+                                                            Margin="0 0 28 0"
+                                                            Padding="2"
+                                                            CornerRadius="4">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <!--<Button Content="{materialDesign:PackIcon Edit}"
+                                                                    Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"
+                                                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                                    ToolTip.Tip="编辑时间点…" Margin="0 0 4 0" />-->
+                                                            <Button Content="{ci:FluentIcon &#xE61C;}"
+                                                                    Foreground="IndianRed"
+                                                                    Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
+                                                                    Theme="{StaticResource TransparentButton}"
+                                                                    ToolTip.Tip="删除时间点" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </controls:TimeLineListItemAdornerTemplateSelector>
+                                    </behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                </behaviors:TimeLineListItemBehavior>
+                            </Interaction.Behaviors>
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              HorizontalAlignment="Stretch"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+                
+                <!-- 档案编辑 > 时间线视图 > 分割线/行动装饰器 -->
+                <Style Selector="^.timeType-separator, ^.timeType-actions">
+                    <Setter Property="Height" Value="NaN"/>
+                    <Setter Property="Panel.ZIndex" Value="33550336"/>
+                </Style>
+            </ControlTheme>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

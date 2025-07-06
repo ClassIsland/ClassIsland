@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="ClassIsland.Controls.TimeLine.TimeLineListItemSeparatorAdornerControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:timeLine="clr-namespace:ClassIsland.Controls.TimeLine"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Styles>
+        <StyleInclude Source="./TimeLineListAdornerStyles.axaml"/>
+    </UserControl.Styles>
+    <Grid>
+        <Grid >
+            <Border Margin="-1" BorderThickness="1"
+                    BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"/>
+            <Border Margin="-3" BorderThickness="2" 
+                    CornerRadius="1"
+                    BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}">
+
+            </Border>
+            <Grid Margin="-16" IsVisible="{Binding IsReadonly, RelativeSource={RelativeSource FindAncestor, AncestorType=timeLine:TimeLineListItemSeparatorAdornerControl}, Converter={StaticResource InvertBooleanConverter}}">
+                <Thumb Cursor="SizeAll" DragDelta="Thumb_OnDragDelta" DragCompleted="Thumb_OnDragCompleted"
+                       DragStarted="Thumb_OnDragStarted">
+                    <Thumb.Template>
+                        <ControlTemplate>
+                            <Ellipse Width="16" Height="16" Classes="thumb-content"
+                                     Stroke="{DynamicResource AccentFillColorDefaultBrush}">
+                            </Ellipse>
+                        </ControlTemplate>
+                    </Thumb.Template>
+                </Thumb>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

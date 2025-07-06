@@ -128,6 +128,20 @@
     </ItemGroup>
 	<ItemGroup>
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Controls\TimeLine\TimeLineListItemControl.axaml.cs">
+	    <DependentUpon>TimeLineListItemControl.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Controls\TimeLine\TimeLineListItemExpandingAdornerControl.axaml.cs">
+	    <DependentUpon>TimeLineListItemExpandingAdornerControl.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Controls\TimeLine\TimeLineListItemSeparatorAdornerControl.axaml.cs">
+	    <DependentUpon>TimeLineListItemSeparatorAdornerControl.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	</ItemGroup>
 
     <Target Name="PrintConstants" AfterTargets="Build">
 		<Message Text="Constants: $(DefineConstants)" Importance="high" />
