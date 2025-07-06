@@ -5,7 +5,7 @@
 
 <div align="center">
 
-# <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28"/> ClassIsland
+# <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28" width="28"/> ClassIsland
 
 <!-- ![软件截图 - 主界面](https://github.com/ClassIsland/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3) -->
 
@@ -156,14 +156,14 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 ## 开发
 
-![Alt](https://repobeats.axiom.co/api/embed/ca0697cbbfea1d5ab5350fb86d7056e803552b2a.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/ace0a0609166a47b16a58bb7d2d0d5e20968d4d1.svg "Repobeats analytics image")
 
 本项目目前开发状态：
 
-| 分支 | 开发状态 | 信息 |
+| 分支 | 开发状态 | 状态 |
 | --- | --- | --- |
 | [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) | 正在此分支上维护版本 [1.7 - RyouYamada](https://github.com/ClassIsland/ClassIsland/milestone/8)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=master&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/master)](https://www.codefactor.io/repository/github/classisland/classisland/overview/master) |
-| [`develop/v2/early`](https://github.com/ClassIsland/ClassIsland/tree/develop/v2/early) | 正在此分支上早期开发版本 [2.0 - Khaslana](https://github.com/ClassIsland/ClassIsland/milestone/9)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=develop%2Fv2%2Fearly)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)  |
+| [`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev) | 正在此分支上早期开发版本 [2.0 - Khaslana](https://github.com/ClassIsland/ClassIsland/milestone/9)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=dev)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)  |
 
 要在本地编译应用，请参考文档[配置 ClassIsland 本体开发环境](https://docs.classisland.tech/dev/get-started/devlopment.html)。
 
