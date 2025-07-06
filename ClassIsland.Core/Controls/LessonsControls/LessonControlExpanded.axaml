@@ -92,10 +92,10 @@
                             <TabItem>
                                 <TextBlock VerticalAlignment="Bottom">
                                     <Run
-                                        Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat='HH:mm'}">
+                                        Text="{Binding CurrentTimeLayoutItem.StartTime, StringFormat='{}{0:hh\\:mm}'}">
                                     </Run><Run Text="-">
                                     </Run><Run
-                                              Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat='HH:mm'}" />
+                                              Text="{Binding CurrentTimeLayoutItem.EndTime, StringFormat='{}{0:hh\\:mm}'}" />
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
