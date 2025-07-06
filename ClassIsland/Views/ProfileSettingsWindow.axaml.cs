@@ -309,6 +309,14 @@ public partial class ProfileSettingsWindow : MyWindow
     #endregion
 
     #region ClassPlans
+
+    private void UpdateClassPlanInfoEditorTimeLayoutComboBox()
+    {
+        if (ViewModel.SelectedClassPlan?.TimeLayout == null)
+        {
+            ViewModel.ClassPlanInfoSelectedTimeLayoutKvp = null;
+        }
+    }
     
     private void SelectingItemsControlClassPlans_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
@@ -325,6 +333,7 @@ public partial class ProfileSettingsWindow : MyWindow
         if (id is { } guid)
         {
             ViewModel.SelectedClassPlan = ViewModel.ProfileService.Profile.ClassPlans[guid];
+            UpdateClassPlanInfoEditorTimeLayoutComboBox();
             OpenDrawer("ClassPlansInfoEditor");
             FlyoutHelper.CloseAncestorFlyout(sender);
         }
@@ -341,6 +350,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonOpenClassPlanDetails_OnClick(object? sender, RoutedEventArgs e)
     {
+        UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
     }
 
@@ -354,6 +364,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var newClassPlan = new ClassPlan();
         ViewModel.ProfileService.Profile.ClassPlans.Add(Guid.NewGuid(), newClassPlan);
         ViewModel.SelectedClassPlan = newClassPlan;
+        UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
     }
 
@@ -387,9 +398,10 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
 
-        OpenDrawer("ClassPlansInfoEditor");
         ViewModel.ProfileService.Profile.ClassPlans.Add(Guid.NewGuid(), s);
         ViewModel.SelectedClassPlan = s;
+        UpdateClassPlanInfoEditorTimeLayoutComboBox();
+        OpenDrawer("ClassPlansInfoEditor");
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.classPlan.duplicate");
     }
     

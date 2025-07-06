@@ -48,7 +48,8 @@
                 <ci:Field Label="时间表">
                     <ComboBox SelectedValue="{Binding TimeLayoutId}"
                               SelectedValueBinding="{Binding Key}"
-                              ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.TimeLayouts.List}">
+                              ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.TimeLayouts.List}"
+                              SelectedItem="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ClassPlanInfoSelectedTimeLayoutKvp}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Value.Name}"
