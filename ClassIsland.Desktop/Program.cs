@@ -25,15 +25,15 @@ class Program
                 return app;
             })
             .UsePlatformDetect()
+#if Platforms_Windows
+            // .UseDirect2D1()  // 完全用不了，https://github.com/AvaloniaUI/Avalonia/issues/11802
+#endif
             .LogToHostSink()
             .StartWithClassicDesktopLifetime(args);
     }
     
     // AppBuilder for designer
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
-#if Platforms_Windows
-        // .UseDirect2D1()
-#endif
         .UsePlatformDetect()
         .LogToHostSink();
 
