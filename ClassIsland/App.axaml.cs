@@ -577,6 +577,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<GeneralSettingsViewModel>();
                 services.AddTransient<AboutSettingsViewModel>();
                 services.AddTransient<AppearanceSettingsViewModel>();
+                services.AddTransient<ComponentsSettingsViewModel>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 // services.AddTransient<SplashWindowBase, SplashWindow>();
@@ -593,7 +594,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<DevPortalWindow>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
-                // services.AddSettingsPage<ComponentsSettingsPage>();
+                services.AddSettingsPage<ComponentsSettingsPage>();
                 services.AddSettingsPage<AppearanceSettingsPage>();
                 // services.AddSettingsPage<NotificationSettingsPage>();
                 // services.AddSettingsPage<WindowSettingsPage>();

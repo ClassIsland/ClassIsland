@@ -35,6 +35,8 @@
     <system:Double x:Key="MainWindowEmphasizedFontSize">18</system:Double>
     <system:Double x:Key="MainWindowLargeFontSize">20</system:Double>
     
+    <system:Double x:Key="SettingsContainerWidth">960</system:Double>
+    
     <system:Boolean x:Key="TrueValue">True</system:Boolean>
     <system:Boolean x:Key="FalseValue">False</system:Boolean>
     
