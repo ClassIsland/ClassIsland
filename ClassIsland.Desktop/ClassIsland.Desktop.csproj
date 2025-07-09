@@ -52,6 +52,7 @@
     
     <ItemGroup Condition="'$(Platforms_Windows)'=='true'">
         <ProjectReference Include="..\platforms\ClassIsland.Platforms.Windows\ClassIsland.Platforms.Windows.csproj" />
+        <PackageReference Include="Avalonia.Direct2D1" Version="$(AvaloniaVersion)"/>
     </ItemGroup>
     <ItemGroup Condition="'$(Platforms_Linux)'=='true'">
         <ProjectReference Include="..\platforms\ClassIsland.Platforms.Linux\ClassIsland.Platforms.Linux.csproj" />

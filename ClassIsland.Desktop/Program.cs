@@ -31,6 +31,9 @@ class Program
     
     // AppBuilder for designer
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
+#if Platforms_Windows
+        // .UseDirect2D1()
+#endif
         .UsePlatformDetect()
         .LogToHostSink();
 
