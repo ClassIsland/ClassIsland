@@ -24,112 +24,113 @@
     <system:Double x:Key="IslandContainerHeight">40</system:Double>
 
     <ControlTemplate x:Key="MainWindowLineFullControlTemplate" TargetType="controls:MainWindowLine">
-        <Grid>
+        <Grid
+           ClipToBounds="True"
+           x:Name="GridRoot"
+           HorizontalAlignment="Stretch">
+            <Grid.Transitions>
+                <Transitions>
+                    <EffectTransition Property="Effect" Duration="0:0:0.1">
+                        <EffectTransition.Easing>
+                            <LinearEasing/>
+                        </EffectTransition.Easing>
+                    </EffectTransition>
+                </Transitions>
+            </Grid.Transitions>
             <Grid.Effect>
-                <DropShadowEffect BlurRadius="8" Opacity="0"
-                                  Color="Black"/>
+                <DropShadowEffect OffsetX="0" OffsetY="0" Opacity="0"/>
             </Grid.Effect>
-            <Grid
-                ClipToBounds="True"
-                Classes="docking">
-                <Grid.Clip>
-                    <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
-                        <Binding Path="BackgroundWidth" Mode="OneWay"
-                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
-                        <Binding Path="Bounds.Width" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
-                        <Binding Path="Bounds.Height" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
-                        <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"
-                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                        <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
-                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                        <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
-                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                    </MultiBinding>
-                </Grid.Clip>
-                <!-- Background -->
-                <Border x:Name="BackgroundBorder"
-                        Classes="docking background"
-                        Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                        Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
-                        Height="{DynamicResource IslandContainerHeight}" />
-                <Border x:Name="BackgroundBorderOverlay"
-                        Classes="docking background"
-                        Width="{Binding Bounds.Width, ElementName=BackgroundBorder, Mode=OneWay}"
-                        Opacity="0"
-                        Height="{DynamicResource IslandContainerHeight}">
-                </Border>
-                <Grid
-                    Classes="docking"
+            <Grid.Clip>
+                <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
+                    <Binding Path="BackgroundWidth" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
+                    <Binding Path="Bounds.Width" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="Bounds.Height" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                    <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                    <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                </MultiBinding>
+            </Grid.Clip>
+            <!-- Background -->
+            <Border x:Name="BackgroundBorder"
+                    Classes="docking background"
                     Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                    Height="{DynamicResource IslandContainerHeight}"
-                    ClipToBounds="True">
-                    <Border x:Name="BackgroundBorderOverlayMask" 
-                            Classes="primaryColorZone"
-                            VerticalAlignment="Stretch"
-                            RenderTransformOrigin="0.5,0.5">
-                        <Border.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform />
-                                <SkewTransform />
-                                <RotateTransform />
-                                <TranslateTransform Y="-50" />
-                            </TransformGroup>
-                        </Border.RenderTransform>
-                    </Border>
-                </Grid>
-
-                <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
-                      Height="{DynamicResource IslandContainerHeight}"
-                      Classes="docking">
-
-                    <Grid Height="{DynamicResource IslandContainerHeight}"
-                          x:Name="GridContentRoot"
-                          Margin="12 0">
-                        <ContentPresenter
-                            Content="{Binding Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
-                    </Grid>
-
-                    <!-- Overlay View -->
-                    <Grid x:Name="GridOverlay"
-                          ClipToBounds="True"
-                          Opacity="0">
-                        <Border ClipToBounds="True"
-                                IsHitTestVisible="False">
-
-                            <ProgressBar VerticalAlignment="Bottom"
-                                         Maximum="1"
-                                         Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
-                                         x:Name="OverlayTimeProgressBar"
-                                         MinWidth="0">
-                            </ProgressBar>
-                        </Border>
-                        <ContentPresenter
-                            Content="{Binding OverlayContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" 
-                            ContentTemplate="{Binding OverlayContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/>
-
-                    </Grid>
-
-                    <!-- Mask -->
-                    <Border x:Name="OverlayMask" Classes="primaryColorZone"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            RenderTransformOrigin="0.5,0.5">
-                        <Border.RenderTransform>
-                            <TranslateTransform Y="-50"/>
-                        </Border.RenderTransform>
-                        <ContentPresenter x:Name="OverlayMaskContent"
-                                          Opacity="0"
-                                          Content="{Binding MaskContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" 
-                                          ContentTemplate="{Binding MaskContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/>
-                    </Border>
-                </Grid>
+                    Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
+                    Height="{DynamicResource IslandContainerHeight}" />
+            <Border x:Name="BackgroundBorderOverlay"
+                    Classes="docking background"
+                    Width="{Binding Bounds.Width, ElementName=BackgroundBorder, Mode=OneWay}"
+                    Opacity="0"
+                    Height="{DynamicResource IslandContainerHeight}">
+            </Border>
+            <Grid
+                Classes="docking"
+                Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                Height="{DynamicResource IslandContainerHeight}"
+                ClipToBounds="True">
+                <Border x:Name="BackgroundBorderOverlayMask" 
+                        Classes="primaryColorZone"
+                        VerticalAlignment="Stretch"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform />
+                            <SkewTransform />
+                            <RotateTransform />
+                            <TranslateTransform Y="-50" />
+                        </TransformGroup>
+                    </Border.RenderTransform>
+                </Border>
             </Grid>
-            <!-- <TextBlock Foreground="Yellow"> -->
-            <!--     <Run Text="ML(N) #"/><Run Text="{Binding LineNumber, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/> -->
-            <!--     <Run Text="Mask"/><Run Text="{Binding #OverlayMaskContent.Opacity}"/> -->
-            <!--     <Run Text="Overlay"/><Run Text="{Binding #GridOverlay.Opacity}"/> -->
-            <!--     <Run Text="Content"/><Run Text="{Binding #GridContentRoot.Opacity}"/> -->
-            <!-- </TextBlock> -->
+
+            <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
+                  Height="{DynamicResource IslandContainerHeight}"
+                  Classes="docking">
+
+                <Grid Height="{DynamicResource IslandContainerHeight}"
+                      x:Name="GridContentRoot"
+                      Margin="12 0">
+                    <ContentPresenter
+                        Content="{Binding Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
+                </Grid>
+
+                <!-- Overlay View -->
+                <Grid x:Name="GridOverlay"
+                      ClipToBounds="True"
+                      Opacity="0">
+                    <Border ClipToBounds="True"
+                            IsHitTestVisible="False">
+
+                        <ProgressBar VerticalAlignment="Bottom"
+                                     Maximum="1"
+                                     Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
+                                     x:Name="OverlayTimeProgressBar"
+                                     MinWidth="0">
+                        </ProgressBar>
+                    </Border>
+                    <ContentPresenter
+                        Content="{Binding OverlayContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" 
+                        ContentTemplate="{Binding OverlayContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/>
+
+                </Grid>
+
+                <!-- Mask -->
+                <Border x:Name="OverlayMask" Classes="primaryColorZone"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <TranslateTransform Y="-50"/>
+                    </Border.RenderTransform>
+                    <ContentPresenter x:Name="OverlayMaskContent"
+                                      Opacity="0"
+                                      Content="{Binding MaskContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" 
+                                      ContentTemplate="{Binding MaskContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"/>
+                </Border>
+            </Grid>
         </Grid>
     </ControlTemplate>
     <ControlTemplate x:Key="MainWindowLineMinControlTemplate" TargetType="controls:MainWindowLine">
@@ -301,12 +302,18 @@
                             </Animation>
                         </Style.Animations>
                     </Style>
+                    
+                    <Style Selector="^ /template/ Grid#GridRoot">
+                        <Setter Property="Effect">
+                            <DropShadowEffect OffsetX="0" OffsetY="0" Opacity="1" BlurRadius="8"/>
+                        </Setter>
+                    </Style>
                     <Style Selector="^ /template/ ContentPresenter#OverlayMaskContent">
                         <Style.Animations>
                             <Animation Delay="0:0:0.2" Duration="0:0:0.1" IterationCount="1"
                                        FillMode="Both">
                                 <KeyFrame Cue="0%">
-                                    <Setter Property="Opacity" Value="0"/>
+                                    <Setter Property="Opacity" Value="0.0"/>
                                 </KeyFrame>
                                 <KeyFrame Cue="100%">
                                     <Setter Property="Opacity" Value="1.0"/>
@@ -322,13 +329,10 @@
                     <Style Selector="^ /template/ Border#OverlayMask, ^ /template/ Border#BackgroundBorderOverlayMask">
                         <Style.Animations>
                             <Animation Duration="0:0:0.2" Delay="0:0:0.1" IterationCount="1"
-                                       FillMode="Both">
+                                       FillMode="Forward">
                                 <Animation.Easing>
-                                    <QuadraticEaseIn/>
+                                    <QuadraticEaseOut/>
                                 </Animation.Easing>
-                                <KeyFrame Cue="0%">
-                                    <Setter Property="TranslateTransform.Y" Value="0"/>
-                                </KeyFrame>
                                 <KeyFrame Cue="100%">
                                     <Setter Property="TranslateTransform.Y" Value="50"/>
                                 </KeyFrame>
@@ -338,7 +342,7 @@
                     <Style Selector="^ /template/ ContentPresenter#OverlayMaskContent">
                         <Style.Animations>
                             <Animation Duration="0:0:0.1" IterationCount="1"
-                                       FillMode="Both">
+                                       FillMode="Forward">
                                 <KeyFrame Cue="0%">
                                     <Setter Property="Opacity" Value="1.0"/>
                                 </KeyFrame>
