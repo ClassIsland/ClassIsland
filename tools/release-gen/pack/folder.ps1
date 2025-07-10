@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 if ($(Test-Path ./out_pack/) -eq $false) {
     New-Item ./out_pack
     New-Item ./out_pack/pack
