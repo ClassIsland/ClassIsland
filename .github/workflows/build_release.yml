@@ -39,7 +39,7 @@ jobs:
           - os: linux
             arch: x86
       
-    name: Build_${{ env.build_id }}
+    name: Build_AppBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -108,7 +108,7 @@ jobs:
         exclude:
           - os: linux
             arch: x86
-    name: Build_${{ env.build_id }}
+    name: Build_Launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
