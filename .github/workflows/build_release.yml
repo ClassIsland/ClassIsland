@@ -257,7 +257,7 @@ jobs:
       - name: Upload Packages to Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: signed_artifacts
+          name: ${{ env.artifact_name }}
           path: ./out_pack/*.zip
           
   build_nupkg:
