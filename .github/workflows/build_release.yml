@@ -47,7 +47,15 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-          tags: true           # 确保标签也被抓取
+          tags: true  # 确保标签也被抓取
+          
+      - name: Cache .nuke/temp, ~/.nuget/packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            .nuke/temp
+            ~/.nuget/packages
+          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
       
       - name: List files
         run: ls
@@ -73,7 +81,7 @@ jobs:
           arch: ${{ matrix.arch }}
           os: ${{ matrix.os }}
         run: |
-          ./build.ps1 PublishApp
+          pwsh -ep bypass ./build.ps1 PublishApp
 
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact

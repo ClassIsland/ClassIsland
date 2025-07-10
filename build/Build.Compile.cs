@@ -16,14 +16,18 @@ partial class Build
     bool IsSecretFilled = false;
     
     Target CleanDesktopApp => _ => _
-        .Before(Restore)
         .Before(CompileApp)
+        .DependsOn(GenerateMetadata)
         .Executes(() =>
         {
             DotNetClean(s => s.SetProject(DesktopAppEntryProject));
             if (Directory.Exists(AppOutputPath))
             {
                 Directory.Delete(AppOutputPath, true);
+            }
+            if (Directory.Exists(AppPublishArtifactPath))
+            {
+                Directory.Delete(AppPublishArtifactPath, true);
             }
         });
 
@@ -44,19 +48,9 @@ partial class Build
                                          ? "ClassIsland.zip"
                                          : PublishArtifactName);
             
-            Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", this);
-            Log.Information("IsSecretFilled = {IsSecretFilled}", this);
-            Log.Information("AppPublishArtifactPath = {AppPublishArtifactPath}", this);
-        });
-
-    Target Restore => _ => _
-        .DependsOn(GenerateMetadata)
-        .DependsOn(CleanDesktopApp)
-        .Executes(() =>
-        {
-            DotNetRestore(s => s
-                .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
-                .SetProjectFile(Solution));
+            Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
+            Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
+            Log.Information("AppPublishArtifactPath = {AppPublishArtifactPath}", AppPublishArtifactPath);
         });
 
     Target GenerateSecrets => t => t
@@ -85,9 +79,9 @@ partial class Build
         });
     
     Target CompileApp => t => t
-        .DependsOn(Restore)
         .DependsOn(GenerateSecrets)
         .DependsOn(GenerateMetadata)
+        .DependsOn(CleanDesktopApp)
         .Requires(() => Os)
         .Requires(() => Arch)
         .Executes(() =>
@@ -99,8 +93,7 @@ partial class Build
                 .SetProperty("PublishPlatform", Os)
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
-                .SetProperty("PublishDir", AppPublishPath)
-                .EnableNoRestore());
+                .SetProperty("PublishDir", AppPublishPath));
         });
 
     Target GenerateAppZipArchive => _ => _
@@ -127,4 +120,6 @@ partial class Build
         .DependsOn(CompileApp)
         .DependsOn(GenerateAppZipArchive)
         .DependsOn(PostCleanup);
+    
+    
 }

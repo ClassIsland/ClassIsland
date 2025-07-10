@@ -30,8 +30,7 @@
         "GenerateMetadata",
         "GenerateSecrets",
         "PostCleanup",
-        "PublishApp",
-        "Restore"
+        "PublishApp"
       ]
     },
     "Verbosity": {
@@ -125,9 +124,9 @@
             "Release"
           ]
         },
-        "Platform": {
+        "Os": {
           "type": "string",
-          "description": "Platform"
+          "description": "Os"
         },
         "PublishArtifactName": {
           "type": "string",
