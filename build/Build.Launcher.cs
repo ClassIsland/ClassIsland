@@ -44,7 +44,8 @@ partial class Build
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
                 .SetProperty("PublishDir", LauncherPublishPath));
-            File.Move(LauncherPublishPath / "ClassIsland.Launcher.exe", LauncherPublishPath / "ClassIsland.exe");
+            var extension = Os == "windows" ? ".exe" : "";
+            File.Move(LauncherPublishPath / "ClassIsland.Launcher" + extension, LauncherPublishPath / "ClassIsland" + extension);
         });
 
     Target GenerateLauncherZipArchive => _ => _
