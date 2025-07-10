@@ -46,7 +46,6 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-          tags: true  # 确保标签也被抓取
           
       - name: Cache .nuke/temp, ~/.nuget/packages
         uses: actions/cache@v4
@@ -93,7 +92,7 @@ jobs:
             ./out/*.appx
             
   build_launcher:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os == 'windows' && 'windows-latest' || 'ubuntu-latest' }}
     env:
       artifact_name: out_launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
@@ -107,7 +106,6 @@ jobs:
         exclude:
           - os: linux
             arch: x86
-    
     name: Build_Launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
       - name: Checkout
@@ -116,7 +114,6 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-          tags: true  # 确保标签也被抓取
 
       - name: Cache .nuke/temp, ~/.nuget/packages
         uses: actions/cache@v4
