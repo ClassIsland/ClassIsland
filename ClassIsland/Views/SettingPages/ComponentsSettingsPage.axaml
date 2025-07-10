@@ -8,9 +8,21 @@
                   xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
                   xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                   xmlns:converters="clr-namespace:ClassIsland.Converters"
+                  xmlns:settingsPages="clr-namespace:ClassIsland.ViewModels.SettingsPages"
                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                   x:Class="ClassIsland.Views.SettingPages.ComponentsSettingsPage"
                   d:DataContext="{d:DesignInstance settingPages:ComponentsSettingsPage}">
+    <ci:SettingsPageBase.Styles>
+        <Style Selector="ListBox.drag-source ListBoxItem">
+            <Setter Property="Interaction.Behaviors">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <ContextDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3" Handler=""/>
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+    </ci:SettingsPageBase.Styles>
     <ci:SettingsPageBase.Resources>
         <converters:HorizontalAlignmentToIntConverter x:Key="HorizontalAlignmentToIntConverter" />
         
@@ -20,7 +32,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition MinHeight="25" MaxHeight="250" Height="25"/>
+            <RowDefinition MinHeight="43.2" MaxHeight="250"
+                           Height="64"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -60,55 +73,118 @@
         </Grid>
         
         <ListBox Grid.Row="2" ItemsSource="{Binding ViewModel.ComponentsService.CurrentComponents.Lines}"
-                 SelectedItem="{Binding ViewModel.SelectedMainWindowLineSettings}">
+                 SelectedItem="{Binding ViewModel.SelectedMainWindowLineSettings}"
+                 x:Name="ListBoxMainWindowLines"
+                 Margin="-12 0">
+            
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <ListBox ItemsSource="{Binding Children}" SelectedItem="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.SelectedComponentSettings}"
-                             SelectionChanged="SelectorComponents_OnSelectionChanged">
-
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type components:ComponentSettings}">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <ci:FluentIcon Glyph="{Binding AssociatedComponentInfo.IconGlyph}"
+                    <Grid ColumnDefinitions="Auto, *, Auto" Height="40">
+                        
+                        <ListBox Grid.Column="1" ItemsSource="{Binding Children}" 
+                                 SelectedItem="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.SelectedComponentSettingsMain}"
+                                 SelectionChanged="SelectorComponents_OnSelectionChanged"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                            <ListBox.Styles>
+                                <Style Selector="ListBoxItem">
+                                    <Setter Property="Interaction.Behaviors">
+                                        <BehaviorCollectionTemplate>
+                                            <BehaviorCollection>
+                                                <ItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"
+                                                                  Orientation="Horizontal"/>
+                                                <ContextDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="45"
+                                                                     Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"/>
+                                            </BehaviorCollection>
+                                        </BehaviorCollectionTemplate>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Styles>
+                            <Interaction.Behaviors>
+                                <BehaviorCollection>
+                                    <ContextDropBehavior Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
+                                                         Context="{Binding Children}"/>
+                                    
+                                </BehaviorCollection>
+                            </Interaction.Behaviors>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type components:ComponentSettings}">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <ci:FluentIcon Glyph="{Binding AssociatedComponentInfo.IconGlyph}"
+                                                       VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
                                                    VerticalAlignment="Center" />
-                                    <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
-                                               VerticalAlignment="Center" />
-                                    <Button Content="{ci:FluentIcon &#xEC30;}"
-                                            Margin="0 -16 0 -16"
-                                            VerticalAlignment="Center"
-                                            ToolTip.Tip="查看子组件"
-                                            Click="ButtonShowChildrenComponents_OnClick"
-                                            Theme="{StaticResource TransparentButton}">
-                                        <Button.IsVisible>
-                                            <MultiBinding
-                                                Converter="{StaticResource BooleanAndExpressionMultiConverter}">
-                                                <Binding Path="IsSelected"
-                                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}" />
-                                                <Binding Path="AssociatedComponentInfo.IsComponentContainer" />
-                                            </MultiBinding>
-                                        </Button.IsVisible>
-                                    </Button>
-                                    <Button
-                                        Foreground="IndianRed"
-                                            Margin="0 -16 -4 -16"
+                                        <Button Content="{ci:FluentIcon &#xEC30;}"
+                                                VerticalAlignment="Center"
+                                                ToolTip.Tip="查看子组件"
+                                                Click="ButtonShowChildrenComponents_OnClick"
+                                                Theme="{StaticResource TransparentButton}">
+                                            <Button.IsVisible>
+                                                <MultiBinding
+                                                    Converter="{StaticResource BooleanAndExpressionMultiConverter}">
+                                                    <Binding Path="IsSelected"
+                                                             RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}" />
+                                                    <Binding Path="AssociatedComponentInfo.IsComponentContainer" />
+                                                </MultiBinding>
+                                            </Button.IsVisible>
+                                        </Button>
+                                        <Button
+                                            Foreground="IndianRed"
                                             VerticalAlignment="Center"
                                             ToolTip.Tip="删除"
                                             IsVisible="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
                                             Click="ButtonRemoveSelectedComponent_OnClick"
-                                            Theme="{StaticResource TransparentButton}">
-                                        <Button.Content>
-                                            <controls:SymbolIcon Symbol="Remove"/>
-                                        </Button.Content>
-                                    </Button>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                                            Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xE61D;}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        
+                        <Border Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                                   Padding="4"
+                                                   CornerRadius="4"
+                                                   Background="{DynamicResource AcrylicBackgroundFillColorBaseBrush}"
+                                                   IsVisible="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}">
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center"
+                                        Spacing="2">
+                                <ToggleButton
+                                    IsChecked="{Binding IsMainLine}"
+                                    Click="ToggleButtonIsMainLine_OnIsCheckedChanged"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="此行是主要行"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Content="{ci:FluentIcon &#xE994;}" />
+                                <ToggleButton
+                                    IsChecked="{Binding IsNotificationEnabled}"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="此行可以显示提醒"
+                                    Click="ToggleButtonIsNotificationEnabled_OnIsCheckedChanged"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Content="{ci:FluentIcon &#xE02B;}" />
+                                <Button
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="在下方插入一行"
+                                    Click="ButtonCreateMainWindowLine_OnClick"
+                                    Theme="{StaticResource TransparentButton}"
+                                    Content="{ci:FluentIcon &#xE00D;}" />
+                                <Button
+                                    Foreground="IndianRed"
+                                    VerticalAlignment="Center"
+                                    ToolTip.Tip="删除"
+                                    Click="ButtonRemoveSelectedMainWindowLine_OnClick"
+                                    Theme="{StaticResource TransparentButton}"
+                                    Content="{ci:FluentIcon &#xE61D;}" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -116,7 +192,8 @@
         <GridSplitter Grid.Row="3" Margin="-12 0" Height="2"/>
         
         <!-- ROW 4 组件设置 -->
-        <Grid Grid.Row="4" HorizontalAlignment="Stretch">
+        <Grid Grid.Row="4" HorizontalAlignment="Stretch"
+              Margin="0 4 0 0">
 
             <TabControl HorizontalContentAlignment="Stretch" 
                         Padding="0"
@@ -124,7 +201,8 @@
                         Classes="compact"
                         SelectedIndex="{Binding ViewModel.SettingsTabControlIndex}">
                 <TabItem Header="组件库">
-                    <ListBox ItemsSource="{x:Static registry:ComponentRegistryService.Registered}">
+                    <ListBox ItemsSource="{x:Static registry:ComponentRegistryService.Registered}"
+                             Classes="drag-source">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,*"
@@ -272,6 +350,7 @@
                                                        Description="指定组件在显示容器中对齐的方式。">
                                 <controls:SettingsExpander.Footer>
                                     <ListBox
+                                        AutoScrollToSelectedItem="False"
                                         SelectedIndex="{Binding HorizontalAlignment, Converter={StaticResource HorizontalAlignmentToIntConverter}}">
                                         <ListBox.Styles>
                                             <Style Selector="ListBoxItem">
@@ -284,6 +363,9 @@
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
                                         <ListBoxItem
+                                            Content="{ci:FluentIcon &#xE03E;}"
+                                            ToolTip.Tip="拉伸" />
+                                        <ListBoxItem
                                             Content="{ci:FluentIcon &#xE03A;}"
                                             ToolTip.Tip="左对齐" />
                                         <ListBoxItem
@@ -292,9 +374,6 @@
                                         <ListBoxItem
                                             Content="{ci:FluentIcon &#xE03C;}"
                                             ToolTip.Tip="右对齐" />
-                                        <ListBoxItem
-                                            Content="{ci:FluentIcon &#xE03E;}"
-                                            ToolTip.Tip="拉伸" />
                                     </ListBox>
                                 </controls:SettingsExpander.Footer>
                             </controls:SettingsExpander>

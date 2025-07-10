@@ -1,15 +1,22 @@
+using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Xaml.Interactions.DragAndDrop;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;
 using ClassIsland.Shared;
@@ -121,7 +128,13 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.SelectedComponentSettings = null;
         if (ViewModel.SelectedComponentSettingsMain != null)
         {
-            ViewModel.SelectedMainWindowLineSettings?.Children.Remove(remove);
+            foreach (var line in ViewModel.ComponentsService.CurrentComponents.Lines)
+            {
+                if (line.Children.Remove(remove))
+                {
+                    break;
+                }
+            }
         } else if (ViewModel.SelectedComponentSettingsChild != null)
         {
             ViewModel.SelectedComponentContainerChildren.Remove(remove);
@@ -179,5 +192,63 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.SelectedContainerComponent = componentSettings;
         ViewModel.IsComponentChildrenViewOpen = true;
         ViewModel.CanChildrenNavigateBack = ViewModel.ChildrenComponentSettingsNavigationStack.Count >= 1;
+    }
+
+    private void ListBoxComponents_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        // 这里应该把指针按下的事件吞掉，这样在拖动这里面的在组件时就不会把事件往上传送到上级，让上级 ListBoxItem 也跟着被拖动。
+        e.Handled = true;
+    }
+
+    private void ButtonCreateMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var index = ViewModel.SelectedMainWindowLineSettings == null
+            ? 0
+            : Math.Max(0,
+                ViewModel.ComponentsService.CurrentComponents.Lines.IndexOf(ViewModel.SelectedMainWindowLineSettings) + 1);
+        var lineSettings = new MainWindowLineSettings();
+        ViewModel.ComponentsService.CurrentComponents.Lines.Insert(index, lineSettings);
+        ViewModel.SelectedMainWindowLineSettings = lineSettings;
+    }
+
+    private void ButtonRemoveSelectedMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel.ComponentsService.CurrentComponents.Lines.Count <= 1)
+        {
+            this.ShowWarningToast("至少需要保留 1 个主界面行。");
+            return;
+        }
+
+        if (ViewModel.SelectedMainWindowLineSettings != null)
+            ViewModel.ComponentsService.CurrentComponents.Lines.Remove(ViewModel.SelectedMainWindowLineSettings);
+    }
+
+    private void ToggleButtonIsNotificationEnabled_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.ComponentsService.CurrentComponents.Lines.Any(x => x.IsNotificationEnabled))
+        {
+            this.ShowWarningToast("您已经禁用了所有主界面行的提醒显示功能。如果没有插件注册其它提醒消费者，提醒将不会显示，也不会播放提醒音效、特效和语音。");
+        }
+    }
+
+    private void ToggleButtonIsMainLine_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton button)
+        {
+            return;
+        }
+
+        foreach (var line in ViewModel.ComponentsService.CurrentComponents.Lines.Where(x => !Equals(button.DataContext, x)))
+        {
+            line.IsMainLine = false;
+        }
+
+        if (button.IsChecked == false)
+        {
+            var firstLine = ViewModel.ComponentsService.CurrentComponents.Lines.FirstOrDefault();
+            if (firstLine != null) 
+                firstLine.IsMainLine = true;
+            this.ShowToast("已将第一行设置为主要行。");
+        }
     }
 }

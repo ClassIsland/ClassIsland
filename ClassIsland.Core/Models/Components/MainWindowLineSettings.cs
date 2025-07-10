@@ -17,4 +17,9 @@ public partial class MainWindowLineSettings : ObservableObject
     /// 是否为主要行
     /// </summary>
     [ObservableProperty] private bool _isMainLine = false;
+
+    /// <summary>
+    /// 是否启用提醒
+    /// </summary>
+    [ObservableProperty] private bool _isNotificationEnabled = true;
 }

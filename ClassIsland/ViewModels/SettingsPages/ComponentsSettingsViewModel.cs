@@ -1,16 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Avalonia.Data.Converters;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;
+using ClassIsland.Views;
+using ClassIsland.Views.SettingPages;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public partial class ComponentsSettingsViewModel(IComponentsService componentsService, SettingsService settingsService) : ObservableRecipient
+public partial class ComponentsSettingsViewModel : ObservableRecipient
 {
-    public IComponentsService ComponentsService { get; } = componentsService;
-    public SettingsService SettingsService { get; } = settingsService;
+    public IComponentsService ComponentsService { get; }
+    public SettingsService SettingsService { get; }
+
+    public ComponentsSettingsPageDropHandler DropHandler { get; }
     
     [ObservableProperty] private ComponentSettings? _selectedComponentSettings;
     [ObservableProperty] private string _createProfileName = "";
@@ -28,5 +33,13 @@ public partial class ComponentsSettingsViewModel(IComponentsService componentsSe
     [ObservableProperty] private ComponentSettings? _selectedRootComponent;
     [ObservableProperty] private MainWindowLineSettings? _selectedMainWindowLineSettings;
 
+    public static FuncValueConverter<int, double> ComponentsEditorHeightConverter { get; } = new(x => x * 43.2);
 
+    /// <inheritdoc/>
+    public ComponentsSettingsViewModel(IComponentsService componentsService, SettingsService settingsService)
+    {
+        ComponentsService = componentsService;
+        SettingsService = settingsService;
+        DropHandler = new ComponentsSettingsPageDropHandler(this);
+    }
 }
