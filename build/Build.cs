@@ -9,6 +9,7 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
+using Serilog;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -27,18 +28,49 @@ partial class Build : NukeBuild
     
     [Parameter("Arch")] readonly string Arch;
     [Parameter("Os")] readonly string Os;
+    [Parameter("Package")] readonly string Package;
+    [Parameter("BuildType")] readonly string BuildType;
+    [Parameter("BuildName")] readonly string BuildName;
     [Parameter("API_SIGNING_KEY")] readonly string ApiSigningKey;
     [Parameter("API_SIGNING_KEY_PS")] readonly string ApiSigningKeyPs;
-    [Parameter("artifact_name")] readonly string PublishArtifactName;
+    
+    string PublishArtifactName;
 
     readonly AbsolutePath DesktopAppEntryProject = RootDirectory / "ClassIsland.Desktop" / "ClassIsland.Desktop.csproj";
-    readonly AbsolutePath DesktopAppLauncherEntryProject = RootDirectory / "ClassIsland.Launcher" / "ClassIsland.Launcher.csproj";
+    readonly AbsolutePath LauncherEntryProject = RootDirectory / "ClassIsland.Launcher" / "ClassIsland.Launcher.csproj";
     readonly AbsolutePath AppOutputPath = RootDirectory / "out";
     readonly AbsolutePath AppPublishPath = RootDirectory / "out" / "ClassIsland";
+    readonly AbsolutePath LauncherPublishPath = RootDirectory / "out" / "Launcher";
     readonly AbsolutePath AppSecretsPath = RootDirectory / "ClassIsland" / "secrets.g.cs";
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
     
 
+    Target GenerateMetadata => _ => _
+        .Requires(() => Os)
+        .Requires(() => Arch)
+        .Requires(() => Package)
+        .Requires(() => BuildType)
+        .Requires(() => BuildName)
+        .Executes(() =>
+        {
+            var osRid = Os switch
+            {
+                "windows" => "win",
+                "linux" => "linux",
+                _ => throw new InvalidOperationException($"不支持的平台：{Os}")
+            };
+            RuntimeIdentifier = $"{osRid}-{Arch}";
+            PublishArtifactName = $"out_{BuildName}_{Os}_{Arch}_{BuildType}_{Package}";
+            IsSecretFilled = !(string.IsNullOrEmpty(ApiSigningKey) || string.IsNullOrEmpty(ApiSigningKeyPs));
+            AppPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
+            LauncherPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
+            
+            Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
+            Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
+            Log.Information("PublishArtifactName = {PublishArtifactName}", PublishArtifactName);
+            Log.Information("AppPublishArtifactPath = {AppPublishArtifactPath}", AppPublishArtifactPath);
+            Log.Information("LauncherPublishArtifactPath = {LauncherPublishArtifactPath}", LauncherPublishArtifactPath);
+        });
 }

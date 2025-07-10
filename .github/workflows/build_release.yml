@@ -23,15 +23,14 @@ on:
 
 jobs:
   build_app:
-    runs-on: windows-latest  # For a list of available runner types, refer to
-    # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-latest
     env:
-      artifact_name: out_app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
+      artifact_name: out_appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        trim_assets: ['false']
+        build_type: ['full']
         package: ['folder']
         arch: ['x64', 'x86', 'arm64']
         os: ['windows', 'linux']
@@ -39,7 +38,7 @@ jobs:
           - os: linux
             arch: x86
       
-    name: Build_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
+    name: Build_AppBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -55,7 +54,7 @@ jobs:
           path: |
             .nuke/temp
             ~/.nuget/packages
-          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/*.props') }}
       
       - name: List files
         run: ls
@@ -72,7 +71,7 @@ jobs:
       
       - name: ☢️ Nuke
         env:
-          trim_assets: ${{ matrix.trim_assets }}
+          buildType: ${{ matrix.build_type }}
           package: ${{ matrix.package }}
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
           test_signing_key: ${{ secrets.TEST_SIGNING_KEY }}
@@ -80,6 +79,7 @@ jobs:
           API_SIGNING_KEY_PS: ${{ secrets.API_SIGNING_KEY_PS }}
           arch: ${{ matrix.arch }}
           os: ${{ matrix.os }}
+          buildName: appBase
         run: |
           pwsh -ep bypass ./build.ps1 PublishApp
 
@@ -91,6 +91,75 @@ jobs:
           path: |
             ./out/*.zip
             ./out/*.appx
+            
+  build_launcher:
+    runs-on: windows-latest
+    env:
+      artifact_name: out_launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      isTestMode: ${{ github.event.inputs.is_test_mode }}
+      arch: ${{ matrix.arch }}
+    strategy:
+      matrix:
+        build_type: ['aot']
+        package: ['singleFile']
+        arch: ['x64', 'x86', 'arm64']
+        os: ['windows', 'linux']
+        exclude:
+          - os: linux
+            arch: x86
+    
+    name: Build_Launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+          tags: true  # 确保标签也被抓取
+
+      - name: Cache .nuke/temp, ~/.nuget/packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            .nuke/temp
+            ~/.nuget/packages
+          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/*.props') }}
+
+      - name: List files
+        run: ls
+      
+      # Install the .NET Core workload
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      
+      # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: ☢️ Nuke
+        env:
+          buildType: ${{ matrix.build_type }}
+          package: ${{ matrix.package }}
+          is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
+          test_signing_key: ${{ secrets.TEST_SIGNING_KEY }}
+          API_SIGNING_KEY: ${{ secrets.API_SIGNING_KEY}}
+          API_SIGNING_KEY_PS: ${{ secrets.API_SIGNING_KEY_PS }}
+          arch: ${{ matrix.arch }}
+          os: ${{ matrix.os }}
+          buildName: launcher
+        run: |
+          pwsh -ep bypass ./build.ps1 PublishLauncher
+
+      - name: Upload Unsigned APP to artifacts
+        id: upload-unsigned-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.artifact_name }}
+          path: |
+            ./out/*.zip
           
   build_nupkg:
     runs-on: windows-latest  # For a list of available runner types, refer to

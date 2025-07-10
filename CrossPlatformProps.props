@@ -1,0 +1,40 @@
+<Project>
+
+    <PropertyGroup>
+        <PlatformNames_Windows>windows</PlatformNames_Windows>
+        <Os_IsWindows>$([System.OperatingSystem]::IsWindows())</Os_IsWindows>
+        <Os_IsLinux>$([System.OperatingSystem]::IsLinux())</Os_IsLinux>
+    </PropertyGroup>
+    
+    <!-- 发布时使用的平台设置，根据 CI 传入的参数自动设定相关设置 -->
+    <PropertyGroup>
+        <!-- fallback -->
+        <TargetFramework>$(BaseFramework)</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(PublishBuilding)' == 'true' And '$(PublishPlatform)'=='linux'">
+        <Platforms_Linux>true</Platforms_Linux>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(PublishBuilding)' == 'true' And '$(PublishPlatform)'=='windows'">
+        <Platforms_Windows>true</Platforms_Windows>
+    </PropertyGroup>
+    <!-- 开发时使用的平台设置，根据当前系统信息自动使用相关设置 -->
+    <PropertyGroup Condition="'$(PublishBuilding)' != 'true' And '$(Os_IsLinux)'=='true'">
+        <Platforms_Linux>true</Platforms_Linux>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(PublishBuilding)' != 'true' And '$(Os_IsWindows)'=='true'">
+        <Platforms_Windows>true</Platforms_Windows>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Platforms_Windows)'=='true'">
+        <TargetFramework>$(BaseFramework)-windows7</TargetFramework>
+        <DefineConstants>$(DefineConstants);Platforms_Windows</DefineConstants>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Platforms_Windows)'=='true' And ('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX')">
+        <OutputType>WinExe</OutputType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Platforms_Linux)'=='true'">
+        <DefineConstants>$(DefineConstants);Platforms_Linux</DefineConstants>
+    </PropertyGroup>
+</Project>

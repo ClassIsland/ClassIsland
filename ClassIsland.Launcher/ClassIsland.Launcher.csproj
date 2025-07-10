@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <BaseFramework>net9.0</BaseFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,4 +20,5 @@
   </ItemGroup>
   
   <Import Project="..\Global.props" />
+  <Import Project="../CrossPlatformProps.props"/>
 </Project>

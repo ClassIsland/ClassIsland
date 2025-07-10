@@ -25,33 +25,12 @@ partial class Build
             {
                 Directory.Delete(AppOutputPath, true);
             }
-            if (Directory.Exists(AppPublishArtifactPath))
+            if (File.Exists(AppPublishArtifactPath))
             {
-                Directory.Delete(AppPublishArtifactPath, true);
+                File.Delete(AppPublishArtifactPath);
             }
         });
 
-    Target GenerateMetadata => _ => _
-        .Executes(() =>
-        {
-            var osRid = Os switch
-            {
-                "windows" => "win",
-                "linux" => "linux",
-                _ => throw new InvalidOperationException($"不支持的平台：{Os}")
-            };
-            RuntimeIdentifier = $"{osRid}-{Arch}";
-
-            IsSecretFilled = !(string.IsNullOrEmpty(ApiSigningKey) || string.IsNullOrEmpty(ApiSigningKeyPs));
-            AppPublishArtifactPath = AppOutputPath /
-                                     (string.IsNullOrWhiteSpace(PublishArtifactName)
-                                         ? "ClassIsland.zip"
-                                         : PublishArtifactName);
-            
-            Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
-            Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
-            Log.Information("AppPublishArtifactPath = {AppPublishArtifactPath}", AppPublishArtifactPath);
-        });
 
     Target GenerateSecrets => t => t
         .Executes(() =>
@@ -82,8 +61,6 @@ partial class Build
         .DependsOn(GenerateSecrets)
         .DependsOn(GenerateMetadata)
         .DependsOn(CleanDesktopApp)
-        .Requires(() => Os)
-        .Requires(() => Arch)
         .Executes(() =>
         {
             DotNetPublish(s => s

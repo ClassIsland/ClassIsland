@@ -25,12 +25,16 @@
       "type": "string",
       "enum": [
         "CleanDesktopApp",
+        "CleanLauncher",
         "CompileApp",
+        "CompileLauncher",
         "GenerateAppZipArchive",
+        "GenerateLauncherZipArchive",
         "GenerateMetadata",
         "GenerateSecrets",
         "PostCleanup",
-        "PublishApp"
+        "PublishApp",
+        "PublishLauncher"
       ]
     },
     "Verbosity": {
@@ -116,6 +120,14 @@
           "type": "string",
           "description": "Arch"
         },
+        "BuildName": {
+          "type": "string",
+          "description": "BuildName"
+        },
+        "BuildType": {
+          "type": "string",
+          "description": "BuildType"
+        },
         "Configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
@@ -128,9 +140,9 @@
           "type": "string",
           "description": "Os"
         },
-        "PublishArtifactName": {
+        "Package": {
           "type": "string",
-          "description": "artifact_name"
+          "description": "Package"
         },
         "Solution": {
           "type": "string",
