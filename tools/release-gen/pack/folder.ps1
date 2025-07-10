@@ -1,10 +1,9 @@
 $ErrorActionPreference = "Stop"
 
 if ($(Test-Path ./out_pack/) -eq $false) {
-    New-Item -p ./out_pack/pack
+    mkdir -p ./out_pack/pack/app-${env:version}/
 }
 
-$artifacts = Get-ChildItem ./out
 
 $appBaseName = "out_appBase_${env:osName}_${env:arch}_${env:buildType}_folder"
 $launcherName = "out_launcher_${env:osName}_${env:arch}_aot_singleFile"
