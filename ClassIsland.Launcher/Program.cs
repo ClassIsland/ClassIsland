@@ -22,8 +22,7 @@ var installation = Directory.GetDirectories(root)
 
 if (installation == null || !File.Exists(Path.Combine(installation, "ClassIsland.exe")))
 {
-    PInvoke.MessageBox(HWND.Null, "找不到有效的 ClassIsland 版本，可能是安装已损坏。请在 https://classisland.tech/download 重新下载并安装 ClassIsland。",
-        "ClassIsland", MESSAGEBOX_STYLE.MB_APPLMODAL | MESSAGEBOX_STYLE.MB_ICONSTOP);
+    ShowError("找不到有效的 ClassIsland 版本，可能是安装已损坏。请在 https://classisland.tech/download 重新下载并安装 ClassIsland。");
     return 1;
 }
 
@@ -39,3 +38,13 @@ foreach (var i in args)
 Process.Start(startInfo);
 
 return 0;
+
+void ShowError(string message)
+{
+#if Platforms_Windows
+    PInvoke.MessageBox(HWND.Null, message,
+        "ClassIsland", MESSAGEBOX_STYLE.MB_APPLMODAL | MESSAGEBOX_STYLE.MB_ICONSTOP);
+#else
+    Console.Error.WriteLine(message);
+#endif
+}
