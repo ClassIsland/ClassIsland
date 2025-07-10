@@ -37,4 +37,12 @@
     <PropertyGroup Condition="'$(Platforms_Linux)'=='true'">
         <DefineConstants>$(DefineConstants);Platforms_Linux</DefineConstants>
     </PropertyGroup>
+    
+    <Target Name="PrintPlatformInfo" BeforeTargets="Build">
+        <Message Text="TargetFramework: $(TargetFramework)" Importance="high"/>
+        <Message Text="RuntimeIdentifier: $(RuntimeIdentifier)" Importance="high"/>
+        <Message Text="PublishBuilding: $(PublishBuilding)" Importance="high"/>
+        <Message Text="PublishPlatform: $(PublishPlatform)" Importance="high"/>
+        <Message Text="Os_IsWindows: $(Os_IsWindows)" Importance="high"/>
+    </Target>
 </Project>

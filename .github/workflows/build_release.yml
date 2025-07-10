@@ -141,9 +141,6 @@ jobs:
           buildType: ${{ matrix.build_type }}
           package: ${{ matrix.package }}
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
-          test_signing_key: ${{ secrets.TEST_SIGNING_KEY }}
-          API_SIGNING_KEY: ${{ secrets.API_SIGNING_KEY}}
-          API_SIGNING_KEY_PS: ${{ secrets.API_SIGNING_KEY_PS }}
           arch: ${{ matrix.arch }}
           os: ${{ matrix.os }}
           buildName: launcher
