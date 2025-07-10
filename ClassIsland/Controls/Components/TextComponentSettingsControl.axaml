@@ -1,0 +1,48 @@
+﻿<controls:ComponentBase xmlns:ci="http://classisland.tech/schemas/xaml/core"  x:TypeArguments="componentSettings:TextComponentSettings" 
+                        x:Class="ClassIsland.Controls.Components.TextComponentSettingsControl"
+                        xmlns="https://github.com/avaloniaui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                        xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                        xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+                        xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                        xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                        mc:Ignorable="d" 
+                        d:DesignHeight="450" d:DesignWidth="800">
+    <ScrollViewer>
+        <StackPanel
+            Classes="settings-container animated-intro" Margin="0"
+            DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TextComponentSettingsControl}}">
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xE510;}"
+                                        Header="文本内容"
+                                        Description="要显示的文本。">
+                <controls1:SettingsExpander.Footer>
+                    <TextBox MinWidth="200"
+                             Text="{Binding Settings.TextContent,UpdateSourceTrigger=PropertyChanged}" />
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
+            
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xEC54;}"
+                                        Header="字体颜色"
+                                        Description="选择要显示文本的颜色。">
+                <controls1:SettingsExpander.Footer>
+                    <controls1:ColorPickerButton Color="{Binding Settings.FontColor, Mode=TwoWay}" />
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
+            
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF273;}"
+                                        Header="字体大小"
+                                        Description="修改要显示的文本的大小。">
+                <controls1:SettingsExpander.Footer>
+                    <Slider Width="200"
+                            TickFrequency="1" TickPlacement="None"
+                            Maximum="30" Minimum="16" IsSnapToTickEnabled="True"
+                            Value="{Binding Settings.FontSize}" 
+                            Classes="auto-tooltip"/>
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
+            
+        </StackPanel>
+    </ScrollViewer>
+</controls:ComponentBase>

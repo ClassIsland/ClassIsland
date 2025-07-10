@@ -612,12 +612,12 @@ public partial class App : AppBase, IAppHost
                 // services.AddSettingsPage<ManagementSettingsPage>();
                 // services.AddSettingsPage<ManagementCredentialsSettingsPage>();
                 // services.AddSettingsPage<ManagementPolicySettingsPage>();
-                // // 主界面组件
-                // services.AddComponent<TextComponent, TextComponentSettingsControl>();
-                // services.AddComponent<SeparatorComponent>();
+                // 主界面组件
+                services.AddComponent<TextComponent, TextComponentSettingsControl>();
+                services.AddComponent<SeparatorComponent>();
                 services.AddComponent<ScheduleComponent, ScheduleComponentSettingsControl>();
                 services.AddComponent<DateComponent>();
-                // services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
+                services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
                 // services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();
                 // services.AddComponent<CountDownComponent, CountDownComponentSettingsControl>();
                 // services.AddComponent<SlideComponent, SlideComponentSettingsControl>();

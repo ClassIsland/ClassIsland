@@ -1,6 +1,6 @@
 ﻿<controls:ComponentBase x:TypeArguments="componentSettings:ClockComponentSettings" 
                         x:Class="ClassIsland.Controls.Components.ClockComponent"
-                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
@@ -10,32 +10,33 @@
                         xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
-    <controls:ComponentBase.Resources>
-        <converters:BooleanToVisibilityReConverter x:Key="BooleanToVisibilityReConverter"/>
-    </controls:ComponentBase.Resources>
     <Grid VerticalAlignment="Center" HorizontalAlignment="Center"
           TextElement.FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+          x:Name="Root"
+          Classes.TimeSeparatorShowing="{Binding IsTimeSeparatorShowing}"
+          Classes.ShowSeconds="{Binding Settings.ShowSeconds}"
           DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClockComponent}}">
-        <TextBlock>
-            <TextBlock.Style>
-                <Style TargetType="TextBlock">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsTimeSeparatorShowing}" Value="False">
-                            <Setter Property="Visibility" Value="Hidden" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Settings.ShowSeconds}" Value="False">
-                            <Setter Property="Text" Value="{Binding CurrentTime, StringFormat={}{0:HH:mm}}" />
-                        </DataTrigger>
-                    </Style.Triggers>
+        <Grid.Styles>
+            <Style Selector="Grid#Root">
+                <Style Selector="^ TextBlock#TextBlock1">
+                    <Setter Property="Opacity" Value="0" />
+                    <Setter Property="Text" Value="{Binding CurrentTime, StringFormat={}{0:HH:mm}}" />
+                </Style>
+                <Style Selector="^.TimeSeparatorShowing TextBlock#TextBlock1">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^.ShowSeconds TextBlock#TextBlock1">
                     <Setter Property="Text" Value="{Binding CurrentTime, StringFormat={}{0:HH:mm:ss}}" />
                 </Style>
-            </TextBlock.Style>
-        </TextBlock>
+            </Style>
+        </Grid.Styles>
+        <TextBlock x:Name="TextBlock1" />
         <TextBlock HorizontalAlignment="Left"
                    Text="{Binding CurrentTime, StringFormat={}{0:HH}}"
-                   Visibility="{Binding IsTimeSeparatorShowing, Converter={StaticResource BooleanToVisibilityReConverter}}"/>
+                   Classes.hidden="{Binding IsTimeSeparatorShowing}"/>
         <TextBlock HorizontalAlignment="Right"
                    Text="{Binding CurrentTime, StringFormat={}{0:mm}}"
-                   Visibility="{Binding IsTimeSeparatorShowing, Converter={StaticResource BooleanToVisibilityReConverter}}"/>
+                   TextAlignment="End"
+                   Classes.hidden="{Binding IsTimeSeparatorShowing}"/>
     </Grid>
 </controls:ComponentBase>

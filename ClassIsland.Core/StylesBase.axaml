@@ -95,8 +95,17 @@
     <Style Selector="controls|CommandBar.hide-popup-indicator controls|CommandBarButton:labelright /template/ controls|FontIcon#SubItemChevron">
         <Setter Property="IsVisible" Value="False"/>
     </Style>
-    <Style Selector="Control.hidden">
-        <Setter Property="IsVisible" Value="False"/>
+    <Style Selector=":is(Control).hidden">
+        <Setter Property="Opacity" Value="0.0"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+    </Style>
+    <Style Selector="Slider.auto-tooltip">
+        <Setter Property="ToolTip.Tip" Value="{Binding $self.Value}"/>
+        <Style Selector="^:pressed">
+            <Setter Property="ToolTip.IsOpen" Value="True"/>
+            <Setter Property="ToolTip.Placement" Value="Pointer"/>
+        </Style>
     </Style>
     
     <!-- 修复字体飞上去的问题 -->
