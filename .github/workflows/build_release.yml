@@ -154,6 +154,111 @@ jobs:
           name: ${{ env.artifact_name }}
           path: |
             ./out/*.zip
+            
+  sign_1:
+    name: Sign_1
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' }}
+    needs: [ build_app, build_launcher ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+          
+      - name: Get commit hash
+        uses: prompt/actions-commit-hash@v3
+        id: commit
+        with:
+          prefix: "${{ github.event.inputs.release_tag }}+"
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./out_artifacts
+
+      - name: Create Sign Bundle
+        run: |
+          pwsh -ep Bypass -c ./tools/release-gen/create-sign-bundle.ps1
+
+      - name: Upload Sign Bundle to artifacts
+        id: upload-sign-bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: sign-bundle
+          path: ./ci_tmp/sign_bundle/*
+        
+      - name: Sign Application
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
+          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
+          project-slug: 'ClassIsland'
+          artifact-configuration-slug: 'sign_bundle_v2'
+          signing-policy-slug: release-signing
+          github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: './out_signed'
+          parameters: |
+            version: ${{ toJSON(steps.commit.outputs.long) }}
+            
+      - name: Upload Signed Files to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed_artifacts
+          path: ./out_signed/*
+            
+  pack_app:
+    runs-on: ubuntu-latest
+    needs: [ sign_1 ]
+    if: ${{ always() && success('build_app') && success('build_launcher') }}
+    env:
+      build_id: app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      artifact_name: out_app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      isTestMode: ${{ github.event.inputs.is_test_mode }}
+      arch: ${{ matrix.arch }}
+    strategy:
+      matrix:
+        build_type: ['full']
+        package: ['folder']
+        arch: ['x64', 'x86', 'arm64']
+        os: ['windows', 'linux']
+        exclude:
+          - os: linux
+            arch: x86
+    name: Pack_App_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+          
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./out_artifacts
+
+      - name: Combine Artifacts
+        run: pwsh -ep bypass ./tools/release-gen/combine-artifacts.ps1
+
+      - name: Generate Package
+        env:
+          package: ${{ matrix.package }}
+          isRelease: ${{ startsWith(github.ref, 'refs/tags/') }}
+          arch: ${{ matrix.arch }}
+          osName: ${{ matrix.os }}
+          buildType: ${{ matrix.build_type }}
+        run: pwsh -ep bypass ./tools/release-gen/pack/entry.ps1
+        
+      - name: Upload Packages to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed_artifacts
+          path: ./out_pack/*.zip
           
   build_nupkg:
     runs-on: windows-latest  # For a list of available runner types, refer to
@@ -212,7 +317,7 @@ jobs:
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == true }}
     if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' }}
-    needs: [ build_app, build_nupkg ]
+    needs: [ pack_app, build_nupkg ]
     concurrency:
       group: "publish-public"
     environment:
@@ -224,42 +329,6 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
-
-      - name: Get commit hash
-        uses: prompt/actions-commit-hash@v3
-        id: commit
-        with:
-          prefix: "${{ github.event.inputs.release_tag }}+"
-      
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: ./out_artifacts
-
-      - name: Create Sign Bundle
-        run: |
-          pwsh -ep Bypass -c ./tools/release-gen/create-sign-bundle.ps1
-
-      - name: Upload Sign Bundle to artifacts
-        id: upload-sign-bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: sign-bundle
-          path: ./ci_tmp/sign_bundle/*
-
-#      - name: Sign Application
-#        uses: signpath/github-action-submit-signing-request@v1
-#        with:
-#          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
-#          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
-#          project-slug: 'ClassIsland'
-#          artifact-configuration-slug: 'sign_bundle'
-#          signing-policy-slug: release-signing
-#          github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
-#          wait-for-completion: true
-#          output-artifact-directory: './out_signed'
-#          parameters: |
-#            version: ${{ toJSON(steps.commit.outputs.long) }}
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
