@@ -39,7 +39,7 @@ partial class Build
                 .SetProperty("SelfContained", true)
                 .SetProperty("PublishAot", true)
                 .SetProperty("TrimMode", "full")
-                .SetProperty("Platform", "x64")
+                .SetProperty("Platform", Arch)
                 .SetProperty("PublishBuilding", true)
                 .SetProperty("PublishPlatform", Os)
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
