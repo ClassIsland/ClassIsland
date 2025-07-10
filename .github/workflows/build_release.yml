@@ -25,7 +25,8 @@ jobs:
   build_app:
     runs-on: windows-latest
     env:
-      artifact_name: out_appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      artifact_name: out_${{ env.build_id }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
     strategy:
@@ -38,7 +39,7 @@ jobs:
           - os: linux
             arch: x86
       
-    name: Build_AppBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+    name: Build_${{ env.build_id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -53,7 +54,7 @@ jobs:
           path: |
             .nuke/temp
             ~/.nuget/packages
-          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/*.props') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/*.props') }}-${{ env.build_id }}
       
       - name: List files
         run: ls
@@ -94,7 +95,8 @@ jobs:
   build_launcher:
     runs-on: ${{ matrix.os == 'windows' && 'windows-latest' || 'ubuntu-latest' }}
     env:
-      artifact_name: out_launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      build_id: launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      artifact_name: out_${{ env.build_id }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
     strategy:
@@ -106,7 +108,7 @@ jobs:
         exclude:
           - os: linux
             arch: x86
-    name: Build_Launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+    name: Build_${{ env.build_id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -121,7 +123,7 @@ jobs:
           path: |
             .nuke/temp
             ~/.nuget/packages
-          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/*.props') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/*.props') }}-${{ env.build_id }}
 
       - name: List files
         run: ls
@@ -131,10 +133,6 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      
-      # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-      - name: Setup MSBuild.exe
-        uses: microsoft/setup-msbuild@v1.0.2
 
       - name: ☢️ Nuke
         env:
