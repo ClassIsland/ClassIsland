@@ -188,7 +188,8 @@
                                     <Grid HorizontalAlignment="Stretch">
                                         <controls:MainWindowLine WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
                                                                  LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                                 IsMainLine="True"
+                                                                 IsMainLine="{Binding IsMainLine}"
+                                                                 IsNotificationEnabled="{Binding IsNotificationEnabled}"
                                                                  LineNumber="0"
                                                                  HorizontalAlignment="Stretch"
                                                                  Settings="{Binding}"

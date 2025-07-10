@@ -109,7 +109,16 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         get => GetValue(IsMainLineProperty);
         set => SetValue(IsMainLineProperty, value);
     
-}
+    }
+
+    public static readonly StyledProperty<bool> IsNotificationEnabledProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
+        nameof(IsNotificationEnabled));
+
+    public bool IsNotificationEnabled
+    {
+        get => GetValue(IsNotificationEnabledProperty);
+        set => SetValue(IsNotificationEnabledProperty, value);
+    }
     
     public static readonly StyledProperty<bool> IsMouseInProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(IsMouseIn));
@@ -368,12 +377,6 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
             wrapper.SizeChanged += WrapperOnSizeChanged;
             wrapper.Loaded += GridWrapperOnLoaded;
         }
-
-        Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
-        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
-        {
-            // BeginStoryboard(LastStoryboardName);
-        }
         base.OnApplyTemplate(e);
     }
 
@@ -385,17 +388,6 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
             GridWrapper.Unloaded -= GridWrapperOnUnloaded;
             GridWrapper.Unloaded += GridWrapperOnUnloaded;
         }
-
-
-        Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            _isTemplateApplied = true;
-            Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
-            if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
-            {
-                // BeginStoryboard(LastStoryboardName);
-            }
-        }, DispatcherPriority.Loaded);
     }
 
     private void GridWrapperOnUnloaded(object? sender, RoutedEventArgs e)
@@ -649,5 +641,5 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     }
 
     public int QueuedNotificationCount => _notificationQueue.Count;
-    public bool AcceptsNotificationRequests => !IsAllComponentsHid && !_isOverlayOpen;
+    public bool AcceptsNotificationRequests => IsNotificationEnabled && !IsAllComponentsHid && !_isOverlayOpen;
 }

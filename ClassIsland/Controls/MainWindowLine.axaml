@@ -233,14 +233,14 @@
         <Style Selector="^:custom-background /template/ Border.background">
             <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"/>
         </Style>
-        <Style Selector="^[IsMainLine=False]">
+        <Style Selector="^[IsNotificationEnabled=False]">
             <Setter Property="Template" Value="{StaticResource MainWindowLineMinControlTemplate}"/>
             <Setter Property="IsVisible" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InvertBooleanConverter}}"/>
         </Style>
         <Style Selector="^[IsLineFaded=True]">
             <Setter Property="Opacity" Value="0.05"/>
         </Style>
-        <Style Selector="^[IsMainLine=True]">
+        <Style Selector="^[IsNotificationEnabled=True]">
             <Style Selector="^ /template/ ContentPresenter#OverlayMaskContent">
                 <!-- <Setter Property="Transitions"> -->
                 <!--     <Transitions> -->
