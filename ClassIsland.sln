@@ -67,6 +67,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassIsland.Desktop", "Clas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassIsland.Platforms.Linux", "platforms\ClassIsland.Platforms.Linux\ClassIsland.Platforms.Linux.csproj", "{2231B4F9-5B56-4E3E-BD36-068B970444EE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{3C1C4AD3-E162-4B82-B29A-D71D50C3702A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_MSIX|Any CPU = Debug_MSIX|Any CPU
@@ -91,6 +93,8 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C1C4AD3-E162-4B82-B29A-D71D50C3702A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C1C4AD3-E162-4B82-B29A-D71D50C3702A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F78DB747-AB6C-4B83-9139-37DFC58C0146}.Debug_MSIX|Any CPU.ActiveCfg = Debug_MSIX|Any CPU
 		{F78DB747-AB6C-4B83-9139-37DFC58C0146}.Debug_MSIX|Any CPU.Build.0 = Debug_MSIX|Any CPU
 		{F78DB747-AB6C-4B83-9139-37DFC58C0146}.Debug_MSIX|ARM.ActiveCfg = Debug_MSIX|Any CPU

@@ -62,7 +62,7 @@ jobs:
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
       
-      - name: Build application
+      - name: ☢️ Nuke
         env:
           trim_assets: ${{ matrix.trim_assets }}
           package: ${{ matrix.package }}
@@ -73,14 +73,7 @@ jobs:
           arch: ${{ matrix.arch }}
           os: ${{ matrix.os }}
         run: |
-          ls
-          if ($env:package -eq "wap") {  
-            # WAP
-            pwsh -ep Bypass -c ./tools/release-gen/publish-wap.ps1 false $env:is_release
-          } else {  
-            # Folder
-            pwsh -ep Bypass -c ./tools/release-gen/publish.ps1 $env:trim_assets $env:arch $env:os
-          }
+          ./build.ps1 PublishApp
 
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
