@@ -39,6 +39,13 @@ public class ConfigureFileHelper
     /// </summary>
     public static ObservableCollection<ConfigError> Errors { get; } = [];
 
+    static ConfigureFileHelper()
+    {
+        // 覆盖默认的 JsonSerializerOptions
+        var field = typeof(JsonSerializerOptions)?.GetField("s_defaultOptions", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        field?.SetValue(null, SerializerOptions);
+    }
+
     /// <summary>
     /// 加载配置文件，并自动创建备份。当加载失败时，将尝试加载备份的配置文件。如果希望在发生加载异常时自动捕获错误，请使用方法 <see cref="LoadConfig{T}"/>。
     /// </summary>
