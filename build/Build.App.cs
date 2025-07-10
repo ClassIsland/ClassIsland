@@ -67,7 +67,7 @@ partial class Build
                 .SetProject(DesktopAppEntryProject)
                 .SetConfiguration(Configuration)
                 .SetProperty("PublishBuilding", true)
-                .SetProperty("PublishPlatform", Os)
+                .SetProperty("PublishPlatform", OsName)
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
                 .SetProperty("PublishDir", AppPublishPath));

@@ -41,11 +41,11 @@ partial class Build
                 .SetProperty("TrimMode", "full")
                 .SetProperty("Platform", Arch)
                 .SetProperty("PublishBuilding", true)
-                .SetProperty("PublishPlatform", Os)
+                .SetProperty("PublishPlatform", OsName)
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
                 .SetProperty("PublishDir", LauncherPublishPath));
-            var extension = Os == "windows" ? ".exe" : "";
+            var extension = OsName == "windows" ? ".exe" : "";
             File.Move(LauncherPublishPath / "ClassIsland.Launcher" + extension, LauncherPublishPath / "ClassIsland" + extension);
         });
 

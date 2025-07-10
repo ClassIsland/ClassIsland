@@ -27,7 +27,7 @@ partial class Build : NukeBuild
     [Solution] readonly Solution Solution;
     
     [Parameter("Arch")] readonly string Arch;
-    [Parameter("Os")] readonly string Os;
+    [Parameter("OsName")] readonly string OsName;
     [Parameter("Package")] readonly string Package;
     [Parameter("BuildType")] readonly string BuildType;
     [Parameter("BuildName")] readonly string BuildName;
@@ -48,21 +48,21 @@ partial class Build : NukeBuild
     
 
     Target GenerateMetadata => _ => _
-        .Requires(() => Os)
+        .Requires(() => OsName)
         .Requires(() => Arch)
         .Requires(() => Package)
         .Requires(() => BuildType)
         .Requires(() => BuildName)
         .Executes(() =>
         {
-            var osRid = Os switch
+            var osRid = OsName switch
             {
                 "windows" => "win",
                 "linux" => "linux",
-                _ => throw new InvalidOperationException($"不支持的平台：{Os}")
+                _ => throw new InvalidOperationException($"不支持的平台：{OsName}")
             };
             RuntimeIdentifier = $"{osRid}-{Arch}";
-            PublishArtifactName = $"out_{BuildName}_{Os}_{Arch}_{BuildType}_{Package}";
+            PublishArtifactName = $"out_{BuildName}_{OsName}_{Arch}_{BuildType}_{Package}";
             IsSecretFilled = !(string.IsNullOrEmpty(ApiSigningKey) || string.IsNullOrEmpty(ApiSigningKeyPs));
             AppPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
             LauncherPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
