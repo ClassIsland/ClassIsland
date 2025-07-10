@@ -7,7 +7,7 @@ if ($(Test-Path ./out) -eq $false) {
 }
 
 foreach ($artifact in $artifacts) {
-    if ($artifact -eq "out_nupkg.zip") {
+    if ($artifact -eq "out_nupkg") {
         continue
     }
     Copy-Item ./out_artifacts/$($artifact.Name)/* -Destination ./out/ -Recurse -Force
