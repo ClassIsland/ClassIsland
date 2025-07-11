@@ -1,8 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+
+#if Platforms_Windows
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+#endif
 
 var root = Path.GetFullPath(Path.GetDirectoryName(Environment.ProcessPath) ?? "");
 var installation = Directory.GetDirectories(root)
