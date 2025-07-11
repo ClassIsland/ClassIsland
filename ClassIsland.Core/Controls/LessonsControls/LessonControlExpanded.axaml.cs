@@ -37,6 +37,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private bool _extraInfo4ShowSeconds = false;
     private ILessonControlSettings? _settingsSource;
     private Subject _displayingSubject = Subject.Empty;
+    private bool _attachedToVisualTree = false;
 
     public static readonly StyledProperty<ILessonControlSettings> DefaultLessonControlSettingsProperty = AvaloniaProperty.Register<LessonControlExpanded, ILessonControlSettings>(
         nameof(DefaultLessonControlSettings), new LessonControlAttachedSettings());
@@ -99,7 +100,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
 
     private void OnIsLiveUpdatePropertyChanged()
     {
-        if (IsLiveUpdatingEnabled)
+        if (IsLiveUpdatingEnabled && _attachedToVisualTree)
         {
             LessonsService = IAppHost.GetService<ILessonsService>();
             ExactTimeService = IAppHost.GetService<IExactTimeService>();
@@ -146,6 +147,21 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         this.GetObservable(IsLiveUpdatingEnabledProperty)
             .Subscribe(new AnonymousObserver<bool>(_ => OnIsLiveUpdatePropertyChanged()));
         this.GetObservable(CurrentTimeLayoutItemProperty).Subscribe(_ => UpdateSubject());
+        AttachedToVisualTree += OnAttachedToVisualTree;
+        DetachedFromVisualTree += OnDetachedFromVisualTree;
+    }
+
+
+    private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        _attachedToVisualTree = true;
+    }
+    
+    private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        _attachedToVisualTree = false;
+        if (LessonsService != null) 
+            LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
     }
 
     ~LessonControlExpanded()
@@ -176,6 +192,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
             LeftSeconds = TotalSeconds - Seconds;
         }
 
+        
         if (SettingsSource != null)
         {
             MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&
