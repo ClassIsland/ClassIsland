@@ -67,9 +67,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     {
     };
 
-    private string _selectedChannel = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public";
     private DateTime _lastCheckUpdateTime = DateTime.MinValue;
-    private AppCenterReleaseInfo _lastCheckUpdateInfoCache = new();
     private UpdateStatus _lastUpdateStatus = UpdateStatus.UpToDate;
     private int _updateMode = 3;
     private bool _autoInstallUpdateNextStartup = true;
@@ -117,7 +115,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Dictionary<string, SpeedTestResult> _speedTestResults = new();
     private bool _isAutoSelectUpgradeMirror = true;
     private DateTime _lastSpeedTest = DateTime.MinValue;
-    private UpdateSourceKind _lastUpdateSourceKind = UpdateSourceKind.None;
     private string _updateReleaseInfo = "";
     private Version _updateVersion = new Version();
     private Release _lastCheckUpdateInfoCacheGitHub = new Release();
@@ -1561,18 +1558,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [Obsolete]
-    public string SelectedChannel
-    {
-        get => _selectedChannel;
-        set
-        {
-            if (value == _selectedChannel) return;
-            _selectedChannel = value;
-            OnPropertyChanged();
-        }
-    }
-
     public DateTime LastCheckUpdateTime
     {
         get => _lastCheckUpdateTime;
@@ -1637,17 +1622,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_lastSpeedTest)) return;
             _lastSpeedTest = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public UpdateSourceKind LastUpdateSourceKind
-    {
-        get => _lastUpdateSourceKind;
-        set
-        {
-            if (value == _lastUpdateSourceKind) return;
-            _lastUpdateSourceKind = value;
             OnPropertyChanged();
         }
     }
