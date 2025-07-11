@@ -155,9 +155,12 @@ public partial class MainWindow : Window
         set => SetValue(NotificationProgressBarValueProperty, value);
     
     }
+
+    public const string DefaultFontFamilyKey =
+        "avares://ClassIsland/Assets/Fonts/#HarmonyOS Sans SC, avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable";
     
     public static FontFamily DefaultFontFamily { get; }=
-        FontFamily.Parse("avares://ClassIsland/Assets/Fonts/#HarmonyOS Sans SC, avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable");
+        FontFamily.Parse(DefaultFontFamilyKey);
 
     public MainWindow(SettingsService settingsService, 
         IProfileService profileService,

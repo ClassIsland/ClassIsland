@@ -9,13 +9,18 @@ public class StringToFontFamilyConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        var v = (string)value;
-        var fontFamily = FontFamily.Parse(v);
-        if (fontFamily.ToString() == MainWindow.DefaultFontFamily.ToString())
+        try
+        {
+            var v = (string)value;
+            var fontFamily = FontFamily.Parse(v);
+            return fontFamily.ToString() == MainWindow.DefaultFontFamily.ToString()
+                ? MainWindow.DefaultFontFamily
+                : fontFamily;
+        }
+        catch (Exception)
         {
             return MainWindow.DefaultFontFamily;
         }
-        return fontFamily;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
