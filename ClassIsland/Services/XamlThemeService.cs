@@ -34,7 +34,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     private Window MainWindow { get; } = AppBase.Current.MainWindow!;
 
-    public static readonly string ThemesPath = Path.Combine(App.AppConfigPath, "Themes");
+    public static readonly string ThemesPath = Path.Combine(CommonDirectories.AppConfigPath, "Themes");
 
     public ObservableCollection<ThemeInfo> Themes { get; } = [];
 
@@ -48,7 +48,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     public ObservableDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
 
-    public static readonly string ThemesPkgRootPath = Path.Combine(App.AppCacheFolderPath, "ThemePackages");
+    public static readonly string ThemesPkgRootPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "ThemePackages");
     private ObservableDictionary<string, ThemeInfo> _mergedThemes = [];
 
     public event EventHandler? RestartRequested;

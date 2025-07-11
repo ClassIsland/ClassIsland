@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia.Platform;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Services.Management;
@@ -33,7 +34,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     public string CurrentProfilePath { 
         get; 
         set;
-    } = Path.Combine(App.AppRootFolderPath, @"Default.json");
+    } = Path.Combine(CommonDirectories.AppRootFolderPath, @"Default.json");
 
     public static readonly string ManagementClassPlanPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
@@ -44,7 +45,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     public static readonly string ManagementSubjectsPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
 
-    public static readonly string ProfilePath = Path.Combine(App.AppRootFolderPath, "Profiles");
+    public static readonly string ProfilePath = Path.Combine(CommonDirectories.AppRootFolderPath, "Profiles");
 
     public Profile Profile {
         get;

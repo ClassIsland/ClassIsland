@@ -50,7 +50,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
 
-    internal static string UpdateCachePath { get; } = Path.Combine(App.AppCacheFolderPath, "Update");
+    internal static string UpdateCachePath { get; } = Path.Combine(CommonDirectories.AppCacheFolderPath, "Update");
 
     internal const string UpdateMetadataUrl =
         "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/disturb/index.json";
@@ -59,7 +59,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 #if IsMsix
         Path.Combine(ApplicationData.Current.TemporaryFolder.Path, "UpdateTemp");
 #else
-        Path.Combine(App.AppRootFolderPath, "UpdateTemp");
+        Path.Combine(CommonDirectories.AppRootFolderPath, "UpdateTemp");
 #endif
 
     public VersionsIndex Index { get; set; }

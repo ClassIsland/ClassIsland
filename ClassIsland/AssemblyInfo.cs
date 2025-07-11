@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Windows;
 
@@ -5,4 +6,6 @@ using System.Windows;
 // [assembly: AssemblyFileVersion("1.4.3.1")]
 // [assembly: AssemblyTitle("ClassIsland")]
 // [assembly: AssemblyProduct("ClassIsland")]
-[assembly: SupportedOSPlatform("Windows")]
+// [assembly: SupportedOSPlatform("Windows")]
+
+[assembly:InternalsVisibleTo("ClassIsland.Desktop")]

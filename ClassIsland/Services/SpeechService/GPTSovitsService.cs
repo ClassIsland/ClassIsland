@@ -25,7 +25,7 @@ namespace ClassIsland.Services.SpeechService;
 [SpeechProviderInfo("classisland.speech.gpt-sovits", "GPT-SoVITS")]
 public class GptSoVitsService : ISpeechService
 {
-    public static readonly string GPTSoVITSCacheFolderPath = Path.Combine(App.AppCacheFolderPath, "GPTSoVITS");
+    public static readonly string GPTSoVITSCacheFolderPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "GPTSoVITS");
 
     private ILogger<GptSoVitsService> Logger { get; } = App.GetService<ILogger<GptSoVitsService>>();
 

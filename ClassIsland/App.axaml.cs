@@ -106,33 +106,7 @@ public partial class App : AppBase, IAppHost
     public bool IsMutexCreateNew { get; set; } = false;
     private ILogger<App>? Logger { get; set; }
     //public static IHost? Host;
-
-    public static readonly string AppRootFolderPath =
-#if IsMsix
-        ApplicationData.Current.LocalFolder.Path;
-#else
-        "./";
-#endif
-    public static readonly string AppDataFolderPath =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassIsland");
-
-    public static readonly string AppLogFolderPath = Path.Combine(AppRootFolderPath, "Logs");
-
-    public static readonly string AppConfigPath = Path.Combine(AppRootFolderPath, "Config");
-
-    public static readonly string AppCacheFolderPath =
-#if IsMsix
-        ApplicationData.Current.LocalCacheFolder.Path;
-#else
-        Path.Combine(AppRootFolderPath, "Cache");
-#endif
-
-    public static readonly string AppTempFolderPath =
-#if IsMsix
-        ApplicationData.Current.TemporaryFolder.Path;
-#else
-        Path.Combine(AppRootFolderPath, "Temp");
-#endif
+    
 
     public static T GetService<T>() => IAppHost.GetService<T>();
 
@@ -177,7 +151,10 @@ public partial class App : AppBase, IAppHost
 #endif
     ;
 
-    public override string OperatingSystem => "windows";
+    public override string OperatingSystem { get; internal set; } = "unknown";
+    
+    public override string PackagingType { get; internal set; } = "folderClassic";
+    
     public override string Platform =>
 #if PLATFORM_x64
     "x64"
@@ -205,8 +182,76 @@ public partial class App : AppBase, IAppHost
         //TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
     }
 
+    private void ActivatePackageType()
+    {
+        if (IsMsix)
+        {
+            PackagingType = "msix";
+            return;
+        }
+        var packageTypeDir = Path.Combine(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? "./",
+            "PackageType");
+        var fallbackPackageTypeDir = Path.Combine("../", "PackageType");
+        var packagingRoot = Path.GetFullPath(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? "../");
+        if (File.Exists(packageTypeDir))
+        {
+            try
+            {
+                PackagingType = File.ReadAllText(packageTypeDir);
+                CommonDirectories.AppPackageRoot = packagingRoot;
+                return;
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+        }
+
+        if (File.Exists(fallbackPackageTypeDir))
+        {
+            try
+            {
+                PackagingType = File.ReadAllText(fallbackPackageTypeDir);
+                CommonDirectories.AppPackageRoot = packagingRoot;
+                return;
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+        }
+    }
+
+    private void ActivateAppDirectories()
+    {
+        if (IsMsix)
+        {
+#if IsMsix
+            CommonDirectories.AppRootFolderPath = ApplicationData.Current.LocalFolder.Path;
+            CommonDirectories.OverrideAppCacheFolderPath = ApplicationData.Current.LocalCacheFolder.Path;
+            CommonDirectories.OverrideAppTempFolderPath = ApplicationData.Current.TemporaryFolder.Path;
+#endif
+            return;
+        }
+
+        CommonDirectories.AppRootFolderPath = PackagingType switch
+        {
+            "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
+            "installer" or "deb" or "appImage" => Path.GetFullPath(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
+            _ => CommonDirectories.AppRootFolderPath
+        };
+
+        if (!Directory.Exists(CommonDirectories.AppRootFolderPath))
+        {
+            Directory.CreateDirectory(CommonDirectories.AppRootFolderPath);
+        }
+    }
+
     public override void Initialize()
     {
+        ActivatePackageType();
+        ActivateAppDirectories();
         this.EnableHotReload();
         AvaloniaXamlLoader.Load(this);
         if (DesktopLifetime != null)
@@ -239,7 +284,7 @@ public partial class App : AppBase, IAppHost
 
         try
         {
-            var startupCountFilePath = Path.Combine(AppRootFolderPath, ".startup-count");
+            var startupCountFilePath = Path.Combine(CommonDirectories.AppRootFolderPath, ".startup-count");
             if (File.Exists(startupCountFilePath))
             {
                 File.Delete(startupCountFilePath);
@@ -452,7 +497,7 @@ public partial class App : AppBase, IAppHost
         // 检测目录是否可以访问
         try
         {
-            var testWritePath = Path.Combine(AppRootFolderPath, "./.test-write");
+            var testWritePath = Path.Combine(CommonDirectories.AppRootFolderPath, "./.test-write");
             await File.WriteAllTextAsync(testWritePath, "");
             File.Delete(testWritePath);
         }
@@ -463,7 +508,7 @@ public partial class App : AppBase, IAppHost
             return;
         }
 
-        var startupCountFilePath = Path.Combine(AppRootFolderPath, ".startup-count");
+        var startupCountFilePath = Path.Combine(CommonDirectories.AppRootFolderPath, ".startup-count");
         var startupCount = File.Exists(startupCountFilePath)
             ? (int.TryParse(await File.ReadAllTextAsync(startupCountFilePath), out var count) ? count + 1 : 1)
             : 1;

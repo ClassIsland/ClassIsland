@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -55,7 +56,11 @@ if (installation == null || !File.Exists(Path.Combine(installation, executableNa
 var startInfo = new ProcessStartInfo()
 {
     FileName = Path.Combine(Path.Combine(installation, executableName)),
-    WorkingDirectory = root
+    WorkingDirectory = root,
+    EnvironmentVariables =
+    {
+        {"ClassIsland_PackageRoot", Path.GetFullPath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ".")}
+    }
 };
 foreach (var i in args)
 {

@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared;
 using System.Text.Json;
+using ClassIsland.Core;
 using Microsoft.Extensions.DependencyInjection;
 using ClassIsland.Core.Models.Action;
 using TriggerBase = ClassIsland.Core.Abstractions.Automation.TriggerBase;
@@ -21,7 +22,7 @@ namespace ClassIsland.Services;
 
 public class AutomationService : ObservableRecipient, IAutomationService
 {
-    public static readonly string AutomationConfigsFolderPath = Path.Combine(App.AppConfigPath, "Automations/");
+    public static readonly string AutomationConfigsFolderPath = Path.Combine(CommonDirectories.AppConfigPath, "Automations/");
     public string CurrentConfig { get; set; }
     public string CurrentConfigPath => Path.GetFullPath(Path.Combine(AutomationConfigsFolderPath, CurrentConfig + ".json"));
 

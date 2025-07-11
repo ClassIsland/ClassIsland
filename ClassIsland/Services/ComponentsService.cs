@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -24,7 +25,7 @@ using ComponentSettingsList = ObservableCollection<ComponentSettings>;
 
 public class ComponentsService : ObservableRecipient, IComponentsService
 {
-    public static readonly string ComponentSettingsPath = Path.Combine(App.AppConfigPath, "ComponentLayouts/");
+    public static readonly string ComponentSettingsPath = Path.Combine(CommonDirectories.AppConfigPath, "ComponentLayouts/");
 
     private ComponentProfile _currentComponents = new();
     private IReadOnlyList<string> _componentConfigs = new List<string>();

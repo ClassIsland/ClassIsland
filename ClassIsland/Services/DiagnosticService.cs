@@ -93,7 +93,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             var logs = string.Join('\n', AppLogService.Logs);
             //await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
             await File.WriteAllTextAsync(Path.Combine(temp, "DiagnosticInfo.txt"), GetDiagnosticInfo());
-            File.Copy(Path.Combine(App.AppRootFolderPath, "Settings.json"), Path.Combine(temp, "Settings.json"));
+            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Path.Combine(temp, "Settings.json"));
             var profile = App.GetService<IProfileService>().CurrentProfilePath;
             Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
             Directory.CreateDirectory(Path.Combine(temp, "Management/"));
@@ -103,9 +103,9 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {
                 File.Copy(file, Path.Combine(temp, "Management/", Path.GetFileName(file)));
             }
-            File.Copy(Path.Combine(App.AppRootFolderPath, "./Profiles", profile), Path.Combine(temp, "Profiles/",  profile));
-            FileFolderService.CopyFolder(Path.Combine(App.AppConfigPath), Path.Combine(temp, "Config/"));
-            FileFolderService.CopyFolder(Path.Combine(App.AppLogFolderPath), Path.Combine(temp, "Logs/"));
+            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles", profile), Path.Combine(temp, "Profiles/",  profile));
+            FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppConfigPath), Path.Combine(temp, "Config/"));
+            FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppLogFolderPath), Path.Combine(temp, "Logs/"));
 
             File.Delete(path);
             await Task.Run(() =>

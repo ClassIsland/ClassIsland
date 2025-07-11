@@ -530,7 +530,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         Process.Start(new ProcessStartInfo()
         {
-            FileName = Path.GetFullPath(App.AppLogFolderPath) ?? "",
+            FileName = Path.GetFullPath(CommonDirectories.AppLogFolderPath) ?? "",
             UseShellExecute = true
         });
     }
@@ -553,7 +553,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         Process.Start(new ProcessStartInfo()
         {
-            FileName = Path.GetFullPath(App.AppRootFolderPath) ?? "",
+            FileName = Path.GetFullPath(CommonDirectories.AppRootFolderPath) ?? "",
             UseShellExecute = true
         });
     }

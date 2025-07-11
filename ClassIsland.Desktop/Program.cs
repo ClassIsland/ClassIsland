@@ -21,6 +21,12 @@ class Program
         return AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
+#if Platforms_Windows
+                app.OperatingSystem = "windows";
+#endif
+#if Platforms_Linux
+                app.OperatingSystem = "linux";
+#endif
                 app.Initialized += (_, _) => postInit();
                 return app;
             })

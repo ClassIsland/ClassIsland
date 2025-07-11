@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ClassIsland.Core;
 using ClassIsland.Helpers;
 using Microsoft.Extensions.Logging;
 using Path = System.IO.Path;
@@ -41,9 +42,9 @@ public class FileLoggerProvider : ILoggerProvider
     {
         try
         {
-            var logs = Directory.GetFiles(App.AppLogFolderPath);
+            var logs = Directory.GetFiles(CommonDirectories.AppLogFolderPath);
             var currentLogFile = GetLogFileName();
-            _logStream = File.Open(Path.Combine(App.AppLogFolderPath, currentLogFile), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+            _logStream = File.Open(Path.Combine(CommonDirectories.AppLogFolderPath, currentLogFile), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
             _logWriter = new StreamWriter(_logStream)
             {
                 AutoFlush = true
@@ -88,7 +89,7 @@ public class FileLoggerProvider : ILoggerProvider
 
     private static List<string?> GetLogs()
     {
-        return Directory.GetFiles(App.AppLogFolderPath).Select(Path.GetFileName).ToList();
+        return Directory.GetFiles(CommonDirectories.AppLogFolderPath).Select(Path.GetFileName).ToList();
     }
 
     internal void WriteLog(string log)

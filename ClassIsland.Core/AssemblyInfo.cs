@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Avalonia.Metadata;
 
 [assembly: InternalsVisibleTo("ClassIsland")]
+[assembly: InternalsVisibleTo("ClassIsland.Desktop")]
 
 [assembly: XmlnsPrefix("http://classisland.tech/schemas/xaml/core", "ci")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core")]

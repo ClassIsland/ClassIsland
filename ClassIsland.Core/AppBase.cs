@@ -64,7 +64,7 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用打包类型
     /// </summary>
-    public string PackagingType => IsMsix ? "msix" : "folder";
+    public abstract string PackagingType { get; internal set; }
 
     /// <summary>
     /// 应用二进制文件的平台架构
@@ -74,7 +74,7 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用二进制文件面向的操作系统
     /// </summary>
-    public abstract string OperatingSystem { get; }
+    public abstract string OperatingSystem { get; internal set; }
 
     /// <summary>
     /// 应用分发频道
