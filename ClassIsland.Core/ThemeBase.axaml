@@ -23,7 +23,6 @@
 
     <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
     <converters:BooleanToBooleanReConverter x:Key="InvertBooleanConverter" />
-    <converters:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
     <converters:IntToFontWeightConverter x:Key="IntToFontWeightConverter" />
     <converters:BooleanAndExpressionMultiConverter x:Key="BooleanAndExpressionMultiConverter" />
     <converters:IntToStringConverter x:Key="IntToStringConverter" />

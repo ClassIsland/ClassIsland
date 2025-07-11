@@ -9,6 +9,8 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
       xmlns:controls2="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      xmlns:settingsPages="clr-namespace:ClassIsland.ViewModels.SettingsPages"
+      xmlns:classIsland="clr-namespace:ClassIsland"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       d:DataContext="{d:DesignInstance local:AppearanceSettingsPage}">
@@ -26,6 +28,7 @@
                 <controls2:SettingsExpander.Footer>
                     <Slider Width="180" Minimum="0.75" Maximum="2.5"
                             VerticalAlignment="Center"
+                            Classes="auto-tooltip"
                             Value="{Binding ViewModel.SettingsService.Settings.Scale}"
                             TickFrequency="0.05"
                             TickPlacement="None"
@@ -57,6 +60,7 @@
                                         Description="主界面背景的不透明度。">
                 <controls2:SettingsExpander.Footer>
                     <Slider Width="180" Minimum="0" Maximum="1"
+                            Classes="auto-tooltip"
                             Value="{Binding ViewModel.SettingsService.Settings.Opacity}"
                             TickFrequency="0.05"
                             IsSnapToTickEnabled="True"/>
@@ -71,6 +75,7 @@
                     <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
                             Value="{Binding ViewModel.SettingsService.Settings.RadiusX}"
                             TickFrequency="0.5"
+                            Classes="auto-tooltip"
                             IsSnapToTickEnabled="True"
                             VerticalAlignment="Center"/>
                 </controls2:SettingsExpander.Footer>
@@ -85,6 +90,7 @@
                         <Slider Width="130" Minimum="0" Maximum="150"
                                 Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
                                 TickFrequency="5"
+                                Classes="auto-tooltip"
                                 IsSnapToTickEnabled="True"/>
                         <TextBox Text="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={StaticResource IntToStringConverter}}"
                                  Width="50"/>
@@ -361,37 +367,32 @@
             <!-- </StackPanel> -->
             <Separator Margin="0 16 0 8" />
             <controls1:IconText Glyph="&#xF26F;" Text="字体" Margin="0 0 0 8" />
-            <!-- TODO: 自定义字体 -->
-            <!-- <controls1:SettingsCard IconGlyph="FormatFont" Header="自定义字体" -->
-            <!--                                                Description="自定义主界面显示课表的字体。"> -->
-            <!--     <controls1:SettingsCard.Switcher> -->
-            <!--         <Grid> -->
-            <!--             <ComboBox ItemsSource="{Binding ViewModel.FontFamilies}" -->
-            <!--                       Foreground="{DynamicResource MaterialDesignBody}" -->
-            <!--                       SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}"> -->
-            <!--                 <ComboBox.ItemTemplate> -->
-            <!--                     <DataTemplate> -->
-            <!--                         <TextBlock FontFamily="{Binding}" FontWeight="Normal" -->
-            <!--                                    ToolTip.Tip="{Binding Source}"> -->
-            <!--                             <TextBlock.Style> -->
-            <!--                                 <Style TargetType="TextBlock"> -->
-            <!--                                     <Style.Triggers> -->
-            <!--                                         <DataTrigger Binding="{Binding Source}" -->
-            <!--                                                      Value="/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC"> -->
-            <!--                                             <Setter Property="Text" -->
-            <!--                                                     Value="（默认）HarmonyOS Sans SC" /> -->
-            <!--                                         </DataTrigger> -->
-            <!--                                     </Style.Triggers> -->
-            <!--                                     <Setter Property="Text" Value="{Binding Source}" /> -->
-            <!--                                 </Style> -->
-            <!--                             </TextBlock.Style> -->
-            <!--                         </TextBlock> -->
-            <!--                     </DataTemplate> -->
-            <!--                 </ComboBox.ItemTemplate> -->
-            <!--             </ComboBox> -->
-            <!--         </Grid> -->
-            <!--     </controls1:SettingsCard.Switcher> -->
-            <!-- </controls1:SettingsCard> -->
+            <controls2:SettingsExpander Header="自定义字体"
+                                        Description="自定义主界面显示课表的字体。"
+                                        IconSource="{controls1:FluentIconSource &#xF271;}">
+                <controls2:SettingsExpander.Footer>
+                    <ComboBox ItemsSource="{Binding ViewModel.FontFamilies}"
+                              Foreground="{DynamicResource MaterialDesignBody}"
+                              SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock FontFamily="{Binding}" FontWeight="Normal"
+                                           ToolTip.Tip="{Binding Name}"
+                                           Classes.DefaultFont="{Binding Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static classIsland:MainWindow.DefaultFontFamily}}">
+                                    <TextBlock.Styles>
+                                        <Style Selector="TextBlock">
+                                            <Style Selector="^.DefaultFont">
+                                                <Setter Property="Text" Value="HarmonyOS Sans SC（默认）"/>
+                                            </Style>
+                                            <Setter Property="Text" Value="{Binding }" />
+                                        </Style>
+                                    </TextBlock.Styles>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
             <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF26F;}"
                                         Header="自定义字重"
                                         Description="自定义主界面显示的字体的字重，需要对应字体支持。">
@@ -497,22 +498,46 @@
                 </controls2:SettingsExpander.Footer>
             </controls2:SettingsExpander>
             <!-- 字体预览 -->
-            <controls1:Field Label="字体预览">
-                <TextBox
-                    FontWeight="{Binding ViewModel.SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
-                    FontSize="17"
-                    Padding="8"
-                    IsReadOnly="False"
-                    AcceptsReturn="True"
-                    FontFamily="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Mode=OneWay}"
-                    Margin="0 4 0 0"
-                    TextAlignment="Center"
-                    xml:space="preserve">我是…终将升起的烈阳！
+            <TabControl Classes="compact" Padding="0">
+                <TabItem Header="字体预览">
+                    <TextBox
+                        FontWeight="{Binding ViewModel.SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
+                        FontSize="17"
+                        Padding="8"
+                        IsReadOnly="False"
+                        AcceptsReturn="True"
+                        FontFamily="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
+                        Margin="0 4 0 0"
+                        TextAlignment="Center"
+                        xml:space="preserve">以旧日余烬，为来世破晓！
 语文 数学 英语 历史 物理 政治 化学 生物 地理
 the quick brown fox jumps over a lazy dog
 THE QUICK BROWN FOX JUMPS OVER A LAZY DOG
 8:00-12:00 1234567890 +-*/</TextBox>
-            </controls1:Field>
+                </TabItem>
+                <TabItem Header="字号预览">
+                    <StackPanel Spacing="2">
+                        <controls1:Field Label="测试文本">
+                            <TextBox Text="{Binding ViewModel.FontSizeTestText}"/>
+                        </controls1:Field>
+                        <TextBlock TextWrapping="Wrap"
+                                   FontFamily="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
+                                   FontWeight="{Binding ViewModel.SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}">
+                            <Run Text="{Binding ViewModel.FontSizeTestText}"
+                                 FontSize="{Binding ViewModel.SettingsService.Settings.MainWindowSecondaryFontSize}" />
+                            <LineBreak />
+                            <Run Text="{Binding ViewModel.FontSizeTestText}"
+                                 FontSize="{Binding ViewModel.SettingsService.Settings.MainWindowBodyFontSize}" />
+                            <LineBreak />
+                            <Run Text="{Binding ViewModel.FontSizeTestText}"
+                                 FontSize="{Binding ViewModel.SettingsService.Settings.MainWindowEmphasizedFontSize}" />
+                            <LineBreak />
+                            <Run Text="{Binding ViewModel.FontSizeTestText}"
+                                 FontSize="{Binding ViewModel.SettingsService.Settings.MainWindowLargeFontSize}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

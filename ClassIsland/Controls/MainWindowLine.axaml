@@ -193,7 +193,6 @@
                 </Transitions>
             </Setter.Value>
         </Setter>
-        
         <Style Selector="^:dock-left /template/:is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
@@ -203,29 +202,11 @@
         <Style Selector="^:dock-right /template/ :is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
-        <Style Selector="^:dock-top">
-            <Setter Property="Margin">
-                <Setter.Value>
-                    <MultiBinding Converter="{StaticResource DoubleToThicknessMultiConverter}">
-                        <Binding Source="{x:Null}"/>
-                        <Binding Source="{x:Null}"/>
-                        <Binding Source="{x:Null}"/>
-                        <Binding Path="ViewModel.Settings.MainWindowLineVerticalMargin"  RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
-                    </MultiBinding>
-                </Setter.Value>
-            </Setter>
+        <Style Selector="^:dock-top" >
+            <Setter Property="Margin" Value="{Binding ViewModel.Settings.MainWindowLineVerticalMargin, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={x:Static controls:MainWindowLine.DoubleToThicknessBottomConverter}}"/>
         </Style>
         <Style Selector="^:dock-bottom">
-            <Setter Property="Margin">
-                <Setter.Value>
-                    <MultiBinding Converter="{StaticResource DoubleToThicknessMultiConverter}">
-                        <Binding Source="{x:Null}"/>
-                        <Binding Path="ViewModel.Settings.MainWindowLineVerticalMargin"  RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
-                        <Binding Source="{x:Null}"/>
-                        <Binding Source="{x:Null}"/>
-                    </MultiBinding>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Margin" Value="{Binding ViewModel.Settings.MainWindowLineVerticalMargin, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={x:Static controls:MainWindowLine.DoubleToThicknessTopConverter}}"/>
         </Style>
         <Style Selector="^ /template/ Border#BackgroundBorder">
             <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>

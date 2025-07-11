@@ -23,7 +23,7 @@
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         d:DataContext="{d:DesignInstance local:MainWindow}"
-        FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay}"
+        FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
         SystemDecorations="None"
         ShowInTaskbar="False"
         d:Width="600"

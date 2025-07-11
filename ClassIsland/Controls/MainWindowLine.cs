@@ -13,6 +13,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
+using Avalonia.Data.Converters;
 using Avalonia.Data.Core;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -43,6 +44,7 @@ using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Org.BouncyCastle.Bcpg.Sig;
+using ReactiveUI;
 using Animation = Avalonia.Animation.Animation;
 using Cue = Avalonia.Animation.Cue;
 using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
@@ -230,6 +232,12 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
     private object TopmostLock { get; } = new();
 
+    public static FuncValueConverter<double, Thickness> DoubleToThicknessTopConverter { get; } =
+        new(x => new Thickness(0, x, 0, 0));
+    
+    public static FuncValueConverter<double, Thickness> DoubleToThicknessBottomConverter { get; } =
+        new(x => new Thickness(0, 0, 0, x));
+
     public MainWindowLine()
     {
         Loaded += OnLoaded;
@@ -243,6 +251,8 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         this.GetObservable(IsMouseInProperty)
             .Skip(1)
             .Subscribe(_ => UpdateFadeStatus());
+        SettingsService.Settings.ObservableForProperty(x => x.IsCustomBackgroundColorEnabled)
+            .Subscribe(v => PseudoClasses.Set(":custom-background", v.Value));
     }
 
     private void UpdateStyleStates()

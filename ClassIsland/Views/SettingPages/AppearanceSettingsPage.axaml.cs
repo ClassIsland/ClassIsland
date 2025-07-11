@@ -2,6 +2,7 @@ using ClassIsland.Core.Abstractions.Controls;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Services;
@@ -25,7 +26,7 @@ public partial class AppearanceSettingsPage : SettingsPageBase
         DataContext = this;
     }
 
-    private async void ButtonUpdateWallpaper_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonUpdateWallpaper_OnClick(object sender, SelectionChangedEventArgs e)
     {
         // if (SettingsService.Settings.ColorSource is 1 or 3)
         //     await WallpaperPickingService.GetWallpaperAsync();
