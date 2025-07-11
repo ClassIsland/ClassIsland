@@ -17,7 +17,7 @@
     </ci:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ScheduleComponentSettingsControl}}">
         <ScrollViewer>
-            <StackPanel>
+            <StackPanel Classes="animated-intro settings-container" Margin="0">
                 <!-- 附加设置覆盖提示 -->
                 <controls:InfoBar IsOpen="True" Message="此处的设置可以在档案设置中被附加设置覆盖。">
                     <controls:InfoBar.ActionButton>
@@ -32,9 +32,10 @@
                 <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF14B;}"
                                            Header="显示时间点附加信息"
                                            Description="在当前的时间点上显示当前时间点的附加信息。"
-                                           Footer="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=TwoWay}"
-                                           IsExpanded="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=OneWay}"
-                                           Classes="switcher">
+                                           IsExpanded="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=OneWay}">
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=TwoWay}"/>
+                    </controls:SettingsExpander.Footer>
                     <controls:SettingsExpanderItem Content="要显示的附加信息">
                         <controls:SettingsExpanderItem.Footer>
                             <ComboBox Grid.Row="0" Grid.Column="1"
@@ -81,8 +82,9 @@
                                 <TextBlock Text="当剩余时间不足" VerticalAlignment="Center"
                                            Opacity="0.75"/>
                                 <TextBox Text="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Converter={StaticResource IntToStringConverter}}"
-                                         MinWidth="75" Margin="3 0 0 0" TextAlignment="Center"
-                                         Classes="dense"/>
+                                         MinWidth="75" Margin="3 0 0 0" TextAlignment="Center"/>
+                                <TextBlock Text="秒" VerticalAlignment="Center"
+                                           Opacity="0.75"/>
                             </StackPanel>
                         </controls:SettingsExpanderItem.Footer>
                     </controls:SettingsExpanderItem>
@@ -92,9 +94,10 @@
                 <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF361;}"
                                            Header="时间点结束倒计时"
                                            Description="在当前时间点将要结束时显示倒计时。"
-                                           Footer="{Binding Settings.IsCountdownEnabled, Mode=TwoWay}"
-                                           IsExpanded="{Binding Settings.IsCountdownEnabled, Mode=OneWay}"
-                                           Classes="switcher">
+                                           IsExpanded="{Binding Settings.IsCountdownEnabled, Mode=OneWay}">
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.IsCountdownEnabled, Mode=TwoWay}"/>
+                    </controls:SettingsExpander.Footer>
                     <controls:SettingsExpanderItem Content="时间点结束倒计时时长">
                         <controls:SettingsExpanderItem.Footer>
                             <controls:NumberBox Grid.Row="0" Width="100"
@@ -103,32 +106,40 @@
                                      Value="{Binding Settings.CountdownSeconds, Mode=TwoWay}" />
                         </controls:SettingsExpanderItem.Footer>
                     </controls:SettingsExpanderItem>
-                    <controls:SettingsExpanderItem Content="使用模糊倒计时"
-                                                   Footer="{Binding Settings.IsNonExactCountdownEnabled}"
-                                                   Classes="switcher"/>
+                    <controls:SettingsExpanderItem Content="使用模糊倒计时">
+                        <controls:SettingsExpanderItem.Footer>
+                            <ToggleSwitch IsChecked="{Binding Settings.IsNonExactCountdownEnabled, Mode=TwoWay}"/>
+                        </controls:SettingsExpanderItem.Footer>
+                    </controls:SettingsExpanderItem>
                 </controls:SettingsExpander>
                 
                 <!-- 上课时仅显示当前课程 -->
                 <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}"
                                            Header="上课时仅显示当前课程"
-                                           Description="在处于上课类型的时间点时，只显示当前时间点。"
-                                           Footer="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=TwoWay}"
-                                           Classes="switcher"/>
-                
+                                           Description="在处于上课类型的时间点时，只显示当前时间点。">
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=TwoWay}"/>
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
                 <!-- 不显示已结束的课程 -->
                 <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}"
                                            Header="不显示已结束的课程"
-                                           Description="隐藏已结束的课程，只显示当前课程与暂未开始的课程。"
-                                           Footer="{Binding Settings.HideFinishedClass, Mode=TwoWay}"
-                                           Classes="switcher"/>
-                
+                                           Description="隐藏已结束的课程，只显示当前课程与暂未开始的课程。">
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.HideFinishedClass, Mode=TwoWay}"/>
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
                 <!-- 标记换课课程 -->
                 <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE15F;}"
                                            Header="标记换课课程"
-                                           Description="将临时层中的换课课程以高亮色标记，仅支持使用“换课”修改的课程。"
-                                           Footer="{Binding Settings.HighlightChangedClass, Mode=TwoWay}"
-                                           Classes="switcher"/>
-                
+                                           Description="将临时层中的换课课程以高亮色标记，仅支持使用“换课”修改的课程。">
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.HighlightChangedClass, Mode=TwoWay}"/>
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
                 <!-- 课程表文本间距 -->
                 <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE0ED;}"
                                            Header="课程表文本间距"
@@ -144,9 +155,10 @@
                 <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE51C;}"
                                            Header="无课程时显示占位符"
                                            Description="当当前没有加载课表或当日所有课程都已结束且不显示第二日课程时，显示指定的占位符。"
-                                           Footer="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=TwoWay}"
-                                           IsExpanded="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=OneWay}"
-                                           Classes="switcher">
+                                           IsExpanded="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=OneWay}">
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=TwoWay}"/>
+                    </controls:SettingsExpander.Footer>
                     <controls:SettingsExpanderItem Content="当日没有课程的占位符内容">
                         <controls:SettingsExpanderItem.Footer>
                             <TextBox MinWidth="100"

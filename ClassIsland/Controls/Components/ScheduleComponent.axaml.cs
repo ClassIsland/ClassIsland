@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
@@ -13,6 +16,7 @@ using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
+using ReactiveUI;
 
 namespace ClassIsland.Controls.Components;
 
@@ -21,6 +25,7 @@ namespace ClassIsland.Controls.Components;
 /// </summary>
 [MigrateFrom("E7831603-61A0-4180-B51B-54AD75B1A4D3")]  // 课程表（旧）
 [ComponentInfo("1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8", "课程表", "\ue751", "显示当前的课程表信息。")]
+[PseudoClasses(":show-tomorrow-schedule", ":show-tomorrow-schedule-after-school", ":show-tomorrow-schedule-always")]
 public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, INotifyPropertyChanged
 {
     private bool _showCurrentLessonOnlyOnClass = false;
@@ -36,6 +41,8 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
 
     public static readonly StyledProperty<int> LessonsListBoxSelectedIndexProperty = AvaloniaProperty.Register<ScheduleComponent, int>(
         nameof(LessonsListBoxSelectedIndex));
+
+    private IDisposable? _tomorrowScheduleShowModeObserver;
 
     public int LessonsListBoxSelectedIndex
     {
@@ -86,11 +93,27 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         Loaded += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         Loaded += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged;
         Loaded += (_, _) => LessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
+        Loaded += OnLoaded;
         Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
         Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged;
         Unloaded += (_, _) => LessonsService.PropertyChanged -= LessonsServiceOnPropertyChanged;
         InitializeComponent();
         CurrentTimeStateChanged();
+    }
+
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        CheckTomorrowClassShowMode();
+        _tomorrowScheduleShowModeObserver ??= Settings
+            .ObservableForProperty(x => x.TomorrowScheduleShowMode)
+            .Subscribe(_ => CheckTomorrowClassShowMode());
+    }
+
+    private void CheckTomorrowClassShowMode()
+    {
+        PseudoClasses.Set(":show-tomorrow-schedule", Settings.TomorrowScheduleShowMode is 1 or 2);
+        PseudoClasses.Set(":show-tomorrow-schedule-after-school", Settings.TomorrowScheduleShowMode is 1);
+        PseudoClasses.Set(":show-tomorrow-schedule-always", Settings.TomorrowScheduleShowMode is 2);
     }
 
     private void LessonsServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

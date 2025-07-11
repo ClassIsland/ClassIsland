@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Avalonia;
 using Avalonia.Data.Converters;
 
 
@@ -10,8 +11,8 @@ public class SizeDoubleToCornerRadiusConverter : IValueConverter
     {
         return value switch
         {
-            double v1 => v1 / 2,
-            int v2 => v2 / 2,
+            double v1 => new CornerRadius(v1 / 2.0), 
+            int v2 => new CornerRadius(v2 / 2.0),
             _ => null
         };
     }

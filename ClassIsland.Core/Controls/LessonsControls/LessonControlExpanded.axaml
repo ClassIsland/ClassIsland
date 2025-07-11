@@ -30,15 +30,6 @@
             </Setter>
         </Style>
         
-        <Style Selector="local|LessonControlExpanded">
-            <Setter Property="DetailIndex" Value="{Binding SettingsSource.ExtraInfoType, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}" />
-        </Style>
-        <Style Selector="local|LessonControlExpanded[IsLiveUpdatingEnabled=False]">
-            <Setter Property="DetailIndex" Value="0" />
-        </Style>
-        <Style Selector="local|LessonControlExpanded.ExtraInfo4ShowSeconds">
-            <Setter Property="DetailIndex" Value="5" />
-        </Style>
         <Style Selector="TabItem">
             <Setter Property="IsVisible" Value="False"></Setter>
         </Style>
@@ -151,25 +142,25 @@
                     </TabItem>
                     <TabItem>
                         <Grid VerticalAlignment="Bottom">
-                            <Border Background="{DynamicResource PrimaryHueMidBrush}"
+                            <Border Background="{DynamicResource AccentFillColorTertiaryBrush}"
                                     Height="{Binding Bounds.Height, ElementName=BorderStroke}"
                                     ClipToBounds="True"
                                     BorderThickness="1"
-                                    Padding="8 0"
+                                    Padding="8 2"
                                     Opacity="0.3"
                                     VerticalAlignment="Bottom"
                                     CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                             </Border>
                             <Border ClipToBounds="True"
-                                    BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                                    BorderBrush="{DynamicResource AccentFillColorDefaultBrush}"
                                     BorderThickness="1"
-                                    Padding="8 0"
+                                    Padding="8 2"
                                     x:Name="BorderStroke"
                                     VerticalAlignment="Bottom"
                                     CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                                 <Grid>
                                     <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center"
-                                               IsVisible="{Binding SettingsSource.IsNonExactCountdownEnabled}">
+                                               IsVisible="{Binding !SettingsSource.IsNonExactCountdownEnabled}">
                                         <Run Text="-">
                                         </Run><Run Text="{Binding LeftSeconds,
                                                    Converter={StaticResource SecondsToFormatTimeConverter},

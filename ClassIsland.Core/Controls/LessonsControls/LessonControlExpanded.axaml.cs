@@ -183,6 +183,14 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
                              IsLiveUpdatingEnabled ? 1 : 0;
             ExtraInfo4ShowSeconds = SettingsSource.ExtraInfoType == 4 &&
                                     LeftSeconds <= SettingsSource.ExtraInfo4ShowSecondsSeconds;
+            if (ExtraInfo4ShowSeconds)
+            {
+                DetailIndex = 5;
+            }
+            else
+            {
+                DetailIndex = IsLiveUpdatingEnabled ? SettingsSource.ExtraInfoType : 0;
+            }
         }
     }
 
