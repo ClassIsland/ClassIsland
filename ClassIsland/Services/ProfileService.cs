@@ -34,7 +34,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     public string CurrentProfilePath { 
         get; 
         set;
-    } = Path.Combine(CommonDirectories.AppRootFolderPath, @"Default.json");
+    } = "Default.json";
 
     public static readonly string ManagementClassPlanPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
@@ -219,14 +219,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         {
             return;
         }
-        if (CurrentProfilePath.Contains(".\\Profiles\\"))  // TODO: 移除路径硬编码
-        {
-            var splittedFileName = CurrentProfilePath.Split("\\");
-            var fileName = splittedFileName[splittedFileName.Length - 1];
-            SaveProfile(fileName);
-            return;
-        }
-        SaveProfile(CurrentProfilePath);
+        SaveProfile(Path.GetFileName(CurrentProfilePath));
     }
 
     public void SaveProfile(string filename)
