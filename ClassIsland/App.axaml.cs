@@ -224,6 +224,7 @@ public partial class App : AppBase, IAppHost
 
     private void ActivateAppDirectories()
     {
+        PackagingType = PackagingType.Replace("\n", "").Replace("\r", "");
         if (IsMsix)
         {
 #if IsMsix
