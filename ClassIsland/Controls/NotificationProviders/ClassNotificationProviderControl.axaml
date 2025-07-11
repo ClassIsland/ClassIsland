@@ -102,9 +102,9 @@
                            Text="{Binding LessonsService.NextClassSubject.TeacherName}"
                            IsVisible="{Binding ShowTeacherName}"/>
                 <TextBlock Margin="2 0 0 0" FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
-                    <Run Text="{Binding LessonsService.NextClassTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm}}">
+                    <Run Text="{Binding LessonsService.NextClassTimeLayoutItem.StartTime, StringFormat={}{0:hh\\:mm}}">
                     </Run><Run Text="-">
-                    </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm}}"/>
+                    </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndTime, StringFormat={}{0:hh\\:mm}}"/>
                 </TextBlock>
             </StackPanel>
         </Grid>
