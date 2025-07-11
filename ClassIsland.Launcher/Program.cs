@@ -18,9 +18,35 @@ var installation = Directory.GetDirectories(root)
 
         return Version.TryParse(split[1], out var version) ? version : new Version();
     })
+    .ThenBy(x =>
+    {
+        var filename = Path.GetFileName(x);
+        var split = filename.Split('-');
+        if (split.Length <= 2)
+        {
+            return 0;
+        }
+
+        return int.TryParse(split[2], out var n) ? n : 0;
+    })
     .FirstOrDefault();
 
-if (installation == null || !File.Exists(Path.Combine(installation, "ClassIsland.exe")))
+// 获取对应平台的可执行文件路径
+string executableName;
+if (OperatingSystem.IsWindows())
+{
+    executableName = "ClassIsland.Desktop.exe";
+} else if (OperatingSystem.IsLinux())
+{
+    executableName = "ClassIsland.Desktop";
+}
+else
+{
+    ShowError("ClassIsland 正在不支持的平台上运行，无法继续。");
+    return 1;
+}
+
+if (installation == null || !File.Exists(Path.Combine(installation, executableName)))
 {
     ShowError("找不到有效的 ClassIsland 版本，可能是安装已损坏。请在 https://classisland.tech/download 重新下载并安装 ClassIsland。");
     return 1;
@@ -28,7 +54,7 @@ if (installation == null || !File.Exists(Path.Combine(installation, "ClassIsland
 
 var startInfo = new ProcessStartInfo()
 {
-    FileName = Path.Combine(Path.Combine(installation, "ClassIsland.exe")),
+    FileName = Path.Combine(Path.Combine(installation, executableName)),
     WorkingDirectory = root
 };
 foreach (var i in args)
