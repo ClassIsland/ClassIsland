@@ -253,6 +253,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
             .Subscribe(_ => UpdateFadeStatus());
         SettingsService.Settings.ObservableForProperty(x => x.IsCustomBackgroundColorEnabled)
             .Subscribe(v => PseudoClasses.Set(":custom-background", v.Value));
+        PseudoClasses.Set(":custom-background", SettingsService.Settings.IsCustomBackgroundColorEnabled);
     }
 
     private void UpdateStyleStates()
