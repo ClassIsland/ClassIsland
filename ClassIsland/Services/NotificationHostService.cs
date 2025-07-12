@@ -106,6 +106,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     private void FinishNotificationPlaying(NotificationRequest request)
     {
+        Logger.LogTrace("提醒 #{} 已播放完成", request.GetHashCode());
         PlayingNotifications.Remove(request);
         UpdateNotificationPlayingState();
     }
@@ -176,8 +177,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             {
                 prevRequest.ChainedNextRequest = request;
             }
-
             prevRequest = request;
+            request.CompletedToken.Register(() => FinishNotificationPlaying(request));
         }
 
         if (PushNotificationRequests(requests.ToList()))
@@ -262,6 +263,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
         foreach (var request in PlayingNotifications.ToList())
         {
+            // PlayingNotifications.Remove(request);
             request.CancellationTokenSource.Cancel();
             request.CompletedTokenSource.Cancel();
         }
