@@ -70,6 +70,7 @@ partial class Build
                 .SetProperty("PublishPlatform", OsName)
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
+                .SetProperty("SelfContained", BuildType == "selfContained")
                 .SetProperty("PublishDir", AppPublishPath));
         });
 
