@@ -101,9 +101,19 @@ public partial class AboutSettingsPage : SettingsPageBase
         });
     }
 
-    private void ButtonDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.DiagnosticInfo = ViewModel.DiagnosticService.GetDiagnosticInfo();
+        var diagInfo = ViewModel.DiagnosticService.GetDiagnosticInfo();
+        await new ContentDialog()
+        {
+            Title = "诊断信息",
+            Content = new TextBox()
+            {
+                Text = diagInfo
+            },
+            PrimaryButtonText = "确定",
+            DefaultButton = ContentDialogButton.Primary
+        }.ShowAsync();
     }
 
     private async void ButtonContributors_OnClick(object sender, RoutedEventArgs e)

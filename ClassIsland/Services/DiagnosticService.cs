@@ -45,8 +45,12 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         var list = new Dictionary<string, string>
         {
             {"SystemOsVersion",  RuntimeInformation.OSDescription},
+            {"SystemOsArch",  RuntimeInformation.OSArchitecture.ToString()},
             {"SystemDeviceName", name},
             {"SystemDeviceVendor", vendor},
+            {"AppPackageRoot", CommonDirectories.AppPackageRoot},
+            {"AppRoot", CommonDirectories.AppRootFolderPath},
+            {"AppCurrentDirectory", Environment.CurrentDirectory},
             {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},
             {"AppStartupDurationMs", StartupDurationMs.ToString()},
             {"AppVersion", App.AppVersionLong},
