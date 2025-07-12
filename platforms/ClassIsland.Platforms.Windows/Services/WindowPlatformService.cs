@@ -165,7 +165,7 @@ public class WindowPlatformService : IWindowPlatformService
         var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
         try
         {
-            NativeHelpers.ThrowIfUnSuccess(GetWindowText((HWND)handle, pClassName, PwstrCapcity - 1));
+            _ = GetWindowText((HWND)handle, pClassName, PwstrCapcity - 1);
             var className = pClassName.ToString();
             return className;
         }
@@ -180,7 +180,7 @@ public class WindowPlatformService : IWindowPlatformService
         var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
         try
         {
-            NativeHelpers.ThrowIfUnSuccess(GetClassName((HWND)handle, pClassName, PwstrCapcity - 1));
+            _ = GetClassName((HWND)handle, pClassName, PwstrCapcity - 1);
             var className = pClassName.ToString();
             return className;
         }
