@@ -329,6 +329,11 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
+          
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./out_artifacts
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -362,7 +367,7 @@ jobs:
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./out/*.zip,./out/*.appx"
+          artifacts: "./out/*.zip,./out/*.appx","./out/*.deb"
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
