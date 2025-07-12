@@ -31,15 +31,15 @@ jobs:
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        build_type: ['full']
-        package: ['folder', 'selfContained']
+        build_type: ['full', 'selfContained']
+        package: ['folder']
         arch: ['x64', 'x86', 'arm64']
         os: ['windows', 'linux']
         exclude: 
           - os: linux
             arch: x86
           - os: linux
-            package: folder  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
+            build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
       
     name: Build_AppBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
@@ -223,15 +223,15 @@ jobs:
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        build_type: ['full']
-        package: ['folder', 'selfContained']
+        build_type: ['full', 'selfContained']
+        package: ['folder']
         arch: ['x64', 'x86', 'arm64']
         os: ['windows', 'linux']
         exclude:
           - os: linux
             arch: x86
           - os: linux
-            package: folder  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
+            build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
     name: Pack_App_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
       - name: Checkout
