@@ -428,8 +428,7 @@
             <!-- 字体大小 -->
             <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF273;}"
                                         Header="字体大小"
-                                        Description="调整主界面上各类字体的大小。"
-                                        IsExpanded="True">
+                                        Description="调整主界面上各类字体的大小。">
                 <controls2:SettingsExpander.Styles>
                     <Style Selector="controls1|Field">
                         <Setter Property="Width" Value="175"/>
