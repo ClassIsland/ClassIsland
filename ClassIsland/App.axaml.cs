@@ -619,6 +619,7 @@ public partial class App : AppBase, IAppHost
                 // ViewModels
                 services.AddTransient<ProfileSettingsViewModel>();
                 services.AddTransient<DevPortalViewModel>();
+                services.AddTransient<AppLogsViewModel>();
                 // ViewModels/SettingsPages
                 services.AddTransient<GeneralSettingsViewModel>();
                 services.AddTransient<AboutSettingsViewModel>();
@@ -629,7 +630,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddTransient<SplashWindowBase, SplashWindow>();
                 // services.AddTransient<FeatureDebugWindow>();
                 services.AddSingleton<TopmostEffectWindow>();
-                // services.AddSingleton<AppLogsWindow>();
+                services.AddSingleton<AppLogsWindow>();
                 services.AddSingleton<SettingsWindowNew>();
                 services.AddSingleton<ProfileSettingsWindow>();
                 // services.AddTransient<ClassPlanDetailsWindow>();

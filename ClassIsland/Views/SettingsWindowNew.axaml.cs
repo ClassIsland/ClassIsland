@@ -479,7 +479,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private void MenuItemAppLogs_OnClick(object sender, RoutedEventArgs e)
     {
-        // App.GetService<AppLogsWindow>().Open();
+        App.GetService<AppLogsWindow>().Open();
     }
 
     private async void MenuItemExportDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)

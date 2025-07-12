@@ -3,6 +3,7 @@ using System.Windows;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.Logging;
 using ClassIsland.Core.Models.Logging;
+using DynamicData;
 
 namespace ClassIsland.Services.Logging;
 
@@ -10,7 +11,7 @@ public class AppLogService : IAppLogService
 {
     public static readonly int MaxLogEntries = 1000;
 
-    public ObservableCollection<LogEntry> Logs { get; } = new();
+    public SourceList<LogEntry> Logs { get; } = new();
 
     public void AddLog(LogEntry log)
     {
