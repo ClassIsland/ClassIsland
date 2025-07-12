@@ -30,7 +30,7 @@ if ($(Test-Path ./out) -eq $false) {
 $artifacts = Get-ChildItem -Path ./out_artifacts -Directory
 
 foreach ($artifact in $artifacts) {
-    if ($artifact.Contains("out_app_") -ne $true) {
+    if ($artifact.Name.Contains("out_app_") -ne $true) {
         continue
     }
     Copy-Item ./out_artifacts/$($artifact.Name)/* -Destination ./out/ -Recurse -Force
