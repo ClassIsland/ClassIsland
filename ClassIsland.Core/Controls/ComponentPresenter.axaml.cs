@@ -168,13 +168,13 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
             var brush = new SolidColorBrush(Settings.ForegroundColor);
             SetValue(ForegroundProperty, brush);
             SetValue(TextElement.ForegroundProperty, brush);
-            Resources["MaterialDesignBody"] = brush;
+            Resources["TextFillColorPrimaryBrush"] = brush;
         }
         else
         {
-            if (Resources.ContainsKey("MaterialDesignBody"))
+            if (Resources.ContainsKey("TextFillColorPrimaryBrush"))
             {
-                Resources.Remove("MaterialDesignBody");
+                Resources.Remove("TextFillColorPrimaryBrush");
             }
             SetValue(ForegroundProperty, AvaloniaProperty.UnsetValue);
             SetValue(TextElement.ForegroundProperty, AvaloniaProperty.UnsetValue);

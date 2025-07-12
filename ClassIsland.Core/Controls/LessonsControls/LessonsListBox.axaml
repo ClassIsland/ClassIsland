@@ -84,9 +84,6 @@
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                             <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelected}" />
                         </Style>
-                        <Style Selector="^ /template/ ContentPresenter">
-                            <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundSelected}" />
-                        </Style>
                         <Style Selector="^ /template/ Rectangle#SelectionIndicator">
                             <Setter Property="IsVisible" Value="True" />
                             <Setter Property="RenderTransform" Value="scaleY(1)" />
@@ -94,17 +91,11 @@
                         <Style Selector="^:not(:focus) /template/ ContentPresenter#PART_ContentPresenter">
                             <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelected}" />
                         </Style>
-                        <Style Selector="^:not(:focus) /template/ ContentPresenter#PART_ContentPresenter">
-                            <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundSelected}" />
-                        </Style>
 
 
                         <Style Selector="^:pointerover">
                             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                                 <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelectedPointerOver}" />
-                            </Style>
-                            <Style Selector="^ /template/ ContentPresenter">
-                                <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundSelectedPointerOver}" />
                             </Style>
                             <Style Selector="^ /template/ Rectangle#SelectionIndicator">
                                 <Setter Property="Fill" Value="{DynamicResource ListViewItemSelectionIndicatorPointerOverBrush}" />
@@ -114,9 +105,6 @@
                         <Style Selector="^:pressed">
                             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                                 <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelectedPressed}" />
-                            </Style>
-                            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                                <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundSelectedPressed}" />
                             </Style>
                             <Style Selector="^ /template/ Rectangle#SelectionIndicator">
                                 <Setter Property="Fill" Value="{DynamicResource ListViewItemSelectionIndicatorPressedBrush}" />

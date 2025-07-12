@@ -603,13 +603,13 @@ public partial class MainWindow : Window
             var brush = new SolidColorBrush(ViewModel.Settings.CustomForegroundColor);
             ResourceLoaderBorder.SetValue(ForegroundProperty, brush);
             ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, brush);
-            ResourceLoaderBorder.Resources["MaterialDesignBody"] = brush;
+            ResourceLoaderBorder.Resources["TextFillColorPrimaryBrush"] = brush;
         }
         else
         {
-            if (ResourceLoaderBorder.Resources.ContainsKey("MaterialDesignBody"))
+            if (ResourceLoaderBorder.Resources.ContainsKey("TextFillColorPrimaryBrush"))
             {
-                ResourceLoaderBorder.Resources.Remove("MaterialDesignBody");
+                ResourceLoaderBorder.Resources.Remove("TextFillColorPrimaryBrush");
             }
             ResourceLoaderBorder.SetValue(ForegroundProperty, AvaloniaProperty.UnsetValue);
             ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, AvaloniaProperty.UnsetValue);
