@@ -1820,6 +1820,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _windowDockingMonitorIndex) return;
+            
+
+            if (value < 0)
+            {
+                throw new ArgumentException("选择不能为空。");
+            }
             _windowDockingMonitorIndex = value;
             OnPropertyChanged();
         }
