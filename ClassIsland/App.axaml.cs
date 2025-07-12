@@ -779,11 +779,11 @@ public partial class App : AppBase, IAppHost
                 // services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本",
                 //     (DataTemplate)simpleTextWeatherIconTemplateDictionary["SimpleTextWeatherIconTemplate"]!);
                 //
-                // // Plugins
-                // if (!ApplicationCommand.Safe)
-                // {
-                //     PluginService.InitializePlugins(context, services);
-                // }
+                // Plugins
+                if (!ApplicationCommand.Safe)
+                {
+                    PluginService.InitializePlugins(context, services);
+                }
             }).Build();
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Starting;
         Logger = GetService<ILogger<App>>();
