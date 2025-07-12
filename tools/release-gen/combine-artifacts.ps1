@@ -17,7 +17,7 @@ foreach ($artifact in $artifacts) {
 
 if ($(Test-Path ./out_artifacts/signed_artifacts) -eq $true) {
     Write-Host Combining signed artifacts.
-    Copy-Item -Path ./out_artifacts/signed_artifacts/* -DestinationPath ./out/ -Force 
+    Copy-Item -Path ./out_artifacts/signed_artifacts/* -Destination ./out/ -Force 
 } else {
     Write-Host Skipping combine signed artifacts.
 }
