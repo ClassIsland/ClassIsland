@@ -367,7 +367,7 @@ jobs:
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "./out/*.zip,./out/*.appx","./out/*.deb"
+          artifacts: "./out/*.zip,./out/*.appx,./out/*.deb"
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
