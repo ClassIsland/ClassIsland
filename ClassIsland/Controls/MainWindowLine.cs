@@ -630,7 +630,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                 SpeechService.ClearSpeechQueue();
             }
 
-            if (NotificationHostService.RequestQueue.Count < 1 && notificationsShowed)
+            if (NotificationHostService.RequestQueue.Count + _notificationQueue.Count < 1 && notificationsShowed)
             {
                 PseudoClasses.Set(":overlay-anim", true);
                 PseudoClasses.Set(":overlay-out", true);
