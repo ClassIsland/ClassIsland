@@ -66,81 +66,114 @@
             </Grid>
             
             <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                <TabControl SelectedIndex="{Binding MasterTabIndex}" Margin="6 0 0 0"
-                            IsVisible="{Binding SettingsSource.ShowExtraInfoOnTimePoint}"
-                            >
-                    <TabControl.Styles>
-                        <Style Selector="TabControl Rectangle#PART_Separator">
-                            <Setter Property="Fill" Value="{x:Null}"/>
-                        </Style>
-                    </TabControl.Styles>
-                    <TabControl.Resources>
-                    </TabControl.Resources>
-                    <TabItem>
-                        <TabControl VerticalAlignment="Bottom" FontSize="{DynamicResource MainWindowSecondaryFontSize}"
-                                    x:Name="DetailedInfoTabControl"
-                                    SelectedIndex="{Binding DetailIndex}">
-                            <TabItem>
-                                <TextBlock VerticalAlignment="Bottom">
-                                    <Run
-                                        Text="{Binding CurrentTimeLayoutItem.StartTime, StringFormat='{}{0:hh\\:mm}'}">
-                                    </Run><Run Text="-">
-                                    </Run><Run
-                                              Text="{Binding CurrentTimeLayoutItem.EndTime, StringFormat='{}{0:hh\\:mm}'}" />
-                                </TextBlock>
-                            </TabItem>
-                            <TabItem>
-                                <TextBlock VerticalAlignment="Bottom">
-                                    <Run>
-                                        <Run.Text>
-                                            <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay">
-                                                <Binding Path="Seconds" Mode="OneWay" />
-                                                <Binding Path="TotalSeconds" Mode="OneWay" />
-                                            </MultiBinding>
-                                        </Run.Text>
-                                    </Run>
-                                </TextBlock>
-                            </TabItem>
-                            <TabItem>
-                                <TextBlock VerticalAlignment="Bottom">
-                                    <Run Text="-"/><Run>
-                                        <Run.Text>
-                                            <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay"
-                                                          ConverterParameter="1">
-                                                <Binding Path="LeftSeconds" Mode="OneWay" />
-                                                <Binding Path="TotalSeconds" Mode="OneWay" />
-                                            </MultiBinding>
-                                        </Run.Text>
-                                    </Run>
-                                </TextBlock>
-                            </TabItem>
-                            <TabItem>
-                                <TextBlock VerticalAlignment="Bottom">
-                                    <TextBlock.Text>
-                                        <MultiBinding Converter="{StaticResource TimeLongToPercentMultiConverter}"
-                                                      Mode="OneWay">
-                                                <Binding Path="Seconds" Mode="OneWay" />
-                                                <Binding Path="TotalSeconds" Mode="OneWay" />
+                <Panel Margin="6 0 0 0"
+                       IsVisible="{Binding SettingsSource.ShowExtraInfoOnTimePoint}">
+                    <Border>
+                        <Border.IsVisible>
+                            <Binding Path="MasterTabIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                <Binding.ConverterParameter>
+                                    <system:Int32>0</system:Int32>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                        </Border.IsVisible>
+                        <Panel VerticalAlignment="Bottom" TextElement.FontSize="{DynamicResource MainWindowSecondaryFontSize}"
+                               x:Name="DetailedInfoTabControl">
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>0</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run Text="{Binding CurrentTimeLayoutItem.StartTime, StringFormat='{}{0:hh\\:mm}'}">
+                                </Run><Run Text="-">
+                                </Run><Run Text="{Binding CurrentTimeLayoutItem.EndTime, StringFormat='{}{0:hh\\:mm}'}" />
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>1</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run>
+                                    <Run.Text>
+                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay">
+                                            <Binding Path="Seconds" Mode="OneWay" />
+                                            <Binding Path="TotalSeconds" Mode="OneWay" />
                                         </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                            </TabItem>
-                            <TabItem>
-                                <TextBlock VerticalAlignment="Bottom">
-                                    <Run Text="-"/><Run Text="{Binding LeftSeconds,
-                                                        Converter={StaticResource SecondsToFormatTimeConverterCeiling}}"/>
-                                </TextBlock>
-                            </TabItem>
-                            <TabItem>
-                                <TextBlock VerticalAlignment="Bottom">
-                                    <Run Text="-"/><Run Text="{Binding LeftSeconds,
-                                                        Converter={StaticResource SecondsToFormatTimeConverter},
-                                                        ConverterParameter={StaticResource TrueValue}}"/>
-                                </TextBlock>
-                            </TabItem>
-                        </TabControl>
-                    </TabItem>
-                    <TabItem>
+                                    </Run.Text>
+                                </Run>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>2</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run Text="-"/><Run>
+                                    <Run.Text>
+                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay"
+                                                      ConverterParameter="1">
+                                            <Binding Path="LeftSeconds" Mode="OneWay" />
+                                            <Binding Path="TotalSeconds" Mode="OneWay" />
+                                        </MultiBinding>
+                                    </Run.Text>
+                                </Run>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>3</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource TimeLongToPercentMultiConverter}"
+                                                  Mode="OneWay">
+                                            <Binding Path="Seconds" Mode="OneWay" />
+                                            <Binding Path="TotalSeconds" Mode="OneWay" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>4</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run Text="-"/><Run Text="{Binding LeftSeconds,
+                                                    Converter={StaticResource SecondsToFormatTimeConverterCeiling}}"/>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>5</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run Text="-"/><Run Text="{Binding LeftSeconds,
+                                                    Converter={StaticResource SecondsToFormatTimeConverter},
+                                                    ConverterParameter={StaticResource TrueValue}}"/>
+                            </TextBlock>
+                        </Panel>
+                    </Border>
+                    <Border>
+                        <Border.IsVisible>
+                            <Binding Path="MasterTabIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                <Binding.ConverterParameter>
+                                    <system:Int32>1</system:Int32>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                        </Border.IsVisible>
                         <Grid VerticalAlignment="Bottom">
                             <Border Background="{DynamicResource AccentFillColorTertiaryBrush}"
                                     Height="{Binding Bounds.Height, ElementName=BorderStroke}"
@@ -174,8 +207,8 @@
                                 </Grid>
                             </Border>
                         </Grid>
-                    </TabItem>
-                </TabControl>
+                    </Border>
+                </Panel>
                 
             </StackPanel>
 

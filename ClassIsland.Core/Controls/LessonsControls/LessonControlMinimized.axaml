@@ -39,7 +39,8 @@
 
         <Grid>
             <Grid.DataContext>
-                <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}">
+                <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}"
+                              FallbackValue="{x:Static profile:Subject.Empty}">
                     <Binding Path="#LessonControlMinimizedRoot.Subjects"/>
                     <Binding Path="#LessonControlMinimizedRoot.ClassInfo.SubjectId"/>
                 </MultiBinding>

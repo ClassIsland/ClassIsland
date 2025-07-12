@@ -12,24 +12,19 @@
 
             <DataTemplate DataType="{x:Type profile:TimeLayoutItem}"
                           x:Key="{x:Static lessonsControls:LessonsListBox.SeparatorLessonControlResourceKey}">
-                <ci:LessonControlSeparator LessonControlSettings="{Binding $parent[lessonsControls:LessonsListBox].LessonControlSettings, Mode=OneWay}"/>
+                <ci:LessonControlSeparator LessonControlSettings="{Binding $self.(lessonsControls:LessonControlBase.DefaultLessonControlSettings)}"/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type profile:TimeLayoutItem}"
                           x:Key="{x:Static lessonsControls:LessonsListBox.ExpandedLessonControlResourceKey}">
-                <lessonsControls:LessonControlExpanded IsLiveUpdatingEnabled="{Binding $parent[lessonsControls:LessonsListBox].IsLiveUpdatingEnabled}"
-                                                       Subjects="{Binding $parent[lessonsControls:LessonsListBox].Subjects}"
-                                                       DefaultLessonControlSettings="{Binding $parent[lessonsControls:LessonsListBox].LessonControlSettings, Mode=OneWay}"
-                                                       CurrentClassPlan="{Binding $parent[lessonsControls:LessonsListBox].ClassPlan, Mode=OneWay}"
-                                                       CurrentTimeLayoutItem="{Binding Mode=OneWay}"
-                                                       ClassPlan="{Binding ClassPlan, RelativeSource={RelativeSource AncestorType=lessonsControls:LessonsListBox}, Mode=OneWay}">
+                <lessonsControls:LessonControlExpanded IsLiveUpdatingEnabled="{Binding $self.(lessonsControls:LessonsListBox.IsLiveUpdatingEnabled)}"
+                                                       Subjects="{Binding $self.(lessonsControls:LessonsListBox.Subjects)}"
+                                                       CurrentTimeLayoutItem="{Binding Mode=OneWay}">
                 </lessonsControls:LessonControlExpanded>
             </DataTemplate>
             <DataTemplate DataType="{x:Type profile:TimeLayoutItem}"
                           x:Key="{x:Static lessonsControls:LessonsListBox.MinimizedLessonControlResourceKey}">
                 <lessonsControls:LessonControlMinimized
-                    Subjects="{Binding Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
-                    DefaultLessonControlSettings="{Binding LessonControlSettings, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
-                    ClassPlan="{Binding ClassPlan, RelativeSource={RelativeSource AncestorType=lessonsControls:LessonsListBox}, Mode=OneWay}"
+                    Subjects="{Binding $self.(lessonsControls:LessonsListBox.Subjects)}"
                     CurrentTimeLayoutItem="{Binding Mode=OneWay}">
                 </lessonsControls:LessonControlMinimized>
             </DataTemplate>
@@ -40,6 +35,8 @@
                 ExpandedDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.ExpandedLessonControlResourceKey}}"
                 MinimizedDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.MinimizedLessonControlResourceKey}}"/>
         </ControlTheme.Resources>
+        <Setter Property="lessonsControls:LessonControlBase.DefaultLessonControlSettings" Value="{Binding $self.LessonControlSettings, Mode=OneWay}"/>
+        <Setter Property="lessonsControls:LessonControlBase.ClassPlan" Value="{Binding $self.ClassPlan, Mode=OneWay}"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ItemsSource" Value="{Binding ClassPlan.TimeLayout.Layouts, RelativeSource={RelativeSource Self}, Mode=OneWay}"/>

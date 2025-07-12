@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Reactive;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.AttachedSettings;
@@ -35,27 +36,10 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private long _seconds = 0;
     private int _masterTabIndex = 0;
     private bool _extraInfo4ShowSeconds = false;
-    private ILessonControlSettings? _settingsSource;
+    private ILessonControlSettings? _settingsSource = new LessonControlAttachedSettings();
     private Subject _displayingSubject = Subject.Empty;
     private bool _attachedToVisualTree = false;
-
-    public static readonly StyledProperty<ILessonControlSettings> DefaultLessonControlSettingsProperty = AvaloniaProperty.Register<LessonControlExpanded, ILessonControlSettings>(
-        nameof(DefaultLessonControlSettings), new LessonControlAttachedSettings());
-    public ILessonControlSettings DefaultLessonControlSettings
-    {
-        get => GetValue(DefaultLessonControlSettingsProperty);
-        set => SetValue(DefaultLessonControlSettingsProperty, value);
-    
-    }
-
-    public static readonly StyledProperty<ClassPlan> CurrentClassPlanProperty = AvaloniaProperty.Register<LessonControlExpanded, ClassPlan>(
-        nameof(CurrentClassPlan));
-    public ClassPlan CurrentClassPlan
-    {
-        get => GetValue(CurrentClassPlanProperty);
-        set => SetValue(CurrentClassPlanProperty, value);
-    
-    }
+    private string _detailedInfoText = "";
 
     public static readonly StyledProperty<int> DetailIndexProperty = AvaloniaProperty.Register<LessonControlExpanded, int>(
         nameof(DetailIndex));
@@ -98,7 +82,18 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         set => SetField(ref _extraInfo4ShowSeconds, value);
     }
 
+    public string DetailedInfoText
+    {
+        get => _detailedInfoText;
+        set => SetField(ref _detailedInfoText, value);
+    }
+
     private void OnIsLiveUpdatePropertyChanged()
+    {
+        UpdateLiveUpdateSettings();
+    }
+
+    private void UpdateLiveUpdateSettings()
     {
         if (IsLiveUpdatingEnabled && _attachedToVisualTree)
         {
@@ -155,13 +150,13 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         _attachedToVisualTree = true;
+        UpdateLiveUpdateSettings();
     }
     
     private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         _attachedToVisualTree = false;
-        if (LessonsService != null) 
-            LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        UpdateLiveUpdateSettings();
     }
 
     ~LessonControlExpanded()
@@ -181,9 +176,9 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
                 new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
                 CurrentSubject,
                 CurrentTimeLayoutItem,
-                CurrentClassPlan,
+                GetClassPlan(this),
                 ClassInfo?.CurrentTimeLayout) ??
-            DefaultLessonControlSettings;
+            GetDefaultLessonControlSettings(this);
 
         if (ExactTimeService != null && CurrentTimeLayoutItem != null)
         {
@@ -191,7 +186,6 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
             Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - CurrentTimeLayoutItem.StartTime).TotalSeconds;
             LeftSeconds = TotalSeconds - Seconds;
         }
-
         
         if (SettingsSource != null)
         {

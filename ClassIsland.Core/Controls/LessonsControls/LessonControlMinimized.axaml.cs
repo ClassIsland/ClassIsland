@@ -13,13 +13,4 @@ public partial class LessonControlMinimized : LessonControlBase
     {
         InitializeComponent();
     }
-
-    public static readonly StyledProperty<ILessonControlSettings> DefaultLessonControlSettingsProperty = AvaloniaProperty.Register<LessonControlMinimized, ILessonControlSettings>(
-        nameof(DefaultLessonControlSettings));
-    
-    public ILessonControlSettings DefaultLessonControlSettings
-    {
-        get => GetValue(DefaultLessonControlSettingsProperty);
-        set => SetValue(DefaultLessonControlSettingsProperty, value);
-    }
 }
