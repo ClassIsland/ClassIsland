@@ -109,7 +109,7 @@
             </ItemsControl>
 
             <Separator Margin="0 12 0 8" />
-            <controls1:IconText Glyph="&#xEA2D;" Text="设置" Margin="0 0 0 4" />
+            <controls1:IconText Glyph="&#xEF27;" Text="设置" Margin="0 0 0 4" />
             
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE7C5;}"
                                         Header="天气位置"
