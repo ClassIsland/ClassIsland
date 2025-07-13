@@ -1,11 +1,9 @@
-#if false
+using System.Collections.Generic;
 using ClassIsland.Core.Abstractions.Controls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
@@ -14,6 +12,9 @@ using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using System.Diagnostics;
 using System.Windows.Input;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Services.Registry;
@@ -30,46 +31,34 @@ using GptSoVitsSpeechSettingsList = ObservableCollection<GptSoVitsSpeechSettings
 /// <summary>
 /// NotificationSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("notification", "提醒", MaterialIconKind.BellNotificationOutline, MaterialIconKind.BellNotification, SettingsPageCategory.Internal)]
+[FullWidthPage]
+[SettingsPageInfo("notification", "提醒", "\ue02b", "\ue02a", SettingsPageCategory.Internal)]
 public partial class NotificationSettingsPage : SettingsPageBase
 {
-    public SettingsService SettingsService { get; }
-
-    public INotificationHostService NotificationHostService { get; }
-
-    public ISpeechService SpeechService { get; }
-
-    public IManagementService ManagementService { get; }
-
-    public NotificationSettingsViewModel ViewModel { get; } = new();
-    public NotificationSettingsPage(SettingsService settingsService, INotificationHostService notificationHostService, ISpeechService speechService, IManagementService managementService)
+    public static readonly List<FilePickerFileType> AudioFileTypes = [
+        new FilePickerFileType("音频文件")
+        {
+            MimeTypes = ["audio"]
+        }
+    ];
+    
+    public NotificationSettingsViewModel ViewModel { get; } = IAppHost.GetService<NotificationSettingsViewModel>();
+    public NotificationSettingsPage()
     {
         InitializeComponent();
         DataContext = this;
-        SettingsService = settingsService;
-        NotificationHostService = notificationHostService;
-        SpeechService = speechService;
-        ManagementService = managementService;
     }
 
     private void UpdateSpeechProviderSettingsControl()
     {
         var info = SpeechProviderRegistryService.RegisteredProviders.FirstOrDefault(x =>
-            x.Id == SettingsService.Settings.SelectedSpeechProvider);
+            x.Id == ViewModel.SettingsService.Settings.SelectedSpeechProvider);
         if (info == null)
         {
             return;
         }
 
         ViewModel.SpeechProviderSettingsControl = IAppHost.Host?.Services.GetKeyedService<SpeechProviderControlBase>(info.Id);
-    }
-
-    private void CollectionViewSourceNotificationProviders_OnFilter(object sender, FilterEventArgs e)
-    {
-        var i = e.Item as string;
-        if (i == null)
-            return;
-        e.Accepted = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == i) != null;
     }
 
     private void SelectorMain_OnSelected(object sender, SelectionChangedEventArgs e)
@@ -95,13 +84,13 @@ public partial class NotificationSettingsPage : SettingsPageBase
             return;
         }
 
-        ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider);
+        ViewModel.SelectedRegisterInfo = ViewModel.NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider);
     }
 
     private void ButtonTestSpeeching_OnClick(object sender, RoutedEventArgs e)
     {
-        SpeechService.ClearSpeechQueue();
-        SpeechService.EnqueueSpeechQueue(ViewModel.TestSpeechText);
+        ViewModel.SpeechService.ClearSpeechQueue();
+        ViewModel.SpeechService.EnqueueSpeechQueue(ViewModel.TestSpeechText);
     }
 
     private void ButtonOpenSpeechSettings_OnClick(object sender, RoutedEventArgs e)
@@ -125,7 +114,7 @@ public partial class NotificationSettingsPage : SettingsPageBase
 
     private void NotificationSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
     {
-        SettingsService.Settings.PropertyChanged -= Settings_PropertyChanged;
+        ViewModel.SettingsService.Settings.PropertyChanged -= Settings_PropertyChanged;
     }
 
     private void SelectorChannel_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -136,31 +125,7 @@ public partial class NotificationSettingsPage : SettingsPageBase
         {
             return;
         }
-        ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider)?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedChannel);
-    }
-
-    private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
-    {
-        if (!e.Handled)
-        {
-            // ListView拦截鼠标滚轮事件
-            e.Handled = true;
-
-            // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
-            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
-            eventArg.Source = sender;
-            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
-            if (parent != null)
-            {
-                parent.RaiseEvent(eventArg);
-            }
-        }
-    }
-
-    private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
-    {
-        //e.Handled = true;
+        ViewModel.SelectedRegisterInfo = ViewModel.NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider)?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedChannel);
     }
 
     private void Expander_OnCollapsed(object sender, RoutedEventArgs e)
@@ -171,7 +136,7 @@ public partial class NotificationSettingsPage : SettingsPageBase
 
     private void NotificationSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        SettingsService.Settings.PropertyChanged += Settings_PropertyChanged;
+        ViewModel.SettingsService.Settings.PropertyChanged += Settings_PropertyChanged;
         UpdateSpeechProviderSettingsControl();
     }
 
@@ -180,4 +145,3 @@ public partial class NotificationSettingsPage : SettingsPageBase
         OpenDrawer("NotificationSettingsDrawer", dataContext: ViewModel.SelectedRegisterInfo);
     }
 }
-#endif

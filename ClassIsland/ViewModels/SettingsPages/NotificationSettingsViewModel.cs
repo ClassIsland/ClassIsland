@@ -2,13 +2,33 @@
 using Edge_tts_sharp.Model;
 using Edge_tts_sharp;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reactive.Linq;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Models;
+using ClassIsland.Services;
 using ClassIsland.Shared.Abstraction.Models.Notification;
+using ClassIsland.Shared.Interfaces;
+using DynamicData;
+using DynamicData.Binding;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
 public class NotificationSettingsViewModel : ObservableRecipient
 {
+    public SettingsService SettingsService { get; }
+    public INotificationHostService NotificationHostService { get; }
+    public ISpeechService SpeechService { get; }
+    public IManagementService ManagementService { get; }
+
+    private readonly ReadOnlyObservableCollection<string> _notificationProviders;
+    
+    public ReadOnlyObservableCollection<string> NotificationProviders => _notificationProviders;
+    
+    
     private bool _isNotificationSettingsPanelOpened = false;
     private string? _notificationSettingsSelectedProvider;
 
@@ -65,6 +85,22 @@ public class NotificationSettingsViewModel : ObservableRecipient
     private INotificationSenderRegisterInfo? _selectedRegisterInfo;
     private string? _notificationSettingsSelectedChannel;
     private object? _speechProviderSettingsControl;
+
+    public NotificationSettingsViewModel(SettingsService settingsService,
+        INotificationHostService notificationHostService,
+        ISpeechService speechService,
+        IManagementService managementService)
+    {
+        SettingsService = settingsService;
+        NotificationHostService = notificationHostService;
+        SpeechService = speechService;
+        ManagementService = managementService;
+
+        SettingsService.Settings.NotificationProvidersPriority
+            .ToObservableChangeSet()
+            .Filter(x => NotificationHostService.NotificationProviders.Any(y => y.ProviderGuid.ToString() == x))
+            .Bind(out _notificationProviders);
+    }
 
     public string TestSpeechText
     {

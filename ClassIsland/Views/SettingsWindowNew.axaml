@@ -58,10 +58,10 @@
                                       BackRequested="NavigationView_OnBackRequested"
                                       >
                 <!-- 页面内容 -->
-                
                 <SplitView IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
                            PanePlacement="Right"
                            Pane="{Binding ViewModel.DrawerContent}"
+                           OpenPaneLength="{Binding ViewModel.DrawerContent.(Control.Width), FallbackValue=0}"
                            PaneBackground="{DynamicResource SolidBackgroundFillColorBaseAltBrush}">
                     <Grid RowDefinitions="Auto, *">
                         <Grid Grid.Row="1"

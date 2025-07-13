@@ -626,6 +626,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<AboutSettingsViewModel>();
                 services.AddTransient<AppearanceSettingsViewModel>();
                 services.AddTransient<ComponentsSettingsViewModel>();
+                services.AddTransient<NotificationSettingsViewModel>();
                 services.AddTransient<WindowSettingsViewModel>();
                 services.AddTransient<WeatherSettingsViewModel>();
                 // Views
@@ -646,7 +647,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();
                 services.AddSettingsPage<AppearanceSettingsPage>();
-                // services.AddSettingsPage<NotificationSettingsPage>();
+                services.AddSettingsPage<NotificationSettingsPage>();
                 services.AddSettingsPage<WindowSettingsPage>();
                 services.AddSettingsPage<WeatherSettingsPage>();
                 // services.AddSettingsPage<UpdatesSettingsPage>();

@@ -19,9 +19,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "上下课提醒", "\uE958;", "在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。")]
-[NotificationChannelInfo(PrepareOnClassChannelId, "准备上课提醒", "\uE479;", description:"在上课前指定时间发出提醒。")]
-[NotificationChannelInfo(OnClassChannelId, "上课提醒", "\uE479;", description: "在上课时发出提醒。")]
+[NotificationProviderInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "上下课提醒", "\uE958", "在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。")]
+[NotificationChannelInfo(PrepareOnClassChannelId, "准备上课提醒", "\uE479", description:"在上课前指定时间发出提醒。")]
+[NotificationChannelInfo(OnClassChannelId, "上课提醒", "\uE479", description: "在上课时发出提醒。")]
 [NotificationChannelInfo(OnBreakingChannelId, "下课提醒", "\ue4c3", description: "在下课时发出提醒。")]
 public class ClassNotificationProvider : NotificationProviderBase<ClassNotificationSettings>
 {
