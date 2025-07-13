@@ -74,6 +74,7 @@ using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Controls.Components;
+using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
@@ -675,7 +676,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddComponent<RollingComponent, RollingComponentSettingsControl>();
                 // services.AddComponent<GroupComponent>();
                 // // 提醒提供方
-                services.AddNotificationProvider<ClassNotificationProvider>();
+                services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
                 services.AddNotificationProvider<AfterSchoolNotificationProvider>();
                 // services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
                 // services.AddNotificationProvider<ManagementNotificationProvider>();

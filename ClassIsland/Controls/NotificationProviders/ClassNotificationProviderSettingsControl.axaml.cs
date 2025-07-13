@@ -1,8 +1,8 @@
-#if false
+
 using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
@@ -13,7 +13,7 @@ namespace ClassIsland.Controls.NotificationProviders;
 /// <summary>
 /// ClassNotificationProviderSettingsControl.xaml 的交互逻辑
 /// </summary>
-public partial class ClassNotificationProviderSettingsControl
+public partial class ClassNotificationProviderSettingsControl : NotificationProviderControlBase<ClassNotificationSettings>
 {
     public ClassNotificationProviderSettingsControl()
     {
@@ -25,4 +25,3 @@ public partial class ClassNotificationProviderSettingsControl
         SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("08F0D9C3-C770-4093-A3D0-02F3D90C24BC"))));
     }
 }
-#endif
