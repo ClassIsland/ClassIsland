@@ -5,7 +5,6 @@
       "ClassIsland.Core\\ClassIsland.Core.csproj",
       "ClassIsland.Desktop\\ClassIsland.Desktop.csproj",
       "ClassIsland.DocsGenerator\\ClassIsland.DocsGenerator.csproj",
-      "ClassIsland.ExamplePlugin\\ClassIsland.ExamplePlugin.csproj",
       "ClassIsland.Launcher\\ClassIsland.Launcher.csproj",
       "ClassIsland.Platforms.Abstractions\\ClassIsland.Platforms.Abstractions.csproj",
       "ClassIsland.PluginSdk\\ClassIsland.PluginSdk.csproj",

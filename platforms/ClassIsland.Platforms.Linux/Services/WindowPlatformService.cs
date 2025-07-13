@@ -141,6 +141,17 @@ public class WindowPlatformService : IWindowPlatformService
         if ((features & WindowFeatures.Topmost) > 0)
         {
             XRaiseWindow(_display, handle);
+            var netWmState = XInternAtom(_display, "_NET_WM_STATE", false);
+            var netWmStateAbove = XInternAtom(_display, "_NET_WM_STATE_ABOVE", false);
+            nint[] atoms = { netWmStateAbove };
+            XChangeProperty(
+                _display, handle,
+                netWmState,             // property
+                4,                // type
+                32,                     // format: 32-bit
+                0,        // 替换模式
+                atoms, atoms.Length
+            );
         }
         if ((features & WindowFeatures.Private) > 0)
         {
@@ -154,7 +165,7 @@ public class WindowPlatformService : IWindowPlatformService
         {
             var attributes = new XSetWindowAttributes();
             attributes.override_redirect = 1;
-            XChangeWindowAttributes(_display, handle, 0, ref attributes);
+            XChangeWindowAttributes(_display, handle, CWOverrideRedirect, ref attributes);
             XMapWindow(_display, handle);
         }
         

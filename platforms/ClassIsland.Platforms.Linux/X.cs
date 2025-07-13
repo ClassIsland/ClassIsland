@@ -10,7 +10,7 @@ public partial class X
 {
     private const string X11 = "libX11.so";
     
-    const int CWOverrideRedirect = 0x2;
+    public const ulong CWOverrideRedirect = (1L<<9);
     const int InputOutput = 1;
     const int InputOnly = 2;
 
@@ -39,7 +39,13 @@ public partial class X
     public static extern void XSelectInput(IntPtr display, IntPtr window, XEventMask event_mask);
 
     [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
-    public static extern void XChangeWindowAttributes(IntPtr display, IntPtr window, uint valueMask, ref XSetWindowAttributes attributes);
+    public static extern void XChangeWindowAttributes(IntPtr display, IntPtr window, ulong valueMask, ref XSetWindowAttributes attributes);
+    
+    [DllImport(X11)]
+    public static extern int XChangeProperty(
+	    IntPtr display, IntPtr w, IntPtr property, IntPtr type,
+	    int format, int mode,
+	    IntPtr[] data, int nelements);
 
     [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
     public static extern int XGetWindowAttributes(IntPtr display, IntPtr window, ref XWindowAttributes attributes);
@@ -123,18 +129,21 @@ public partial class X
     [StructLayout(LayoutKind.Sequential)]
     public struct XSetWindowAttributes
     {
-        public uint background_pixmap;
-        public uint background_pixel;
-        public uint border_pixmap;
-        public uint border_pixel;
+        public nint background_pixmap;
+        public ulong background_pixel;
+        public nint border_pixmap;
+        public ulong border_pixel;
         public int bit_gravity;
         public int win_gravity;
         public int backing_store;
-        public uint save_under;
-        public IntPtr colormap;
-        public uint map_installed;
-        public uint map_state;
+        public ulong backing_planes;
+        public ulong backing_pixel;
+        public int save_under;
+        public long event_mask;
+        public long do_not_propagate_mask;
         public int override_redirect;
+        public nint colormap;
+        public nint cursor;
     }
 
     [StructLayout(LayoutKind.Sequential)]
