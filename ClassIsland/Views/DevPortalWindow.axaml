@@ -5,6 +5,7 @@
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:views="clr-namespace:ClassIsland.Views"
         xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.DevPortalWindow"
         Title="DevPortal"
@@ -89,6 +90,22 @@
                     <Button Content="Run chain" Classes=""
                             Click="ButtonRunChain_OnClick"/>
                 </StackPanel>
+            </TabItem>
+            <TabItem Header="LDV">
+                <controls:ListDetailView>
+                    <controls:ListDetailView.TitleElement>
+                        <TextBlock Text="Title" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                    </controls:ListDetailView.TitleElement>
+                    <controls:ListDetailView.LeftContent>
+                        <TextBlock Text="Left!"/>
+                    </controls:ListDetailView.LeftContent>
+                    <controls:ListDetailView.RightContent>
+                        <StackPanel>
+                            <TextBlock Text="Right!"/>
+                            <Image Source="/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="72" Height="72"/>
+                        </StackPanel>
+                    </controls:ListDetailView.RightContent>
+                </controls:ListDetailView>
             </TabItem>
         </TabControl>
     </Grid>
