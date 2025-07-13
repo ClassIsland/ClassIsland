@@ -3,7 +3,8 @@
         xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
-        xmlns:ci="http://classisland.tech/schemas/xaml/core" >
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia">
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,6 +17,7 @@
             <StackPanel Spacing="6">
                 <ToggleSwitch />
                 <ci:NavHyperlink Content="Hello!"/>
+                <asyncImageLoader:AdvancedImage Width="300" Height="200" IsLoading="False"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -107,6 +109,56 @@
         <Style Selector="^:pressed">
             <Setter Property="ToolTip.IsOpen" Value="True"/>
             <Setter Property="ToolTip.Placement" Value="Pointer"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="asyncImageLoader|AdvancedImage">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid x:Name="Root" Classes.empty="{TemplateBinding CurrentImage, Converter={x:Static ObjectConverters.IsNull}, Mode=OneWay}">
+                    <Border VerticalAlignment="Stretch" MinWidth="0" 
+                            HorizontalAlignment="Stretch"
+                            x:Name="LoadingBorder"
+                            Background="{DynamicResource ControlAltFillColorQuarternaryBrush}"
+                            Opacity="0.75"
+                            IsVisible="False"/>
+                    <ci:FluentIcon VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   Glyph="&#xE9CC;"
+                                   IsVisible="False"
+                                   IsHitTestVisible="False"
+                                   x:Name="FluentIconError"
+                                   FontSize="18"
+                                   Foreground="{DynamicResource SystemFillColorCriticalBrush}"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^[IsLoading=True] /template/ Border#LoadingBorder">
+            <Style.Animations>
+                <Animation Duration="0:0:2" IterationCount="INFINITE">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.75"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%" KeySpline="1.00, 0.00, 1.00, 0.30">
+                        <Setter Property="Opacity" Value="1.0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%" KeySpline="0.00, 0.30, 0.00, 1.00">
+                        <Setter Property="Opacity" Value="0.75"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        
+        <Style Selector="^[IsLoading=False] /template/ Grid#Root.empty">
+            <Style Selector="^ Border#LoadingBorder">
+                <Setter Property="IsVisible" Value="True"/>
+                <Setter Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}"/>
+                <Setter Property="ToolTip.Tip" Value="喔唷，图裂啦"/>
+            </Style>
+            <Style Selector="^ ci|FluentIcon#FluentIconError">
+                <Setter Property="IsVisible" Value="True"/>
+            </Style>
         </Style>
     </Style>
     
