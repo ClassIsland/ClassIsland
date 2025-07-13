@@ -104,7 +104,8 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
             {
                 Glyph = info.IconGlyph,
                 Width = 24,
-                Height = 24
+                Height = 24,
+                FontSize = 24
             };
         }
 

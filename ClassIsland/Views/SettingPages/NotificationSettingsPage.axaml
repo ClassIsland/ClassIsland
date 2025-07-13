@@ -169,12 +169,13 @@
                                                           Grid.RowSpan="2"
                                                           Width="24" Height="24"
                                                           VerticalAlignment="Center"
-                                                          ClipToBounds="True" Margin="6"
+                                                          ClipToBounds="True" Margin="6 6 10 6"
                                                           Content="{Binding ProviderInstance.IconElement}" />
                                         
                                         <!-- 标题 -->
                                         <TextBlock Grid.Column="1" Grid.Row="0"
                                                    TextWrapping="Wrap"
+                                                   Margin="0 0 0 2"
                                                    Text="{Binding Name}"
                                                    FontSize="16" FontWeight="Bold" />
                                         

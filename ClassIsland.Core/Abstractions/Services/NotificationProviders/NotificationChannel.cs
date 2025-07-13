@@ -65,7 +65,8 @@ public class NotificationChannel : INotificationSender, INotificationProvider
         {
             Glyph = info.IconGlyph,
             Width = 24,
-            Height = 24
+            Height = 24,
+            FontSize = 24
         };
 
         __NotificationHostService.RegisterNotificationChannel(this);
