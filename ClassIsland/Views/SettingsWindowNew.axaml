@@ -14,7 +14,7 @@
         d:DataContext="{d:DesignInstance local:SettingsWindowNew}"
         mc:Ignorable="d"
         MinWidth="560"
-        Title="应用设置" Height="550" Width="1200"
+        Title="应用设置" Height="550" Width="1240"
         EnableMicaWindow="True"
         windowing:AppWindow.AllowInteractionInTitleBar="True"
         SizeChanged="SettingsWindowNew_OnSizeChanged"
@@ -50,13 +50,14 @@
     <Grid x:Name="RootGrid">
         <Grid RowDefinitions="Auto,*">
             <controls3:NavigationView Grid.Row="1" 
-                                      x:Name="NavigationView"
-                                      PaneDisplayMode="Auto" 
-                                      IsSettingsVisible="False"
-                                      MenuItems="{Binding ViewModel.NavigationViewItems, Mode=OneWay}"
-                                      ItemInvoked="NavigationView_OnItemInvoked"
-                                      BackRequested="NavigationView_OnBackRequested"
-                                      >
+                  x:Name="NavigationView"
+                  PaneDisplayMode="Auto" 
+                  IsSettingsVisible="False"
+                  MenuItems="{Binding ViewModel.NavigationViewItems, Mode=OneWay}"
+                  ItemInvoked="NavigationView_OnItemInvoked"
+                  BackRequested="NavigationView_OnBackRequested"
+                  OpenPaneLength="283"
+                  >
                 <!-- 页面内容 -->
                 <SplitView IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
                            PanePlacement="Right"
