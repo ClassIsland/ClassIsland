@@ -175,7 +175,7 @@
                                                 IsVisible="{Binding ViewModel.SettingsService.Settings.UseRawInput}"
                                                 Description="启用后，触屏点击主界面区域后将在一定时间后自动恢复主界面显示。设置为0为禁用。">
                     <controls1:SettingsExpanderItem.Footer>
-                        <ci:Field Suffix="px">
+                        <ci:Field Suffix="ms">
                             <controls1:NumberBox Width="150"
                                                  Value="{Binding ViewModel.SettingsService.Settings.TouchInFadingDurationMs}"
                                                  SpinButtonPlacementMode="Inline"
