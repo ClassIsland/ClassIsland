@@ -699,22 +699,22 @@ public partial class MainWindow : Window
         {
             0 => //左上
                 //Left = (screen.WorkingArea.Left + ox) / dpiX;
-                (offsetAreaTop + oy) / dpiY,
+                (offsetAreaTop + oy),
             1 => // 中上
                 //Left = (c - aw / 2 + ox) / dpiX;
-                (offsetAreaTop + oy) / dpiY,
+                (offsetAreaTop + oy),
             2 => // 右上
                 //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
-                (offsetAreaTop + oy) / dpiY,
+                (offsetAreaTop + oy),
             3 => // 左下
                 //Left = (screen.WorkingArea.Left + ox) / dpiX;
-                (offsetAreaBottom - ah + oy) / dpiY,
+                (offsetAreaBottom - ah + oy),
             4 => // 中下
                 //Left = (c - aw / 2 + ox) / dpiX;
-                (offsetAreaBottom - ah + oy) / dpiY,
+                (offsetAreaBottom - ah + oy),
             5 => // 右下
                 //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
-                (offsetAreaBottom - ah + oy) / dpiY,
+                (offsetAreaBottom - ah + oy),
             _ => 0.0
         };
         Position = new PixelPoint((int)x, (int)y);
