@@ -20,6 +20,8 @@
         </Border>
     </Design.PreviewWith>
     
+    <StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
+    
     <StyleInclude Source="/Controls/Field.axaml"/>
     <StyleInclude Source="/Controls/Emptiable.axaml"/>
     <StyleInclude Source="/Controls/Empty.axaml"/>

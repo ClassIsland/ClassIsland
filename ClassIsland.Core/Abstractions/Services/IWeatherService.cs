@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
+using Avalonia.Controls.Templates;
 using Avalonia.Markup.Xaml.Templates;
 using ClassIsland.Core.Models.Weather;
 
@@ -39,7 +40,7 @@ public interface IWeatherService : INotifyPropertyChanged
     /// <summary>
     /// 当前天气图标模板
     /// </summary>
-    DataTemplate? SelectedWeatherIconTemplate { get; }
+    IDataTemplate? SelectedWeatherIconTemplate { get; }
 
     /// <summary>
     /// 已注册的天气图标模板列表。

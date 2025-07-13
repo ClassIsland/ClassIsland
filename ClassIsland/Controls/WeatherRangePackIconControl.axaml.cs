@@ -1,9 +1,10 @@
-#if false
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
+using Avalonia;
+using Avalonia.Controls;
 using ClassIsland.Core.Models.Weather;
 
 namespace ClassIsland.Controls;
@@ -13,16 +14,18 @@ namespace ClassIsland.Controls;
 /// </summary>
 public partial class WeatherRangePackIconControl : UserControl, INotifyPropertyChanged
 {
-    public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
-        nameof(Value), typeof(RangedValue), typeof(WeatherRangePackIconControl), new PropertyMetadata(default(RangedValue)));
-
-    private bool _hasSecondIcon = false;
+    public static readonly StyledProperty<RangedValue?> ValueProperty = AvaloniaProperty.Register<WeatherRangePackIconControl, RangedValue?>(
+        nameof(Value));
 
     public RangedValue? Value
     {
-        get { return (RangedValue)GetValue(ValueProperty); }
-        set { SetValue(ValueProperty, value); }
+        get => GetValue(ValueProperty);
+        set => SetValue(ValueProperty, value);
     }
+    
+
+    private bool _hasSecondIcon = false;
+
 
     public bool HasSecondIcon
     {
@@ -38,15 +41,7 @@ public partial class WeatherRangePackIconControl : UserControl, INotifyPropertyC
     public WeatherRangePackIconControl()
     {
         InitializeComponent();
-    }
-
-    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
-    {
-        if (Value != null)
-        {
-            HasSecondIcon = Value.From != Value.To;
-        }
-        base.OnPropertyChanged(e);
+        this.GetObservable(ValueProperty).Subscribe(_ => HasSecondIcon = Value != null && Value.From != Value.To);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -64,4 +59,3 @@ public partial class WeatherRangePackIconControl : UserControl, INotifyPropertyC
         return true;
     }
 }
-#endif

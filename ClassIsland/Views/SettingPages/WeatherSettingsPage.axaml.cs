@@ -1,14 +1,16 @@
-#if false
 using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Models.Weather;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
 using Microsoft.Extensions.Logging;
 
@@ -17,16 +19,12 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// WeatherSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("weather", "天气", MaterialIconKind.CloudOutline, MaterialIconKind.Cloud, SettingsPageCategory.Internal)]
+[SettingsPageInfo("weather", "天气", "\uf44f", "\uf44e", SettingsPageCategory.Internal)]
 public partial class WeatherSettingsPage : SettingsPageBase
 {
-    public WeatherSettingsViewModel ViewModel { get; } = new();
+    public WeatherSettingsViewModel ViewModel { get; } = IAppHost.GetService<WeatherSettingsViewModel>();
 
-    public SettingsService SettingsService { get; }
-
-    public IWeatherService WeatherService { get; }
-    public ILocationService LocationService { get; }
-    public ILogger<WeatherSettingsPage> Logger { get; }
+    private ILogger<WeatherSettingsPage> Logger => ViewModel.Logger;
 
     // [搜索城市或地区] TextBox的全局变量 用于防抖
     private TextBox GlobalTextBoxSearchCity { get; set; } = null!;
@@ -38,17 +36,13 @@ public partial class WeatherSettingsPage : SettingsPageBase
     {
         InitializeComponent();
         DataContext = this;
-        WeatherService = weatherService;
-        LocationService = locationService;
-        Logger = logger;
-        SettingsService = settingsService;
         // [搜索城市或地区] 初始化防抖定时器
         Loaded += WeatherSettingsPage_Loaded;
     }
 
     private async void ButtonRefreshWeather_OnClick(object sender, RoutedEventArgs e)
     {
-        await WeatherService.QueryWeatherAsync();
+        await ViewModel.WeatherService.QueryWeatherAsync();
     }
 
     private void ButtonEditCurrentCity_OnClick(object sender, RoutedEventArgs e)
@@ -61,14 +55,14 @@ public partial class WeatherSettingsPage : SettingsPageBase
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private async void WeatherSettingsPage_Loaded(object sender, RoutedEventArgs e)
+    private async void WeatherSettingsPage_Loaded(object? sender, RoutedEventArgs e)
     {
         // 初始化防抖定时器，设置间隔时间为50毫秒
         SearchDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
         SearchDebounceTimer.Tick += SearchDebounceTimer_Tick;
         SearchDebounceTimer.Stop();
         
-        ViewModel.CitySearchResults = await WeatherService.GetCitiesByName(string.Empty);
+        ViewModel.CitySearchResults = await ViewModel.WeatherService.GetCitiesByName(string.Empty);
     }
 
     /// <summary>
@@ -100,7 +94,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
         ViewModel.IsSearchingWeather = true;
         var searchText = GlobalTextBoxSearchCity.Text;
         ViewModel.CitySearchResults =
-            await WeatherService.GetCitiesByName(searchText);
+            await ViewModel.WeatherService.GetCitiesByName(searchText);
         ViewModel.IsSearchingWeather = false;
     }
 
@@ -114,18 +108,18 @@ public partial class WeatherSettingsPage : SettingsPageBase
             //Settings.CityName = "";
             return;
         }
-        SettingsService.Settings.CityName = city.Name;
-        await WeatherService.QueryWeatherAsync();
+        ViewModel.SettingsService.Settings.CityName = city.Name;
+        await ViewModel.WeatherService.QueryWeatherAsync();
     }
 
     private async void ButtonGetCurrentPos_OnClick(object sender, RoutedEventArgs e)
     {
         try
         {
-            var pos = await LocationService.GetLocationAsync();
-            SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4); 
-            SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
-            await WeatherService.QueryWeatherAsync();
+            var pos = await ViewModel.LocationService.GetLocationAsync();
+            ViewModel.SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4); 
+            ViewModel.SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
+            await ViewModel.WeatherService.QueryWeatherAsync();
         }
         catch (Exception exception)
         {
@@ -138,4 +132,4 @@ public partial class WeatherSettingsPage : SettingsPageBase
         ViewModel.HideLocationPos = false;
     }
 }
-#endif
+

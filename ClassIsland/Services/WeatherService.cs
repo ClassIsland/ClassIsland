@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Avalonia.Controls.Templates;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Platform;
 using Avalonia.Threading;
@@ -26,7 +27,7 @@ namespace ClassIsland.Services;
 
 public class WeatherService : ObservableRecipient, IHostedService, IWeatherService
 {
-    private DataTemplate? _selectedWeatherIconTemplate;
+    private IDataTemplate? _selectedWeatherIconTemplate;
     private SettingsService SettingsService { get; }
 
     private Settings Settings => SettingsService.Settings;
@@ -245,7 +246,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         }
     }
 
-    public DataTemplate? SelectedWeatherIconTemplate
+    public IDataTemplate? SelectedWeatherIconTemplate
     {
         get => _selectedWeatherIconTemplate;
         private set => SetProperty(ref _selectedWeatherIconTemplate, value);

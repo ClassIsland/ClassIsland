@@ -1,9 +1,11 @@
-#if false
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 
@@ -12,31 +14,35 @@ namespace ClassIsland.Controls;
 /// <summary>
 /// WeatherPackIconControl.xaml 的交互逻辑
 /// </summary>
+[PseudoClasses(":rainy")]
 public partial class WeatherPackIconControl : UserControl, INotifyPropertyChanged
 {
-    public static readonly DependencyProperty CodeProperty = DependencyProperty.Register(
-        nameof(Code), typeof(string), typeof(WeatherPackIconControl), new PropertyMetadata(default(string)));
-
     private string _weatherName = "";
+    
+    public static readonly StyledProperty<string> CodeProperty = AvaloniaProperty.Register<WeatherPackIconControl, string>(
+        nameof(Code));
 
     public string Code
     {
-        get => (string)GetValue(CodeProperty);
+        get => GetValue(CodeProperty);
         set => SetValue(CodeProperty, value);
     }
 
+    public static readonly StyledProperty<string> WeatherNameProperty = AvaloniaProperty.Register<WeatherPackIconControl, string>(
+        nameof(WeatherName));
+
     public string WeatherName
     {
-        get => _weatherName;
-        set => SetField(ref _weatherName, value);
+        get => GetValue(WeatherNameProperty);
+        set => SetValue(WeatherNameProperty, value);
     }
 
-    public static readonly DependencyProperty AllowColorProperty = DependencyProperty.Register(
-        nameof(AllowColor), typeof(bool), typeof(WeatherPackIconControl), new PropertyMetadata(true));
+    public static readonly StyledProperty<bool> AllowColorProperty = AvaloniaProperty.Register<WeatherPackIconControl, bool>(
+        nameof(AllowColor), true);
 
     public bool AllowColor
     {
-        get => (bool)GetValue(AllowColorProperty);
+        get => GetValue(AllowColorProperty);
         set => SetValue(AllowColorProperty, value);
     }
 
@@ -53,25 +59,22 @@ public partial class WeatherPackIconControl : UserControl, INotifyPropertyChange
     public WeatherPackIconControl()
     {
         InitializeComponent();
+        this.GetObservable(CodeProperty).Subscribe(_ =>
+        {
+            WeatherName = App.GetService<IWeatherService>().GetWeatherTextByCode(Code);
+            if (AllowColor)
+            {
+                PseudoClasses.Set(":rainy", (WeatherName.Contains('雨') || WeatherName is "飑"));
+            }
+            else
+            {
+                PseudoClasses.Set(":rainy", false);
+            }
+        });
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
-    {
-        if (e.Property == CodeProperty)
-        {
-            var c = (string)e.NewValue;
-            WeatherName = App.GetService<IWeatherService>().GetWeatherTextByCode(c);
-            WeatherColor = "";
-            if (AllowColor)
-            {
-                if (WeatherName.Contains('雨') || WeatherName is "飑")
-                    WeatherColor = "Rainy";
-            }
-        }
-        base.OnPropertyChanged(e);
-    }
+    
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
@@ -86,4 +89,3 @@ public partial class WeatherPackIconControl : UserControl, INotifyPropertyChange
         return true;
     }
 }
-#endif

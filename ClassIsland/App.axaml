@@ -17,12 +17,17 @@
     </ci:AppBase.Styles>
     <Application.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceInclude x:Key="Light" Source="/Themes/LightTheme.axaml"/>
+                <ResourceInclude x:Key="Dark" Source="/Themes/DarkTheme.axaml"/>
+            </ResourceDictionary.ThemeDictionaries>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Assets/Fonts/Fonts.axaml"/>
                 <!-- <ResourceInclude Source="/Themes/Generic.axaml"/> -->
                 <ResourceInclude Source="/Controls/MainWindowLine.axaml"/>
                 <ResourceInclude Source="/Controls/TimeLine/TimeLineListControl.axaml"/>
                 <ResourceInclude Source="avares://ClassIsland.Core/ThemeBase.axaml"/>
+                <ResourceInclude Source="/Controls/WeatherIcons/Index.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>

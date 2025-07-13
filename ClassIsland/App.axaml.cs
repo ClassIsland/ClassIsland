@@ -66,6 +66,7 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
@@ -626,6 +627,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<AppearanceSettingsViewModel>();
                 services.AddTransient<ComponentsSettingsViewModel>();
                 services.AddTransient<WindowSettingsViewModel>();
+                services.AddTransient<WeatherSettingsViewModel>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 // services.AddTransient<SplashWindowBase, SplashWindow>();
@@ -646,7 +648,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<AppearanceSettingsPage>();
                 // services.AddSettingsPage<NotificationSettingsPage>();
                 services.AddSettingsPage<WindowSettingsPage>();
-                // services.AddSettingsPage<WeatherSettingsPage>();
+                services.AddSettingsPage<WeatherSettingsPage>();
                 // services.AddSettingsPage<UpdatesSettingsPage>();
                 // services.AddSettingsPage<AutomationSettingsPage>();
                 // services.AddSettingsPage<StorageSettingsPage>();
@@ -773,12 +775,10 @@ public partial class App : AppBase, IAppHost
                 // };
                 // services.AddWeatherIconTemplate("classisland.weatherIcons.materialDesign", "Material Design（默认）",
                 //     (DataTemplate)materialDesignWeatherIconTemplateDictionary["MaterialDesignWeatherIconTemplate"]!);
-                // var simpleTextWeatherIconTemplateDictionary = new ResourceDictionary()
-                // {
-                //     Source = new Uri("avares://ClassIsland/Controls/WeatherIcons/SimpleTextWeatherIconTemplate.xaml")
-                // };
-                // services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本",
-                //     (DataTemplate)simpleTextWeatherIconTemplateDictionary["SimpleTextWeatherIconTemplate"]!);
+                services.AddWeatherIconTemplate("classisland.weatherIcons.fluentDesign", "Fluent Design（默认）",
+                    (this.FindResource("FluentDesignWeatherIconTemplate") as IDataTemplate)!);
+                services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本",
+                    (this.FindResource("SimpleTextWeatherIconTemplate") as IDataTemplate)!);
                 //
                 // Plugins
                 if (!ApplicationCommand.Safe)

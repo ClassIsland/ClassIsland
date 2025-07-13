@@ -15,7 +15,7 @@
                                                  Height="64" Width="64"
                                                  HorizontalAlignment="Center"/>
                     <TextBlock Text="{TemplateBinding Text}" HorizontalAlignment="Center"
-                               TextAlignment="Center"/>
+                               TextAlignment="Center" TextWrapping="Wrap"/>
                 </StackPanel>
             </ControlTemplate>
         </Setter>

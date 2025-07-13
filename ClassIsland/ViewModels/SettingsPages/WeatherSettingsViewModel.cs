@@ -1,45 +1,26 @@
 ﻿using ClassIsland.Core.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Platforms.Abstraction.Services;
+using ClassIsland.Services;
+using ClassIsland.Views.SettingPages;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class WeatherSettingsViewModel : ObservableRecipient
+public partial class WeatherSettingsViewModel(SettingsService settingsService, 
+    ILocationService locationService, 
+    IWeatherService weatherService,
+    ILogger<WeatherSettingsPage> logger) : ObservableRecipient
 {
-    private List<City> _citySearchResults = new();
-    private bool _isSearchingWeather = false;
-    private bool _hideLocationPos = true;
+    public SettingsService SettingsService { get; } = settingsService;
+    public ILocationService LocationService { get; } = locationService;
+    public IWeatherService WeatherService { get; } = weatherService;
+    public ILogger<WeatherSettingsPage> Logger { get; } = logger;
 
-    public List<City> CitySearchResults
-    {
-        get => _citySearchResults;
-        set
-        {
-            if (Equals(value, _citySearchResults)) return;
-            _citySearchResults = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsSearchingWeather
-    {
-        get => _isSearchingWeather;
-        set
-        {
-            if (value == _isSearchingWeather) return;
-            _isSearchingWeather = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool HideLocationPos
-    {
-        get => _hideLocationPos;
-        set
-        {
-            if (value == _hideLocationPos) return;
-            _hideLocationPos = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty] private List<City> _citySearchResults = new();
+    [ObservableProperty] private bool _isSearchingWeather = false;
+    [ObservableProperty] private bool _hideLocationPos = true;
+    
 }

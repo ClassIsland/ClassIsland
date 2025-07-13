@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Avalonia.Controls.Templates;
 using Avalonia.Markup.Xaml.Templates;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Weather;
@@ -19,7 +20,7 @@ public static class WeatherIconTemplateRegistryExtensions
     /// <param name="name">天气图标模板名称</param>
     /// <param name="template">天气图标模板内容</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 实例</returns>
-    public static IServiceCollection AddWeatherIconTemplate(this IServiceCollection services, string id, string name, DataTemplate template)
+    public static IServiceCollection AddWeatherIconTemplate(this IServiceCollection services, string id, string name, IDataTemplate template)
     {
         IWeatherService.RegisteredTemplates.Add(new WeatherIconTemplateRegistryInfo(id, name, template));
         return services;
