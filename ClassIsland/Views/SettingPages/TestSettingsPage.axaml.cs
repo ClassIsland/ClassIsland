@@ -10,6 +10,7 @@ using FluentAvalonia.UI.Navigation;
 
 namespace ClassIsland.Views.SettingPages;
 
+[FullWidthPage]
 [SettingsPageInfo("test-settings-page", "测试页面", SettingsPageCategory.Debug)]
 public partial class TestSettingsPage : SettingsPageBase
 {

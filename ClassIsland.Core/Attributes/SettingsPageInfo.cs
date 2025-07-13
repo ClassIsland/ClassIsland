@@ -14,6 +14,7 @@ public class SettingsPageInfo : Attribute
     public bool UseBitmapIcon { get; } = false;
 
     public bool HideDefault { get; } = false;
+    public bool UseFullWidth { get; internal set; } = false;
 
     public SettingsPageCategory Category { get; } = SettingsPageCategory.External;
     

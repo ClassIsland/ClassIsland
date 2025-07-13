@@ -30,6 +30,11 @@ public static class SettingsWindowRegistryExtensions
         {
             throw new ArgumentException($"此设置页面id {info.Id} 已经被占用。");
         }
+
+        if (type.GetCustomAttributes(false).OfType<FullWidthPageAttribute>().Any())
+        {
+            info.UseFullWidth = true;
+        }
         services.AddKeyedTransient<SettingsPageBase, T>(info.Id);
         SettingsWindowRegistryService.Registered.Add(info);
         return services;
