@@ -51,7 +51,7 @@
                         <controls2:SettingsExpanderItem.Footer>
                             <controls1:Field Suffix="秒">
                                 <controls2:NumberBox Maximum="3600" Minimum="0"
-                                                     ValidationMode="{Binding Settings.InDoorClassPreparingDeltaTime}"
+                                                     Value="{Binding Settings.InDoorClassPreparingDeltaTime}"
                                                      Width="150" 
                                                      SpinButtonPlacementMode="Inline"/>
                             </controls1:Field>
@@ -64,7 +64,7 @@
                         <controls2:SettingsExpanderItem.Footer>
                             <controls1:Field Suffix="秒">
                                 <controls2:NumberBox Maximum="3600" Minimum="0"
-                                                     ValidationMode="{Binding Settings.OutDoorClassPreparingDeltaTime}"
+                                                     Value="{Binding Settings.OutDoorClassPreparingDeltaTime}"
                                                      Width="150" 
                                                      SpinButtonPlacementMode="Inline"/> 
                             </controls1:Field>
