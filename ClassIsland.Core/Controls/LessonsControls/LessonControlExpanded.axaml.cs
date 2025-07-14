@@ -14,6 +14,7 @@ using ClassIsland.Core.Models.AttachedSettings;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Models.Profile;
+using ReactiveUI;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
 
@@ -142,6 +143,12 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         this.GetObservable(IsLiveUpdatingEnabledProperty)
             .Subscribe(new AnonymousObserver<bool>(_ => OnIsLiveUpdatePropertyChanged()));
         this.GetObservable(CurrentTimeLayoutItemProperty).Subscribe(_ => UpdateSubject());
+        this.GetObservable(ClassPlanProperty).Subscribe(_ => UpdateSubject());
+        this.GetObservable(ClassInfoProperty).Subscribe(_ =>
+        {
+            ClassInfo.ObservableForProperty(x => x.SubjectId)
+                .Subscribe(_ => UpdateSubject());
+        });
         AttachedToVisualTree += OnAttachedToVisualTree;
         DetachedFromVisualTree += OnDetachedFromVisualTree;
     }

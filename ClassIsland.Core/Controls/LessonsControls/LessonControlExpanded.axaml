@@ -62,7 +62,7 @@
                 <!--     </MultiBinding> -->
                 <!-- </Grid.DataContext> -->
                 <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
-                           FontWeight="Bold" x:Name="Text" Text="{Binding CurrentSubject.Name, Mode=OneWay}"/>
+                           FontWeight="Bold" x:Name="Text" Text="{Binding DisplayingSubject.Name, Mode=OneWay}"/>
             </Grid>
             
             <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
