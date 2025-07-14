@@ -1,4 +1,3 @@
-#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,16 +6,19 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
-using MaterialDesignThemes.Wpf;
-using System.Windows.Media;
 using System.Windows;
+using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
+using Avalonia.Interactivity;
+using ReactiveUI;
 
 namespace ClassIsland.Controls.Components;
 
 /// <summary>
 /// CountDownComponent.xaml 的交互逻辑
 /// </summary>
-[ComponentInfo("7C645D35-8151-48BA-B4AC-15017460D994", "倒计时日", MaterialIconKind.TimerOutline, "显示距离某一天的倒计时。")]
+[PseudoClasses(":connector-colored", ":compact")]
+[ComponentInfo("7C645D35-8151-48BA-B4AC-15017460D994", "倒计时日", "\uf361", "显示距离某一天的倒计时。")]
 public partial class CountDownComponent : ComponentBase<CountDownComponentSettings>, INotifyPropertyChanged
 {
     private string _daysLeft = "";
@@ -43,11 +45,22 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         Loaded += (_, _) =>
         {
             UpdateContent();
+            Settings.ObservableForProperty(x => x.IsConnectorColorEmphasized)
+                .Subscribe(_ => UpdateStyleClasses());
+            Settings.ObservableForProperty(x => x.IsCompactModeEnabled)
+                .Subscribe(_ => UpdateStyleClasses());
+            UpdateStyleClasses();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         };
         Unloaded += (_, _) => {
             LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
         };
+    }
+
+    private void UpdateStyleClasses()
+    {
+        PseudoClasses.Set(":connector-colored", Settings.IsConnectorColorEmphasized);
+        PseudoClasses.Set(":compact", Settings.IsCompactModeEnabled);
     }
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
@@ -75,4 +88,3 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         return true;
     }
 }
-#endif

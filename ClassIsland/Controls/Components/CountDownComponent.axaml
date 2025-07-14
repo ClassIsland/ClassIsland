@@ -1,6 +1,6 @@
 ﻿<controls:ComponentBase x:TypeArguments="componentSettings:CountDownComponentSettings" 
                         x:Class="ClassIsland.Controls.Components.CountDownComponent"
-                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
@@ -14,6 +14,11 @@
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800"
                         d:DataContext="{d:DesignInstance classIsland:MainWindow}">
+    <controls:ComponentBase.Styles>
+        <Style Selector="local|CountDownComponent:connector-colored TextBlock.connector">
+            <Setter Property="Foreground" Value="{Binding $parent[local:CountDownComponent].Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+        </Style>
+    </controls:ComponentBase.Styles>
     <controls:ComponentBase.Resources>
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
     </controls:ComponentBase.Resources>
@@ -21,19 +26,10 @@
           VerticalAlignment="Center" TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="距离"
-                       Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
-                       VerticalAlignment="Center" Margin="0 0 2 0">
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Settings.IsConnectorColorEmphasized}" Value="True">
-                                <Setter Property="Foreground" Value="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
+                       x:Name="TextBlockTo"
+                       Classes="connector"
+                       IsVisible="{Binding !Settings.IsCompactModeEnabled}"
+                       VerticalAlignment="Center" Margin="0 0 2 0"/>
             <TextBlock Text="{Binding Settings.CountDownName}"
                        Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                        FontSize="{Binding Settings.FontSize}"
@@ -41,18 +37,9 @@
                        FontWeight="Medium" />
             <TextBlock Text="{Binding Settings.CountDownConnector}"
                        VerticalAlignment="Center"
-                       Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Settings.IsConnectorColorEmphasized}" Value="True">
-                                <Setter Property="Foreground" Value="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
+                       Classes="connector"
+                       x:Name="TextBlockConnector"
+                       IsVisible="{Binding !Settings.IsCompactModeEnabled}"/>
             <TextBlock Text="{Binding DaysLeft, Mode=OneWay}" 
                        Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                        FontSize="{Binding Settings.FontSize}"
@@ -60,20 +47,11 @@
                        FontWeight="Medium"
                        Margin="2 0 2 0" />
             <TextBlock Text="天"
+                       x:Name="TextBlockDay"
+                       Classes="connector"
                        FontSize="{Binding Settings.FontSize}"
                        VerticalAlignment="Center"
-                       FontWeight="Medium">
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Settings.IsConnectorColorEmphasized}" Value="True">
-                                <Setter Property="Foreground" Value="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
+                       FontWeight="Medium"/>
         </StackPanel>
     </Grid>
 </controls:ComponentBase>
