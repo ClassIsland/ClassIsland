@@ -337,7 +337,6 @@
                                                     Value="{Binding ViewModel.SettingsService.Settings.NotificationSoundVolume}"
                                                     Minimum="0" Maximum="1"
                                                     TickFrequency="0.01"
-                                                    Margin="0 4 0 8"
                                                     Width="150"
                                                     Classes="auto-tooltip"
                                                     IsSnapToTickEnabled="True" 
