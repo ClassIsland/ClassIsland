@@ -727,12 +727,26 @@
                                 
                                 <TabControl Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Classes="compact"
                                             Padding="0"
+                                            SelectedIndex="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SettingsService.Settings.TimeLayoutEditorIndex, Mode=TwoWay}"
                                             TabStripPlacement="Bottom">
                                     <TabItem Header="{ci:FluentIcon &#xE075;}">
                                         <ListBox ItemsSource="{Binding Layouts}"
                                                  SelectedIndex="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePointIndex}"
                                                  SelectedItem="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint}">
-                                            
+
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal"
+                                                                Spacing="4">
+                                                        <ci:FluentIcon Glyph="{Binding TimeType, Converter={x:Static ci:TimeTypeToIconGlyphConverter.Instance}}"
+                                                                       Margin="0 -4 0 0"/>
+                                                        <TextBlock Text="{Binding TimeType, Converter={x:Static ci:TimeTypeToTimeTypeNameConverter.Instance}}"/>
+                                                        <TextBlock Text="{Binding StartTime}"/>
+                                                        <TextBlock Text="-"/>
+                                                        <TextBlock Text="{Binding EndTime}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
                                         </ListBox>
                                     </TabItem>
                                     <TabItem Header="{ci:FluentIcon &#xF35B;}">
@@ -741,6 +755,7 @@
                                                                       Scale="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}, Mode=OneWay}"
                                                                       IsSticky="{Binding ViewModel.IsTimeLineSticky, RelativeSource={RelativeSource AncestorType=views:ProfileSettingsWindow}}"
                                                                       x:Name="TimeLineListControl"
+                                                                      AutoScrollToSelectedItem="True"
                                                                       IsPanningModeEnabled="True">
                                             <!-- 回应我吧，爱莉希雅 -->
                                             <timeLine:TimeLineListControl.IsReadonly>
