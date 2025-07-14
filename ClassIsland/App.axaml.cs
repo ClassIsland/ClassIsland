@@ -671,7 +671,7 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<ScheduleComponent, ScheduleComponentSettingsControl>();
                 services.AddComponent<DateComponent>();
                 services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
-                // services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();
+                services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();
                 services.AddComponent<CountDownComponent, CountDownComponentSettingsControl>();
                 // services.AddComponent<SlideComponent, SlideComponentSettingsControl>();
                 // services.AddComponent<RollingComponent, RollingComponentSettingsControl>();

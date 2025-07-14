@@ -42,17 +42,23 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         InitializeComponent();
         LessonsService = lessonsService;
         ExactTimerService = exactTimeService;
+        IDisposable? observer1 = null;
+        IDisposable? observer2 = null;
         Loaded += (_, _) =>
         {
             UpdateContent();
-            Settings.ObservableForProperty(x => x.IsConnectorColorEmphasized)
+            observer1?.Dispose();
+            observer2?.Dispose();
+            observer1 = Settings.ObservableForProperty(x => x.IsConnectorColorEmphasized)
                 .Subscribe(_ => UpdateStyleClasses());
-            Settings.ObservableForProperty(x => x.IsCompactModeEnabled)
+            observer2 = Settings.ObservableForProperty(x => x.IsCompactModeEnabled)
                 .Subscribe(_ => UpdateStyleClasses());
             UpdateStyleClasses();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         };
         Unloaded += (_, _) => {
+            observer1?.Dispose();
+            observer2?.Dispose();
             LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
         };
     }

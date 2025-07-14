@@ -183,6 +183,14 @@
         <Setter Property="CornerRadius" Value="0"/>
     </Style>
     
+    <Style Selector="TabControl.content-only">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Margin" Value="0"/>
+        <Style Selector="^ TabItem">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </Style>
+    
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

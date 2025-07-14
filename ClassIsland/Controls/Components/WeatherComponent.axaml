@@ -1,0 +1,259 @@
+﻿<controls:ComponentBase x:TypeArguments="componentSettings:WeatherComponentSettings"
+                        x:Class="ClassIsland.Controls.Components.WeatherComponent"
+                        xmlns="https://github.com/avaloniaui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                        xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+                        xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                        xmlns:controls1="clr-namespace:ClassIsland.Controls"
+                        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                        xmlns:converters="clr-namespace:ClassIsland.Converters"
+                        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+                        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                        mc:Ignorable="d"
+                        d:DesignHeight="450" d:DesignWidth="800"
+                        ClipToBounds="False"
+                        Loaded="Control_OnLoaded"
+                        Unloaded="Control_OnUnloaded">
+    <controls:ComponentBase.Styles>
+        <Style Selector="local|WeatherComponent">
+            <Style Selector="^[AqiLevel=1] ci|FluentIcon#AqiIcon">
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel1Brush}"/>
+            </Style>
+            <Style Selector="^[AqiLevel=2] ci|FluentIcon#AqiIcon">
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel2Brush}"/>
+            </Style>
+            <Style Selector="^[AqiLevel=3] ci|FluentIcon#AqiIcon">
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel3Brush}"/>
+            </Style>
+            <Style Selector="^[AqiLevel=4] ci|FluentIcon#AqiIcon">
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel4Brush}"/>
+            </Style>
+            <Style Selector="^[AqiLevel=5] ci|FluentIcon#AqiIcon">
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel5Brush}"/>
+            </Style>
+            <Style Selector="^[AqiLevel=6] ci|FluentIcon#AqiIcon">
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel6Brush}"/>
+            </Style>
+        </Style>
+        <Style Selector="ci|FluentIcon">
+            <Setter Property="Margin" Value="0 -2 0 0"></Setter>
+        </Style>
+    </controls:ComponentBase.Styles>
+    <controls:ComponentBase.Resources>
+        <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
+        <converters:StringToDoubleConverter x:Key="StringToDoubleConverter" />
+    </controls:ComponentBase.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <TabControl IsVisible="{Binding Settings.ShowMainWeatherInfo}"
+                        SelectedIndex="{Binding Settings.MainWeatherInfoKind}"
+                        Classes="content-only">
+                <TabItem>
+                    <StackPanel Orientation="Horizontal">
+                        <controls1:WeatherPackIconControl
+                            Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
+                            Height="22" VerticalAlignment="Center" />
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <StackPanel Orientation="Horizontal">
+                        <ci:FluentIcon 
+                            Height="22" Width="22"
+                            FontSize="22"
+                             Glyph="&#xE794;"
+                             VerticalAlignment="Center"/>
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <StackPanel Orientation="Horizontal">
+                        <ci:FluentIcon Height="22" Width="22"
+                                                 Glyph="&#xF43B;"
+                                                 FontSize="22"
+                                                 VerticalAlignment="Center"/>
+                        <ci:FluentIcon Height="22" Width="22"
+                                                 Margin="6 0 0 0"
+                                                 FontSize="22"
+                                                 Glyph="&#xE0CA;"
+                                                 RenderTransformOrigin="{x:Static RelativePoint.Center}"
+                                                 VerticalAlignment="Center">
+                            <ci:FluentIcon.RenderTransform>
+                                <RotateTransform Angle="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Direction.Value, Converter={StaticResource StringToDoubleConverter}}" />
+                            </ci:FluentIcon.RenderTransform>
+                        </ci:FluentIcon>
+                        <TextBlock VerticalAlignment="Center" Margin="0 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <StackPanel Orientation="Horizontal">
+                        <ci:FluentIcon Glyph="&#xEA7D;" Width="22" Height="22"
+                                       VerticalAlignment="Center"
+                                       FontSize="22"
+                                       x:Name="AqiIcon"/>
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}">
+                            </Run>
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <StackPanel Orientation="Horizontal">
+                        <ci:FluentIcon Height="22" Width="22"
+                                       FontSize="22"
+                                       Glyph="&#xE8E0;" VerticalAlignment="Center"/>
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <StackPanel Orientation="Horizontal">
+                        <ci:FluentIcon Height="22" Width="22"
+                                       Glyph="&#xF1B3;"
+                                       FontSize="22"
+                                       VerticalAlignment="Center"/>
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+            <!-- 预警信号 -->
+            <ItemsControl ItemsSource="{Binding SettingsService.Settings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
+                          IsVisible="{Binding Settings.ShowAlerts}"
+                          Margin="6 0 -4 0"
+                          ClipToBounds="False">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Panel x:Name="PanelRoot">
+                            <Classes.AlwaysShowIcon>
+                                <Binding Path="$parent[local:WeatherComponent].Settings.AlertsTitleShowMode" Converter="{x:Static ObjectConverters.Equal}"
+                                         Mode="OneWay">
+                                    <Binding.ConverterParameter>
+                                        <system:Int32>0</system:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.AlwaysShowIcon>
+                            <Classes.AlwaysShowFull>
+                                <Binding Path="$parent[local:WeatherComponent].Settings.AlertsTitleShowMode" Converter="{x:Static ObjectConverters.Equal}"
+                                         Mode="OneWay">
+                                    <Binding.ConverterParameter>
+                                        <system:Int32>2</system:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.AlwaysShowFull>
+                            <Panel.Styles>
+                                <Style Selector="Panel">
+                                    <Style Selector="^ Border#BorderIcon">
+                                        <Setter Property="IsVisible" Value="{Binding !IsDefaultIcon}"/>
+                                    </Style>
+                                    <Style Selector="^ Border#BorderFull">
+                                        <Setter Property="IsVisible" Value="{Binding IsDefaultIcon}"/>
+                                    </Style>
+                                    
+                                    <Style Selector="^.AlwaysShowIcon">
+                                        <Style Selector="^ Border#BorderIcon">
+                                            <Setter Property="IsVisible" Value="True"/>
+                                        </Style>
+                                        <Style Selector="^ Border#BorderFull">
+                                            <Setter Property="IsVisible" Value="False"/>
+                                        </Style>
+                                    </Style>
+                                    <Style Selector="^.AlwaysShowFull">
+                                        <Style Selector="^ Border#BorderIcon">
+                                            <Setter Property="IsVisible" Value="False"/>
+                                        </Style>
+                                        <Style Selector="^ Border#BorderFull">
+                                            <Setter Property="IsVisible" Value="True"/>
+                                        </Style>
+                                    </Style>
+                                </Style>
+                                
+                            </Panel.Styles>
+                            <Border x:Name="BorderIcon">
+                                <asyncImageLoader:AdvancedImage Source="{Binding Images[icon]}"
+                                                                Width="22"
+                                                                Height="22"
+                                                                Margin="2 0 0 0" />
+                            </Border>
+                            <Border x:Name="BorderFull">
+                                <Grid Margin="2 0 0 0" ColumnDefinitions="*,*">
+                                    <Border Grid.ColumnSpan="2"
+                                            Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                            CornerRadius="11" />
+                                    <asyncImageLoader:AdvancedImage Grid.Column="0"
+                                           Source="{Binding Images[icon]}" Height="22" Width="22" />
+                                    <TextBlock Grid.Column="1" Margin="4 0 8 0"
+                                               Text="{Binding Type}" VerticalAlignment="Center"
+                                               FontSize="{DynamicResource MainWindowSecondaryFontSize}" />
+                                </Grid>
+                            </Border>
+                        </Panel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!-- 降水预警 -->
+            <Grid VerticalAlignment="Center" Margin="8 0 0 0">
+                <Grid.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="!!SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes"/>
+                        <Binding Path="Settings.ShowRainTime"/>
+                    </MultiBinding>
+                </Grid.IsVisible>
+                <Border Background="{DynamicResource Rainy}"
+                        Height="{Binding Bounds.Height, ElementName=BorderStroke}"
+                        ClipToBounds="True"
+                        BorderThickness="1"
+                        Padding="8 0"
+                        Opacity="0.15"
+                        VerticalAlignment="Bottom"
+                        CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
+                </Border>
+                <Border ClipToBounds="True"
+                        BorderBrush="{DynamicResource Rainy}"
+                        BorderThickness="1"
+                        Padding="8 0"
+                        x:Name="BorderStroke"
+                        VerticalAlignment="Bottom"
+                        CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <ci:FluentIcon Glyph="&#xF453;" VerticalAlignment="Center"
+                                       FontSize="{DynamicResource MainWindowSecondaryFontSize}"
+                                       Margin="0 0 4 0"/>
+                        <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
+                                   VerticalAlignment="Center" FontWeight="Regular">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay}">
+                            </Run><Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="min"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</controls:ComponentBase>
