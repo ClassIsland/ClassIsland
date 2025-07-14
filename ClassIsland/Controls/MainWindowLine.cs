@@ -254,6 +254,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         SettingsService.Settings.ObservableForProperty(x => x.IsCustomBackgroundColorEnabled)
             .Subscribe(v => PseudoClasses.Set(":custom-background", v.Value));
         PseudoClasses.Set(":custom-background", SettingsService.Settings.IsCustomBackgroundColorEnabled);
+        UpdateStyleStates();
     }
 
     private void UpdateStyleStates()
