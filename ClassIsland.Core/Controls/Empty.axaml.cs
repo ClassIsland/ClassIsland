@@ -30,4 +30,22 @@ public class Empty : TemplatedControl
         get => GetValue(TextProperty);
         set => SetValue(TextProperty, value);
     }
+
+    public static readonly StyledProperty<double> IconHeightProperty = AvaloniaProperty.Register<Empty, double>(
+        nameof(IconHeight), 64.0);
+
+    public double IconHeight
+    {
+        get => GetValue(IconHeightProperty);
+        set => SetValue(IconHeightProperty, value);
+    }
+
+    public static readonly StyledProperty<double> IconWidthProperty = AvaloniaProperty.Register<Empty, double>(
+        nameof(IconWidth), 64.0);
+
+    public double IconWidth
+    {
+        get => GetValue(IconWidthProperty);
+        set => SetValue(IconWidthProperty, value);
+    }
 }

@@ -12,7 +12,8 @@
             <ControlTemplate>
                 <StackPanel Spacing="8" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <controls1:IconSourceElement IconSource="{TemplateBinding Icon}" 
-                                                 Height="64" Width="64"
+                                                 Height="{TemplateBinding IconHeight}"
+                                                 Width="{TemplateBinding IconWidth}"
                                                  HorizontalAlignment="Center"/>
                     <TextBlock Text="{TemplateBinding Text}" HorizontalAlignment="Center"
                                TextAlignment="Center" TextWrapping="Wrap"/>

@@ -1104,7 +1104,11 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="调课">
-
+                    <ci:Empty Text="Coming S∞n" IconWidth="75" IconHeight="75">
+                        <ci:Empty.Icon>
+                            <controls:BitmapIconSource UriSource="avares://ClassIsland/Assets/HoYoStickers/白厄_掉线.png"/>
+                        </ci:Empty.Icon>
+                    </ci:Empty>
                 </TabItem>
             </TabControl>
 
