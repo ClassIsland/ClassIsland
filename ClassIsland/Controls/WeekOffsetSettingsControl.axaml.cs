@@ -8,8 +8,10 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Extensions;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -36,7 +38,7 @@ public partial class WeekOffsetSettingsControl : UserControl
     void UpdateIndexes() => ViewModel.CyclePositionIndexes =
             new(LessonsService.GetCyclePositionsByDate().Select(x => x - 1));
     
-    async Task GenerateWeekContentPanel()
+    private void GenerateWeekContentPanel()
     {
          if (ContentPanel.Children.Count == SettingsService.Settings.MultiWeekRotationMaxCycle - 1) return;
          
@@ -47,11 +49,10 @@ public partial class WeekOffsetSettingsControl : UserControl
              ContentPanel.Children.Add(weekSelectorPanel);
          }
          
-         // TODO:FIXME: 修改为 Dispatcher.Yield
-         await Task.Delay(1);
-         await Task.Delay(1);
-         await Task.Delay(1); // 歇会
-         ContentScrollViewer.Offset = new Vector(0, 0);
+         _ = Dispatcher.UIThread.InvokeAsync(() =>
+         {
+             ContentScrollViewer.Offset = new Vector(0, 0);
+         }, DispatcherPriority.ContextIdle);
     }
     
 
@@ -90,7 +91,8 @@ public partial class WeekOffsetSettingsControl : UserControl
 
     private void ButtonFinish_OnClick(object _, RoutedEventArgs e)
     {
-        CloseRequested.Invoke(this, EventArgs.Empty);
+        CloseRequested?.Invoke(this, EventArgs.Empty);
+        FlyoutHelper.CloseAncestorFlyout(this);
         SetCyclePositionsOffset();
     }
 
@@ -122,4 +124,9 @@ public partial class WeekOffsetSettingsControl : UserControl
     private WeekOffsetSettingsControlViewModel ViewModel { get; } = new();
     private ControlTheme ChipListBoxTheme { get; } = (ControlTheme)Application.Current.FindResource("ChipListBoxTheme");
     public WeekOffsetSettingsControl() => InitializeComponent();
+
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        InitializeAfterLoad();
+    }
 }

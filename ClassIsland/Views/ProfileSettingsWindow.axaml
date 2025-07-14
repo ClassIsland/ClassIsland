@@ -13,6 +13,7 @@
         xmlns:action="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
         xmlns:timeLine="clr-namespace:ClassIsland.Controls.TimeLine"
         xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
+        xmlns:data="clr-namespace:FluentAvalonia.UI.Data;assembly=FluentAvalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
@@ -24,7 +25,7 @@
         Closing="Window_OnClosing">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
-                              Executed="CommandBindingRemoveTimePoint_OnExecuted"></input:CommandBinding>
+                              Executed="CommandBindingRemoveTimePoint_OnExecuted"/>
     </input:CommandManager.CommandBindings>
     <ci:MyWindow.DataTemplates>
     </ci:MyWindow.DataTemplates>
@@ -201,9 +202,113 @@
             </StackPanel>
         </ScrollViewer>
         
+        <ci:PreventNullConverter x:Key="PreventNullConverter" />
+        <Grid  Margin="16" Width="300" x:Key="TemporaryClassPlan">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="当前启用的课表" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0 8 0 0">
+                        <ToggleSwitch VerticalAlignment="Center" Margin="0 0 4 0" 
+                                      OnContent="加载课表" OffContent="加载课表"
+                                      IsChecked="{Binding ViewModel.LessonsService.IsClassPlanEnabled}"/>
+                    </StackPanel>
+
+                    <StackPanel IsVisible="{Binding ViewModel.ProfileService.Profile.OverlayClassPlanId, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Separator Margin="0 16 0 4"/>
+                        <ci:IconText Glyph="&#xEA2F;" Text="临时层" Margin="0 0 0 8"/>
+                        <TextBlock Text="临时层课表将优先于临时课表应用。临时层课表将在该课表过期后自动清除。"
+                                   TextWrapping="Wrap"
+                                   Margin="0 0 0 4"/>
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleSwitch VerticalAlignment="Center" Margin="0 0 4 0"
+                                          Content="启用临时层"
+                                          IsChecked="{Binding ViewModel.ProfileService.Profile.IsOverlayClassPlanEnabled}"/>
+                        </StackPanel>
+                        <Button Theme="{StaticResource TrsnaparentButton}" Margin="0 4 0 0"
+                                HorizontalAlignment="Left"
+                                Click="ButtonClearTempOverlay_OnClick"
+                                ToolTip.Tip="清除临时层课表。">
+                            <ci:IconText Glyph="&#xE1BD;" Text="清除临时层"/>
+                        </Button>
+                    </StackPanel>
+
+                    <Separator Margin="0 16 0 4"/>
+                    <ci:IconText Glyph="&#xE6B1;" Text="临时课表" Margin="0 0 0 8"/>
+                    <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天有效。" TextWrapping="Wrap"/>
+                    <Button Theme="{StaticResource TrsnaparentButton}" 
+                            HorizontalAlignment="Left"
+                            ToolTip.Tip="清除选择的临时课表，并恢复至正常课表安排。"
+                            Margin="0 6 0 0"
+                            Click="ButtonClearTemporaryClassPlan_OnClick">
+                        <Button.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.Or}"
+                                          Mode="OneWay">
+                                <Binding Path="!ViewModel.ProfileService.Profile.IsOverlayClassPlanEnabled"/>
+                                <Binding Path="!ViewModel.ProfileService.Profile.HasOverlayClassPlan"/>
+                            </MultiBinding>
+                        </Button.IsVisible>
+                        <ci:IconText Glyph="&#xE1BD;" Text="清除临时课表"/>
+                    </Button>
+                    <TextBlock Text="临时课表被临时层课表覆盖。要使用临时课表，请暂时禁用或清除临时层课表。"
+                               TextWrapping="Wrap"
+                               Margin="0 4 0 0">
+                        <TextBlock.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="ViewModel.ProfileService.Profile.IsOverlayClassPlanEnabled"/>
+                                <Binding Path="ViewModel.ProfileService.Profile.HasOverlayClassPlan"/>
+                            </MultiBinding>
+                        </TextBlock.IsVisible>
+                    </TextBlock>
+                </StackPanel>
+                <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.TempClassPlanList.Items}"
+                         Margin="0 12 0 0"
+                         SelectionMode="Single"
+                         SelectedValue="{Binding ViewModel.ProfileService.Profile.TempClassPlanId, Mode=TwoWay, Converter={StaticResource PreventNullConverter}}"
+                         SelectedValueBinding="{Binding Key}"
+                         SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged">
+                    <ListBox.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.Or}"
+                                      Mode="OneWay">
+                            <Binding Path="!ViewModel.ProfileService.Profile.IsOverlayClassPlanEnabled"/>
+                            <Binding Path="!ViewModel.ProfileService.Profile.HasOverlayClassPlan"/>
+                        </MultiBinding>
+                    </ListBox.IsVisible>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Mode=OneWay}"
+                                      IsHitTestVisible="False"
+                                      Focusable="False"
+                                      HorizontalAlignment="Stretch">
+                                <CheckBox.Content>
+                                    <TextBlock Text="{Binding Value.Name}"
+                                               VerticalAlignment="Center"/>
+                                </CheckBox.Content>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Grid.Row="2">
+                    <Separator Margin="0 16 0 4" />
+                    <ci:IconText Glyph="&#xE304;" Text="多周轮换偏移" Margin="0 0 0 8" />
+                    <Button Theme="{StaticResource TransparentButton}"
+                            HorizontalAlignment="Left">
+                        <Button.Flyout>
+                            <Flyout>
+                                <Border>
+                                    <controls1:WeekOffsetSettingsControl
+                                        x:Name="WeekOffsetSettingsControl"/>
+                                </Border>
+                            </Flyout>
+                        </Button.Flyout>
+                        <ci:IconText Glyph="&#xE304;" Text="调整多周轮换偏移…"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
     </ci:MyWindow.Resources>
     <SplitView DisplayMode="Overlay" PanePlacement="Right"
                IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
+               OpenPaneLength="332"
                Pane="{Binding ViewModel.DrawerContent, Mode=OneWay}">
         <Grid RowDefinitions="48, *">
             <!-- Background Layer -->
@@ -999,7 +1104,8 @@
                                                ToolTip.Tip="当前启用的档案"
                                                Click="ButtonOpenProfileManager_OnClick"/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe6b1;}"
-                                               Label="{Binding ViewModel.LessonsService.CurrentClassPlan.Name}"
+                                               Click="ButtonOpenTempClassPlans_OnClick"
+                                               Label="{Binding ViewModel.LessonsService.CurrentClassPlan.Name, FallbackValue='（无）'}"
                                                ToolTip.Tip="启用临时课表"/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe92f;}"
                                                ToolTip.Tip="管理课表群">

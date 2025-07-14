@@ -1,7 +1,8 @@
 ﻿<UserControl x:Class="ClassIsland.Controls.WeekOffsetSettingsControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ci="http://classisland.tech/schemas/xaml/core">
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             Loaded="Control_OnLoaded">
     <StackPanel Spacing="0" Margin="0">
         <TextBlock Text="调整本周的多周轮换位置。"
                    FontSize="16"

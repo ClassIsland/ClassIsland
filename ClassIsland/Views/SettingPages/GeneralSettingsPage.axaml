@@ -83,11 +83,10 @@
                                 ToolTip.Tip="调整偏移…"
                                 x:Name="WeekOffsetSettingsControlButton">
                             <Button.Flyout>
-                                <Flyout Opening="OnWeekOffsetSettingsControlFlyoutOpening">
+                                <Flyout>
                                     <Border>
                                         <controls2:WeekOffsetSettingsControl
-                                            x:Name="WeekOffsetSettingsControl"
-                                            CloseRequested="WeekOffsetSettingsControlOnCloseRequested"/>
+                                            x:Name="WeekOffsetSettingsControl"/>
                                     </Border>
                                 </Flyout>
                             </Button.Flyout>

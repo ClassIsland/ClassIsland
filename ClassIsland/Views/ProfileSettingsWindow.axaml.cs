@@ -308,6 +308,30 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #endregion
 
+    #region TempClassPlan
+    
+    private void ButtonOpenTempClassPlans_OnClick(object? sender, RoutedEventArgs e)
+    {
+        OpenDrawer("TemporaryClassPlan");
+    }
+
+    private void ButtonClearTempOverlay_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ProfileService.ClearTempClassPlan();
+    }
+    
+    private void ButtonClearTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ProfileService.Profile.TempClassPlanId = null;
+    }
+    
+    private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ViewModel.ProfileService.Profile.TempClassPlanSetupTime = ViewModel.ExactTimeService.GetCurrentLocalDateTime();
+    }
+
+    #endregion
+
     #region ClassPlans
 
     private void UpdateClassPlanInfoEditorTimeLayoutComboBox()

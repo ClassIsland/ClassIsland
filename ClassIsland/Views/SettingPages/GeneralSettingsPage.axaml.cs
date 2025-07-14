@@ -75,16 +75,5 @@ public partial class GeneralSettingsPage : SettingsPageBase
         // window.Owner = Window.GetWindow(this);
         // window.ShowDialog();
     }
-
-    private void OnWeekOffsetSettingsControlFlyoutOpening(object? sender, EventArgs e)
-    {
-        WeekOffsetSettingsControl.InitializeAfterLoad();
-        WeekOffsetSettingsControl.CloseRequested += WeekOffsetSettingsControlOnCloseRequested;
-    }
-
-    private void WeekOffsetSettingsControlOnCloseRequested(object? sender, EventArgs e)
-    {
-        WeekOffsetSettingsControlButton.Flyout.Hide();
-    }
 }
 

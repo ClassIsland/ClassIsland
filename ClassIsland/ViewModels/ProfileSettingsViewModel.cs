@@ -35,6 +35,8 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
 
     public SyncDictionaryList<Guid, ClassPlanGroup> ClassPlanGroups { get; }
 
+    public IObservableList<KeyValuePair<Guid, ClassPlan>> TempClassPlanList { get; }
+
 
     [ObservableProperty] private object _drawerContent = new();
     [ObservableProperty] private bool _isClassPlansEditing = false;
@@ -97,5 +99,10 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
         ClassPlanGroups =
             new SyncDictionaryList<Guid, ClassPlanGroup>(ProfileService.Profile.ClassPlanGroups, Guid.NewGuid);
+
+        TempClassPlanList = ClassPlans.List
+            .ToObservableChangeSet()
+            .Filter(x => !x.Value.IsOverlay)
+            .AsObservableList();
     }
 }
