@@ -62,7 +62,7 @@
                 <SplitView IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
                            PanePlacement="Right"
                            Pane="{Binding ViewModel.DrawerContent}"
-                           OpenPaneLength="{Binding ViewModel.DrawerContent.(Control.Width), FallbackValue=0}"
+                           OpenPaneLength="{Binding ViewModel.DrawerContent, FallbackValue=0, Converter={x:Static local:SettingsWindowNew.ControlToWidthConverter}}"
                            PaneBackground="{DynamicResource SolidBackgroundFillColorBaseAltBrush}">
                     <Grid RowDefinitions="Auto, *">
                         <Grid Grid.Row="1"

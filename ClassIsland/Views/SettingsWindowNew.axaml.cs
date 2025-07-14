@@ -30,6 +30,7 @@ using ClassIsland.Core.Models.SettingsWindow;
 using ClassIsland.Helpers;
 using System.Transactions;
 using Avalonia.Controls;
+using Avalonia.Data.Converters;
 using Avalonia.Data.Core;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
@@ -58,7 +59,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     public SettingsNewViewModel ViewModel { get; } = new();
 
-
     private bool IsOpened { get; set; } = false;
 
     public IManagementService ManagementService { get; }
@@ -80,6 +80,16 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     private bool _isFirstNavigated = false;
 
     private readonly Dictionary<string, SettingsPageBase?> _cachedPages = new();
+    
+    public static readonly FuncValueConverter<object?, double> ControlToWidthConverter = new(x =>
+    {
+        if (x is Control control)
+        {
+            return control.Margin.Left + control.Width + control.Margin.Right;
+        }
+
+        return 0;
+    });
 
     public SettingsWindowNew(IManagementService managementService, IHangService hangService,
         ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService,
