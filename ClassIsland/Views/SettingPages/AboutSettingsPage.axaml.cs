@@ -134,7 +134,7 @@ public partial class AboutSettingsPage : SettingsPageBase
         {
             ViewModel.SettingsService.Settings.ContributorsCache =
                 await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
-                    "https://github.moeyy.xyz/https://raw.githubusercontent.com/ClassIsland/ClassIsland/master/.all-contributorsrc"));
+                    "https://ghfast.top/https://raw.githubusercontent.com/ClassIsland/ClassIsland/master/.all-contributorsrc"));
         }
         catch (Exception ex)
         {

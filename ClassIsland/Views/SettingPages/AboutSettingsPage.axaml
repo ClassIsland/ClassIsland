@@ -64,9 +64,9 @@
                                                        Rect="0,0,32,32" />
                                 </Grid.Clip>
                                 <Border Background="{DynamicResource MaterialDesignBody}" Opacity="0.1" />
-                                <Image asyncImageLoader:ImageLoader.Source="{Binding AvatarUri}"
+                                <asyncImageLoader:AdvancedImage Source="{Binding AvatarUri}"
                                        Width="32" Height="32">
-                                </Image>
+                                </asyncImageLoader:AdvancedImage>
                             </Grid>
                             <TextBlock Grid.Column="1" TextWrapping="Wrap">
                                 <Run FontSize="15"
