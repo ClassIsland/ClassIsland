@@ -13,6 +13,7 @@ using ClassIsland.ViewModels.SettingsPages;
 using System.Diagnostics;
 using System.Windows.Input;
 using Avalonia.Controls;
+using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
@@ -41,6 +42,14 @@ public partial class NotificationSettingsPage : SettingsPageBase
             MimeTypes = ["audio"]
         }
     ];
+
+    private static Border? _border;
+
+    public static readonly FuncValueConverter<object?, object> ControlPreventNullConverter = new(x =>
+    {
+        _border ??= new Border();
+        return x ?? _border;
+    });
     
     public NotificationSettingsViewModel ViewModel { get; } = IAppHost.GetService<NotificationSettingsViewModel>();
     public NotificationSettingsPage()

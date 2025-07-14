@@ -17,6 +17,7 @@
                            xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                            xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Collections"
                            xmlns:storage="clr-namespace:Avalonia.Platform.Storage;assembly=Avalonia.Base"
+                           xmlns:notification1="clr-namespace:ClassIsland.Shared.Abstraction.Models.Notification;assembly=ClassIsland.Shared"
                            mc:Ignorable="d"
                            d:DesignHeight="450" d:DesignWidth="800"
                            d:DataContext="{d:DesignInstance local:NotificationSettingsPage}"
@@ -387,40 +388,39 @@
 
         <controls1:ListDetailView.RightContent>
             <!-- 提醒详细信息 -->
-            <ci:Emptiable IsDirectContentMode="True" Data="{Binding ViewModel.NotificationSettingsSelectedProvider}">
-                <Grid>
-                    <Grid DataContext="{Binding ViewModel.SelectedRegisterInfo, Mode=OneWay}"
-                          d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}"
-                          RowDefinitions="Auto,*">
-                        <ContentPresenter Grid.Row="1" ClipToBounds="True"
-                                          Content="{Binding ProviderInstance.SettingsElement}" />
-                        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                    IsVisible="{Binding ProviderInstance.SettingsElement, Converter={x:Static ObjectConverters.IsNull}}">
-                            <ci:FluentIcon Glyph="&#xEF26;" Width="72" Height="72"
-                                           FontSize="72" HorizontalAlignment="Center" />
-                            <TextBlock Text="该提醒提供方没有设置。" TextWrapping="Wrap"
-                                       Margin="0 8 0 0" />
-                        </StackPanel>
+            <ci:Emptiable Content="{Binding ViewModel.SelectedRegisterInfo}">
+                <ci:Emptiable.ContentTemplate>
+                    <DataTemplate x:DataType="notification1:INotificationSenderRegisterInfo">
+                        <Grid RowDefinitions="Auto,*">
+                            <ContentPresenter Grid.Row="1" ClipToBounds="True"
+                                              Content="{Binding ProviderInstance.SettingsElement, Converter={x:Static local:NotificationSettingsPage.ControlPreventNullConverter}}" />
+                            <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                        IsVisible="{Binding ProviderInstance.SettingsElement, Converter={x:Static ObjectConverters.IsNull}}">
+                                <ci:FluentIcon Glyph="&#xEF26;" Width="72" Height="72"
+                                               FontSize="72" HorizontalAlignment="Center" />
+                                <TextBlock Text="该提醒提供方没有设置。" TextWrapping="Wrap"
+                                           Margin="0 8 0 0" />
+                            </StackPanel>
 
-                        <Border Grid.Row="0" Height="36">
-                            <Grid Margin="12 0" ColumnDefinitions="Auto,Auto,*">
-                                <ToggleSwitch Grid.Column="0" Margin="0 -12 0 0"
-                                              VerticalAlignment="Center" OnContent="" OffContent=""
-                                              IsChecked="{Binding ProviderSettings.IsSettingsEnabled}" />
-                                <Button Grid.Column="1" Theme="{StaticResource TransparentButton}"
-                                        Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                        Content="{ci:FluentIcon &#xEF27;}"
-                                        VerticalAlignment="Center"
-                                        ToolTip.Tip="查看提醒高级设置…"
-                                        Margin="0 0 6 0"
-                                        Click="ButtonOpenAdvancedProviderSettings_OnClick"
-                                        IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"/>
-                                <TextBlock Grid.Column="2" Text="对此提醒来源启用特殊高级设置" VerticalAlignment="Center"/>
-                            </Grid>
-                        </Border>
+                            <Border Grid.Row="0" Height="36">
+                                <Grid Margin="12 0" ColumnDefinitions="Auto,Auto,*">
+                                    <ToggleSwitch Grid.Column="0" Margin="0 -12 0 0"
+                                                  VerticalAlignment="Center" OnContent="" OffContent=""
+                                                  IsChecked="{Binding ProviderSettings.IsSettingsEnabled}" />
+                                    <Button Grid.Column="1" Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xEF27;}"
+                                            VerticalAlignment="Center"
+                                            ToolTip.Tip="查看提醒高级设置…"
+                                            Margin="0 0 6 0"
+                                            Click="ButtonOpenAdvancedProviderSettings_OnClick"
+                                            IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"/>
+                                    <TextBlock Grid.Column="2" Text="对此提醒来源启用特殊高级设置" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
 
-                    </Grid>
-                </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </ci:Emptiable.ContentTemplate>
             </ci:Emptiable>
         </controls1:ListDetailView.RightContent>
     </controls1:ListDetailView>
