@@ -208,7 +208,7 @@
                 <StackPanel Grid.Row="0">
                     <TextBlock Text="当前启用的课表" Theme="{StaticResource SubtitleTextBlockStyle}"/>
                     <StackPanel Orientation="Horizontal" Margin="0 8 0 0">
-                        <ToggleSwitch VerticalAlignment="Center" Margin="0 0 4 0" 
+                        <ToggleSwitch VerticalAlignment="Center" Margin="0 -6"
                                       OnContent="加载课表" OffContent="加载课表"
                                       IsChecked="{Binding ViewModel.LessonsService.IsClassPlanEnabled}"/>
                     </StackPanel>
@@ -220,11 +220,11 @@
                                    TextWrapping="Wrap"
                                    Margin="0 0 0 4"/>
                         <StackPanel Orientation="Horizontal">
-                            <ToggleSwitch VerticalAlignment="Center" Margin="0 0 4 0"
-                                          Content="启用临时层"
+                            <ToggleSwitch VerticalAlignment="Center" Margin="0 -6"
+                                          OnContent="启用临时层" OffContent="启用临时层"
                                           IsChecked="{Binding ViewModel.ProfileService.Profile.IsOverlayClassPlanEnabled}"/>
                         </StackPanel>
-                        <Button Theme="{StaticResource TrsnaparentButton}" Margin="0 4 0 0"
+                        <Button Theme="{StaticResource TransparentButton}" Margin="0 4 0 0"
                                 HorizontalAlignment="Left"
                                 Click="ButtonClearTempOverlay_OnClick"
                                 ToolTip.Tip="清除临时层课表。">
@@ -235,7 +235,7 @@
                     <Separator Margin="0 16 0 4"/>
                     <ci:IconText Glyph="&#xE6B1;" Text="临时课表" Margin="0 0 0 8"/>
                     <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天有效。" TextWrapping="Wrap"/>
-                    <Button Theme="{StaticResource TrsnaparentButton}" 
+                    <Button Theme="{StaticResource TransparentButton}" 
                             HorizontalAlignment="Left"
                             ToolTip.Tip="清除选择的临时课表，并恢复至正常课表安排。"
                             Margin="0 6 0 0"
