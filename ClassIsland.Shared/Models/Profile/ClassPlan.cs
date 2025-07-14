@@ -125,6 +125,7 @@ public class ClassPlan : AttachableSettingsObject
     public ClassPlan()
     {
         PropertyChanged += OnPropertyChanged;
+        PropertyChanging += OnPropertyChanging;
         if (TimeLayouts.ContainsKey(TimeLayoutId) && TimeLayout != null)
         {
             TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
@@ -133,6 +134,35 @@ public class ClassPlan : AttachableSettingsObject
         }
         Classes.CollectionChanged += ClassesOnCollectionChanged;
         ClassesChanged += (sender, args) => MakeValidTimeLayoutItemsDirty();
+    }
+
+    private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(TimeLayout):
+            {
+                if (TimeLayout != null)
+                {
+                    TimeLayout.LayoutObjectChanged -= TimeLayoutOnLayoutObjectChanged;
+                    TimeLayout.LayoutItemChanged -= TimeLayoutOnLayoutItemChanged;
+                    TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
+                }
+
+                NotifyClassesChanged();
+                break;
+            }
+            case nameof(Classes):
+            {
+                Classes.CollectionChanged -= ClassesOnCollectionChanged;
+                foreach (var i in Classes)
+                {
+                    i.PropertyChanged -= ClassInfoOnPropertyChanged;
+                }
+
+                break;
+            }
+        }
     }
 
     private void ClassesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -198,11 +228,14 @@ public class ClassPlan : AttachableSettingsObject
         switch (e.PropertyName)
         {
             case nameof(TimeLayout):
-            case nameof(TimeLayoutId):
+            // case nameof(TimeLayoutId):
             {
                 if (TimeLayout != null)
                 {
                     RefreshClassesList();
+                    TimeLayout.LayoutObjectChanged -= TimeLayoutOnLayoutObjectChanged;
+                    TimeLayout.LayoutItemChanged -= TimeLayoutOnLayoutItemChanged;
+                    TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
                     TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
                     TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
                     TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
@@ -213,6 +246,11 @@ public class ClassPlan : AttachableSettingsObject
             }
             case nameof(Classes):
             {
+                Classes.CollectionChanged -= ClassesOnCollectionChanged;
+                foreach (var i in Classes)
+                {
+                    i.PropertyChanged -= ClassInfoOnPropertyChanged;
+                }
                 Classes.CollectionChanged += ClassesOnCollectionChanged;
                 foreach (var i in Classes)
                 {
@@ -233,7 +271,13 @@ public class ClassPlan : AttachableSettingsObject
                     break;
                 foreach (var i in e.AddedItems)
                 {
-                    Classes.Insert(e.AddIndexClasses, new ClassInfo());
+                    var classInfo = new ClassInfo();
+                    if (TimeLayout != null)
+                    {
+                        classInfo.CurrentTimeLayout = TimeLayout;
+                        classInfo.Index = e.AddIndexClasses;
+                    }
+                    Classes.Insert(e.AddIndexClasses, classInfo);
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
