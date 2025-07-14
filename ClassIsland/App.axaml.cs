@@ -677,7 +677,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddComponent<GroupComponent>();
                 // // 提醒提供方
                 services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
-                services.AddNotificationProvider<AfterSchoolNotificationProvider>();
+                services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
                 // services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
                 // services.AddNotificationProvider<ManagementNotificationProvider>();
                 services.AddNotificationProvider<ActionNotificationProvider>();
