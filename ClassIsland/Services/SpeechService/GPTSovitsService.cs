@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
@@ -16,9 +17,11 @@ using ClassIsland.Shared.Abstraction.Services;
 
 using Microsoft.Extensions.Logging;
 
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 using PgpCore;
+using SoundFlow.Backends.MiniAudio;
+using SoundFlow.Components;
+using SoundFlow.Enums;
+using SoundFlow.Providers;
 
 namespace ClassIsland.Services.SpeechService;
 
@@ -37,7 +40,7 @@ public class GptSoVitsService : ISpeechService
 
     private CancellationTokenSource? requestingCancellationTokenSource;
 
-    private IWavePlayer? CurrentWavePlayer { get; set; }
+    private SoundPlayer? CurrentWavePlayer { get; set; }
 
     public GptSoVitsService()
     {
@@ -96,7 +99,6 @@ public class GptSoVitsService : ISpeechService
         try
         {
             CurrentWavePlayer?.Stop();
-            CurrentWavePlayer?.Dispose();
             CurrentWavePlayer = null;
         }
         catch (Exception e)
@@ -179,6 +181,7 @@ public class GptSoVitsService : ISpeechService
         if (IsPlaying)
             return;
         IsPlaying = true;
+        using var audioEngine = new MiniAudioEngine(48000, Capability.Playback); 
         while (PlayingQueue.Count > 0)
         {
             var playInfo = PlayingQueue.Dequeue();
@@ -202,32 +205,32 @@ public class GptSoVitsService : ISpeechService
                 continue;
             }
 
-            CurrentWavePlayer?.Dispose();
-            var player = CurrentWavePlayer = new DirectSoundOut();
+            CurrentWavePlayer?.Stop();
             try
             {
-                await using var audio = new AudioFileReader(playInfo.FilePath);
-                var volume = new VolumeSampleProvider(audio)
-                {
-                    Volume = (float)SettingsService.Settings.SpeechVolume
-                };
-                player.Init(volume);
+                var player = CurrentWavePlayer =
+                    new SoundPlayer(new StreamDataProvider(File.OpenRead(playInfo.FilePath)))
+                    {
+                        Volume = (float)SettingsService.Settings.SpeechVolume
+                    };
                 Logger.LogDebug("开始播放 {FilePath}", playInfo.FilePath);
-                player.Play();
-                playInfo.IsPlayingCompleted = false;
+                Mixer.Master.AddComponent(player);
 
                 var playbackTcs = new TaskCompletionSource<bool>();
-                void PlaybackStoppedHandler(object? sender, StoppedEventArgs args)
+                void PlaybackStoppedHandler(object? sender, EventArgs args)
                 {
+                    Mixer.Master.RemoveComponent(player);
                     playInfo.IsPlayingCompleted = true;
                     playbackTcs.SetResult(true);
                 }
 
-                player.PlaybackStopped += PlaybackStoppedHandler;
+                player.PlaybackEnded += PlaybackStoppedHandler;
+                player.Play();
+                playInfo.IsPlayingCompleted = false;
 
                 await playbackTcs.Task;
 
-                player.PlaybackStopped -= PlaybackStoppedHandler;
+                player.PlaybackEnded -= PlaybackStoppedHandler;
                 Logger.LogDebug("结束播放 {FilePath}", playInfo.FilePath);
             }
             catch (Exception ex)
@@ -235,8 +238,7 @@ public class GptSoVitsService : ISpeechService
                 Logger.LogError(ex, "无法播放语音。");
             }
         }
-
-        CurrentWavePlayer?.Dispose();
+        
         CurrentWavePlayer = null;
         IsPlaying = false;
     }

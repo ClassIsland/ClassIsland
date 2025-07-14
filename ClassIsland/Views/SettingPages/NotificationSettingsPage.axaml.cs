@@ -43,14 +43,6 @@ public partial class NotificationSettingsPage : SettingsPageBase
         }
     ];
 
-    private static Border? _border;
-
-    public static readonly FuncValueConverter<object?, object> ControlPreventNullConverter = new(x =>
-    {
-        _border ??= new Border();
-        return x ?? _border;
-    });
-    
     public NotificationSettingsViewModel ViewModel { get; } = IAppHost.GetService<NotificationSettingsViewModel>();
     public NotificationSettingsPage()
     {

@@ -16,8 +16,10 @@ using Edge_tts_sharp.Model;
 
 using Microsoft.Extensions.Logging;
 
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
+using SoundFlow.Backends.MiniAudio;
+using SoundFlow.Components;
+using SoundFlow.Enums;
+using SoundFlow.Providers;
 
 namespace ClassIsland.Services.SpeechService;
 
@@ -40,7 +42,7 @@ public class EdgeTtsService : ISpeechService
 
     private CancellationTokenSource? requestingCancellationTokenSource;
 
-    private IWavePlayer? CurrentWavePlayer { get; set; }
+    private SoundPlayer? CurrentWavePlayer { get; set; }
 
 
     public EdgeTtsService()
@@ -112,7 +114,6 @@ public class EdgeTtsService : ISpeechService
     {
         requestingCancellationTokenSource?.Cancel();
         CurrentWavePlayer?.Stop();
-        CurrentWavePlayer?.Dispose();
         CurrentWavePlayer = null;
         foreach (var pair in PlayingQueue)
         {
@@ -126,6 +127,7 @@ public class EdgeTtsService : ISpeechService
         if (IsPlaying)
             return;
         IsPlaying = true;
+        using var audioEngine = new MiniAudioEngine(48000, Capability.Playback); 
         while (PlayingQueue.Count > 0)
         {
             var playInfo = PlayingQueue.Dequeue();
@@ -138,23 +140,25 @@ public class EdgeTtsService : ISpeechService
                 Logger.LogDebug("等待下载完成结束");
             }
 
-            CurrentWavePlayer?.Dispose();
-            var player = CurrentWavePlayer = new DirectSoundOut();
+            CurrentWavePlayer?.Stop();
             try
             {
-                await using var audio = new AudioFileReader(playInfo.FilePath);
-                var volume = new VolumeSampleProvider(audio)
+                var player = CurrentWavePlayer = new SoundPlayer(new StreamDataProvider(File.OpenRead(playInfo.FilePath)))
                 {
-                    Volume = (float)SettingsService.Settings.SpeechVolume
+                    Volume = (float)SettingsService.Settings.SpeechVolume * 100
                 };
-                player.Init(volume);
                 Logger.LogDebug("开始播放 {}", playInfo.FilePath);
+                Mixer.Master.AddComponent(player);
+                player.PlaybackEnded += (sender, args) =>
+                {
+                    Mixer.Master.RemoveComponent(player);
+                    playInfo.IsPlayingCompleted = true;
+                };
                 player.Play();
-                player.PlaybackStopped += (sender, args) => playInfo.IsPlayingCompleted = true;
 
                 await Task.Run(() =>
                 {
-                    while (player.PlaybackState == PlaybackState.Playing &&
+                    while (player.State == PlaybackState.Playing &&
                            !playInfo.CancellationTokenSource.IsCancellationRequested)
                     {
                     }
@@ -167,7 +171,6 @@ public class EdgeTtsService : ISpeechService
             }
         }
 
-        CurrentWavePlayer?.Dispose();
         CurrentWavePlayer = null;
         IsPlaying = false;
     }

@@ -75,6 +75,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Controls.Components;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Controls.SpeechProviderSettingsControls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
@@ -767,9 +768,9 @@ public partial class App : AppBase, IAppHost
                 // // 认证提供方
                 // services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
                 // // 语音提供方
-                // services.AddSpeechProvider<SystemSpeechService>();
-                // services.AddSpeechProvider<EdgeTtsService, EdgeTtsSpeechServiceSettingsControl>();
-                // services.AddSpeechProvider<GptSoVitsService, GptSovitsSpeechServiceSettingsControl>();
+                services.AddSpeechProvider<SystemSpeechService>();
+                services.AddSpeechProvider<EdgeTtsService, EdgeTtsSpeechServiceSettingsControl>();
+                services.AddSpeechProvider<GptSoVitsService, GptSovitsSpeechServiceSettingsControl>();
                 // // 天气图标模板
                 // var materialDesignWeatherIconTemplateDictionary = new ResourceDictionary()
                 // {

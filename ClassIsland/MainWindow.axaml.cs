@@ -37,9 +37,7 @@ using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
-using NAudio.Wave;
 using Sentry;
-using NAudio.Wave.SampleProviders;
 using Linearstar.Windows.RawInput;
 using YamlDotNet.Core;
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -41,10 +42,12 @@ using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Views;
 using Linearstar.Windows.RawInput;
 using Microsoft.Extensions.Logging;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 using Org.BouncyCastle.Bcpg.Sig;
 using ReactiveUI;
+using SoundFlow.Backends.MiniAudio;
+using SoundFlow.Components;
+using SoundFlow.Enums;
+using SoundFlow.Providers;
 using Animation = Avalonia.Animation.Animation;
 using Cue = Avalonia.Animation.Cue;
 using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
@@ -497,9 +500,10 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
             NotificationHostService.RequestQueue.Clear();
         }
 
+        using var audioEngine = new MiniAudioEngine(48000, Capability.Playback);
+        SoundPlayer? player = null;
         while (_notificationQueue.Count > 0)
         {
-            using var player = new DirectSoundOut();
             var request = _notificationQueue.Dequeue();
             INotificationSettings settings = SettingsService.Settings;
             foreach (var i in new List<NotificationSettings?>([request.ChannelSettings, request.ProviderSettings, request.RequestNotificationSettings]).OfType<NotificationSettings>().Where(i => i.IsSettingsEnabled))
@@ -546,15 +550,21 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                 {
                     try
                     {
-                        var provider = string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
-                            ? new StreamMediaFoundationReader(
-                                AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)).ToSampleProvider()
-                            : new AudioFileReader(settings.NotificationSoundPath);
-                        var volume = new VolumeSampleProvider(provider)
+                        var provider = new StreamDataProvider(string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                            ? AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)
+                            : File.OpenRead(settings.NotificationSoundPath));
+                        player = new SoundPlayer(provider)
                         {
                             Volume = (float)SettingsService.Settings.NotificationSoundVolume
                         };
-                        player.Init(volume);
+                        var player1 = player;
+                        player.PlaybackEnded += PlayerOnPlaybackEnded;
+                        void PlayerOnPlaybackEnded(object? sender, EventArgs e)
+                        {
+                            player1.PlaybackEnded -= PlayerOnPlaybackEnded;
+                            Mixer.Master.RemoveComponent(player1);
+                        }
+                        Mixer.Master.AddComponent(player1);
                         player.Play();
                     }
                     catch (Exception e)
@@ -649,6 +659,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         OverlayContent = null;
         MaskContent = null;
         _isOverlayOpen = false;
+        player?.Stop();
         MainWindow.ReleaseTopmostLock(TopmostLock);
     }
 

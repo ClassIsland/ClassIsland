@@ -1,4 +1,3 @@
-#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,14 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -29,13 +23,13 @@ namespace ClassIsland.Controls.SpeechProviderSettingsControls;
 /// <summary>
 /// GptSovitsSpeechServiceSettingsControl.xaml 的交互逻辑
 /// </summary>
-public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChanged
+public partial class GptSovitsSpeechServiceSettingsControl : SpeechProviderControlBase, INotifyPropertyChanged
 {
     public SettingsService SettingsService { get; }
 
     public GptSoVitsSpeechSettingsList GptSoVitsSpeechSettingsPresets { get; }
 
-    public static readonly string GptSoVitsSettingsPresetsPath = System.IO.Path.Combine(App.AppConfigPath,
+    public static readonly string GptSoVitsSettingsPresetsPath = System.IO.Path.Combine(CommonDirectories.AppConfigPath,
         "GptSovitsSettingsPresets.json");
 
     public static readonly GptSoVitsSpeechSettingsList InternalGptSoVitsSpeechPresets = [
@@ -199,7 +193,7 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
 
     private void DataGridPresets_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
     {
-        if (e.Row.Item is GptSoVitsSpeechSettings settings)
+        if (e.Row.DataContext is GptSoVitsSpeechSettings settings)
         {
             e.Cancel = settings.IsInternal;
         }
@@ -221,8 +215,8 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
 
     private void OpenDrawer(string key)
     {
-        var o = FindResource(key);
-        if (o is FrameworkElement e)
+        var o = this.FindResource(key);
+        if (o is Control e)
         {
             e.DataContext = this;
         }
@@ -244,4 +238,3 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
         return true;
     }
 }
-#endif

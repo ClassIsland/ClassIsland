@@ -272,9 +272,13 @@
                                         </controls3:SettingsExpanderItem.Footer>
                                     </controls3:SettingsExpanderItem>
                                     <!-- 语音引擎设置 -->
-                                    <controls3:SettingsExpanderItem>
-                                        <ContentPresenter Margin="0 6 0 6"
-                                                          Content="{Binding ViewModel.SpeechProviderSettingsControl}"/>
+                                    <controls3:SettingsExpanderItem Padding="0" MinHeight="0" Margin="0 0 0 -1">
+                                        <controls3:SettingsExpanderItem.Template>
+                                            <ControlTemplate>
+                                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                                            </ControlTemplate>
+                                        </controls3:SettingsExpanderItem.Template>
+                                        <ContentPresenter Content="{Binding ViewModel.SpeechProviderSettingsControl, Converter={x:Static ci:ElementConverters.ControlPreventNullConverter}}"/>
                                     </controls3:SettingsExpanderItem>
                                     <!-- 语音音量 -->
                                     <controls3:SettingsExpanderItem Content="语音音量">
@@ -393,7 +397,7 @@
                     <DataTemplate x:DataType="notification1:INotificationSenderRegisterInfo">
                         <Grid RowDefinitions="Auto,*">
                             <ContentPresenter Grid.Row="1" ClipToBounds="True"
-                                              Content="{Binding ProviderInstance.SettingsElement, Converter={x:Static local:NotificationSettingsPage.ControlPreventNullConverter}}" />
+                                              Content="{Binding ProviderInstance.SettingsElement, Converter={x:Static ci:ElementConverters.ControlPreventNullConverter}}" />
                             <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
                                         IsVisible="{Binding ProviderInstance.SettingsElement, Converter={x:Static ObjectConverters.IsNull}}">
                                 <ci:FluentIcon Glyph="&#xEF26;" Width="72" Height="72"

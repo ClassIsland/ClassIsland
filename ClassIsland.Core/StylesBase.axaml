@@ -162,6 +162,27 @@
         </Style>
     </Style>
     
+    <Style Selector="controls|SettingsExpander.no-radius">
+        <Style Selector="^">
+            <Setter Property="CornerRadius" Value="0"/>
+        </Style>
+        <Style Selector="^ /template/ Expander#Expander">
+            <Setter Property="CornerRadius" Value="0"/>
+        </Style>
+        <Style Selector="^ /template/ ToggleButton#ToggleButton">
+            <Setter Property="CornerRadius" Value="0"/>
+        </Style>
+        <Style Selector="^ /template/ controls|SettingsExpanderItem /template/ Border#Root">
+            <Setter Property="CornerRadius" Value="0"/>
+        </Style>
+        <Style Selector="^ /template/ Expander#Expander /template/ ToggleButton /template/ Border#Root">
+            <Setter Property="CornerRadius" Value="0"/>
+        </Style>
+    </Style>
+    <Style Selector="controls|SettingsExpanderItem.no-radius /template/ Border#Root">
+        <Setter Property="CornerRadius" Value="0"/>
+    </Style>
+    
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>
