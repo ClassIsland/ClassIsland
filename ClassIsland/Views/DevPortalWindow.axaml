@@ -107,6 +107,14 @@
                     </controls:ListDetailView.RightContent>
                 </controls:ListDetailView>
             </TabItem>
+            <TabItem Header="OOBE_Intro">
+                <StackPanel>
+                    <ContentPresenter HorizontalAlignment="Stretch"
+                                      Height="400" 
+                                      Content="{Binding ViewModel.OobeIntroControlContent, Mode=OneWay, TargetNullValue='awa'}"/>
+                    <Button Classes="accentt" Click="ButtonPlayOobeAnimation_OnClick">Play</Button>
+                </StackPanel>
+            </TabItem>
         </TabControl>
     </Grid>
 </ci:MyWindow>

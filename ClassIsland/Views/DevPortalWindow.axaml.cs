@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using ClassIsland.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification;
@@ -100,5 +101,10 @@ public partial class DevPortalWindow : MyWindow
             CanUserClose = ViewModel.ToastCanUserClose,
             ActionContent = ViewModel.ToastHaveActions ? new Button() {Content = "Test"} : null
         });
+    }
+
+    private void ButtonPlayOobeAnimation_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.OobeIntroControlContent = new OobeIntroAnimationControl();
     }
 }

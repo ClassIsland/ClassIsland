@@ -2,9 +2,143 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ClassIsland.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="ClassIsland.Controls.OobeIntroAnimationControl">
-    <Canvas>
+             x:Class="ClassIsland.Controls.OobeIntroAnimationControl"
+             Loaded="Control_OnLoaded"
+             Opacity="0">
+    <UserControl.RenderTransform>
+        <ScaleTransform/>
+    </UserControl.RenderTransform>
+    <UserControl.Styles>
+        <Style Selector="controls|OobeIntroAnimationControl.anim">
+            <Style.Animations>
+                <Animation Duration="0:0:2.6" Easing="0.00, 0.83, 0.17, 0.90"
+                           FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1.25"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1.25"/>
+                        <Setter Property="Opacity" Value="0.0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1.0"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1.0"/>
+                        <Setter Property="Opacity" Value="1.0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.block">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="{DynamicResource ControlStrongFillColorDefaultBrush}"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="RenderTransformOrigin" Value="0, 12"/>
+            <Setter Property="RenderTransform">
+                <TransformGroup>
+                    <TranslateTransform Y="50"/>
+                    <ScaleTransform />
+                    <Rotate3DTransform/>
+                </TransformGroup>
+            </Setter>
+            <Style Selector="^.anim.sp-anim">
+                <Setter Property="Panel.ZIndex" Value="33550336"/>
+                <Style.Animations>
+                    <Animation Delay="0:0:0.307" Duration="0:0:0.25"
+                               Easing="1.00, 0.33, 0.00, 0.77"
+                               FillMode="Forward">
+                        <KeyFrame Cue="0%">
+                            <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        </KeyFrame>
+                        <KeyFrame Cue="100%">
+                            <Setter Property="ScaleTransform.ScaleX" Value="2.17"/>
+                            <Setter Property="Background" Value="#00bfff"/>
+                        </KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+            <Style Selector="^.anim.sp-anim2">
+                
+            </Style>
+        </Style>
         
-    </Canvas>
+    </UserControl.Styles>
+    <Grid>
+        <StackPanel x:Name="Rects" Orientation="Horizontal"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    TextElement.FontSize="32"
+                    TextElement.FontWeight="Medium"
+                    Spacing="4">
+            <Border Classes="block" />
+            <Border Classes="block" />
+            <Border Classes="block" />
+            <Border Classes="block" />
+            <Border Classes="block" />
+            <Border Classes="block sp-anim" />
+            <Border Classes="block sp-anim2" />
+            <Border Classes="block" />
+            <Border Classes="block" />
+            <Border Classes="block" />
+            <Border Classes="block" />
+        </StackPanel>
+
+        <StackPanel x:Name="Texts" Orientation="Horizontal"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    TextElement.FontSize="32">
+            <StackPanel.Styles>
+                <Style Selector="StackPanel" >
+                    <Setter Property="Spacing" Value="4"/>
+                    <Style Selector="^.anim">
+                        <Style.Animations>
+                            <Animation Duration="0:0:0.4" Easing="0.80, 0.04, 0.84, 0.22"
+                                       FillMode="Both">
+                                <KeyFrame Cue="0%">
+                                    <Setter Property="Spacing" Value="4"/>
+                                </KeyFrame>
+                                <KeyFrame Cue="100%">
+                                    <Setter Property="Spacing" Value="0"/>
+                                </KeyFrame>
+                            </Animation>
+                        </Style.Animations>
+                        <Style Selector="^.anim TextBlock">
+                            <Style.Animations>
+                                <Animation Duration="0:0:0.4" Easing="0.80, 0.04, 0.84, 0.22"
+                                           FillMode="Both">
+                                    <KeyFrame Cue="0%">
+                                        <Setter Property="MinWidth" Value="32"/>
+                                    </KeyFrame>
+                                    <KeyFrame Cue="100%">
+                                        <Setter Property="MinWidth" Value="0"/>
+                                    </KeyFrame>
+                                </Animation>
+                            </Style.Animations>
+                        </Style>
+                    </Style>
+                </Style>
+                <Style Selector="TextBlock">
+                    <Setter Property="MinWidth" Value="32"/>
+                    <Setter Property="FontWeight" Value="Medium"/>
+                    <Setter Property="Opacity" Value="0"/>
+                    <Setter Property="TextAlignment" Value="Center"/>
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <Rotate3DTransform/>
+                        </Setter.Value>
+                    </Setter>
+                    
+                </Style>
+            </StackPanel.Styles>
+            <TextBlock Text="C" Classes="text"/>
+            <TextBlock Text="l" Classes="text"/>
+            <TextBlock Text="a" Classes="text"/>
+            <TextBlock Text="s" Classes="text"/>
+            <TextBlock Text="s" Classes="text"/>
+            <TextBlock Text="I" Classes="text"/>
+            <TextBlock Text="s" Classes="text"/>
+            <TextBlock Text="l" Classes="text"/>
+            <TextBlock Text="a" Classes="text"/>
+            <TextBlock Text="n" Classes="text"/>
+            <TextBlock Text="d" Classes="text"/>
+        </StackPanel>
+    </Grid>
 </UserControl>

@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -30,6 +31,7 @@ public partial class DevPortalViewModel(
     [ObservableProperty] private string _toastMessage = "";
     [ObservableProperty] private bool _toastHaveActions = false;
     [ObservableProperty] private bool _toastCanUserClose = true;
+    [ObservableProperty] private object? _oobeIntroControlContent = new Border();
 
     public bool IsTargetDateTimeLoaded => IsTargetDateLoaded && IsTargetTimeLoaded;
 }
