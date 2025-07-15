@@ -370,6 +370,11 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             ViewModel.ClassPlanInfoSelectedTimeLayoutKvp = null;
         }
+        else
+        {
+            var kvp = ViewModel.TimeLayouts.List.FirstOrDefault(x => x.Key == ViewModel.SelectedClassPlan.TimeLayoutId);
+            ViewModel.ClassPlanInfoSelectedTimeLayoutKvp = kvp;
+        }
     }
     
     private void SelectingItemsControlClassPlans_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
