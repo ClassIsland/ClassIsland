@@ -27,14 +27,16 @@
             </Expander.IsExpanded>
             <Expander.Header>
                 <DockPanel>
-                    <ToggleButton DockPanel.Dock="Right"
+                    <ToggleSwitch DockPanel.Dock="Right"
                                   IsChecked="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled}"
                                   ToolTip.Tip="是否在此处启用特定的设置"
+                                  OnContent="" OffContent="" Margin="0 -8"
+                                  Click="ButtonIsSettingsEnabled_OnClick"
                                   IsEnabled="{Binding ControlInfo.HasEnabledState, Mode=OneWay}">
                         <ToggleButton.Content>
                             <controls1:FontIcon Glyph="&#xE81E;" />
                         </ToggleButton.Content>
-                    </ToggleButton>
+                    </ToggleSwitch>
                     <Button DockPanel.Dock="Right"  
                             Theme="{StaticResource TransparentButton}"
                             Classes="circle"

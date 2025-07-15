@@ -54,10 +54,10 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         set => SetValue(ContentObjectProperty, value);
     }
 
-    public static readonly StyledProperty<IAttachedSettings> AssociatedAttachedSettingsProperty = AvaloniaProperty.Register<AttachedSettingsControlPresenter, IAttachedSettings>(
+    public static readonly StyledProperty<IAttachedSettings?> AssociatedAttachedSettingsProperty = AvaloniaProperty.Register<AttachedSettingsControlPresenter, IAttachedSettings?>(
         nameof(AssociatedAttachedSettings));
 
-    public IAttachedSettings AssociatedAttachedSettings
+    public IAttachedSettings? AssociatedAttachedSettings
     {
         get => GetValue(AssociatedAttachedSettingsProperty);
         set => SetValue(AssociatedAttachedSettingsProperty, value);
@@ -234,8 +234,8 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         //    c.AttachedSettingsControlHelper.AttachedTarget = TargetObject;
         //}
         MainContentPresenter.Content = ContentObject;
-        TargetObject.AttachedObjects[ControlInfo.Guid] = settings;
         AssociatedAttachedSettings = settings as IAttachedSettings;
+        UpdateSourceSettings(AssociatedAttachedSettings);
 
         if (!IsDependencyMode || ProfileAnalyzeService == null || !ProfileAnalyzeService.Nodes.TryGetValue(new AttachableObjectAddress(ContentId, ContentIndex), out var node))
         {
@@ -308,12 +308,20 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
                 }
                 break;
             case AttachedSettingsTargets.None:
-                DependencyItemTitle = "???";
-                break;
             default:
                 DependencyItemTitle = "???";
                 break;
         }
+    }
+
+    private void UpdateSourceSettings(IAttachedSettings? settings)
+    {
+        if (settings?.IsAttachSettingsEnabled != true && ControlInfo.HasEnabledState)
+        {
+            // 在附加设置没有启用，且控件有附加设置启用状态的情况下不回写设置信息，以降低档案文件大小。
+            return;
+        }
+        TargetObject.AttachedObjects[ControlInfo.Guid] = settings;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -343,5 +351,10 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     private async void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
     {
         await AnalyzeAsync();
+    }
+
+    private void ButtonIsSettingsEnabled_OnClick(object? sender, RoutedEventArgs e)
+    {
+        UpdateSourceSettings(AssociatedAttachedSettings);
     }
 }
