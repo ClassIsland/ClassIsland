@@ -332,6 +332,25 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #endregion
 
+    #region ClassPlanGroups
+    
+    private void ButtonClassPlansGroup_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("ClassPlanGroups");
+    }
+
+    private void ButtonClearTempClassPlanGroup_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ProfileService.ClearTempClassPlanGroup();
+    }
+    
+    private void ButtonNewClassPlanGroups_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ProfileService.Profile.ClassPlanGroups.Add(Guid.NewGuid(), new ClassPlanGroup());
+    }
+
+    #endregion
+
     #region ClassPlans
 
     private void UpdateClassPlanInfoEditorTimeLayoutComboBox()

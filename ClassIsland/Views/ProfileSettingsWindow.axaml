@@ -33,7 +33,11 @@
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
                                               x:Key="SubjectIdToSubjectConverter"/>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:ClassPlanGroup"
-                                              x:Key="ClassPlanGroupIdToClassPlanGroupConverter"/>
+                                              x:Key="ClassPlanGroupIdToClassPlanGroupConverter"
+                                              Dictionary="{Binding ViewModel.ProfileService.Profile.ClassPlanGroups}"/>
+        <ci:BindingProxy x:TypeArguments="profile:ClassPlanGroup"
+                         x:Key="ClassPlanGroupBindingProxy"
+                         Data="{Binding ViewModel.ProfileService.Profile.SelectedClassPlanGroupId, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}, Mode=OneWay}"/>
         <converters:SubjectDictionaryKeyFinderMultiConverter x:Key="SubjectDictionaryKeyFinderMultiConverter" />
         
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
@@ -228,7 +232,7 @@
                                 HorizontalAlignment="Left"
                                 Click="ButtonClearTempOverlay_OnClick"
                                 ToolTip.Tip="清除临时层课表。">
-                            <ci:IconText Glyph="&#xE1BD;" Text="清除临时层"/>
+                            <ci:IconText Glyph="&#xE1BC;" Text="清除临时层"/>
                         </Button>
                     </StackPanel>
 
@@ -247,7 +251,7 @@
                                 <Binding Path="!ViewModel.ProfileService.Profile.HasOverlayClassPlan"/>
                             </MultiBinding>
                         </Button.IsVisible>
-                        <ci:IconText Glyph="&#xE1BD;" Text="清除临时课表"/>
+                        <ci:IconText Glyph="&#xE1BC;" Text="清除临时课表"/>
                     </Button>
                     <TextBlock Text="临时课表被临时层课表覆盖。要使用临时课表，请暂时禁用或清除临时层课表。"
                                TextWrapping="Wrap"
@@ -303,6 +307,81 @@
                         <ci:IconText Glyph="&#xE304;" Text="调整多周轮换偏移…"/>
                     </Button>
                 </StackPanel>
+            </Grid>
+        </Grid>
+        
+        <!-- 课表群管理 -->
+        <ci:TempClassPlanGroupTypeToIntConverter x:Key="TempClassPlanGroupTypeToIntConverter" />
+        <Grid  Margin="16" Width="300" x:Key="ClassPlanGroups">
+            <Grid RowDefinitions="Auto,*">
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="课表群" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                    <TextBlock TextWrapping="Wrap" Margin="0 6 0 0">
+                        您可以通过课表群对课表进行分组，并灵活地启用一批课表。<ci:NavHyperlink NavTarget="https://docs.classisland.tech/app/profile/classplan#%E8%AF%BE%E8%A1%A8%E7%BE%A4">了解更多…</ci:NavHyperlink>
+                    </TextBlock>
+                    <StackPanel IsVisible="{Binding ViewModel.ProfileService.Profile.TempClassPlanGroupId, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Separator Margin="0 12 0 4" />
+                        <ci:IconText Glyph="&#xE92F;" Text="临时课表群" Margin="0 0 0 4" />
+                        <Border DataContext="{Binding ViewModel.ProfileService.Profile.TempClassPlanGroupId, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="当前：" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" />
+                                <Button Theme="{StaticResource TransparentButton}"
+                                        VerticalAlignment="Center"
+                                        Click="ButtonClearTempClassPlanGroup_OnClick">
+                                    <ci:IconText Glyph="&#xE1BC;" Text="清除" />
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                        <Grid ColumnDefinitions="Auto,Auto,*,*">
+                            <ToggleSwitch Grid.Column="0" VerticalAlignment="Center"
+                                          Margin="0 -8"
+                                          OnContent="" OffContent=""
+                                          IsChecked="{Binding ViewModel.ProfileService.Profile.IsTempClassPlanGroupEnabled}" />
+                            <ci:Field Grid.Column="2" Label="失效日期">
+                                <CalendarDatePicker VerticalAlignment="Center"
+                                                    SelectedDate="{Binding ViewModel.ProfileService.Profile.TempClassPlanGroupExpireTime}" />
+                                </ci:Field>
+                            <ci:Field Grid.Column="3" Label="覆盖模式" Margin="2 0 0 0">
+                                <ComboBox SelectedIndex="{Binding ViewModel.ProfileService.Profile.TempClassPlanGroupType, Converter={StaticResource TempClassPlanGroupTypeToIntConverter}}"
+                                          VerticalAlignment="Center">
+                                    <ComboBoxItem>覆盖</ComboBoxItem>
+                                    <ComboBoxItem>继承</ComboBoxItem>
+                                </ComboBox>
+                            </ci:Field>
+                        </Grid>
+                    </StackPanel>
+                    <Separator Margin="0 12 0 4" />
+                    <ci:IconText Glyph="&#xE92F;" Text="管理课表群" Margin="0 0 0 4"/>
+                    
+                    <WrapPanel Orientation="Horizontal">
+                        <Button Theme="{StaticResource TransparentButton}" 
+                                HorizontalAlignment="Left"
+                                ToolTip.Tip="创建一个新的课表群。"
+                                Margin="2"
+                                Click="ButtonNewClassPlanGroups_OnClick">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                                    <Binding Path="ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}"/>
+                                    <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                            <ci:IconText Glyph="&#xE00D;" Text="新建课表群"/>
+                        </Button>
+                    </WrapPanel>
+                </StackPanel>
+                <ListBox Grid.Row="1" 
+                         ItemsSource="{Binding ViewModel.ClassPlanGroups.List}"
+                         Margin="0 4 0 0"
+                         SelectionMode="Single">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <controls1:ClassPlanGroupItemControl Item="{Binding Value, Mode=OneWay}" 
+                                                                Key="{Binding Key, Mode=OneWay}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
         </Grid>
     </ci:MyWindow.Resources>
@@ -1106,7 +1185,7 @@
                 <TabItem Header="调课">
                     <ci:Empty Text="Coming S∞n" IconWidth="75" IconHeight="75">
                         <ci:Empty.Icon>
-                            <controls:BitmapIconSource UriSource="avares://ClassIsland/Assets/HoYoStickers/白厄_掉线.png"/>
+                            <controls:BitmapIconSource UriSource="avares://ClassIsland/Assets/HoYoStickers/白厄_掉线.png"/> 
                         </ci:Empty.Icon>
                     </ci:Empty>
                 </TabItem>
@@ -1127,17 +1206,9 @@
                                                Label="{Binding ViewModel.LessonsService.CurrentClassPlan.Name, FallbackValue='（无）'}"
                                                ToolTip.Tip="启用临时课表"/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe92f;}"
-                                               ToolTip.Tip="管理课表群">
-                        <Border>
-                            <Border.DataContext>
-                                <MultiBinding Converter="{StaticResource ClassPlanGroupIdToClassPlanGroupConverter}">
-                                    <Binding Path="ViewModel.ProfileService.Profile.SelectedClassPlanGroupId"/>
-                                    <Binding Path="ViewModel.ProfileService.Profile.ClassPlanGroups"/>
-                                </MultiBinding>
-                            </Border.DataContext>
-                            <TextBlock Text="{Binding Name}"/>
-                        </Border>
-                    </controls:CommandBarButton>
+                                               Click="ButtonClassPlansGroup_OnClick"
+                                               ToolTip.Tip="管理课表群"
+                                               Label="{Binding Data.Name, Source={StaticResource ClassPlanGroupBindingProxy}, Mode=OneWay}"/>
                     <controls:CommandBarSeparator/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xeeb5;}"
                                                Label="保存"

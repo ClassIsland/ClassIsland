@@ -1,16 +1,20 @@
-#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
+using ClassIsland.ViewModels;
 using ClassIsland.Views;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Controls;
 
@@ -19,35 +23,25 @@ namespace ClassIsland.Controls;
 /// </summary>
 public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyChanged
 {
-    public static readonly DependencyProperty ItemProperty = DependencyProperty.Register(
-        nameof(Item), typeof(ClassPlanGroup), typeof(ClassPlanGroupItemControl), new PropertyMetadata(new ClassPlanGroup()));
+    public static readonly StyledProperty<ClassPlanGroup> ItemProperty = AvaloniaProperty.Register<ClassPlanGroupItemControl, ClassPlanGroup>(
+        nameof(Item));
 
     public ClassPlanGroup Item
     {
-        get { return (ClassPlanGroup)GetValue(ItemProperty); }
-        set { SetValue(ItemProperty, value); }
+        get => GetValue(ItemProperty);
+        set => SetValue(ItemProperty, value);
     }
 
-    public static readonly DependencyProperty KeyProperty = DependencyProperty.Register(
-        nameof(Key), typeof(string), typeof(ClassPlanGroupItemControl), new PropertyMetadata("", (o, args) =>
-        {
-            if (o is not ClassPlanGroupItemControl control) 
-                return;
-            var key = control.Key;
-            var policy = IAppHost.GetService<IManagementService>().Policy;
-            control.IsProtected = key == ClassPlanGroup.DefaultGroupGuid.ToString() ||
-                                  key == ClassPlanGroup.GlobalGroupGuid.ToString() ||
-                                  policy.DisableProfileEditing ||
-                                  policy.DisableProfileClassPlanEditing;
-        }));
+    public static readonly StyledProperty<Guid> KeyProperty = AvaloniaProperty.Register<ClassPlanGroupItemControl, Guid>(
+        nameof(Key));
 
-    private bool _isRenaming = false;
-
-    public string Key
+    public Guid Key
     {
-        get { return (string)GetValue(KeyProperty); }
-        set { SetValue(KeyProperty, value); }
+        get => GetValue(KeyProperty);
+        set => SetValue(KeyProperty, value);
     }
+    
+    private bool _isRenaming = false;
 
     private IProfileService ProfileService { get; } = App.GetService<IProfileService>();
 
@@ -79,7 +73,14 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
     public ClassPlanGroupItemControl()
     {
         InitializeComponent();
-        _parentDialogId = App.GetService<ProfileSettingsWindow>().ViewModel.DialogHostId;
+        this.GetObservable(KeyProperty).Subscribe(_ =>
+        {
+            var policy = IAppHost.GetService<IManagementService>().Policy;
+            IsProtected = Key == ClassPlanGroup.DefaultGroupGuid ||
+                          Key == ClassPlanGroup.GlobalGroupGuid ||
+                          policy.DisableProfileEditing ||
+                          policy.DisableProfileClassPlanEditing;
+        });
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -111,7 +112,7 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
 
     private void TextBox_OnKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key is System.Windows.Input.Key.Enter or System.Windows.Input.Key.Escape)
+        if (e.Key is Avalonia.Input.Key.Enter or Avalonia.Input.Key.Escape)
         {
             IsRenaming = false;
             Focus();
@@ -125,8 +126,15 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
 
     private async void MenuItemDisband_OnClick(object sender, RoutedEventArgs e)
     {
-        var r = await DialogHost.Show(FindResource("DisbandConfirmDialog"), _parentDialogId);
-        if (r as bool? != true)
+        var result = await new ContentDialog()
+        {
+            Title = "解散课表群",
+            Content = this.FindResource("DisbandConfirmDialog"),
+            PrimaryButtonText = "解散",
+            SecondaryButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary
+        }.ShowAsync();
+        if (result != ContentDialogResult.Primary)
         {
             return;
         }
@@ -136,13 +144,32 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
 
     private async void MenuItemDelete_OnClick(object sender, RoutedEventArgs e)
     {
-        var r = await DialogHost.Show(FindResource("DeleteConfirmDialog"), _parentDialogId);
-        if (r as bool? != true)
+        var result = await new ContentDialog()
+        {
+            Title = "解散课表群",
+            Content = this.FindResource("DeleteConfirmDialog"),
+            PrimaryButtonText = "删除",
+            SecondaryButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary
+        }.ShowAsync();
+        if (result != ContentDialogResult.Primary)
         {
             return;
         }
 
         ProfileService.Profile.DeleteClassPlanGroup(Key);
     }
+
+    private void ToggleButton_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not RadioButton button)
+        {
+            return;
+        }
+
+        if (button.IsChecked == true)
+        {
+            IAppHost.GetService<IProfileService>().Profile.SelectedClassPlanGroupId = Key;
+        }
+    }
 }
-#endif
