@@ -36,7 +36,7 @@ public interface IProfileAnalyzeService : INotifyPropertyChanged
     /// <param name="id">附加设置 ID</param>
     /// <param name="requiresEnabled"></param>
     /// <returns></returns>
-    List<AttachableObjectNode> FindNextObjects(AttachableObjectAddress address, string id, bool requiresEnabled = true);
+    List<AttachableObjectNode> FindNextObjects(AttachableObjectAddress address, Guid id, bool requiresEnabled = true);
 
     /// <summary>
     /// 查找此位置的附加设置可能覆盖的附加设置。
@@ -45,5 +45,5 @@ public interface IProfileAnalyzeService : INotifyPropertyChanged
     /// <param name="id">附加设置 ID</param>
     /// <param name="requiresEnabled"></param>
     /// <returns></returns>
-    List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, string id, bool requiresEnabled = true);
+    List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, Guid id, bool requiresEnabled = true);
 }

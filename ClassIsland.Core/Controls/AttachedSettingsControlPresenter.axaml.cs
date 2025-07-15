@@ -203,10 +203,10 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         {
             ProfileAnalyzeService.Analyze();
             NextItems = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.FindNextObjects(new AttachableObjectAddress(contentId, contentIndex),
-                guid.ToString())!);
+                guid)!);
             PreviousItems = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.FindPreviousObjects(
                 new AttachableObjectAddress(contentId, contentIndex),
-                guid.ToString())!);
+                guid)!);
         });
         IsLoading = false;
     }
@@ -227,14 +227,14 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
             return;
         }
 
-        TargetObject.AttachedObjects.TryGetValue(ControlInfo.Guid.ToString(), out var settings);
+        TargetObject.AttachedObjects.TryGetValue(ControlInfo.Guid, out var settings);
         ContentObject = AttachedSettingsControlBase.GetInstance(ControlInfo, ref settings);
         //if (ContentObject is IAttachedSettingsControlBase c)
         //{
         //    c.AttachedSettingsControlHelper.AttachedTarget = TargetObject;
         //}
         MainContentPresenter.Content = ContentObject;
-        TargetObject.AttachedObjects[ControlInfo.Guid.ToString()] = settings;
+        TargetObject.AttachedObjects[ControlInfo.Guid] = settings;
         AssociatedAttachedSettings = settings as IAttachedSettings;
 
         if (!IsDependencyMode || ProfileAnalyzeService == null || !ProfileAnalyzeService.Nodes.TryGetValue(new AttachableObjectAddress(ContentId, ContentIndex), out var node))

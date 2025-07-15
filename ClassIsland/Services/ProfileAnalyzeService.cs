@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -176,7 +177,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         }
     }
 
-    public List<AttachableObjectNode> FindNextObjects(AttachableObjectAddress address, string id, bool requiresEnabled=true)
+    public List<AttachableObjectNode> FindNextObjects(AttachableObjectAddress address, Guid id, bool requiresEnabled=true)
     {
         var results = new List<AttachableObjectNode>();
         Walk(Nodes[address], results, false, true);
@@ -193,7 +194,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         ];
     }
 
-    public List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, string id, bool requiresEnabled = true)
+    public List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, Guid id, bool requiresEnabled = true)
     {
         var results = new List<AttachableObjectNode>();
         Walk(Nodes[address], results, true, true);

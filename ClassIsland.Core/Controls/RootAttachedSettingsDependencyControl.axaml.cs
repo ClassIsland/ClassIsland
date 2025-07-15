@@ -81,7 +81,7 @@ public partial class RootAttachedSettingsDependencyControl : UserControl, INotif
         }
         ProfileAnalyzeService.Analyze();
         Nodes = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.Nodes.Where(x =>
-            x.Value.Object != null && x.Value.Object.AttachedObjects.TryGetValue(ControlInfo.Guid.ToString(), out var value) &&
+            x.Value.Object != null && x.Value.Object.AttachedObjects.TryGetValue(ControlInfo.Guid, out var value) &&
             IAttachedSettings.GetIsEnabled(value)).OrderByDescending(x => x.Value.Target).Select(x => x.Value));
     }
 
