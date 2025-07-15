@@ -87,6 +87,7 @@ using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.ViewModels;
 using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Views.SettingPages;
+using FluentAvalonia.UI.Controls;
 using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
 using ReactiveUI;
@@ -459,10 +460,6 @@ public partial class App : AppBase, IAppHost
         DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        //if (IsAssetsTrimmed())
-        //{
-        //    Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");
-        //}
         
 
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-CN");
@@ -475,8 +472,9 @@ public partial class App : AppBase, IAppHost
             {
                 spanPreInit.Finish();
                 transaction.Finish();
-                // ProcessInstanceExisted();
+                await ProcessInstanceExisted();
                 Environment.Exit(0);
+                return;
             }
         }
 
@@ -1003,32 +1001,56 @@ public partial class App : AppBase, IAppHost
     //     }
     // }
 
-    // private void ProcessInstanceExisted()
-    // {
-    //     InstanceExistedWindow popup = new();
-    //     bool needRestart = popup.ShowDialog() ?? false;
-    //     if (!needRestart)
-    //     {
-    //         return;
-    //     }
-    //     try
-    //     {
-    //         var proc = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Environment.ProcessPath)).Where(x=>x.Id != Environment.ProcessId);
-    //         foreach (var i in proc)
-    //         {
-    //             i.Kill(true);
-    //         }
-    //
-    //         Process.Start(new ProcessStartInfo(Environment.ProcessPath ?? "")
-    //         {
-    //             ArgumentList = { "-m" }
-    //         });
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         CommonDialog.ShowError($"无法重新启动应用，可能当前运行的实例正在以管理员身份运行。请使用任务管理器终止正在运行的实例，然后再试一次。\n\n{e.Message}");
-    //     }
-    // }
+    private async Task ProcessInstanceExisted()
+    {
+        var dialog = new TaskDialog()
+        {
+            Title = "ClassIsland 已正在运行",
+            Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行修改设置等操作。\n" +
+                      "如果您无法看到应用主界面，这有可能是您在托盘图标菜单中选择了【隐藏主界面】，或者【按规则隐藏主界面】设置正在生效，也有可能是自动化功能修改了上述设置。",
+            XamlRoot = PhonyRootWindow,
+            Buttons =
+            [
+                new TaskDialogButton("退出应用", false)
+            ],
+            Commands =
+            [
+                new TaskDialogCommand()
+                {
+                    DialogResult = true,
+                    ClosesOnInvoked = true,
+                    Text = "重启当前实例",
+                    Description = "结束当前正在运行的 ClassIsland 实例，然后重启当前实例。",
+                    IconSource = new FluentIconSource("\ue0bd"),
+                }
+            ]
+        };
+        var r = await dialog.ShowAsync();
+        if (!Equals(r, true))
+        {
+            return;
+        }
+        try
+        {
+            var proc = Process.GetProcessesByName(System.OperatingSystem.IsWindows() 
+                ? Path.GetFileNameWithoutExtension(Environment.ProcessPath)
+                : Environment.ProcessPath?.Replace(".dll", ""))
+                .Where(x=>x.Id != Environment.ProcessId);
+            foreach (var i in proc)
+            {
+                i.Kill(true);
+            }
+    
+            Process.Start(new ProcessStartInfo(Environment.ProcessPath ?? "")
+            {
+                ArgumentList = { "-m" }
+            });
+        }
+        catch (Exception e)
+        {
+            await CommonTaskDialogs.ShowDialog("重启失败", $"无法重新启动应用，可能当前运行的实例正在以管理员身份运行。请使用任务管理器终止正在运行的实例，然后再试一次。\n\n{e.Message}");
+        }
+    }
 
     public static void ReleaseLock()
     {
@@ -1091,7 +1113,7 @@ public partial class App : AppBase, IAppHost
         var path = Environment.ProcessPath;
         if (path == null)
             return;
-        var replaced = path.Replace(".dll", ".exe");
+        var replaced = path.Replace(".dll", System.OperatingSystem.IsWindows() ? ".exe" : "");
         var startInfo = new ProcessStartInfo(replaced);
         foreach (var i in parameters)
         {
