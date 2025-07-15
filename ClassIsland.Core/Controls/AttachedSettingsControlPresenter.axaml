@@ -18,7 +18,8 @@
         
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}">
-        <Expander Background="Transparent">
+        <Expander Classes="compact stretch-header" 
+                  HorizontalContentAlignment="Stretch">
             <Expander.IsExpanded>
                 <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
                     <Binding Path="AssociatedAttachedSettings.IsAttachSettingsEnabled"/>
@@ -26,16 +27,14 @@
                 </MultiBinding>
             </Expander.IsExpanded>
             <Expander.Header>
-                <DockPanel>
+                <DockPanel HorizontalAlignment="Stretch">
                     <ToggleSwitch DockPanel.Dock="Right"
                                   IsChecked="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled}"
                                   ToolTip.Tip="是否在此处启用特定的设置"
-                                  OnContent="" OffContent="" Margin="0 -8"
+                                  OnContent="" OffContent="" Margin="0,-8,0,-4"
                                   Click="ButtonIsSettingsEnabled_OnClick"
+                                  VerticalAlignment="Center"
                                   IsEnabled="{Binding ControlInfo.HasEnabledState, Mode=OneWay}">
-                        <ToggleButton.Content>
-                            <controls1:FontIcon Glyph="&#xE81E;" />
-                        </ToggleButton.Content>
                     </ToggleSwitch>
                     <Button DockPanel.Dock="Right"  
                             Theme="{StaticResource TransparentButton}"
@@ -44,7 +43,7 @@
                             ToolTip.Tip="查看此设置的继承情况…"
                             Click="ButtonShowDetails_OnClick">
                         <Button.Content>
-                            <controls1:FontIcon Glyph="&#xE81E;" />
+                            <controls:FluentIcon Glyph="&#xEA2F;" />
                         </Button.Content>
                         <Button.IsVisible>
                             <MultiBinding Converter="{StaticResource BooleanAndConverter}" Mode="OneWay">
@@ -55,27 +54,26 @@
                         <Button.Flyout>
                             <Flyout>
                                 <Border Width="350"
+                                        Margin="-8"
                                         MinHeight="300"
                                         MaxHeight="500">
                                     <Grid RowDefinitions="*,Auto">
-                                        <TabControl Grid.Row="0">
+                                        <TabControl Grid.Row="0" Classes="compact" Padding="0">
                                             <TabItem Header="被覆盖">
                                                 <Grid Margin="4" RowDefinitions="Auto,*">
                                                     <TextBlock Grid.Row="0" Text="以下节点的设置可能会覆盖此处的设置。" />
                                                     <ListBox Grid.Row="1" ItemsSource="{Binding NextItems}">
                                                         <ListBox.ItemContainerTheme>
-                                                            <ControlTheme TargetType="ListBoxItem"
-                                                                   >
+                                                            <ControlTheme TargetType="ListBoxItem">
                                                                 <Setter Property="Template">
                                                                     <Setter.Value>
                                                                         <ControlTemplate>
                                                                             <controls:AttachedSettingsControlPresenter
-                                                                                Margin="4"
                                                                                 TargetObject="{Binding Object, Mode=OneWay}"
                                                                                 ContentId="{Binding Address.Guid, Mode=OneWay}"
                                                                                 ContentIndex="{Binding Address.Index, Mode=OneWay}"
                                                                                 IsDependencyMode="True"
-                                                                                ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}" />
+                                                                                ControlInfo="{Binding $parent[local:AttachedSettingsControlPresenter].ControlInfo, Mode=OneWay}" />
                                                                         </ControlTemplate>
                                                                     </Setter.Value>
                                                                 </Setter>
@@ -95,12 +93,11 @@
                                                                     <Setter.Value>
                                                                         <ControlTemplate>
                                                                             <controls:AttachedSettingsControlPresenter
-                                                                                Margin="4"
                                                                                 TargetObject="{Binding Object, Mode=OneWay}"
                                                                                 ContentId="{Binding Address.Guid, Mode=OneWay}"
                                                                                 ContentIndex="{Binding Address.Index, Mode=OneWay}"
                                                                                 IsDependencyMode="True"
-                                                                                ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}" />
+                                                                                ControlInfo="{Binding $parent[local:AttachedSettingsControlPresenter].ControlInfo, Mode=OneWay}" />
                                                                         </ControlTemplate>  
                                                                     </Setter.Value>
                                                                 </Setter>
@@ -120,7 +117,7 @@
                                                     Theme="{StaticResource TransparentButton}"
                                                     Classes="circle">
                                                 <Button.Content>
-                                                    <controls1:FontIcon Glyph="&#xE897;" />
+                                                    <controls:FluentIcon Glyph="&#xEE31;" />
                                                 </Button.Content>
                                             </Button>
                                             <Button HorizontalAlignment="Left"
@@ -130,14 +127,14 @@
                                                     Theme="{StaticResource TransparentButton}" 
                                                     Classes="circle">
                                                 <Button.Content>
-                                                    <controls1:FontIcon Glyph="&#xE72C;" />
+                                                    <controls:FluentIcon Glyph="&#xE0B5;" />
                                                 </Button.Content>
                                             </Button>
                                         </WrapPanel>
                                         <ProgressBar Grid.Row="0"
                                                      IsIndeterminate="True"
                                                      VerticalAlignment="Top"
-                                                     IsVisible="{Binding IsLoaded}" />
+                                                     IsVisible="{Binding !IsLoaded}" />
                                     </Grid>
                                 </Border>
                             </Flyout>

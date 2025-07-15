@@ -5,11 +5,13 @@ using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
@@ -191,7 +193,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     private async Task AnalyzeAsync()
     {
-        if (ControlInfo == null || ProfileAnalyzeService == null || IsLoading)
+        if (ControlInfo == null || ProfileAnalyzeService == null || IsLoading || ContentId == Guid.Empty)
         {
             return;
         }
@@ -202,6 +204,11 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         await Task.Run(() =>
         {
             ProfileAnalyzeService.Analyze();
+            if (!ProfileAnalyzeService.Nodes.ContainsKey(new AttachableObjectAddress(contentId, contentIndex)))
+            {
+                Dispatcher.UIThread.InvokeAsync(() => this.ShowWarningToast("当前节点未被任何一个课表使用，无法给出分析结果。"));
+                return;
+            }
             NextItems = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.FindNextObjects(new AttachableObjectAddress(contentId, contentIndex),
                 guid)!);
             PreviousItems = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.FindPreviousObjects(

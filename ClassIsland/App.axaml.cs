@@ -73,6 +73,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Media;
 using Avalonia.Threading;
+using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.Components;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Controls.SpeechProviderSettingsControls;
@@ -714,9 +715,9 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
                 services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
                 // AttachedSettings
-                // services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
-                // services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
-                // services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
+                services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
+                services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
+                services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
                 // services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
                 // // 触发器
                 // services.AddTrigger<SignalTrigger, SignalTriggerSettingsControl>();

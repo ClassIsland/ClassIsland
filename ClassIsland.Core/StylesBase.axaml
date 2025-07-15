@@ -86,6 +86,22 @@
         </Style>
         <Setter Property="MinHeight" Value="28"/>
     </Style>
+    <Style Selector="Expander.compact">
+        <Setter Property="Padding" Value="8"/>
+        <Style Selector="^ /template/ ToggleButton#ExpanderHeader">
+            <Setter Property="MinHeight" Value="36"/>
+        </Style>
+        <Style Selector="^ /template/ ToggleButton#ExpanderHeader /template/ Border#Root">
+            <Setter Property="Padding" Value="8 0 0 0"/>
+        </Style>
+        <Style Selector="^ /template/ ToggleButton#ExpanderHeader /template/ Border#ExpandCollapseChevronBorder">
+            <Setter Property="Margin" Value="4,-8,8,-8"/>
+        </Style>
+    </Style>
+    <Style Selector="Expander.stretch-header /template/ ToggleButton#ExpanderHeader /template/ ContentPresenter#ContentPresenter">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    </Style>
     
     <Style Selector="TextBlock :is(HyperlinkButton)">
         <Setter Property="Padding" Value="0"/>

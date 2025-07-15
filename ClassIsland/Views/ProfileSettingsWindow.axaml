@@ -38,7 +38,12 @@
         <ci:BindingProxy x:TypeArguments="profile:ClassPlanGroup"
                          x:Key="ClassPlanGroupBindingProxy"
                          Data="{Binding ViewModel.ProfileService.Profile.SelectedClassPlanGroupId, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}, Mode=OneWay}"/>
-        <converters:SubjectDictionaryKeyFinderMultiConverter x:Key="SubjectDictionaryKeyFinderMultiConverter" />
+        <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:Subject"
+                                                      x:Key="SubjectDictionaryKeyFinderMultiConverter" />
+        <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:TimeLayout"
+                                                      x:Key="TimeLayoutDictionaryKeyFinderMultiConverter" />
+        <converters:DictionaryKeyFinderMultiConverter x:TypeArguments="profile:ClassPlan"
+                                                      x:Key="ClassPlanDictionaryKeyFinderMultiConverter" />
         
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
                       VerticalScrollBarVisibility="Auto">
@@ -94,11 +99,10 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <ci:AttachedSettingsControlPresenter ControlInfo="{Binding}"
-                                                               Margin="0 0 0 8"
                                                                TargetObject="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassPlan}">
                                 <ci:AttachedSettingsControlPresenter.ContentId>
                                     <MultiBinding
-                                        Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}"
+                                        Converter="{StaticResource ClassPlanDictionaryKeyFinderMultiConverter}"
                                         Mode="OneWay">
                                         <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.SelectedClassPlan"/>
                                         <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.ClassPlans"/>
@@ -189,11 +193,10 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <ci:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
-                                                                   Margin="0 0 0 8"
                                                                    TargetObject="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimeLayout}">
                                 <ci:AttachedSettingsControlPresenter.ContentId>
                                     <MultiBinding
-                                        Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}"
+                                        Converter="{StaticResource TimeLayoutDictionaryKeyFinderMultiConverter}"
                                         Mode="OneWay">
                                         <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.SelectedTimeLayout"/>
                                         <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.TimeLayouts"/>
@@ -992,12 +995,11 @@
                                                         <DataTemplate>
                                                             <ci:AttachedSettingsControlPresenter
                                                                 ControlInfo="{Binding}"
-                                                                Margin="0 0 0 8"
                                                                 ContentIndex="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePointIndex, Mode=OneWay}"
                                                                 TargetObject="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint}">
                                                                 <ci:AttachedSettingsControlPresenter.ContentId>
                                                                     <MultiBinding
-                                                                        Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}"
+                                                                        Converter="{StaticResource TimeLayoutDictionaryKeyFinderMultiConverter}"
                                                                         Mode="OneWay">
                                                                         <Binding
                                                                             Path="$parent[views:ProfileSettingsWindow].ViewModel.SelectedTimeLayout" />
@@ -1158,7 +1160,6 @@
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <ci:AttachedSettingsControlPresenter ControlInfo="{Binding}"
-                                                        Margin="0 0 0 8"
                                                         TargetObject="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}">
                                                         <ci:AttachedSettingsControlPresenter.ContentId>
                                                             <MultiBinding
