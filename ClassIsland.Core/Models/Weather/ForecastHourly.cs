@@ -11,27 +11,28 @@ public class ForecastHourly
     private StatusValueBase<List<int>> WeatherConverter()
     {
         int Hour = DateTime.Now.Hour;
-        for (var i = (Hour >= 19 ? 0 : 18 - Hour); i < 29 - Hour; i++)
+        for (var i = Hour >= 19 ? 0 : 18 - Hour; i < 29 - Hour; i++)
         {
-            if (WeatherRaw.Value[i] == "0")
+            if (WeatherRaw.Value[i] == 0)
             {
-                WeatherRaw.Value[i] = "10000";
+                WeatherRaw.Value[i] = 10000;
             }
-            else if (WeatherRaw.Value[i] == "1")
+            else if (WeatherRaw.Value[i] == 1)
             {
-                WeatherRaw.Value[i] = "10000";
+                WeatherRaw.Value[i] = 10000;
             }
         }
-        for (var i = (Hour > 19 ? 42 - Hour : 23); i < 23 /* WeatherRaw.Value.Count */ ; i++)
+        for (var i = Hour > 19 ? 42 - Hour : 23; i < 23 /* WeatherRaw.Value.Count */ ; i++)
         {
-            if (WeatherRaw.Value[i] == "0")
+            if (WeatherRaw.Value[i] == 0)
             {
-                WeatherRaw.Value[i] = "10000";
+                WeatherRaw.Value[i] = 10000;
             }
-            else if (WeatherRaw.Value[i] == "1")
+            else if (WeatherRaw.Value[i] == 1)
             {
-                WeatherRaw.Value[i] = "10000";
+                WeatherRaw.Value[i] = 10000;
             }
         }
+        return WeatherRaw;
     }
 }
