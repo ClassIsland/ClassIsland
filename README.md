@@ -172,7 +172,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-27-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-29-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -219,6 +219,10 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/wjj-8283"><img src="https://avatars.githubusercontent.com/u/82750345?v=4?s=100" width="100px;" alt="wjj"/><br /><sub><b>wjj</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=wjj-8283" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/diann34"><img src="https://avatars.githubusercontent.com/u/95152427?v=4?s=100" width="100px;" alt="Nikoa"/><br /><sub><b>Nikoa</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=diann34" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Griseo-bh3rd"><img src="https://avatars.githubusercontent.com/u/121101691?v=4?s=100" width="100px;" alt="【繁星】格蕾修"/><br /><sub><b>【繁星】格蕾修</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Griseo-bh3rd" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sjzyQwQ"><img src="https://avatars.githubusercontent.com/u/68456645?v=4?s=100" width="100px;" alt="Misaka10072"/><br /><sub><b>Misaka10072</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=sjzyQwQ" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/HuYihe2008"><img src="https://avatars.githubusercontent.com/u/76118866?v=4?s=100" width="100px;" alt="JamYido"/><br /><sub><b>JamYido</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=HuYihe2008" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

@@ -171,8 +171,8 @@
         </ContextMenu>
         <CollectionViewSource x:Key="ComponentsCollectionViewSource"
                               Source="{Binding ComponentsService.CurrentComponents}"
-                              IsLiveGroupingRequested="True"
-                              IsLiveSortingRequested="True">
+                              IsLiveGroupingRequested="False"
+                              IsLiveSortingRequested="False">
             <!--<CollectionViewSource.LiveSortingProperties>
                 <system:String>RelativeLineNumber</system:String>
             </CollectionViewSource.LiveSortingProperties>
@@ -360,24 +360,18 @@
         </Storyboard>
 
         <Storyboard x:Key="WindowMouseIn">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="0.1">
-                    <EasingDoubleKeyFrame.EasingFunction>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.1" Duration="0:0:0.15">
+                    <DoubleAnimation.EasingFunction>
                         <CircleEase EasingMode="EaseOut"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-            </DoubleAnimationUsingKeyFrames>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
         </Storyboard>
         <Storyboard x:Key="WindowMouseOut">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.1"/>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="1">
-                    <EasingDoubleKeyFrame.EasingFunction>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.1" To="1" Duration="0:0:0.15">
+                    <DoubleAnimation.EasingFunction>
                         <CircleEase EasingMode="EaseIn"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-            </DoubleAnimationUsingKeyFrames>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
         </Storyboard>
         <converters1:IntToStringConverter x:Key="IntToStringConverter" />
         <converters1:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
@@ -528,7 +522,7 @@
                         </ItemsControl.GroupStyle>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
+                                <VirtualizingStackPanel Orientation="Horizontal" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>

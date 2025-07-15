@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // 使用 IntelliSense 找出 C# 调试存在哪些属性
+            // 将悬停用于现有属性的说明
+            // 有关详细信息，请访问 https://github.com/dotnet/vscode-csharp/blob/main/debugger-launchjson.md
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            // 如果已更改目标框架，请确保更新程序路径。
+            "program": "${workspaceFolder}/ClassIsland/bin/Debug/net8.0-windows/ClassIsland.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/ClassIsland",
+            // 有关“控制台”字段的详细信息，请参阅 https://aka.ms/VSCode-CS-LaunchJson-Console
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        }
+    ]
+}
