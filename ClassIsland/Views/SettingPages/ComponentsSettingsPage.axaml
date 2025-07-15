@@ -272,7 +272,11 @@
                             <!-- 字体大小 -->
                             <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF273;}"
                                                         Header="字体大小"
-                                                        Description="调整组件上各类字体的大小，将覆盖【外观】设置和主界面行中设置的字体大小。">
+                                                        Description="调整组件上各类字体的大小，将覆盖【外观】设置和主界面行中设置的字体大小。"
+                                                        IsExpanded="{Binding IsResourceOverridingEnabled, Mode=OneWay}">
+                                <controls:SettingsExpander.Footer>
+                                    <ToggleSwitch IsChecked="{Binding IsResourceOverridingEnabled}"/>
+                                </controls:SettingsExpander.Footer>
                                 <controls:SettingsExpander.Styles>
                                     <Style Selector="ci|Field">
                                         <Setter Property="Width" Value="175" />
