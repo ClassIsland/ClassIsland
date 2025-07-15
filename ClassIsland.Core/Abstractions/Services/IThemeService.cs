@@ -31,7 +31,7 @@ public interface IThemeService
     /// </summary>
     /// <param name="themeMode">主题模式</param>
     /// <param name="primary">第一主题色</param>
-    public void SetTheme(int themeMode, Color primary);
+    public void SetTheme(int themeMode, Color? primary);
 
     /// <summary>
     /// 动画等级

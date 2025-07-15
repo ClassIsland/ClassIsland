@@ -560,24 +560,20 @@ public partial class MainWindow : Window
 
         UpdateWindowLayer();
 
-        var primary = Colors.DodgerBlue;
-        var secondary = Colors.DodgerBlue;
+        var primary = (Color?)Colors.DodgerBlue;
         switch (ViewModel.Settings.ColorSource)
         {
             case 0: //custom
                 primary = ViewModel.Settings.PrimaryColor;
-                secondary = ViewModel.Settings.SecondaryColor;
                 break;
             case 1: // 壁纸主题色
             case 3: // 屏幕主题色
-                primary = secondary = ViewModel.Settings.SelectedPlatte;
+                primary = ViewModel.Settings.SelectedPlatte;
                 break;
             case 2:
                 try
                 {
-                    // DwmGetColorizationColor(out var color, out _);
-                    // var c = NativeWindowHelper.GetColor((int)color);
-                    // primary = secondary = c;
+                    primary = null;
                 }
                 catch (Exception ex)
                 {

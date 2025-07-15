@@ -40,7 +40,7 @@ public class ThemeService : IHostedService, IThemeService
 
     public int CurrentRealThemeMode { get; set; } = 0;
 
-    public void SetTheme(int themeMode, Color primary)
+    public void SetTheme(int themeMode, Color? primary)
     {
         var faTheme = Application.Current!.Styles
             .OfType<FluentAvaloniaTheme>()
@@ -58,10 +58,8 @@ public class ThemeService : IHostedService, IThemeService
             _ => ThemeVariant.Default
         };
 
+        faTheme.CustomAccentColor = primary;
+        faTheme.PreferUserAccentColor = primary == null;
         faTheme.PreferSystemTheme = themeMode == 0;
-        // var resource = new ResourceInclude(CurrentRealThemeMode == 0
-        //     ? new Uri("avares://ClassIsland/Themes/LightTheme.axaml")
-        //     : new Uri("avares://ClassIsland/Themes/DarkTheme.axaml"));
-        // Application.Current!.Resources.MergedDictionaries[0] = resource;
     }
 }
