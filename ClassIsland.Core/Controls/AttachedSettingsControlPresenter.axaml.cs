@@ -164,7 +164,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     }
 
     public static readonly StyledProperty<AttachedSettingsControlState> StateProperty = AvaloniaProperty.Register<AttachedSettingsControlPresenter, AttachedSettingsControlState>(
-        nameof(State));
+        nameof(State), AttachedSettingsControlState.Enabled);
 
     public AttachedSettingsControlState State
     {

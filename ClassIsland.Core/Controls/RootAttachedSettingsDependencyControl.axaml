@@ -7,14 +7,15 @@
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="https://github.com/AvaloniaCommunity/Material.Avalonia"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Width="332">
     <Grid Width="300" Margin="16" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RootAttachedSettingsDependencyControl}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
-            <TextBlock Text="附加设置依赖" Classes="Headline5"
+            <TextBlock Text="附加设置依赖" Theme="{StaticResource SubtitleTextBlockStyle}"
                            Margin="0 0 0 8" />
             <TextBlock Text="以下附加设置节点可能会覆盖此处的设置。" />
             <Button Theme="{StaticResource TransparentButton}"
@@ -36,12 +37,11 @@
                         <Setter.Value>
                             <ControlTemplate>
                                 <local:AttachedSettingsControlPresenter
-                                    Margin="0 4"
                                     TargetObject="{Binding Object, Mode=OneWay}"
                                     ContentId="{Binding Address.Guid, Mode=OneWay}"
                                     ContentIndex="{Binding Address.Index, Mode=OneWay}"
                                     IsDependencyMode="True"
-                                    ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:RootAttachedSettingsDependencyControl}, Mode=OneWay}" />
+                                    ControlInfo="{Binding $parent[local:RootAttachedSettingsDependencyControl].ControlInfo, Mode=OneWay}" />
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
