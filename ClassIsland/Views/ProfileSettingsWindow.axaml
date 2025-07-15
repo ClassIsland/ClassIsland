@@ -448,7 +448,8 @@
                                                                    ToolTip.Tip="查看并编辑课表的基本信息。" />
                                         <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe077;}"
                                                                    Label="详细看板"
-                                                                   ToolTip.Tip="查看课表的所有时间点的附加设置继承情况。" />
+                                                                   ToolTip.Tip="查看课表的所有时间点的附加设置继承情况。" 
+                                                                   Click="ButtonOpenClassPlanDetailsWindow_OnClick"/>
                                         <controls:CommandBarSeparator />
                                         <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xea2f;}"
                                                                    Label="创建临时层"

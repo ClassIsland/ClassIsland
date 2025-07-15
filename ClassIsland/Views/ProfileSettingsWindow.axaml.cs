@@ -353,6 +353,17 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region ClassPlans
 
+    private void ButtonOpenClassPlanDetailsWindow_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var details = App.GetService<ClassPlanDetailsWindow>();
+        if (ViewModel.SelectedClassPlan == null)
+        {
+            return;
+        }
+        details.ViewModel.ClassPlan = ViewModel.SelectedClassPlan;
+        _ = details.ShowDialog(this);
+    }
+    
     private void UpdateClassPlanInfoEditorTimeLayoutComboBox()
     {
         if (ViewModel.SelectedClassPlan?.TimeLayout == null)

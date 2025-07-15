@@ -640,7 +640,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<AppLogsWindow>();
                 services.AddSingleton<SettingsWindowNew>();
                 services.AddSingleton<ProfileSettingsWindow>();
-                // services.AddTransient<ClassPlanDetailsWindow>();
+                services.AddTransient<ClassPlanDetailsWindow>();
                 services.AddTransient<WindowRuleDebugWindow>();
                 // services.AddTransient<ConfigErrorsWindow>();
                 // services.AddTransient<TimeAdjustmentWindow>();

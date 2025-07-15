@@ -1,4 +1,5 @@
-﻿using ClassIsland.Shared.Models.Profile;
+﻿using System;
+using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
@@ -7,7 +8,7 @@ public class LessonDetails : ObservableRecipient
 {
     private Subject _subject = Subject.Empty;
     private TimeLayoutItem _timeLayoutItem = new TimeLayoutItem();
-    private string _subjectId = "";
+    private Guid _subjectId = Guid.Empty;
 
     public Subject Subject
     {
@@ -31,7 +32,7 @@ public class LessonDetails : ObservableRecipient
         }
     }
 
-    public string SubjectId
+    public Guid SubjectId
     {
         get => _subjectId;
         set

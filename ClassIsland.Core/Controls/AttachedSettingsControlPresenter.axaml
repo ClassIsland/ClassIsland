@@ -9,6 +9,7 @@
              xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
              xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
              xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:enums="clr-namespace:ClassIsland.Core.Enums"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -149,34 +150,37 @@
                                            UseFontIcon="True"
                                            Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
                                            IsVisible="{Binding IsDependencyMode}">
-                            <!-- TODO: P2 完成依赖状态样式 -->
-                            <!-- <avalonia:MaterialIconText.Style> -->
-                            <!--     <Style TargetType="local:IconText"> -->
-                            <!--         <Style.Resources> -->
-                            <!--             <Style TargetType="TextBlock"> -->
-                            <!--                 <Style.Triggers> -->
-                            <!--                     <DataTrigger Binding="{Binding State}" Value="Disabled"> -->
-                            <!--                         <Setter Property="Opacity" Value="0.5"/> -->
-                            <!--                     </DataTrigger> -->
-                            <!--                     <DataTrigger Binding="{Binding State, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}" Value="Override"> -->
-                            <!-- -->
-                            <!--                         <Setter Property="TextDecorations" Value="{x:Static TextDecorations.Strikethrough}"/> -->
-                            <!--                     </DataTrigger> -->
-                            <!--                 </Style.Triggers> -->
-                            <!--             </Style> -->
-                            <!--         </Style.Resources> -->
-                            <!--         <Style.Triggers> -->
-                            <!--             <DataTrigger Binding="{Binding State}" Value="Disabled"> -->
-                            <!--                 <Setter Property="Opacity" Value="0.5"/> -->
-                            <!--             </DataTrigger> -->
-                            <!--             <DataTrigger Binding="{Binding State}" Value="Override"> -->
-                            <!--                 <Setter Property="TextElement.FontStyle" Value="Italic"/> -->
-                            <!--             </DataTrigger> -->
-                            <!--         </Style.Triggers> -->
-                            <!--     </Style> -->
-                            <!-- </avalonia:MaterialIconText.Style> -->
+                            <controls:IconText.Styles>
+                                <Style Selector="controls|IconText.Disabled">
+                                    <Setter Property="Opacity" Value="0.5"/>
+                                </Style>
+                                <Style Selector="controls|IconText.Override TextBlock">
+                                    <Setter Property="TextDecorations" Value="{x:Static TextDecorations.Strikethrough}"/>
+                                    <Setter Property="FontStyle" Value="Italic"/>
+                                </Style>
+                            </controls:IconText.Styles>
+                            <Classes.Disabled>
+                                <Binding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <enums:AttachedSettingsControlState>Disabled</enums:AttachedSettingsControlState>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.Disabled>
+                            <Classes.Enabled>
+                                <Binding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <enums:AttachedSettingsControlState>Enabled</enums:AttachedSettingsControlState>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.Enabled>
+                            <Classes.Override>
+                                <Binding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <enums:AttachedSettingsControlState>Override</enums:AttachedSettingsControlState>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.Override>
                         </controls:IconText>
-
                     </Grid>
                 </DockPanel>
             </Expander.Header>

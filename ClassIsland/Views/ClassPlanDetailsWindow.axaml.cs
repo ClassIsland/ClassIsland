@@ -1,9 +1,11 @@
-#if false
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Models;
@@ -16,7 +18,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// ClassPlanDetailsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class ClassPlanDetailsWindow
+public partial class ClassPlanDetailsWindow : MyWindow
 {
     public IProfileService ProfileService { get; }
     public IProfileAnalyzeService ProfileAnalyzeService { get; }
@@ -112,7 +114,7 @@ public partial class ClassPlanDetailsWindow
             },
             {
                 new AttachableObjectAddress(ProfileService.Profile.ClassPlans
-                    .FirstOrDefault(x => x.Value == ViewModel.ClassPlan).Key ?? ""),
+                    .FirstOrDefault(x => x.Value == ViewModel.ClassPlan).Key),
                 ViewModel.ClassPlan
             },
             {
@@ -143,7 +145,7 @@ public partial class ClassPlanDetailsWindow
                 Node = node
             };
             
-            if (!i.Value.AttachedObjects.TryGetValue(id.ToString(), out var settings))
+            if (!i.Value.AttachedObjects.TryGetValue(id, out var settings))
             {
                 item.State = AttachedSettingsControlState.Disabled;
                 goto finish;
@@ -185,4 +187,3 @@ public partial class ClassPlanDetailsWindow
         Analyze();
     }
 }
-#endif
