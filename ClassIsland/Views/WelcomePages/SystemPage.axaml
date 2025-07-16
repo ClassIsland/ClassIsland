@@ -36,7 +36,8 @@
             <ci:Thing IconSource="{ci:FluentIconSource &#xE62F;}" Header="创建桌面快捷方式"
                       Description="在桌面上添加软件快捷方式。" />
         </CheckBox>
-        <CheckBox IsChecked="{Binding ViewModel.CreateStartMenuShortcut}">
+        <CheckBox IsChecked="{Binding ViewModel.CreateStartMenuShortcut}"
+                  IsVisible="{Binding PackagingType, Source={x:Static ci:AppBase.Current}, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter='deb'}">
             <ci:Thing IconSource="{ci:FluentIconSource &#xE064;}"
                       Header="创建开始菜单快捷方式"
                       Description="在开始菜单上添加软件快捷方式。" />

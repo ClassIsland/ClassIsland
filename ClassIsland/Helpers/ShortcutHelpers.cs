@@ -19,6 +19,11 @@ public static class ShortcutHelpers
 
     public static async Task CreateFreedesktopShortcutAsync(string path = "")
     {
+        if (AppBase.Current.PackagingType == "deb")
+        {
+            File.Copy("/usr/share/applications/cn.classisland.app.desktop", path, true);
+            return;
+        }
         var targetPath = string.IsNullOrEmpty(path)
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                 ".local/share/applications/cn.classisland.app.desktop") : path;

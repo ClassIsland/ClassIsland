@@ -78,6 +78,11 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
+        if (AppBase.Current.PackagingType == "deb")
+        {
+            ViewModel.CreateStartupShortcut = false;
+        }
+        
         MainFrame.Navigate(typeof(WelcomePage));
     }
 

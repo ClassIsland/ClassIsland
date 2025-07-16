@@ -63,6 +63,7 @@ partial class Build
         .DependsOn(CleanDesktopApp)
         .Executes(() =>
         {
+            var createDeb = Package == "deb";
             DotNetPublish(s => s
                 .SetProject(DesktopAppEntryProject)
                 .SetConfiguration(Configuration)
@@ -71,12 +72,15 @@ partial class Build
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
                 .SetProperty("SelfContained", BuildType == "selfContained")
-                .SetProperty("PublishDir", AppPublishPath));
+                .SetProperty("PublishDir", AppPublishPath)
+                .SetProperty("DebUOSOutputFilePath", AppOutputPath / PublishArtifactName + ".deb")
+                .SetProperty("AutoCreateDebUOSAfterPublish", createDeb));
         });
 
     Target GenerateAppZipArchive => _ => _
         .Produces(AppPublishArtifactPath)
         .DependsOn(CompileApp)
+        .OnlyWhenDynamic(() => Package != "deb")
         .Executes(() =>
         {
             AppPublishPath.ZipTo(AppPublishArtifactPath);

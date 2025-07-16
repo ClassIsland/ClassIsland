@@ -268,6 +268,7 @@ public partial class App : AppBase, IAppHost
 
     public override void Initialize()
     {
+        Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ".";
         ActivatePackageType();
         ActivateAppDirectories();
         if (!Design.IsDesignMode)
@@ -469,7 +470,6 @@ public partial class App : AppBase, IAppHost
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
-        Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ".";
 
         //ConsoleService.InitializeConsole();
         DiagnosticService.BeginStartup();

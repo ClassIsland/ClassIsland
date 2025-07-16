@@ -7,6 +7,21 @@
         <BaseFramework>net8.0</BaseFramework>
     </PropertyGroup>
     
+    <!-- UOS DEB Packaging Properties -->
+    <PropertyGroup>
+        <AppId>cn.classisland.app</AppId>
+        <AppName>ClassIsland</AppName>
+        <DebControlDescription>全功能、可定制、跨平台的大屏课表显示工具。</DebControlDescription>
+        <DesktopComment>全功能、可定制、跨平台的大屏课表显示工具。</DesktopComment>
+        <DebControlHomepage>https://classisland.tech</DebControlHomepage>
+        <DebControlSection>utils</DebControlSection>
+        <SvgIconFile>Assets\AppLogo.svg</SvgIconFile>
+<!--        <DesktopMimeType>x-scheme-handler/classisland</DesktopMimeType>-->
+        <DesktopCategories>Education;Office</DesktopCategories>
+        <InfoPermissions>autostart;notification;trayicon;clipboard</InfoPermissions>
+        <DesktopExec>/opt/apps/$(AppId)/files/bin/$(AssemblyName)</DesktopExec>
+    </PropertyGroup>
+    
     <ItemGroup>
       <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
       <ProjectReference Include="..\ClassIsland\ClassIsland.csproj" />
@@ -20,13 +35,28 @@
     <ItemGroup Condition="'$(Platforms_Linux)'=='true'">
         <ProjectReference Include="..\platforms\ClassIsland.Platforms.Linux\ClassIsland.Platforms.Linux.csproj" />
     </ItemGroup>
+    <ItemGroup Condition="'$(Platforms_Linux)'=='true' and '$(PublishBuilding)'=='true'">
+        <PackageReference Include="Packaging.DebUOS" Version="3.17.6"/>
+    </ItemGroup>
     <ItemGroup>
       <AvaloniaResource Include="Assets\AppLogo.ico" />
+      <AvaloniaResource Include="Assets\AppLogo.svg" />
     </ItemGroup>
     
     <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
         <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
     </PropertyGroup>
+
+    <Target Name="_CreatePackageTypeForDeb" BeforeTargets="CreateDebUOS" DependsOnTargets="Publish">
+        <PropertyGroup>
+            <PackageTypeFilePath>$([System.IO.Path]::Combine($(PublishDir), "PackageType"))</PackageTypeFilePath>
+        </PropertyGroup>
+        <ItemGroup>
+            <PackageTypeFilePathWriteArgLine Include="deb" />
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(PackageTypeFilePath)" Lines="@(PackageTypeFilePathWriteArgLine)" Overwrite="true"/>
+    </Target>
     
     <Import Project="../Global.props"/>
     <Import Project="../AvaloniaShared.props"/>
