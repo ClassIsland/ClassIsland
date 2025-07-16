@@ -33,6 +33,7 @@ partial class Build : NukeBuild
     [Parameter("BuildName")] readonly string BuildName;
     [Parameter("API_SIGNING_KEY")] readonly string ApiSigningKey;
     [Parameter("API_SIGNING_KEY_PS")] readonly string ApiSigningKeyPs;
+    [Parameter] readonly string AppVersion;
     
     string PublishArtifactName;
 

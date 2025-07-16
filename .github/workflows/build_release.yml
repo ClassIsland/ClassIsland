@@ -23,7 +23,7 @@ on:
 
 jobs:
   build_app:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || 'windows-latest' }}
     env:
       build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       artifact_name: out_appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -32,12 +32,14 @@ jobs:
     strategy:
       matrix:
         build_type: ['full', 'selfContained']
-        package: ['folder']
+        package: ['folder', 'deb']
         arch: ['x64', 'x86', 'arm64']
         os: ['windows', 'linux']
         exclude: 
           - os: linux
             arch: x86
+          - os: windows
+            package: deb
           - os: linux
             build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
       
@@ -49,14 +51,6 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-          
-      # - name: Cache .nuke/temp, ~/.nuget/packages
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       .nuke/temp
-      #       ~/.nuget/packages
-      #     key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/*.props') }}-${{ env.build_id }}
       
       - name: List files
         run: ls
@@ -66,10 +60,9 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      
-      # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-      - name: Setup MSBuild.exe
-        uses: microsoft/setup-msbuild@v1.0.2
+        
+      - uses: little-core-labs/get-git-tag@v3.0.1
+        id: tagName
       
       - name: ☢️ Nuke
         env:
@@ -81,7 +74,8 @@ jobs:
           ApiSigningKeyPs: ${{ secrets.API_SIGNING_KEY_PS }}
           arch: ${{ matrix.arch }}
           osName: ${{ matrix.os }}
-          buildName: appBase
+          appVersion: ${{ steps.tagName.outputs.tag }} 
+          buildName: ${{ matrix.package == 'folder' &&  'appBase' || 'app' }}  # 打包版本的构建将在这一步直接产生完整的包体，无需经过分装
         run: |
           pwsh -ep bypass ./build.ps1 PublishApp
 
@@ -93,6 +87,7 @@ jobs:
           path: |
             ./out/*.zip
             ./out/*.appx
+            ./out/*.deb
             
   build_launcher:
     runs-on: ${{ matrix.os == 'windows' && 'windows-latest' || ( matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') }}

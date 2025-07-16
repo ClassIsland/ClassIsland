@@ -74,6 +74,7 @@ partial class Build
                 .SetProperty("SelfContained", BuildType == "selfContained")
                 .SetProperty("PublishDir", AppPublishPath)
                 .SetProperty("DebUOSOutputFilePath", AppOutputPath / PublishArtifactName + ".deb")
+                .SetProperty("UOSDebVersion", AppVersion)
                 .SetProperty("AutoCreateDebUOSAfterPublish", createDeb));
         });
 
