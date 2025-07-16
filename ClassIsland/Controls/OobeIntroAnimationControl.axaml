@@ -13,7 +13,7 @@
     <UserControl.Styles>
         <Style Selector="controls|OobeIntroAnimationControl.anim">
             <Style.Animations>
-                <Animation Duration="0:0:2.6" Easing="0.00, 0.83, 0.17, 0.90"
+                <Animation Duration="0:0:3.0" Easing="0.00, 0.83, 0.17, 0.90"
                            FillMode="Both">
                     <KeyFrame Cue="0%">
                         <Setter Property="ScaleTransform.ScaleX" Value="1.25"/>
@@ -45,7 +45,7 @@
                 <Setter Property="Panel.ZIndex" Value="33550336"/>
                 <Style.Animations>
                     <Animation Delay="0:0:0.307" Duration="0:0:0.25"
-                               Easing="1.00, 0.33, 0.00, 0.77"
+                               Easing="0.76, 0, 0.24, 1"
                                FillMode="Forward">
                         <KeyFrame Cue="0%">
                             <Setter Property="ScaleTransform.ScaleX" Value="1"/>
@@ -90,7 +90,7 @@
                     <Setter Property="Spacing" Value="4"/>
                     <Style Selector="^.anim">
                         <Style.Animations>
-                            <Animation Duration="0:0:0.4" Easing="0.80, 0.04, 0.84, 0.22"
+                            <Animation Duration="0:0:0.7" Easing="0.33, 1, 0.68, 1"
                                        FillMode="Both">
                                 <KeyFrame Cue="0%">
                                     <Setter Property="Spacing" Value="4"/>
@@ -102,7 +102,7 @@
                         </Style.Animations>
                         <Style Selector="^.anim TextBlock">
                             <Style.Animations>
-                                <Animation Duration="0:0:0.4" Easing="0.80, 0.04, 0.84, 0.22"
+                                <Animation Duration="0:0:0.7" Easing="0.33, 1, 0.68, 1"
                                            FillMode="Both">
                                     <KeyFrame Cue="0%">
                                         <Setter Property="MinWidth" Value="32"/>

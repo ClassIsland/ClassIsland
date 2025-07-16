@@ -1,0 +1,32 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls"
+        xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <controls:Thing IconSource="{controls:FluentIconSource &#xE232;}"
+                        Header="测试测试测试测试"
+                        Description="测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试"/>
+    </Design.PreviewWith>
+
+    <Style Selector="controls|Thing">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto">
+                    <Viewbox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                             Width="18" Height="18"
+                             Margin="0 0 8 0">
+                        <controls1:IconSourceElement x:Name="IconSourceElement"
+                                                     IconSource="{TemplateBinding IconSource}" />
+                    </Viewbox>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{TemplateBinding Header}" 
+                               TextWrapping="Wrap"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{TemplateBinding Description}"
+                               Margin="0 2 0 0"
+                               TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               FontSize="12"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

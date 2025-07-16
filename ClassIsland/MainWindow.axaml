@@ -87,6 +87,7 @@
                     <NativeMenuItemSeparator/>
                     <NativeMenuItem  Header="启用课表" Click="NativeMenuItemDebugEnableTempClassPlan_OnClick"/>
                     <NativeMenuItem  Header="显示崩溃窗口" Click="NativeMenuItemDebugCrashTest_OnClick"/>
+                    <NativeMenuItem  Header="WelcomeWindow" Click="NativeMenuItemDebugOpenWelcomeWindow_OnClick"/>
                 </NativeMenu>
             </NativeMenuItem>
         </NativeMenu>

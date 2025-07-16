@@ -258,7 +258,10 @@ public partial class App : AppBase, IAppHost
     {
         ActivatePackageType();
         ActivateAppDirectories();
-        this.EnableHotReload();
+        if (!Design.IsDesignMode)
+        {
+            this.EnableHotReload();
+        }
         AvaloniaXamlLoader.Load(this);
         if (DesktopLifetime != null)
         {
@@ -622,6 +625,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<ProfileSettingsViewModel>();
                 services.AddTransient<DevPortalViewModel>();
                 services.AddTransient<AppLogsViewModel>();
+                services.AddTransient<WelcomeViewModel>();
                 // ViewModels/SettingsPages
                 services.AddTransient<GeneralSettingsViewModel>();
                 services.AddTransient<AboutSettingsViewModel>();
@@ -644,6 +648,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddTransient<TimeAdjustmentWindow>();
                 // services.AddTransient<ExcelExportWindow>();
                 services.AddTransient<DevPortalWindow>();
+                services.AddTransient<WelcomeWindow>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();

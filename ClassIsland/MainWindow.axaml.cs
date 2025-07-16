@@ -944,4 +944,9 @@ public partial class MainWindow : Window
             UpdateWindowLayer();
         }
     }
+
+    private void NativeMenuItemDebugOpenWelcomeWindow_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<WelcomeWindow>().Show();
+    }
 }

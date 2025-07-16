@@ -1,38 +1,26 @@
 ﻿<UserControl x:Class="ClassIsland.Controls.Demo.ThemeDemo"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ClassIsland.Controls.Demo"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="75" d:DesignWidth="300"
+             >
     <Grid>
-        <Grid Height="75">
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
-                                     Value="Light">
-                            <Setter Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
-                                     Value="Dark">
-                            <Setter Property="Background" Value="{DynamicResource PrimaryHueDarkBrush}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <Grid.Resources>
-                <Style TargetType="Rectangle">
+        <Grid Height="75" Background="{DynamicResource AccentFillColorSecondaryBrush}">
+            <Grid.Styles>
+                <Style Selector="Rectangle">
                     <Setter Property="Fill"
-                            Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}" />
+                            Value="{DynamicResource TextFillColorPrimaryBrush}" />
                     <Setter Property="Margin" Value="2 0" />
                     <Setter Property="Height" Value="4" />
                     <Setter Property="Opacity" Value="0.8" />
                 </Style>
-            </Grid.Resources>
-            <materialDesign:ColorZone Mode="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}" HorizontalAlignment="Center">
+            </Grid.Styles>
+            <Border HorizontalAlignment="Center" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    VerticalAlignment="Top">
                 <StackPanel Orientation="Horizontal"
                             Margin="2">
 
@@ -45,12 +33,12 @@
                     <Rectangle Width="4" />
                     <Rectangle Width="4" />
                 </StackPanel>
-            </materialDesign:ColorZone>
-            <materialDesign:ColorZone Mode="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Bottom"
-                                      Width="100"
-                                      Height="50">
+            </Border>
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom" 
+                    Width="100"
+                    Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    Height="50">
                 <StackPanel>
                     <StackPanel Height="6" HorizontalAlignment="Right" Orientation="Horizontal">
                         <Rectangle Width="4" Opacity="0.5" />
@@ -66,7 +54,7 @@
                     <Rectangle Width="60" Opacity="0.75" HorizontalAlignment="Left"
                                Margin="4 4 0 0" />
                 </StackPanel>
-            </materialDesign:ColorZone>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

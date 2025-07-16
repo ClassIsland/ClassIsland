@@ -33,7 +33,7 @@ public partial class OobeIntroAnimationControl : UserControl
         Task? last = null;
         for (int i = 0; i < count; i++)
         {
-            var delay = Math.Sin((1.0 * (i + 2) / (i + 2)) * (Math.PI / 2)) * durationMs / count;
+            var delay = Math.Sin((1.0 * (i + 2) / (count + 2)) * (Math.PI / 2)) * durationMs / count;
             Console.WriteLine(delay);
             var c1 = children1[i];
             var c2 = children2[i];
@@ -43,7 +43,7 @@ public partial class OobeIntroAnimationControl : UserControl
             var t = anim2.RunAsync(c2);
             c1.Classes.Add("anim");
             c2.Classes.Add("anim");
-            if (i == count - 1)
+            if (i == count - 3)
             {
                 last = t;
             }
@@ -65,7 +65,7 @@ public partial class OobeIntroAnimationControl : UserControl
             var animation = new Animation()
             {
                 FillMode = FillMode.Both,
-                Duration = TimeSpan.FromMilliseconds(timeMs * 1.5 + 500),
+                Duration = TimeSpan.FromMilliseconds(timeMs * 1.5 + 750),
                 Children =
                 {
                     new KeyFrame()
@@ -85,7 +85,7 @@ public partial class OobeIntroAnimationControl : UserControl
                             new Setter(OpacityProperty, 1.0),
                             new Setter(TranslateTransform.YProperty, 0.0),
                         },
-                        KeySpline = KeySpline.Parse("0.00, 0.00, 0.00, 1.00", CultureInfo.CurrentUICulture)
+                        KeySpline = KeySpline.Parse("0.25, 1, 0.5, 1", CultureInfo.CurrentUICulture)
                     },
                     new KeyFrame()
                     {
@@ -97,7 +97,7 @@ public partial class OobeIntroAnimationControl : UserControl
                     },
                     new KeyFrame()
                     {
-                        KeyTime = TimeSpan.FromMilliseconds(timeMs + 500),
+                        KeyTime = TimeSpan.FromMilliseconds(timeMs + 750),
                         Setters =
                         { 
                             new Setter(OpacityProperty, willHide ? 0.0 : 1.0),
@@ -112,7 +112,7 @@ public partial class OobeIntroAnimationControl : UserControl
                             new Setter(OpacityProperty, 0.0),
                             new Setter(Rotate3DTransform.AngleXProperty, 90.0)
                         },
-                        KeySpline = KeySpline.Parse("1.00, 0.00, 1.00, 1.00", CultureInfo.CurrentUICulture)
+                        KeySpline = KeySpline.Parse("0.32, 0, 0.67, 0", CultureInfo.CurrentUICulture)
                     }
                     
                 }
@@ -126,12 +126,12 @@ public partial class OobeIntroAnimationControl : UserControl
             var animation = new Animation()
             {
                 FillMode = FillMode.Both,
-                Duration = TimeSpan.FromMilliseconds(timeMs * 2 + 500),
+                Duration = TimeSpan.FromMilliseconds(timeMs * 2 + 750),
                 Children =
                 {
                     new KeyFrame()
                     {
-                        KeyTime = TimeSpan.FromMilliseconds(timeMs * 1.5 + 500),
+                        KeyTime = TimeSpan.FromMilliseconds(timeMs * 1.5 + 750),
                         Setters =
                         {
                             new Setter(Rotate3DTransform.AngleXProperty, -90.0),
@@ -146,7 +146,7 @@ public partial class OobeIntroAnimationControl : UserControl
                             new Setter(Rotate3DTransform.AngleXProperty, 0.0),
                             new Setter(OpacityProperty, 1.0)
                         },
-                        KeySpline = KeySpline.Parse("0.00, 0.00, 0.00, 1.00", CultureInfo.CurrentUICulture)
+                        KeySpline = KeySpline.Parse("0.33, 1, 0.68, 1", CultureInfo.CurrentUICulture)
                     }
                     
                 }

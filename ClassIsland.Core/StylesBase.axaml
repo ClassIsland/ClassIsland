@@ -28,6 +28,7 @@
     <StyleInclude Source="/Controls/Emptiable.axaml"/>
     <StyleInclude Source="/Controls/Empty.axaml"/>
     <StyleInclude Source="/Themes/StackPanelIntroAnimation.axaml"/>
+    <StyleInclude Source="/Controls/Thing.axaml"/>
 
     <!-- Add Styles Here -->
     <Style Selector="StackPanel.settings-container">
