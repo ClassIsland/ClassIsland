@@ -23,11 +23,13 @@
     </Design.PreviewWith>
     
     <StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
+    <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     
     <StyleInclude Source="/Controls/Field.axaml"/>
     <StyleInclude Source="/Controls/Emptiable.axaml"/>
     <StyleInclude Source="/Controls/Empty.axaml"/>
     <StyleInclude Source="/Themes/StackPanelIntroAnimation.axaml"/>
+    <StyleInclude Source="/Themes/RichTextStyles.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
 
     <!-- Add Styles Here -->

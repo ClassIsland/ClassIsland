@@ -11,7 +11,6 @@
     <ResourceDictionary.MergedDictionaries>
         <!--<ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>-->
         <ResourceInclude Source="avares://ClassIsland.Core/Themes/Generic.axaml"/>
-        <ResourceInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml"/>
         <ResourceInclude Source="avares://ClassIsland.Core/Controls/NotificationTemplates/Templates.axaml"/>
         <ResourceInclude Source="avares://ClassIsland.Core/Controls/LessonsControls/LessonsListBox.axaml"/>
         <ResourceInclude Source="avares://ClassIsland.Core/Themes/ChipListBox.axaml"/>

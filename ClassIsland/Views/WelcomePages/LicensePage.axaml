@@ -14,12 +14,14 @@
         <TextBlock Text="要继续使用 ClassIsland，您必须阅读并同意以下许可条款。" HorizontalAlignment="Center"/>
         <CheckBox x:Name="ComboBoxOssLicense">
             <TextBlock VerticalAlignment="Center" Margin="0 4 0 0" >
-                我已阅读并同意<HyperlinkButton Content="《ClassIsland 开源许可》" Margin="0 -2 0 0"/>。
+                我已阅读并同意<HyperlinkButton Content="《ClassIsland 开源许可》" Margin="0 -2 0 0"
+                                        Click="ButtonShowOssLicense_OnClick"/>。
             </TextBlock>
         </CheckBox>
         <CheckBox x:Name="ComboBoxPrivacy">
             <TextBlock VerticalAlignment="Center" Margin="0 4 0 0" >
-                我已阅读并同意<HyperlinkButton Content="《ClassIsland 隐私协议》" Margin="0 -2 0 0"/>。
+                我已阅读并同意<HyperlinkButton Content="《ClassIsland 隐私政策》" Margin="0 -2 0 0"
+                                        Click="ButtonShowPrivacyLicense_OnClick"/>。
             </TextBlock>
         </CheckBox>
         <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">

@@ -22,6 +22,8 @@ public partial class DevPortalWindow : MyWindow
     {
         DataContext = this;
         InitializeComponent();
+        
+        MarkdownEditor.Text = ViewModel.MarkdownText;
     }
 
     private void ButtonSendNotification_OnClick(object? sender, RoutedEventArgs e)
@@ -106,5 +108,10 @@ public partial class DevPortalWindow : MyWindow
     private void ButtonPlayOobeAnimation_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.OobeIntroControlContent = new OobeIntroAnimationControl();
+    }
+
+    private void MarkdownEditor_OnTextChanged(object? sender, EventArgs e)
+    {
+        ViewModel.MarkdownText = MarkdownEditor.Text;
     }
 }

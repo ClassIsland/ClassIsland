@@ -32,6 +32,12 @@ public partial class DevPortalViewModel(
     [ObservableProperty] private bool _toastHaveActions = false;
     [ObservableProperty] private bool _toastCanUserClose = true;
     [ObservableProperty] private object? _oobeIntroControlContent = new Border();
+    [ObservableProperty] private string _markdownText =
+        """
+        # Welcome to ClassIsland!
+        
+        
+        """;
 
     public bool IsTargetDateTimeLoaded => IsTargetDateLoaded && IsTargetTimeLoaded;
 }

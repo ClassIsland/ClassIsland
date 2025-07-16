@@ -1,0 +1,42 @@
+    <local:MyWindow x:Class="ClassIsland.Core.Controls.DocumentReaderWindow"
+            xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:local="clr-namespace:ClassIsland.Core.Controls"
+            xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
+            xmlns:helpers="clr-namespace:ClassIsland.Core.Helpers"
+            mc:Ignorable="d"
+            d:DataContext="{d:DesignInstance local:DocumentReaderWindow}"
+            Title="{Binding Source, Mode=OneWay}" 
+            Height="700" Width="500"
+            WindowStartupLocation="CenterOwner"
+            KeyDown="DocumentReaderWindow_OnKeyDown"
+            Loaded="Control_OnLoaded">
+        <Grid Margin="8" RowDefinitions="*,Auto">
+            <mdxaml:MarkdownScrollViewer
+                Margin="0"
+                Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
+                Markdown="{Binding Markdown}">
+                <mdxaml:MarkdownScrollViewer.Styles>
+                    <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml"/>
+                </mdxaml:MarkdownScrollViewer.Styles>
+            </mdxaml:MarkdownScrollViewer>
+            <Button Grid.Row="1" 
+                    Classes="accent"
+                    HorizontalAlignment="Right"
+                    Margin="0 8 0 0"
+                    Click="ButtonClose_OnClick"
+                    Content="关闭">
+            </Button>
+            <Grid Grid.Row="0"
+                  Grid.RowSpan="2"
+                  Margin="-8"
+                  IsVisible="{Binding IsLoading, Mode=OneWay}">
+                <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}" Opacity="0.5"/>
+                <local:StarRailLoadingControl VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"/>
+            </Grid>
+        </Grid>
+    </local:MyWindow>
+
