@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || 'windows-latest' }}
     env:
       build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
-      artifact_name: out_appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+      artifact_name: out_${{ matrix.package == 'folder' &&  'appBase' || 'app' }}_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
     strategy:
