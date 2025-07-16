@@ -41,7 +41,7 @@
         <profile:ClassPlan x:Key="FallbackClassPlan"/>
         
         <NativeMenu x:Key="AppMenu">
-            <NativeMenuItem Icon="Assets/AppLogo.png" Header="ClassIsland"/>
+            <NativeMenuItem Icon="Assets/AppLogo.png" Header="ClassIsland" Click="MenuItemAbout_OnClick"/>
             <NativeMenuItem Header="帮助…"
                             Click="MenuItemHelps_OnClick" 
                             IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>

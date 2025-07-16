@@ -50,7 +50,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region Misc
 
-    private void OpenDrawer(string key)
+    public void OpenDrawer(string key)
     {
         ViewModel.IsDrawerOpen = true;
         if (this.FindResource(key) is { } o)

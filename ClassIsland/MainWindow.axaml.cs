@@ -731,7 +731,7 @@ public partial class MainWindow : Window
 
     private void MenuItemTemporaryClassPlan_OnClick(object sender, EventArgs e)
     {
-        // App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
+        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
         OpenProfileSettingsWindow();
     }
 
@@ -740,7 +740,7 @@ public partial class MainWindow : Window
         App.GetService<ProfileSettingsWindow>().Open();
     }
 
-    private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemAbout_OnClick(object sender, EventArgs e)
     {
         App.GetService<SettingsWindowNew>().Open("about");
     }
