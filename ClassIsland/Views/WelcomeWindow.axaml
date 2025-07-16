@@ -14,6 +14,7 @@
         Width="800" Height="600"
         EnableMicaWindow="True"
         WindowStartupLocation="CenterScreen"
+        Closing="Window_OnClosing"
         CanResize="False">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static views:WelcomeWindow.WelcomeNavigateForwardCommand}"

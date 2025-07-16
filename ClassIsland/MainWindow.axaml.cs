@@ -303,32 +303,6 @@ public partial class MainWindow : Window
             AutoSetNotificationEffectRenderingScale();
         }
 
-        if (!ViewModel.Settings.IsWelcomeWindowShowed)
-        {
-            if (ViewModel.Settings.IsSplashEnabled)
-            {
-                App.GetService<ISplashService>().EndSplash();
-            }
-            // TODO: welcome window
-            // var w = new WelcomeWindow()
-            // {
-            //     ViewModel =
-            //     {
-            //         Settings = ViewModel.Settings
-            //     }
-            // };
-            // var r = w.ShowDialog();
-            // if (r == false)
-            // {
-            //     ViewModel.IsClosing = true;
-            //     Close();
-            // }
-            // else
-            // {
-            ViewModel.Settings.IsWelcomeWindowShowed = true;
-            // }
-        }
-
         UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());
 
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化输入");
@@ -948,5 +922,11 @@ public partial class MainWindow : Window
     private void NativeMenuItemDebugOpenWelcomeWindow_OnClick(object? sender, EventArgs e)
     {
         IAppHost.GetService<WelcomeWindow>().Show();
+    }
+
+    private void NativeMenuItemDebugOpenWelcomeWindowFull_OnClick(object? sender, EventArgs e)
+    {
+        ViewModel.Settings.IsWelcomeWindowShowed = false;
+        AppBase.Current.Restart();
     }
 }

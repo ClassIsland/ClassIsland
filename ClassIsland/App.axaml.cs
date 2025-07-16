@@ -870,6 +870,26 @@ public partial class App : AppBase, IAppHost
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = IAppHost.Host.StartAsync();
         IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
+        
+        if (!Settings.IsWelcomeWindowShowed)
+        {
+            if (Settings.IsSplashEnabled)
+            {
+                GetService<ISplashService>().EndSplash();
+            }
+            var w = IAppHost.GetService<WelcomeWindow>();
+            await w.ShowDialog(PhonyRootWindow);
+            if (!w.ViewModel.IsWizardCompleted)
+            {
+                Stop();
+            }
+            else
+            {
+                Settings.IsWelcomeWindowShowed = true;
+                Restart();
+            }
+            return;
+        }
 
         var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
         Logger.LogInformation("正在初始化MainWindow。");

@@ -80,7 +80,7 @@
             <NativeMenuItem  Header="重启" Click="MenuItemRestartApp_OnClick"/>
             <NativeMenuItem  Header="退出" Click="MenuItemExitApp_OnClick"/>
             <NativeMenuItemSeparator />
-            <NativeMenuItem Header="dev_Debug">
+            <NativeMenuItem Header="dev__Debug">
                 <NativeMenu>
                     <NativeMenuItem Header="DevTools" Click="NativeMenuItemDebugDevTools_OnClick"/>
                     <NativeMenuItem Header="DevPortal" Click="NativeMenuItemDebugDevPortal_OnClick"/>
@@ -88,6 +88,7 @@
                     <NativeMenuItem  Header="启用课表" Click="NativeMenuItemDebugEnableTempClassPlan_OnClick"/>
                     <NativeMenuItem  Header="显示崩溃窗口" Click="NativeMenuItemDebugCrashTest_OnClick"/>
                     <NativeMenuItem  Header="WelcomeWindow" Click="NativeMenuItemDebugOpenWelcomeWindow_OnClick"/>
+                    <NativeMenuItem  Header="WelcomeWindow (full)" Click="NativeMenuItemDebugOpenWelcomeWindowFull_OnClick"/>
                 </NativeMenu>
             </NativeMenuItem>
         </NativeMenu>

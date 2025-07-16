@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -9,10 +11,13 @@ using Avalonia.Markup.Xaml;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Helpers;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using ClassIsland.Views.WelcomePages;
 using FluentAvalonia.UI.Controls;
+using Microsoft.Extensions.Logging;
+using WindowsShortcutFactory;
 
 namespace ClassIsland.Views;
 
@@ -92,7 +97,67 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         MainFrame.Navigate(type);
     }
 
-    private void CommandBindingFinishWizard_OnExecuted(object? sender, ExecutedRoutedEventArgs e)
+    private async Task CreateShortcutsWindows()
     {
+        var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
+        var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "ClassIsland.lnk");
+        var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "ClassIsland.lnk");
+        using var shortcut = new WindowsShortcut();
+        shortcut.Path = Environment.ProcessPath;
+        shortcut.WorkingDirectory = Environment.CurrentDirectory;
+        if (ViewModel.CreateStartupShortcut)
+            shortcut.Save(startupPath);
+        if (ViewModel.CreateStartMenuShortcut)
+            shortcut.Save(startMenuPath);
+        if (ViewModel.CreateDesktopShortcut)
+            shortcut.Save(desktopPath);
+        if (ViewModel.RegisterUrlScheme)
+            UriProtocolRegisterHelper.Register();
+        if (ViewModel is { CreateClassSwapShortcut: true, RegisterUrlScheme: true })
+            await ShortcutHelpers.CreateClassSwapShortcutAsync();
+    }
+
+    private async void CommandBindingFinishWizard_OnExecuted(object? sender, ExecutedRoutedEventArgs e)
+    {
+        ViewModel.CanClose = true;
+        ViewModel.IsWizardCompleted = true;
+        try
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                await CreateShortcutsWindows();
+            }
+        }
+        catch (Exception ex)
+        {
+            App.GetService<ILogger<WelcomeWindow>>().LogError(ex, "无法创建快捷方式。");
+        }
+        
+        Close();
+    }
+
+    private async void Window_OnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        if (ViewModel.CanClose || e.CloseReason is WindowCloseReason.OSShutdown or WindowCloseReason.ApplicationShutdown)
+        {
+            return;
+        }
+
+        e.Cancel = true;
+        var r = await new ContentDialog()
+        {
+            Title = "退出 ClassIsland",
+            Content = "您需要完成设置才能开始使用本应用。关闭此窗口将直接退出应用。",
+            PrimaryButtonText = "退出",
+            SecondaryButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary
+        }.ShowAsync();
+        if (r != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        ViewModel.CanClose = true;
+        Close();
     }
 }

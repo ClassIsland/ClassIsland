@@ -26,5 +26,6 @@ public partial class WelcomeViewModel(SettingsService settingsService) : Observa
     [ObservableProperty] private bool _requiresRestarting = false;
     [ObservableProperty] private DateTime _singleWeekStartTime = DateTime.Now;
     [ObservableProperty] private Type? _currentPage;
-
+    [ObservableProperty] private bool _canClose = false;
+    [ObservableProperty] private bool _isWizardCompleted = false;
 }
