@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version={0}
+Encoding=UTF-8
+Name=ClassIsland
+GenericName=班级大屏课表
+Comment=全功能、可定制、跨平台的大屏课表显示工具。
+Exec={1} --uri %u
+Icon=classisland
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Education;Office
+MimeType=x-scheme-handler/classisland
+StartupWMClass=classisland_main

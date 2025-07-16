@@ -33,6 +33,7 @@
         Icon="/Assets/AppLogo.ico"
         Loaded="MainWindow_OnLoaded"
         SizeToContent="Height"
+        X11Properties.WmClass="classisland_main"
         ShowActivated="False">
     <Window.Resources>
         <converters1:IndexConverter x:Key="IndexConverter" />

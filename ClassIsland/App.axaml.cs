@@ -236,10 +236,12 @@ public partial class App : AppBase, IAppHost
             CommonDirectories.AppRootFolderPath = ApplicationData.Current.LocalFolder.Path;
             CommonDirectories.OverrideAppCacheFolderPath = ApplicationData.Current.LocalCacheFolder.Path;
             CommonDirectories.OverrideAppTempFolderPath = ApplicationData.Current.TemporaryFolder.Path;
+            ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
 #endif
             return;
         }
 
+        ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
         CommonDirectories.AppRootFolderPath = PackagingType switch
         {
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
@@ -251,6 +253,16 @@ public partial class App : AppBase, IAppHost
         if (!Directory.Exists(CommonDirectories.AppRootFolderPath))
         {
             Directory.CreateDirectory(CommonDirectories.AppRootFolderPath);
+        }
+
+        if (File.Exists(Path.Combine(CommonDirectories.AppPackageRoot, "ClassIsland" + PlatformExecutableExtension)))
+        {
+            ExecutingEntrance =
+                Path.Combine(CommonDirectories.AppPackageRoot, "ClassIsland" + PlatformExecutableExtension);
+        }
+        else
+        {
+            ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
         }
     }
 
@@ -1138,7 +1150,7 @@ public partial class App : AppBase, IAppHost
         var path = Environment.ProcessPath;
         if (path == null)
             return;
-        var replaced = path.Replace(".dll", System.OperatingSystem.IsWindows() ? ".exe" : "");
+        var replaced = path.Replace(".dll", PlatformExecutableExtension);
         var startInfo = new ProcessStartInfo(replaced);
         foreach (var i in parameters)
         {

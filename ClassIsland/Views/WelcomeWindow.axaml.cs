@@ -8,6 +8,8 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
+using ClassIsland.Core;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
@@ -116,6 +118,36 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         if (ViewModel is { CreateClassSwapShortcut: true, RegisterUrlScheme: true })
             await ShortcutHelpers.CreateClassSwapShortcutAsync();
     }
+    
+    private async Task CreateShortcutsFreedesktop()
+    {
+        var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            ".config/autostart/cn.classisland.app.desktop");
+        var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            ".local/share/applications/cn.classisland.app.desktop");
+        var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "ClassIsland.desktop");
+
+        if (ViewModel.CreateStartupShortcut)
+            await ShortcutHelpers.CreateFreedesktopShortcutAsync(startupPath);
+        if (ViewModel.CreateStartMenuShortcut)
+            await ShortcutHelpers.CreateFreedesktopShortcutAsync(startMenuPath);
+        if (ViewModel.CreateDesktopShortcut)
+            await ShortcutHelpers.CreateFreedesktopShortcutAsync(desktopPath);
+
+        if ((ViewModel.CreateStartupShortcut || ViewModel.CreateStartMenuShortcut || ViewModel.CreateDesktopShortcut)
+            && AppBase.Current.PackagingType is "folder" or "folderClassic") // 仅在绿色版下才需要手动复制图标，安装版应当由安装程序将图标复制到系统目录。
+        {
+            var iconsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "icons/hicolor/128x128/apps/");
+            if (!Directory.Exists(iconsDir))
+            {
+                Directory.CreateDirectory(iconsDir);
+            }
+
+            await using var src = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/FreedesktopIcons/AppLogo@128w.png"));
+            await using var file = File.OpenWrite(Path.Combine(iconsDir, "classisland.png"));
+            await src.CopyToAsync(file);
+        }
+    }
 
     private async void CommandBindingFinishWizard_OnExecuted(object? sender, ExecutedRoutedEventArgs e)
     {
@@ -126,6 +158,11 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
             if (OperatingSystem.IsWindows())
             {
                 await CreateShortcutsWindows();
+            }
+
+            if (OperatingSystem.IsLinux())
+            {
+                await CreateShortcutsFreedesktop();
             }
         }
         catch (Exception ex)

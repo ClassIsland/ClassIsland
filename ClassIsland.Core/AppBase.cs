@@ -128,4 +128,14 @@ public abstract class AppBase : Application, IAppHost
     /// 虚根窗口
     /// </summary>
     public Window PhonyRootWindow = null!;
+
+    /// <summary>
+    /// 应用入口二进制文件路径。
+    /// </summary>
+    public static string ExecutingEntrance { get; internal set; } = "";
+
+    /// <summary>
+    /// 当前平台可执行文件后缀
+    /// </summary>
+    public static string PlatformExecutableExtension => System.OperatingSystem.IsWindows() ? ".exe" : "";
 }
