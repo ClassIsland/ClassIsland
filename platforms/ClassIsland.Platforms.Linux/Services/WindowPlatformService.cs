@@ -23,6 +23,8 @@ public class WindowPlatformService : IWindowPlatformService
     
     public delegate int XErrorHandlerDelegate(IntPtr display, IntPtr errorEvent);
 
+    private static CancellationToken _stopToken;
+
     
     private static int XErrorHandler(IntPtr display, IntPtr errorEvent)
     {
@@ -37,8 +39,10 @@ public class WindowPlatformService : IWindowPlatformService
 
     private static Delegate _xErrorHandlerDelegate = new XErrorHandlerDelegate(XErrorHandler);
     
-    public WindowPlatformService()
+    public WindowPlatformService(CancellationToken stopToken)
     {
+        _stopToken = stopToken;
+        
         XInitThreads();
         
         _display = XOpenDisplay(null);
@@ -59,7 +63,7 @@ public class WindowPlatformService : IWindowPlatformService
 
     public void PostInit()
     {
-        new Thread(XEventLoop).Start();
+        new Task(XEventLoop, _stopToken).Start();
     }
     
     private static void XEventLoop()
@@ -72,7 +76,7 @@ public class WindowPlatformService : IWindowPlatformService
         XSelectInput(display, root, XEventMask.PropertyChangeMask);
         try
         {
-            while (true)
+            while (!_stopToken.IsCancellationRequested)
             {
                 var status  = XNextEvent(display, out var ev);
                 if (status != 0)

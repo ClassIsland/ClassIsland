@@ -16,9 +16,10 @@ class Program
     [STAThread]
     static async Task<int> Main(string[] args)
     {
-        ActivatePlatforms(out var postInit);
+        var stopTokenSource = new CancellationTokenSource();
+        ActivatePlatforms(out var postInit, stopTokenSource.Token);
         var buildApp = await ClassIsland.Program.AppEntry(args);
-        return AppBuilder.Configure<App>(() =>
+        var r =  AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
 #if Platforms_Windows
@@ -28,6 +29,7 @@ class Program
                 app.OperatingSystem = "linux";
 #endif
                 app.Initialized += (_, _) => postInit();
+                app.AppStopping += (_, _) => stopTokenSource.Cancel();
                 return app;
             })
             .UsePlatformDetect()
@@ -36,6 +38,8 @@ class Program
 #endif
             .LogToHostSink()
             .StartWithClassicDesktopLifetime(args);
+        
+        return r;
     }
     
     // AppBuilder for designer
@@ -43,7 +47,7 @@ class Program
         .UsePlatformDetect()
         .LogToHostSink();
 
-    static void ActivatePlatforms(out Action postInitCallback)
+    static void ActivatePlatforms(out Action postInitCallback, CancellationToken stopToken)
     {
         postInitCallback = () => { };
 #if Platforms_Windows
@@ -51,7 +55,7 @@ class Program
         PlatformServices.LocationService = new LocationService();
 #endif
 #if Platforms_Linux
-        var windowPlatformService = new WindowPlatformService();
+        var windowPlatformService = new WindowPlatformService(stopToken);
         PlatformServices.WindowPlatformService = windowPlatformService;
         postInitCallback = () =>
         {
