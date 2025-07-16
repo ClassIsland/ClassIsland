@@ -588,19 +588,17 @@ public partial class MainWindow : Window
 
     private void UpdateWindowLayer()
     {
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
-            ViewModel.Settings.WindowLayer == 1);
         switch (ViewModel.Settings.WindowLayer)
         {
             case 0: // bottom
-                PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost,
-                    !ViewModel.IsNotificationWindowExplicitShowed);
                 Topmost = ViewModel.IsNotificationWindowExplicitShowed;
                 break;
             case 1:
                 Topmost = true;
                 break;
         }
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
+            ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
     }
 
     private void ButtonSettings_OnClick(object sender, EventArgs e)
