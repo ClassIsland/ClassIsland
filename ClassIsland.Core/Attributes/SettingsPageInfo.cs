@@ -16,6 +16,8 @@ public class SettingsPageInfo : Attribute
     public bool HideDefault { get; } = false;
     public bool UseFullWidth { get; internal set; } = false;
 
+    public bool HidePageTitle { get; internal set; } = false;
+
     public SettingsPageCategory Category { get; } = SettingsPageCategory.External;
     
     public SettingsPageInfo(string id, string name, SettingsPageCategory category=SettingsPageCategory.External)

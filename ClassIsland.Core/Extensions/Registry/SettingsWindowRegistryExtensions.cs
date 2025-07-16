@@ -35,6 +35,10 @@ public static class SettingsWindowRegistryExtensions
         {
             info.UseFullWidth = true;
         }
+        if (type.GetCustomAttributes(false).OfType<HidePageTitleAttribute>().Any())
+        {
+            info.HidePageTitle = true;
+        }
         services.AddKeyedTransient<SettingsPageBase, T>(info.Id);
         SettingsWindowRegistryService.Registered.Add(info);
         return services;

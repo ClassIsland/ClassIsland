@@ -85,7 +85,9 @@
                                        VerticalAlignment="Center"
                                        Margin="4 0 0 0"/>
                         </Grid>
-                        <Grid Grid.Row="0" Margin="12 16 18 0" Classes.FullWidth="{Binding ViewModel.SelectedPageInfo.UseFullWidth}"
+                        <Grid Grid.Row="0" Margin="12 16 18 0" 
+                              IsVisible="{Binding !ViewModel.SelectedPageInfo.HidePageTitle}"
+                              Classes.FullWidth="{Binding ViewModel.SelectedPageInfo.UseFullWidth}"
                               x:Name="TitleContainer">
                             <Grid.Styles>
                                 <Style Selector="Grid#TitleContainer:not(.FullWidth)">
