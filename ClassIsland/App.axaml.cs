@@ -836,7 +836,7 @@ public partial class App : AppBase, IAppHost
         Logger.LogInformation("初始化应用。");
         
         IThemeService.IsTransientDisabled = Settings.AnimationLevel < 1;
-        IThemeService.IsWaitForTransientDisabled = Settings.AnimationLevel >= 1;
+        IThemeService.IsWaitForTransientDisabled = Settings.IsWaitForTransientDisabled;
         IThemeService.AnimationLevel = Settings.AnimationLevel;
         GetService<ISplashService>().CurrentProgress = 30;
         GetService<ISplashService>().SetDetailedStatus("正在启动挂起检查服务");
