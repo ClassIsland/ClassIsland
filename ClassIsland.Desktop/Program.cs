@@ -57,6 +57,7 @@ class Program
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);
         PlatformServices.WindowPlatformService = windowPlatformService;
+        PlatformServices.DesktopService = new DesktopService();
         postInitCallback = () =>
         {
             windowPlatformService.PostInit();

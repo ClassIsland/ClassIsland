@@ -17,4 +17,14 @@ public static class PlatformServices
     /// 平台定位服务
     /// </summary>
     public static ILocationService LocationService { get; internal set; } = new LocationServiceStub();
+    
+    /// <summary>
+    /// 平台桌面服务
+    /// </summary>
+    public static IDesktopService DesktopService { get; internal set; } = new DesktopServiceStub();
+
+    /// <summary>
+    /// 当前平台是否支持定位服务
+    /// </summary>
+    public static bool IsLocationSupported => LocationService is not LocationServiceStub;
 }

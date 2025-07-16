@@ -147,7 +147,13 @@
                                           Click="MenuItemDebugWindowRule_OnClick"/>
                                 <MenuItem Icon="{controls:FluentIcon &#xE15F;}"
                                           Header="创建快捷换课图标"
-                                          Click="MenuItemAddClassSwapShortcut_OnClick"/>
+                                          Click="MenuItemAddClassSwapShortcut_OnClick">
+                                    <MenuItem.IsVisible>
+                                        <OnPlatform Default="False">
+                                            <On Options="Windows" Content="True"/>
+                                        </OnPlatform>
+                                    </MenuItem.IsVisible>
+                                </MenuItem>
                                 <Separator/>
                                 <MenuItem Icon="{controls:FluentIcon &#xE2B4;}" Header="集控选项…"
                                           Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"

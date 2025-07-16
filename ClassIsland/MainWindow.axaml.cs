@@ -521,8 +521,7 @@ public partial class MainWindow : Window
     private async void UpdateTheme()
     {
         UpdateWindowPos();
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow 
-                                                                      | WindowFeatures.SkipManagement, true);
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, true);
         if (!ViewModel.Settings.IsMouseClickingEnabled)
         {
             PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);
@@ -589,9 +588,13 @@ public partial class MainWindow : Window
 
     private void UpdateWindowLayer()
     {
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
+            ViewModel.Settings.WindowLayer == 1);
         switch (ViewModel.Settings.WindowLayer)
         {
             case 0: // bottom
+                PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost,
+                    !ViewModel.IsNotificationWindowExplicitShowed);
                 Topmost = ViewModel.IsNotificationWindowExplicitShowed;
                 break;
             case 1:

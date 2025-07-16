@@ -11,8 +11,8 @@
     <PropertyGroup>
         <AppId>cn.classisland.app</AppId>
         <AppName>ClassIsland</AppName>
-        <DebControlDescription>全功能、可定制、跨平台的大屏课表显示工具。</DebControlDescription>
-        <DesktopComment>全功能、可定制、跨平台的大屏课表显示工具。</DesktopComment>
+        <DebControlDescription>dev_全功能、可定制、跨平台的大屏课表显示工具。</DebControlDescription>
+        <DesktopComment>dev_全功能、可定制、跨平台的大屏课表显示工具。</DesktopComment>
         <DebControlHomepage>https://classisland.tech</DebControlHomepage>
         <DebControlSection>utils</DebControlSection>
         <SvgIconFile>Assets\AppLogo.svg</SvgIconFile>
