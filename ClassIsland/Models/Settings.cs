@@ -496,38 +496,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [JsonIgnore]
-    public bool IsAutoStartEnabled
-    {
-        get => File.Exists(
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk"));
-        set
-        {
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
-            try
-            {
-                if (value)
-                {
-                    using var shortcut = new WindowsShortcut
-                    {
-                        Path = Environment.ProcessPath,
-                        WorkingDirectory = Environment.CurrentDirectory
-                    };
-                    shortcut.Save(path);
-                }
-                else
-                {
-                    File.Delete(path);
-                }
-                OnPropertyChanged();
-            }
-            catch (Exception ex)
-            {
-                App.GetService<ILogger<Settings>>().LogError(ex, "无法创建开机自启动快捷方式。");
-            }
-        }
-    }
-
     public bool IsReportingEnabled
     {
         get => _isReportingEnabled;
@@ -558,23 +526,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             catch (Exception ex)
             {
                 IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 Sentry 启用状态。");
-            }
-        }
-    }
-
-    [JsonIgnore]
-    public bool IsUrlProtocolRegistered
-    {
-        get => UriProtocolRegisterHelper.IsRegistered();
-        set
-        {
-            if (value)
-            {
-                UriProtocolRegisterHelper.Register();
-            }
-            else
-            {
-                UriProtocolRegisterHelper.UnRegister();
             }
         }
     }

@@ -53,6 +53,7 @@ class Program
 #if Platforms_Windows
         PlatformServices.WindowPlatformService = new WindowPlatformService();
         PlatformServices.LocationService = new LocationService();
+        PlatformServices.DesktopService = new DesktopService();
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);

@@ -166,7 +166,7 @@
                                                 Content="使用原始输入"
                                                 Description="启用后，ClassIsland 将使用 RawInput 接收鼠标/触屏事件，而不是轮询获取光标位置。这允许应用辨别鼠标和触摸事件，并分别做出更适宜的响应。如果出现不兼容的问题，请尝试禁用此选项。">
                     <controls1:SettingsExpanderItem.IsVisible>
-                        <OnPlatform Default="{Binding ViewModel.SettingsService.Settings.UseRawInput}">
+                        <OnPlatform Default="False">
                             <On Options="Windows" Content="True"/>
                         </OnPlatform>
                     </controls1:SettingsExpanderItem.IsVisible>

@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
+      <ProjectReference Include="..\..\ClassIsland\ClassIsland.csproj" />
       <ProjectReference Include="..\..\vendors\System.Device.Location\System.Device.Location.csproj" />
     </ItemGroup>
 
@@ -17,6 +18,11 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Helpers\" />
     </ItemGroup>
     <Import Project="../../Global.props"/>
 </Project>

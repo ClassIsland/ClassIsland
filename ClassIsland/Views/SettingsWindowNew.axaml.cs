@@ -38,6 +38,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using ClassIsland.Platforms.Abstraction;
 using DynamicData;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Data;
@@ -570,7 +571,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private async void MenuItemAddClassSwapShortcut_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!SettingsService.Settings.IsUrlProtocolRegistered)
+        if (!PlatformServices.DesktopService.IsUrlSchemeRegistered)
         {
             var urlDialogResult = await new TaskDialog()
             {
@@ -591,7 +592,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 return;
             }
 
-            SettingsService.Settings.IsUrlProtocolRegistered = true;
+            PlatformServices.DesktopService.IsUrlSchemeRegistered = true;
         }
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
         {
