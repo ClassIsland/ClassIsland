@@ -167,7 +167,26 @@
                                     </Grid.ColumnDefinitions>
                                     <Border Grid.ColumnSpan="2"
                                             Background="{DynamicResource MaterialDesignBody}" Opacity="0.1"
-                                            CornerRadius="11" />
+                                            CornerRadius="11">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Value="蓝色" Binding="{Binding Level}">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource WeatherAlertLevelBlueBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Value="黄色" Binding="{Binding Level}">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource WeatherAlertLevelYellowBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Value="橙色" Binding="{Binding Level}">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource WeatherAlertLevelOrangeBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Value="红色" Binding="{Binding Level}">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource WeatherAlertLevelRedBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
                                     <Image Grid.Column="0"
                                            Source="{Binding Images[icon]}" Height="22" />
                                     <TextBlock Grid.Column="1" Margin="4 0 8 0"
