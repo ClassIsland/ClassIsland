@@ -1,16 +1,18 @@
-#if false
 using System;
 using System.Diagnostics;
 using System.Windows;
+using Avalonia.Interactivity;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
 using Microsoft.Extensions.Logging;
-using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.SettingPages;
@@ -18,23 +20,16 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// StorageSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("storage", "存储", MaterialIconKind.DatabaseOutline, MaterialIconKind.Database, SettingsPageCategory.Internal)]
-public partial class StorageSettingsPage
+[SettingsPageInfo("storage", "存储", "\ue6b7", "\ue6b6", SettingsPageCategory.Internal)]
+public partial class StorageSettingsPage : SettingsPageBase
 {
-    public StorageSettingsViewModel ViewModel { get; } = new();
+    public StorageSettingsViewModel ViewModel { get; } = IAppHost.GetService<StorageSettingsViewModel>();
 
-    public FileFolderService FileFolderService { get; }
-    public SettingsService SettingsService { get; }
-    public ILogger<StorageSettingsPage> Logger { get; }
-    public IManagementService ManagementService { get; }
+    public ILogger<StorageSettingsPage> Logger => ViewModel.Logger;
 
-    public StorageSettingsPage(FileFolderService fileFolderService, SettingsService settingsService, ILogger<StorageSettingsPage> logger, IManagementService managementService)
+    public StorageSettingsPage()
     {
-        FileFolderService = fileFolderService;
-        SettingsService = settingsService;
-        Logger = logger;
-        ManagementService = managementService;
-        SettingsService.Settings.BackupFilesSize = Helpers.StorageSizeHelper.FormatSize(Helpers.StorageSizeHelper.GetFolderStorageSize(Path.Combine(App.AppRootFolderPath, "Backups/")));
+        ViewModel.SettingsService.Settings.BackupFilesSize = Helpers.StorageSizeHelper.FormatSize(Helpers.StorageSizeHelper.GetFolderStorageSize(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups/")));
         DataContext = this;
         InitializeComponent();
     }
@@ -47,11 +42,12 @@ public partial class StorageSettingsPage
         {
             await FileFolderService.CreateBackupAsync();
             ViewModel.IsBackupFinished = true;
+            this.ShowSuccessToast("备份成功。");
         }
         catch (Exception exception)
         {
             Logger.LogError(exception, "无法创建备份。");
-            CommonDialog.ShowError($"无法创建备份：{exception.Message}");
+            this.ShowErrorToast("无法创建备份", exception);
         }
         ViewModel.IsBackingUp = false;
     }
@@ -62,24 +58,23 @@ public partial class StorageSettingsPage
         {
             Process.Start(new ProcessStartInfo()
             {
-                FileName = System.IO.Path.GetFullPath(Path.Combine(App.AppRootFolderPath, "Backups")),
+                FileName = System.IO.Path.GetFullPath(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups")),
                 UseShellExecute = true
             });
         }
         catch (Exception exception)
         {
             Logger.LogError(exception, "无法浏览备份文件。");
-            CommonDialog.ShowError($"无法浏览备份文件：{exception.Message}");
+            this.ShowErrorToast($"无法浏览备份文件", exception);
         }
     }
 
     private async void ButtonRecoverBackup_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
+        if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
         {
             return;
         }
         AppBase.Current.Restart(["-m", "-r"]);
     }
 }
-#endif

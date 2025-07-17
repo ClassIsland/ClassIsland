@@ -1,31 +1,23 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Services;
+using ClassIsland.Views.SettingPages;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class StorageSettingsViewModel : ObservableRecipient
+public partial class StorageSettingsViewModel(
+    FileFolderService fileFolderService,
+    SettingsService settingsService,
+    ILogger<StorageSettingsPage> logger,
+    IManagementService managementService) : ObservableRecipient
 {
-    private bool _isBackingUp = false;
-    private bool _isBackupFinished = false;
-
-    public bool IsBackingUp
-    {
-        get => _isBackingUp;
-        set
-        {
-            if (value == _isBackingUp) return;
-            _isBackingUp = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsBackupFinished
-    {
-        get => _isBackupFinished;
-        set
-        {
-            if (value == _isBackupFinished) return;
-            _isBackupFinished = value;
-            OnPropertyChanged();
-        }
-    }
+    public FileFolderService FileFolderService { get; } = fileFolderService;
+    public SettingsService SettingsService { get; } = settingsService;
+    public ILogger<StorageSettingsPage> Logger { get; } = logger;
+    public IManagementService ManagementService { get; } = managementService;
+    
+    [ObservableProperty] private bool _isBackingUp = false;
+    [ObservableProperty] private bool _isBackupFinished = false;
+    
 }
