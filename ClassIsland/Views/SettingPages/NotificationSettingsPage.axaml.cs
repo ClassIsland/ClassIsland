@@ -37,10 +37,7 @@ using GptSoVitsSpeechSettingsList = ObservableCollection<GptSoVitsSpeechSettings
 public partial class NotificationSettingsPage : SettingsPageBase
 {
     public static readonly List<FilePickerFileType> AudioFileTypes = [
-        new FilePickerFileType("音频文件")
-        {
-            MimeTypes = ["audio"]
-        }
+        
     ];
 
     public NotificationSettingsViewModel ViewModel { get; } = IAppHost.GetService<NotificationSettingsViewModel>();

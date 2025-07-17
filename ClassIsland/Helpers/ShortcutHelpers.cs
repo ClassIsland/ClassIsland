@@ -12,7 +12,7 @@ public static class ShortcutHelpers
     public static async Task CreateClassSwapShortcutAsync(string path="")
     {
         var desktopPath = string.IsNullOrEmpty(path) ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "快捷换课.url") : path;
-        var stream = AssetLoader.Open(new Uri("/Assets/ShortcutTemplates/ClassSwap.url", UriKind.Relative));
+        var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/ClassSwap.url"));
 
         await File.WriteAllTextAsync(desktopPath, await new StreamReader(stream).ReadToEndAsync());
     }

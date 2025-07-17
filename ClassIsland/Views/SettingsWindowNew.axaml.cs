@@ -38,6 +38,8 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Platforms.Abstraction;
 using DynamicData;
 using FluentAvalonia.UI.Controls;
@@ -495,6 +497,12 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private async void MenuItemExportDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
     {
+        var message = new ToastMessage()
+        {
+            Message = "正在导出诊断信息…",
+            CanUserClose = false,
+            AutoClose = false,
+        };
         try
         {
             var r = await new TaskDialog()
@@ -511,29 +519,40 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                     }
                 }
             }.ShowAsync();
-            
-            if (r != (object)true)
+
+            if (!Equals(r, true))
                 return;
 
+            this.ShowToast(message);
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
             {
                 Title = "导出诊断数据",
                 SuggestedStartLocation =
                     await StorageProvider.TryGetFolderFromPathAsync(
                         Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
-                FileTypeChoices = [
-                    new FilePickerFileType("压缩文件(*.zip)|*.zip")
+                FileTypeChoices =
+                [
+                    new FilePickerFileType("压缩文件")
+                    {
+                        Patterns = ["*.zip"]
+                    }
                 ]
             });
             if (file == null)
             {
                 return;
             }
+
             await DiagnosticService.ExportDiagnosticData(file.Path.LocalPath);
+            this.ShowSuccessToast($"已导出诊断信息到 {file.Path.LocalPath}。");
         }
         catch (Exception exception)
         {
-            await CommonTaskDialogs.ShowDialog("无法导出诊断信息", $"{exception.Message}", this);
+            this.ShowErrorToast("无法导出诊断信息", exception);
+        }
+        finally
+        {
+            message.Close();
         }
     }
 
@@ -587,7 +606,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                     }
                 }
             }.ShowAsync();
-            if (urlDialogResult != (object)true)
+            if (!Equals(urlDialogResult, true))
             {
                 return;
             }
@@ -601,7 +620,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 await StorageProvider.TryGetFolderFromPathAsync(
                     Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
             FileTypeChoices = [
-                new FilePickerFileType("快捷方式（*.url）|*.url")
+                new FilePickerFileType("快捷方式")
+                {
+                    Patterns = ["*.url"]
+                }
             ]
         });
         if (file == null)
@@ -609,7 +631,15 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             return;
         }
 
-        await ShortcutHelpers.CreateClassSwapShortcutAsync(file.Path.LocalPath);
+        try
+        {
+            await ShortcutHelpers.CreateClassSwapShortcutAsync(file.Path.LocalPath);
+            this.ShowSuccessToast($"已创建快捷换课图标到 {file.Path.LocalPath}。");
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法创建快捷换课图标", exception);
+        }
         
     }
 
