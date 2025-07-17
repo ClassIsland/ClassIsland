@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -28,5 +29,10 @@ public partial class WelcomePage : UserControl, IWelcomePage
             Severity = InfoBarSeverity.Warning
         });
         WelcomeWindow.WelcomeNavigateForwardCommand.Execute(this);
+    }
+
+    private void Intro_OnAnimationEnd(object? sender, EventArgs e)
+    {
+        ContentRoot.Classes.Add("anim");
     }
 }

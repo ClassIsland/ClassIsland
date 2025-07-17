@@ -15,6 +15,7 @@ namespace ClassIsland.Controls;
 
 public partial class OobeIntroAnimationControl : UserControl
 {
+    public event EventHandler? AnimationEnd;
     
     public OobeIntroAnimationControl()
     {
@@ -57,6 +58,7 @@ public partial class OobeIntroAnimationControl : UserControl
             await last;
         }
         Texts.Classes.Add("anim");
+        AnimationEnd?.Invoke(this, EventArgs.Empty);
         
         return;
 

@@ -9,35 +9,9 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.WelcomePages.WelcomePage">
     <UserControl.Styles>
-        <Style Selector="controls1|OobeIntroAnimationControl#Intro">
+        <Style Selector="Grid#ContentRoot.anim">
             <Style.Animations>
-                <Animation Duration="0:0:0.2" Delay="0:0:2.9"
-                           FillMode="Both">
-                    <KeyFrame Cue="0%">
-                        <Setter Property="Opacity" Value="1.0"/>
-                    </KeyFrame>
-                    <KeyFrame Cue="100%">
-                        <Setter Property="Opacity" Value="0.0"/>
-                    </KeyFrame>
-                </Animation>
-            </Style.Animations>
-        </Style>
-        <Style Selector="Grid#ContentRoot">
-            <Style.Animations>
-                <Animation Duration="0:0:0.2" Delay="0:0:2.0"
-                           FillMode="Both">
-                    <KeyFrame Cue="0%">
-                        <Setter Property="Opacity" Value="0.0"/>
-                    </KeyFrame>
-                    <KeyFrame Cue="100%">
-                        <Setter Property="Opacity" Value="1.0"/>
-                    </KeyFrame>
-                </Animation>
-            </Style.Animations>
-        </Style>
-        <Style Selector="StackPanel#TextsMain">
-            <Style.Animations>
-                <Animation Duration="0:0:0.2" Delay="0:0:2.9"
+                <Animation Duration="0:0:0.2"
                            FillMode="Both">
                     <KeyFrame Cue="0%">
                         <Setter Property="Opacity" Value="0.0"/>
@@ -96,6 +70,7 @@
         </Grid>
         
         <!-- Intro -->
-        <controls1:OobeIntroAnimationControl x:Name="Intro"/>
+        <controls1:OobeIntroAnimationControl x:Name="Intro"
+                                             AnimationEnd="Intro_OnAnimationEnd"/>
     </Grid>
 </UserControl>
