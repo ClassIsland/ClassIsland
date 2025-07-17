@@ -122,7 +122,7 @@
                                 Margin="0 -8 -8 -8"
                                 Click="TogglePaneButton_OnClick"
                                 IsVisible="{Binding !#NavigationView.IsPaneToggleButtonVisible}"
-                                MinWidth="40"/>
+                                MinWidth="40" Width="48"/>
                         <Image Margin="12 4"
                                IsHitTestVisible="False"
                                Source="/Assets/AppLogo.png"
@@ -138,7 +138,7 @@
                         </Image>
 
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
-                                   FontSize="12"
+                                   FontSize="12" Margin="0 2 0 0"
                                    IsHitTestVisible="False"
                                    VerticalAlignment="Center">
                             <TextBlock.IsVisible>
