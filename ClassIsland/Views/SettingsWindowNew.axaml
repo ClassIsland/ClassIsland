@@ -136,63 +136,77 @@
                             </TextBlock.IsVisible>
                         </TextBlock>
                     </StackPanel>
-                    <Button Grid.Column="2" Theme="{StaticResource TransparentButton}"
-                            ToolTip.Tip="更多选项…" VerticalAlignment="Center"
-                            HorizontalAlignment="Right">
-                        <commands:FluentIcon Glyph="&#xEBAC;"/>
-                        <Button.Flyout>
-                            <MenuFlyout>
-                                <MenuItem Icon="{controls:FluentIcon &#xE508;}" Header="实验性功能…"
-                                      Click="MenuItemExperimentalSettings_OnClick" />
-                                <MenuItem Icon="{controls:FluentIcon &#xF485;}"
-                                          Header="调试窗口规则…"
-                                          Click="MenuItemDebugWindowRule_OnClick"/>
-                                <MenuItem Icon="{controls:FluentIcon &#xE15F;}"
-                                          Header="创建快捷换课图标"
-                                          Click="MenuItemAddClassSwapShortcut_OnClick">
-                                    <MenuItem.IsVisible>
-                                        <OnPlatform Default="False">
-                                            <On Options="Windows" Content="True"/>
-                                        </OnPlatform>
-                                    </MenuItem.IsVisible>
-                                </MenuItem>
-                                <Separator/>
-                                <MenuItem Icon="{controls:FluentIcon &#xE2B4;}" Header="集控选项…"
-                                          Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                          CommandParameter="classisland://app/settings/management?ci_keepHistory=true">
-                                </MenuItem>
-                                <MenuItem Icon="{controls:FluentIcon &#xE2B6;}" Header="加入管理…"
-                                      IsVisible="{Binding ManagementService.IsManagementEnabled}"
-                                      >
-                                    
-                                </MenuItem>
-                                <MenuItem Icon="{controls:FluentIcon &#xE2B8;}" Header="退出管理…"
-                                          Click="MenuItemExitManagement_OnClick"
-                                          IsVisible="{Binding ManagementService.IsManagementEnabled}">
-                                </MenuItem>
-                                <Separator/>
-                                <MenuItem Icon="{controls:FluentIcon &#xE510;}"
-                                      Header="日志…"
-                                      Click="MenuItemAppLogs_OnClick"/>
-                                <MenuItem Icon="{controls:FluentIcon &#xE601;}"
-                                      Header="导出诊断数据"
-                                      Click="MenuItemExportDiagnosticInfo_OnClick"/>
-                                <MenuItem Icon="{controls:FluentIcon &#xF4C5;}"
-                                          Header="重启到恢复模式"
-                                          Click="MenuItemRestartToRecovery_OnClick"/>
-                                <Separator/>
-                                <MenuItem Icon="{controls:FluentIcon &#xE889;}"
-                                          Header="打开日志目录…"
-                                          Click="MenuItemOpenLogFolder_OnClick"/>
-                                <MenuItem Icon="{controls:FluentIcon &#xE881;}"
-                                          Header="打开数据目录…"
-                                          Click="MenuItemOpenDataFolder_OnClick"/>
-                                <MenuItem Icon="{controls:FluentIcon &#xE885;}"
-                                          Header="打开应用目录…"
-                                          Click="MenuItemOpenAppFolder_OnClick"/>
-                            </MenuFlyout>
-                        </Button.Flyout>
-                    </Button>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Spacing="8">
+                        <Button Classes="accent"
+                                ToolTip.Tip="部分设置需要重启才能生效，点击以重启应用。"
+                                IsVisible="{Binding ViewModel.IsRequestedRestart}"
+                                Click="ButtonRestartApp_OnClick">
+                            <commands:IconText Glyph="&#xE0BD;" Text="需要重启"/>
+                        </Button>
+                        <TextBlock Text="{x:Static commands:AppBase.AppVersion}"
+                                   VerticalAlignment="Center" ToolTip.Tip="应用版本"
+                                   Margin="0 2 0 0"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                        <Button Theme="{StaticResource TransparentButton}"
+                                ToolTip.Tip="更多选项…" VerticalAlignment="Center"
+                                HorizontalAlignment="Right">
+                            <commands:FluentIcon Glyph="&#xEBAC;" />
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem Icon="{controls:FluentIcon &#xE508;}" Header="实验性功能…"
+                                              Click="MenuItemExperimentalSettings_OnClick" />
+                                    <MenuItem Icon="{controls:FluentIcon &#xF485;}"
+                                              Header="调试窗口规则…"
+                                              Click="MenuItemDebugWindowRule_OnClick" />
+                                    <MenuItem Icon="{controls:FluentIcon &#xE15F;}"
+                                              Header="创建快捷换课图标"
+                                              Click="MenuItemAddClassSwapShortcut_OnClick">
+                                        <MenuItem.IsVisible>
+                                            <OnPlatform Default="False">
+                                                <On Options="Windows" Content="True" />
+                                            </OnPlatform>
+                                        </MenuItem.IsVisible>
+                                    </MenuItem>
+                                    <Separator />
+                                    <MenuItem Icon="{controls:FluentIcon &#xE2B4;}" Header="集控选项…"
+                                              Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                              CommandParameter="classisland://app/settings/management?ci_keepHistory=true">
+                                    </MenuItem>
+                                    <MenuItem Icon="{controls:FluentIcon &#xE2B6;}" Header="加入管理…"
+                                              IsVisible="{Binding ManagementService.IsManagementEnabled}">
+
+                                    </MenuItem>
+                                    <MenuItem Icon="{controls:FluentIcon &#xE2B8;}" Header="退出管理…"
+                                              Click="MenuItemExitManagement_OnClick"
+                                              IsVisible="{Binding ManagementService.IsManagementEnabled}">
+                                    </MenuItem>
+                                    <Separator />
+                                    <MenuItem Icon="{controls:FluentIcon &#xE510;}"
+                                              Header="日志…"
+                                              Click="MenuItemAppLogs_OnClick" />
+                                    <MenuItem Icon="{controls:FluentIcon &#xE601;}"
+                                              Header="导出诊断数据"
+                                              Click="MenuItemExportDiagnosticInfo_OnClick" />
+                                    <MenuItem Icon="{controls:FluentIcon &#xF4C5;}"
+                                              Header="重启到恢复模式"
+                                              Click="MenuItemRestartToRecovery_OnClick" />
+                                    <Separator />
+                                    <MenuItem Icon="{controls:FluentIcon &#xE889;}"
+                                              Header="打开日志目录…"
+                                              Click="MenuItemOpenLogFolder_OnClick" />
+                                    <MenuItem Icon="{controls:FluentIcon &#xE881;}"
+                                              Header="打开数据目录…"
+                                              Click="MenuItemOpenDataFolder_OnClick" />
+                                    <MenuItem Icon="{controls:FluentIcon &#xE885;}"
+                                              Header="打开应用目录…"
+                                              Click="MenuItemOpenAppFolder_OnClick" />
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
                     <!-- 金刚键空位 -->
                     <Border Grid.Column="3" Width="140">
                         <Border.IsVisible>
