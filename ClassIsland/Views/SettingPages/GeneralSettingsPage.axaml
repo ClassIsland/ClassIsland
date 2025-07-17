@@ -80,9 +80,6 @@
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4">
                         <CalendarDatePicker SelectedDate="{Binding ViewModel.SettingsService.Settings.SingleWeekStartTime}"
-                                            Padding="3,5,0,3"
-                                            VerticalContentAlignment="Center"
-                                            HorizontalContentAlignment="Center"
                                             Width="120"/>
                         <Button Theme="{StaticResource TransparentButton}"
                                 Classes="accent"

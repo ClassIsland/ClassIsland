@@ -33,6 +33,14 @@
     <StyleInclude Source="/Controls/Thing.axaml"/>
 
     <!-- Add Styles Here -->
+    
+    <!--日历选择器文字偏移修复-->
+    <Style Selector="CalendarDatePicker">
+        <Setter Property="Padding" Value="3,5,0,3"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    
     <Style Selector="StackPanel.settings-container">
         <Setter Property="Margin" Value="12 12 18 12" />
         <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}" />
