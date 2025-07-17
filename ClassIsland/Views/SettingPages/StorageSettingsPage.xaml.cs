@@ -6,6 +6,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using Microsoft.Extensions.Logging;
@@ -33,6 +34,7 @@ public partial class StorageSettingsPage
         SettingsService = settingsService;
         Logger = logger;
         ManagementService = managementService;
+        SettingsService.Settings.BackupFilesSize = Helpers.StorageSizeHelper.FormatSize(Helpers.StorageSizeHelper.GetFolderStorageSize(Path.Combine(App.AppRootFolderPath, "Backups/")));
         DataContext = this;
         InitializeComponent();
     }

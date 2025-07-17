@@ -45,7 +45,7 @@
     </controls:ComponentBase.Styles>
     <controls:ComponentBase.Resources>
         <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
-        <converters:StringToDoubleConverter x:Key="StringToDoubleConverter" />
+        <converters:WindDirectionConverter x:Key="StringToDoubleConverter" />
     </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -87,7 +87,7 @@
                         <ci:FluentIcon Height="22" Width="22"
                                                  Margin="6 0 0 0"
                                                  FontSize="22"
-                                                 Glyph="&#xE0CA;"
+                                                 Glyph="&#xE196;"
                                                  RenderTransformOrigin="{x:Static RelativePoint.Center}"
                                                  VerticalAlignment="Center">
                             <ci:FluentIcon.RenderTransform>

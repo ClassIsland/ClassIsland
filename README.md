@@ -1,8 +1,11 @@
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
 
+> [!caution]
+> 目前我们正在进行备案更变，2025/6/25-2025/7/29 期间 ClassIsland 所有网络服务可能无法访问，届时可能无法正常下载/更新应用和插件。感谢大家的理解和支持。
+
 <div align="center">
 
-# <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28"/> ClassIsland
+# <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28" width="28"/> ClassIsland
 
 <!-- ![软件截图 - 主界面](https://github.com/ClassIsland/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3) -->
 
@@ -153,14 +156,14 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 ## 开发
 
-![Alt](https://repobeats.axiom.co/api/embed/ca0697cbbfea1d5ab5350fb86d7056e803552b2a.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/ace0a0609166a47b16a58bb7d2d0d5e20968d4d1.svg "Repobeats analytics image")
 
 本项目目前开发状态：
 
-| 分支 | 开发状态 | 信息 |
+| 分支 | 开发状态 | 状态 |
 | --- | --- | --- |
 | [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) | 正在此分支上维护版本 [1.7 - RyouYamada](https://github.com/ClassIsland/ClassIsland/milestone/8)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=master&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/master)](https://www.codefactor.io/repository/github/classisland/classisland/overview/master) |
-| [`develop/v2/early`](https://github.com/ClassIsland/ClassIsland/tree/develop/v2/early) | 正在此分支上早期开发版本 [2.0 - Kiana](https://github.com/ClassIsland/ClassIsland/milestone/9)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=develop%2Fv2%2Fearly)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)  |
+| [`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev) | 正在此分支上早期开发版本 [2.0 - Khaslana](https://github.com/ClassIsland/ClassIsland/milestone/9)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=dev)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml)  |
 
 要在本地编译应用，请参考文档[配置 ClassIsland 本体开发环境](https://docs.classisland.tech/dev/get-started/devlopment.html)。
 
@@ -169,7 +172,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-27-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-29-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -216,6 +219,10 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/wjj-8283"><img src="https://avatars.githubusercontent.com/u/82750345?v=4?s=100" width="100px;" alt="wjj"/><br /><sub><b>wjj</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=wjj-8283" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/diann34"><img src="https://avatars.githubusercontent.com/u/95152427?v=4?s=100" width="100px;" alt="Nikoa"/><br /><sub><b>Nikoa</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=diann34" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Griseo-bh3rd"><img src="https://avatars.githubusercontent.com/u/121101691?v=4?s=100" width="100px;" alt="【繁星】格蕾修"/><br /><sub><b>【繁星】格蕾修</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Griseo-bh3rd" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sjzyQwQ"><img src="https://avatars.githubusercontent.com/u/68456645?v=4?s=100" width="100px;" alt="Misaka10072"/><br /><sub><b>Misaka10072</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=sjzyQwQ" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/HuYihe2008"><img src="https://avatars.githubusercontent.com/u/76118866?v=4?s=100" width="100px;" alt="JamYido"/><br /><sub><b>JamYido</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=HuYihe2008" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
