@@ -21,7 +21,7 @@
                            x:Name="LabelControl"/>
                     
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{TemplateBinding Prefix, Mode=OneWay}"
-                               Margin="0 0 2 0"
+                               Margin="0 0 6 0"
                                VerticalAlignment="Center"
                                x:Name="PrefixTextBlock"/>
                     <ContentPresenter Grid.Row="1" Grid.Column="1"
@@ -31,7 +31,7 @@
                                       Content="{TemplateBinding Content}"
                                       VerticalAlignment="Center" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="{TemplateBinding Suffix, Mode=OneWay}"
-                               Margin="2 0 0 0"
+                               Margin="6 0 0 0"
                                VerticalAlignment="Center"
                                x:Name="SuffixTextBlock"/>
                 </Grid>
