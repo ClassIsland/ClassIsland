@@ -672,7 +672,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddSettingsPage<UpdatesSettingsPage>();
                 // services.AddSettingsPage<AutomationSettingsPage>();
                 // services.AddSettingsPage<StorageSettingsPage>();
-                // services.AddSettingsPage<PrivacySettingsPage>();
+                services.AddSettingsPage<PrivacySettingsPage>();
                 services.AddSettingsPage<PluginsSettingsPage>();
                 // services.AddSettingsPage<ThemesSettingsPage>();
                 services.AddSettingsPage<TestSettingsPage>();

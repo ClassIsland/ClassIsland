@@ -154,6 +154,7 @@
                                 Spacing="8">
                         <Button Classes="accent"
                                 ToolTip.Tip="部分设置需要重启才能生效，点击以重启应用。"
+                                Margin="0 -8" VerticalAlignment="Center"
                                 IsVisible="{Binding ViewModel.IsRequestedRestart}"
                                 Click="ButtonRestartApp_OnClick">
                             <commands:IconText Glyph="&#xE0BD;" Text="需要重启"/>

@@ -1,7 +1,8 @@
-#if false
 using System;
 using System.ComponentModel;
 using System.Windows;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
@@ -13,7 +14,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// PrivacySettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("privacy", "隐私", MaterialIconKind.ShieldAccountOutline, MaterialIconKind.ShieldAccount, SettingsPageCategory.Internal)]
+[SettingsPageInfo("privacy", "隐私", "\uef65", "\uef64", SettingsPageCategory.Internal)]
 public partial class PrivacySettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }
@@ -38,10 +39,9 @@ public partial class PrivacySettingsPage : SettingsPageBase
     {
         new DocumentReaderWindow()
         {
-            Source = new Uri("/Assets/Documents/Privacy_.md", UriKind.RelativeOrAbsolute),
-            Owner = Window.GetWindow(this),
+            Source = new Uri("avares://ClassIsland/Assets/Documents/Privacy_.md"),
             Title = "ClassIsland 隐私政策"
-        }.ShowDialog();
+        }.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
     }
 
     private void PrivacySettingsPage_OnLoaded(object sender, RoutedEventArgs e)
@@ -54,4 +54,4 @@ public partial class PrivacySettingsPage : SettingsPageBase
         SettingsService.Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
     }
 }
-#endif
+
