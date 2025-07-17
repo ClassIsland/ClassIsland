@@ -90,6 +90,17 @@
         <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
         <!-- <Setter Property="Command" Value="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"/> -->
     </Style>
+    
+    <Style Selector="TextBlock.CodeBlock">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        </Style.Setters>
+    </Style>
+    <Style Selector="avalonia|CCode">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        </Style.Setters>
+    </Style>
     <Style Selector="avalonia|CHyperlink:pointerover">
         <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorSecondaryBrush}"/>
         <!-- <Setter Property="Command" Value="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"/> -->
