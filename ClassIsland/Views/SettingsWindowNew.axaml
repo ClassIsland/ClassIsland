@@ -56,8 +56,12 @@
                   MenuItems="{Binding ViewModel.NavigationViewItems, Mode=OneWay}"
                   ItemInvoked="NavigationView_OnItemInvoked"
                   BackRequested="NavigationView_OnBackRequested"
-                  OpenPaneLength="283"
-                  >
+                  OpenPaneLength="283">
+                <controls3:NavigationView.Styles>
+                    <Style Selector="controls3|NavigationView#NavigationView:minimal">
+                        <Setter Property="IsPaneToggleButtonVisible" Value="False"/>
+                    </Style>
+                </controls3:NavigationView.Styles>
                 <!-- 页面内容 -->
                 <SplitView IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
                            PanePlacement="Right"
@@ -111,6 +115,14 @@
                 <Grid Margin="0 0 0 0" ColumnDefinitions="Auto,Auto,*,Auto">
                     <StackPanel Orientation="Horizontal" Grid.Column="1"
                                 VerticalAlignment="Center">
+                        <Button Name="TogglePaneButton"
+                                Grid.Column=""
+                                Theme="{StaticResource PaneToggleButtonStyle}"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Margin="0 -8 -8 -8"
+                                Click="TogglePaneButton_OnClick"
+                                IsVisible="{Binding !#NavigationView.IsPaneToggleButtonVisible}"
+                                MinWidth="40"/>
                         <Image Margin="12 4"
                                IsHitTestVisible="False"
                                Source="/Assets/AppLogo.png"

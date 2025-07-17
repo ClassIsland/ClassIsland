@@ -685,4 +685,9 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         NavigationFrame.GoBack();
     }
+
+    private void TogglePaneButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        NavigationView.IsPaneOpen = !NavigationView.IsPaneOpen;
+    }
 }
