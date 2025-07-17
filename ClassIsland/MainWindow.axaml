@@ -197,7 +197,8 @@
                                                                  HorizontalAlignment="Stretch"
                                                                  Settings="{Binding}"
                                                                  IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
-                                            <ItemsControl ItemsSource="{Binding Children}">
+                                            <ItemsControl ItemsSource="{Binding Children}"
+                                                          ClipToBounds="False">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
                                                         <StackPanel Orientation="Horizontal" />
