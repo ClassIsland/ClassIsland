@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Avalonia.Platform.Storage;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Shared;
@@ -23,4 +24,12 @@ public interface IPluginService
     /// 已加载的插件信息列表。
     /// </summary>
     public static IReadOnlyList<PluginInfo> LoadedPlugins => LoadedPluginsInternal;
+
+    /// <summary>
+    /// 插件包文件类型
+    /// </summary>
+    public static FilePickerFileType PluginPackageFileType { get; } = new("ClassIsland 插件包")
+    {
+        Patterns = ["*.cipx"]
+    };
 }

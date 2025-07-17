@@ -11,7 +11,6 @@
         <system:Double x:Key="MarkdownImageMaxWidth">700</system:Double>
     </Styles.Resources>
     <Style Selector="avalonia|CTextBlock">
-        <Setter Property="LineHeight" Value="24"/>
         <Setter Property="TextElement.FontWeight" Value="Regular"/>
         <Setter Property="TextElement.FontSize" Value="16"/>
         <Setter Property="TextAlignment" Value="Left"/>
@@ -96,7 +95,4 @@
         <!-- <Setter Property="Command" Value="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"/> -->
     </Style>
     
-    <Style Selector="mdxaml|MarkdownScrollViewer /template/ ScrollViewer">
-        <Setter Property="Padding" Value="12"/>
-    </Style>
 </Styles>

@@ -89,6 +89,13 @@
         </Style>
         <Setter Property="MinHeight" Value="28"/>
     </Style>
+    <Style Selector="TabStrip.compact TabStripItem">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="TextElement.FontSize" Value="14"/>
+            <Setter Property="TextElement.FontWeight" Value="Medium"/>
+        </Style>
+        <Setter Property="MinHeight" Value="28"/>
+    </Style>
     <Style Selector="Expander.compact">
         <Setter Property="Padding" Value="8"/>
         <Style Selector="^ /template/ ToggleButton#ExpanderHeader">

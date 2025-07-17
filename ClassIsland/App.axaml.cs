@@ -646,6 +646,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<NotificationSettingsViewModel>();
                 services.AddTransient<WindowSettingsViewModel>();
                 services.AddTransient<WeatherSettingsViewModel>();
+                services.AddTransient<PluginsSettingsPageViewModel>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 // services.AddTransient<SplashWindowBase, SplashWindow>();
@@ -672,7 +673,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddSettingsPage<AutomationSettingsPage>();
                 // services.AddSettingsPage<StorageSettingsPage>();
                 // services.AddSettingsPage<PrivacySettingsPage>();
-                // services.AddSettingsPage<PluginsSettingsPage>();
+                services.AddSettingsPage<PluginsSettingsPage>();
                 // services.AddSettingsPage<ThemesSettingsPage>();
                 services.AddSettingsPage<TestSettingsPage>();
                 // services.AddSettingsPage<DebugPage>();

@@ -40,21 +40,11 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
         { "moeyy", "https://github.moeyy.xyz/https://github.com" }
     };
 
-private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
     private bool _isLoadingPluginSource = false;
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
 
-    public ObservableDictionary<string, PluginInfo> MergedPlugins
-    {
-        get => _mergedPlugins;
-        set
-        {
-            if (Equals(value, _mergedPlugins)) return;
-            _mergedPlugins = value;
-            OnPropertyChanged();
-        }
-    }
+    public ObservableDictionary<string, PluginInfo> MergedPlugins { get; } = new();
 
     public bool IsLoadingPluginSource
     {
