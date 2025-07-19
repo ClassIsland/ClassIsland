@@ -1,0 +1,36 @@
+﻿<ci:TriggerSettingsControlBase x:TypeArguments="triggers:PreTimePointTriggerSettings"
+                               x:Class="ClassIsland.Controls.TriggerSettingsControls.PreTimePointTriggerSettingsControl"
+                               xmlns="https://github.com/avaloniaui"
+                               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                               xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                               xmlns:local="clr-namespace:ClassIsland.Controls.TriggerSettingsControls"
+                               xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                               xmlns:triggers="clr-namespace:ClassIsland.Models.Automation.Triggers"
+                               xmlns:converters="clr-namespace:ClassIsland.Converters"
+                               xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                               mc:Ignorable="d" 
+                               d:DesignHeight="450" d:DesignWidth="800">
+    <ci:TriggerSettingsControlBase.Resources>
+        <converters:TimeStateToClassConverter x:Key="TimeStateToClassConverter" />
+    </ci:TriggerSettingsControlBase.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:PreTimePointTriggerSettingsControl}}"
+          ColumnDefinitions="*,*">
+        <ComboBox Grid.Column="0" VerticalAlignment="Center" x:Name="StateComboBox" SelectionChanged="StateComboBox_SelectionChanged">
+            <ComboBoxItem>
+                上课
+            </ComboBoxItem>
+            <ComboBoxItem>
+                课间休息
+            </ComboBoxItem>
+            <ComboBoxItem>
+                放学
+            </ComboBoxItem>
+        </ComboBox>
+        <TextBlock Grid.Column="1" Margin="4 0 0 0">
+            <Run Text="之前" BaselineAlignment="Center"/>
+            <TextBox Text="{Binding Settings.TimeSeconds, Converter={StaticResource IntToStringConverter}}"/>
+            <Run Text="秒" BaselineAlignment="Center"/>
+        </TextBlock>
+    </Grid>
+</ci:TriggerSettingsControlBase>

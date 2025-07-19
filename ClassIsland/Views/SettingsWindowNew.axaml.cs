@@ -74,7 +74,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     public SettingsService SettingsService { get; }
 
-    public static readonly string StartupSettingsPage = "general";
+    public static readonly string StartupSettingsPage = "automation";
 
     private IComponentsService ComponentsService { get; }
 

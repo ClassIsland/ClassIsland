@@ -20,12 +20,11 @@ public class AppLogger(AppLogService appLogService, string categoryName) : ILogg
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        List<string> scopes = [];
-        if (ScopeStack.Value != null)
-        {
-            scopes.AddRange(ScopeStack.Value.ToArray().Select(scope => (scope.ToString() ?? "") + " => "));
-        }
-        var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? "\n" + exception : "");
+        var snapshot = ScopeStack.Value?.ToArray() ?? [];
+        var scopes = snapshot.Select(scope => (scope?.ToString() ?? "") + " => ").ToList();
+    
+        var message = string.Join("", scopes) + formatter(state, exception)
+                                              + (exception != null ? "\n" + exception : "");
         AppLogService.AddLog(new LogEntry()
         {
             LogLevel = logLevel,

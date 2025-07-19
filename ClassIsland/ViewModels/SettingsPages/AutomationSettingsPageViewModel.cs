@@ -1,43 +1,48 @@
-﻿using ClassIsland.Core.Models;
+﻿using System.Reactive;
+using Avalonia.Threading;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models;
+using ClassIsland.Services;
+using ClassIsland.Shared.Helpers;
+using ClassIsland.Shared.Models.Action;
+using ClassIsland.Views.SettingPages;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
+using ReactiveUI;
+
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class AutomationSettingsViewModel : ObservableRecipient
+public partial class AutomationSettingsViewModel
+    : ObservableRecipient
 {
+    public IRulesetService RulesetService { get; }
+    public SettingsService SettingsService { get; }
+    public IAutomationService AutomationService { get; }
+    public IActionService ActionService { get; } 
+    public ILogger<AutomationSettingsPage> Logger { get; } 
+
+    public AutomationSettingsViewModel(
+        IRulesetService rulesetService,
+        SettingsService settingsService,
+        ILogger<AutomationSettingsPage> logger,
+        IAutomationService automationService,
+        IActionService actionService)
+    {
+        RulesetService = rulesetService;
+        SettingsService = settingsService;
+        Logger = logger;
+        AutomationService = automationService;
+        ActionService = actionService;
+    }
+
+    [ObservableProperty]
     bool _isPanelOpened = false;
-    public bool IsPanelOpened
-    {
-        get => _isPanelOpened;
-        set
-        {
-            if (value == _isPanelOpened) return;
-            _isPanelOpened = value;
-            OnPropertyChanged();
-        }
-    }
+    
 
+    [ObservableProperty]
     Workflow? _selectedAutomation;
-    public Workflow? SelectedAutomation
-    {
-        get => _selectedAutomation;
-        set
-        {
-            if (value == _selectedAutomation) return;
-            _selectedAutomation = value;
-            OnPropertyChanged();
-        }
-    }
 
 
+    [ObservableProperty]
     string _createProfileName = "";
-    public string CreateProfileName
-    {
-        get => _createProfileName;
-        set
-        {
-            if (value == _createProfileName) return;
-            _createProfileName = value;
-            OnPropertyChanged();
-        }
-    }
 }

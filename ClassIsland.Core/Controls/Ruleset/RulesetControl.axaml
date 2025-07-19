@@ -42,22 +42,21 @@
             <TextBlock Text="规则集" Classes="Headline5"
                            Margin="0 0 0 8" IsVisible="{Binding ShowTitle}"/>
             <WrapPanel Orientation="Horizontal">
-                <controls:Field Label="模式">
-                    <ComboBox
-                        SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}">
-                        <ComboBoxItem>
-                            <controls:IconText Glyph="&#xE590;" Text="当以下任意条件组满足时" />
-                        </ComboBoxItem>
-                        <ComboBoxItem>
-                            <controls:IconText Glyph="&#xE591;" Text="当以下所有条件组满足时" />
-                        </ComboBoxItem>
-                    </ComboBox>
-                </controls:Field>
+                <ComboBox
+                    SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}">
+                    <ComboBoxItem>
+                        <controls:IconText Glyph="&#xE590;" Text="当以下任意条件组满足时" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <controls:IconText Glyph="&#xE591;" Text="当以下所有条件组满足时" />
+                    </ComboBoxItem>
+                </ComboBox>
                 <CheckBox Content="反转" IsChecked="{Binding Ruleset.IsReversed}"/>
                 <Button Theme="{StaticResource TransparentButton}"
                         Classes="accent"
                         Click="ButtonAddRule_OnClick">
-                    <controls:IconText Glyph="&#xE00D;" Text="添加组"/>
+                    <controls:IconText Glyph="&#xE00D;" Text="添加组"
+                                       Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
                 </Button>
                 <Ellipse Grid.Column="1" Width="8" Height="8" 
                          Margin="4 0 4 0"
@@ -81,23 +80,22 @@
                             <WrapPanel Grid.Row="0" Orientation="Horizontal"
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Center">
-                                <controls:Field Label="模式">
-                                    <ComboBox
-                                        SelectedIndex="{Binding Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}">
-                                        <ComboBoxItem>
-                                            <controls:IconText Glyph="&#xE590;" Text="当以下任意条件组满足时" />
-                                        </ComboBoxItem>
-                                        <ComboBoxItem>
-                                            <controls:IconText Glyph="&#xE591;" Text="当以下所有条件组满足时" />
-                                        </ComboBoxItem>
-                                    </ComboBox>
-                                </controls:Field>
+                                <ComboBox
+                                    SelectedIndex="{Binding Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}">
+                                    <ComboBoxItem>
+                                        <controls:IconText Glyph="&#xE590;" Text="当以下任意条件组满足时" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <controls:IconText Glyph="&#xE591;" Text="当以下所有条件组满足时" />
+                                    </ComboBoxItem>
+                                </ComboBox>
                                 <CheckBox Content="反转" IsChecked="{Binding IsReversed}"/>
                                 <Button Theme="{StaticResource TransparentButton}"
                                         Classes="accent"
                                         Command="{Binding AddRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                         CommandParameter="{Binding}">
-                                    <controls:IconText Glyph="&#xE00D;" Text="规则"/>
+                                    <controls:IconText Glyph="&#xE00D;" Text="规则"
+                                                       Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
                                 </Button>
                             </WrapPanel>
 

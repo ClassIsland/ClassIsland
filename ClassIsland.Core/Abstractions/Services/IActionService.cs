@@ -14,7 +14,7 @@ public interface IActionService
     /// <summary>
     /// 已注册的行动。
     /// </summary>
-    static ObservableDictionary<string, ActionRegistryInfo> Actions { get; } = [];
+    static Dictionary<string, ActionRegistryInfo> Actions { get; } = [];
 
     /// <summary>
     /// 注册指定行动的处理方法。

@@ -64,7 +64,7 @@ public class ActionService : IActionService
     public void RegisterActionHandler(string id, ActionRegistryInfo.HandleDelegate handler)
     {
         // TODO: stub
-        return;
+        // return;
         if (!IActionService.Actions.TryGetValue(id, out var actionRegistryInfo))
             throw new KeyNotFoundException($"找不到行动 {id}。");
 
@@ -74,7 +74,7 @@ public class ActionService : IActionService
 
     public void RegisterRevertHandler(string id, ActionRegistryInfo.HandleDelegate handler)
     {
-        return;
+        // return;
         if (!IActionService.Actions.TryGetValue(id, out var actionRegistryInfo))
             throw new KeyNotFoundException($"找不到行动 {id}。");
 

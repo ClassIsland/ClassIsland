@@ -1,0 +1,72 @@
+﻿<ci:ActionSettingsControlBase x:Class="ClassIsland.Controls.ActionSettingsControls.NotificationActionSettingsControl"
+                              x:TypeArguments="actions:NotificationActionSettings"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:actions="clr-namespace:ClassIsland.Models.Actions"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ci:ActionSettingsControlBase.Resources>
+        <DataTemplate x:Key="NSettingsDrawer">
+            <ScrollViewer Margin="-16"
+                          d:DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NotificationActionSettingsControl}}">
+                <StackPanel Width="400" Margin="4">
+                    <TextBlock Text="提醒内容设置"
+                               Theme="{StaticResource TitleTextBlockStyle}"
+                               Margin="0 0 0 8"/>
+                    <TextBox Text="{Binding Settings.Mask}"
+                             Watermark="遮罩内容" UseFloatingWatermark="True"
+                             Margin="0 0 0 8"/>
+                    <TextBox Text="{Binding Settings.MaskDurationSeconds, Converter={StaticResource IntToStringConverter}}"
+                             Watermark="遮罩持续时长（秒）" UseFloatingWatermark="True"
+                             Margin="0 0 0 8"/>
+                    <TextBox Text="{Binding Settings.Content}"
+                             Watermark="正文内容" UseFloatingWatermark="True"
+                             Margin="0 0 0 8"/>
+                    <TextBox Text="{Binding Settings.ContentDurationSeconds, Converter={StaticResource IntToStringConverter}}"
+                             Watermark="正文持续时长（秒）"
+                             Margin="0 0 0 8"/>
+                    <CheckBox Content="启用遮罩语音" IsChecked="{Binding Settings.IsMaskSpeechEnabled}"
+                              Margin="0 0 0 6"/>
+                    <CheckBox Content="启用正文语音" IsChecked="{Binding Settings.IsContentSpeechEnabled}"
+                              Margin="0 0 0 6"/>
+                    <Separator Margin="0 0 0 4"/>
+                    <CheckBox Content="启用高级设置" IsChecked="{Binding Settings.IsAdvancedSettingsEnabled}"
+                              Margin="0 0 0 6"/>
+                    <StackPanel IsVisible="{Binding Settings.IsAdvancedSettingsEnabled}">
+                        <CheckBox Content="置顶提醒" IsChecked="{Binding Settings.IsTopmostEnabled}"
+                                  Margin="0 0 0 6"/>
+                        <CheckBox Content="启用提醒特效" IsChecked="{Binding Settings.IsEffectEnabled}"
+                                  Margin="0 0 0 6"/>
+                        <CheckBox Content="启用提醒音效" IsChecked="{Binding Settings.IsSoundEffectEnabled}"
+                                  Margin="0 0 0 6"/>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox Text="{Binding Settings.CustomSoundEffectPath}"
+                                     Grid.Column="0"
+                                     Watermark="自定义提醒音效路径（留空将使用默认音效）"
+                                     UseFloatingWatermark="True"/>
+                            <controls:FileBrowserButton Grid.Column="1" CurrentPath="{Binding Settings.CustomSoundEffectPath, Mode=TwoWay}"
+                                                        Theme="{StaticResource TransparentButton}" Content="{ci:FluentIcon &#xE88D;}"
+                                                        VerticalAlignment="Stretch"/>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </DataTemplate>
+    </ci:ActionSettingsControlBase.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:NotificationActionSettingsControl}}">
+        <Button Theme="{StaticResource TransparentButton}"
+                HorizontalAlignment="Left"
+                Click="ButtonShowSettings_OnClick">
+            <ci:IconText Glyph="&#xEF27;" Text="提醒设置…"
+                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+        </Button>
+
+    </Grid>
+</ci:ActionSettingsControlBase>

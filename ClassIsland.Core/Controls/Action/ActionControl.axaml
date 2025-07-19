@@ -19,26 +19,19 @@
             </Interaction.Behaviors>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border HorizontalAlignment="Stretch">
-                        <Grid Margin="0 4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto" Margin="0 4">
+                            
                             <Button Grid.Column="0"
                                     Theme="{StaticResource TransparentButton}" Classes="circle"
                                     ToolTip.Tip="删除"
                                     Command="{Binding RemoveActionCommand, RelativeSource={RelativeSource AncestorType=local:ActionControl}}"
                                     CommandParameter="{Binding}"
                                     Margin="0 0 2 0"
-                                    IsVisible="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ActionControl}}">
-                                <Button.Content>
-                                    <controls2:SymbolIcon Symbol="Remove"/>
-                                </Button.Content>
+                                    IsVisible="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ActionControl}}"
+                                    Content="{controls:FluentIcon &#xE61D;}">
                             </Button>
-                            <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1"
-                                  ColumnDefinitions="Auto,*,Auto,Auto">
-                                <ComboBox SelectedValue="{Binding Id}"
+                                <ComboBox Grid.Column="1" SelectedValue="{Binding Id}"
                                           SelectedValueBinding="{Binding Key}"
                                           ItemsSource="{x:Static services:IActionService.Actions}"
                                           MinWidth="100">
@@ -52,17 +45,18 @@
                                 <local:ActionSettingsControlPresenter Action="{Binding Mode=OneWay}"
                                                                       ActionId="{Binding Id, Mode=OneWay}"
                                                                       Margin="4 0 0 0"
-                                                                      Grid.Column="1" />
+                                                                      Grid.Column="2" />
                                 <ProgressBar IsIndeterminate="True"
                                              Value="0"
-                                             Grid.Column="2" IsVisible="{Binding IsWorking}">
+                                             Grid.Column="3" IsVisible="{Binding IsWorking}">
                                 </ProgressBar>
                                 
-                                <Button Grid.Column="2" 
+                                <Button Grid.Column="4" 
                                         ToolTip.Tip="上次运行此行动时出现错误，点击查看错误信息。"
                                         Theme="{StaticResource TransparentButton}"
                                         Classes="circle"
-                                        Foreground="Red">
+                                        Foreground="Red"
+                                        IsVisible="{Binding Exception, Converter={x:Static ObjectConverters.IsNotNull}}">
                                     <controls2:FontIcon Glyph="&#xE783;"/>
                                     <Button.Flyout>
                                         <Flyout>
@@ -84,16 +78,16 @@
                                         </Flyout>
                                     </Button.Flyout>
                                 </Button>
-                            </Grid>
                         </Grid>
-                    </Border>
+                    </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
         <Button Theme="{StaticResource TransparentButton}" Classes="primary"
                 Click="ButtonAddAction_OnClick"
                 HorizontalAlignment="Left">
-            <controls:IconText Symbol="Add" Text="添加行动" />
+            <controls:IconText Glyph="&#xE00D;" Text="添加行动" 
+                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
         </Button>
     </StackPanel>
 </UserControl>
