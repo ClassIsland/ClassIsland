@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
-    <PackageReference Include="Lucide.Avalonia" Version="0.1.37"/>
     <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
       <PrivateAssets>all</PrivateAssets>
@@ -67,6 +66,10 @@
       <SubType>Code</SubType>
     </Compile>
     <AvaloniaResource Include="Assets/**"/>
+    <Compile Update="Controls\LucideIcon.axaml.cs">
+      <DependentUpon>LucideIcon.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
