@@ -4,9 +4,13 @@ using ClassIsland.Platform.Windows.Services;
 #if Platforms_Linux
 using ClassIsland.Platforms.Linux.Services;
 #endif
+#if Platforms_MacOs
+using ClassIsland.Platforms.MacOs.Services;
+#endif
 using Avalonia;
 using ClassIsland.Extensions;
 using ClassIsland.Platforms.Abstraction;
+
 
 
 namespace ClassIsland.Desktop;
@@ -63,6 +67,10 @@ class Program
         {
             windowPlatformService.PostInit();
         };
+#endif
+#if Platforms_MacOs
+        PlatformServices.WindowPlatformService = new WindowPlatformServices();
+
 #endif
     }
 }

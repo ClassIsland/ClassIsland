@@ -1,0 +1,20 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="7">
+            <item index="0" class="java.lang.String" itemvalue="onnxruntime-gpu" />
+            <item index="1" class="java.lang.String" itemvalue="onnxruntime" />
+            <item index="2" class="java.lang.String" itemvalue="onnxslim" />
+            <item index="3" class="java.lang.String" itemvalue="gradio" />
+            <item index="4" class="java.lang.String" itemvalue="safetensors" />
+            <item index="5" class="java.lang.String" itemvalue="onnx" />
+            <item index="6" class="java.lang.String" itemvalue="pycocotools" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
