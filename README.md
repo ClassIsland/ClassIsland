@@ -1,8 +1,8 @@
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
-
+<!--
 > [!caution]
 > 目前我们正在进行备案更变，2025/6/25-2025/7/29 期间 ClassIsland 所有网络服务可能无法访问，届时可能无法正常下载/更新应用和插件。感谢大家的理解和支持。
-
+-->
 <div align="center">
 
 # <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28" width="28"/> ClassIsland
