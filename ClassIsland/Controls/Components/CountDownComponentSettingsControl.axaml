@@ -31,7 +31,7 @@
                 <controls3:SettingsExpander.Footer>
                     <CalendarDatePicker
                         SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
-                        Width="180" />
+                        Width="120" />
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
             

@@ -125,6 +125,11 @@ public abstract class AppBase : Application, IAppHost
     public static FontFamily FluentIconsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable");
 
     /// <summary>
+    /// Lucide Icons 字体
+    /// </summary>
+    public static FontFamily LucideIconsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#lucide");
+    
+    /// <summary>
     /// 虚根窗口
     /// </summary>
     public Window PhonyRootWindow = null!;

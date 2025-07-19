@@ -82,7 +82,7 @@
                                 <TextBlock Text="当剩余时间不足" VerticalAlignment="Center"
                                            Opacity="0.75"/>
                                 <TextBox Text="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Converter={StaticResource IntToStringConverter}}"
-                                         MinWidth="75" Margin="3 0 0 0" TextAlignment="Center"/>
+                                         MinWidth="75" Margin="6 0 6 0" TextAlignment="Center"/>
                                 <TextBlock Text="秒" VerticalAlignment="Center"
                                            Opacity="0.75"/>
                             </StackPanel>

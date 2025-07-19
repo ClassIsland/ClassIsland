@@ -66,6 +66,10 @@
       <SubType>Code</SubType>
     </Compile>
     <AvaloniaResource Include="Assets/**"/>
+    <Compile Update="Controls\LucideIcon.axaml.cs">
+      <DependentUpon>LucideIcon.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

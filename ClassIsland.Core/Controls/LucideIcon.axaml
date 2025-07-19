@@ -1,0 +1,11 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls">
+    <Design.PreviewWith>
+        <controls:LucideIcon />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|LucideIcon">
+        <Setter Property="FontFamily" Value="{StaticResource LucideIcons}"/>
+    </Style>
+</Styles>

@@ -40,6 +40,7 @@
     
     <!-- IconFonts -->
     <FontFamily x:Key="FluentIcons">avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable</FontFamily>
+    <FontFamily x:Key="LucideIcons">avares://ClassIsland.Core/Assets/Fonts/#lucide</FontFamily>
     
     <!-- DataTemplates -->
     <DataTemplate DataType="system:Boolean" x:Key="SwitcherTemplate">

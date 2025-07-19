@@ -91,8 +91,10 @@
                                 Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
                                 TickFrequency="5"
                                 Classes="auto-tooltip"
+                                VerticalAlignment="Center"
                                 IsSnapToTickEnabled="True"/>
                         <TextBox Text="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={StaticResource IntToStringConverter}}"
+                                 Margin="6,0,0,0"
                                  Width="50"/>
                     </StackPanel>
                 </controls2:SettingsExpander.Footer>
