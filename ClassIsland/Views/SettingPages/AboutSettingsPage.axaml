@@ -273,7 +273,7 @@
                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                             CommandParameter="https://docs.classisland.tech"/>
                                     <Button Theme="{StaticResource TransparentButton}"
-                                            Content="{commands:LucideIcon &#xE0EA;, FontSize=20}"
+                                            Content="{commands:LucideIcon &#xE0EA;, FontSize=16}"
                                             ToolTip.Tip="GitHub"
                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                             CommandParameter="https://github.com/ClassIsland/ClassIsland"/>
