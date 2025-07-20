@@ -1850,7 +1850,7 @@
                                             <ci:StickerControl ImageSource="/Assets/HoYoStickers/藿藿_好痛.png" Width="78" 
                                                                PackIconKind="ClockCheckOutline"
                                                                Margin="0 0 0 8"
-                                                                StickerToolTip="霍霍_好痛"/>
+                                                                StickerToolTip="藿藿_好痛"/>
                                             <TextBlock Text="您还没有创建时间点。点击上方工具栏新建时间点按钮以新建时间点。"
                                                        TextAlignment="Center"
                                                        VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
