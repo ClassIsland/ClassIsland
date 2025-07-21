@@ -64,6 +64,10 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
+      
+      - name: Install Macos workload
+        if: ${{ matrix.os == 'macos' }}
+        run: dotnet workload install macos
         
       - uses: little-core-labs/get-git-tag@v3.0.1
         id: tagName
