@@ -1105,7 +1105,7 @@ public partial class App : AppBase, IAppHost
         {
             return;
         }
-        Dispatcher.UIThread.Invoke(async () =>
+        _ = Dispatcher.UIThread.InvokeAsync(async () =>
         {
             CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Stopping;
             Logger?.LogInformation("正在停止应用");

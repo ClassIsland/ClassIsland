@@ -35,6 +35,7 @@
         Loaded="MainWindow_OnLoaded"
         SizeToContent="Height"
         X11Properties.WmClass="classisland_main"
+        Closing="MainWindow_OnClosing"
         ShowActivated="False">
     <NativeMenu.Menu>
         <NativeMenu>
