@@ -39,8 +39,9 @@
         <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Platforms_MacOs)'=='true'">
-        <TargetFramework>$(BaseFramework)-macos15</TargetFramework>
+        <TargetFramework>$(BaseFramework)-macos</TargetFramework>
         <DefineConstants>$(DefineConstants);Platforms_MacOs</DefineConstants>
+        <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Platforms_Windows)'=='true' And ('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX')">
         <OutputType>WinExe</OutputType>

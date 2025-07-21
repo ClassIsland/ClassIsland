@@ -21,7 +21,7 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
         get;
     } = new()
     {
-        Icon = new WindowIcon("Assets/AppLogo.png"),
+        // fixme: 重新加上 icon
         ToolTipText = "ClassIsland"
     };
 

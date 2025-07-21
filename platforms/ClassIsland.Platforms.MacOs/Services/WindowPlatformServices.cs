@@ -1,42 +1,77 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
+using ClassIsland.Core.Controls;
 using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
+using AppKit;
+using ClassIsland.Core;
+using Foundation;
+using ObjCRuntime;
 
 namespace ClassIsland.Platforms.MacOs.Services;
 
 public class WindowPlatformServices : IWindowPlatformService
 {
+    private bool _isMacosFxxked = false;
+    
+    public WindowPlatformServices()
+    {
+        
+        
+    }
+    
     public void SetWindowFeature(TopLevel toplevel, WindowFeatures features, bool state)
     {
-        var win = NSApplication.SharedApplication.WindowWithWindowNumber(toplevel.TryGetPlatformHandle()!.Handle);
+        try
+        {
+            var platformHandle = toplevel.TryGetPlatformHandle();
+            var handlePtr = (platformHandle as IMacOSTopLevelPlatformHandle)?.NSWindow ?? IntPtr.Zero;
+            if (handlePtr == nint.Zero)
+            {
+                return;
+            }
+            var win = Runtime.GetNSObject(handlePtr) as NSWindow;
+            if (win == null)
+            {
+                return;
+            }
+
+            if ((features & WindowFeatures.Transparent) > 0)
+            {
+                win.IgnoresMouseEvents = state;
+            }
+            if ((features & WindowFeatures.Bottommost) > 0)
+            {
+
+            }
+            if ((features & WindowFeatures.Topmost) > 0)
+            {
+
+            }
+            if ((features & WindowFeatures.Private) > 0)
+            {
+
+            }
+            if ((features & WindowFeatures.ToolWindow) > 0 && toplevel is Window window)
+            {
+
+            }
+            if ((features & WindowFeatures.SkipManagement) > 0)
+            {
+
+            }
         
-        
-        if ((features & WindowFeatures.Transparent) > 0)
-        {
-            win.IgnoresMouseEvents = state;
         }
-        if ((features & WindowFeatures.Bottommost) > 0)
+        catch (Exception e)
         {
-            
-        }
-        if ((features & WindowFeatures.Topmost) > 0)
-        {
-            
-        }
-        if ((features & WindowFeatures.Private) > 0)
-        {
-            
-        }
-        if ((features & WindowFeatures.ToolWindow) > 0 && toplevel is Window window)
-        {
-            
-        }
-        if ((features & WindowFeatures.SkipManagement) > 0)
-        {
-            
+            if (_isMacosFxxked)
+            {
+                return;
+            }
+            _isMacosFxxked = true;
+            _ = CommonTaskDialogs.ShowDialog("Fuck macOS Platform Error", e.ToString());
         }
     }
 

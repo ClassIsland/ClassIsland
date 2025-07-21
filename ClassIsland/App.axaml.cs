@@ -247,7 +247,9 @@ public partial class App : AppBase, IAppHost
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
             "installer" or "deb" or "appImage" => Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
-            _ => CommonDirectories.AppRootFolderPath
+            _ => System.OperatingSystem.IsMacOS() ? Path.GetFullPath(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")) :
+                CommonDirectories.AppRootFolderPath
         };
 
         if (!Directory.Exists(CommonDirectories.AppRootFolderPath))
@@ -273,7 +275,7 @@ public partial class App : AppBase, IAppHost
         ActivateAppDirectories();
         if (!Design.IsDesignMode)
         {
-            this.EnableHotReload();
+            // this.EnableHotReload();
         }
         AvaloniaXamlLoader.Load(this);
         if (DesktopLifetime != null)
@@ -293,7 +295,7 @@ public partial class App : AppBase, IAppHost
         };
         PhonyRootWindow.Closing += (sender, args) => args.Cancel = true;
         PhonyRootWindow.Show();
-        PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
+        // PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         base.Initialize();
     }
 

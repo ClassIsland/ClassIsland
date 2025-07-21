@@ -7,7 +7,9 @@ using ClassIsland.Platforms.Linux.Services;
 #if Platforms_MacOs
 using ClassIsland.Platforms.MacOs.Services;
 #endif
+using System.Diagnostics;
 using Avalonia;
+using ClassIsland.Core;
 using ClassIsland.Extensions;
 using ClassIsland.Platforms.Abstraction;
 
@@ -40,10 +42,17 @@ class Program
 #if Platforms_Windows
             // .UseDirect2D1()  // 完全用不了，https://github.com/AvaloniaUI/Avalonia/issues/11802
 #endif
-            .LogToHostSink()
-            .StartWithClassicDesktopLifetime(args);
-        
-        return r;
+            .LogToHostSink();
+
+        try
+        {
+            return r.StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception e)
+        {
+            await File.WriteAllTextAsync(e.ToString(), Path.Combine(CommonDirectories.AppRootFolderPath, "crash.txt"));
+            return -1;
+        }
     }
     
     // AppBuilder for designer
@@ -70,7 +79,10 @@ class Program
 #endif
 #if Platforms_MacOs
         PlatformServices.WindowPlatformService = new WindowPlatformServices();
-
+        postInitCallback = () =>
+        {
+            NSApplication.Init();
+        };
 #endif
     }
 }

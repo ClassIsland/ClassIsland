@@ -51,7 +51,7 @@
         <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Platforms_MacOs)'=='true'">
-        <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
+<!--        <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>-->
     </PropertyGroup>
 
     <Target Name="_CreatePackageTypeForDeb" BeforeTargets="CreateDebUOS" DependsOnTargets="Publish">

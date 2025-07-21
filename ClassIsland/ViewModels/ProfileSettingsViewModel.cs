@@ -14,7 +14,6 @@ using ClassIsland.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using DynamicData.Binding;
-using Grpc.Core.Logging;
 using Microsoft.Extensions.Logging;
 
 

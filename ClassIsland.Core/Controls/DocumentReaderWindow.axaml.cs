@@ -13,7 +13,6 @@ using Avalonia.Platform;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Shared;
-using Grpc.Core.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Core.Controls;

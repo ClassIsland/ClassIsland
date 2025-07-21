@@ -62,7 +62,6 @@
         <PackageReference Include="Downloader" Version="3.3.4" />
         <PackageReference Include="EPPlus" Version="7.0.8" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
-        <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
         <PackageReference Include="Grpc.Tools" Version="2.62.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -114,7 +113,7 @@
     </ItemGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
-        <None Include="Assets\AppLogo.png" CopyToOutputDirectory="PreserveNewest"/>
+        <None Include="Assets\AppLogo.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
