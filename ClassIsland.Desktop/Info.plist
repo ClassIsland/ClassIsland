@@ -42,5 +42,7 @@
 	<string>AppIcon</string>
 	<key>CFBundleDisplayName</key>
 	<string>ClassIsland</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>ClassIsland 将申请定位服务权限用于获取当前地理位置，以用于获取准确的天气信息。</string>
 </dict>
 </plist>

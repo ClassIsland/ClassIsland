@@ -80,6 +80,7 @@ class Program
 #if Platforms_MacOs
         var service = new WindowPlatformServices();
         PlatformServices.WindowPlatformService = service;
+        PlatformServices.LocationService = new LocationService();
         postInitCallback = () =>
         {
             service.PostInit();
