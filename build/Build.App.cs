@@ -81,7 +81,7 @@ partial class Build
     Target GenerateAppZipArchive => _ => _
         .Produces(AppPublishArtifactPath)
         .DependsOn(CompileApp)
-        .OnlyWhenDynamic(() => Package != "deb")
+        .OnlyWhenDynamic(() => Package != "deb" && Package != "pkg")
         .Executes(() =>
         {
             AppPublishPath.ZipTo(AppPublishArtifactPath);

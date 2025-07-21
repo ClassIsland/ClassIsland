@@ -59,7 +59,8 @@ partial class Build : NukeBuild
             var osRid = OsName switch
             {
                 "windows" => "win",
-                "linux" => "linux",
+                "linux" => "linux", 
+                "macos" => "osx",
                 _ => throw new InvalidOperationException($"不支持的平台：{OsName}")
             };
             RuntimeIdentifier = $"{osRid}-{Arch}";

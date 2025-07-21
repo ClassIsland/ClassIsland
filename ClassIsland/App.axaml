@@ -5,7 +5,14 @@
          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
          xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
          xmlns:converters="clr-namespace:ClassIsland.Converters"
-         xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia">
+         xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
+         xmlns:enums="clr-namespace:ClassIsland.Core.Enums;assembly=ClassIsland.Core"
+         Name="ClassIsland">
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="关于 ClassIsland…" Click="NativeMenuItemOpenAbout_OnClick"/>
+        </NativeMenu>
+    </NativeMenu.Menu>
     <ci:AppBase.Styles>
         <styling:FluentAvaloniaTheme CustomAccentColor="DodgerBlue"
                                      TextVerticalAlignmentOverrideBehavior="AlwaysEnabled"/>

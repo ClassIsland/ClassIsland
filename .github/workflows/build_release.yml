@@ -23,7 +23,7 @@ on:
 
 jobs:
   build_app:
-    runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || 'windows-latest' }}
+    runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-latest' || 'windows-latest' ) }}
     env:
       build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       artifact_name: out_${{ matrix.package == 'folder' &&  'appBase' || 'app' }}_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -42,7 +42,11 @@ jobs:
             package: deb
           - os: linux
             build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
-      
+        include:
+          - os: macos
+            arch: arm64
+            package: pkg
+            build_type: selfContained
     name: Build_AppBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
       - name: Checkout
@@ -88,6 +92,7 @@ jobs:
             ./out/*.zip
             ./out/*.appx
             ./out/*.deb
+            ./out/*.pkg
             
   build_launcher:
     runs-on: ${{ matrix.os == 'windows' && 'windows-latest' || ( matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') }}

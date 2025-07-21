@@ -10,6 +10,8 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>ClassIsland</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.15</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -18,6 +20,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>XSAppIconAssets</key>
+	<string>Assets/AppLogo.xcassets/AppIcon.appiconset</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>${AuthorCopyright:HtmlEncode}</string>
 	<key>NSMainStoryboardFile</key>
@@ -30,9 +34,13 @@
 	<string></string>
 	<key>LSUIElement</key>
 	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 	<key>CFBundleIconFile</key>
-	<string>AppLogo</string>
+	<string>Assets/AppIcon.icns</string>
 	<key>CFBundleIconName</key>
-	<string>AppLogo</string>
+	<string>AppIcon</string>
+	<key>CFBundleDisplayName</key>
+	<string>ClassIsland</string>
 </dict>
 </plist>

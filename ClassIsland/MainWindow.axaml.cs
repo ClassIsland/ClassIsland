@@ -293,7 +293,8 @@ public partial class MainWindow : Window
         UpdateTheme();
         IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化托盘菜单");
-        TaskBarIconService.MainTaskBarIcon.Menu = this.FindResource("AppMenu") as NativeMenu;
+        var menu = this.FindResource("AppMenu") as NativeMenu;
+        TaskBarIconService.MainTaskBarIcon.Menu = menu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         ViewModel.OverlayRemainTimePercents = 0.5;
         DiagnosticService.EndStartup();

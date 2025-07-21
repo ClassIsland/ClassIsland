@@ -21,7 +21,7 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
         get;
     } = new()
     {
-        // fixme: 重新加上 icon
+        Icon = new WindowIcon(OperatingSystem.IsMacOS() ? "../Resources/Assets/AppLogo.png" : "Assets/AppLogo.png"),
         ToolTipText = "ClassIsland"
     };
 

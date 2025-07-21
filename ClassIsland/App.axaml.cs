@@ -245,7 +245,7 @@ public partial class App : AppBase, IAppHost
         CommonDirectories.AppRootFolderPath = PackagingType switch
         {
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
-            "installer" or "deb" or "appImage" => Path.GetFullPath(Path.Combine(
+            "installer" or "deb" or "appImage" or "pkg" => Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
             _ => System.OperatingSystem.IsMacOS() ? Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")) :
@@ -1161,6 +1161,15 @@ public partial class App : AppBase, IAppHost
             startInfo.ArgumentList.Add(i);
         }
         Process.Start(startInfo);
+    }
+
+    private void NativeMenuItemOpenAbout_OnClick(object? sender, EventArgs e)
+    {
+        if (CurrentLifetime != Core.Enums.ApplicationLifetime.Running || !Settings.IsWelcomeWindowShowed)
+        {
+            return;
+        }
+        IAppHost.GetService<SettingsWindowNew>().Open("about");
     }
 }
 
