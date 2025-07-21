@@ -72,7 +72,7 @@ partial class Build
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
                 .SetProperty("SelfContained", BuildType == "selfContained")
-                .SetProperty("PublishDir", AppPublishPath)
+                .SetProperty("PublishDir", Package == "pkg" ? AppOutputPath : AppPublishPath)
                 .SetProperty("DebUOSOutputFilePath", AppOutputPath / PublishArtifactName + ".deb")
                 .SetProperty("UOSDebVersion", AppVersion)
                 .SetProperty("AutoCreateDebUOSAfterPublish", createDeb));
