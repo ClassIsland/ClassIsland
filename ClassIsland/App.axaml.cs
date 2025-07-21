@@ -1171,6 +1171,11 @@ public partial class App : AppBase, IAppHost
         }
         IAppHost.GetService<SettingsWindowNew>().Open("about");
     }
+
+    private void NativeMenuItemExit_OnClick(object? sender, EventArgs e)
+    {
+        Stop();
+    }
 }
 
 

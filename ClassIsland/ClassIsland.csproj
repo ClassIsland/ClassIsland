@@ -16,6 +16,7 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
         <HotAvaloniaIncludeExtensions>True</HotAvaloniaIncludeExtensions>
         <OutputType>Library</OutputType>
+        <NeutralLanguage>zh-Hans-CN</NeutralLanguage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX'">
     </PropertyGroup>
