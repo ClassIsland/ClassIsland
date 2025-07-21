@@ -6,6 +6,8 @@
         <OutputType>Exe</OutputType>
         <BaseFramework>net8.0</BaseFramework>
         <ApplicationId>cn.classisland.app</ApplicationId>
+        <Company>ClassIsland</Company>
+        <Product>ClassIsland</Product>
     </PropertyGroup>
     
     <!-- UOS DEB Packaging Properties -->
