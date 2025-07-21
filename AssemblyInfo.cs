@@ -9,5 +9,5 @@ using System.Runtime.Versioning;
 // [assembly: SupportedOSPlatform("Windows")]
 #endif
 #if Platforms_MacOs
-[assembly:SupportedOSPlatform("macOS")]
+[assembly:SupportedOSPlatform("macos")]
 #endif

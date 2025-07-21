@@ -7,6 +7,7 @@ using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
 using AppKit;
 using ClassIsland.Core;
+using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
 
@@ -18,21 +19,34 @@ public class WindowPlatformServices : IWindowPlatformService
     
     public WindowPlatformServices()
     {
-        
-        
+    }
+
+    private static NSWindow? GetNsWindowFromAvalonia(TopLevel toplevel)
+    {
+        var platformHandle = toplevel.TryGetPlatformHandle();
+        var handlePtr = (platformHandle as IMacOSTopLevelPlatformHandle)?.NSWindow ?? IntPtr.Zero;
+        if (handlePtr == nint.Zero)
+        {
+            return null;
+        }
+        var win = Runtime.GetNSObject(handlePtr) as NSWindow;
+        return win;
+    }
+
+    private static NSWindow? GetNsWindowFromHandle(nint handle)
+    {
+        if (handle == nint.Zero)
+        {
+            return null;
+        }
+        return Runtime.GetNSObject(handle) as NSWindow;
     }
     
     public void SetWindowFeature(TopLevel toplevel, WindowFeatures features, bool state)
     {
         try
         {
-            var platformHandle = toplevel.TryGetPlatformHandle();
-            var handlePtr = (platformHandle as IMacOSTopLevelPlatformHandle)?.NSWindow ?? IntPtr.Zero;
-            if (handlePtr == nint.Zero)
-            {
-                return;
-            }
-            var win = Runtime.GetNSObject(handlePtr) as NSWindow;
+            var win = GetNsWindowFromAvalonia(toplevel);
             if (win == null)
             {
                 return;
@@ -44,19 +58,26 @@ public class WindowPlatformServices : IWindowPlatformService
             }
             if ((features & WindowFeatures.Bottommost) > 0)
             {
-
+                // Not directly supported on macOS in a simple way.
             }
             if ((features & WindowFeatures.Topmost) > 0)
             {
-
+                win.Level = state ? NSWindowLevel.Floating : NSWindowLevel.Normal;
             }
             if ((features & WindowFeatures.Private) > 0)
             {
-
+                win.SharingType = state ? NSWindowSharingType.None : NSWindowSharingType.ReadOnly;
             }
             if ((features & WindowFeatures.ToolWindow) > 0 && toplevel is Window window)
             {
-
+                if (state)
+                {
+                    win.StyleMask |= NSWindowStyle.Utility;
+                }
+                else
+                {
+                    win.StyleMask &= ~NSWindowStyle.Utility;
+                }
             }
             if ((features & WindowFeatures.SkipManagement) > 0)
             {
@@ -92,32 +113,42 @@ public class WindowPlatformServices : IWindowPlatformService
 
     public string GetWindowTitle(IntPtr handle)
     {
-        return "";
+        var win = GetNsWindowFromHandle(handle);
+        return win?.Title ?? "";
     }
 
     public string GetWindowClassName(IntPtr handle)
     {
-        return "";
+        var win = GetNsWindowFromHandle(handle);
+        return win?.GetType().FullName ?? "";
     }
 
     public bool IsWindowMaximized(IntPtr handle)
     {
-        return false;
+        var win = GetNsWindowFromHandle(handle);
+        return win?.IsZoomed ?? false;
     }
 
     public bool IsWindowMinimized(IntPtr handle)
     {
-        return false;
+        var win = GetNsWindowFromHandle(handle);
+        return win?.IsMiniaturized ?? false;
     }
 
     public bool IsForegroundWindowFullscreen(Screen screen)
     {
-        return false;
+        var foregroundWindow = NSApplication.SharedApplication.KeyWindow;
+        if (foregroundWindow == null)
+        {
+            return false;
+        }
+        return (foregroundWindow.StyleMask & NSWindowStyle.FullScreenWindow) == NSWindowStyle.FullScreenWindow;
     }
 
     public bool IsForegroundWindowMaximized(Screen screen)
     {
-        return false;
+        var foregroundWindow = NSApplication.SharedApplication.KeyWindow;
+        return foregroundWindow?.IsZoomed ?? false;
     }
 
     public Point GetMousePos()
@@ -125,7 +156,7 @@ public class WindowPlatformServices : IWindowPlatformService
         return new Point();
     }
 
-    public IntPtr ForegroundWindowHandle { get; } = nint.Zero;
+    public IntPtr ForegroundWindowHandle => NSApplication.SharedApplication.KeyWindow?.Handle ?? nint.Zero;
 
     public int GetWindowPid(IntPtr handle)
     {
