@@ -78,10 +78,11 @@ class Program
         };
 #endif
 #if Platforms_MacOs
-        PlatformServices.WindowPlatformService = new WindowPlatformServices();
+        var service = new WindowPlatformServices();
+        PlatformServices.WindowPlatformService = service;
         postInitCallback = () =>
         {
-            NSApplication.Init();
+            service.PostInit();
         };
 #endif
     }

@@ -201,7 +201,6 @@
                 </TransformGroup>
             </LayoutTransformControl.LayoutTransform>
             <Grid ClipToBounds="True"
-                  IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}"
                   VerticalAlignment="Top"
                   HorizontalAlignment="Stretch"
                   x:Name="GridRoot"

@@ -60,6 +60,15 @@ namespace ClassIsland.Controls;
     ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out", ":custom-background")]
 public class MainWindowLine : TemplatedControl, INotificationConsumer
 {
+    public static readonly StyledProperty<bool> PointerOverProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
+        nameof(PointerOver));
+
+    public bool PointerOver
+    {
+        get => GetValue(PointerOverProperty);
+        set => SetValue(PointerOverProperty, value);
+    }
+    
     public static readonly StyledProperty<object> ContentProperty = AvaloniaProperty.Register<MainWindowLine, object>(
         nameof(Content));
     
@@ -68,8 +77,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     {
         get => GetValue(ContentProperty);
         set => SetValue(ContentProperty, value);
-    
-}
+    }
 
     public static readonly StyledProperty<string> LastStoryboardNameProperty = AvaloniaProperty.Register<MainWindowLine, string>(
         nameof(LastStoryboardName));
@@ -254,6 +262,8 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         this.GetObservable(IsMouseInProperty)
             .Skip(1)
             .Subscribe(_ => UpdateFadeStatus());
+        this.GetObservable(PointerOverProperty)
+            .Subscribe(_ => UpdateFadeStatus());
         SettingsService.Settings.ObservableForProperty(x => x.IsCustomBackgroundColorEnabled)
             .Subscribe(v => PseudoClasses.Set(":custom-background", v.Value));
         PseudoClasses.Set(":custom-background", SettingsService.Settings.IsCustomBackgroundColorEnabled);
@@ -310,9 +320,10 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
     private void UpdateFadeStatus()
     {
+        var mouseIn = OperatingSystem.IsMacOS() ? PointerOver : IsMouseIn;
         IsLineFaded =
             SettingsService.Settings.IsMouseInFadingEnabled &&
-            (IsMouseIn ^ SettingsService.Settings.IsMouseInFadingReversed);
+            (mouseIn ^ SettingsService.Settings.IsMouseInFadingReversed);
     }
 
     private void MainWindowOnMainWindowAnimationEvent(object? sender, MainWindowAnimationEventArgs e)
