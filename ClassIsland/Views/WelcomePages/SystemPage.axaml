@@ -24,6 +24,11 @@
                    Margin="0 0 0 8"/>
         
         <CheckBox IsChecked="{Binding ViewModel.CreateStartupShortcut}">
+            <CheckBox.IsVisible>
+                <OnPlatform Default="True">
+                    <On Options="macOS" Content="False"/>
+                </OnPlatform>
+            </CheckBox.IsVisible>
             <ci:Thing IconSource="{ci:FluentIconSource &#xE342;}" Header="开机自启"
                       Description="在系统启动时自动运行本应用。" />
         </CheckBox>
@@ -33,11 +38,23 @@
                                       Description="注册*.cip文件格式关联，便于导入档案文件。" />
         </CheckBox>-->
         <CheckBox IsChecked="{Binding ViewModel.CreateDesktopShortcut}">
+            <CheckBox.IsVisible>
+                <OnPlatform Default="True">
+                    <On Options="macOS" Content="False"/>
+                </OnPlatform>
+            </CheckBox.IsVisible>
             <ci:Thing IconSource="{ci:FluentIconSource &#xE62F;}" Header="创建桌面快捷方式"
                       Description="在桌面上添加软件快捷方式。" />
         </CheckBox>
-        <CheckBox IsChecked="{Binding ViewModel.CreateStartMenuShortcut}"
-                  IsVisible="{Binding PackagingType, Source={x:Static ci:AppBase.Current}, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter='deb'}">
+        <CheckBox IsChecked="{Binding ViewModel.CreateStartMenuShortcut}">
+            <CheckBox.IsVisible>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Converter="{x:Static ObjectConverters.NotEqual}" Source="{x:Static ci:AppBase.Current}"
+                             Path="PackagingType" ConverterParameter="deb"/>
+                    <Binding Converter="{x:Static ObjectConverters.NotEqual}" Source="{x:Static ci:AppBase.Current}"
+                             Path="OperatingSystem" ConverterParameter="macos"/>
+                </MultiBinding>
+            </CheckBox.IsVisible>
             <ci:Thing IconSource="{ci:FluentIconSource &#xE064;}"
                       Header="创建开始菜单快捷方式"
                       Description="在开始菜单上添加软件快捷方式。" />

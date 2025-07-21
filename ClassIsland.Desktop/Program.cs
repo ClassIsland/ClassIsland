@@ -34,6 +34,9 @@ class Program
 #if Platforms_Linux
                 app.OperatingSystem = "linux";
 #endif
+#if Platforms_MacOs
+                app.OperatingSystem = "macos";
+#endif
                 app.Initialized += (_, _) => postInit();
                 app.AppStopping += (_, _) => stopTokenSource.Cancel();
                 return app;
