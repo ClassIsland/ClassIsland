@@ -14,12 +14,8 @@
 	<string>10.15</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>1</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets/AppLogo.xcassets/AppIcon.appiconset</string>
 	<key>NSHumanReadableCopyright</key>

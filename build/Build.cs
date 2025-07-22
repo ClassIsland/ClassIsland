@@ -69,6 +69,7 @@ partial class Build : NukeBuild
             AppPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
             LauncherPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
             
+            Log.Information("AppVersion = {AppVersion}", AppVersion);
             Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
             Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
             Log.Information("PublishArtifactName = {PublishArtifactName}", PublishArtifactName);

@@ -75,6 +75,8 @@ partial class Build
                 .SetProperty("PublishDir", Package == "pkg" ? AppOutputPath : AppPublishPath)
                 .SetProperty("DebUOSOutputFilePath", AppOutputPath / PublishArtifactName + ".deb")
                 .SetProperty("UOSDebVersion", AppVersion)
+                .SetProperty("ApplicationVersion", AppVersion)
+                .SetProperty("ApplicationDisplayVersion", AppVersion)
                 .SetProperty("AutoCreateDebUOSAfterPublish", createDeb));
         });
 
