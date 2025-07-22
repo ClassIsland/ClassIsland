@@ -43,6 +43,9 @@
         <BundleResource Include="Assets\AppLogo.xcassets\**" />
         <MauiIcon Include="Assets\AppLogo.svg"/>
     </ItemGroup>
+    <ItemGroup Condition="'$(Platforms_HarmonyOS)'=='true'">
+        <ProjectReference Include="..\platforms\ClassIsland.Platforms.HarmonyOS\ClassIsland.Platforms.HarmonyOS.csproj" />
+    </ItemGroup>
     <ItemGroup Condition="'$(Platforms_Linux)'=='true' and '$(PublishBuilding)'=='true'">
         <PackageReference Include="Packaging.DebUOS" Version="3.17.6"/>
     </ItemGroup>
