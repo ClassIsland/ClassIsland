@@ -255,7 +255,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     private async Task CoreNavigate(SettingsPageInfo? info, Uri? uri = null)
     {
         Logger.LogTrace("pre-开始导航");
-        if (info == null)
+        if (info == null || Equals(info, ViewModel.SelectedPageInfo))
         {
             return;
         }
