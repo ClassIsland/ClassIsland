@@ -273,9 +273,9 @@ public partial class App : AppBase, IAppHost
         Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ".";
         ActivatePackageType();
         ActivateAppDirectories();
-        if (!Design.IsDesignMode)
+        if (!Design.IsDesignMode && !System.OperatingSystem.IsMacOS())
         {
-            // this.EnableHotReload();
+            this.EnableHotReload();
         }
         AvaloniaXamlLoader.Load(this);
         if (DesktopLifetime != null)
@@ -295,7 +295,7 @@ public partial class App : AppBase, IAppHost
         };
         PhonyRootWindow.Closing += (sender, args) => args.Cancel = true;
         PhonyRootWindow.Show();
-        // PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
+        PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         base.Initialize();
     }
 
