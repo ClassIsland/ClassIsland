@@ -36,9 +36,9 @@
     
     <!--日历选择器文字偏移修复-->
     <Style Selector="CalendarDatePicker">
-        <Setter Property="Padding" Value="3,5,0,3"/>
+        <Setter Property="Padding" Value="12,5,0,3"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
     </Style>
     
     <Style Selector="StackPanel.settings-container">
