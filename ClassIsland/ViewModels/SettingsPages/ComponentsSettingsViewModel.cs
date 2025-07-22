@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Components;
@@ -32,6 +33,8 @@ public partial class ComponentsSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _canChildrenNavigateBack = false;
     [ObservableProperty] private ComponentSettings? _selectedRootComponent;
     [ObservableProperty] private MainWindowLineSettings? _selectedMainWindowLineSettings;
+    [ObservableProperty] private Dictionary<MainWindowLineSettings, ListBox> _mainWindowLineListBoxCache = new();
+    [ObservableProperty] private Dictionary<ListBox, MainWindowLineSettings> _mainWindowLineListBoxCacheReversed = new();
 
     public static FuncValueConverter<int, double> ComponentsEditorHeightConverter { get; } = new(x => x * 43.2);
 

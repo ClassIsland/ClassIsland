@@ -76,14 +76,15 @@
                  SelectedItem="{Binding ViewModel.SelectedMainWindowLineSettings}"
                  x:Name="ListBoxMainWindowLines"
                  Margin="-12 0">
-            
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="Auto, *, Auto" Height="40">
                         
                         <ListBox Grid.Column="1" ItemsSource="{Binding Children}" 
-                                 SelectedItem="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.SelectedComponentSettingsMain}"
                                  SelectionChanged="SelectorComponents_OnSelectionChanged"
+                                 Tag="{Binding}"
+                                 AttachedToVisualTree="ListBoxMainWindowLineSettings_OnAttachedToVisualTree"
+                                 DetachedFromVisualTree="ListBoxMainWindowLineSettings_OnDetachedFromVisualTree"
                                  ScrollViewer.HorizontalScrollBarVisibility="Auto">
                             <ListBox.Styles>
                                 <Style Selector="ListBoxItem">

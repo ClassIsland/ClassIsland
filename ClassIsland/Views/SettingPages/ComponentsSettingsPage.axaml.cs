@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +10,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Models;
@@ -23,6 +25,7 @@ using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels.SettingsPages;
 using FluentAvalonia.UI.Controls;
+using ReactiveUI;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -35,11 +38,22 @@ public partial class ComponentsSettingsPage : SettingsPageBase
     {
         InitializeComponent();
         DataContext = this;
+        ViewModel.SettingsService.Settings
+            .ObservableForProperty(x => x.CurrentComponentConfig)
+            .Subscribe(_ => ClearSelectedComponents());
     }
     
     private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
     {
+        ClearSelectedComponents();
         ViewModel.ComponentsService.RefreshConfigs();
+    }
+
+    private void ClearSelectedComponents()
+    {
+        ViewModel.SelectedComponentSettingsMain = null;
+        ViewModel.SelectedComponentSettings = null;
+        UpdateSettingsVisibility();
     }
 
     private async void ButtonCreateConfig_OnClick(object sender, RoutedEventArgs e)
@@ -74,10 +88,19 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ConfigureFileHelper.SaveConfig(path, ClassIsland.Services.ComponentsService.DefaultComponentProfile);
         ViewModel.ComponentsService.RefreshConfigs();
         ViewModel.SettingsService.Settings.CurrentComponentConfig = ViewModel.CreateProfileName;
+        ViewModel.SelectedComponentSettings = null;
+        UpdateSettingsVisibility();
     }
     
     private void SelectorComponents_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings) 
+            return;
+        foreach (var listBox in ViewModel.MainWindowLineListBoxCacheReversed.Keys.Where(x => !Equals(x, sender)))
+        {
+            listBox.SelectedItem = null;
+        }
+        ViewModel.SelectedComponentSettingsMain = settings;
         if (ViewModel.SelectedComponentSettingsMain != null)
         {
             ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsMain;
@@ -250,5 +273,31 @@ public partial class ComponentsSettingsPage : SettingsPageBase
                 firstLine.IsMainLine = true;
             this.ShowToast("已将第一行设置为主要行。");
         }
+    }
+
+    private void ListBoxMainWindowLineSettings_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (sender is not ListBox { Tag: MainWindowLineSettings settings } listBox)
+        {
+            return;
+        }
+
+        ViewModel.MainWindowLineListBoxCache[settings] = listBox;
+        ViewModel.MainWindowLineListBoxCacheReversed[listBox] = settings;
+    }
+
+    private void ListBoxMainWindowLineSettings_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (sender is not ListBox listBox)
+        {
+            return;
+        }
+
+        var settings = ViewModel.MainWindowLineListBoxCacheReversed.GetValueOrDefault(listBox);
+        if (settings != null)
+        {
+            ViewModel.MainWindowLineListBoxCache.Remove(settings);
+        }
+        ViewModel.MainWindowLineListBoxCacheReversed.Remove(listBox);
     }
 }

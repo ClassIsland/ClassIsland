@@ -163,6 +163,11 @@
         <controls:SettingsExpander Header="高级选项"
                                    Description="如果您不清楚这些设置的作用，请不要修改这些设置。"
                                    Classes="no-radius">
+            <controls:SettingsExpander.Styles>
+                <Style Selector="controls|SettingsExpander /template/ Expander#Expander">
+                    <Setter Property="Padding" Value="-1"/>
+                </Style>
+            </controls:SettingsExpander.Styles>
             <controls:SettingsExpanderItem Content="文本分割方法"> 
                 <!-- 文本分割方法 -->
                 <controls:SettingsExpanderItem.Footer >
@@ -178,4 +183,5 @@
             </controls:SettingsExpanderItem>
         </controls:SettingsExpander>
     </StackPanel>
+    <!--State:G6MAAJzJ4+5T0YTJW4I5XDeVesEtfWC7sW8kSuamXGagGQfs3WNggQ04xwmOxjhgZ+Hpkt/U6PcNtL+7eR1Ax+dDz0Kg9H+YfTFe+eIEaINW1LeeAx0NyfIBagOQZS/sAdCI/D//wikKxZ2cUGOoJtR8FpL0b8wxvCRLcbZAtBPikQ==-->
 </ci:SpeechProviderControlBase>
