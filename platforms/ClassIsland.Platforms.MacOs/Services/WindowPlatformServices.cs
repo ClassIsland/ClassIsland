@@ -22,6 +22,7 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
     
     public WindowPlatformServices()
     {
+        NSApplication.Init();
     }
 
     public object? GetWindowFromHandle(nint handle)
@@ -81,7 +82,6 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
 
     public void PostInit()
     {
-        NSApplication.Init();
         _observer = NSWorkspace.Notifications.ObserveDidActivateApplication((sender, args) =>
         {
             var app = args.Application;
