@@ -7,9 +7,6 @@ using ClassIsland.Platforms.Linux.Services;
 #if Platforms_MacOs
 using ClassIsland.Platforms.MacOs.Services;
 #endif
-#if Platforms_HarmonyOS
-using ClassIsland.Platform.HarmonyOS.Services;
-#endif
 using System.Diagnostics;
 using Avalonia;
 using ClassIsland.Core;
@@ -39,9 +36,6 @@ class Program
 #endif
 #if Platforms_MacOs
                 app.OperatingSystem = "macos";
-#endif
-#if Platforms_HarmonyOS
-                app.OperatingSystem = "harmonyos";
 #endif
                 app.Initialized += (_, _) => postInit();
                 app.AppStopping += (_, _) => stopTokenSource.Cancel();
@@ -94,11 +88,6 @@ class Program
         {
             service.PostInit();
         };
-#endif
-#if Platforms_HarmonyOS
-        PlatformServices.WindowPlatformService = new WindowPlatformService();
-        PlatformServices.LocationService = new LocationService();
-        PlatformServices.DesktopService = new DesktopService();
 #endif
     }
 }
