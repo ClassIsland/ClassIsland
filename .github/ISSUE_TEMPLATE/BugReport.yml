@@ -66,22 +66,14 @@ body:
       label: 堆栈跟踪（可选）
       description: 如果在遇到这个 Bug 时发生了崩溃（弹出崩溃提示），或者产生了错误日志，请将产生的堆栈跟踪信息粘贴到此处，便于开发者定位 Bug。
       render: shell
-  - type: input
-    id: app_version
+  - type: textarea
+    id: stacktrace
     attributes:
-      label: 应用版本
-      description: 您当前使用的 ClassIsland 版本号，可以在【应用设置】->【关于 ClassIsland】中查看。
-      placeholder: 如：1.3.2.0-Firefly-e921904(dev)
+      label: 诊断信息
+      description: 在【应用设置】->【关于】->【查看诊断信息】中查看。请完整复制其中的诊断信息并粘贴到下面的文本输入框中，不要做任何更改。
+      render: plaintext
     validations:
       required: true
-  - type: input
-    id: os_version
-    attributes:
-      label: 操作系统版本
-      description: |
-        您当前使用的 Windows 操作系统版本，可以运行 `winver.exe` 查看。
-        如果您不能肯定此 Bug 与操作系统无关，请填写此项。
-      placeholder: 如：10.0.22000.0
   - type: checkboxes
     id: revision
     attributes:
