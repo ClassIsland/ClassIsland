@@ -21,7 +21,9 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification;
+using ClassIsland.Helpers;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -566,22 +568,8 @@ public partial class MainWindow : Window
         ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowLargeFontSize)] =
             SettingsService.Settings.MainWindowLargeFontSize;
 
-        if (ViewModel.Settings.IsCustomForegroundColorEnabled)
-        {
-            var brush = new SolidColorBrush(ViewModel.Settings.CustomForegroundColor);
-            ResourceLoaderBorder.SetValue(ForegroundProperty, brush);
-            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, brush);
-            ResourceLoaderBorder.Resources["TextFillColorPrimaryBrush"] = brush;
-        }
-        else
-        {
-            if (ResourceLoaderBorder.Resources.ContainsKey("TextFillColorPrimaryBrush"))
-            {
-                ResourceLoaderBorder.Resources.Remove("TextFillColorPrimaryBrush");
-            }
-            ResourceLoaderBorder.SetValue(ForegroundProperty, AvaloniaProperty.UnsetValue);
-            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, AvaloniaProperty.UnsetValue);
-        }
+        ControlColorHelper.SetControlForegroundColor(ResourceLoaderBorder, ViewModel.Settings.CustomForegroundColor,
+            ViewModel.Settings.IsCustomForegroundColorEnabled);
 
         App._isCriticalSafeModeEnabled = ViewModel.Settings.IsCriticalSafeMode;
         SizeToContent = SizeToContent.Height;
