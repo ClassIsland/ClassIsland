@@ -263,22 +263,22 @@
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right"
                                             Spacing="2">
                                     <Button Theme="{StaticResource TransparentButton}"
-                                            Content="{controls1:FluentIcon &#xE905;, 20}"
+                                            Content="{controls1:FluentIcon &#xE905;, FontSize=20}"
                                             ToolTip.Tip="项目主页"
                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                             CommandParameter="https://classisland.tech"/>
                                     <Button Theme="{StaticResource TransparentButton}"
-                                            Content="{controls1:FluentIcon &#xE23C;, 20}"
+                                            Content="{controls1:FluentIcon &#xE23C;, FontSize=20}"
                                             ToolTip.Tip="文档"
                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                             CommandParameter="https://docs.classisland.tech"/>
                                     <Button Theme="{StaticResource TransparentButton}"
-                                            Content="{controls1:FluentIcon &#xE99E;, 20}"
+                                            Content="{commands:LucideIcon &#xE0EA;, FontSize=16}"
                                             ToolTip.Tip="GitHub"
                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                             CommandParameter="https://github.com/ClassIsland/ClassIsland"/>
                                     <Button Theme="{StaticResource TransparentButton}"
-                                            Content="{controls1:FluentIcon &#xE3EE;, 20}"
+                                            Content="{controls1:FluentIcon &#xE3EE;, FontSize=20}"
                                             ToolTip.Tip="加入社区"
                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                             CommandParameter="https://docs.classisland.tech/community/"/>
