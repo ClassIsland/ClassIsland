@@ -293,7 +293,8 @@ public partial class MainWindow : Window
         UpdateTheme();
         IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化托盘菜单");
-        TaskBarIconService.MainTaskBarIcon.Menu = this.FindResource("AppMenu") as NativeMenu;
+        var menu = this.FindResource("AppMenu") as NativeMenu;
+        TaskBarIconService.MainTaskBarIcon.Menu = menu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         ViewModel.OverlayRemainTimePercents = 0.5;
         DiagnosticService.EndStartup();
@@ -633,14 +634,15 @@ public partial class MainWindow : Window
         AppBase.Current.Restart();
     }
 
-    private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
+    private void MainWindow_OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        if (!ViewModel.IsClosing)
+        if (!ViewModel.IsClosing && (e.CloseReason != WindowCloseReason.OSShutdown &&
+                                     e.CloseReason != WindowCloseReason.ApplicationShutdown))
         {
             e.Cancel = true;
             return;
         }
-
+        AppBase.Current.Stop();
     }
 
     private void UpdateWindowPos(bool updateEffectWindow=false)

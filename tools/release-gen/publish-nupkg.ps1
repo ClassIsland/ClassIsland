@@ -25,7 +25,7 @@ echo PackageVersion:$($version -as [string])
 echo Version:$($ver -as [string])
 #dotnet clean
 
-dotnet build -c Release -p:Platform="Any CPU" -p:Version=$($ver -as [string]) -p:PackageVersion=$($version -as [string])
+dotnet build ClassIsland.Filter.Linux.slnf -c Release -p:Platform="Any CPU" -p:Version=$($ver -as [string]) -p:PackageVersion=$($version -as [string])
 cp ./**/bin/Release/*.nupkg ./out
 
 Get-ChildItem ./out

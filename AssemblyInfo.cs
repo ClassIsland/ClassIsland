@@ -8,3 +8,6 @@ using System.Runtime.Versioning;
 #if NETCOREAPP
 // [assembly: SupportedOSPlatform("Windows")]
 #endif
+#if Platforms_MacOs
+[assembly:SupportedOSPlatform("macos")]
+#endif

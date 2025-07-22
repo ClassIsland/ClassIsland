@@ -21,7 +21,7 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
         get;
     } = new()
     {
-        Icon = new WindowIcon("Assets/AppLogo.png"),
+        Icon = new WindowIcon(OperatingSystem.IsMacOS() ? "../Resources/Assets/AppLogo.png" : "Assets/AppLogo.png"),
         ToolTipText = "ClassIsland"
     };
 

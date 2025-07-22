@@ -28,12 +28,14 @@
         ShowInTaskbar="False"
         d:Width="600"
         Background="Transparent"
+        TransparencyLevelHint="Transparent"
         SizeChanged="MainWindow_OnSizeChanged"
         Activated="MainWindow_OnActivated"
         Icon="/Assets/AppLogo.ico"
         Loaded="MainWindow_OnLoaded"
         SizeToContent="Height"
         X11Properties.WmClass="classisland_main"
+        Closing="MainWindow_OnClosing"
         ShowActivated="False">
     <Window.Resources>
         <converters1:IndexConverter x:Key="IndexConverter" />
@@ -41,7 +43,13 @@
         <profile:ClassPlan x:Key="FallbackClassPlan"/>
         
         <NativeMenu x:Key="AppMenu">
-            <NativeMenuItem Icon="Assets/AppLogo.png" Header="ClassIsland" Click="MenuItemAbout_OnClick"/>
+            <NativeMenuItem Header="ClassIsland" Click="MenuItemAbout_OnClick">
+                <NativeMenuItem.Icon>
+                    <OnPlatform Default="Assets/AppLogo.png">
+                        <On Content="{x:Null}" Options="macOS"/>
+                    </OnPlatform>
+                </NativeMenuItem.Icon>
+            </NativeMenuItem>
             <NativeMenuItem Header="帮助…"
                             Click="MenuItemHelps_OnClick" 
                             IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
@@ -142,7 +150,6 @@
                 </TransformGroup>
             </LayoutTransformControl.LayoutTransform>
             <Grid ClipToBounds="True"
-                  IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}"
                   VerticalAlignment="Top"
                   HorizontalAlignment="Stretch"
                   x:Name="GridRoot"

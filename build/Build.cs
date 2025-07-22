@@ -59,7 +59,8 @@ partial class Build : NukeBuild
             var osRid = OsName switch
             {
                 "windows" => "win",
-                "linux" => "linux",
+                "linux" => "linux", 
+                "macos" => "osx",
                 _ => throw new InvalidOperationException($"不支持的平台：{OsName}")
             };
             RuntimeIdentifier = $"{osRid}-{Arch}";
@@ -68,6 +69,7 @@ partial class Build : NukeBuild
             AppPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
             LauncherPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
             
+            Log.Information("AppVersion = {AppVersion}", AppVersion);
             Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
             Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
             Log.Information("PublishArtifactName = {PublishArtifactName}", PublishArtifactName);

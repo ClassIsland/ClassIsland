@@ -116,6 +116,9 @@
           "type": "string",
           "description": "API_SIGNING_KEY_PS"
         },
+        "AppVersion": {
+          "type": "string"
+        },
         "Arch": {
           "type": "string",
           "description": "Arch"

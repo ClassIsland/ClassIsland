@@ -218,6 +218,9 @@
             <Setter Property="Template" Value="{StaticResource MainWindowLineMinControlTemplate}"/>
             <Setter Property="IsVisible" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InvertBooleanConverter}}"/>
         </Style>
+        <Style Selector="^:pointerover">
+            <Setter Property="PointerOver" Value="True"/>
+        </Style>
         <Style Selector="^[IsLineFaded=True]">
             <Setter Property="Opacity" Value="0.05"/>
         </Style>

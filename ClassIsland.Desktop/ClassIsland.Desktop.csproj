@@ -1,10 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
         <BaseFramework>net8.0</BaseFramework>
+        <ApplicationId>cn.classisland.app</ApplicationId>
+        <Company>ClassIsland</Company>
+        <Product>ClassIsland</Product>
     </PropertyGroup>
     
     <!-- UOS DEB Packaging Properties -->
@@ -35,16 +38,41 @@
     <ItemGroup Condition="'$(Platforms_Linux)'=='true'">
         <ProjectReference Include="..\platforms\ClassIsland.Platforms.Linux\ClassIsland.Platforms.Linux.csproj" />
     </ItemGroup>
+    <ItemGroup Condition="'$(Platforms_MacOs)'=='true'">
+        <ProjectReference Include="..\platforms\ClassIsland.Platforms.MacOs\ClassIsland.Platforms.MacOs.csproj" />
+        <BundleResource Include="Assets\AppLogo.xcassets\**" />
+        <MauiIcon Include="Assets\AppLogo.svg"/>
+    </ItemGroup>
     <ItemGroup Condition="'$(Platforms_Linux)'=='true' and '$(PublishBuilding)'=='true'">
         <PackageReference Include="Packaging.DebUOS" Version="3.17.6"/>
     </ItemGroup>
     <ItemGroup>
-      <AvaloniaResource Include="Assets\AppLogo.ico" />
-      <AvaloniaResource Include="Assets\AppLogo.svg" />
+      <AvaloniaResource Include="Assets\AppLogo.ico">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </AvaloniaResource>
+      <None Include="Assets/**" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always"
+            PublishFolderType="Resource"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@384w.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 2.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 3.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 1.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 4.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@384w 1.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w 2.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w 1.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo_16x16.png" />
     </ItemGroup>
     
     <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
         <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Platforms_MacOs)'=='true'">
+<!--        <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>-->
     </PropertyGroup>
 
     <Target Name="_CreatePackageTypeForDeb" BeforeTargets="CreateDebUOS" DependsOnTargets="Publish">

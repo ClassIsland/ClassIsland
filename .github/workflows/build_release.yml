@@ -23,7 +23,7 @@ on:
 
 jobs:
   build_app:
-    runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || 'windows-latest' }}
+    runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-15' || 'windows-latest' ) }}
     env:
       build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       artifact_name: out_${{ matrix.package == 'folder' &&  'appBase' || 'app' }}_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -42,7 +42,15 @@ jobs:
             package: deb
           - os: linux
             build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
-      
+        include:
+          - os: macos
+            package: pkg
+            build_type: selfContained
+            arch: arm64
+          - os: macos
+            package: pkg
+            build_type: selfContained
+            arch: x64
     name: Build_AppBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
       - name: Checkout
@@ -60,6 +68,10 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
+      
+      - name: Install Macos workload
+        if: ${{ matrix.os == 'macos' }}
+        run: dotnet workload install macos
         
       - uses: little-core-labs/get-git-tag@v3.0.1
         id: tagName
@@ -88,6 +100,7 @@ jobs:
             ./out/*.zip
             ./out/*.appx
             ./out/*.deb
+            ./out/*.pkg
             
   build_launcher:
     runs-on: ${{ matrix.os == 'windows' && 'windows-latest' || ( matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') }}

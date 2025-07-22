@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleIdentifier</key>
+	<string>cn.classisland.app</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>ClassIsland</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.15</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>XSAppIconAssets</key>
+	<string>Assets/AppLogo.xcassets/AppIcon.appiconset</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>${AuthorCopyright:HtmlEncode}</string>
+	<key>NSMainStoryboardFile</key>
+	<string>Main</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSSystemAdministrationUsageDescription</key>
+	<string></string>
+	<key>CFBundleExecutable</key>
+	<string></string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>CFBundleIconFile</key>
+	<string>Assets/AppIcon.icns</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
+	<key>CFBundleDisplayName</key>
+	<string>ClassIsland</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>ClassIsland 将申请定位服务权限用于获取当前地理位置，以用于获取准确的天气信息。</string>
+</dict>
+</plist>

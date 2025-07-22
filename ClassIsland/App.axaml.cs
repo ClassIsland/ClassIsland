@@ -245,9 +245,11 @@ public partial class App : AppBase, IAppHost
         CommonDirectories.AppRootFolderPath = PackagingType switch
         {
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
-            "installer" or "deb" or "appImage" => Path.GetFullPath(Path.Combine(
+            "installer" or "deb" or "appImage" or "pkg" => Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
-            _ => CommonDirectories.AppRootFolderPath
+            _ => System.OperatingSystem.IsMacOS() ? Path.GetFullPath(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")) :
+                CommonDirectories.AppRootFolderPath
         };
 
         if (!Directory.Exists(CommonDirectories.AppRootFolderPath))
@@ -271,7 +273,7 @@ public partial class App : AppBase, IAppHost
         Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ".";
         ActivatePackageType();
         ActivateAppDirectories();
-        if (!Design.IsDesignMode)
+        if (!Design.IsDesignMode && !System.OperatingSystem.IsMacOS())
         {
             this.EnableHotReload();
         }
@@ -1103,7 +1105,7 @@ public partial class App : AppBase, IAppHost
         {
             return;
         }
-        Dispatcher.UIThread.Invoke(async () =>
+        _ = Dispatcher.UIThread.InvokeAsync(async () =>
         {
             CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Stopping;
             Logger?.LogInformation("正在停止应用");
@@ -1159,6 +1161,20 @@ public partial class App : AppBase, IAppHost
             startInfo.ArgumentList.Add(i);
         }
         Process.Start(startInfo);
+    }
+
+    private void NativeMenuItemOpenAbout_OnClick(object? sender, EventArgs e)
+    {
+        if (CurrentLifetime != Core.Enums.ApplicationLifetime.Running || !Settings.IsWelcomeWindowShowed)
+        {
+            return;
+        }
+        IAppHost.GetService<SettingsWindowNew>().Open("about");
+    }
+
+    private void NativeMenuItemExit_OnClick(object? sender, EventArgs e)
+    {
+        Stop();
     }
 }
 

@@ -26,7 +26,6 @@ using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
-using Grpc.Core.Logging;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using Sentry;

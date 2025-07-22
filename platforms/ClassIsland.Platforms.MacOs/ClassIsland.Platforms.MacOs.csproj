@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0-macos15</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
+        <ProjectReference Include="..\..\ClassIsland\ClassIsland.csproj" />
+    </ItemGroup>
+    <Import Project="../../Global.props"/>
+</Project>

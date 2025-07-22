@@ -72,16 +72,18 @@ partial class Build
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
                 .SetProperty("SelfContained", BuildType == "selfContained")
-                .SetProperty("PublishDir", AppPublishPath)
+                .SetProperty("PublishDir", Package == "pkg" ? AppOutputPath : AppPublishPath)
                 .SetProperty("DebUOSOutputFilePath", AppOutputPath / PublishArtifactName + ".deb")
                 .SetProperty("UOSDebVersion", AppVersion)
+                .SetProperty("ApplicationVersion", AppVersion)
+                .SetProperty("ApplicationDisplayVersion", AppVersion)
                 .SetProperty("AutoCreateDebUOSAfterPublish", createDeb));
         });
 
     Target GenerateAppZipArchive => _ => _
         .Produces(AppPublishArtifactPath)
         .DependsOn(CompileApp)
-        .OnlyWhenDynamic(() => Package != "deb")
+        .OnlyWhenDynamic(() => Package != "deb" && Package != "pkg")
         .Executes(() =>
         {
             AppPublishPath.ZipTo(AppPublishArtifactPath);
