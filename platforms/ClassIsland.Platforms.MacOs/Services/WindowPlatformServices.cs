@@ -72,7 +72,6 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
                 {
                     highestLevel = level;
                     frontmostWindow = new nint(windowInfo.WinId);
-
                 }
             }
         }
@@ -156,9 +155,7 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
             }
             if ((features & WindowFeatures.SkipManagement) > 0)
             {
-
             }
-        
         }
         catch (Exception e)
         {
