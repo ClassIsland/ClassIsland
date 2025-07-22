@@ -67,7 +67,7 @@ body:
       description: 如果在遇到这个 Bug 时发生了崩溃（弹出崩溃提示），或者产生了错误日志，请将产生的堆栈跟踪信息粘贴到此处，便于开发者定位 Bug。
       render: shell
   - type: textarea
-    id: stacktrace
+    id: diagnostics
     attributes:
       label: 诊断信息
       description: 在【应用设置】->【关于】->【查看诊断信息】中查看。请完整复制其中的诊断信息并粘贴到下面的文本输入框中，不要做任何更改。
