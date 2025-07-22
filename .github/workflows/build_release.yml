@@ -42,9 +42,10 @@ jobs:
             package: deb
           - os: linux
             build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
+          - os: macos
+            arch: x86
         include:
           - os: macos
-            arch: arm64
             package: pkg
             build_type: selfContained
     name: Build_AppBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
