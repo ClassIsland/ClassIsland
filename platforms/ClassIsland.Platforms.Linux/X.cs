@@ -8,7 +8,7 @@ namespace ClassIsland.Platforms.Linux;
 
 public partial class X
 {
-    private const string X11 = "libX11.so";
+    private const string X11 = "libX11.so.6";
     
     public const ulong CWOverrideRedirect = (1L<<9);
     const int InputOutput = 1;

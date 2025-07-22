@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
+using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -28,6 +30,28 @@ namespace ClassIsland.Controls.Components;
 [PseudoClasses(":show-tomorrow-schedule", ":show-tomorrow-schedule-after-school", ":show-tomorrow-schedule-always")]
 public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, INotifyPropertyChanged
 {
+    private bool _hideFinishedClass;
+
+    public static readonly DirectProperty<ScheduleComponent, bool> HideFinishedClassProperty = AvaloniaProperty.RegisterDirect<ScheduleComponent, bool>(
+        nameof(HideFinishedClass), o => o.HideFinishedClass, (o, v) => o.HideFinishedClass = v);
+
+    public bool HideFinishedClass
+    {
+        get => _hideFinishedClass;
+        set => SetAndRaise(HideFinishedClassProperty, ref _hideFinishedClass, value);
+    }
+
+    private bool _showEmptyPlaceholder;
+
+    public static readonly DirectProperty<ScheduleComponent, bool> ShowEmptyPlaceholderProperty = AvaloniaProperty.RegisterDirect<ScheduleComponent, bool>(
+        nameof(ShowEmptyPlaceholder), o => o.ShowEmptyPlaceholder, (o, v) => o.ShowEmptyPlaceholder = v);
+
+    public bool ShowEmptyPlaceholder
+    {
+        get => _showEmptyPlaceholder;
+        set => SetAndRaise(ShowEmptyPlaceholderProperty, ref _showEmptyPlaceholder, value);
+    }
+    
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isAfterSchool = false;
     private ClassPlan? _tomorrowClassPlan;
@@ -43,6 +67,9 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         nameof(LessonsListBoxSelectedIndex));
 
     private IDisposable? _tomorrowScheduleShowModeObserver;
+    private IDisposable? _hideFinishedClassObserver;
+    private IDisposable? _showEmptyPlaceholderObserver
+        ;
 
     public int LessonsListBoxSelectedIndex
     {
@@ -107,6 +134,15 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         _tomorrowScheduleShowModeObserver ??= Settings
             .ObservableForProperty(x => x.TomorrowScheduleShowMode)
             .Subscribe(_ => CheckTomorrowClassShowMode());
+        _hideFinishedClassObserver ??= Settings
+            .ObservableForProperty(x => x.HideFinishedClass)
+            .Subscribe(_ => HideFinishedClass = Settings.HideFinishedClass);
+        _showEmptyPlaceholderObserver ??= Settings
+            .ObservableForProperty(x => x.ShowPlaceholderOnEmptyClassPlan)
+            .Subscribe(_ => ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan);
+
+        HideFinishedClass = Settings.HideFinishedClass;
+        ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan;
     }
 
     private void CheckTomorrowClassShowMode()

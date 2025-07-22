@@ -204,9 +204,9 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
                 },
                 ItemId = args.NewItems?[0] switch
                 {
-                    KeyValuePair<string, ClassPlan> cp => cp.Key,
-                    KeyValuePair<string, TimeLayout> tl => tl.Key,
-                    KeyValuePair<string, Subject> s => s.Key,
+                    KeyValuePair<Guid, ClassPlan> cp => cp.Key.ToString(),
+                    KeyValuePair<Guid, TimeLayout> tl => tl.Key.ToString(),
+                    KeyValuePair<Guid, Subject> s => s.Key.ToString(),
                     _ => throw new ArgumentOutOfRangeException()
                 },
             });

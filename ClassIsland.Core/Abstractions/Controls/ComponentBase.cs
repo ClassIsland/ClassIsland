@@ -2,6 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 using Avalonia.Controls;
+using ClassIsland.Shared;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Core.Abstractions.Controls;
 

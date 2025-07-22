@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Reactive;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Shared;
 
@@ -163,22 +164,8 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
             }
         }
 
-        if (Settings.IsCustomForegroundColorEnabled)
-        {
-            var brush = new SolidColorBrush(Settings.ForegroundColor);
-            SetValue(ForegroundProperty, brush);
-            SetValue(TextElement.ForegroundProperty, brush);
-            Resources["TextFillColorPrimaryBrush"] = brush;
-        }
-        else
-        {
-            if (Resources.ContainsKey("TextFillColorPrimaryBrush"))
-            {
-                Resources.Remove("TextFillColorPrimaryBrush");
-            }
-            SetValue(ForegroundProperty, AvaloniaProperty.UnsetValue);
-            SetValue(TextElement.ForegroundProperty, AvaloniaProperty.UnsetValue);
-        }
+        ControlColorHelper.SetControlForegroundColor(this, Settings.ForegroundColor, 
+            Settings.IsCustomForegroundColorEnabled);
     }
 
     public object? PresentingContent

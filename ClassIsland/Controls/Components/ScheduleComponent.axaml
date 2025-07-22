@@ -13,9 +13,7 @@
                   mc:Ignorable="d"
                   d:DesignHeight="450" d:DesignWidth="800"
                   x:Name="ScheduleComponentRoot"
-                  Classes.AfterSchool="{Binding IsAfterSchool, RelativeSource={RelativeSource Self}}"
-                  Classes.HideFinishedClass="{Binding Settings.HideFinishedClass, RelativeSource={RelativeSource Self}}"
-                  Classes.ShowEmptyPlaceholder="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, RelativeSource={RelativeSource Self}}"
+                  Classes.AfterSchool="{Binding $self.IsAfterSchool}"
                   Classes.TomorrowScheduleEmpty="{Binding $self.TomorrowClassPlan, Converter={x:Static ObjectConverters.IsNull}}"
                   Classes.TodayScheduleEmpty="{Binding $self.LessonsService.CurrentClassPlan, Converter={x:Static ObjectConverters.IsNull}}">
     <ci:ComponentBase.Resources>
@@ -37,12 +35,12 @@
         </Style>
         <Style Selector="local|ScheduleComponent">
             <Setter Property="LessonsListBoxSelectedIndex" Value="{Binding $self.LessonsService.CurrentSelectedIndex, Mode=TwoWay}"/>
-            <Style Selector="^.HideFinishedClass.AfterSchool">
+            <Style Selector="^[HideFinishedClass=True].AfterSchool">
                 <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
                     <Setter Property="IsVisible" Value="False"/>
                 </Style>
                 <Style Selector="^ TextBlock#EmptyPlaceholder">
-                    <Setter Property="IsVisible" Value="True"/>
+                    <Setter Property="IsVisible" Value="{Binding $parent[local:ScheduleComponent].ShowEmptyPlaceholder}"/>
                     <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"/>
                 </Style>
                 <Setter Property="LessonsListBoxSelectedIndex" Value="-1"/>
@@ -53,7 +51,7 @@
                 <Setter Property="IsVisible" Value="False"/>
             </Style>
             <Style Selector="^ TextBlock#EmptyPlaceholder">
-                <Setter Property="IsVisible" Value="True"/>
+                <Setter Property="IsVisible" Value="{Binding $parent[local:ScheduleComponent].ShowEmptyPlaceholder}"/>
                 <Setter Property="Text" Value="{Binding Settings.PlaceholderTextNoClass, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"/>
             </Style>
         </Style>
