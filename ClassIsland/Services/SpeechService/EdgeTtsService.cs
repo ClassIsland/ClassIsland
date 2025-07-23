@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
@@ -28,9 +29,9 @@ public class EdgeTtsService : ISpeechService
 {
     public static readonly string EdgeTtsCacheFolderPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "EdgeTTS");
 
-    private ILogger<EdgeTtsService> Logger { get; } = App.GetService<ILogger<EdgeTtsService>>();
+    private ILogger<EdgeTtsService> Logger { get; }
 
-    private SettingsService SettingsService { get; } = App.GetService<SettingsService>();
+    private SettingsService SettingsService { get; }
 
     private List<eVoice> Voices { get; } = EdgeTts.GetVoice();
 
@@ -45,8 +46,11 @@ public class EdgeTtsService : ISpeechService
     private SoundPlayer? CurrentWavePlayer { get; set; }
 
 
-    public EdgeTtsService()
+    public EdgeTtsService(IAudioService audioService, ILogger<EdgeTtsService> logger, SettingsService settingsService)
     {
+        Logger = logger;
+        SettingsService = settingsService;
+        
         Logger.LogInformation("初始化了EdgeTTS服务。");
     }
 
@@ -127,7 +131,6 @@ public class EdgeTtsService : ISpeechService
         if (IsPlaying)
             return;
         IsPlaying = true;
-        using var audioEngine = new MiniAudioEngine(48000, Capability.Playback); 
         while (PlayingQueue.Count > 0)
         {
             var playInfo = PlayingQueue.Dequeue();
