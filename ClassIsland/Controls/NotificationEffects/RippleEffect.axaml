@@ -12,21 +12,17 @@
     <UserControl.Resources>
         <converters1:RippleEffectTranslationConverter x:Key="RippleEffectTranslationConverter" />
     </UserControl.Resources>
-    <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RippleEffect}}">
+    <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RippleEffect}}"
+            ClipToBounds="True">
         <Ellipse StrokeThickness="200"
                  x:Name="EllipseMain"
                  Canvas.Left="{Binding CenterX}"
                  Canvas.Top="{Binding CenterY}"
                  VerticalAlignment="Center"
                  HorizontalAlignment="Center"
-                 Width="{Binding EllipseSize}"
-                 Height="{Binding EllipseSize}"
                  Fill="{DynamicResource AccentFillColorDefaultBrush}" RenderTransformOrigin="0.5, 0.5">
             <Ellipse.RenderTransform>
                 <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform/>
                     <TranslateTransform X="{Binding EllipseSize, Converter={StaticResource RippleEffectTranslationConverter}}" 
                                         Y="{Binding EllipseSize, Converter={StaticResource RippleEffectTranslationConverter}}"/>
                 </TransformGroup>
