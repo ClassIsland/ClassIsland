@@ -650,6 +650,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<WeatherSettingsViewModel>();
                 services.AddTransient<PluginsSettingsPageViewModel>();
                 services.AddTransient<StorageSettingsViewModel>();
+                services.AddTransient<ErrorSettingsViewModel>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 // services.AddTransient<SplashWindowBase, SplashWindow>();
@@ -685,6 +686,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddSettingsPage<ManagementSettingsPage>();
                 // services.AddSettingsPage<ManagementCredentialsSettingsPage>();
                 // services.AddSettingsPage<ManagementPolicySettingsPage>();
+                services.AddSettingsPage<ErrorSettingsPage>();
                 // 主界面组件
                 services.AddComponent<TextComponent, TextComponentSettingsControl>();
                 services.AddComponent<SeparatorComponent>();

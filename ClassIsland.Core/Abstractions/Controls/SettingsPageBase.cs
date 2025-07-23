@@ -71,4 +71,9 @@ public abstract class SettingsPageBase : UserControl
     {
         RequestRestartCommand.Execute(null);
     }
+    
+    /// <summary>
+    /// 导航到本设置页面时使用的 Uri（如有）
+    /// </summary>
+    public Uri? NavigationUri { get; internal set; }
 }
