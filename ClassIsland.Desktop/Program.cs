@@ -10,6 +10,7 @@ using ClassIsland.Platforms.MacOs.Services;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Logging;
+using Avalonia.Media;
 using ClassIsland.Core;
 using ClassIsland.Extensions;
 using ClassIsland.Platforms.Abstraction;
@@ -41,6 +42,17 @@ class Program
                 app.Initialized += (_, _) => postInit();
                 app.AppStopping += (_, _) => stopTokenSource.Cancel();
                 return app;
+            })
+            .With(new FontManagerOptions
+            {
+                DefaultFamilyName = MainWindow.DefaultFontFamilyKey,
+                FontFallbacks =
+                [
+                    new FontFallback
+                    {
+                        FontFamily = MainWindow.DefaultFontFamily
+                    }
+                ]
             })
             .UsePlatformDetect()
 #if Platforms_Windows
