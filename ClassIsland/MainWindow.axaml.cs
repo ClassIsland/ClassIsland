@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -298,6 +299,7 @@ public partial class MainWindow : Window
         var menu = this.FindResource("AppMenu") as NativeMenu;
         TaskBarIconService.MainTaskBarIcon.Menu = menu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
+        TaskBarIconService.MainTaskBarIcon.Clicked += MainTaskBarIconOnClicked;
         ViewModel.OverlayRemainTimePercents = 0.5;
         DiagnosticService.EndStartup();
 
@@ -344,6 +346,45 @@ public partial class MainWindow : Window
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
         base.Show();
+    }
+
+    private void MainTaskBarIconOnClicked(object? sender, EventArgs e)
+    {
+        switch (SettingsService.Settings.TaskBarIconClickBehavior)
+        {
+            case 0:
+                // Get this tray icon's implementation
+                ITrayIconImpl? impl = (ITrayIconImpl?)typeof(TrayIcon)
+                    .GetProperty ("Impl", BindingFlags.NonPublic | BindingFlags.Instance)?
+                    .GetValue (TaskBarIconService.MainTaskBarIcon);
+
+                // Get the Windows tray icon implementation type
+                Type? type = AppDomain.CurrentDomain.GetAssemblies ()
+                    .Where (a => a.FullName?.StartsWith ("Avalonia.Win32") ?? false)
+                    .SelectMany (a => a.GetTypes ())
+                    .FirstOrDefault (t => t.Name == "TrayIconImpl");
+
+                // If the Implementation and type are not null
+                if (impl != null && type != null)
+                {
+                    // Get the OnRightClicked method
+                    MethodInfo? methodInfo = type.GetMethod("OnRightClicked",
+                        BindingFlags.NonPublic | BindingFlags.Instance);
+                    // Invoke the method on the implementation
+                    methodInfo?.Invoke(impl, null);
+                }
+
+                break;
+            case 1:
+                OpenProfileSettingsWindow();
+                break;
+            case 2:
+                SettingsService.Settings.IsMainWindowVisible = !SettingsService.Settings.IsMainWindowVisible;
+                break;
+            case 3:
+                OpenClassSwapWindow();
+                break;
+        }
     }
 
     private void ReCheckTopmostState()

@@ -148,11 +148,21 @@
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C1;}" 
                                         Header="点击托盘图标行为"
                                         Description="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。">
+                <controls3:SettingsExpander.IsVisible>
+                    <OnPlatform Default="True">
+                        <On Options="macOS" Content="False"/>
+                    </OnPlatform>
+                </controls3:SettingsExpander.IsVisible>
                 <controls3:SettingsExpander.Footer>
                     <Grid>
                         <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.TaskBarIconClickBehavior}"
                                   HorizontalContentAlignment="Left">
                             <ComboBoxItem HorizontalContentAlignment="Left">
+                                <ComboBoxItem.IsVisible>
+                                    <OnPlatform Default="False">
+                                        <On Options="Windows" Content="True"/>
+                                    </OnPlatform>
+                                </ComboBoxItem.IsVisible>
                                 <controls1:IconText Glyph="&#xE075;" Text="打开主菜单" />
                             </ComboBoxItem>
                             <ComboBoxItem HorizontalContentAlignment="Left">
