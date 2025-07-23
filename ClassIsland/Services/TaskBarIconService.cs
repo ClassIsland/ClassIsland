@@ -46,7 +46,6 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
     public TaskBarIconService(ILogger<TaskBarIconService> logger)
     {
         Logger = logger;
-        
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
