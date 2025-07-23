@@ -54,7 +54,7 @@ class Program
         }
         catch (Exception e)
         {
-            await File.WriteAllTextAsync(e.ToString(), Path.Combine(CommonDirectories.AppRootFolderPath, "crash.txt"));
+            await File.WriteAllTextAsync(Path.Combine(CommonDirectories.AppRootFolderPath, "crash.txt"), e.ToString());
             return -1;
         }
     }
