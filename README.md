@@ -123,8 +123,10 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 **首先，请确保您的设备满足以下推荐需求：**
 
 - Windows 10 或更高版本
--  macOS Catalina 10.15 或更高版本
-- 安装 [ASP.NET Core 运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)
+- macOS Catalina 10.15 或更高版本
+- 
+
+对于 Windows PC ，您需要安装 [.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
 
 ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类修改窗口材质的工具）**不兼容**，与这些工具同时使用 ClassIsland 时请将 ClassIsland 添加到这些工具的排除列表中。
 
@@ -137,10 +139,6 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 - [**ClassIsland 官网（推荐）**](https://classisland.tech/download)
 - [GitHub Releases](https://github.com/ClassIsland/ClassIsland/releases/)
-
-对于 Windows 设备，下载完成后，将软件压缩包解压到一个**独立的文件夹（运行路径不能有中文）**，运行软件即可开始使用。解压时请不要解压到网盘同步文件夹、【下载】文件夹中，否则可能会出现**文件无法读写、文件丢失**等问题。
-
-对于 Mac 设备，下载完成后，运行 .pkg 安装包，完成安装后即可在启动台中打开应用。
 
 ## 获取帮助＆加入社区
 
