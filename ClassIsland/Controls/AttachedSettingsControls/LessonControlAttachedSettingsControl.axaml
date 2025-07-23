@@ -18,7 +18,7 @@
     </UserControl.Resources>
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlAttachedSettingsControl}}"
                 Spacing="4">
-        <WrapPanel>
+        <WrapPanel Classes="animated-resize">
             <!-- 显示时间点附加信息 -->
             <CheckBox IsChecked="{Binding Settings.ShowExtraInfoOnTimePoint}"
                       Content="显示时间点附加信息"/>
@@ -56,7 +56,7 @@
                 Value="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Mode=TwoWay}" />
         </controls1:Field>
         
-        <WrapPanel>
+        <WrapPanel Classes="animated-resize">
             <!-- 时间点结束倒计时 -->
             <CheckBox IsChecked="{Binding Settings.IsCountdownEnabled}"
                       Content="时间点结束倒计时"

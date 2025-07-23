@@ -635,6 +635,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IAnnouncementService, AnnouncementService>();
                 services.AddSingleton<ILocationService>(PlatformServices.LocationService);
                 services.AddSingleton<IXamlThemeService, XamlThemeService>();
+                services.AddSingleton<IAudioService, AudioService>();
                 // ViewModels
                 services.AddTransient<ProfileSettingsViewModel>();
                 services.AddTransient<DevPortalViewModel>();
