@@ -9,6 +9,7 @@ using ClassIsland.Platforms.MacOs.Services;
 #endif
 using System.Diagnostics;
 using Avalonia;
+using Avalonia.Logging;
 using ClassIsland.Core;
 using ClassIsland.Extensions;
 using ClassIsland.Platforms.Abstraction;
