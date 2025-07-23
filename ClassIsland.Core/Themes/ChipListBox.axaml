@@ -61,7 +61,7 @@
         </ControlTheme.Resources>
         <Setter Property="ItemsPanel">
             <ItemsPanelTemplate>
-                <WrapPanel Orientation="Horizontal"/>
+                <WrapPanel Orientation="Horizontal" Classes="animated-resize"/>
             </ItemsPanelTemplate>
         </Setter>
         <Setter Property="Template">
