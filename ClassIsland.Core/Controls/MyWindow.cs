@@ -77,8 +77,7 @@ public class MyWindow : AppWindow
 
         IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version.Build > 22000;
         Loaded += OnLoaded;
-        Avalonia.Media.RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
-        
+        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
         KeyDown += OnKeyDown;
     }
 
@@ -110,7 +109,6 @@ public class MyWindow : AppWindow
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        // TODO: 实现导航命令注册
         var commands = CommandManager.GetCommandBindings(this);
         commands.Add(new CommandBinding(UriNavigationCommands.UriNavigationCommand,
             (_, args) => IAppHost.TryGetService<IUriNavigationService>()
