@@ -9,6 +9,7 @@
                   xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                   xmlns:converters="clr-namespace:ClassIsland.Converters"
                   xmlns:settingsPages="clr-namespace:ClassIsland.ViewModels.SettingsPages"
+                  xmlns:models="clr-namespace:ClassIsland.Models"
                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                   x:Class="ClassIsland.Views.SettingPages.ComponentsSettingsPage"
                   d:DataContext="{d:DesignInstance settingPages:ComponentsSettingsPage}">
@@ -24,6 +25,7 @@
         </Style>
         <Style Selector="ListBox.component-listBox">
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="Height" Value="40"/>
             <Setter Property="ItemTemplate">
                 <DataTemplate DataType="{x:Type components:ComponentSettings}">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -69,7 +71,8 @@
                             <ItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"
                                               Orientation="Horizontal"/>
                             <ContextDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="45"
-                                                 Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"/>
+                                                 Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}">
+                            </ContextDragBehavior>
                         </BehaviorCollection>
                     </BehaviorCollectionTemplate>
                 </Setter>
@@ -197,9 +200,55 @@
         
         <!-- ROW 4 组件设置 -->
         <Grid Grid.Row="4" HorizontalAlignment="Stretch"
-              Margin="0 4 0 0">
-
-            <TabControl HorizontalContentAlignment="Stretch" 
+              Margin="0 4 0 0"
+              RowDefinitions="Auto, *">
+            <Border Grid.Row="0" CornerRadius="4" ClipToBounds="True"
+                    IsVisible="{Binding ViewModel.IsComponentChildrenViewOpen}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+                <Grid RowDefinitions="Auto, Auto">
+                    <Border Grid.Row="0" Padding="8"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="0 0 0 1">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Button Grid.Column="0" Content="{ci:FluentIcon &#xE0C7;}"
+                                    Margin="0 -16 4 -16"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    ToolTip.Tip="返回上一层级"
+                                    IsVisible="{Binding ViewModel.CanChildrenNavigateBack, Mode=OneWay}"
+                                    Click="ButtonNavigateUp_OnClick"
+                                    Theme="{StaticResource TransparentButton}" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Left">
+                                <Run Text="此组件的子组件" />
+                            </TextBlock>
+                            <Button Grid.Column="1" Content="{ci:FluentIcon &#xE671;}"
+                                    Margin="4 -16 -4 -16"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    ToolTip.Tip="关闭"
+                                    Click="ButtonChildrenViewClose_OnClick"
+                                    Theme="{StaticResource TransparentButton}" />
+                        </Grid> 
+                    </Border>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.SelectedComponentContainerChildren}"
+                             Classes="component-listBox"
+                             SelectionChanged="SelectorComponentsChildren_OnSelectionChanged">
+                        <Interaction.Behaviors>
+                            <BehaviorCollection>
+                                <ContextDropBehavior Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
+                                                     Context="{Binding ViewModel.SelectedComponentContainerChildren}"/>
+                            </BehaviorCollection>
+                        </Interaction.Behaviors>
+                    </ListBox>
+                </Grid>
+            </Border>
+            
+            <TabControl Grid.Row="1"
+                        HorizontalContentAlignment="Stretch" 
                         Padding="0"
                         MaxWidth="{StaticResource SettingsContainerWidth}"
                         Classes="compact"

@@ -53,6 +53,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
     {
         ViewModel.SelectedComponentSettingsMain = null;
         ViewModel.SelectedComponentSettings = null;
+        CloseComponentChildrenView();
         UpdateSettingsVisibility();
     }
 
@@ -94,8 +95,11 @@ public partial class ComponentsSettingsPage : SettingsPageBase
     
     private void SelectorComponents_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings) 
+        if (e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings)
+        {
+            UpdateSettingsVisibility();
             return;
+        }
         foreach (var listBox in ViewModel.MainWindowLineListBoxCacheReversed.Keys.Where(x => !Equals(x, sender)))
         {
             listBox.SelectedItem = null;
@@ -299,5 +303,25 @@ public partial class ComponentsSettingsPage : SettingsPageBase
             ViewModel.MainWindowLineListBoxCache.Remove(settings);
         }
         ViewModel.MainWindowLineListBoxCacheReversed.Remove(listBox);
+    }
+
+    private void ButtonNavigateUp_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.ChildrenComponentSettingsNavigationStack.TryPop(out var settings))
+        {
+            return;
+        }
+        SetCurrentSelectedComponentContainer(settings, true);
+    }
+
+    private void SelectorComponentsChildren_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count > 0 && e.AddedItems[0] is ComponentSettings settings)
+        {
+            ViewModel.SelectedComponentSettingsChild = settings;
+            ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsChild;
+            ViewModel.SelectedComponentSettingsMain = null;
+        }
+        UpdateSettingsVisibility();
     }
 }
