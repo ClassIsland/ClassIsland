@@ -92,6 +92,7 @@
 
                 <Grid Height="{DynamicResource IslandContainerHeight}"
                       x:Name="GridContentRoot"
+                      MinWidth="20"
                       Margin="12 0">
                     <ContentPresenter
                         Content="{Binding Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
