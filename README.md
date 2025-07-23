@@ -124,7 +124,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 
 - Windows 10 或更高版本
 - macOS Catalina 10.15 或更高版本
-- 
+- Debian 9 / Ubuntu 16.04 LTS 或更高版本
 
 对于 Windows PC ，您需要安装 [.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
 
@@ -134,6 +134,8 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 > **详细安装说明请参阅 [ClassIsland 文档](https://docs.classisland.tech/app/setup)。**
 >
 > 不建议在 Windows 10 以下的系统运行本应用。在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅 [在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/app/setup#检查系统需求)。
+>
+> 要在 Linux 中安装并运行本应用，需要 X11 桌面环境、 2.23 或更高版本的 glibc ，不支持 XWayland 或 Wayland。
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
