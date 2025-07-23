@@ -1,0 +1,13 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="WrapPanel.animated-resize">
+        <Setter Property="ci:WrapPanelResizingAnimationBehavior.IsResizingAnimationEnabled" Value="True"/>
+    </Style>
+</Styles>
