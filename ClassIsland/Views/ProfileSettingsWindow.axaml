@@ -1403,6 +1403,11 @@
                                               BeginningEdit="DataGridWeekSchedule_OnBeginningEdit"
                                               scheduleDataGridCell:ScheduleDataGridCellControl.Subjects="{Binding ViewModel.ProfileService.Profile.Subjects, Mode=OneWay}"
                                               x:Name="DataGridWeekSchedule">
+                                        <DataGrid.Styles>
+                                            <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+                                                <Setter Property="Fill" Value="{DynamicResource DataGridRowHoveredBackgroundColor}"/>
+                                            </Style>
+                                        </DataGrid.Styles>
                                         <DataGrid.Columns>
                                             <DataGridTemplateColumn Header="周日" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
