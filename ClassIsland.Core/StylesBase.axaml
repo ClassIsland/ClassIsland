@@ -31,6 +31,7 @@
     <StyleInclude Source="/Themes/StackPanelIntroAnimation.axaml"/>
     <StyleInclude Source="/Themes/RichTextStyles.axaml"/>
     <StyleInclude Source="/Themes/WrapPanelResizingAnimation.axaml"/>
+    <StyleInclude Source="/Themes/PopupAnimations.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
 
     <!-- Add Styles Here -->

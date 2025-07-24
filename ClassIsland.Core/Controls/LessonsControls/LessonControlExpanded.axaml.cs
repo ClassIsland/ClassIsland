@@ -38,7 +38,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private int _masterTabIndex = 0;
     private bool _extraInfo4ShowSeconds = false;
     private ILessonControlSettings? _settingsSource = new LessonControlAttachedSettings();
-    private Subject _displayingSubject = Subject.Empty;
+    private Subject _displayingSubject = Subject.Fallback;
     private bool _attachedToVisualTree = false;
     private string _detailedInfoText = "";
 
@@ -174,7 +174,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         }
     }
 
-    private Subject CurrentSubject => Subjects?.TryGetValue(ClassInfo?.SubjectId ?? Guid.Empty, out var value) == true ? value : Subject.Empty;
+    private Subject CurrentSubject => Subjects?.TryGetValue(ClassInfo?.SubjectId ?? Guid.Empty, out var value) == true ? value : Subject.Fallback;
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {

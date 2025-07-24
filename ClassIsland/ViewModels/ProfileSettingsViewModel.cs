@@ -33,6 +33,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public SyncDictionaryList<Guid, Subject> Subjects { get; }
 
     public SyncDictionaryList<Guid, ClassPlanGroup> ClassPlanGroups { get; }
+    public SyncDictionaryList<DateTime, OrderedSchedule> OrderedSchedules { get; }
 
     public IObservableList<KeyValuePair<Guid, ClassPlan>> TempClassPlanList { get; }
 
@@ -71,7 +72,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isTempSwapMode = true;
     [ObservableProperty] private int _dataGridWeekRowsWeekIndex = 0;
     [ObservableProperty] private bool _isClassPlanTempEditPopupOpen = false;
-    [ObservableProperty] private string _targetSubjectIndex = "";
+    [ObservableProperty] private Guid _targetSubjectIndex = Guid.Empty;
     [ObservableProperty] private bool _isTimeLineSticky = true;
     [ObservableProperty] private bool _isDrawerOpen = false;
     [ObservableProperty] private int _masterPageTabSelectIndex = 0;
@@ -98,6 +99,8 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
         ClassPlanGroups =
             new SyncDictionaryList<Guid, ClassPlanGroup>(ProfileService.Profile.ClassPlanGroups, Guid.NewGuid);
+        OrderedSchedules =
+            new SyncDictionaryList<DateTime, OrderedSchedule>(ProfileService.Profile.OrderedSchedules, () => DateTime.MinValue);
 
         TempClassPlanList = ClassPlans.List
             .ToObservableChangeSet()

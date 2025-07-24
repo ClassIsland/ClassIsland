@@ -40,7 +40,7 @@
         <Grid>
             <Grid.DataContext>
                 <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}"
-                              FallbackValue="{x:Static profile:Subject.Empty}">
+                              FallbackValue="{x:Static profile:Subject.Fallback}">
                     <Binding Path="#LessonControlMinimizedRoot.Subjects"/>
                     <Binding Path="#LessonControlMinimizedRoot.ClassInfo.SubjectId"/>
                 </MultiBinding>
