@@ -1,4 +1,5 @@
 ﻿<UserControl x:Class="ClassIsland.Controls.NotificationEffects.RippleEffect"
+             TransparentLevelHint="Transparent"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
