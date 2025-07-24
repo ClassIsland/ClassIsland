@@ -100,7 +100,7 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            FontWeight="{DynamicResource CalendarViewWeekDayFontWeight}"
-                           Margin="18 13"
+                           Margin="18 8"
                            Padding="{DynamicResource CalendarViewWeekDayPadding}"
                            Theme="{StaticResource CaptionTextBlockStyle}"/>
             </Template>
@@ -118,8 +118,8 @@
                             <Setter Property="VerticalAlignment" Value="Stretch" />
                             <Setter Property="FontSize" Value="{DynamicResource CalendarViewHeaderNavigationButtonFontSize}" />
                             <Setter Property="FontWeight" Value="{DynamicResource CalendarViewHeaderNavigationFontWeight}" />
-                            <Setter Property="Margin" Value="{DynamicResource CalendarViewHeaderNavigationButtonMargin}" />
-                            <Setter Property="Padding" Value="{DynamicResource CalendarViewHeaderNavigationButtonPadding}" />
+                            <Setter Property="Margin" Value="7 3 3 3" />
+                            <Setter Property="Padding" Value="12 6" />
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="Template">
@@ -163,7 +163,7 @@
                             <!-- Changed to 14 (FluentIcons is smaller) -->
                             <Setter Property="Background" Value="{DynamicResource CalendarViewNavigationButtonBackground}" />
                             <Setter Property="Foreground" Value="{DynamicResource CalendarViewNavigationButtonForeground}" />
-                            <Setter Property="Padding" Value="{DynamicResource CalendarViewNavigationButtonPadding}" />
+                            <Setter Property="Padding" Value="8 6" />
                             <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
                             <Setter Property="HorizontalContentAlignment" Value="Center" />
                         </Style>

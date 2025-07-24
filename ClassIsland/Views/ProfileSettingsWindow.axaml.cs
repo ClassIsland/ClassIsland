@@ -9,16 +9,20 @@ using System.Text.Json;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
+using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Models;
+using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Action;
@@ -88,6 +92,14 @@ public partial class ProfileSettingsWindow : MyWindow
         e.Cancel = true;
         _isOpen = false;
         Hide();
+    }
+    
+    private void MasterTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (MasterTabControl?.SelectedIndex == 3)
+        {
+            RefreshWeekScheduleRows();
+        }
     }
 
     #endregion
@@ -880,5 +892,259 @@ public partial class ProfileSettingsWindow : MyWindow
         DataGridSubjects.IsReadOnly = false;
     }
     #endregion
-    
+
+    #region ClassPlanAdjustment
+
+    private (DataGridCell?, int) GetDataGridSelectedCell(DataGrid dataGrid)
+    {
+        var currentRow = dataGrid.FindDescendantOfType<DataGridRowsPresenter>()?
+            .Children.OfType<DataGridRow>()
+            .FirstOrDefault(r => r.FindDescendantOfType<DataGridCellsPresenter>()?
+                .Children.Any(p => p.Classes.Contains(":current")) ?? false);
+        var item = currentRow?.DataContext;
+
+        var children = currentRow?.FindDescendantOfType<DataGridCellsPresenter>()?.Children;
+        var currentCell = children?.OfType<DataGridCell>().FirstOrDefault(p => p.Classes.Contains(":current"));
+        return (currentCell, currentCell != null ? children?.IndexOf(currentCell) ?? 0 : 0);
+    }
+
+    private void RefreshWeekScheduleRows()
+    {
+        var selectedDate = ViewModel.ScheduleCalendarSelectedDate.Date;
+        var baseDate = selectedDate.AddDays(-(int)selectedDate.DayOfWeek);
+        ViewModel.ScheduleWeekViewBaseDate = baseDate;
+        List<ClassPlan?> classPlans = [];
+        ViewModel.WeekClassPlanRows.Clear();
+        var maxClasses = 0;
+        for (var i = 0; i < 7; i++)
+        {
+            var classPlan = ViewModel.LessonsService.GetClassPlanByDate(baseDate.AddDays(i));
+            maxClasses = Math.Max(maxClasses, classPlan?.Classes.Count ?? 0);
+            classPlans.Add(classPlan);
+        }
+
+        for (var i = 0; i < maxClasses; i++)
+        {
+            var row = new WeekClassPlanRow()
+            {
+                Sunday = TryGetClassInfo(classPlans[0], i),
+                Monday = TryGetClassInfo(classPlans[1], i),
+                Tuesday = TryGetClassInfo(classPlans[2], i),
+                Wednesday = TryGetClassInfo(classPlans[3], i),
+                Thursday = TryGetClassInfo(classPlans[4], i),
+                Friday = TryGetClassInfo(classPlans[5], i),
+                Saturday = TryGetClassInfo(classPlans[6], i),
+            };
+            ViewModel.WeekClassPlanRows.Add(row);
+        }
+
+        ViewModel.DataGridWeekRowsWeekIndex =
+            (int)Math.Ceiling((baseDate.AddDays(6) - ViewModel.SettingsService.Settings.SingleWeekStartTime).TotalDays / 7);
+
+        return;
+
+        ClassInfo? TryGetClassInfo(ClassPlan? classPlan, int index)
+        {
+            if (classPlan != null && classPlan.Classes.Count > index)
+            {
+                return classPlan.Classes[index];
+            }
+
+            return null;
+        }
+    }
+    private void ButtonRefreshScheduleAdjustmentView_OnClick(object sender, RoutedEventArgs e)
+    {
+        RefreshWeekScheduleRows();
+        ScheduleCalendarControl.UpdateSchedule();
+    }
+
+    private void DataGridWeekSchedule_OnPreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)
+    {
+    }
+
+    private void DataGridWeekSchedule_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
+    {
+        // if (e.Row.Item is WeekClassPlanRow row &&
+        //     GetClassInfoFromRow(row, e.Column.DisplayIndex) == null)
+        // {
+        //     e.Cancel = true;
+        // }
+    }
+
+    private ClassInfo? GetClassInfoFromRow(WeekClassPlanRow row, int index)
+    {
+        return index switch
+        {
+            0 => row.Sunday,
+            1 => row.Monday,
+            2 => row.Tuesday,
+            3 => row.Wednesday,
+            4 => row.Thursday,
+            5 => row.Friday,
+            6 => row.Saturday,
+            _ => throw new ArgumentOutOfRangeException(nameof(index), index, null)
+        };
+    }
+
+    private void ButtonSwapSchedule_OnClick(object sender, RoutedEventArgs e)
+    {
+        var (cell, colIndex) = GetDataGridSelectedCell(DataGridWeekSchedule);
+        if (cell?.DataContext is not WeekClassPlanRow row)
+        {
+            this.ShowWarningToast("请先选择要交换的课程。");
+            return;
+        }
+        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(colIndex);
+        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+        if (GetClassInfoFromRow(row, colIndex) == null)
+        {
+            this.ShowWarningToast("选择课程区域无效。");
+            return;
+        }
+        ViewModel.ClassSwapStartPosition = new ScheduleClassPosition(date, index);
+        ViewModel.IsInScheduleSwappingMode = true;
+    }
+
+    private void ButtonNextWeek_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ScheduleCalendarSelectedDate += TimeSpan.FromDays(7);
+        RefreshWeekScheduleRows();
+    }
+
+    private void ButtonPreviousWeek_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ScheduleCalendarSelectedDate -= TimeSpan.FromDays(7);
+        RefreshWeekScheduleRows();
+    }
+
+    private void ButtonSwapScheduleComplete_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsInScheduleSwappingMode = false;
+        var (cell, colIndex) = GetDataGridSelectedCell(DataGridWeekSchedule);
+        if (cell?.DataContext is not WeekClassPlanRow row)
+        {
+            return;
+        }
+        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(colIndex);
+        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+        if (GetClassInfoFromRow(row, colIndex) == null)
+        {
+            this.ShowWarningToast("选择课程区域无效。");
+            return;
+        }
+        ViewModel.ClassSwapEndPosition = new ScheduleClassPosition(date, index);
+
+        var startOverlay = GetTargetClassPlan(ViewModel.ClassSwapStartPosition.Date, ViewModel.IsTempSwapMode, out _);
+        var endOverlay = GetTargetClassPlan(ViewModel.ClassSwapEndPosition.Date, ViewModel.IsTempSwapMode, out _);
+        if (startOverlay == null || endOverlay == null ||
+            endOverlay.Classes.Count <= ViewModel.ClassSwapEndPosition.Index ||
+            startOverlay.Classes.Count <= ViewModel.ClassSwapStartPosition.Index)
+        {
+            return;
+        }
+
+        (startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].SubjectId, endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].SubjectId) = (endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].SubjectId, startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].SubjectId);
+        if (ViewModel.IsTempSwapMode)
+        {
+            startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].IsChangedClass = true;
+            endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].IsChangedClass = true;
+        }
+
+        RefreshWeekScheduleRows();
+        ScheduleCalendarControl.UpdateSchedule();
+    }
+
+    private ClassPlan? GetTargetClassPlan(DateTime dateTime, bool overlay, out Guid? targetGuid)
+    {
+        targetGuid = null;
+        var baseClassPlan = ViewModel.LessonsService.GetClassPlanByDate(dateTime, out var baseGuid);
+        if (baseClassPlan == null || baseGuid == null)
+        {
+            return null;
+        }
+
+        if (!overlay || baseClassPlan.IsOverlay)
+        {
+            targetGuid = baseGuid.Value;
+            return baseClassPlan;
+        }
+
+        var orderedClassPlanId = ViewModel.ProfileService.Profile.OrderedSchedules.GetValueOrDefault(dateTime)?.ClassPlanId;
+        if (orderedClassPlanId != null
+            && ViewModel.ProfileService.Profile.ClassPlans.TryGetValue(orderedClassPlanId.Value, out var classPlan)
+            && classPlan.IsOverlay)
+        {
+            targetGuid = baseGuid.Value;
+            return baseClassPlan;
+        }
+
+        targetGuid =
+            ViewModel.ProfileService.CreateTempClassPlan(baseGuid.Value, enableDateTime: dateTime);
+        return targetGuid == null ? null : ViewModel.ProfileService.Profile.ClassPlans.GetValueOrDefault(targetGuid.Value);
+    }
+
+    private void ButtonCancelClassSwap_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsInScheduleSwappingMode = false;
+    }
+
+    private void ButtonEditClassInfoTemp_OnClick(object sender, RoutedEventArgs e)
+    {
+        e.Handled = true;
+        var (cell, colIndex) = GetDataGridSelectedCell(DataGridWeekSchedule);
+        if (cell?.DataContext is not WeekClassPlanRow row)
+        {
+            this.ShowWarningToast("请先选择要修改的课程。");
+            return;
+        }
+        if (GetClassInfoFromRow(row, colIndex) == null)
+        {
+            this.ShowWarningToast("选择课程区域无效。");
+            return;
+        }
+        if (sender is CommandBarButton button1 && this.FindResource("ChangeClassFlyout") is Flyout flyout)
+        {
+            flyout.ShowAt(button1);
+        }
+        ViewModel.TargetSubjectIndex = Guid.Empty;
+        ViewModel.IsClassPlanTempEditPopupOpen = true;
+    }
+
+    private void ButtonEditClassInfoTempConfirm_OnClick(object sender, RoutedEventArgs e)
+    {
+        FlyoutHelper.CloseAncestorFlyout(sender);
+        var (cell, colIndex) = GetDataGridSelectedCell(DataGridWeekSchedule);
+        if (cell?.DataContext is not WeekClassPlanRow row)
+        {
+            return;
+        }
+        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(colIndex);
+        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+
+        var targetClassPlan = GetTargetClassPlan(date, ViewModel.IsTempSwapMode, out var guid);
+        if (targetClassPlan == null || targetClassPlan.Classes.Count <= index)
+        {
+            return;
+        }
+
+        targetClassPlan.Classes[index].SubjectId = ViewModel.TargetSubjectIndex;
+        if (ViewModel.IsTempSwapMode)
+        {
+            targetClassPlan.Classes[index].IsChangedClass = true;
+        }
+        RefreshWeekScheduleRows();
+        ScheduleCalendarControl.UpdateSchedule();
+    }
+
+    private void ScheduleAdjustmentTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ScheduleAdjustmentTabControl?.SelectedIndex != 0)
+        {
+            return;
+        }
+        RefreshWeekScheduleRows();
+    }
+
+    #endregion
 }
