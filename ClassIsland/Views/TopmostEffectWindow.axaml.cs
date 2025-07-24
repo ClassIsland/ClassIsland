@@ -5,7 +5,9 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Platform;
+using Avalonia.Rendering;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -43,13 +45,9 @@ public partial class TopmostEffectWindow : Window
             Show();
             Hide();
         }
-    }
-
-    public override void EndInit()
-    {
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, 
-            WindowFeatures.Transparent | WindowFeatures.ToolWindow, true);
-        base.EndInit();
+#if DEBUG
+        // RendererDiagnostics.DebugOverlays = RendererDebugOverlays.Fps;
+#endif
     }
 
     private void EffectControlsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -112,6 +110,12 @@ public partial class TopmostEffectWindow : Window
     private void TopmostEffectWindow_OnClosing(object? sender, WindowClosingEventArgs e)
     {
         e.Cancel = true;
+    }
+
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, 
+            WindowFeatures.Transparent | WindowFeatures.ToolWindow, true);
     }
 }
 

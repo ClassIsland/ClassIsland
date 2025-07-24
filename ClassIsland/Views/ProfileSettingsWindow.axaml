@@ -125,7 +125,7 @@
                 <TextBlock Text="管理与切换保存的档案。切换档案需要重新启动应用。" TextWrapping="Wrap"
                            Margin="0 6 0 0"/>
                 <!--<TextBlock Text="{Binding MainViewModel.Settings.SelectedProfile, Mode=OneWay}"/>-->
-                <WrapPanel Margin="0 6 0 0">
+                <WrapPanel Margin="0 6 0 0" Classes="animated-resize">
                     <Button ToolTip.Tip="新建档案。" Click="ButtonCreateProfile_OnClick"
                             Theme="{StaticResource TransparentButton}">
                         <ci:IconText Glyph="&#xE689;" Text="新建档案"/>
@@ -362,7 +362,7 @@
                     <Separator Margin="0 12 0 4" />
                     <ci:IconText Glyph="&#xE92F;" Text="管理课表群" Margin="0 0 0 4"/>
                     
-                    <WrapPanel Orientation="Horizontal">
+                    <WrapPanel Orientation="Horizontal" Classes="animated-resize">
                         <Button Theme="{StaticResource TransparentButton}" 
                                 HorizontalAlignment="Left"
                                 ToolTip.Tip="创建一个新的课表群。"
@@ -431,7 +431,7 @@
                                      SelectionChanged="SelectingItemsControlClassPlans_OnSelectionChanged">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <WrapPanel Orientation="Horizontal">
+                                        <WrapPanel Orientation="Horizontal" >
                                             <TextBlock Text="{Binding Value.Name}" Classes="textFix" />
                                         </WrapPanel>
                                     </DataTemplate>
@@ -649,7 +649,7 @@
                                                     </ListBox.Styles>
                                                     <ListBox.ItemsPanel>
                                                         <ItemsPanelTemplate>
-                                                            <WrapPanel />
+                                                            <WrapPanel Classes="animated-resize"/>
                                                         </ItemsPanelTemplate>
                                                     </ListBox.ItemsPanel>
                                                     <ListBox.ItemTemplate>
@@ -977,7 +977,7 @@
                                                         </DataTemplate>
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
-                                                <WrapPanel Orientation="Horizontal" Margin="0 4 0 0">
+                                                <WrapPanel Orientation="Horizontal" Margin="0 4 0 0" Classes="animated-resize">
                                                     <Button Theme="{StaticResource TransparentButton}"
                                                             Click="ButtonOverwriteClasses_OnClick"
                                                             IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">

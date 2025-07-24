@@ -9,6 +9,8 @@ using ClassIsland.Platforms.MacOs.Services;
 #endif
 using System.Diagnostics;
 using Avalonia;
+using Avalonia.Logging;
+using Avalonia.Media;
 using ClassIsland.Core;
 using ClassIsland.Extensions;
 using ClassIsland.Platforms.Abstraction;
@@ -41,6 +43,17 @@ class Program
                 app.AppStopping += (_, _) => stopTokenSource.Cancel();
                 return app;
             })
+            .With(new FontManagerOptions
+            {
+                DefaultFamilyName = MainWindow.DefaultFontFamilyKey,
+                FontFallbacks =
+                [
+                    new FontFallback
+                    {
+                        FontFamily = MainWindow.DefaultFontFamily
+                    }
+                ]
+            })
             .UsePlatformDetect()
 #if Platforms_Windows
             // .UseDirect2D1()  // 完全用不了，https://github.com/AvaloniaUI/Avalonia/issues/11802
@@ -53,7 +66,7 @@ class Program
         }
         catch (Exception e)
         {
-            await File.WriteAllTextAsync(e.ToString(), Path.Combine(CommonDirectories.AppRootFolderPath, "crash.txt"));
+            await File.WriteAllTextAsync(Path.Combine(CommonDirectories.AppRootFolderPath, "crash.txt"), e.ToString());
             return -1;
         }
     }

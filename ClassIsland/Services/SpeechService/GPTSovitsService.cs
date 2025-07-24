@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
@@ -30,9 +31,9 @@ public class GptSoVitsService : ISpeechService
 {
     public static readonly string GPTSoVITSCacheFolderPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "GPTSoVITS");
 
-    private ILogger<GptSoVitsService> Logger { get; } = App.GetService<ILogger<GptSoVitsService>>();
+    private ILogger<GptSoVitsService> Logger { get; }
 
-    private SettingsService SettingsService { get; } = App.GetService<SettingsService>();
+    private SettingsService SettingsService { get; }
 
     private Queue<GptSoVitsPlayInfo> PlayingQueue { get; } = new();
 
@@ -42,8 +43,11 @@ public class GptSoVitsService : ISpeechService
 
     private SoundPlayer? CurrentWavePlayer { get; set; }
 
-    public GptSoVitsService()
+    public GptSoVitsService(IAudioService audioService, ILogger<GptSoVitsService> logger, SettingsService settingsService)
     {
+        Logger = logger;
+        SettingsService = settingsService;
+        
         Logger.LogInformation("初始化了 GPTSoVITS 服务。");
         
     }
@@ -181,7 +185,6 @@ public class GptSoVitsService : ISpeechService
         if (IsPlaying)
             return;
         IsPlaying = true;
-        using var audioEngine = new MiniAudioEngine(48000, Capability.Playback); 
         while (PlayingQueue.Count > 0)
         {
             var playInfo = PlayingQueue.Dequeue();

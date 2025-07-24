@@ -237,6 +237,8 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
     private TopmostEffectWindow TopmostEffectWindow { get; } = IAppHost.GetService<TopmostEffectWindow>();
 
+    private IAudioService AudioService { get; } = IAppHost.GetService<IAudioService>();
+
     private Grid? GridWrapper;
     
     private Point _centerPointCache = new Point(0, 0);
@@ -510,8 +512,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         {
             NotificationHostService.RequestQueue.Clear();
         }
-
-        using var audioEngine = new MiniAudioEngine(48000, Capability.Playback);
+        
         SoundPlayer? player = null;
         while (_notificationQueue.Count > 0)
         {

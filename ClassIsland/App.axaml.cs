@@ -635,6 +635,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IAnnouncementService, AnnouncementService>();
                 services.AddSingleton<ILocationService>(PlatformServices.LocationService);
                 services.AddSingleton<IXamlThemeService, XamlThemeService>();
+                services.AddSingleton<IAudioService, AudioService>();
                 // ViewModels
                 services.AddTransient<ProfileSettingsViewModel>();
                 services.AddTransient<DevPortalViewModel>();
@@ -650,6 +651,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<WeatherSettingsViewModel>();
                 services.AddTransient<PluginsSettingsPageViewModel>();
                 services.AddTransient<StorageSettingsViewModel>();
+                services.AddTransient<ErrorSettingsViewModel>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 // services.AddTransient<SplashWindowBase, SplashWindow>();
@@ -685,6 +687,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddSettingsPage<ManagementSettingsPage>();
                 // services.AddSettingsPage<ManagementCredentialsSettingsPage>();
                 // services.AddSettingsPage<ManagementPolicySettingsPage>();
+                services.AddSettingsPage<ErrorSettingsPage>();
                 // 主界面组件
                 services.AddComponent<TextComponent, TextComponentSettingsControl>();
                 services.AddComponent<SeparatorComponent>();
@@ -695,8 +698,8 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<CountDownComponent, CountDownComponentSettingsControl>();
                 // services.AddComponent<SlideComponent, SlideComponentSettingsControl>();
                 // services.AddComponent<RollingComponent, RollingComponentSettingsControl>();
-                // services.AddComponent<GroupComponent>();
-                // // 提醒提供方
+                services.AddComponent<GroupComponent>();
+                // 提醒提供方
                 services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
                 services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
                 // services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();

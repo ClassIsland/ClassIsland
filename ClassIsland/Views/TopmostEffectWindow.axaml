@@ -13,7 +13,8 @@
         Closing="TopmostEffectWindow_OnClosing"
         ShowInTaskbar="False"
         CanResize="False"
-        SystemDecorations="None">
+        SystemDecorations="None"
+        Loaded="Control_OnLoaded">
     <Grid>
         <ItemsControl VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch"

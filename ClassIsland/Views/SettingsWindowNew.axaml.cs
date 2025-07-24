@@ -59,6 +59,7 @@ namespace ClassIsland.Views;
 public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 {
     private const string KeepHistoryParameterName = "ci_keepHistory";
+    private const string ErrorPageId = "_error";
 
     public SettingsNewViewModel ViewModel { get; } = new();
 
@@ -141,6 +142,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         NavigationView.MenuItems.Clear();
 
         var infos = SettingsWindowRegistryService.Registered
+            .Where(x => !x.HideDefault)
             .OrderBy(x => x.Category)
             .GroupBy(x => x.Category)
             .ToList();
@@ -320,7 +322,8 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 NavigationFrame.BackStack.Clear();
             }
             var spanLoadPhase2 = transaction.StartChild("frameNavigate");
-            NavigationFrame.NavigateFromObject(new SettingsWindowNavigationData(true, uri != null, uri, keepHistory, transaction, spanLoadPhase2, info));
+            var data = new SettingsWindowNavigationData(true, uri != null, uri, keepHistory, transaction, spanLoadPhase2, info);
+            NavigationFrame.NavigateFromObject(data);
             //ViewModel.FrameContent;
             if (!keepHistory)
             {
@@ -334,6 +337,11 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             spanLoadPhase1.Finish(ex, SpanStatus.InternalError);
             transaction.Finish(SpanStatus.InternalError);
             ViewModel.IsNavigating = false;
+            if (info.Id != ErrorPageId)
+            {
+                await CoreNavigate(SettingsWindowRegistryService.Registered.First(x => x.Id == ErrorPageId),
+                    new Uri("classisland://app/settings/_error?error=true"));
+            }
         }
         //finally
         //{
@@ -683,6 +691,11 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         {
             transaction.SetTag("cache.hit", cached.ToString());
             transaction.SetTag("cache.policy", SettingsService.Settings.SettingsPagesCachePolicy.ToString());
+        }
+
+        if (page != null)
+        {
+            page.NavigationUri = data.NavigateUri;
         }
         return page;
     }

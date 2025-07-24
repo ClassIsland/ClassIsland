@@ -1,0 +1,33 @@
+<ci:SettingsPageBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Views.SettingPages.ErrorSettingsPage"
+             d:DataContext="{d:DesignInstance settingPages:ErrorSettingsPage}"
+             Loaded="Control_OnLoaded">
+    <ScrollViewer>
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="8">
+            <Image Source="/Assets/HoYoStickers/帕姆_哭哭.png"
+                   Width="80" Height="80" HorizontalAlignment="Center"/>
+            <TextBlock Text="欧呦，出错啦！" HorizontalAlignment="Center"
+                       IsVisible="{Binding ViewModel.IsError}"
+                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
+            <TextBlock Text="在尝试导航到请求的的页面时发生了一个未知错误，详细请见应用日志。"
+                       FontSize="13"
+                       IsVisible="{Binding ViewModel.IsError}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="404" HorizontalAlignment="Center"
+                       IsVisible="{Binding !ViewModel.IsError}"
+                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
+            <TextBlock Text="找不到请求的页面。"
+                       FontSize="13"
+                       IsVisible="{Binding !ViewModel.IsError}"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>
