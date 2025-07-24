@@ -133,6 +133,9 @@
                     </mdxaml:MarkdownScrollViewer>
                 </Grid>
             </TabItem>
+            <TabItem Header="调课日历">
+                <controls:ScheduleCalendarControl/>
+            </TabItem>
         </TabControl>
     </Grid>
 </ci:MyWindow>

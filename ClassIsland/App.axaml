@@ -35,6 +35,7 @@
                 <ResourceInclude Source="/Controls/TimeLine/TimeLineListControl.axaml"/>
                 <ResourceInclude Source="avares://ClassIsland.Core/ThemeBase.axaml"/>
                 <ResourceInclude Source="/Controls/WeatherIcons/Index.axaml"/>
+                <ResourceInclude Source="/Controls/ScheduleCalendarControl.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>
