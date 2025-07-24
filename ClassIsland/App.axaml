@@ -18,6 +18,8 @@
                                      TextVerticalAlignmentOverrideBehavior="AlwaysEnabled"/>
         
         <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
+        <StyleInclude Source="/Controls/ScheduleDataGridCell/ScheduleDataGridCellControl.axaml"/>
+        
         <Style Selector=":is(ci|MyWindow)">
             <Setter Property="Icon" Value="/Assets/AppLogo.png"/>
         </Style>
@@ -35,6 +37,7 @@
                 <ResourceInclude Source="/Controls/TimeLine/TimeLineListControl.axaml"/>
                 <ResourceInclude Source="avares://ClassIsland.Core/ThemeBase.axaml"/>
                 <ResourceInclude Source="/Controls/WeatherIcons/Index.axaml"/>
+                <ResourceInclude Source="/Controls/ScheduleCalendarControl.axaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>

@@ -22,7 +22,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
 {
     private ClassPlan? _currentClassPlan;
     private int _currentSelectedIndex = -1;
-    private Subject _nextSubject = Subject.Empty;
+    private Subject _nextSubject = Subject.Fallback;
     private TimeLayoutItem _nextBreakingLayoutItem = TimeLayoutItem.Empty;
     private TimeSpan _onClassLeftTime = TimeSpan.Zero;
     private TimeState _currentStatus = TimeState.None;
@@ -489,8 +489,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         // 统一更新信息
         CurrentSelectedIndex = currentSelectedIndex ?? -1;
         CurrentState = currentState ?? TimeState.None;
-        CurrentSubject = currentSubject ?? Subject.Empty;
-        NextClassSubject = nextClassSubject ?? Subject.Empty;
+        CurrentSubject = currentSubject ?? Subject.Fallback;
+        NextClassSubject = nextClassSubject ?? Subject.Fallback;
         CurrentTimeLayoutItem = currentTimeLayoutItem ?? TimeLayoutItem.Empty;
         NextClassTimeLayoutItem = nextClassTimeLayoutItem ?? TimeLayoutItem.Empty;
         NextBreakingTimeLayoutItem = nextBreakingTimeLayoutItem ?? TimeLayoutItem.Empty;

@@ -197,7 +197,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         var overlayText = settings?.ClassOffOverlayText ?? Settings.ClassOffOverlayText;
         var showOverlayText = !string.IsNullOrWhiteSpace(overlayText);
 
-        var isNextClassEmpty = LessonsService.NextClassSubject == Subject.Empty;
+        var isNextClassEmpty = LessonsService.NextClassSubject == Subject.Fallback;
         Channel(OnBreakingChannelId).ShowNotification(new NotificationRequest()
         {
             MaskContent = new NotificationContent(new ClassNotificationProviderControl("ClassOffNotification")

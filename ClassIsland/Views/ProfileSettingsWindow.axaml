@@ -14,6 +14,7 @@
         xmlns:timeLine="clr-namespace:ClassIsland.Controls.TimeLine"
         xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
         xmlns:data="clr-namespace:FluentAvalonia.UI.Data;assembly=FluentAvalonia"
+        xmlns:scheduleDataGridCell="clr-namespace:ClassIsland.Controls.ScheduleDataGridCell"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
@@ -387,6 +388,38 @@
                 </ListBox>
             </Grid>
         </Grid>
+        
+        <Flyout x:Key="ChangeClassFlyout">
+            <StackPanel Width="250">
+                <TextBlock Text="修改课程"
+                           Theme="{StaticResource SubtitleTextBlockStyle}"
+                           Margin="0 0 0 8" />
+                <ci:Field Label="换课成…">
+                    <ComboBox HorizontalAlignment="Stretch"
+                              Margin="0 0 0 8"
+                              ItemsSource="{Binding ViewModel.Subjects.List, UpdateSourceTrigger=PropertyChanged}"
+                              SelectedValueBinding="{Binding Key}"
+                              SelectedValue="{Binding ViewModel.TargetSubjectIndex}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Value.Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </ci:Field>
+                <CheckBox
+                    IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}"
+                    Margin="0 0 0 8">
+                    永久换课
+                </CheckBox>
+                <Button Click="ButtonEditClassInfoTempConfirm_OnClick"
+                        HorizontalAlignment="Left"
+                        Classes="accent"
+                        IsEnabled="{Binding ViewModel.TargetSubjectIndex, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter={x:Static system:Guid.Empty}}">
+                    <ci:IconText Glyph="&#xE424;" Text="确定" />
+                </Button>
+            </StackPanel>
+        </Flyout>
     </ci:MyWindow.Resources>
     <SplitView DisplayMode="Overlay" PanePlacement="Right"
                IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
@@ -399,6 +432,8 @@
                     HorizontalAlignment="Stretch" />
 
             <TabControl Grid.Row="0" Grid.RowSpan="2" Padding="0" Classes="navigation"
+                        SelectionChanged="MasterTabControl_OnSelectionChanged"
+                        x:Name="MasterTabControl"
                         SelectedIndex="{Binding ViewModel.MasterPageTabSelectIndex}">
                 <TabItem Header="课表">
                     <Grid>
@@ -1185,11 +1220,255 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="调课">
-                    <ci:Empty Text="Coming S∞n" IconWidth="75" IconHeight="75">
-                        <ci:Empty.Icon>
-                            <controls:BitmapIconSource UriSource="avares://ClassIsland/Assets/HoYoStickers/白厄_掉线.png"/> 
-                        </ci:Empty.Icon>
-                    </ci:Empty>
+                    <Grid RowDefinitions="Auto,*,Auto">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <controls:CommandBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                                             Classes="hide-popup-indicator"
+                                             DefaultLabelPosition="Right">
+                            <controls:CommandBar.PrimaryCommands>
+                                <controls:CommandBarButton Click="ButtonRefreshScheduleAdjustmentView_OnClick" 
+                                                           IconSource="{ci:FluentIconSource &#xE0B5;}"
+                                                           Label="刷新"
+                                                           IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}"/>
+                                <controls:CommandBarSeparator>
+                                    <controls:CommandBarSeparator.IsVisible>
+                                        <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
+                                                 Converter="{x:Static ObjectConverters.Equal}">
+                                            <Binding.ConverterParameter>
+                                                <system:Int32>0</system:Int32>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
+                                    </controls:CommandBarSeparator.IsVisible>
+                                </controls:CommandBarSeparator>
+                                <controls:CommandBarButton Click="ButtonEditClassInfoTemp_OnClick"
+                                                           IconSource="{ci:FluentIconSource &#xE7C9;}"
+                                                           Label="修改课程"
+                                                           IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                    <controls:CommandBarButton.IsVisible>
+                                        <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
+                                                 Converter="{x:Static ObjectConverters.Equal}">
+                                            <Binding.ConverterParameter>
+                                                <system:Int32>0</system:Int32>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
+                                    </controls:CommandBarButton.IsVisible>
+                                </controls:CommandBarButton>
+                                <controls:CommandBarButton Click="ButtonSwapSchedule_OnClick" 
+                                                           IconSource="{ci:FluentIconSource &#xE15F;}"
+                                                           Label="交换课程"
+                                                           IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                    <controls:CommandBarButton.IsVisible>
+                                        <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
+                                                 Converter="{x:Static ObjectConverters.Equal}">
+                                            <Binding.ConverterParameter>
+                                                <system:Int32>0</system:Int32>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
+                                    </controls:CommandBarButton.IsVisible>
+                                </controls:CommandBarButton>
+                                <controls:CommandBarButton Click="ButtonCancelClassSwap_OnClick" 
+                                                           IconSource="{ci:FluentIconSource &#xE671;}"
+                                                           Label="取消"
+                                                           IsEnabled="{Binding !ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                    <controls:CommandBarButton.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
+                                                     Converter="{x:Static ObjectConverters.Equal}">
+                                                <Binding.ConverterParameter>
+                                                    <system:Int32>0</system:Int32>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                            <Binding Path="ViewModel.IsInScheduleSwappingMode"/>
+                                        </MultiBinding>
+                                    </controls:CommandBarButton.IsVisible>
+                                </controls:CommandBarButton>
+                                <controls:CommandBarButton Click="ButtonSwapScheduleComplete_OnClick" 
+                                                           IconSource="{ci:FluentIconSource &#xE424;}"
+                                                           Label="完成交换"
+                                                           IsEnabled="{Binding !ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                    <controls:CommandBarButton.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
+                                                     Converter="{x:Static ObjectConverters.Equal}">
+                                                <Binding.ConverterParameter>
+                                                    <system:Int32>0</system:Int32>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                            <Binding Path="ViewModel.IsInScheduleSwappingMode"/>
+                                        </MultiBinding>
+                                    </controls:CommandBarButton.IsVisible>
+                                </controls:CommandBarButton>
+                                <controls:CommandBarElementContainer>
+                                    <controls:CommandBarElementContainer.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
+                                                     Converter="{x:Static ObjectConverters.Equal}">
+                                                <Binding.ConverterParameter>
+                                                    <system:Int32>0</system:Int32>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                            <Binding Path="ViewModel.IsInScheduleSwappingMode"/>
+                                        </MultiBinding>
+                                    </controls:CommandBarElementContainer.IsVisible>
+                                    <CheckBox
+                                        IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}">
+                                        永久换课
+                                    </CheckBox>
+                                </controls:CommandBarElementContainer>
+                            </controls:CommandBar.PrimaryCommands>
+                        </controls:CommandBar>
+
+                        <ListBox Grid.Row="1" Grid.Column="0"
+                                 ItemsSource="{Binding ViewModel.OrderedSchedules.List}"
+                                 SelectedValue="{Binding ViewModel.ScheduleCalendarSelectedDate}"
+                                 SelectedValueBinding="{Binding Key}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock VerticalAlignment="Center">
+                                            <Run
+                                                Text="{Binding Key, Mode=OneWay, StringFormat={}{0:yy/MM/dd ddd}}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <GridSplitter Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"
+                                      VerticalAlignment="Stretch"
+                                      Width="5"
+                                      Margin="4 0"
+                                      ResizeBehavior="PreviousAndNext"/>
+
+                        <TabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl"
+                                    SelectionChanged="ScheduleAdjustmentTabControl_OnSelectionChanged"
+                                    TabStripPlacement="Bottom"
+                                    Padding="0"
+                                    Classes="compact">
+                            <TabItem Header="{ci:FluentIcon &#xF0EB;}">
+                                <Grid RowDefinitions="Auto,*,Auto">
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal"
+                                                Spacing="4">
+                                        <CalendarDatePicker
+                                            SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate}"
+                                            Width="150"/>
+                                        <Button Theme="{StaticResource TransparentButton}"
+                                                Content="{ci:FluentIcon &#xE109;}"
+                                                ToolTip.Tip="上一周"
+                                                Click="ButtonPreviousWeek_OnClick"/>
+                                        <Button Theme="{StaticResource TransparentButton}"
+                                                Content="{ci:FluentIcon &#xE131;}"
+                                                ToolTip.Tip="下一周"
+                                                Click="ButtonNextWeek_OnClick"/>
+                                        <TextBlock VerticalAlignment="Center"
+                                                   Margin="4 0 0 0">
+                                            <Run Text="第"/><Run Text="{Binding ViewModel.DataGridWeekRowsWeekIndex}"/><Run Text="周"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    
+                                    
+                                    <Border Background="#204169e1" 
+                                            Grid.Row="2"
+                                            IsVisible="{Binding ViewModel.IsInScheduleSwappingMode}">
+                                        <Grid>
+                                            <DockPanel Margin="8 4">
+                                                <ci:FluentIcon Glyph="&#xE15F;"
+                                                    Height="20" Width="20" FontSize="20"/>
+                                                <TextBlock TextWrapping="Wrap"
+                                                           VerticalAlignment="Center"
+                                                           Margin="4 0 0 0" >
+                                                    <Run Text="正在交换课程。选择要与"/>
+                                                    <Run Text="{Binding ViewModel.ClassSwapStartPosition, Mode=OneWay}"/>
+                                                    <Run Text="交换的课程，然后点击【完成交换】。"/>
+                                                </TextBlock>
+                                            </DockPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <DataGrid Grid.Row="1"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                              ItemsSource="{Binding ViewModel.WeekClassPlanRows, Mode=TwoWay}"
+                                              CanUserSortColumns="False"
+                                              CanUserReorderColumns="False"
+                                              AutoGenerateColumns="False"
+                                              CanUserResizeColumns="False"
+                                              SelectionMode="Single"
+                                              GridLinesVisibility="Horizontal"
+                                              SelectedItem="{Binding ViewModel.SelectedWeekClassPlanRow}"
+                                              PreparingCellForEdit="DataGridWeekSchedule_OnPreparingCellForEdit"
+                                              BeginningEdit="DataGridWeekSchedule_OnBeginningEdit"
+                                              scheduleDataGridCell:ScheduleDataGridCellControl.Subjects="{Binding ViewModel.ProfileService.Profile.Subjects, Mode=OneWay}"
+                                              x:Name="DataGridWeekSchedule">
+                                        <DataGrid.Styles>
+                                            <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+                                                <Setter Property="Fill" Value="{DynamicResource DataGridRowHoveredBackgroundColor}"/>
+                                            </Style>
+                                        </DataGrid.Styles>
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn Header="周日" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Sunday}"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="周一" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Monday}"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="周二" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Tuesday}"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="周三" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Wednesday}"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="周四" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Thursday}"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="周五" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Friday}"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="周六" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Saturday}"/>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="{ci:FluentIcon &#xE304;}">
+                                <controls1:ScheduleCalendarControl x:Name="ScheduleCalendarControl"
+                                                                  DisplayDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"
+                                                                  SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}" />
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
                 </TabItem>
             </TabControl>
 
