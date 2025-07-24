@@ -27,7 +27,7 @@ public interface IPublicLessonsService
     int CurrentSelectedIndex { get; set; }
 
     /// <summary>
-    /// 当前或下一节课（下一个上课类型的时间点<see cref="TimeLayoutItem"/>）的科目。如无，则为 <see cref="Subject.Empty"/>。
+    /// 当前或下一节课（下一个上课类型的时间点<see cref="TimeLayoutItem"/>）的科目。如无，则为 <see cref="Subject.Fallback"/>。
     /// </summary>
     Subject NextClassSubject { get; set; }
 
@@ -64,7 +64,7 @@ public interface IPublicLessonsService
     /// <summary>
     /// 当前所处时间点<see cref="TimeLayoutItem"/>的科目。<br/><br/>
     /// 如果当前是课间休息，则其中 <see cref="Subject.Name"/>(科目名) 为课间名称。<br/>
-    /// 如果当前课程未定义，则为 <see cref="Subject.Empty"/>。<br/>
+    /// 如果当前课程未定义，则为 <see cref="Subject.Fallback"/>。<br/>
     /// 如果当前没有时间点，或没有加载课表，则为 null。<br/>
     /// </summary>
     Subject? CurrentSubject { get; set; }

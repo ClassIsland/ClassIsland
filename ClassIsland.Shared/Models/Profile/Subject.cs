@@ -70,14 +70,25 @@ public class Subject : AttachableSettingsObject
             OnPropertyChanged();
         }
     }
+    
+    
 
     /// <summary>
-    /// 代表一个空科目。
+    /// 代表后备科目。
     /// </summary>
-    public static readonly Subject Empty = new()
+    public static readonly Subject Fallback = new()
     {
         Initial = "?",
         Name = "???"
+    };
+    
+    /// <summary>
+    /// 代表一个空白科目。
+    /// </summary>
+    public static readonly Subject Empty = new()
+    {
+        Initial = "",
+        Name = ""
     };
 
     /// <summary>
