@@ -18,6 +18,8 @@
                                      TextVerticalAlignmentOverrideBehavior="AlwaysEnabled"/>
         
         <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
+        <StyleInclude Source="/Controls/ScheduleDataGridCell/ScheduleDataGridCellControl.axaml"/>
+        
         <Style Selector=":is(ci|MyWindow)">
             <Setter Property="Icon" Value="/Assets/AppLogo.png"/>
         </Style>

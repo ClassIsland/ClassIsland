@@ -6,7 +6,7 @@ namespace ClassIsland.Models;
 
 public class LessonDetails : ObservableRecipient
 {
-    private Subject _subject = Subject.Empty;
+    private Subject _subject = Subject.Fallback;
     private TimeLayoutItem _timeLayoutItem = new TimeLayoutItem();
     private Guid _subjectId = Guid.Empty;
 
