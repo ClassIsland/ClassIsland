@@ -641,6 +641,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<DevPortalViewModel>();
                 services.AddTransient<AppLogsViewModel>();
                 services.AddTransient<WelcomeViewModel>();
+                services.AddTransient<ClassChangingViewModel>();
                 // ViewModels/SettingsPages
                 services.AddTransient<GeneralSettingsViewModel>();
                 services.AddTransient<AboutSettingsViewModel>();
