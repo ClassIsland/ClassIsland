@@ -1,0 +1,91 @@
+﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.RollingComponentSettingsControl"
+                  x:TypeArguments="componentSettings:RollingComponentSettings"
+                  xmlns="https://github.com/avaloniaui"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                  xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                  xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                  xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                  xmlns:helpers="clr-namespace:ClassIsland.Helpers"
+                  mc:Ignorable="d"
+                  d:DesignHeight="450" d:DesignWidth="800">
+    <ci:ComponentBase.Resources>
+        <ci:RulesetControl x:Key="RulesetControl"/>
+    </ci:ComponentBase.Resources>
+    <ScrollViewer>
+        <StackPanel
+            Classes="settings-container animated-intro" Margin="0"
+            DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponentSettingsControl}}">
+            <controls:InfoBar Message="滚动组件仅在组件内容超出滚动组件宽度时才会开始滚动。您可能需要在【高级设置】中为本组件设置【最大宽度】或【固定宽度】以限制组件的宽度，这样在组件内容超出限制的宽度时内容才会开始滚动。"
+                              IsOpen="{Binding SettingsService.Settings.IsRollingComponentWarningVisible}"
+                              CloseButtonClick="ButtonCloseWarningTip_OnClick"/>
+
+            <!-- 滚动速度 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf373;}"
+                                       Header="滚动速度"
+                                       Description="组件内容的滚动速度">
+                <controls:SettingsExpander.Footer>
+                    <ci:Field Suffix="px/秒">
+                        <controls:NumberBox Width="150"
+                                            Minimum="0.1"
+                                            Value="{Binding Settings.SpeedPixelPerSecond}" />
+                    </ci:Field>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+
+            <!-- 定时暂停 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe4d0;}"
+                                       Header="定时暂停"
+                                       Description="启用后，将在滚动到指定位置后暂停滚动一段时间"
+                                       IsExpanded="{Binding Settings.IsPauseEnabled, Mode=OneWay}">
+                <controls:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding Settings.IsPauseEnabled, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe4c4;}"
+                                               Content="暂停时长"
+                                               Description="每次暂停时停留的时长">
+                    <controls:SettingsExpanderItem.Footer>
+                        <ci:Field Suffix="秒">
+                            <controls:NumberBox Width="150"
+                                                Minimum="0" Maximum="{x:Static helpers:TimeSpanHelper.MaxTimeSpanSeconds}"
+                                                Value="{Binding Settings.PauseSeconds}" />
+                        </ci:Field>
+                    </controls:SettingsExpanderItem.Footer>
+                </controls:SettingsExpanderItem>
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xede1;}"
+                                               Content="暂停位置"
+                                               Description="暂停时的滚动偏移值">
+                    <controls:SettingsExpanderItem.Footer>
+                        <ci:Field Suffix="px">
+                            <controls:NumberBox Width="150"
+                                                Minimum="0"
+                                                Value="{Binding Settings.PauseOffsetX}" />
+                        </ci:Field>
+                    </controls:SettingsExpanderItem.Footer>
+                </controls:SettingsExpanderItem>
+            </controls:SettingsExpander>
+
+            <!-- 满足规则时停止 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xee67;}"
+                                       Header="满足规则时停止"
+                                       Description="在指定规则满足时停止滚动。停止时会停止滚动，并回到初始位置。">
+                <controls:SettingsExpander.Footer>
+                    <StackPanel Orientation="Horizontal">
+                        <Button HorizontalAlignment="Left"
+                                Theme="{StaticResource TransparentButton}"
+                                Click="ButtonOpenStopRuleset_OnClick"
+                                IsVisible="{Binding Settings.StopOnRule}">
+                            <ci:IconText Glyph="&#xf17e;" Text="编辑规则集…" />
+                        </Button>
+                        <ToggleSwitch VerticalAlignment="Center"
+                                      IsChecked="{Binding Settings.StopOnRule}" />
+                    </StackPanel>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+            
+        </StackPanel>
+    </ScrollViewer>
+</ci:ComponentBase>

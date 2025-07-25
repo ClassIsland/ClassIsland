@@ -1,6 +1,6 @@
 ﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.RollingComponent"
                   x:TypeArguments="componentSettings:RollingComponentSettings"
-                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns="https://github.com/avaloniaui"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,35 +12,27 @@
                   Loaded="RollingComponent_OnLoaded"
                   Unloaded="RollingComponent_OnUnloaded">
     <Border SizeChanged="OuterContainerStackPanel_OnSizeChanged"
-            x:Name="OuterContainerStackPanel" ClipToBounds="True"
+            x:Name="OuterContainerStackPanel" ClipToBounds="False"
             Margin="-6 0">
-        <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}"
-                Width="{Binding ActualWidth, ElementName=ItemsControlCore}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="16"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RenderTransform>
-                    <TranslateTransform X="{Binding ScrollWidth, Mode=OneWay}"/>
-                </Grid.RenderTransform>
+        <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}">
+            <Grid ColumnDefinitions="Auto,16,Auto" VerticalAlignment="Stretch" 
+                  x:Name="GridScrollContainer"
+                  Height="{Binding #OuterContainerStackPanel.Bounds.Height}">
                 <Border x:Name="ItemsControlContainer" Background="Transparent">
                     <ItemsControl ItemsSource="{Binding Settings.Children}"
                                   x:Name="ItemsControlCore"
-                                  VerticalContentAlignment="Stretch"
                                   VerticalAlignment="Stretch"
-                                  Background="Transparent"
-                                  Height="{Binding ActualHeight, ElementName=OuterContainerStackPanel}"
+                                  Height="{Binding Bounds.Height, ElementName=OuterContainerStackPanel}"
                                   SizeChanged="ItemsControlCore_OnSizeChanged">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" IsItemsHost="True" />
+                                <StackPanel Orientation="Horizontal" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <ci:ComponentPresenter IsOnMainWindow="True"
+                                                       VerticalAlignment="Stretch"
                                                        Settings="{Binding}"
                                                        HidingRules="{Binding HidingRules, Mode=OneWay}"
                                                        HideOnRule="{Binding HideOnRule, Mode=OneWay}"
@@ -48,16 +40,6 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </Border>
-                <Border Grid.Column="2" Width="{Binding ActualWidth, ElementName=ItemsControlContainer}"
-                        Height="{Binding ActualHeight, ElementName=OuterContainerStackPanel}"
-                        Visibility="{Binding IsScrolling, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Border.Background>
-                        <VisualBrush Visual="{Binding ElementName=ItemsControlContainer}"
-                                     Stretch="UniformToFill"
-                                     AlignmentX="Left"
-                                     AlignmentY="Center"/>
-                    </Border.Background>
                 </Border>
             </Grid>
         </Canvas>
