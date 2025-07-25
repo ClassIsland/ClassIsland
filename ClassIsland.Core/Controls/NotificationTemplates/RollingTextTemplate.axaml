@@ -24,11 +24,6 @@
                        FontSize="17"
                        Canvas.Right="0"
                        VerticalAlignment="Center">
-                <TextBlock.RenderTransform>
-                    <TransformGroup>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </TextBlock.RenderTransform>
             </TextBlock>
         </Canvas>
     </Grid>
