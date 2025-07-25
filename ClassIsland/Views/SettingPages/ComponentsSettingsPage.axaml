@@ -236,6 +236,7 @@
                     </Border>
                     <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.SelectedComponentContainerChildren}"
                              Classes="component-listBox"
+                             x:Name="ListBoxComponentsChildren"
                              SelectionChanged="SelectorComponentsChildren_OnSelectionChanged">
                         <Interaction.Behaviors>
                             <BehaviorCollection>

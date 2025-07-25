@@ -109,6 +109,10 @@ public partial class TopmostEffectWindow : Window
 
     private void TopmostEffectWindow_OnClosing(object? sender, WindowClosingEventArgs e)
     {
+        if (e.CloseReason == WindowCloseReason.OSShutdown || e.CloseReason == WindowCloseReason.ApplicationShutdown)
+        {
+            return;
+        }
         e.Cancel = true;
     }
 

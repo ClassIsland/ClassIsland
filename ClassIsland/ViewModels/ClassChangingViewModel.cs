@@ -1,97 +1,68 @@
 ﻿using System;
-
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.ComponentModels;
+using ClassIsland.Services;
 using ClassIsland.Shared.Models.Profile;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using ReactiveUI;
 
 namespace ClassIsland.ViewModels;
 
-public class ClassChangingViewModel : ObservableRecipient
+public partial class ClassChangingViewModel : ObservableRecipient
 {
-    private bool _writeToSourceClassPlan = false;
-    private int _slideIndex = 0;
-    private int _sourceIndex = -1;
-    private int _swapModeTargetIndex = -1;
-    private Subject? _targetSubject;
-    private bool _isAutoNextStep = false;
-    private string? _targetSubjectIndex;
+    [ObservableProperty] private bool _writeToSourceClassPlan = false;
+    [ObservableProperty] private int _slideIndex = 0;
+    [ObservableProperty] private int _sourceIndex = -1;
+    [ObservableProperty] private int _swapModeTargetIndex = -1;
+    [ObservableProperty] private Subject? _targetSubject;
+    [ObservableProperty] private bool _isAutoNextStep = false;
+    [ObservableProperty] private Guid _targetSubjectIndex;
+    [ObservableProperty] private int _classChangeMode;
+    [ObservableProperty] private bool _canCompleteClassChanging = false;
+    [ObservableProperty] private ClassInfo? _selectedClassInfo;
+    [ObservableProperty] private TimeLayoutItem? _selectedTimeLayoutItem;
+    
+    public SettingsService SettingsService { get; }
 
-    public bool WriteToSourceClassPlan
+    public IProfileService ProfileService { get; }
+
+    public IManagementService ManagementService { get; }
+    
+    public SyncDictionaryList<Guid, Subject> Subjects { get; }
+
+    public ClassChangingViewModel(IProfileService profileService, IManagementService managementService, SettingsService settingsService)
     {
-        get => _writeToSourceClassPlan;
-        set
-        {
-            if (value == _writeToSourceClassPlan) return;
-            _writeToSourceClassPlan = value;
-            OnPropertyChanged();
-        }
+        ProfileService = profileService;
+        ManagementService = managementService;
+        SettingsService = settingsService;
+
+        Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
+        this.ObservableForProperty(x => x.TargetSubjectIndex)
+            .Subscribe(_ => UpdateCanCompleteClassChanging());
+        this.ObservableForProperty(x => x.SwapModeTargetIndex)
+            .Subscribe(_ => UpdateCanCompleteClassChanging());
+        this.ObservableForProperty(x => x.SlideIndex)
+            .Subscribe(_ => UpdateCanCompleteClassChanging());
+        SettingsService.Settings.ObservableForProperty(x => x.IsSwapMode)
+            .Subscribe(_ => UpdateCanCompleteClassChanging());
     }
 
-    public int SlideIndex
+    private void UpdateCanCompleteClassChanging()
     {
-        get => _slideIndex;
-        set
+        if (SlideIndex == 0)
         {
-            if (value == _slideIndex) return;
-            _slideIndex = value;
-            OnPropertyChanged();
+            CanCompleteClassChanging = false;
+            return;
         }
-    }
 
-    public int SwapModeTargetIndex
-    {
-        get => _swapModeTargetIndex;
-        set
+        if (SettingsService.Settings.IsSwapMode)
         {
-            if (value == _swapModeTargetIndex) return;
-            _swapModeTargetIndex = value;
-            OnPropertyChanged();
+            CanCompleteClassChanging = SwapModeTargetIndex != -1;
+            return;
         }
-    }
 
-    public Subject? TargetSubject
-    {
-        get => _targetSubject;
-        set
-        {
-            if (Equals(value, _targetSubject)) return;
-            _targetSubject = value;
-            OnPropertyChanged();
-        }
+        CanCompleteClassChanging = TargetSubjectIndex != Guid.Empty;
     }
-
-    public string? TargetSubjectIndex
-    {
-        get => _targetSubjectIndex;
-        set
-        {
-            if (value == _targetSubjectIndex) return;
-            _targetSubjectIndex = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int SourceIndex
-    {
-        get => _sourceIndex;
-        set
-        {
-            if (value == _sourceIndex) return;
-            _sourceIndex = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsAutoNextStep
-    {
-        get => _isAutoNextStep;
-        set
-        {
-            if (value == _isAutoNextStep) return;
-            _isAutoNextStep = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public Guid DialogIdentifier { get; } = Guid.NewGuid();
 }
