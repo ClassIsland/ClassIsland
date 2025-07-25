@@ -123,6 +123,7 @@ public partial class SlideComponent : ComponentBase<SlideComponentSettings>
     private void SlideComponent_OnLoaded(object sender, RoutedEventArgs e)
     {
         GridRoot.DataContext = this;
+        SelectedIndex = 0;
         LoadSettings();
         Settings.PropertyChanged += OnSettingsOnPropertyChanged;
         Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
