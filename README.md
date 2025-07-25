@@ -137,6 +137,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 >
 > 要在 Linux 中安装并运行本应用，需要 X11 桌面环境、 2.23 或更高版本的 glibc 。不支持 Wayland。通过 XWayland 运行不属于 ClassIsland 的支持范围，部分功能可能无法正常运行。
 
+
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
 - [**ClassIsland 官网（推荐）**](https://classisland.tech/download)
