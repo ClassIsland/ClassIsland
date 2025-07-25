@@ -1,8 +1,10 @@
 using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Data.Core;
 using Avalonia.Interactivity;
 using Avalonia.Rendering.Composition;
+using Avalonia.Rendering.Composition.Animations;
 using Avalonia.Styling;
 using ClassIsland.Core.Models.Notification.Templates;
 
@@ -26,27 +28,19 @@ public partial class RollingTextTemplate : UserControl
 
     private void RollingTextTemplate_OnLoaded(object sender, RoutedEventArgs e)
     {
-        var anim = new Animation()
+        var visual = ElementComposition.GetElementVisual(Description);
+        if (visual == null)
         {
-            Duration = Data.Duration / Math.Min(Data.RepeatCount, 1),
-            IterationCount = IterationCount.Infinite
-        };
-        anim.Children.Add(new KeyFrame()
-        {
-            Cue = new Cue(0),
-            Setters =
-            {
-                new Setter(Canvas.RightProperty, -Description.Bounds.Width)
-            }
-        });
-        anim.Children.Add(new KeyFrame()
-        {
-            Cue = new Cue(1),
-            Setters =
-            {
-                new Setter(Canvas.RightProperty, RootCanvas.Bounds.Width)
-            }
-        });
-        anim.RunAsync(RootCanvas);
+            return;
+        }
+
+        var compositor = visual.Compositor;
+        var anim = compositor.CreateVector3DKeyFrameAnimation();
+        anim.Target = nameof(visual.Offset);
+        anim.Duration = Data.Duration / Math.Max(Data.RepeatCount, 1);
+        anim.IterationBehavior = AnimationIterationBehavior.Forever;
+        anim.InsertKeyFrame(0f, visual.Offset with { X = RootCanvas.Bounds.Width }, new LinearEasing());
+        anim.InsertKeyFrame(1f, visual.Offset with { X = -Description.Bounds.Width }, new LinearEasing());
+        visual.StartAnimation(nameof(visual.Offset), anim);
     }
 }
