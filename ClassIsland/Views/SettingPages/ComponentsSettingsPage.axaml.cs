@@ -104,6 +104,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         {
             listBox.SelectedItem = null;
         }
+        ListBoxComponentsChildren.SelectedItem = null;
         ViewModel.SelectedComponentSettingsMain = settings;
         if (ViewModel.SelectedComponentSettingsMain != null)
         {
@@ -316,12 +317,20 @@ public partial class ComponentsSettingsPage : SettingsPageBase
 
     private void SelectorComponentsChildren_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (e.AddedItems.Count > 0 && e.AddedItems[0] is ComponentSettings settings)
+
+        if (e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings)
         {
-            ViewModel.SelectedComponentSettingsChild = settings;
-            ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsChild;
-            ViewModel.SelectedComponentSettingsMain = null;
+            UpdateSettingsVisibility();
+            return;
         }
+        foreach (var listBox in ViewModel.MainWindowLineListBoxCacheReversed.Keys.Where(x => !Equals(x, sender)))
+        {
+            listBox.SelectedItem = null;
+        }
+        
+        ViewModel.SelectedComponentSettingsChild = settings;
+        ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsChild;
+        ViewModel.SelectedComponentSettingsMain = null;
         UpdateSettingsVisibility();
     }
 }
