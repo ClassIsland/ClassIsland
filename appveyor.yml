@@ -3,9 +3,6 @@ image: Visual Studio 2022
 configuration: Release
 platform: x64
 skip_tags: true
-environment:
-  appcenter_token:
-    secure: 2CPAZ5+bQnvsQLK3ArwP7/Mt8dqLQdk3+5iXqMlZc+ZJ+ymhZ8J+VH1wE/j0hsMo
 build_script:
   - pwsh: pwsh -ep Bypass -c ./tools/build-appveyor.ps1
 artifacts:

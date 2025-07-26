@@ -277,6 +277,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Lvshujun0918",
+      "name": "吕舒君",
+      "avatar_url": "https://avatars.githubusercontent.com/u/41245552?v=4",
+      "profile": "https://cszj.wang/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "tlnkmc",
+      "name": "Mux_Yang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/122972130?v=4",
+      "profile": "https://github.com/tlnkmc",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

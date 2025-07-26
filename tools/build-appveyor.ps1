@@ -14,13 +14,4 @@ pwsh -ep bypass -c .\tools\release-gen\publish.ps1 false
 Write-Host "Generating MD5..." -ForegroundColor Cyan
 pwsh -ep Bypass -c .\tools\generate-md5.ps1 ./out
 
-
-if ($env:APPVEYOR_REPO_TAG -eq $true) {
-    Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
-    pwsh -ep Bypass -c .\tools\release-gen\pre-appcenter-upload.ps1
-    pwsh -ep Bypass -c .\tools\release-gen\appcenter-upload.ps1 $env:appcenter_token ${env:git_latest_tag}
-} else {
-    Write-Host "Skiped uploading to AppCenter." -ForegroundColor Yellow
-}
-
 Write-Host "Completed!" -ForegroundColor Green
