@@ -245,4 +245,9 @@ public class WindowPlatformService : IWindowPlatformService
         _ = GetWindowThreadProcessId((HWND)handle, &pid);
         return (int)pid;
     }
+
+    public void ClearWindow(TopLevel topLevel)
+    {
+        
+    }
 }

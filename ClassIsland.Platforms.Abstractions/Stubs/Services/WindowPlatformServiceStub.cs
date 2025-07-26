@@ -88,4 +88,9 @@ public class WindowPlatformServiceStub : IWindowPlatformService
     {
         return 0;
     }
+
+    /// <inheritdoc />
+    public void ClearWindow(TopLevel topLevel)
+    {
+    }
 }

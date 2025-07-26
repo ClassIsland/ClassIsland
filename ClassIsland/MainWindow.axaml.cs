@@ -354,7 +354,7 @@ public partial class MainWindow : Window
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（2）");
         UpdateTheme();
         base.Show();
-        Dispatcher.UIThread.InvokeAsync(PostInit, DispatcherPriority.SystemIdle);
+        Dispatcher.UIThread.InvokeAsync(PostInit, DispatcherPriority.ApplicationIdle);
     }
 
     private void MainTaskBarIconOnClicked(object? sender, EventArgs e)
@@ -683,6 +683,7 @@ public partial class MainWindow : Window
 
     private void UpdateWindowPos(bool updateEffectWindow=false)
     {
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, false);
         GetCurrentDpi(out var dpiX, out var dpiY);
 
         var scale = ViewModel.Settings.Scale;
@@ -730,6 +731,13 @@ public partial class MainWindow : Window
         {
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
         }
+
+        Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            PlatformServices.WindowPlatformService.ClearWindow(this);
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
+                ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
+        }, DispatcherPriority.ApplicationIdle);
     }
 
     public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)
