@@ -11,6 +11,7 @@ public class MinutelyPrecipitation
     {
         get
         {
+            //没有返回降雨量
             if (Value.Count <= 0)
             {
                 return 0;
@@ -18,6 +19,7 @@ public class MinutelyPrecipitation
 
             if (Value[0] > 0)
             {
+                //
                 for (var i = 0; i < Value.Count; i++)
                 {
                     if (Value[i] <= 0)
