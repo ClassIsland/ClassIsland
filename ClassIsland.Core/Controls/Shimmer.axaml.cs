@@ -39,7 +39,7 @@ public class Shimmer : TemplatedControl
     }
 
     public static readonly StyledProperty<bool> AutoDetectContentLoadStateProperty = AvaloniaProperty.Register<Shimmer, bool>(
-        nameof(AutoDetectContentLoadState));
+        nameof(AutoDetectContentLoadState), true);
 
     public bool AutoDetectContentLoadState
     {
@@ -77,9 +77,16 @@ public class Shimmer : TemplatedControl
             _mainBorder.Loaded += MainBorderOnLoaded;
         }
 
-        if (Content is Control { IsLoaded: false } control && AutoDetectContentLoadState)
+        if (Content is Control control && AutoDetectContentLoadState)
         {
-            control.Loaded += ControlOnLoaded;
+            if (!control.IsLoaded)
+            {
+                control.Loaded += ControlOnLoaded;
+            }
+            else
+            {
+                IsContentLoaded = true;
+            }
         }
         base.OnApplyTemplate(e);
     }
