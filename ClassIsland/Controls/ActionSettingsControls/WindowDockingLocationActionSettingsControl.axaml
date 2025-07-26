@@ -1,0 +1,27 @@
+﻿<ci:ActionSettingsControlBase
+    x:Class="ClassIsland.Controls.ActionSettingsControls.WindowDockingLocationActionSettingsControl"
+    x:TypeArguments="actions:WindowDockingLocationActionSettings"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+    xmlns:actions="clr-namespace:ClassIsland.Models.Actions"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Orientation="Horizontal"
+                DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WindowDockingLocationActionSettingsControl}}">
+        <TextBlock Text="移动到" VerticalAlignment="Center" Margin="0 0 4 0"/>
+        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                  SelectedIndex="{Binding Settings.Value}"
+                  HorizontalContentAlignment="Left">
+            <ci:IconText Glyph="&#xE19B;" Text="左上角" />
+            <ci:IconText Glyph="&#xE1A1;" Text="中上侧" />
+            <ci:IconText Glyph="&#xE19D;" Text="右上角" />
+            <ci:IconText Glyph="&#xE0CF;" Text="左下角" />
+            <ci:IconText Glyph="&#xE0D3;" Text="中下侧" />
+            <ci:IconText Glyph="&#xE0D1;" Text="右下角" />
+        </ComboBox>
+    </StackPanel>
+</ci:ActionSettingsControlBase>

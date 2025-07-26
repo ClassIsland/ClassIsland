@@ -1,0 +1,22 @@
+﻿<ci:ActionSettingsControlBase
+    x:Class="ClassIsland.Controls.ActionSettingsControls.WindowLayerActionSettingsControl"
+    x:TypeArguments="actions:WindowLayerActionSettings"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+    xmlns:actions="clr-namespace:ClassIsland.Models.Actions"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Orientation="Horizontal"
+                DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WindowLayerActionSettingsControl}}">
+        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                  SelectedIndex="{Binding Settings.Value}"
+                  HorizontalContentAlignment="Left">
+            <ci:IconText Glyph="&#xE0CB;" Text="置底" />
+                <ci:IconText Glyph="&#xE197;" Text="置顶" />
+        </ComboBox>
+    </StackPanel>
+</ci:ActionSettingsControlBase>

@@ -21,49 +21,48 @@
                 <DataTemplate>
                     <Border HorizontalAlignment="Stretch"
                             Background="{DynamicResource MaterialDesignCardBackground}">
-                        <Grid Margin="0 4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0"
-                                    Theme="{StaticResource TransparentButton}"
-                                    Classes="circle"
-                                    ToolTip.Tip="删除"
-                                    Command="{Binding RemoveTriggerCommand, RelativeSource={RelativeSource AncestorType=local:TriggerSettingsControl}}"
-                                    CommandParameter="{Binding}"
-                                    Margin="0 0 2 0"
-                                    IsVisible="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:TriggerSettingsControl}}">
-                                <controls1:FontIcon Glyph="&#xE783;" />
-                            </Button>
-                            <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1"
-                                  ColumnDefinitions="Auto,*,Auto,Auto">
-                                <ComboBox SelectedValue="{Binding Id}"
-                                          SelectedValueBinding="{Binding Id}"
-                                          ItemsSource="{x:Static services:IAutomationService.RegisteredTriggers}"
-                                          MinWidth="100">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <controls:IconText Glyph="{Binding IconGlyph}"
-                                                               Text="{Binding Name}"/>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
+                        <Grid Margin="0 4" ColumnDefinitions="Auto,*">
+                            <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 0 4">
+                                    <Button Grid.Column="0"
+                                            Theme="{StaticResource TransparentButton}"
+                                            Classes="circle"
+                                            ToolTip.Tip="删除"
+                                            Command="{Binding RemoveTriggerCommand, RelativeSource={RelativeSource AncestorType=local:TriggerSettingsControl}}"
+                                            CommandParameter="{Binding}"
+                                            Margin="0 0 2 0"
+                                            IsVisible="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:TriggerSettingsControl}}"
+                                            Content="{controls:FluentIcon &#xE61D;}"
+                                            VerticalAlignment="Stretch">
+                                    </Button>
+                                    <ComboBox SelectedValue="{Binding Id}"
+                                              SelectedValueBinding="{Binding Id}"
+                                              ItemsSource="{x:Static services:IAutomationService.RegisteredTriggers}"
+                                              MinWidth="100">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <controls:IconText Glyph="{Binding IconGlyph}"
+                                                                   Text="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
                                 <local:TriggerSettingsControlPresenter Settings="{Binding}"
                                                                        Id="{Binding Id}"
                                                                       Margin="4 0 0 0"
                                                                       Grid.Column="1" />
-                            </Grid>
+                            </WrapPanel>
                         </Grid>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Button Theme="{StaticResource TransparentButton}" Classes="accent"
+        <Button Theme="{StaticResource TransparentButton}"
                 Click="ButtonAddTrigger_OnClick"
                 HorizontalAlignment="Left">
-            <controls:IconText Symbol="Add"
-                               Text="添加触发器" />
+            <controls:IconText Glyph="&#xE00D;"
+                               Text="添加触发器"
+                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
         </Button>
     </StackPanel>
 </UserControl>
