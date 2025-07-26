@@ -17,6 +17,7 @@
         <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
         <converters:WindDirectionConverter x:Key="WindDirectionConverter" />
         <converters:MinutesToHoursConverter x:Key="MinutesToHoursConverter" />
+        <converters:MinutesToUnitConverter x:Key="MinutesToUnitConverter"/>
     </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -217,7 +218,8 @@
                                    VerticalAlignment="Center" FontWeight="Regular">
                             <!-- <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay}">
                             </Run><Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="min"/> -->
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Converter={StaticResource MinutesToHoursConverter}, Mode=OneWay}"/>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Converter={StaticResource MinutesToHoursConverter}, Mode=OneWay}"></Run>
+                            <Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="{Binding RainRemainingMinutes, Converter={StaticResource MinutesToUnitConverter}, Mode=OneWay}"/>
                         </TextBlock>
                     </StackPanel>
                 </Border>
