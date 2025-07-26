@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -92,6 +93,7 @@ using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
 using ReactiveUI;
 using Empty = Google.Protobuf.WellKnownTypes.Empty;
+using LicenseContext = OfficeOpenXml.LicenseContext;
 
 namespace ClassIsland;
 /// <summary>
@@ -641,6 +643,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<DevPortalViewModel>();
                 services.AddTransient<AppLogsViewModel>();
                 services.AddTransient<WelcomeViewModel>();
+                services.AddTransient<ClassChangingViewModel>();
                 // ViewModels/SettingsPages
                 services.AddTransient<GeneralSettingsViewModel>();
                 services.AddTransient<AboutSettingsViewModel>();
@@ -696,8 +699,8 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
                 services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();
                 services.AddComponent<CountDownComponent, CountDownComponentSettingsControl>();
-                // services.AddComponent<SlideComponent, SlideComponentSettingsControl>();
-                // services.AddComponent<RollingComponent, RollingComponentSettingsControl>();
+                services.AddComponent<SlideComponent, SlideComponentSettingsControl>();
+                services.AddComponent<RollingComponent, RollingComponentSettingsControl>();
                 services.AddComponent<GroupComponent>();
                 // 提醒提供方
                 services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
@@ -1122,6 +1125,7 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
+            IAppHost.Host?.Services.GetService<IComponentsService>()?.SaveConfig();
             DesktopLifetime?.Shutdown();
             try
             {

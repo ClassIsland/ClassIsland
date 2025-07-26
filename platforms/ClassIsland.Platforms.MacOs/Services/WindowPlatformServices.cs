@@ -257,4 +257,9 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
             _observer = null;
         }
     }
+    
+    public void ClearWindow(TopLevel topLevel)
+    {
+        
+    }
 }

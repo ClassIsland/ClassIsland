@@ -26,14 +26,22 @@
             </Style>
         </Style>
     </UserControl.Styles>
-    <Border x:Name="ComponentRootBorder"
-            Classes.OnMainWindow="{Binding IsOnMainWindow, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
-            Classes.MaxWidthEnabled="{Binding Settings.IsMaxWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
-            Classes.MinWidthEnabled="{Binding Settings.IsMinWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
-            Classes.FixedWidthEnabled="{Binding Settings.IsFixedWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}">
-        <ContentPresenter x:Name="MainContentPresenter"
-                          local:ComponentPresenter.ComponentVisibilityChanged="MainContentPresenter_OnComponentVisibilityChanged"
-                          Content="{Binding PresentingContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
-    </Border>
+    <Panel>
+        <local:Shimmer x:Name="Shimmer" AutoDetectContentLoadState="False"
+                       Padding="0 8">
+            <Border x:Name="ComponentRootBorder"
+                    SizeChanged="ComponentRootBorder_OnSizeChanged"
+                    Classes.OnMainWindow="{Binding IsOnMainWindow, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                    Classes.MaxWidthEnabled="{Binding Settings.IsMaxWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                    Classes.MinWidthEnabled="{Binding Settings.IsMinWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                    Classes.FixedWidthEnabled="{Binding Settings.IsFixedWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}">
+                <ContentPresenter x:Name="MainContentPresenter"
+                                  local:ComponentPresenter.ComponentVisibilityChanged="MainContentPresenter_OnComponentVisibilityChanged"
+                                  Content="{Binding PresentingContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}" />
+            </Border>
+        </local:Shimmer>
+        <Border Width="{Binding Settings.LastWidthCache, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                IsVisible="{Binding !#Shimmer.IsContentLoaded}"/>
+    </Panel>
 </UserControl>
 

@@ -1,14 +1,19 @@
-#if false
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Helpers;
+using ClassIsland.Models.ComponentSettings;
+using ClassIsland.Shared;
 
 namespace ClassIsland.Controls.Components;
 
@@ -16,19 +21,28 @@ namespace ClassIsland.Controls.Components;
 /// SlideComponent.xaml 的交互逻辑
 /// </summary>
 [ContainerComponent]
-[ComponentInfo("7E19A113-D281-4F33-970A-834A0B78B5AD", "轮播组件", MaterialIconKind.Slideshow, "轮播多个组件。")]
-public partial class SlideComponent
+[ComponentInfo("7E19A113-D281-4F33-970A-834A0B78B5AD", "轮播组件", "\uefc9", "轮播多个组件。")]
+public partial class SlideComponent : ComponentBase<SlideComponentSettings>
 {
-    public IRulesetService RulesetService { get; }
+    public IRulesetService RulesetService { get; } = IAppHost.GetService<IRulesetService>();
 
-    public static readonly DependencyProperty SelectedIndexProperty = DependencyProperty.Register(
-        nameof(SelectedIndex), typeof(int), typeof(SlideComponent), new PropertyMetadata(default(int)));
+    private int _selectedIndex = 0;
 
     public int SelectedIndex
     {
-        get { return (int)GetValue(SelectedIndexProperty); }
-        set { SetValue(SelectedIndexProperty, value); }
+        get => _selectedIndex;
+        set
+        {
+            _selectedIndex = value;
+            MainListBox.SelectedIndex = value;
+        }
     }
+
+    public static readonly AttachedProperty<bool> IsAnimationEnabledProperty =
+        AvaloniaProperty.RegisterAttached<SlideComponent, Control, bool>("IsAnimationEnabled", inherits: true);
+
+    public static void SetIsAnimationEnabled(Control obj, bool value) => obj.SetValue(IsAnimationEnabledProperty, value);
+    public static bool GetIsAnimationEnabled(Control obj) => obj.GetValue(IsAnimationEnabledProperty);
 
     private Queue<int> _randomPlaylist = [];
 
@@ -39,9 +53,8 @@ public partial class SlideComponent
         Interval = TimeSpan.FromSeconds(5)
     };
 
-    public SlideComponent(IRulesetService rulesetService)
+    public SlideComponent()
     {
-        RulesetService = rulesetService;
         InitializeComponent();
     }
 
@@ -109,6 +122,8 @@ public partial class SlideComponent
 
     private void SlideComponent_OnLoaded(object sender, RoutedEventArgs e)
     {
+        GridRoot.DataContext = this;
+        SelectedIndex = 0;
         LoadSettings();
         Settings.PropertyChanged += OnSettingsOnPropertyChanged;
         Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
@@ -134,6 +149,10 @@ public partial class SlideComponent
 
     private void ChildrenOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (Settings.Children.Count - e.NewItems?.Count <= 0)
+        {
+            SelectedIndex = 0;
+        }
         CreateRandomPlaylist();
     }
 
@@ -181,4 +200,3 @@ public partial class SlideComponent
         Timer.Start();
     }
 }
-#endif

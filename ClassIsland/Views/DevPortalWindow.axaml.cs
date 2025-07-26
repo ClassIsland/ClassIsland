@@ -48,7 +48,7 @@ public partial class DevPortalWindow : MyWindow
             new NotificationRequest()
             {
                 MaskContent = NotificationContent.CreateTwoIconsMask("第二条通知"),
-                OverlayContent = NotificationContent.CreateSimpleTextContent("我是，终将升起的烈阳！")
+                OverlayContent = NotificationContent.CreateRollingTextContent("所以，我们该启程啦，成为开启一切的人……就像你的名字那样，背负起最初的混沌，和这个我们深爱的世界吧……再见啦，卡厄斯兰那。", TimeSpan.FromSeconds(20), 2)
             }
         ], new Guid("4B12F124-8585-43C7-AFC5-7BBB7CBE60D6"), Guid.Empty);
     }

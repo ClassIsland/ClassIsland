@@ -97,4 +97,10 @@ public interface IWindowPlatformService
     /// <param name="handle">窗口句柄</param>
     /// <returns>目标 PID</returns>
     public int GetWindowPid(nint handle);
+
+    /// <summary>
+    /// 强制重绘目标窗口。
+    /// </summary>
+    /// <param name="topLevel">要重绘的窗口</param>
+    public void ClearWindow(TopLevel topLevel);
 }

@@ -1,0 +1,56 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls">
+    <Design.PreviewWith>
+        <controls:Shimmer />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|Shimmer">
+        <!-- Set Defaults -->
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Background" Value="{DynamicResource ControlStrongFillColorDefaultBrush}"/>
+        <Setter Property="MinHeight" Value="16"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Border CornerRadius="{TemplateBinding CornerRadius}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            Margin="{TemplateBinding Padding}"
+                            x:Name="PART_MainBorder">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.2"
+                                                  Easing="0.65, 0, 0.35, 1"/>
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      x:Name="ContentPresenter">
+                        <ContentPresenter.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.2"
+                                                  Easing="0.65, 0, 0.35, 1"/>
+                            </Transitions>
+                        </ContentPresenter.Transitions>
+                    </ContentPresenter>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^[IsContentLoaded=False] /template/ ContentPresenter#ContentPresenter">
+            <Setter Property="Opacity" Value="0.0"/>
+        </Style>
+        <Style Selector="^[IsContentLoaded=False] /template/ Border#PART_MainBorder">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="^[IsContentLoaded=True] /template/ Border#PART_MainBorder">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="^[IsContentLoaded=True] /template/ ContentPresenter#ContentPresenter">
+            <Setter Property="Opacity" Value="1.0"/>
+        </Style>
+    </Style>
+</Styles>

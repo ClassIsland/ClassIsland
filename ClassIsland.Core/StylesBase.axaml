@@ -28,6 +28,7 @@
     <StyleInclude Source="/Controls/Field.axaml"/>
     <StyleInclude Source="/Controls/Emptiable.axaml"/>
     <StyleInclude Source="/Controls/Empty.axaml"/>
+    <StyleInclude Source="/Controls/Shimmer.axaml"/>
     <StyleInclude Source="/Themes/StackPanelIntroAnimation.axaml"/>
     <StyleInclude Source="/Themes/RichTextStyles.axaml"/>
     <StyleInclude Source="/Themes/WrapPanelResizingAnimation.axaml"/>
@@ -152,12 +153,12 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid x:Name="Root" Classes.empty="{TemplateBinding CurrentImage, Converter={x:Static ObjectConverters.IsNull}, Mode=OneWay}">
-                    <Border VerticalAlignment="Stretch" MinWidth="0" 
+                    <ci:Shimmer VerticalAlignment="Stretch" MinWidth="0" 
                             HorizontalAlignment="Stretch"
                             x:Name="LoadingBorder"
-                            Background="{DynamicResource ControlAltFillColorQuarternaryBrush}"
-                            Opacity="0.75"
-                            IsVisible="False"/>
+                            Padding="0"
+                            AutoDetectContentLoadState="False"
+                            IsContentLoaded="{Binding !IsLoading, RelativeSource={RelativeSource TemplatedParent}}"/>
                     <ci:FluentIcon VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Glyph="&#xE9CC;"
                                    IsVisible="False"
@@ -168,23 +169,6 @@
                 </Grid>
             </ControlTemplate>
         </Setter>
-        
-        <Style Selector="^[IsLoading=True] /template/ Border#LoadingBorder">
-            <Style.Animations>
-                <Animation Duration="0:0:2" IterationCount="INFINITE">
-                    <KeyFrame Cue="0%">
-                        <Setter Property="Opacity" Value="0.75"/>
-                    </KeyFrame>
-                    <KeyFrame Cue="50%" KeySpline="1.00, 0.00, 1.00, 0.30">
-                        <Setter Property="Opacity" Value="1.0"/>
-                    </KeyFrame>
-                    <KeyFrame Cue="100%" KeySpline="0.00, 0.30, 0.00, 1.00">
-                        <Setter Property="Opacity" Value="0.75"/>
-                    </KeyFrame>
-                </Animation>
-            </Style.Animations>
-            <Setter Property="IsVisible" Value="True"/>
-        </Style>
         
         <Style Selector="^[IsLoading=False] /template/ Grid#Root.empty">
             <Style Selector="^ Border#LoadingBorder">

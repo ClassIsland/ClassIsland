@@ -123,8 +123,10 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 **首先，请确保您的设备满足以下推荐需求：**
 
 - Windows 10 或更高版本
--  macOS Catalina 10.15 或更高版本
-- 安装 [ASP.NET Core 运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)
+- macOS Catalina 10.15 或更高版本
+- Debian 9 / Ubuntu 16.04 LTS 或更高版本
+
+对于 Windows PC ，您需要安装 [.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
 
 ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类修改窗口材质的工具）**不兼容**，与这些工具同时使用 ClassIsland 时请将 ClassIsland 添加到这些工具的排除列表中。
 
@@ -132,15 +134,14 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 > **详细安装说明请参阅 [ClassIsland 文档](https://docs.classisland.tech/app/setup)。**
 >
 > 不建议在 Windows 10 以下的系统运行本应用。在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅 [在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/app/setup#检查系统需求)。
+>
+> 要在 Linux 中安装并运行本应用，需要 X11 桌面环境、 2.23 或更高版本的 glibc 。不支持 Wayland。通过 XWayland 运行不属于 ClassIsland 的支持范围，部分功能可能无法正常运行。
+
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
 - [**ClassIsland 官网（推荐）**](https://classisland.tech/download)
 - [GitHub Releases](https://github.com/ClassIsland/ClassIsland/releases/)
-
-对于 Windows 设备，下载完成后，将软件压缩包解压到一个**独立的文件夹（运行路径不能有中文）**，运行软件即可开始使用。解压时请不要解压到网盘同步文件夹、【下载】文件夹中，否则可能会出现**文件无法读写、文件丢失**等问题。
-
-对于 Mac 设备，下载完成后，运行 .pkg 安装包，完成安装后即可在启动台中打开应用。
 
 ## 获取帮助＆加入社区
 

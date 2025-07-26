@@ -236,6 +236,7 @@
                     </Border>
                     <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.SelectedComponentContainerChildren}"
                              Classes="component-listBox"
+                             x:Name="ListBoxComponentsChildren"
                              SelectionChanged="SelectorComponentsChildren_OnSelectionChanged">
                         <Interaction.Behaviors>
                             <BehaviorCollection>
@@ -259,7 +260,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,*"
-                                      Margin="0 8" Width="200" Height="50">
+                                      Margin="0 8" Height="50">
                                     <ci:FluentIcon Grid.Column="0" Grid.Row="0"
                                                    Grid.RowSpan="2"
                                                    Width="32" Height="32"
@@ -287,7 +288,13 @@
                         </ListBox.ItemTemplate>
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <WrapPanel Classes="animated-resize"/>
+                                <WrapPanel Classes="animated-resize">
+                                    <Interaction.Behaviors>
+                                        <BehaviorCollection>
+                                            <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
+                                        </BehaviorCollection>
+                                    </Interaction.Behaviors>
+                                </WrapPanel>
                             </ItemsPanelTemplate>
                         </ListBox.ItemsPanel>
                     </ListBox>
