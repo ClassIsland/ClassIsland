@@ -14,7 +14,9 @@
     <Border SizeChanged="OuterContainerStackPanel_OnSizeChanged"
             x:Name="OuterContainerStackPanel" ClipToBounds="False"
             Margin="-6 0">
-        <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}">
+        <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}"
+                Width="{Binding #ItemsControlContainer.Bounds.Width, Mode=OneWay}"
+                HorizontalAlignment="Left">
             <Grid ColumnDefinitions="Auto,16,Auto" VerticalAlignment="Stretch" 
                   x:Name="GridScrollContainer"
                   Height="{Binding #OuterContainerStackPanel.Bounds.Height}">

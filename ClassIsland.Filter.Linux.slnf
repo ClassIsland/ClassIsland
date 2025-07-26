@@ -13,8 +13,7 @@
       "ClassIsland\\ClassIsland.csproj",
       "platforms\\ClassIsland.Platforms.Linux\\ClassIsland.Platforms.Linux.csproj",
       "platforms\\ClassIsland.Platforms.Windows\\ClassIsland.Platforms.Windows.csproj",
-      "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj",
-      "vendors\\System.Device.Location\\System.Device.Location.csproj"
+      "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj"
     ]
   }
 }

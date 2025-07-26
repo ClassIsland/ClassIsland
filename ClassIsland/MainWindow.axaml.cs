@@ -21,6 +21,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification;
@@ -290,10 +291,8 @@ public partial class MainWindow : Window
         return _centerPointCache = new Point(p.Value.X, Bounds.Top + (Bounds.Height / 2));
     }
 
-    public override void Show()
+    private void PostInit()
     {
-        IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（2）");
-        UpdateTheme();
         IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化托盘菜单");
         var menu = this.FindResource("AppMenu") as NativeMenu;
@@ -329,6 +328,7 @@ public partial class MainWindow : Window
             LessonsService.PreMainTimerTicked += ProcessMousePos;
         }
 
+        ComponentPresenter.SetIsMainWindowLoaded(this, true);
         StartupCompleted?.Invoke(this, EventArgs.Empty);
 
         if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
@@ -345,7 +345,16 @@ public partial class MainWindow : Window
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
+    }
+
+    public override void Show()
+    {
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
+            ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
+        IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（2）");
+        UpdateTheme();
         base.Show();
+        Dispatcher.UIThread.InvokeAsync(PostInit, DispatcherPriority.ApplicationIdle);
     }
 
     private void MainTaskBarIconOnClicked(object? sender, EventArgs e)
@@ -627,8 +636,6 @@ public partial class MainWindow : Window
                 Topmost = true;
                 break;
         }
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
-            ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
     }
 
     private void ButtonSettings_OnClick(object sender, EventArgs e)
@@ -676,6 +683,7 @@ public partial class MainWindow : Window
 
     private void UpdateWindowPos(bool updateEffectWindow=false)
     {
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, false);
         GetCurrentDpi(out var dpiX, out var dpiY);
 
         var scale = ViewModel.Settings.Scale;
@@ -723,6 +731,13 @@ public partial class MainWindow : Window
         {
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
         }
+
+        Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            PlatformServices.WindowPlatformService.ClearWindow(this);
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
+                ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
+        }, DispatcherPriority.ApplicationIdle);
     }
 
     public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)
@@ -854,6 +869,7 @@ public partial class MainWindow : Window
     {
         
     }
+    
 
     private void MenuItemSettingsWindow2_OnClick(object sender, RoutedEventArgs e)
     {

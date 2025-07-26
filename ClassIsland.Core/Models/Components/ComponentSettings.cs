@@ -35,6 +35,7 @@ public class ComponentSettings : ObservableRecipient
     private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Stretch;
     private int _relativeLineNumber = 0;
     private bool _isVisible = true;
+    private double _lastWidthCache = 100;
 
     /// <summary>
     /// 要显示的组件Id，ClassIsland用这个来索引组件，与<see cref="ComponentInfo"/>的Guid一致。
@@ -367,6 +368,20 @@ public class ComponentSettings : ObservableRecipient
         {
             if (value == _isVisible) return;
             _isVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 组件上次的宽度缓存。
+    /// </summary>
+    public double LastWidthCache
+    {
+        get => _lastWidthCache;
+        set
+        {
+            if (value.Equals(_lastWidthCache)) return;
+            _lastWidthCache = value;
             OnPropertyChanged();
         }
     }

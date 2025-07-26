@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -92,6 +93,7 @@ using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
 using ReactiveUI;
 using Empty = Google.Protobuf.WellKnownTypes.Empty;
+using LicenseContext = OfficeOpenXml.LicenseContext;
 
 namespace ClassIsland;
 /// <summary>
@@ -1123,6 +1125,7 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
+            IAppHost.Host?.Services.GetService<IComponentsService>()?.SaveConfig();
             DesktopLifetime?.Shutdown();
             try
             {

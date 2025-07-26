@@ -133,7 +133,7 @@ public class WindowPlatformService : IWindowPlatformService
             return;
         }
         
-        if ((features & WindowFeatures.Transparent) > 0)
+        if ((features & WindowFeatures.Transparent) > 0 && state)
         {
             var region = XFixesCreateRegion(_display, 0, 0);
             XFixesSetWindowShapeRegion(_display, handle, ShapeInput, 0, 0, region);
@@ -171,6 +171,7 @@ public class WindowPlatformService : IWindowPlatformService
             attributes.override_redirect = state ? 1 : 0;
             XChangeWindowAttributes(_display, handle, CWOverrideRedirect, ref attributes);
             XMapWindow(_display, handle);
+            XFlush(_display);
         }
         
     }
@@ -291,6 +292,15 @@ public class WindowPlatformService : IWindowPlatformService
         XFree(propPid);
         return pid;
     }
-    
-    
+
+    public void ClearWindow(TopLevel topLevel)
+    {
+        var handle = topLevel.TryGetPlatformHandle()?.Handle ?? nint.Zero;
+        if (handle == nint.Zero)
+        {
+            return;
+        }
+
+        XClearWindow(_display, handle);
+    }
 }

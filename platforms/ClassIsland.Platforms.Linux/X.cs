@@ -109,6 +109,12 @@ public partial class X
     
     [DllImport(X11)]
     public static extern int XInitThreads();
+    
+    [DllImport(X11)]
+    public static extern int XClearWindow(nint display, nint window);
+
+    [DllImport(X11)]
+    public static extern void XFlush(nint display);
 
     [StructLayout(LayoutKind.Sequential)]
     public struct XClassHint

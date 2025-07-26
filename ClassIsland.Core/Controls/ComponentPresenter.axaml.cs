@@ -7,6 +7,7 @@ using Avalonia.Controls.Documents;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Reactive;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
@@ -82,7 +83,11 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 
     private static void PropertyChangedCallback(ComponentPresenter d, AvaloniaPropertyChangedEventArgs e)
     {
-        d.UpdateContent(e.OldValue as ComponentSettings);
+        if (d.IsOnMainWindow && !GetIsMainWindowLoaded(d))
+        {
+            return;
+        }
+        d.UpdateContent(e.OldValue as ComponentSettings, false);
     }
 
     private IRulesetService RulesetService { get; } = IAppHost.GetService<IRulesetService>();
@@ -95,7 +100,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         set => SetValue(SettingsProperty, value);
     }
 
-    private void UpdateContent(ComponentSettings? oldSettings)
+    private void UpdateContent(ComponentSettings? oldSettings, bool isInit)
     {
         if (oldSettings != null)
         {
@@ -122,6 +127,17 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 
         PresentingContent = content;
         UpdateTheme();
+        if (isInit)
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Shimmer.IsContentLoaded = true;
+            });
+        }
+        else
+        {
+            Shimmer.IsContentLoaded = true;
+        }
     }
 
     private void ChildrenOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -178,10 +194,27 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+
+    public static readonly AttachedProperty<bool> IsMainWindowLoadedProperty =
+        AvaloniaProperty.RegisterAttached<ComponentPresenter, Control, bool>("IsMainWindowLoaded", inherits: true);
+
+    internal static void SetIsMainWindowLoaded(Control obj, bool value) => obj.SetValue(IsMainWindowLoadedProperty, value);
+    public static bool GetIsMainWindowLoaded(Control obj) => obj.GetValue(IsMainWindowLoadedProperty);
     
     static ComponentPresenter()
     {
         SettingsProperty.Changed.AddClassHandler<ComponentPresenter>(PropertyChangedCallback);
+        IsMainWindowLoadedProperty.Changed.AddClassHandler<ComponentPresenter>(IsMainWindowLoadedChanged);
+
+    }
+
+    private static void IsMainWindowLoadedChanged(ComponentPresenter cp, AvaloniaPropertyChangedEventArgs args)
+    {
+        if (!cp.IsOnMainWindow || !GetIsMainWindowLoaded(cp))
+        {
+            return;
+        }
+        cp.UpdateContent(null, true);
     }
 
     public ComponentPresenter()
@@ -265,5 +298,15 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     private void ComponentPresenter_OnLoaded(object sender, RoutedEventArgs e)
     {
         UpdateComponentHidState();
+    }
+
+    private void ComponentRootBorder_OnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        if (Settings == null)
+        {
+            return;
+        }
+
+        Settings.LastWidthCache = ComponentRootBorder.Bounds.Width;
     }
 }
