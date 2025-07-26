@@ -10,27 +10,5 @@
     <!-- Add Styles Here -->
     <Style Selector=":is(Panel).animated-intro">
         <Setter Property="behaviors:StackPanelIntroAnimationBehavior.IsIntroAnimationEnabled" Value="True"/>
-        <Style Selector="^> :is(Control)[(behaviors|StackPanelIntroAnimationBehavior.CanPlayAnimation)=True]">
-            <Setter Property="Opacity" Value="0"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <TranslateTransform Y="-25"/>
-                </Setter.Value>
-            </Setter>
-            <Style Selector="^[(behaviors|StackPanelIntroAnimationBehavior.IsAnimationPlayed)=True]">
-                <Style.Animations>
-                    <Animation Duration="0:0:0.75" FillMode="Both" Easing="0.00, 1.00, 0.00, 1.00">
-                        <KeyFrame Cue="0%">
-                            <Setter Property="TranslateTransform.Y" Value="50"/>
-                            <Setter Property="Opacity" Value="0"/>
-                        </KeyFrame>
-                        <KeyFrame Cue="100%">
-                            <Setter Property="TranslateTransform.Y" Value="0"/>
-                            <Setter Property="Opacity" Value="1"/>
-                        </KeyFrame>
-                    </Animation>
-                </Style.Animations>
-            </Style>
-        </Style>
     </Style>
 </Styles>

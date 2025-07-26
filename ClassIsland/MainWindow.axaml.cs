@@ -15,6 +15,7 @@ using Avalonia.Diagnostics;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using ClassIsland.Core;
@@ -210,6 +211,7 @@ public partial class MainWindow : Window
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
         IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
+        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
     }
 
     private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
