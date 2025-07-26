@@ -28,6 +28,7 @@
     <StyleInclude Source="/Controls/Field.axaml"/>
     <StyleInclude Source="/Controls/Emptiable.axaml"/>
     <StyleInclude Source="/Controls/Empty.axaml"/>
+    <StyleInclude Source="/Controls/Shimmer.axaml"/>
     <StyleInclude Source="/Themes/StackPanelIntroAnimation.axaml"/>
     <StyleInclude Source="/Themes/RichTextStyles.axaml"/>
     <StyleInclude Source="/Themes/WrapPanelResizingAnimation.axaml"/>

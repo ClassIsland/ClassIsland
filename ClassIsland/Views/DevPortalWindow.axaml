@@ -69,13 +69,8 @@
                         <CheckBox Content="消息有内容" IsChecked="{Binding ViewModel.ToastHaveActions}" />
                         <Button Content="发送！" Classes="accnet" Click="ButtonSendToast_OnClick" />
                         <Separator />
-                        <TextBlock Text="AdvancedImage" />
-                        <Grid ColumnDefinitions="*, *">
-                            <asyncImageLoader:AdvancedImage Grid.Column="0" Source="https://res.classisland.tech/test/large_image1.jpg" 
-                                                            Height="250"/>
-                            <asyncImageLoader:AdvancedImage Grid.Column="1" Source="https://res.classisland.tech/test/large_image.jpg" 
-                                                            Height="250"/>
-                        </Grid>
+                        <TextBlock Text="Shimmer" />
+                        <ci:Shimmer Width="64"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
