@@ -236,6 +236,7 @@
                                     </Button>
                                     <ToggleSwitch IsChecked="{Binding Value.IsEnabled}"
                                                   VerticalAlignment="Center"
+                                                  OnContent="" OffContent=""
                                                   IsVisible="{Binding Value.IsLocal}"
                                                   Margin="4 0 0 0" />
                                     

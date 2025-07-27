@@ -4,9 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Styling;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
@@ -30,7 +33,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
     public ILogger<XamlThemeService> Logger { get; }
     public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
-    private ResourceDictionary RootResourceDictionary { get; } = new();
+    private Styles RootStyles { get; } = [];
 
     private Window MainWindow { get; } = AppBase.Current.MainWindow!;
 
@@ -65,7 +68,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         }
 
         var resourceBoarder = MainWindow.FindControl<Border>("ResourceLoaderBorder");
-        resourceBoarder?.Resources.MergedDictionaries.Add(RootResourceDictionary);
+        resourceBoarder?.Styles.Add(RootStyles);
 
         ProcessThemeInstall();
         LoadAllThemes();
@@ -80,12 +83,12 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         {
             return;
         }
-        RootResourceDictionary.MergedDictionaries.Clear();
+        RootStyles.Clear();
         foreach (var themeInfo in Themes)
         {
             if (themeInfo.IsEnabled)
             {
-                LoadTheme(Path.Combine(themeInfo.Path, "Theme.xaml"));
+                LoadTheme(Path.Combine(themeInfo.Path, "Styles.axaml"));
                 themeInfo.IsLoaded = true;
             }
         }
@@ -93,9 +96,14 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     public void LoadTheme(string themePath)
     {
-        // Logger.LogInformation("正在加载主题 {}", themePath);
-        // var themeResourceDictionary = new ResourceInclude(new Uri(Path.GetFullPath(themePath)));
-        // RootResourceDictionary.MergedDictionaries.Add(themeResourceDictionary);
+        Logger.LogInformation("正在加载主题 {}", themePath);
+        var uri = new Uri(Path.GetFullPath(themePath));
+        if (AvaloniaRuntimeXamlLoader.Load(File.ReadAllText(themePath), Assembly.GetExecutingAssembly(), uri: uri) is
+            not Styles styles)
+        {
+            return;
+        }
+        RootStyles.Add(styles);
     }
 
     public void LoadThemeSource()

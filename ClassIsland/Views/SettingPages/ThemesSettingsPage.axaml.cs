@@ -57,6 +57,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
     {
         ViewModel.XamlThemeService.LoadThemeSource();
         ViewModel.XamlThemeService.LoadAllThemes();
+        ViewModel.UpdateMergedThemes();
     }
 
     [RelayCommand]
@@ -103,6 +104,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
     private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
         await ViewModel.PluginMarketService.RefreshPluginSourceAsync();
+        ViewModel.UpdateMergedThemes();
     }
     
 

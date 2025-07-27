@@ -27,7 +27,7 @@ public partial class ThemesSettingsViewModel : ObservableObject
     
     [ObservableProperty] private IObservableList<KeyValuePair<string, ThemeInfo>> _mergedThemesFiltered = null!;
 
-    public SyncDictionaryList<string, ThemeInfo> MergedThemes { get; }
+    public SyncDictionaryList<string, ThemeInfo> MergedThemes { get; set; } = null!;
     
     /// <inheritdoc/>
     public ThemesSettingsViewModel(IXamlThemeService xamlThemeService, IPluginMarketService pluginMarketService, SettingsService settingsService)
@@ -35,13 +35,13 @@ public partial class ThemesSettingsViewModel : ObservableObject
         XamlThemeService = xamlThemeService;
         PluginMarketService = pluginMarketService;
         SettingsService = settingsService;
-
-        MergedThemes = new SyncDictionaryList<string, ThemeInfo>(XamlThemeService.MergedThemes, () => "");
+        
         UpdateMergedThemes();
     }
     
     public void UpdateMergedThemes()
     {
+        MergedThemes = new SyncDictionaryList<string, ThemeInfo>(XamlThemeService.MergedThemes, () => "");
         MergedThemesFiltered = MergedThemes.List
             .ToObservableChangeSet()
             .Filter(ThemeSourceFilter)
