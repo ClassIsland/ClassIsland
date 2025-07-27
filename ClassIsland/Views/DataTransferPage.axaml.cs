@@ -12,6 +12,7 @@ using Avalonia.Platform.Storage;
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
+using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
@@ -56,9 +57,9 @@ public partial class DataTransferPage : UserControl
         await ViewModel.PerformImportAction();
     }
     
-    private void ButtonTurnBackFromPage1_OnClick(object? sender, RoutedEventArgs e)
+    private void ButtonTurnBack_OnClick(object? sender, RoutedEventArgs e)
     {
-        ViewModel.PageIndex = 0;
+        ViewModel.PageIndex--;
     }
 
     #region ClassIsland
@@ -104,75 +105,114 @@ public partial class DataTransferPage : UserControl
         {
             return;
         }
-        AppBase.Current.Restart(["--importV1", ViewModel.ImportSourcePath, "-m"]);
+
+        var entry = ImportEntries.None;
+        if (ViewModel.IsProfileSelected)
+        {
+            entry |= ImportEntries.Profiles;
+        }
+        if (ViewModel.IsSettingsSelected)
+        {
+            entry |= ImportEntries.Settings;
+        }
+        if (ViewModel.IsOtherConfigSelected)
+        {
+            entry |= ImportEntries.OtherConfig;
+        }
+        AppBase.Current.Restart(["--importV1", ViewModel.ImportSourcePath, "-m", "--importEntries", entry.ToString()]);
+    }
+
+    private void ImportSettings(string root)
+    {
+        var settings = ConfigureFileHelper.LoadConfigUnWrapped<Settings>(Path.Combine(root, "Settings.json"), false);
+        settings.MainWindowFont = MainWindow.DefaultFontFamilyKey;
+        settings.AutoInstallUpdateNextStartup = false;
+        settings.ShowEchoCaveWhenSettingsPageLoading = false;
+        if (settings.WeatherIconId == "classisland.weatherIcons.materialDesign")
+        {
+            settings.WeatherIconId = "classisland.weatherIcons.fluentDesign";
+        }
+        ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), settings);
+    }
+    
+    private void ImportConfig(string root)
+    {
+        Directory.Delete(Path.Combine(CommonDirectories.AppRootFolderPath, "Plugins"), true);
+        
+        FileFolderService.CopyFolder(Path.Combine(root, "Config"),
+            Path.Combine(CommonDirectories.AppRootFolderPath, "Config"), true);
+        FileFolderService.CopyFolder(Path.Combine(root, "Plugins"),
+            Path.Combine(CommonDirectories.AppRootFolderPath, "Plugins"), true);
+        if (!Directory.Exists(ComponentsService.ComponentSettingsPath))
+        {
+            Directory.CreateDirectory(ComponentsService.ComponentSettingsPath);
+        }
+        foreach (var path in Directory.GetFiles(Path.Combine(CommonDirectories.AppConfigPath, "Islands")))
+        {
+            var oldConfig =
+                ConfigureFileHelper.LoadConfigUnWrapped<ObservableCollection<ComponentSettings>>(path, false);
+            var newConfig = new ComponentProfile();
+            var e = oldConfig.OrderBy(x => x.RelativeLineNumber)
+                .GroupBy(x => x.RelativeLineNumber)
+                .Select(x => new MainWindowLineSettings()
+                {
+                    IsMainLine = x.Key == 0,
+                    Children = new ObservableCollection<ComponentSettings>(x)
+                });
+            newConfig.Lines = new ObservableCollection<MainWindowLineSettings>(e);
+            ConfigureFileHelper.SaveConfig(Path.Combine(ComponentsService.ComponentSettingsPath, Path.GetFileName(path)), newConfig);
+        }
+    }
+    
+    [Obsolete]
+    private void ImportProfile(string root)
+    {
+        FileFolderService.CopyFolder(Path.Combine(root, "Profiles"),
+            Path.Combine(CommonDirectories.AppRootFolderPath, "Profiles"), true);
+        foreach (var path in Directory.GetFiles(ProfileService.ProfilePath))
+        {
+            var config = ConfigureFileHelper.LoadConfigUnWrapped<Profile>(path, false);
+            foreach (var tl in config.TimeLayouts)
+            {
+                foreach (var layoutItem in tl.Value.Layouts.Where(x =>
+                             !string.IsNullOrWhiteSpace(x.StartSecond) && !string.IsNullOrWhiteSpace(x.EndSecond)))
+                {
+                    layoutItem.StartTime = DateTime.TryParse(layoutItem.StartSecond, out var r1)
+                        ? r1.TimeOfDay
+                        : TimeSpan.Zero;
+                    layoutItem.EndTime = DateTime.TryParse(layoutItem.EndSecond, out var r2)
+                        ? r2.TimeOfDay
+                        : TimeSpan.Zero;
+                }
+            }
+            ConfigureFileHelper.SaveConfig(Path.Combine(ProfileService.ProfilePath, Path.GetFileName(path)), config);
+        }
     }
 
     [Obsolete]
-    public async Task PerformClassIslandImport(string root)
+    public async Task PerformClassIslandImport(string root, ImportEntries importEntries)
     {
         try
         {
-            ViewModel.PageIndex = 2;
+            ViewModel.PageIndex = 3;
             await Task.Run(() =>
             {
-                Directory.Delete(Path.Combine(CommonDirectories.AppRootFolderPath, "Plugins"), true);
-                FileFolderService.CopyFolder(Path.Combine(root, "Profiles"),
-                    Path.Combine(CommonDirectories.AppRootFolderPath, "Profiles"), true);
-                FileFolderService.CopyFolder(Path.Combine(root, "Config"),
-                    Path.Combine(CommonDirectories.AppRootFolderPath, "Config"), true);
-                FileFolderService.CopyFolder(Path.Combine(root, "Plugins"),
-                    Path.Combine(CommonDirectories.AppRootFolderPath, "Plugins"), true);
+                if ((importEntries & ImportEntries.Settings) == ImportEntries.Settings)
+                {
+                    ImportSettings(root);
+                }
+                if ((importEntries & ImportEntries.OtherConfig) == ImportEntries.OtherConfig)
+                {
+                    ImportConfig(root);
+                }
 
-                var settings = ConfigureFileHelper.LoadConfigUnWrapped<Settings>(Path.Combine(root, "Settings.json"), false);
-                settings.MainWindowFont = MainWindow.DefaultFontFamilyKey;
-                settings.AutoInstallUpdateNextStartup = false;
-                settings.ShowEchoCaveWhenSettingsPageLoading = false;
-                if (settings.WeatherIconId == "classisland.weatherIcons.materialDesign")
+                if ((importEntries & ImportEntries.Profiles) == ImportEntries.Profiles)
                 {
-                    settings.WeatherIconId = "classisland.weatherIcons.fluentDesign";
-                }
-                ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), settings);
-
-                if (!Directory.Exists(ComponentsService.ComponentSettingsPath))
-                {
-                    Directory.CreateDirectory(ComponentsService.ComponentSettingsPath);
-                }
-                foreach (var path in Directory.GetFiles(Path.Combine(CommonDirectories.AppConfigPath, "Islands")))
-                {
-                    var oldConfig =
-                        ConfigureFileHelper.LoadConfigUnWrapped<ObservableCollection<ComponentSettings>>(path, false);
-                    var newConfig = new ComponentProfile();
-                    var e = oldConfig.OrderBy(x => x.RelativeLineNumber)
-                        .GroupBy(x => x.RelativeLineNumber)
-                        .Select(x => new MainWindowLineSettings()
-                        {
-                            IsMainLine = x.Key == 0,
-                            Children = new ObservableCollection<ComponentSettings>(x)
-                        });
-                    newConfig.Lines = new ObservableCollection<MainWindowLineSettings>(e);
-                    ConfigureFileHelper.SaveConfig(Path.Combine(ComponentsService.ComponentSettingsPath, Path.GetFileName(path)), newConfig);
-                }
-                foreach (var path in Directory.GetFiles(ProfileService.ProfilePath))
-                {
-                    var config = ConfigureFileHelper.LoadConfigUnWrapped<Profile>(path, false);
-                    foreach (var tl in config.TimeLayouts)
-                    {
-                        foreach (var layoutItem in tl.Value.Layouts.Where(x =>
-                                     !string.IsNullOrWhiteSpace(x.StartSecond) && !string.IsNullOrWhiteSpace(x.EndSecond)))
-                        {
-                            layoutItem.StartTime = DateTime.TryParse(layoutItem.StartSecond, out var r1)
-                                ? r1.TimeOfDay
-                                : TimeSpan.Zero;
-                            layoutItem.EndTime = DateTime.TryParse(layoutItem.EndSecond, out var r2)
-                                ? r2.TimeOfDay
-                                : TimeSpan.Zero;
-                        }
-                    }
-                    ConfigureFileHelper.SaveConfig(Path.Combine(ProfileService.ProfilePath, Path.GetFileName(path)), config);
+                    ImportProfile(root);
                 }
             });
             
-            ViewModel.PageIndex = 3;
+            ViewModel.PageIndex = 4;
         }
         catch (Exception e)
         {
@@ -186,5 +226,10 @@ public partial class DataTransferPage : UserControl
     private void ButtonFinish_OnClick(object? sender, RoutedEventArgs e)
     {
         (TopLevel.GetTopLevel(this) as Window)?.Close();
+    }
+
+    private void ButtonNext_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.PageIndex++;
     }
 }

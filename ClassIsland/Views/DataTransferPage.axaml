@@ -7,6 +7,11 @@
              xmlns:views="clr-namespace:ClassIsland.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.DataTransferPage">
+    <UserControl.Styles>
+        <Style Selector="CheckBox">
+            <Setter Property="Padding" Value="8 0"/>
+        </Style>
+    </UserControl.Styles>
     <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource AncestorType=views:DataTransferPage}}">
         <Grid MaxWidth="600" 
                     VerticalAlignment="Stretch"
@@ -27,7 +32,7 @@
                             <TabControl Classes="compact">
                                 <TabItem Header="导入">
                                     <StackPanel Classes="animated-intro" Spacing="2">
-                                        <controls:SettingsExpander Header="ClassIsland 1.7.0.x 数据"
+                                        <controls:SettingsExpander Header="ClassIsland 1.7.0.x"
                                                                    IsClickEnabled="True"
                                                                    Click="SettingsExpanderImportFromClassIsland1_OnClick">
                                             <controls:SettingsExpander.IconSource>
@@ -35,20 +40,17 @@
                                                     UriSource="avares://ClassIsland/Assets/AppLogo.png" />
                                             </controls:SettingsExpander.IconSource>
                                         </controls:SettingsExpander>
-                                        <controls:SettingsExpander Header="ClassWidgets 数据"
+                                        <controls:SettingsExpander Header="ClassWidgets"
                                                                    IsClickEnabled="True"
                                                                    IconSource="{ci:FluentIconSource &#xe06f;}" />
                                     </StackPanel>
-                                </TabItem>
-                                <TabItem Header="导出">
-
                                 </TabItem>
                             </TabControl>
                         </StackPanel>
                     </Border>
                     <Border VerticalAlignment="Center">
                         <StackPanel Classes="animated-intro" Spacing="2" VerticalAlignment="Center">
-                            <TextBlock Text="选择导入信息" HorizontalAlignment="Center"
+                            <TextBlock Text="选择要导入的数据" HorizontalAlignment="Center"
                                        Margin="0 0 0 4"
                                        Theme="{StaticResource SubtitleTextBlockStyle}"/>
                             <TextBlock Text="{Binding ViewModel.ImportDescription}" 
@@ -56,18 +58,62 @@
                                        TextAlignment="Center"
                                        TextWrapping="Wrap"
                                        Margin="0 0 0 4"/>
-                            
-                            <TextBlock Text="选择要导入的位置" 
+                            <TextBlock Text="选择要从导入源导入的信息" 
                                        HorizontalAlignment="Center"
                                        TextAlignment="Center"
                                        Margin="0 0 0 8"/>
+                            <CheckBox IsChecked="{Binding ViewModel.IsProfileSelected}">
+                                <ci:Thing IconSource="{ci:FluentIconSource &#xe699;}"
+                                          VerticalAlignment="Center"
+                                          Header="课表配置"
+                                          Description="包括课表内容、时间安排、科目定义等信息。"/>
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding ViewModel.IsSettingsSelected}">
+                                <ci:Thing IconSource="{ci:FluentIconSource &#xef27;}"
+                                          Header="应用设置"
+                                          VerticalAlignment="Center"
+                                          Description="包括应用的各个首选项，如隐藏设置、颜色设置、提醒/铃声设置、天气信息等。"/>
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding ViewModel.IsOtherConfigSelected}">
+                                <ci:Thing IconSource="{ci:FluentIconSource &#xe06f;}"
+                                          Header="其它配置"
+                                          VerticalAlignment="Center"
+                                          Description="组件、自动化等配置文件。"/>
+                            </CheckBox>
+                            <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+                                <Button Click="ButtonTurnBack_OnClick"
+                                        ToolTip.Tip="上一步"
+                                        Content="{ci:FluentIcon &#xE108;, FontSize=18}"
+                                        Width="48" Height="48"
+                                        CornerRadius="24"
+                                        Margin="0 8 0 0"/>
+                                <Button Click="ButtonNext_OnClick"
+                                        ToolTip.Tip="下一步"
+                                        Content="{ci:FluentIcon &#xE130;, FontSize=18}"
+                                        Width="48" Height="48"
+                                        CornerRadius="24"
+                                        Classes="accent" 
+                                        Margin="0 8 0 0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border VerticalAlignment="Center">
+                        <StackPanel Classes="animated-intro" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="导入来源" HorizontalAlignment="Center"
+                                       Margin="0 0 0 4"
+                                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                            <TextBlock Text="选择要导入的数据来源。" 
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Margin="0 0 0 8"/>
+                            
                             <controls:SettingsExpander Header="浏览…"
                                                        IconSource="{ci:FluentIconSource &#xe88d;}"
                                                        Description="手动浏览导入位置"
                                                        IsClickEnabled="True"
                                                        Click="SettingsExpanderBrowse_OnClick">
                             </controls:SettingsExpander>
-                            <Button Click="ButtonTurnBackFromPage1_OnClick"
+                            <Button Click="ButtonTurnBack_OnClick"
                                     ToolTip.Tip="上一步"
                                     Content="{ci:FluentIcon &#xE108;, FontSize=18}"
                                     Width="48" Height="48"

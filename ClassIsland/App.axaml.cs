@@ -79,6 +79,7 @@ using ClassIsland.Controls.Components;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Controls.SpeechProviderSettingsControls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Enums;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -818,7 +819,7 @@ public partial class App : AppBase, IAppHost
                     PluginService.InitializePlugins(context, services);
                 }
             }).Build();
-        AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Starting;
+        AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.StartingOffline;
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
@@ -847,7 +848,8 @@ public partial class App : AppBase, IAppHost
                 ImportName = "ClassIsland"
             };
             dtWindow.Show();
-            await dtWindow.PerformClassIslandImport(ApplicationCommand.ImportV1);
+            var entries = int.TryParse(ApplicationCommand.ImportEntries, out var r) ? r : 0;
+            await dtWindow.PerformClassIslandImport(ApplicationCommand.ImportV1, (ImportEntries)entries);
         }
         var spanLaunching = transaction.StartChild("startup-launching");
         var spanSetupMgmt = spanLaunching.StartChild("startup-setup-mgmt");
@@ -866,7 +868,8 @@ public partial class App : AppBase, IAppHost
         }
         spanLoadingSettings.Finish();
         //OverrideFocusVisualStyle();
-        
+
+        CurrentLifetime = Core.Enums.ApplicationLifetime.StartingOnline;
         Logger.LogInformation("初始化应用。");
         
         IThemeService.IsTransientDisabled = Settings.AnimationLevel < 1;
@@ -1125,7 +1128,7 @@ public partial class App : AppBase, IAppHost
         }
         _ = Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            var partial = CurrentLifetime <= Core.Enums.ApplicationLifetime.Starting;
+            var partial = CurrentLifetime < Core.Enums.ApplicationLifetime.StartingOnline;
             CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Stopping;
             Logger?.LogInformation("正在停止应用");
             if (IAppHost.TryGetService<IManagementService>() is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })

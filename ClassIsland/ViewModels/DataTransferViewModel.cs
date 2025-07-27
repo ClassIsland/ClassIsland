@@ -11,4 +11,8 @@ public partial class DataTransferViewModel : ObservableRecipient
     [ObservableProperty] private Func<Task>? _browseAction;
     [ObservableProperty] private Func<Task>? _performImportAction;
     [ObservableProperty] private string _importSourcePath = "";
+    
+    [ObservableProperty] private bool _isProfileSelected = true;
+    [ObservableProperty] private bool _isSettingsSelected = true;
+    [ObservableProperty] private bool _isOtherConfigSelected = true;
 }
