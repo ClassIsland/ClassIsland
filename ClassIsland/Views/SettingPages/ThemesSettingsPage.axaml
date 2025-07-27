@@ -1,0 +1,309 @@
+﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.ThemesSettingsPage"
+                     xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                     xmlns:controls1="clr-namespace:ClassIsland.Controls"
+                     xmlns:classIsland="clr-namespace:ClassIsland"
+                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                     xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                     xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+                     mc:Ignorable="d"
+                     d:DesignHeight="450" d:DesignWidth="800"
+                     d:DataContext="{d:DesignInstance local:ThemesSettingsPage}">
+
+    <ci:SettingsPageBase.Resources>
+        <Grid x:Key="ErrorInfoDrawer" Margin="16" Width="450" RowDefinitions="Auto,*">
+            <TextBlock Text="错误信息" Grid.Row="0"
+                       Theme="{StaticResource SubtitleTextBlockStyle}" />
+            <TextBox Grid.Row="1"
+                     VerticalContentAlignment="Stretch"
+                     Text="{Binding Mode=OneTime}" />
+        </Grid>
+        <ci:BindingProxy
+            x:TypeArguments="local:ThemesSettingsPage"
+            Data="{Binding}"
+            x:Key="BindingProxy"/>
+
+            <!--<Style TargetType="Canvas">
+            <Setter Property="UseLayoutRounding" Value="True"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="RenderOptions.EdgeMode" Value="Aliased"/>
+        </Style>-->
+    </ci:SettingsPageBase.Resources>
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <Grid Row="0" ColumnDefinitions="*,Auto" IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
+            <TabStrip Grid.Column="0" Classes="compact"
+                      SelectionChanged="ListBoxCategory_OnSelectionChanged"
+                      SelectedIndex="{Binding ViewModel.ThemeCategoryIndex}">
+                <TabStripItem>市场</TabStripItem>
+                <TabStripItem>已安装</TabStripItem>
+            </TabStrip>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Theme="{StaticResource TransparentButton}"
+                        Click="ButtonBase_OnClick">
+                    <ci:IconText Glyph="&#xe0b5;" Text="刷新市场" />
+                </Button>
+                <Button Theme="{StaticResource TransparentButton}"
+                        Click="ButtonLoadThemes_OnClick">
+                    <ci:IconText Glyph="&#xe0bd;" Text="重载主题" />
+                </Button>
+                <Button Theme="{StaticResource TransparentButton}"
+                        Click="ButtonOpenThemeFolder_OnClick">
+                    <ci:IconText Glyph="&#xe88d;" Text="打开主题文件夹…" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
+            <ProgressBar IsIndeterminate="True"
+                         IsVisible="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource}"/>
+        </StackPanel>
+        
+
+        <ListBox Grid.Row="2" 
+                 ItemsSource="{Binding ViewModel.MergedThemesFiltered.Items}"
+                 IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
+            <ListBox.ItemContainerTheme>
+                <ControlTheme TargetType="ListBoxItem" >
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="2"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <ContentPresenter Content="{Binding}"
+                                                  ContentTemplate="{Binding ItemTemplate, RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </ControlTheme>
+            </ListBox.ItemContainerTheme>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" ItemHeight="150"
+                               Classes="animated-resize">
+                        <Interaction.Behaviors>
+                            <ci:WrapPanelAutoResizeBehavior TargetWidth="328"/>
+                        </Interaction.Behaviors>
+                    </WrapPanel>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                            BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="4" ClipToBounds="True">
+                        <Grid Background="Transparent">
+                            <Border >
+                                <asyncImageLoader:AdvancedImage
+                                    CornerRadius="4"
+                                    Source="{Binding Value.RealBannerPath, Mode=OneWay}" Stretch="UniformToFill"
+                                    StretchDirection="Both" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                            </Border>
+                            <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                                    CornerRadius="4">
+                                <Border.OpacityMask>
+                                    <LinearGradientBrush StartPoint="0, 0" EndPoint="0, 150">
+                                        <LinearGradientBrush.GradientStops>
+                                            <GradientStop Color="#00ffffff" Offset="0"/>
+                                            <GradientStop Color="#00ffffff" Offset="0.65"/>
+                                            <GradientStop Color="#ffffffff" Offset="1.0"/>
+                                        </LinearGradientBrush.GradientStops>
+                                    </LinearGradientBrush>
+                                </Border.OpacityMask>
+                            </Border>
+                            <Grid VerticalAlignment="Bottom" Margin="8" RowDefinitions="Auto,Auto"
+                                  ColumnDefinitions="Auto,*,Auto"
+                                  x:Name="GridCardRoot">
+                                <Grid.Styles>
+                                    <Style Selector="Grid#GridCardRoot.Fade">
+                                        <Setter Property="Opacity" Value="0.8"/>
+                                    </Style>
+                                </Grid.Styles>
+                                <Classes.Fade>
+                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                        <Binding Path="!Value.IsLoaded"/>
+                                        <Binding Path="Value.IsLocal"/>
+                                    </MultiBinding>
+                                </Classes.Fade>
+
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Value.Manifest.Name}"
+                                           VerticalAlignment="Center" FontWeight="Medium" FontSize="16"/>
+                                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
+                                    <TextBlock Text="{Binding Value.Manifest.Author}"
+                                               VerticalAlignment="Center" FontSize="12"
+                                               HorizontalAlignment="Left" />
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xe905;}"
+                                            Margin="2 -4 0 -4"
+                                            ToolTip.Tip="网站…"
+                                            CommandParameter="{Binding Value.Manifest.Url}"
+                                            Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Margin="0 -8"
+                                            IsEnabled="{Binding Value.DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}">
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                                Content="{ci:FluentIcon &#xe808;}"
+                                                IsVisible="{Binding Value.IsError}"
+                                                Margin="2 0"
+                                                Foreground="Red"
+                                                ToolTip.Tip="加载此主题时发生错误"
+                                                CommandParameter="{Binding Value}"
+                                                Command="{Binding ShowErrorsCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xebac;}"
+                                            Margin="2 0"
+                                            IsVisible="{Binding Value.IsLocal}"
+                                            ToolTip.Tip="更多选项…">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Icon="{ci:FluentIcon &#xe88d;}" Header="打开主题文件夹…"
+                                                          CommandParameter="{Binding Value}"
+                                                          Command="{Binding Data.OpenFolderCommand, Source={StaticResource BindingProxy}}"/>
+                                                <MenuItem Icon="{ci:FluentIcon &#xE06F;}" Header="打包主题…"
+                                                          CommandParameter="{Binding Value}"
+                                                          Command="{Binding Data.PackageThemeCommandCommand, Source={StaticResource BindingProxy}}"/>
+                                                <Separator/>
+                                                <MenuItem Icon="{ci:FluentIcon &#xe61d;}" Header="卸载主题"
+                                                          IsVisible="{Binding !Value.IsUninstalling}"
+                                                          CommandParameter="{Binding Value}"
+                                                          Command="{Binding Data.UninstallThemeCommand, Source={StaticResource BindingProxy}}"/>
+                                                <MenuItem Icon="{ci:FluentIcon &#xe195;}" Header="撤销卸载"
+                                                          IsVisible="{Binding Value.IsUninstalling}"
+                                                          CommandParameter="{Binding Value}"
+                                                          Command="{Binding Data.UndoUninstallThemeCommand, Source={StaticResource BindingProxy}}"/>
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                    <Panel>
+                                        <Button
+                                            ToolTip.Tip="安装"
+                                            Classes="accent"
+                                            CornerRadius="14"
+                                            Width="28" Height="28"
+                                            Padding="0"
+                                            CommandParameter="{Binding Value.Manifest.Id}"
+                                            Command="{Binding Data.InstallThemeCommand, Source={StaticResource BindingProxy}}"
+                                            Content="{ci:FluentIcon &#xE0D2;}">
+                                            <Button.IsVisible>
+                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                    <Binding Path="Value.IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
+                                                    <Binding Path="Value.IsAvailableOnMarket"/>
+                                                    <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
+                                                </MultiBinding>
+                                            </Button.IsVisible>
+                                        </Button>
+                                        <Button
+                                            ToolTip.Tip="更新"
+                                            Classes="accent"
+                                            CornerRadius="14"
+                                            Width="28" Height="28"
+                                            Padding="0"
+                                            CommandParameter="{Binding Value.Manifest.Id}"
+                                            Command="{Binding Data.InstallThemeCommand, Source={StaticResource BindingProxy}}"
+                                            Content="{ci:FluentIcon &#xE1A0;}">
+                                            <Button.IsVisible>
+                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                    <Binding Path="Value.IsLocal"/>
+                                                    <Binding Path="Value.IsAvailableOnMarket"/>
+                                                    <Binding Path="Value.IsUpdateAvailable"/>
+                                                    <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
+                                                </MultiBinding>
+                                            </Button.IsVisible>
+                                        </Button>
+                                        <controls:ProgressRing Width="28" Height="28" MinWidth="0" MinHeight="0" IsIndeterminate="False"
+                                                                IsVisible="{Binding Value.DownloadProgress.IsDownloading, FallbackValue={x:False}}"
+                                                                Value="{Binding Value.DownloadProgress.Progress}"
+                                                                Maximum="100"/>
+                                    </Panel>
+                                    <Button
+                                        ToolTip.Tip="重启以应用更改"
+                                        CornerRadius="14"
+                                        Width="28" Height="28"
+                                        Click="ButtonRestart_OnClick"
+                                        Content="{ci:FluentIcon &#xE0BC;}"
+                                        Classes="accent" Padding="0"
+                                        IsVisible="{Binding Value.RestartRequired}">
+                                    </Button>
+                                    <ToggleSwitch IsChecked="{Binding Value.IsEnabled}"
+                                                  VerticalAlignment="Center"
+                                                  IsVisible="{Binding Value.IsLocal}"
+                                                  Margin="4 0 0 0" />
+                                    
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
+        <Border Grid.Row="0" Grid.RowSpan="3"
+                IsVisible="{Binding ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
+            <ScrollViewer>
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
+                    <Grid HorizontalAlignment="Center" ColumnDefinitions="75,Auto,75">
+                        <Image Grid.Column="0" Source="/Assets/AppLogo.png" />
+                        <ci:FluentIcon Grid.Column="1"
+                                         VerticalAlignment="Center"
+                                         Width="25" Height="25"
+                                         FontSize="25"
+                                         Margin="16 0"
+                                         Glyph="&#xE00C;" />
+                        <ci:FluentIcon Grid.Column="2" Glyph="&#xE070;"
+                                       VerticalAlignment="Stretch"
+                                       HorizontalAlignment="Stretch"
+                                       FontSize="75"
+                                       Height="75"
+                                       Width="75" />
+                    </Grid>
+                    <TextBlock Text="主题"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Margin="0 8 0 0"
+                               Theme="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBlock Margin="0 6 0 0"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Width="320">
+                        <Run Text="欢迎使用主题！主题可以修改甚至完全重塑 ClassIsland 主界面的外观。您可以使用主题功能打造出独一无二的 ClassIsland 界面。" />
+
+                    </TextBlock>
+                    <Border Width="320"
+                            Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                            Margin="0 8 0 0"
+                            CornerRadius="4"
+                            Padding="8">
+                        <StackPanel>
+                            <ci:FluentIcon Glyph="&#xF430;"
+                                             Margin="0 0 0 4"
+                                             HorizontalAlignment="Center"/>
+                            <TextBlock TextAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Text="需要注意，主题以 XAML 样式的形式加载，可能存在与部分 ClassIsland 版本不兼容，甚至使应用完全无法使用的情况。并且主题在加载过程中会转译为可执行代码，可以以 ClassIsland 的身份和权限执行任意代码。请不要安装来路不明的主题，开发者也无法保证市场所提供的主题都是绝对安全的。ClassIsland 开发团队对使用主题造成的一切后果概不负责。" />
+                        </StackPanel>
+                    </Border>
+
+                    <Button HorizontalAlignment="Center"
+                            Margin="0 16 0 0"
+                            Classes="accent"
+                            Click="ButtonAgreeAgreement_OnClick">
+                        <ci:IconText Glyph="&#xE424;" Text="同意并开始使用主题"/>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</ci:SettingsPageBase>
