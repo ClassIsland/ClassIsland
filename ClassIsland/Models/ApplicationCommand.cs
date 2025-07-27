@@ -41,5 +41,7 @@ public class ApplicationCommand
     public bool Diagnostic { get; set; } = false;
     public bool Safe { get; set; } = false;
 
+    public string ImportV1 { get; set; } = "";
+
     public bool SkipOobe { get; set; } = false;
 }

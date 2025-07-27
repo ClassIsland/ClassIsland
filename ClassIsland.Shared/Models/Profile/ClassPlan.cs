@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 using ClassIsland.Shared.ComponentModels;
+using ClassIsland.Shared.JsonConverters;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -374,6 +375,7 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 当前课表的时间表ID
     /// </summary>
+    [JsonConverter(typeof(GuidEmptyFallbackConverter))]
     public Guid TimeLayoutId
     {
         get => _timeLayoutId;

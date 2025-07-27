@@ -19,6 +19,7 @@ using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using HotAvalonia;
 using Sentry;
 using System.Diagnostics;
+using ClassIsland.Shared.JsonConverters;
 
 namespace ClassIsland;
 
@@ -31,6 +32,7 @@ public static class Program
         AppBase.CurrentLifetime = ApplicationLifetime.EarlyLoading;
         
         ConfigureFileHelper.SerializerOptions.Converters.Add(new ColorHexJsonConverter());
+        ConfigureFileHelper.SerializerOptions.Converters.Add(new GuidEmptyFallbackConverter());
 
         var command = new RootCommand
         {
@@ -48,7 +50,8 @@ public static class Program
             new Option<bool>(["--recovery", "-r"], "启动时进入恢复模式"),
             new Option<bool>(["--diagnostic", "-d"], "启用诊断模式"),
             new Option<bool>(["--safe", "-s"], "启用安全模式"),
-            new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动")
+            new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动"),
+            new Option<string>(["--importV1"], "指定要导入的 ClassIsland 1.7 配置目录")
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);

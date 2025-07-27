@@ -1,0 +1,127 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Views.DataTransferPage">
+    <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource AncestorType=views:DataTransferPage}}">
+        <Grid MaxWidth="600" 
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Center">
+            
+            <Carousel Width="600" SelectedIndex="{Binding ViewModel.PageIndex}"
+                      VerticalAlignment="Stretch"
+                      ClipToBounds="False">
+                <Carousel.Items>
+                    <Border VerticalAlignment="Center">
+                        <StackPanel>   
+                            <TextBlock Text="数据迁移" HorizontalAlignment="Center"
+                                       Margin="0 0 0 4"
+                                       Theme="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="向 ClassIsland 导入或从 ClassIsland 导出数据。"
+                                       HorizontalAlignment="Center"
+                                       Margin="0 0 0 8" />
+                            <TabControl Classes="compact">
+                                <TabItem Header="导入">
+                                    <StackPanel Classes="animated-intro" Spacing="2">
+                                        <controls:SettingsExpander Header="ClassIsland 1.7.0.x 数据"
+                                                                   IsClickEnabled="True"
+                                                                   Click="SettingsExpanderImportFromClassIsland1_OnClick">
+                                            <controls:SettingsExpander.IconSource>
+                                                <controls:BitmapIconSource
+                                                    UriSource="avares://ClassIsland/Assets/AppLogo.png" />
+                                            </controls:SettingsExpander.IconSource>
+                                        </controls:SettingsExpander>
+                                        <controls:SettingsExpander Header="ClassWidgets 数据"
+                                                                   IsClickEnabled="True"
+                                                                   IconSource="{ci:FluentIconSource &#xe06f;}" />
+                                    </StackPanel>
+                                </TabItem>
+                                <TabItem Header="导出">
+
+                                </TabItem>
+                            </TabControl>
+                        </StackPanel>
+                    </Border>
+                    <Border VerticalAlignment="Center">
+                        <StackPanel Classes="animated-intro" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="选择导入信息" HorizontalAlignment="Center"
+                                       Margin="0 0 0 4"
+                                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                            <TextBlock Text="{Binding ViewModel.ImportDescription}" 
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Margin="0 0 0 4"/>
+                            
+                            <TextBlock Text="选择要导入的位置" 
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       Margin="0 0 0 8"/>
+                            <controls:SettingsExpander Header="浏览…"
+                                                       IconSource="{ci:FluentIconSource &#xe88d;}"
+                                                       Description="手动浏览导入位置"
+                                                       IsClickEnabled="True"
+                                                       Click="SettingsExpanderBrowse_OnClick">
+                            </controls:SettingsExpander>
+                            <Button Click="ButtonTurnBackFromPage1_OnClick"
+                                    ToolTip.Tip="上一步"
+                                    Content="{ci:FluentIcon &#xE108;, FontSize=18}"
+                                    Width="48" Height="48"
+                                    CornerRadius="24"
+                                    HorizontalAlignment="Center"
+                                    Margin="0 8 0 0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border VerticalAlignment="Center">
+                        <StackPanel Classes="animated-intro" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="正在导入" HorizontalAlignment="Center"
+                                       Margin="0 0 0 4"
+                                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                            <TextBlock Text="请坐和放宽，导入很快就能完成。" 
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Margin="0 0 0 4"/>
+                            <controls:ProgressRing IsIndeterminate="True"
+                                                   Width="48" Height="48"
+                                         Margin="0 8 0 0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border VerticalAlignment="Center">
+                        <StackPanel Classes="animated-intro" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="导入完成" HorizontalAlignment="Center"
+                                       Margin="0 0 0 4"
+                                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                            <TextBlock Text="已成功完成导入。" 
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Margin="0 0 0 4"/>
+                            <Button ToolTip.Tip="完成"
+                                    VerticalAlignment="Center"
+                                    Content="{ci:FluentIcon &#xE423;, FontSize=18}"
+                                    Width="48" Height="48"
+                                    CornerRadius="24"
+                                    Classes="accent" 
+                                    HorizontalAlignment="Center"
+                                    Click="ButtonFinish_OnClick"
+                                    Margin="0 8 0 0"/>
+                        </StackPanel>
+                    </Border>
+                </Carousel.Items>
+                <Carousel.PageTransition>
+                    <CompositePageTransition>
+                        <PageSlide Duration="0:0:0.3" Orientation="Horizontal"
+                                   SlideOutEasing="0.76, 0, 0.24, 1"
+                                   SlideInEasing="0.76, 0, 0.24, 1"/>
+                        <CrossFade Duration="0:0:0.3"/>
+                    </CompositePageTransition>
+                </Carousel.PageTransition>
+            </Carousel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
