@@ -34,4 +34,9 @@ public partial class DataTransferWindow : MyWindow
     {
         
     }
+
+    public void ImportComplete()
+    {
+        _dataTransferPage.ViewModel.PageIndex = 4;
+    }
 }

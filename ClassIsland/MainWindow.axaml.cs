@@ -505,6 +505,10 @@ public partial class MainWindow : Window
 
     public void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (!CheckAccess())
+        {
+            return;
+        }
         UpdateTheme();
         if (e.PropertyName is nameof(ViewModel.Settings.IsMouseInFadingReversed)
                            or nameof(ViewModel.Settings.IsMouseInFadingEnabled))

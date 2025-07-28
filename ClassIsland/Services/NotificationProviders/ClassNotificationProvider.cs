@@ -25,9 +25,9 @@ namespace ClassIsland.Services.NotificationProviders;
 [NotificationChannelInfo(OnBreakingChannelId, "下课提醒", "\ue4c3", description: "在下课时发出提醒。")]
 public class ClassNotificationProvider : NotificationProviderBase<ClassNotificationSettings>
 {
-    private const string PrepareOnClassChannelId = "CDDFE7FF-B904-4C73-B458-82793B2F66E9";
-    private const string OnClassChannelId = "AFF5B9A4-037C-4A71-8563-C9EA87DDA75C";
-    private const string OnBreakingChannelId = "77C9F3FB-0A2A-4B22-BDDF-3C333462B2F9";
+    public const string PrepareOnClassChannelId = "CDDFE7FF-B904-4C73-B458-82793B2F66E9";
+    public const string OnClassChannelId = "AFF5B9A4-037C-4A71-8563-C9EA87DDA75C";
+    public const string OnBreakingChannelId = "77C9F3FB-0A2A-4B22-BDDF-3C333462B2F9";
 
     private bool IsClassPreparingNotified { get; set; } = false;
 
