@@ -391,6 +391,6 @@ jobs:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}
         run: |
           ls
-          cd out
+          cd out_artifacts/out_nupkgs
           dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
 
