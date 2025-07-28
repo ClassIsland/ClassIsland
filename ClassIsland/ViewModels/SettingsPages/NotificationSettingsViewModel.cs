@@ -17,17 +17,12 @@ using DynamicData.Binding;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class NotificationSettingsViewModel : ObservableRecipient
+public partial class NotificationSettingsViewModel : ObservableRecipient
 {
     public SettingsService SettingsService { get; }
     public INotificationHostService NotificationHostService { get; }
     public ISpeechService SpeechService { get; }
     public IManagementService ManagementService { get; }
-
-    private readonly ReadOnlyObservableCollection<string> _notificationProviders;
-    
-    public ReadOnlyObservableCollection<string> NotificationProviders => _notificationProviders;
-    
     
     private bool _isNotificationSettingsPanelOpened = false;
     private string? _notificationSettingsSelectedProvider;
@@ -85,6 +80,8 @@ public class NotificationSettingsViewModel : ObservableRecipient
     private INotificationSenderRegisterInfo? _selectedRegisterInfo;
     private string? _notificationSettingsSelectedChannel;
     private object? _speechProviderSettingsControl;
+    
+    [ObservableProperty] private IObservableList<string> _notificationProvidersFiltered = null!;
 
     public NotificationSettingsViewModel(SettingsService settingsService,
         INotificationHostService notificationHostService,
@@ -96,10 +93,10 @@ public class NotificationSettingsViewModel : ObservableRecipient
         SpeechService = speechService;
         ManagementService = managementService;
 
-        SettingsService.Settings.NotificationProvidersPriority
+        NotificationProvidersFiltered = SettingsService.Settings.NotificationProvidersPriority
             .ToObservableChangeSet()
             .Filter(x => NotificationHostService.NotificationProviders.Any(y => y.ProviderGuid.ToString() == x))
-            .Bind(out _notificationProviders);
+            .AsObservableList();
     }
 
     public string TestSpeechText
