@@ -48,4 +48,6 @@ public class ApplicationCommand
     public bool SkipOobe { get; set; } = false;
 
     public string ImportEntries { get; set; } = "0";
+
+    public bool ImportComplete { get; set; } = false;
 }

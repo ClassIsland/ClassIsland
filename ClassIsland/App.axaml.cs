@@ -980,6 +980,15 @@ public partial class App : AppBase, IAppHost
             }
             _isStartedCompleted = true;
             AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Running;
+            if (ApplicationCommand.ImportComplete)
+            {
+                var dtWindow = new DataTransferWindow()
+                { 
+                    ImportName = "ClassIsland"
+                };
+                dtWindow.Show();
+                dtWindow.ImportComplete();
+            }
         };
 #if DEBUG
         MemoryProfiler.GetSnapshot("Pre MainWindow show");

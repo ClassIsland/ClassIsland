@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
@@ -18,9 +19,13 @@ using ClassIsland.Core.Models.Components;
 using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.Models.External.ClassWidgets;
+using ClassIsland.Models.NotificationProviderSettings;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
+using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
+using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
@@ -233,7 +238,7 @@ public partial class DataTransferPage : UserControl
 
     #endregion
 
-    #region Class
+    #region Class Widgets
 
     private double TryGetDoubleFromSection(PropertyCollection? dictionary, string key, double fallback) 
     {
@@ -496,14 +501,147 @@ public partial class DataTransferPage : UserControl
         // General
         var general = ini["General"];
         settings.Scale = TryGetDoubleFromSection(general, "scale", 1.0);
-        settings.Opacity = TryGetDoubleFromSection(general, "opacity", 1.0);
+        settings.Opacity = TryGetDoubleFromSection(general, "opacity", 100) / 100;
         settings.HideOnClass = TryGetIntFromSection(general, "hide", 0) == 1;
+        PlatformServices.DesktopService.IsAutoStartEnabled = TryGetBooleanFromSection(general, "auto_startup", false);
+        settings.WindowLayer = TryGetIntFromSection(general, "pin_on_top", 0) switch
+        {
+            0 or 2 => 0,
+            1 => 1,
+            _ => 0
+        };
+        settings.Theme = TryGetIntFromSection(general, "color_mode", 2) switch
+        {
+            2 => 0,
+            0 => 1,
+            1 => 2,
+            _ => 0
+        };
         
+        // Weather
+        var weather = ini["Weather"];
+        if (TryGetStringFromSection(weather, "api", "xiaomi_weather") == "xiaomi_weather")
+        {
+            settings.CityId = "weathercn:" + TryGetStringFromSection(weather, "city", "101010100");
+            settings.WeatherLocationSource = 0;
+        }
+        
+        // Toast
+        var toast = ini["Toast"];
+        settings.IsNotificationEnabled = true;
+        settings.IsNotificationEffectEnabled =
+            settings.AllowNotificationEffect = TryGetBooleanFromSection(toast, "wave", true);
+        settings.IsNotificationSoundEnabled =
+            settings.AllowNotificationSound = TryGetBooleanFromSection(toast, "ringtone", true);
+        var classSettings =
+            settings.NotificationProvidersSettings.GetValueOrDefault("08F0D9C3-C770-4093-A3D0-02F3D90C24BC".ToLower()) as ClassNotificationSettings
+            ?? new ClassNotificationSettings();
+        classSettings.InDoorClassPreparingDeltaTime = classSettings.OutDoorClassPreparingDeltaTime
+            = (int)(TryGetDoubleFromSection(toast, "prepare_minutes", 2.0) * 60);
+        classSettings.IsClassOnNotificationEnabled = TryGetBooleanFromSection(toast, "attend_class", true);
+        classSettings.IsClassOffNotificationEnabled = TryGetBooleanFromSection(toast, "finish_class", true);
+        classSettings.IsClassOnPreparingNotificationEnabled = TryGetBooleanFromSection(toast, "prepare_class", true);
+        settings.NotificationProvidersSettings["08F0D9C3-C770-4093-A3D0-02F3D90C24BC".ToLower()] = classSettings;
+        var afterSchoolSettings =
+            settings.NotificationProvidersSettings.GetValueOrDefault("8FBC3A26-6D20-44DD-B895-B9411E3DDC51".ToLower()) as AfterSchoolNotificationProviderSettings
+            ?? new AfterSchoolNotificationProviderSettings();
+        afterSchoolSettings.IsEnabled = TryGetBooleanFromSection(toast, "after_school", true);
+        settings.NotificationProvidersSettings["8FBC3A26-6D20-44DD-B895-B9411E3DDC51".ToLower()] = afterSchoolSettings;
+        
+        // Time
+        var time = ini["Time"];
+        settings.IsExactTimeEnabled = TryGetStringFromSection(time, "type", "ntp") == "ntp";
+        settings.ExactTimeServer = TryGetStringFromSection(time, "ntp_server", "ntp.aliyun.com");
+        settings.TimeOffsetSeconds = TryGetDoubleFromSection(time, "time_offset", 0);
+        
+        // Date
+        var date = ini["Date"];
+        settings.SingleWeekStartTime = DateOnly.TryParse(TryGetStringFromSection(date, "start_date", ""), out var d)
+            ? d.ToDateTime(TimeOnly.MinValue)
+            : DateTime.Now;
+        
+        // Audio
+        var audio = ini["Audio"];
+        settings.NotificationSoundVolume = TryGetDoubleFromSection(audio, "volume", 100) / 100.0;
+        SetNotificationChannelSound(ClassNotificationProvider.OnClassChannelId,
+            TryGetStringFromSection(audio, "attend_class", "attend_class.wav"));
+        SetNotificationChannelSound(ClassNotificationProvider.OnBreakingChannelId,
+            TryGetStringFromSection(audio, "finish_class", "finish_class.wav"));
+        SetNotificationChannelSound(ClassNotificationProvider.PrepareOnClassChannelId,
+            TryGetStringFromSection(audio, "prepare_class", "prepare_class.wav"));
+
+        return;
+        
+        void SetNotificationChannelSound(string channelId, string cwPath)
+        {
+            var chanelSettings =
+                settings.NotificationChannelsNotifySettings.GetValueOrDefault(channelId) ?? new NotificationSettings();
+            chanelSettings.IsNotificationSoundEnabled = true;
+            chanelSettings.IsSettingsEnabled = true;
+            if (!Directory.Exists(Path.Combine(CommonDirectories.AppConfigPath, "ExternalAudios")))
+            {
+                Directory.CreateDirectory(Path.Combine(CommonDirectories.AppConfigPath, "ExternalAudios"));
+            }
+            var ciPath = Path.GetFullPath(Path.Combine(CommonDirectories.AppConfigPath, "ExternalAudios", cwPath));
+            File.Copy(Path.Combine(root, "audio", cwPath), ciPath, true);
+            chanelSettings.NotificationSoundPath = ciPath;
+            settings.NotificationChannelsNotifySettings[new Guid(channelId).ToString()] = chanelSettings;
+        }
+    }
+
+    private void ImportClassWidgetsComponents(string root, IniData ini)
+    {
+        var profile = new ComponentProfile()
+        {
+            Lines = [
+                new MainWindowLineSettings()
+            ]
+        };
+        var line = profile.Lines[0];
+        var widgets =
+            ConfigureFileHelper.LoadConfigUnWrapped<CwWidgetsProfile>(Path.Combine(root, "config", "widget.json"));
+        foreach (var widget in widgets.Widgets)
+        {
+            var comp = new ComponentSettings()
+            {
+                Id = widget switch
+                {
+                    "widget-weather.ui" => "CA495086-E297-4BEB-9603-C5C1C1A8551E",
+                    "widget-time.ui" => "9E1AF71D-8F77-4B21-A342-448787104DD9",
+                    "widget-next-activity.ui" => "E7831603-61A0-4180-B51B-54AD75B1A4D3",
+                    "widget-countdown-day.ui" => "7C645D35-8151-48BA-B4AC-15017460D994",
+                    _ => ""
+                }
+            };
+            if (comp.Id == "")
+            {
+                continue;
+            }
+            line.Children.Add(comp);
+        }
+
+        var name = $"cw-{Guid.NewGuid()}.json";
+        ConfigureFileHelper.SaveConfig(Path.Combine(ComponentsService.ComponentSettingsPath, name), profile);
+        var settingsService = IAppHost.GetService<SettingsService>();
+        var settings = settingsService.Settings;
+        settings.CurrentComponentConfig = Path.GetFileNameWithoutExtension(name);
     }
     
     private async Task PerformClassWidgetsImportAction()
     {
         if (string.IsNullOrWhiteSpace(ViewModel.ImportSourcePath))
+        {
+            return;
+        }
+        var r = await new ContentDialog()
+        {
+            Title = "重启以继续",
+            Content = "应用需要重启以完全应用导入操作，要继续吗？",
+            PrimaryButtonText = "重启并继续",
+            SecondaryButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary
+        }.ShowAsync(TopLevel.GetTopLevel(this));
+        if (r != ContentDialogResult.Primary)
         {
             return;
         }
@@ -524,13 +662,22 @@ public partial class DataTransferPage : UserControl
                 if (ViewModel.IsProfileSelected)
                 {
                     ImportClassWidgetsProfile(root, ini);
+                    var general = ini["General"];
+                    var profileName = "cw_" + TryGetStringFromSection(general, "schedule", "新课表 - 1.json");
+                    var settingsService = IAppHost.GetService<SettingsService>();
+                    var settings = settingsService.Settings;
+                    settings.SelectedProfile = profileName;
                 }
                 if (ViewModel.IsSettingsSelected)
                 {
-                    
+                    ImportClassWidgetsSettings(root, ini);
+                }
+                if (ViewModel.IsOtherConfigSelected)
+                {
+                    ImportClassWidgetsComponents(root, ini);
                 }
             });
-            ViewModel.PageIndex = 4;
+            AppBase.Current.Restart(["-m", "--importComplete"]);
         }
         catch (Exception e)
         {
