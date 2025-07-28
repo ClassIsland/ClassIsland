@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-
+using ClassIsland.Shared.JsonConverters;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Profile;
@@ -67,6 +67,7 @@ public class ClassInfo : AttachableSettingsObject
     /// <summary>
     /// 课程ID
     /// </summary>
+    [JsonConverter(typeof(GuidEmptyFallbackConverter))]
     public Guid SubjectId
     {
         get => _subjectId;

@@ -183,6 +183,9 @@
                                             </OnPlatform>
                                         </MenuItem.IsVisible>
                                     </MenuItem>
+                                    <MenuItem Icon="{commands:FluentIcon &#xe083;}"
+                                              Header="数据迁移…"
+                                              Click="MenuItemDataTransfer_OnClick"/>
                                     <Separator />
                                     <MenuItem Icon="{controls:FluentIcon &#xE2B4;}" Header="集控选项…"
                                               Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"

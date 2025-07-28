@@ -1,3 +1,5 @@
+using ClassIsland.Enums;
+
 namespace ClassIsland.Models;
 
 public class ApplicationCommand
@@ -41,5 +43,9 @@ public class ApplicationCommand
     public bool Diagnostic { get; set; } = false;
     public bool Safe { get; set; } = false;
 
+    public string ImportV1 { get; set; } = "";
+
     public bool SkipOobe { get; set; } = false;
+
+    public string ImportEntries { get; set; } = "0";
 }

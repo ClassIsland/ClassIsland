@@ -703,4 +703,9 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         NavigationView.IsPaneOpen = !NavigationView.IsPaneOpen;
     }
+
+    private void MenuItemDataTransfer_OnClick(object? sender, RoutedEventArgs e)
+    {
+        IAppHost.GetService<DataTransferWindow>().ShowDialog(this);
+    }
 }

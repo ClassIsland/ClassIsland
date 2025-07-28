@@ -79,6 +79,7 @@ using ClassIsland.Controls.Components;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Controls.SpeechProviderSettingsControls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Enums;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -644,6 +645,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<AppLogsViewModel>();
                 services.AddTransient<WelcomeViewModel>();
                 services.AddTransient<ClassChangingViewModel>();
+                services.AddTransient<DataTransferViewModel>();
                 // ViewModels/SettingsPages
                 services.AddTransient<GeneralSettingsViewModel>();
                 services.AddTransient<AboutSettingsViewModel>();
@@ -655,6 +657,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<PluginsSettingsPageViewModel>();
                 services.AddTransient<StorageSettingsViewModel>();
                 services.AddTransient<ErrorSettingsViewModel>();
+                services.AddTransient<ThemesSettingsViewModel>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 // services.AddTransient<SplashWindowBase, SplashWindow>();
@@ -670,6 +673,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddTransient<ExcelExportWindow>();
                 services.AddTransient<DevPortalWindow>();
                 services.AddTransient<WelcomeWindow>();
+                services.AddTransient<DataTransferWindow>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();
@@ -682,7 +686,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<StorageSettingsPage>();
                 services.AddSettingsPage<PrivacySettingsPage>();
                 services.AddSettingsPage<PluginsSettingsPage>();
-                // services.AddSettingsPage<ThemesSettingsPage>();
+                services.AddSettingsPage<ThemesSettingsPage>();
                 services.AddSettingsPage<TestSettingsPage>();
                 // services.AddSettingsPage<DebugPage>();
                 // services.AddSettingsPage<DebugBrushesSettingsPage>();
@@ -815,7 +819,7 @@ public partial class App : AppBase, IAppHost
                     PluginService.InitializePlugins(context, services);
                 }
             }).Build();
-        AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Starting;
+        AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.StartingOffline;
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
@@ -837,6 +841,16 @@ public partial class App : AppBase, IAppHost
 #endif
         spanHostBuilding.Finish();
         spanPreInit.Finish();
+        if (!string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1))
+        {
+            var dtWindow = new DataTransferWindow()
+            { 
+                ImportName = "ClassIsland"
+            };
+            dtWindow.Show();
+            var entries = int.TryParse(ApplicationCommand.ImportEntries, out var r) ? r : 0;
+            await dtWindow.PerformClassIslandImport(ApplicationCommand.ImportV1, (ImportEntries)entries);
+        }
         var spanLaunching = transaction.StartChild("startup-launching");
         var spanSetupMgmt = spanLaunching.StartChild("startup-setup-mgmt");
         await GetService<IManagementService>().SetupManagement();
@@ -854,7 +868,8 @@ public partial class App : AppBase, IAppHost
         }
         spanLoadingSettings.Finish();
         //OverrideFocusVisualStyle();
-        
+
+        CurrentLifetime = Core.Enums.ApplicationLifetime.StartingOnline;
         Logger.LogInformation("初始化应用。");
         
         IThemeService.IsTransientDisabled = Settings.AnimationLevel < 1;
@@ -1113,6 +1128,7 @@ public partial class App : AppBase, IAppHost
         }
         _ = Dispatcher.UIThread.InvokeAsync(async () =>
         {
+            var partial = CurrentLifetime < Core.Enums.ApplicationLifetime.StartingOnline;
             CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Stopping;
             Logger?.LogInformation("正在停止应用");
             if (IAppHost.TryGetService<IManagementService>() is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
@@ -1120,12 +1136,15 @@ public partial class App : AppBase, IAppHost
                 connection.LogAuditEvent(AuditEvents.AppExited, new Empty());
             }
             AppStopping?.Invoke(this, EventArgs.Empty);
-            IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
-            IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
-            IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
-            IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
-            IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
-            IAppHost.Host?.Services.GetService<IComponentsService>()?.SaveConfig();
+            if (!partial)
+            {
+                IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
+                IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
+                IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
+                IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
+                IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
+                IAppHost.Host?.Services.GetService<IComponentsService>()?.SaveConfig();
+            }
             DesktopLifetime?.Shutdown();
             try
             {

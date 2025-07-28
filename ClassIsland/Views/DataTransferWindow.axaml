@@ -1,0 +1,19 @@
+<ci:MyWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:ClassIsland.Views"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ClassIsland.Views.DataTransferWindow"
+        Title="数据迁移"
+        Icon="/Assets/AppLogo.png"
+        Width="800" Height="600"
+        EnableMicaWindow="True"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True"
+        X11Properties.NetWmWindowType="Normal"
+        CanResize="False"
+        Loaded="Control_OnLoaded">
+    
+</ci:MyWindow>
