@@ -120,10 +120,23 @@ public partial class AboutSettingsPage : SettingsPageBase
         await dialog.ShowAsync();
     }
 
-    private void ButtonCopyDiagnosticInfo_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void ButtonCopyDiagnosticInfo_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(ViewModel.DiagnosticService.GetDiagnosticInfo());
-        ToastsHelper.ShowSuccessToast(this, "复制成功！");
+        bool success = false;
+        try
+        {
+            await TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(ViewModel.DiagnosticService.GetDiagnosticInfo());
+            success = true;
+        }
+        catch (Exception ex)
+        {
+            App.GetService<ILogger<AboutSettingsPage>>().LogError(ex, "复制诊断信息失败。");
+            ToastsHelper.ShowErrorToast(this, "复制失败，请全选诊断信息文本后手动复制。");
+        }
+        if (success)
+        {
+            ToastsHelper.ShowSuccessToast(this, "复制成功！");
+        }
     }
 
     private async void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
@@ -191,7 +204,7 @@ public partial class AboutSettingsPage : SettingsPageBase
             string[] sayingsArray;
             if (sayings.Contains("\r\n"))
             {
-               sayingsArray = sayings.Split("\r\n");
+                sayingsArray = sayings.Split("\r\n");
             }
             else
             {
