@@ -104,16 +104,26 @@ public partial class AboutSettingsPage : SettingsPageBase
     private async void ButtonDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
     {
         var diagInfo = ViewModel.DiagnosticService.GetDiagnosticInfo();
-        await new ContentDialog()
+        var dialog = new ContentDialog()
         {
             Title = "诊断信息",
             Content = new TextBox()
             {
                 Text = diagInfo
             },
+            IsSecondaryButtonEnabled = true,
             PrimaryButtonText = "确定",
+            SecondaryButtonText = "复制",
             DefaultButton = ContentDialogButton.Primary
-        }.ShowAsync();
+        };
+        dialog.SecondaryButtonClick += ButtonCopyDiagnosticInfo_OnClick;
+        await dialog.ShowAsync();
+    }
+
+    private void ButtonCopyDiagnosticInfo_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    {
+        TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(ViewModel.DiagnosticService.GetDiagnosticInfo());
+        ToastsHelper.ShowSuccessToast(this, "复制成功！");
     }
 
     private async void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
