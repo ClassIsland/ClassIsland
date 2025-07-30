@@ -674,6 +674,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<DevPortalWindow>();
                 services.AddTransient<WelcomeWindow>();
                 services.AddTransient<DataTransferWindow>();
+                services.AddTransient<DebugPageViewModel>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();
@@ -688,7 +689,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<PluginsSettingsPage>();
                 services.AddSettingsPage<ThemesSettingsPage>();
                 services.AddSettingsPage<TestSettingsPage>();
-                // services.AddSettingsPage<DebugPage>();
+                services.AddSettingsPage<DebugPage>();
                 // services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
                 // services.AddSettingsPage<ManagementSettingsPage>();

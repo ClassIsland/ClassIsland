@@ -88,8 +88,8 @@
             <NativeMenuItemSeparator />
             <NativeMenuItem  Header="重启" Click="MenuItemRestartApp_OnClick"/>
             <NativeMenuItem  Header="退出" Click="MenuItemExitApp_OnClick"/>
-            <NativeMenuItemSeparator />
-            <NativeMenuItem Header="dev__Debug">
+            <NativeMenuItemSeparator IsVisible="{Binding ViewModel.Settings.IsDebugEnabled}"/>
+            <NativeMenuItem Header="dev__Debug" IsVisible="{Binding ViewModel.Settings.IsDebugEnabled}">
                 <NativeMenu>
                     <NativeMenuItem Header="DevTools" Click="NativeMenuItemDebugDevTools_OnClick"/>
                     <NativeMenuItem Header="DevPortal" Click="NativeMenuItemDebugDevPortal_OnClick"/>

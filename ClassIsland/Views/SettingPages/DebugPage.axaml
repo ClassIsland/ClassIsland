@@ -1,0 +1,133 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.DebugPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance local:DebugPage}">
+
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro" 
+                    IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableDebugMenu}">
+            <controls3:InfoBar Severity="Error"
+                               Message="仅供调试，除非你能知道您在做什么，请不要使用以下按钮。"
+                               IsOpen="True"
+                               IsClosable="False"/>
+            
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xe2c8;}"
+                                        Header="启用调试菜单">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsDebugOptionsEnabled}"/>
+                </controls3:SettingsExpander.Footer>
+                <controls3:SettingsExpanderItem Content="调试菜单">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsDebugEnabled}"/>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="主窗口调试界面">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsMainWindowDebugEnabled}"/>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+            </controls3:SettingsExpander>
+            
+            <controls3:SettingsExpander Header="调试时间偏移" IconSource="{ci:FluentIconSource &#xe4c4;}"
+                                        IsExpanded="True">
+                <controls3:SettingsExpanderItem>
+                    <StackPanel Orientation="Horizontal" Spacing="4" Loaded="TargetTime_OnLoaded">
+                        <CalendarDatePicker SelectedDate="{Binding ViewModel.TargetDate}"
+                                            SelectedDateChanged="DatePicker_OnSelectedDateChanged"
+                                            Loaded="TargetDate_OnLoaded"/>
+                        <TimePicker SelectedTime="{Binding ViewModel.TargetTime}"
+                                    SelectedTimeChanged="TimePicker_OnSelectedTimeChanged"
+                                    Loaded="TargetTime_OnLoaded"
+                                    UseSeconds="True"/>
+                        <Button Content="重置" Click="ButtonReset_OnClick"/>
+                    </StackPanel>
+                </controls3:SettingsExpanderItem>
+            </controls3:SettingsExpander>
+
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xe47a;}"
+                                        Header="课程服务">
+                <controls3:SettingsExpanderItem Content="触发上课" Click="MenuItemDebugTriggerOnClass_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="触发下课" Click="MenuItemDebugTriggerAfterClass_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="启动主计时器" Click="MenuItemStartMainTimer_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="停止主计时器" Click="MenuItemStopMainTimer_OnClick"
+                                                IsClickEnabled="True"/>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xef27;}"
+                                        Header="应用设置">
+                <controls3:SettingsExpanderItem Content="覆盖设置版本" Click="MenuItemOverwriteSettingsVersion_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="显示插件使用须知" Click="MenuItemShowPluginMarketWarning_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="显示自动化使用须知" Click="MenuItemShowAutomationWarning_OnClick"
+                                                IsClickEnabled="True"/>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xe84f;}"
+                                        Header="功能测试"> 
+                <controls3:SettingsExpanderItem Content="转储课表关系图" Click="MenuItemDumpProfileRelations_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="打开 Markdown 文档" Click="MenuItemOpenMdDocs_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="显示测试通知" Click="MenuItemShowTestNotification_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="测试定位" Click="MenuItemTryGetLocation_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="正在集控管理">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.ManagementService.IsManagementEnabled}"
+                                      IsEnabled="{Binding !ViewModel.ManagementService.IsManagementEnabled, Mode=OneTime}" />
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="垃圾回收" IconSource="{ci:FluentIconSource &#xe1fd;}"
+                                        IsClickEnabled="True"
+                                        Click="MenuItemGcCollect_OnClick"/>
+            <!-- 时间流速 -->
+            <controls3:SettingsExpander Header="时间流速" IconSource="{ci:FluentIconSource &#xe4d2;}"
+                                        Description="持续调整时间偏移，以控制时间流速。">
+                <controls3:SettingsExpander.Footer>
+                    <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,*,*">
+                        <!--<Slider Grid.Column="0"
+                                Value="{Binding ViewModel.SettingsService.Settings.DebugTimeSpeed, Mode=TwoWay}"
+                                MinWidth="200"
+                                TickFrequency="10" Minimum="-100" Maximum="500" IsSnapToTickEnabled="True"/>-->
+                        <TextBox Grid.Column="1"
+                                 Text="{Binding ViewModel.SettingsService.Settings.DebugTimeSpeed, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
+                                 MinWidth="102"/>
+                        <Button Grid.Column="2" Click="ButtonResetTimeSpeed_OnClick" 
+                                ToolTip.Tip="重置时间流速"
+                                Theme="{StaticResource TransparentButton}"
+                                Content="{ci:FluentIcon &#xe4cc;}"/>
+                    </Grid>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xf431;}"
+                                        Header="危险操作"
+                                        Description="没事别按。">
+                <controls3:SettingsExpanderItem Content="崩溃测试" Click="ButtonCrash_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="崩溃测试（延迟3秒）" Click="ButtonDelayCrash_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="崩溃测试（Task）" Click="MenuItemCrashOnTask_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="崩溃测试（扔到栈顶）" Click="MenuItemCrashTestGlobal_OnClick"
+                                                IsClickEnabled="True"/>
+                <controls3:SettingsExpanderItem Content="Environment.FailFast();" Click="MenuItemFailFast_OnClick"
+                                                IsClickEnabled="True"/>
+                
+            </controls3:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

@@ -7,7 +7,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
-
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -17,8 +16,6 @@ public class TaskBarIconService(ILogger<TaskBarIconService> logger) : IHostedSer
 {
     public ILogger<TaskBarIconService> Logger { get; } = logger;
 
-    private WindowNotificationManager WindowNotificationManager { get; } = new();
-    
     public TrayIcon MainTaskBarIcon
     {
         get;
@@ -30,12 +27,7 @@ public class TaskBarIconService(ILogger<TaskBarIconService> logger) : IHostedSer
 
     public void ShowNotification(string title, string content, Action? clickedCallback = null)
     {
-        WindowNotificationManager.Show(new Notification()
-        {
-            Title = title,
-            Message = content,
-            OnClick = clickedCallback
-        });
+        
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
