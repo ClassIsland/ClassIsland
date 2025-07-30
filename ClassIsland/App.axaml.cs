@@ -669,7 +669,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<ClassPlanDetailsWindow>();
                 services.AddTransient<WindowRuleDebugWindow>();
                 // services.AddTransient<ConfigErrorsWindow>();
-                // services.AddTransient<TimeAdjustmentWindow>();
+                services.AddTransient<TimeAdjustmentWindow>();
                 // services.AddTransient<ExcelExportWindow>();
                 services.AddTransient<DevPortalWindow>();
                 services.AddTransient<WelcomeWindow>();
