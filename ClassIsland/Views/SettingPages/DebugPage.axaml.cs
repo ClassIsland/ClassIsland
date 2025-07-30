@@ -149,9 +149,9 @@ public partial class DebugPage : SettingsPageBase
 
     private void MenuItemGcCollect_OnClick(object sender, RoutedEventArgs e)
     {
-        var before = GC.GetTotalAllocatedBytes(true);
-        GC.Collect();
-        var after = GC.GetTotalAllocatedBytes(true);
+        var before = GC.GetTotalMemory(true);
+        GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true);
+        var after = GC.GetTotalMemory(true);
         var delta = before - after;
         if (delta <= 0)
         {
