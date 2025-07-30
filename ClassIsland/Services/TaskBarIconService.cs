@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 
 using Microsoft.Extensions.Hosting;
@@ -11,11 +13,12 @@ using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
-public class TaskBarIconService : IHostedService, ITaskBarIconService
+public class TaskBarIconService(ILogger<TaskBarIconService> logger) : IHostedService, ITaskBarIconService
 {
-    public ILogger<TaskBarIconService> Logger { get; }
+    public ILogger<TaskBarIconService> Logger { get; } = logger;
 
-    // TODO: 实现托盘图标交互
+    private WindowNotificationManager WindowNotificationManager { get; } = new();
+    
     public TrayIcon MainTaskBarIcon
     {
         get;
@@ -25,27 +28,14 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
         ToolTipText = "ClassIsland"
     };
 
-    private Action? CurrentNotificationCallback { get; set; }
-
-    private Queue<Action> NotificationQueue { get; set; } = new();
-
-    private bool IsProcessingNotifications { get; set; } = false;
-
-    private void ProcessNotification()
-    {
-        
-    }
-
-    
-
     public void ShowNotification(string title, string content, Action? clickedCallback = null)
     {
-        // todo: 实现通知显示
-    }
-
-    public TaskBarIconService(ILogger<TaskBarIconService> logger)
-    {
-        Logger = logger;
+        WindowNotificationManager.Show(new Notification()
+        {
+            Title = title,
+            Message = content,
+            OnClick = clickedCallback
+        });
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
