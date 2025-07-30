@@ -351,6 +351,7 @@
             <StackPanel Margin="0 12 0 0" Classes="cardContainer">
                 <controls3:SettingsExpanderItem 
                     Content="查看开放源代码许可"
+                    Click="SettingsExpanderItemShowOssLicense_OnClick"
                     IsClickEnabled="True"/>
                 <controls3:SettingsExpanderItem 
                     Click="ButtonPrivacy_OnClick"

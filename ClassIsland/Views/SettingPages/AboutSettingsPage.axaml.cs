@@ -180,13 +180,11 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private void ButtonPrivacy_OnClick(object sender, RoutedEventArgs e)
     {
-        // TODO: 实现文档阅读窗口
-        // new DocumentReaderWindow()
-        // {
-        //     Source = new Uri("/Assets/Documents/Privacy_.md", UriKind.RelativeOrAbsolute),
-        //     Owner = Window.GetWindow(this),
-        //     Title = "ClassIsland 隐私政策"
-        // }.ShowDialog();
+        new DocumentReaderWindow()
+        {
+            Source = new Uri("avares://ClassIsland/Assets/Documents/Privacy_.md"),
+            Title = "ClassIsland 隐私政策"
+        }.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
     }
 
     private async void Sayings_OnMouseLeftButtonDown(object sender, RoutedEventArgs e)
@@ -236,6 +234,22 @@ public partial class AboutSettingsPage : SettingsPageBase
             TopLevel.GetTopLevel(this)?.Clipboard?
                 .SetTextAsync("5oS/5oiR5Lus5Zyo6YKj6bKc6Iqx6Iqs6Iqz55qE6KW/6aOO5bC95aS06YeN6YCi44CC");
         }
+    }
+
+    private async void SettingsExpanderItemShowOssLicense_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var license = await new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/LICENSE.txt")))
+            .ReadToEndAsync();
+        await new ContentDialog()
+        {
+            Title = "开放源代码许可",
+            Content = new TextBlock()
+            {
+                Text = license
+            },
+            PrimaryButtonText = "关闭",
+            DefaultButton = ContentDialogButton.Primary
+        }.ShowAsync();
     }
 }
 
