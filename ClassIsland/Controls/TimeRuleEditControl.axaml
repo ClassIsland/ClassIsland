@@ -2,7 +2,8 @@
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
-             xmlns:controls="clr-namespace:ClassIsland.Controls">
+             xmlns:controls="clr-namespace:ClassIsland.Controls"
+             xmlns:viewModels="clr-namespace:ClassIsland.ViewModels">
     <UserControl.Resources>
         <ci:PreventNullConverter x:Key="PreventNullConverter" />
     </UserControl.Resources>
@@ -12,7 +13,7 @@
         <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
 
         <TextBlock Text="当今天是：" Margin="0 8 0 0" />
-        <ListBox ItemsSource="{Binding $parent[controls:TimeRuleEditControl].ViewModel.WeekDayOptions, Mode=OneTime}"
+        <ListBox ItemsSource="{x:Static viewModels:TimeRuleEditViewModel.WeekDayOptions}"
                  SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.WeekDay, Converter={StaticResource PreventNullConverter}}"
                  Theme="{StaticResource ChipListBoxTheme}" />
 
