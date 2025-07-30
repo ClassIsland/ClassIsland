@@ -158,11 +158,11 @@
                         <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.TaskBarIconClickBehavior}"
                                   HorizontalContentAlignment="Left">
                             <ComboBoxItem HorizontalContentAlignment="Left">
-                                <ComboBoxItem.IsVisible>
+                                <ComboBoxItem.IsEnabled>
                                     <OnPlatform Default="False">
                                         <On Options="Windows" Content="True"/>
                                     </OnPlatform>
-                                </ComboBoxItem.IsVisible>
+                                </ComboBoxItem.IsEnabled>
                                 <controls1:IconText Glyph="&#xE075;" Text="打开主菜单" />
                             </ComboBoxItem>
                             <ComboBoxItem HorizontalContentAlignment="Left">
