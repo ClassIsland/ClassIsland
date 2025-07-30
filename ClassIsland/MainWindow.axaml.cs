@@ -425,6 +425,10 @@ public partial class MainWindow : Window
 
     private IntPtr ProcWnd(IntPtr hwnd, uint msg, IntPtr param, IntPtr lParam, ref bool handled)
     {
+        if (!OperatingSystem.IsWindows())
+        {
+            return nint.Zero;
+        } 
         if (msg == 0x00FF) // WM_INPUT
         {
             if (RawInputUpdateStopWatch.ElapsedMilliseconds < 20)
@@ -436,26 +440,25 @@ public partial class MainWindow : Window
             var data = RawInputData.FromHandle(lParam);
             RawInputEvent?.Invoke(this, new RawInputEventArgs(data));
         }
-
-        // TODO: 实现在窗口层级变化后重新设置 Z 序
-        // if (msg == 0x0047) // WM_WINDOWPOSCHANGED
-        // {
-        //     var pos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
-        //     Logger.LogTrace("WM_WINDOWPOSCHANGED {}", pos.flags);
-        //     if ((pos.flags & SET_WINDOW_POS_FLAGS.SWP_NOZORDER) == 0) // SWP_NOZORDER
-        //     {
-        //         Logger.LogTrace("Z order changed");
-        //         if (pos.hwndInsertAfter != NativeWindowHelper.HWND_TOPMOST)
-        //         {
-        //             ReCheckTopmostState();
-        //         }
-        //
-        //         if (pos.hwndInsertAfter != NativeWindowHelper.HWND_BOTTOM)
-        //         {
-        //             SetBottom();
-        //         }
-        //     }
-        // }
+        
+        if (msg == 0x0047) // WM_WINDOWPOSCHANGED
+        {
+            var pos = Marshal.PtrToStructure<NativeWindowHelper.WINDOWPOS>(lParam);
+            Logger.LogTrace("WM_WINDOWPOSCHANGED {}", pos.flags);
+            if ((pos.flags & NativeWindowHelper.SWP_NOZORDER) == 0) // SWP_NOZORDER
+            {
+                Logger.LogTrace("Z order changed");
+                if (pos.hwndInsertAfter != NativeWindowHelper.HWND_TOPMOST)
+                {
+                    ReCheckTopmostState();
+                }
+        
+                if (pos.hwndInsertAfter != NativeWindowHelper.HWND_BOTTOM)
+                {
+                    SetBottom();
+                }
+            }
+        }
 
         return nint.Zero;
     }
