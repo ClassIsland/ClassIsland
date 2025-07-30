@@ -26,6 +26,7 @@ using WindowsShortcutFactory;
 using File = System.IO.File;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Abstractions.Models.Speech;
+using ClassIsland.Core.Services;
 using ClassIsland.Shared.ComponentModels;
 
 namespace ClassIsland.Models;
@@ -511,17 +512,13 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     [JsonIgnore]
     public bool IsSentryEnabled
     {
-        get => Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null;
+        get => GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
         set
         {
             try
             {
                 var envVar = value ? "1" : "0";
-                Environment.SetEnvironmentVariable("ClassIsland_IsSentryEnabled", envVar);
-                // 因为 Environment.SetEnvironmentVariable 有时会执行很长时间，所以这里要直接修改注册表。
-                using var reg = Registry.CurrentUser.OpenSubKey(
-                    @"Environment", true);
-                reg?.SetValue("ClassIsland_IsSentryEnabled", envVar, RegistryValueKind.String);
+                GlobalStorageService.SetValue("IsSentryEnabled", envVar);
                 OnPropertyChanged();
             }
             catch (Exception ex)
@@ -2393,17 +2390,13 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     [JsonIgnore]
     public bool ShowSellingAnnouncement
     {
-        get => Environment.GetEnvironmentVariable("ClassIsland_ShowSellingAnnouncement") is "1" or null;
+        get => GlobalStorageService.GetValue("ShowSellingAnnouncement") is "1" or null;
         set
         {
             try
             {
                 var envVar = value ? "1" : "0";
-                Environment.SetEnvironmentVariable("ClassIsland_ShowSellingAnnouncement", envVar);
-                // 因为 Environment.SetEnvironmentVariable 有时会执行很长时间，所以这里要直接修改注册表。
-                using var reg = Registry.CurrentUser.OpenSubKey(
-                    @"Environment", true);
-                reg?.SetValue("ClassIsland_ShowSellingAnnouncement", envVar, RegistryValueKind.String);
+                GlobalStorageService.SetValue("ShowSellingAnnouncement", envVar);
                 OnPropertyChanged();
             }
             catch (Exception ex)
