@@ -9,7 +9,6 @@ using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
-using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
 
 namespace ClassIsland.Services.NotificationProviders;
 

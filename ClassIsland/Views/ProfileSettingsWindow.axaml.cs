@@ -20,6 +20,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.Action;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -789,7 +790,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             return;
         }
-        IAppHost.GetService<IActionService>().Invoke(action);
+        ViewModel.ActionService.InvokeActionSetAsync(action);
     }
     
     private void ButtonOverwriteClasses_OnClick(object sender, RoutedEventArgs e)

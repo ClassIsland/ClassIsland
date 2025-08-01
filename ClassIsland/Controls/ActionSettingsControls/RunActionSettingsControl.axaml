@@ -1,0 +1,37 @@
+﻿<ci:ActionSettingsControlBase x:Class="ClassIsland.Controls.ActionSettingsControls.RunActionSettingsControl"
+                              x:TypeArguments="actionSettings:RunActionSettings"
+                              d:DataContext="{d:DesignInstance local:RunActionSettingsControl}"
+                              xmlns="https://github.com/avaloniaui"
+                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                              xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                              xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                              xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
+
+                              xmlns:controls="clr-namespace:ClassIsland.Controls"
+                              xmlns:actionSettings="clr-namespace:ClassIsland.Models.ActionSettings">
+    <Grid ColumnDefinitions="Auto * Auto" RowDefinitions="Auto Auto">
+        <ComboBox SelectedIndex="{Binding Settings.RunType}"
+                  Margin="0 0 3 0">
+            <ci:IconText Glyph="&#xF4B1;" Text="应用程序" />
+            <ci:IconText Glyph="&#xE508;" Text="{Binding $parent[local:RunActionSettingsControl].TerminalCommandText, Mode=OneWay}" />
+            <ci:IconText Glyph="&#xE687;" Text="文件" />
+            <ci:IconText Glyph="&#xE875;" Text="文件夹" />
+            <ci:IconText Glyph="&#xE905;" Text="Url 链接" />
+        </ComboBox>
+        <TextBox Grid.Column="1"
+                 Text="{Binding Settings.Value, Mode=TwoWay}"
+                 Watermark="{Binding $parent[local:RunActionSettingsControl].Watermark}"
+                 Margin="0 0 0 2"/>
+        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Settings.Args, Mode=TwoWay}"
+                 IsVisible="{Binding $parent[local:RunActionSettingsControl].IsApplication}"
+                 Watermark="应用程序启动参数"/>
+        <controls:FileBrowserButton CurrentPath="{Binding Settings.Value, Mode=TwoWay}"
+                                    Grid.Column="2"
+                                    Theme="{StaticResource TransparentButton}" Content="{ci:FluentIcon &#xE88D;}"
+                                    IsVisible="{Binding $parent[local:RunActionSettingsControl].IsFileSelector}"
+                                    IsFolder="{Binding $parent[local:RunActionSettingsControl].IsFolder}"
+                                    VerticalAlignment="Stretch"
+                                    VerticalContentAlignment="Center"/>
+    </Grid>
+</ci:ActionSettingsControlBase>

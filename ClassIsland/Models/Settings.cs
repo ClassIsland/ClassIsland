@@ -896,8 +896,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     }
 
     [JsonIgnore]
-    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1 
-        ? Colors.DodgerBlue 
+    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1
+        ? Colors.DodgerBlue
         : WallpaperColorPlatte[SelectedPlatteIndex];
 
     public int SelectedPlatteIndex
@@ -1492,6 +1492,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _currentAutomationConfig) return;
+            OnPropertyChanging();
             _currentAutomationConfig = value;
             OnPropertyChanged();
         }
@@ -1515,7 +1516,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// <summary>
     /// 更新模式
     /// </summary>
-    /// 
+    ///
     public int UpdateMode
     {
         get => _updateMode;
@@ -1691,7 +1692,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     /// <summary>
     /// 窗口停靠位置
-    /// 
+    ///
     /// </summary>
     /// <value>
     /// <code>
@@ -1740,7 +1741,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-    
+
     public int WindowDockingOffsetX
     {
         get => _windowDockingOffsetX;
@@ -1769,7 +1770,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _windowDockingMonitorIndex) return;
-            
+
 
             if (value < 0)
             {

@@ -1,13 +1,12 @@
-<UserControl 
+<UserControl
     x:Class="ClassIsland.Core.Controls.Ruleset.RulesetSettingsControlPresenter"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:ClassIsland.Core.Controls.Ruleset"
     xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
     xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services">
     <ContentPresenter x:Name="RootContentPresenter"/>
 </UserControl>

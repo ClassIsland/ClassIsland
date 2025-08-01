@@ -42,7 +42,7 @@ public partial class RulesetSettingsControlPresenter : UserControl
 
     private void UpdateContent()
     {
-        if (Rule == null)
+        if (Rule == null || RuleId == null)
         {
             return;
         }

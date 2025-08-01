@@ -1,84 +1,47 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Avalonia.Controls;
-using ClassIsland.Core.Models.Action;
+using ClassIsland.Core.Abstractions.Automation;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Models.Action;
 using Microsoft.Extensions.DependencyInjection;
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
-/// 可附加设置的控件
+/// 行动提供方设置控件基类。
 /// </summary>
-public abstract class ActionSettingsControlBase : UserControl, INotifyPropertyChanged
+public abstract class ActionSettingsControlBase : UserControl
 {
     [NotNull] internal object? SettingsInternal { get; set; }
 
     /// <summary>
-    /// 从设置对象获取控件实例。
+    /// 获取行动提供方设置控件实例。
     /// </summary>
-    /// <param name="info">控件信息</param>
-    /// <param name="settings">要附加的设置对象</param>
-    /// <returns>初始化的控件对象。</returns>
-    public static ActionSettingsControlBase? GetInstance(ActionRegistryInfo info, ref object? settings)
+    /// <param name="actionItem">要获取行动提供方的行动项。</param>
+    public static ActionSettingsControlBase? GetInstance(ActionItem actionItem)
     {
-        var control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(info.Id);
-        if (control == null || info.SettingsControlType == null)
+        var control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(actionItem.Id);
+        if (control == null) return null;
+
+        var settingsType = control.GetType().BaseType?.GetGenericArguments().FirstOrDefault();
+        if (settingsType != null)
         {
-            return null;
+            if (actionItem.Settings is JsonElement json)
+                actionItem.Settings = json.Deserialize(settingsType);
+            if (actionItem.Settings?.GetType() != settingsType)
+                actionItem.Settings = Activator.CreateInstance(settingsType);
+            control.SettingsInternal = actionItem.Settings;
         }
-
-        var baseType = info.SettingsControlType.BaseType;
-        if (baseType?.GetGenericArguments().Length > 0)
-        {
-            var settingsType = baseType.GetGenericArguments().First();
-            var settingsReal = settings ?? Activator.CreateInstance(settingsType);
-            if (settingsReal is JsonElement json)
-            {
-                settingsReal = json.Deserialize(settingsType);
-            }
-
-            if (settingsReal?.GetType() != settingsType)
-            {
-                settingsReal = Activator.CreateInstance(settingsType);
-            }
-
-            settings = settingsReal;
-
-            control.SettingsInternal = settingsReal;
-        }
-
         return control;
     }
-
-    #region PropertyChanged
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
-    }
-
-    #endregion
 }
 
-/// <summary>
-/// 可附加设置的控件
-/// </summary>
+/// <inheritdoc />
 public abstract class ActionSettingsControlBase<T> : ActionSettingsControlBase where T : class
 {
     /// <summary>
-    /// 当前控件的设置
+    /// 当前行动项的设置。
     /// </summary>
     public T Settings => (SettingsInternal as T)!;
 }

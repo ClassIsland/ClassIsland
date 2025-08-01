@@ -1,5 +1,4 @@
 ﻿using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Models.Actions;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Hosting;
@@ -11,11 +10,11 @@ public class SleepActionHandler : IHostedService
 {
     public SleepActionHandler(IActionService ActionService)
     {
-        ActionService.RegisterActionHandler("classisland.action.sleep",
-            (s, g) => {
-                Task.Delay(TimeSpanHelper.FromSecondsSafe(((SleepActionSettings)s!).Value))
-                    .Wait();
-            });
+        // ActionService.RegisterActionHandler("classisland.action.sleep",
+        //     (s, g) => {
+        //         Task.Delay(TimeSpanHelper.FromSecondsSafe(((SleepActionSettings)s!).Value))
+        //             .Wait();
+        //     });
     }
 
     public async Task StartAsync(CancellationToken _) { }

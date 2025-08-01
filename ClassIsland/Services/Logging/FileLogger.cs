@@ -17,15 +17,15 @@ public class FileLogger(FileLoggerProvider provider, string categoryName) : ILog
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        List<string> scopes = [];
-        if (ScopeStack.Value != null)
-        {
-            scopes.AddRange(ScopeStack.Value.ToList().Select(scope => (scope.ToString() ?? "") + "=>"));
-        }
-        var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? "\n" + exception : "");
+        var snapshot = ScopeStack.Value?.ToArray() ?? [];
+        var scopes = snapshot.Select(scope => (scope?.ToString() ?? "") + " => ").ToList();
+    
+        var message = string.Join("", scopes) + formatter(state, exception)
+                                              + (exception != null ? "\n" + exception : "");
         message = LogMaskingHelper.MaskLog(message);
         Provider.WriteLog($"{DateTime.Now}|{logLevel}|{CategoryName}|{message}");
     }
+
 
     public bool IsEnabled(LogLevel logLevel)
     {

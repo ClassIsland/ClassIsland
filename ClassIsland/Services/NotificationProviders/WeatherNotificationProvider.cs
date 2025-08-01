@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Models.Actions;
+using ClassIsland.Models.ActionSettings;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
@@ -58,7 +58,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
         LessonsService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
         LessonsService.OnClass += NotificationHostServiceOnOnClass;
 
-        ActionService.RegisterActionHandler("classisland.notification.weather", (settings, _) => 
+        ActionService.RegisterActionHandler("classisland.notification.weather", (settings, _) =>
             AppBase.Current.Dispatcher.Invoke(() => HandleWeatherAction(settings)));
     }
 

@@ -39,6 +39,16 @@ public class FileBrowserButton : Button
         set => SetValue(StartFolderProperty, value);
     }
 
+    public static readonly StyledProperty<bool> IsFolderProperty =
+        AvaloniaProperty.Register<FileBrowserButton, bool>(
+            nameof(IsFolder));
+
+    public bool IsFolder
+    {
+        get => GetValue(IsFolderProperty);
+        set => SetValue(IsFolderProperty, value);
+    }
+
     public event EventHandler? FileSelected;
 
     protected override Type StyleKeyOverride => typeof(Button);
@@ -57,16 +67,34 @@ public class FileBrowserButton : Button
         }
 
         // 启动异步操作以打开对话框。
-        var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        if (!IsFolder)
         {
-            SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(StartFolder),
-            FileTypeFilter = FileTypes.AsReadOnly(),
-            AllowMultiple = false,
-            SuggestedFileName = CurrentPath
-        });
-        if (files.Count > 0)
+            var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(StartFolder),
+                FileTypeFilter = FileTypes.AsReadOnly(),
+                AllowMultiple = false,
+                SuggestedFileName = CurrentPath
+            });
+
+            if (files.Count > 0)
+            {
+                CurrentPath = files[0].TryGetLocalPath() ?? "";
+            }
+        }
+        else
         {
-            CurrentPath = files[0].TryGetLocalPath() ?? "";
+            var folders = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
+            {
+                SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(StartFolder),
+                AllowMultiple = false,
+                SuggestedFileName = CurrentPath
+            });
+
+            if (folders.Count > 0)
+            {
+                CurrentPath = folders[0].TryGetLocalPath() ?? "";
+            }
         }
         FileSelected?.Invoke(this, EventArgs.Empty);
     }

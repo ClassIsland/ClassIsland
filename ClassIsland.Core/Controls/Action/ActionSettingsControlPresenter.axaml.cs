@@ -1,10 +1,13 @@
-using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Reactive;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
-using A = ClassIsland.Core.Models.Action;
+using ClassIsland.Core.Attributes;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Models.Action;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace ClassIsland.Core.Controls.Action;
 
 /// <summary>
@@ -12,44 +15,29 @@ namespace ClassIsland.Core.Controls.Action;
 /// </summary>
 public partial class ActionSettingsControlPresenter : UserControl
 {
-    public static readonly StyledProperty<string> ActionIdProperty = AvaloniaProperty.Register<ActionSettingsControlPresenter, string>(
-        nameof(ActionId));
+    public static readonly StyledProperty<ActionItem?> ActionItemProperty =
+        AvaloniaProperty.Register<ActionSettingsControlPresenter, ActionItem?>(nameof(ActionItem));
 
-    public string ActionId
+    public ActionItem? ActionItem
     {
-        get => GetValue(ActionIdProperty);
-        set => SetValue(ActionIdProperty, value);
-    }
-
-    public static readonly StyledProperty<Shared.Models.Action.Action?> ActionProperty = AvaloniaProperty.Register<ActionSettingsControlPresenter, Shared.Models.Action.Action?>(
-        nameof(Action));
-
-    public Shared.Models.Action.Action? Action
-    {
-        get => GetValue(ActionProperty);
-        set => SetValue(ActionProperty, value);
+        get => GetValue(ActionItemProperty);
+        set => SetValue(ActionItemProperty, value);
     }
 
     public ActionSettingsControlPresenter()
     {
         InitializeComponent();
-        this.GetObservable(ActionIdProperty).Subscribe(new AnonymousObserver<string>(_ => UpdateContent()));
-        this.GetObservable(ActionProperty).Subscribe(new AnonymousObserver<Shared.Models.Action.Action?>(_ => UpdateContent()));
+        this.GetObservable(ActionItemProperty).Subscribe(new AnonymousObserver<ActionItem?>(_ => UpdateContent()));
     }
 
-    private void UpdateContent()
+    void UpdateContent()
     {
-        if (Action == null || ActionId == null)
+        if (string.IsNullOrEmpty(ActionItem?.Id))
         {
-            return;
-        }
-        if (!IActionService.Actions.TryGetValue(ActionId, out var info))
-        {
+            RootContentPresenter.Content = null;
             return;
         }
 
-        var actionSettings = Action.Settings;
-        RootContentPresenter.Content = ActionSettingsControlBase.GetInstance(info, ref actionSettings);
-        Action.Settings = actionSettings;
+        RootContentPresenter.Content = ActionSettingsControlBase.GetInstance(ActionItem);
     }
 }

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using Avalonia.Threading;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Models.Actions;
-using ClassIsland.Shared.Interfaces;
 using ClassIsland.Core.Models.Notification;
-using Microsoft.Extensions.Hosting;
 using ClassIsland.Helpers;
+using ClassIsland.Models.ActionSettings;
 
 namespace ClassIsland.Services.NotificationProviders;
 
@@ -26,7 +20,7 @@ public class ActionNotificationProvider : NotificationProviderBase
         NotificationHostService = notificationHostService;
         ActionService = actionService;
 
-        ActionService.RegisterActionHandler("classisland.showNotification", (o, s) => Dispatcher.UIThread.Invoke(() => ActionHandler(o, s)));
+        // ActionService.RegisterActionHandler("classisland.showNotification", (o, s) => Dispatcher.UIThread.InvokeActionSet(() => ActionHandler(o, s)));
     }
 
     private void ActionHandler(object? o, string guid)

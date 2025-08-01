@@ -4,8 +4,9 @@ using ClassIsland.Core.Models;
 namespace ClassIsland.Core.Abstractions.Services;
 
 /// <summary>
-/// 自动化服务。
+/// 自动化服务。负责管理自动化工作流、时间点行动、触发器。
 /// </summary>
+//TODO: 更新接口。
 public interface IAutomationService
 {
     /// <summary>

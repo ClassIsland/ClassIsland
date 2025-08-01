@@ -1,15 +1,10 @@
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Models.Action;
-using ClassIsland.Shared;
-
-using System.Windows;
-using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Attributes;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Action;
 using CommunityToolkit.Mvvm.Input;
-
 namespace ClassIsland.Core.Controls.Action;
 
 /// <summary>
@@ -22,23 +17,31 @@ public partial class ActionControl : UserControl
         InitializeComponent();
     }
 
-    public static readonly StyledProperty<ActionSet> ActionSetProperty = AvaloniaProperty.Register<ActionControl, ActionSet>(
-        nameof(ActionSet));
+
+
+    [RelayCommand]
+    void AddAction(string id)
+    {
+        ActionSet.ActionItems.Add(new ActionItem { Id = id });
+    }
+
+    [RelayCommand]
+    void RemoveAction(ActionItem actionItem)
+    {
+        ActionSet.ActionItems.Remove(actionItem);
+    }
+
+
+
+    public IActionService ActionService { get; } = IAppHost.GetService<IActionService>();
+    public IReadOnlyDictionary<string, ActionInfo> ActionInfos { get; } = IActionService.ActionInfos;
+
+    public static readonly StyledProperty<ActionSet> ActionSetProperty =
+        AvaloniaProperty.Register<ActionControl, ActionSet>(nameof(ActionSet));
 
     public ActionSet ActionSet
     {
         get => GetValue(ActionSetProperty);
         set => SetValue(ActionSetProperty, value);
-    }
-
-    private void ButtonAddAction_OnClick(object sender, RoutedEventArgs e)
-    {
-        ActionSet.Actions.Add(new());
-    }
-
-    [RelayCommand]
-    private void RemoveAction(ClassIsland.Shared.Models.Action.Action action)
-    {
-        ActionSet.Actions.Remove(action);
     }
 }
