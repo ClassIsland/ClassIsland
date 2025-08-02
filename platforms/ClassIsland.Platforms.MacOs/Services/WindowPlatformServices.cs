@@ -147,24 +147,16 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
                 if (state)
                 {
                     win.StyleMask |= NSWindowStyle.Utility;
-                }
-                else
-                {
-                    win.StyleMask &= ~NSWindowStyle.Utility;
-                }
-            }
-            if ((features & WindowFeatures.SkipManagement) > 0)
-            {
-                // For macOS, to make window visible across virtual desktops (spaces),
-                // we need to set the collection behavior
-                if (state)
-                {
                     win.CollectionBehavior |= NSWindowCollectionBehavior.CanJoinAllSpaces;
                 }
                 else
                 {
+                    win.StyleMask &= ~NSWindowStyle.Utility;
                     win.CollectionBehavior &= ~NSWindowCollectionBehavior.CanJoinAllSpaces;
                 }
+            }
+            if ((features & WindowFeatures.SkipManagement) > 0)
+            {
             }
         }
         catch (Exception e)
