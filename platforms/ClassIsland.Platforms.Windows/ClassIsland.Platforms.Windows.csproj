@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.Win32.SystemEvents" Version="9.0.7" />
       <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,5 +25,5 @@
     <ItemGroup>
       <Folder Include="Helpers\" />
     </ItemGroup>
-    <Import Project="../../Global.props"/>
+    <Import Project="../../Global.props" />
 </Project>

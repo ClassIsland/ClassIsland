@@ -55,9 +55,6 @@ class Program
                 ]
             })
             .UsePlatformDetect()
-#if Platforms_Windows
-            // .UseDirect2D1()  // 完全用不了，https://github.com/AvaloniaUI/Avalonia/issues/11802
-#endif
             .LogToHostSink();
 
         try
@@ -83,6 +80,7 @@ class Program
         PlatformServices.WindowPlatformService = new WindowPlatformService();
         PlatformServices.LocationService = new LocationService();
         PlatformServices.DesktopService = new DesktopService();
+        PlatformServices.SystemEventsService = new SystemEventsService();
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);

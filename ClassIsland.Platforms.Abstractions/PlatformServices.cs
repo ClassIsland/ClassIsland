@@ -27,4 +27,9 @@ public static class PlatformServices
     /// 当前平台是否支持定位服务
     /// </summary>
     public static bool IsLocationSupported => LocationService is not LocationServiceStub;
+
+    /// <summary>
+    /// 系统事件注册服务
+    /// </summary>
+    public static ISystemEventsService SystemEventsService { get; internal set; } = new SystemEventsServiceStub();
 }

@@ -33,8 +33,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using OfficeOpenXml;
-
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using UpdateStatus = ClassIsland.Shared.Enums.UpdateStatus;
 #if DEBUG
@@ -94,8 +92,6 @@ using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
 using ReactiveUI;
 using Empty = Google.Protobuf.WellKnownTypes.Empty;
-using LicenseContext = OfficeOpenXml.LicenseContext;
-
 namespace ClassIsland;
 /// <summary>
 /// Interaction logic for App.xaml
@@ -472,7 +468,6 @@ public partial class App : AppBase, IAppHost
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Initializing;
         Dispatcher.UIThread.UnhandledException += App_OnDispatcherUnhandledException;
         MyWindow.ShowOssWatermark = ApplicationCommand.ShowOssWatermark;
-        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
 
