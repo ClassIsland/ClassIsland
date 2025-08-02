@@ -155,6 +155,16 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
             }
             if ((features & WindowFeatures.SkipManagement) > 0)
             {
+                // For macOS, to make window visible across virtual desktops (spaces),
+                // we need to set the collection behavior
+                if (state)
+                {
+                    win.CollectionBehavior |= NSWindowCollectionBehavior.CanJoinAllSpaces;
+                }
+                else
+                {
+                    win.CollectionBehavior &= ~NSWindowCollectionBehavior.CanJoinAllSpaces;
+                }
             }
         }
         catch (Exception e)
