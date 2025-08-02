@@ -34,4 +34,8 @@ public enum WindowFeatures
     /// 跳过窗口管理器
     /// </summary>
     SkipManagement = 32,
+    /// <summary>
+    /// 隐藏Title Bar
+    /// </summary>
+    HiddenTitleBar = 64,
 }
