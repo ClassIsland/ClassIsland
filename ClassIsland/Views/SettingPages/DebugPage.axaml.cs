@@ -17,6 +17,8 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.ProfileAnalyzing;
+using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
 using ClassIsland.Shared;
@@ -199,7 +201,22 @@ public partial class DebugPage : SettingsPageBase
 
     private void MenuItemShowTestNotification_OnClick(object sender, RoutedEventArgs e)
     {
-        
+        var toastContent = new DesktopToastContent()
+        {
+            Title = "测试通知",
+            Body = "Hello world!",
+            HeroImageUri = new Uri("avares://ClassIsland/Assets/Banner.png"),
+            LogoImageUri = new Uri("avares://ClassIsland/Assets/HoYoStickers/白厄_没事.png"),
+            Buttons =
+            {
+                { "Hello!", () => { _ = CommonTaskDialogs.ShowDialog("Clicked!", "点击了按钮"); } }
+            }
+        };
+        toastContent.Activated += (o, args) =>
+        {
+            _ = CommonTaskDialogs.ShowDialog("Clicked!", "点击了 Toast 通知");
+        };
+        PlatformServices.DesktopToastService.ShowToastAsync(toastContent);
     }
 
     private async void MenuItemTryGetLocation_OnClick(object sender, RoutedEventArgs e)

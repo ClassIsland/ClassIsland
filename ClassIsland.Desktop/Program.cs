@@ -81,6 +81,14 @@ class Program
         PlatformServices.LocationService = new LocationService();
         PlatformServices.DesktopService = new DesktopService();
         PlatformServices.SystemEventsService = new SystemEventsService();
+        PlatformServices.DesktopToastService = new DesktopToastService();
+        postInitCallback = () =>
+        {
+            AppBase.Current.AppStarted += (sender, args) =>
+            {
+                
+            };
+        };
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);

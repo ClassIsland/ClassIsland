@@ -32,4 +32,9 @@ public static class PlatformServices
     /// 系统事件注册服务
     /// </summary>
     public static ISystemEventsService SystemEventsService { get; internal set; } = new SystemEventsServiceStub();
+
+    /// <summary>
+    /// 桌面通知服务
+    /// </summary>
+    public static IDesktopToastService DesktopToastService { get; internal set; } = new DesktopToastServiceStub();
 }

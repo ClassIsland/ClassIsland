@@ -25,11 +25,6 @@ public class TaskBarIconService(ILogger<TaskBarIconService> logger) : IHostedSer
         ToolTipText = "ClassIsland"
     };
 
-    public void ShowNotification(string title, string content, Action? clickedCallback = null)
-    {
-        
-    }
-
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         return;
