@@ -46,6 +46,7 @@ using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Data;
 using FluentAvalonia.UI.Navigation;
 using FluentAvalonia.UI.Windowing;
+using ReactiveUI;
 using Control = Avalonia.Controls.Control;
 using SaveFileDialog = Avalonia.Controls.SaveFileDialog;
 using TaskDialog = FluentAvalonia.UI.Controls.TaskDialog;
@@ -121,6 +122,9 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         }
 
         BuildNavigationMenuItems();
+        SettingsService.Settings
+            .ObservableForProperty(x => x.IsDebugOptionsEnabled)
+            .Subscribe(_ => BuildNavigationMenuItems());
     }
 
     private void BuildNavigationMenuItems()
@@ -129,6 +133,11 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
         var infos = SettingsWindowRegistryService.Registered
             .Where(x => !x.HideDefault)
+            .Where(x => !(ManagementService.Policy.DisableSettingsEditing && x.Category == SettingsPageCategory.Internal))
+            .Where(x => !(ManagementService.Policy.DisableSettingsEditing && x.Category == SettingsPageCategory.External))
+            .Where(x => !(ManagementService.Policy.DisableSettingsEditing && x.Category == SettingsPageCategory.External))
+            .Where(x => !(ManagementService.Policy.DisableDebugMenu && x.Category == SettingsPageCategory.Debug))
+            .Where(x => !(!SettingsService.Settings.IsDebugOptionsEnabled && x.Category == SettingsPageCategory.Debug))
             .OrderBy(x => x.Category)
             .GroupBy(x => x.Category)
             .ToList();

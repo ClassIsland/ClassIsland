@@ -33,8 +33,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using OfficeOpenXml;
-
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using UpdateStatus = ClassIsland.Shared.Enums.UpdateStatus;
 #if DEBUG
@@ -83,6 +81,7 @@ using ClassIsland.Enums;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
+using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
@@ -94,8 +93,6 @@ using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
 using ReactiveUI;
 using Empty = Google.Protobuf.WellKnownTypes.Empty;
-using LicenseContext = OfficeOpenXml.LicenseContext;
-
 namespace ClassIsland;
 /// <summary>
 /// Interaction logic for App.xaml
@@ -449,7 +446,7 @@ public partial class App : AppBase, IAppHost
                 break;
             case 2:
                 Logger?.LogInformation("因教学安全模式设定，应用将忽略异常并显示一条通知");
-                IAppHost.Host?.Services.GetService<ITaskBarIconService>()?.ShowNotification("崩溃报告", $"ClassIsland 发生了一个无法处理的错误：{e.Message}");
+                await PlatformServices.DesktopToastService.ShowToastAsync("崩溃报告", $"ClassIsland 发生了一个无法处理的错误：{e.Message}");
                 break;
             case 3:
                 Logger?.LogInformation("因教学安全模式设定，应用将直接忽略异常");
@@ -472,7 +469,6 @@ public partial class App : AppBase, IAppHost
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Initializing;
         Dispatcher.UIThread.UnhandledException += App_OnDispatcherUnhandledException;
         MyWindow.ShowOssWatermark = ApplicationCommand.ShowOssWatermark;
-        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
 
@@ -669,11 +665,12 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<ClassPlanDetailsWindow>();
                 services.AddTransient<WindowRuleDebugWindow>();
                 // services.AddTransient<ConfigErrorsWindow>();
-                // services.AddTransient<TimeAdjustmentWindow>();
+                services.AddTransient<TimeAdjustmentWindow>();
                 // services.AddTransient<ExcelExportWindow>();
                 services.AddTransient<DevPortalWindow>();
                 services.AddTransient<WelcomeWindow>();
                 services.AddTransient<DataTransferWindow>();
+                services.AddTransient<DebugPageViewModel>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();
@@ -688,7 +685,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<PluginsSettingsPage>();
                 services.AddSettingsPage<ThemesSettingsPage>();
                 services.AddSettingsPage<TestSettingsPage>();
-                // services.AddSettingsPage<DebugPage>();
+                services.AddSettingsPage<DebugPage>();
                 // services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
                 // services.AddSettingsPage<ManagementSettingsPage>();
@@ -963,12 +960,32 @@ public partial class App : AppBase, IAppHost
             File.Delete(startupCountFilePath);
             if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)
             {
-                GetService<ITaskBarIconService>().ShowNotification("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", clickedCallback:() => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
+                PlatformServices.DesktopToastService.ShowToastAsync("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", () => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
             }
             if (Settings.CorruptPluginsDisabledLastSession)
             {
                 Settings.CorruptPluginsDisabledLastSession = false;
-                GetService<ITaskBarIconService>().ShowNotification("已自动禁用异常插件", "ClassIsland 已自动禁用导致上次崩溃的插件。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。", clickedCallback: () => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins")));
+                var content = new DesktopToastContent()
+                {
+                    Title = "已自动禁用异常插件",
+                    Body = "ClassIsland 已自动禁用导致上次崩溃的插件。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。",
+                    Buttons =
+                    {
+                        {
+                            "打开插件设置",
+                            () => GetService<IUriNavigationService>()
+                                .NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"))
+                        },
+                        {
+                            "管理异常插件行为",
+                            () => GetService<IUriNavigationService>()
+                                .NavigateWrapped(new Uri("classisland://app/settings/general"))
+                        }
+                    }
+                };
+                content.Activated += (_, _) => GetService<IUriNavigationService>()
+                    .NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"));
+                PlatformServices.DesktopToastService.ShowToastAsync(content);
             }
             if (Settings.IsSplashEnabled)
             {
@@ -1005,9 +1022,9 @@ public partial class App : AppBase, IAppHost
         // 注册uri导航
         var uriNavigationService = GetService<IUriNavigationService>();
         uriNavigationService.HandleAppNavigation("test", args => _ = CommonTaskDialogs.ShowDialog("测试导航", $"{args.Uri}"));
-        // uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
-        // uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
-        // uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/")));
+        uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
+        uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
+        uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/")));
         // uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
         // uriNavigationService.HandleAppNavigation("config-errors", args => GetService<ConfigErrorsWindow>().ShowDialog());
 
@@ -1024,7 +1041,21 @@ public partial class App : AppBase, IAppHost
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
-            GetService<ITaskBarIconService>().ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。", clickedCallback:() => uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update")));
+            var content = new DesktopToastContent()
+            {
+                Title = "更新完成。",
+                Body = $"应用已更新到版本{AppVersion}。",
+                Buttons =
+                {
+                    {
+                        "查看更新日志",
+                        () => uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update"))
+                    }
+                }
+            };
+            content.Activated += (_, _) =>
+                uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update"));
+            await PlatformServices.DesktopToastService.ShowToastAsync(content);
         }
         
         base.OnFrameworkInitializationCompleted();

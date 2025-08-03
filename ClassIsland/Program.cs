@@ -19,6 +19,7 @@ using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using HotAvalonia;
 using Sentry;
 using System.Diagnostics;
+using ClassIsland.Core.Services;
 using ClassIsland.Shared.JsonConverters;
 
 namespace ClassIsland;
@@ -57,6 +58,8 @@ public static class Program
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);
+        
+        GlobalStorageService.InitializeGlobalStorage();
 
         if (App.ApplicationCommand.Diagnostic)
         {
@@ -88,7 +91,7 @@ public static class Program
             }
         }
 
-        var sentryEnabled = Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null;
+        var sentryEnabled = GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
         if (sentryEnabled )
         {
             SentrySdk.Init(ConfigureSentry);

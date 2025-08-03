@@ -1,11 +1,14 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Color = System.Drawing.Color;
 
 namespace ClassIsland;
+
 
 public class ColorOctTreeNode
 {
@@ -135,14 +138,16 @@ public class ColorOctTreeNode
         }
     }
 
-    public static Dictionary<string, int> ProcessImage(Bitmap img)
+    public static Dictionary<string, int> ProcessImage(WriteableBitmap img)
     {
         var root = new ColorOctTreeNode(null, 0, 0);
-        for (var x = 0; x < img.Width; x++)
+        for (var x = 0; x < img.Size.Width; x++)
         {
-            for (var y = 0; y < img.Height; y++)
+            for (var y = 0; y < img.Size.Height; y++)
             {
-                root.AddColor(img.GetPixel(x, y), 0);
+                
+                img.CopyPixels();
+                root.AddColor(img.(x, y), 0);
                 while (root.LeafNum > 16) 
                 {
                     root.ReduceTree();
@@ -155,3 +160,4 @@ public class ColorOctTreeNode
         return r;
     }
 }
+#endif

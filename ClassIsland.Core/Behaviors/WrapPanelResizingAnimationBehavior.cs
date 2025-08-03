@@ -16,10 +16,10 @@ namespace ClassIsland.Core.Behaviors;
 public class WrapPanelResizingAnimationBehavior
 {
     public static readonly AttachedProperty<bool> IsResizingAnimationEnabledProperty =
-        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationBehavior, WrapPanel, bool>("IsResizingAnimationEnabled");
+        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationBehavior, Panel, bool>("IsResizingAnimationEnabled");
 
-    public static void SetIsResizingAnimationEnabled(WrapPanel obj, bool value) => obj.SetValue(IsResizingAnimationEnabledProperty, value);
-    public static bool GetIsResizingAnimationEnabled(WrapPanel obj) => obj.GetValue(IsResizingAnimationEnabledProperty);
+    public static void SetIsResizingAnimationEnabled(Panel obj, bool value) => obj.SetValue(IsResizingAnimationEnabledProperty, value);
+    public static bool GetIsResizingAnimationEnabled(Panel obj) => obj.GetValue(IsResizingAnimationEnabledProperty);
 
     public static readonly AttachedProperty<bool> IsAnimationAttachedProperty =
         AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationBehavior, Visual, bool>("IsAnimationAttached");
@@ -29,7 +29,7 @@ public class WrapPanelResizingAnimationBehavior
     
     static WrapPanelResizingAnimationBehavior()
     {
-        IsResizingAnimationEnabledProperty.Changed.AddClassHandler<WrapPanel>(HandleIsResizingAnimationEnabledChanged);
+        IsResizingAnimationEnabledProperty.Changed.AddClassHandler<Panel>(HandleIsResizingAnimationEnabledChanged);
     }
 
     public static readonly AttachedProperty<bool> IsLoadedHandlerAttachedProperty =
@@ -38,7 +38,7 @@ public class WrapPanelResizingAnimationBehavior
     private static void SetIsLoadedHandlerAttached(Control obj, bool value) => obj.SetValue(IsLoadedHandlerAttachedProperty, value);
     public static bool GetIsLoadedHandlerAttached(Control obj) => obj.GetValue(IsLoadedHandlerAttachedProperty);
     
-    private static void HandleIsResizingAnimationEnabledChanged(WrapPanel panel, AvaloniaPropertyChangedEventArgs args)
+    private static void HandleIsResizingAnimationEnabledChanged(Panel panel, AvaloniaPropertyChangedEventArgs args)
     {
         if (IThemeService.AnimationLevel < 2)
         {

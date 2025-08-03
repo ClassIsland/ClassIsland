@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
@@ -70,10 +71,8 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void ButtonAdjustTime_OnClick(object sender, RoutedEventArgs e)
     {
-        // todo: 时间校准窗口
-        // var window = IAppHost.GetService<TimeAdjustmentWindow>();
-        // window.Owner = Window.GetWindow(this);
-        // window.ShowDialog();
+        var window = IAppHost.GetService<TimeAdjustmentWindow>();
+        window.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
     }
 }
 

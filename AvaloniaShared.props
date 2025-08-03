@@ -14,6 +14,6 @@
         <HotAvalonia Condition="'$(Configuration)' == 'Debug'">True</HotAvalonia>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="HotAvalonia" Version="3.0.0" PrivateAssets="All" Publish="True"/>
+        <PackageReference Include="HotAvalonia" Version="3.0.0" PrivateAssets="All" Publish="False"/>
     </ItemGroup>
 </Project>

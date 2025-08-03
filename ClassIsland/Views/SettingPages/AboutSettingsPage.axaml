@@ -30,13 +30,7 @@
         </Style>
     </controls:SettingsPageBase.Styles>
     <controls:SettingsPageBase.Resources>
-        <Grid Margin="16" x:Key="ContributorsDrawer" Width="300">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+        <Grid Margin="16" x:Key="ContributorsDrawer" Width="300" RowDefinitions="Auto,Auto,Auto,*">
             <TextBlock Grid.Row="0" Text="贡献人员" Theme="{StaticResource SubtitleTextBlockStyle}" />
             <TextBlock Grid.Row="1" Margin="0 6 0 0" Text="感谢以下同学为本项目做出的贡献！"/>
             <Button Grid.Row="2" HorizontalAlignment="Left" 
@@ -242,8 +236,11 @@
                 <!-- banner -->
                 <Border ClipToBounds="True">
                     <StackPanel>
-                        <Image Source="/Assets/Banner.png" Stretch="UniformToFill" HorizontalAlignment="Center"
-                               VerticalAlignment="Center" />
+                        <Border CornerRadius="4 4 0 0"
+                                PointerPressed="DebugBorder_OnPointerPressed">
+                            <Image Source="/Assets/Banner.png" Stretch="UniformToFill" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                        </Border>
                         <controls3:SettingsExpanderItem IsClickEnabled="True"
                                                         Click="UIElementAppInfo_OnMouseDown">
                             <Grid HorizontalAlignment="Stretch" >
@@ -351,6 +348,7 @@
             <StackPanel Margin="0 12 0 0" Classes="cardContainer">
                 <controls3:SettingsExpanderItem 
                     Content="查看开放源代码许可"
+                    Click="SettingsExpanderItemShowOssLicense_OnClick"
                     IsClickEnabled="True"/>
                 <controls3:SettingsExpanderItem 
                     Click="ButtonPrivacy_OnClick"

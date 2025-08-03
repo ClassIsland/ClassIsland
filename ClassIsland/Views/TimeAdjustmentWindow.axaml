@@ -1,0 +1,101 @@
+﻿<ci:MyWindow x:Class="ClassIsland.Views.TimeAdjustmentWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        mc:Ignorable="d"
+        Title="对齐铃声" Height="330" Width="600"
+        WindowStartupLocation="CenterOwner"
+        Closed="TimeAdjustmentWindow_OnClosed"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        CanResize="False"
+        EnableMicaWindow="True">
+    <Grid RowDefinitions="0.6*,Auto,5*" ColumnDefinitions="*,Auto,*">
+        <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                <TextBlock Text="目标时间" FontSize="14"
+                           VerticalAlignment="Bottom"
+                           HorizontalAlignment="Left"
+                           Margin="0 0 4 0" />
+                <Button Content="{ci:FluentIcon &#xe02f;}"
+                        ToolTip.Tip="对齐到下个铃声"
+                        Margin="4 0"
+                        Padding="4"
+                        Click="ButtonAdjustToNextEvent_OnClick"
+                        Theme="{StaticResource TransparentButton}"/>
+                <Button Content="{ci:FluentIcon &#xe846;}"
+                        ToolTip.Tip="对齐到下个整分钟"
+                        Margin="4 0"
+                        Padding="4"
+                        Click="ButtonAdjustToNextMinute_OnClick"
+                        Theme="{StaticResource TransparentButton}"/>
+            </StackPanel>
+            <TimePicker Grid.Row="1" 
+                        SelectedTime="{Binding ViewModel.TargetTimeSpan}"
+                         FontSize="36"
+                        Margin="0 2 0 0"
+                         Padding="0 0 0 0"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Right"
+                         FontWeight="Medium"
+                        UseSeconds="True"
+                        Width="180">
+                <TimePicker.Resources>
+                    <system:Double x:Key="TimePickerThemeMinWidth">180.0</system:Double>
+                </TimePicker.Resources>
+            </TimePicker>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                <TextBlock Text="当前时间" FontSize="14"
+                           VerticalAlignment="Bottom"
+                           HorizontalAlignment="Left"/>
+            </StackPanel>
+            <TextBlock Text="{Binding ViewModel.CurrentTime, StringFormat=HH:mm:ss}" 
+                       d:Text="XX:XX:XX" FontSize="42"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Margin="0 2 0 -1"
+                       FontWeight="Medium"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+            <ci:FluentIcon Glyph="&#xe131;"
+                           FontSize="32"
+                           Width="32" Height="32"
+                           Margin="16 24 16 0"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top"
+                    HorizontalAlignment="Center"
+                    Margin="0 18 0 0">
+            <ci:Field Label="时间偏移" Suffix="秒"
+                      HorizontalAlignment="Center">
+                <TextBox MinWidth="100" HorizontalAlignment="Center"
+                         FontSize="15"
+                         Text="{Binding SettingsService.Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}, UpdateSourceTrigger=PropertyChanged}" />
+            </ci:Field>
+            <Button Margin="0 16 0 0"
+                    Width="48" Height="48" CornerRadius="24"
+                    Classes="accent"
+                    HorizontalAlignment="Center"
+                    Content="{ci:FluentIcon &#xe4d2;, FontSize=22}"
+                    ToolTip.Tip="校准"
+                    Click="ButtonApplyAdjustment_OnClick"/>
+
+            <TextBlock HorizontalAlignment="Center"
+                       FontSize="12.5" Opacity="0.75"
+                       Margin="0 16 0 0"
+                       TextAlignment="Center">
+                <Run Text="当到达目标时间点或对应铃声响起时，按下上方的按钮以进行校准。"/>
+                <LineBreak/><Run Text="校准后，将调整时间偏移，使当前时间更改为目标时间。"/>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</ci:MyWindow>

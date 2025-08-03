@@ -1,18 +1,12 @@
-#if false
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Controls;
 using ClassIsland.Helpers;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Services;
@@ -26,7 +20,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// TimeAdjustmentWindow.xaml 的交互逻辑
 /// </summary>
-public partial class TimeAdjustmentWindow
+public partial class TimeAdjustmentWindow : MyWindow
 {
     public IExactTimeService ExactTimeService { get; }
     public ILessonsService LessonsService { get; }
@@ -90,20 +84,20 @@ public partial class TimeAdjustmentWindow
         {
             // 上课中
             case TimeState.OnClass when LessonsService.NextBreakingTimeLayoutItem == TimeLayoutItem.Empty:
-                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.CurrentTimeLayoutItem.EndSecond.TimeOfDay));
+                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.CurrentTimeLayoutItem.EndTime));
                 return;
             case TimeState.OnClass:
-                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.NextBreakingTimeLayoutItem.StartSecond.TimeOfDay));
+                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.NextBreakingTimeLayoutItem.StartTime));
                 return;
             // 课间休息
             case TimeState.Breaking when LessonsService.NextClassTimeLayoutItem == TimeLayoutItem.Empty:
-                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.CurrentTimeLayoutItem.EndSecond.TimeOfDay));
+                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.CurrentTimeLayoutItem.EndTime));
                 return;
             case TimeState.Breaking:
             {
                 var nextPrepOnClassDeltaSeconds = classNotificationProvider.GetSettingsDeltaTime();
                 var onClassTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(
-                    LessonsService.NextClassTimeLayoutItem.StartSecond.TimeOfDay));
+                    LessonsService.NextClassTimeLayoutItem.StartTime));
                 var prepOnClassTime = onClassTime - TimeSpanHelper.FromSecondsSafe(nextPrepOnClassDeltaSeconds);
                 if (now <= prepOnClassTime)
                 {
@@ -115,11 +109,11 @@ public partial class TimeAdjustmentWindow
                 }
             case TimeState.None when LessonsService.NextClassTimeLayoutItem != TimeLayoutItem.Empty:
                 ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(
-                    LessonsService.NextClassTimeLayoutItem.StartSecond.TimeOfDay));
+                    LessonsService.NextClassTimeLayoutItem.StartTime));
                 return;
             case TimeState.None when LessonsService.NextBreakingTimeLayoutItem != TimeLayoutItem.Empty:
                 ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(
-                    LessonsService.NextBreakingTimeLayoutItem.StartSecond.TimeOfDay));
+                    LessonsService.NextBreakingTimeLayoutItem.StartTime));
                 return;
             case TimeState.PrepareOnClass:  // 弃用
             case TimeState.AfterSchool:
@@ -158,4 +152,3 @@ public partial class TimeAdjustmentWindow
             nextMinute.Minute, 0);
     }
 }
-#endif
