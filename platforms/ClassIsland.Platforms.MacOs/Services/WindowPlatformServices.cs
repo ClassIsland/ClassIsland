@@ -147,10 +147,12 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
                 if (state)
                 {
                     win.StyleMask |= NSWindowStyle.Utility;
+                    win.CollectionBehavior |= NSWindowCollectionBehavior.CanJoinAllSpaces;
                 }
                 else
                 {
                     win.StyleMask &= ~NSWindowStyle.Utility;
+                    win.CollectionBehavior &= ~NSWindowCollectionBehavior.CanJoinAllSpaces;
                 }
             }
             if ((features & WindowFeatures.SkipManagement) > 0)
