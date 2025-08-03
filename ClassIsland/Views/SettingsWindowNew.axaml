@@ -1,11 +1,8 @@
 ﻿<controls:MyWindow x:Class="ClassIsland.Views.SettingsWindowNew"
-<<<<<<< HEAD
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="PreferSystemChrome"
         ExtendClientAreaTitleBarHeightHint="-1"
         SystemDecorations="Full"
-=======
->>>>>>> parent of 8f1dba62 (feat: Hide macOS Title Bar)
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
