@@ -48,26 +48,9 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
     
     public WelcomeWindow()
     {
-#if MACOS
-        this.ExtendClientAreaToDecorationsHint = true;
-        this.ExtendClientAreaChromeHints = Avalonia.Platform.ExtendClientAreaChromeHints.NoChrome;
-        this.TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent };
-#endif
-            InitializeComponent();
-            DataContext = this;
-    #if MACOS
-            this.Loaded += WelcomeWindow_Loaded;
-    #endif
-        }
-
-#if MACOS
-    private void WelcomeWindow_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        ClassIsland.Helpers.MacWindowHelper.CustomizeMacWindow(this);
+        InitializeComponent();
+        DataContext = this;
     }
-#endif
-
-
     
     // Create a page based on a Type, but you can create it however you want
     public Control? GetPage(Type srcType)

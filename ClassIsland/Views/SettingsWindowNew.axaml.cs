@@ -99,11 +99,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService,
         IComponentsService componentsService, IUriNavigationService uriNavigationService)
     {
-        #if MACOS
-        this.ExtendClientAreaToDecorationsHint = true;
-        this.ExtendClientAreaChromeHints = Avalonia.Platform.ExtendClientAreaChromeHints.NoChrome;
-        this.TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent };
-        #endif
         Logger = logger;
         DataContext = this;
         ManagementService = managementService;
@@ -113,10 +108,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         SettingsService = settingsService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         InitializeComponent();
-        #if MACOS
-        this.Loaded += SettingsWindowNew_Loaded;
-        #endif
-
         // SplashScreen = new EmptySplashScreen();
 
         TitleBar.ExtendsContentIntoTitleBar = true;
@@ -128,15 +119,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         {
             LaunchSettingsPage = "about";
         }
+
         BuildNavigationMenuItems();
     }
 
-#if MACOS
-    private void SettingsWindowNew_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        ClassIsland.Helpers.MacWindowHelper.CustomizeMacWindow(this);
-    }
-#endif
     private void BuildNavigationMenuItems()
     {
         NavigationView.MenuItems.Clear();

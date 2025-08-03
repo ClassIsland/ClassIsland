@@ -1,9 +1,3 @@
-#if MACOS
-    private void ProfileSettingsWindow_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        ClassIsland.Helpers.MacWindowHelper.CustomizeMacWindow(this);
-    }
-#endif
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -53,24 +47,9 @@ public partial class ProfileSettingsWindow : MyWindow
 
     public ProfileSettingsWindow()
     {
-#if MACOS
-        this.ExtendClientAreaToDecorationsHint = true;
-        this.ExtendClientAreaChromeHints = Avalonia.Platform.ExtendClientAreaChromeHints.NoChrome;
-        this.TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent };
-#endif
         DataContext = this;
         InitializeComponent();
-#if MACOS
-        this.Loaded += ProfileSettingsWindow_Loaded;
-#endif
     }
-
-#if MACOS
-    private void ProfileSettingsWindow_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        ClassIsland.Helpers.MacWindowHelper.CustomizeMacWindow(this);
-    }
-#endif
 
     #region Misc
 
