@@ -158,50 +158,6 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
             if ((features & WindowFeatures.SkipManagement) > 0)
             {
             }
-
-            // 仅macOS处理隐藏标题栏特性
-            // Fuck macOS, this is a hacky way to hide the title bar.
-            // Fuck Copilot, brings me more error messages.
-            if ((features & WindowFeatures.HiddenTitleBar) > 0 && toplevel is Window macWindow)
-            {
-#if MACOS
-                // 通过反射获取Handle字段
-                var platformImpl = macWindow.GetType().GetProperty("PlatformImpl", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?.GetValue(macWindow);
-                var handleProp = platformImpl?.GetType().GetProperty("Handle", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-                var handleObj = handleProp?.GetValue(platformImpl);
-                var rawHandle = handleObj?.GetType().GetProperty("Handle", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)?.GetValue(handleObj);
-                var handle = rawHandle is IntPtr ptr ? ptr : IntPtr.Zero;
-                if (handle != IntPtr.Zero)
-                {
-                    // P/Invoke声明
-                    [System.Runtime.InteropServices.DllImport("/usr/lib/libobjc.dylib", EntryPoint = "sel_registerName")]
-                    static extern IntPtr sel_registerName(string name);
-                    [System.Runtime.InteropServices.DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-                    static extern void objc_msgSend_void_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg);
-                    [System.Runtime.InteropServices.DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-                    static extern void objc_msgSend_void_bool(IntPtr receiver, IntPtr selector, bool arg);
-                    [System.Runtime.InteropServices.DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-                    static extern IntPtr objc_msgSend_IntPtr(IntPtr receiver, IntPtr selector);
-
-                    // 1. titleVisibility = .hidden
-                    var selTitleVisibility = sel_registerName("setTitleVisibility:");
-                    var NSWindowTitleHidden = (IntPtr)1;
-                    objc_msgSend_void_IntPtr(handle, selTitleVisibility, NSWindowTitleHidden);
-
-                    // 2. titlebarAppearsTransparent = true
-                    var selTitlebarAppearsTransparent = sel_registerName("setTitlebarAppearsTransparent:");
-                    objc_msgSend_void_bool(handle, selTitlebarAppearsTransparent, true);
-
-                    // 3. styleMask.insert(.fullSizeContentView)
-                    var selStyleMask = sel_registerName("styleMask");
-                    var styleMask = objc_msgSend_IntPtr(handle, selStyleMask);
-                    var NSWindowStyleMaskFullSizeContentView = (IntPtr)(1 << 15);
-                    styleMask = (IntPtr)(styleMask.ToInt64() | NSWindowStyleMaskFullSizeContentView.ToInt64());
-                    var selSetStyleMask = sel_registerName("setStyleMask:");
-                    objc_msgSend_void_IntPtr(handle, selSetStyleMask, styleMask);
-                }
-#endif
-            }
         }
         catch (Exception e)
         {
