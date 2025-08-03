@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Platforms.Abstraction;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using GuerrillaNtp;
@@ -77,11 +78,9 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
         Task.Run(() => {
             Sync();
             UpdateTimerStatus();
-            if (OperatingSystem.IsWindows())
-            {
-                SystemEvents.TimeChanged += SystemEventsOnTimeChanged;
-                AppBase.Current.AppStopping += (sender, args) => SystemEvents.TimeChanged -= SystemEventsOnTimeChanged; ;
-            }
+            PlatformServices.SystemEventsService.TimeChanged += SystemEventsOnTimeChanged;
+            AppBase.Current.AppStopping += (sender, args) => PlatformServices.SystemEventsService.TimeChanged -= SystemEventsOnTimeChanged; ;
+            
         });
 
         if (SettingsService.Settings.IsTimeAutoAdjustEnabled)

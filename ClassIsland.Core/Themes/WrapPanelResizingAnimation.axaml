@@ -7,7 +7,7 @@
         </Border>
     </Design.PreviewWith>
 
-    <Style Selector="WrapPanel.animated-resize">
+    <Style Selector=":is(Panel).animated-resize">
         <Setter Property="ci:WrapPanelResizingAnimationBehavior.IsResizingAnimationEnabled" Value="True"/>
     </Style>
 </Styles>

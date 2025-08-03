@@ -1,10 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Services.Metadata;
+using ClassIsland.Core.Commands;
 using ClassIsland.Core.Enums.Metadata.Announcement;
 using ClassIsland.Core.Models.Metadata.Announcement;
 using ClassIsland.Shared;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Controls;
 
@@ -27,7 +30,18 @@ public partial class AnnouncementControl : UserControl
         set => SetValue(AnnouncementProperty, value);
     }
 
-    private void ButtonRead_OnClick(object sender, RoutedEventArgs e)
+    public static FuncValueConverter<Severity, InfoBarSeverity> AnnouncementSeverityToInfoBarSeverityConverter =
+        new (x => x switch
+        {
+            Severity.Announcement => InfoBarSeverity.Informational,
+            Severity.Info => InfoBarSeverity.Informational,
+            Severity.Important => InfoBarSeverity.Warning,
+            Severity.Warning => InfoBarSeverity.Warning,
+            Severity.Critical => InfoBarSeverity.Error,
+            _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
+        });
+
+    private void ButtonRead_OnClick(InfoBar infoBar, EventArgs args)
     {
         var service = IAppHost.GetService<IAnnouncementService>();
         var readStateStorage = Announcement.ReadStateStorageScope switch
@@ -38,5 +52,10 @@ public partial class AnnouncementControl : UserControl
         };
         readStateStorage.Add(Announcement.Guid);
         
+    }
+
+    private void ButtonDetails_OnClick(object? sender, RoutedEventArgs e)
+    {
+        UriNavigationCommands.UriNavigationCommand.Execute(Announcement.DetailsUri);
     }
 }

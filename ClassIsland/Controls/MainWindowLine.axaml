@@ -186,14 +186,17 @@
                 </MultiBinding>
             </Setter.Value>
         </Setter>
-        <Setter Property="Transitions">
-            <Setter.Value>
-                <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="0:0:0.100"/>
-                    <DoubleTransition Property="BackgroundWidth" Duration="0:0:0.550" Easing="0.00, 1.00, 0.50, 1.10"/>
-                </Transitions>
-            </Setter.Value>
-        </Setter>
+        
+        <Style Selector="^[(ci|ComponentPresenter.IsMainWindowLoaded)=True]">
+            <Setter Property="Transitions">
+                <Setter.Value>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.100"/>
+                        <DoubleTransition Property="BackgroundWidth" Duration="0:0:0.550" Easing="0.00, 1.00, 0.50, 1.10"/>
+                    </Transitions>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style Selector="^:dock-left /template/:is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>

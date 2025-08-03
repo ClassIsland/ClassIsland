@@ -1,44 +1,35 @@
 ﻿using System;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Platforms.Abstraction.Services;
+using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class DebugPageViewModel : ObservableRecipient
+public partial class DebugPageViewModel(
+    SettingsService settingsService,
+    IManagementService managementService,
+    ConsoleService consoleService,
+    ILessonsService lessonsService,
+    IProfileAnalyzeService profileAnalyzeService,
+    ILocationService locationService) : ObservableRecipient
 {
-    private bool _isTargetDateTimeLoaded = false;
-    private DateTime _targetDate = new();
-    private DateTime _targetTime = new();
+    public SettingsService SettingsService { get; } = settingsService;
+    public IManagementService ManagementService { get; } = managementService;
+    public ConsoleService ConsoleService { get; } = consoleService;
+    public ILessonsService LessonsService { get; } = lessonsService;
+    public IProfileAnalyzeService ProfileAnalyzeService { get; } = profileAnalyzeService;
+    public ILocationService LocationService { get; } = locationService;
+    
+    [ObservableProperty] private DateTime _targetDate = DateTime.Now;
+    
+    [ObservableProperty] private TimeSpan _targetTime = TimeSpan.Zero;
 
-    public bool IsTargetDateTimeLoaded
-    {
-        get => _isTargetDateTimeLoaded;
-        set
-        {
-            if (value == _isTargetDateTimeLoaded) return;
-            _isTargetDateTimeLoaded = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty] private bool _isTargetDateLoaded = false;
 
-    public DateTime TargetDate
-    {
-        get => _targetDate;
-        set
-        {
-            if (value == _targetDate) return;
-            _targetDate = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime TargetTime
-    {
-        get => _targetTime;
-        set
-        {
-            if (value == _targetTime) return;
-            _targetTime = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty] private bool _isTargetTimeLoaded = false;
+    
+    public bool IsTargetDateTimeLoaded => IsTargetDateLoaded && IsTargetTimeLoaded;
+    
 }

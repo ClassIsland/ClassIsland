@@ -261,7 +261,7 @@
                                          FontSize="25"
                                          Margin="16 0"
                                          Glyph="&#xE00C;" />
-                        <ci:FluentIcon Grid.Column="2" Glyph="&#xE070;"
+                        <ci:FluentIcon Grid.Column="2" Glyph="&#xe6af;"
                                        VerticalAlignment="Stretch"
                                        HorizontalAlignment="Stretch"
                                        FontSize="75"

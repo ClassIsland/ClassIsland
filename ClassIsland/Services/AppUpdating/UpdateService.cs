@@ -23,6 +23,7 @@ using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Updating;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Helpers;
@@ -281,9 +282,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             var spanGetDetail = transaction.StartChild("getDetail");
             SelectedVersionInfo = await WebRequestHelper.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
-            TaskBarIconService.ShowNotification("发现新版本",
+            await PlatformServices.DesktopToastService.ShowToastAsync("发现新版本",
                 $"{Assembly.GetExecutingAssembly().GetName().Version} -> {version.Version}\n" +
-                "点击以查看详细信息。", clickedCallback:UpdateNotificationClickedCallback);
+                "点击以查看详细信息。", UpdateNotificationClickedCallback);
 
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             spanGetDetail.Finish(SpanStatus.Ok);
@@ -494,7 +495,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         var success = true;
         var transaction = SentrySdk.StartTransaction("Reboot to Update Mode", "appUpdating.rebootToUpdate");
         Logger.LogInformation("正在重启至升级模式。");
-        TaskBarIconService.ShowNotification("正在安装应用更新", "这可能需要10-30秒的时间，请稍后……");
+        await PlatformServices.DesktopToastService.ShowToastAsync("正在安装应用更新", "这可能需要10-30秒的时间，请稍后……");
         CurrentWorkingStatus = UpdateWorkingStatus.ExtractingUpdates;
         try
         {
@@ -526,7 +527,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             transaction.GetLastActiveSpan()?.Finish(ex, SpanStatus.InternalError);
             transaction.Finish(ex, SpanStatus.InternalError);
             Logger.LogError(ex, "无法安装更新");
-            TaskBarIconService.ShowNotification("安装更新失败", ex.Message, clickedCallback:UpdateNotificationClickedCallback);
+            await PlatformServices.DesktopToastService.ShowToastAsync("安装更新失败", ex.Message, UpdateNotificationClickedCallback);
             CurrentWorkingStatus = UpdateWorkingStatus.Idle;
             await RemoveDownloadedFiles();
         }

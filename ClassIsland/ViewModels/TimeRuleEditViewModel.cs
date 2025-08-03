@@ -5,7 +5,7 @@ namespace ClassIsland.ViewModels;
 
 public partial class TimeRuleEditViewModel : ObservableObject
 {
-    public IReadOnlyList<string> WeekDayOptions { get; } =
+    public static IReadOnlyList<string> WeekDayOptions { get; } =
         ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
     public List<string> WeekCountDivOptions { get; set; } = [];

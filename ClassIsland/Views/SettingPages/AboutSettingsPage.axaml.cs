@@ -9,6 +9,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
@@ -45,35 +46,6 @@ public partial class AboutSettingsPage : SettingsPageBase
         ViewModel.License = r.ReadToEnd();
     }
 
-    private void AppIcon_OnMouseDown(object sender, RoutedEventArgs e)
-    {
-        ViewModel.AppIconClickCount++;
-        if (ViewModel.AppIconClickCount >= 10 && !ViewModel.SettingsService.Settings.IsDebugOptionsEnabled)
-        {
-            if (ViewModel.ManagementService.Policy.DisableDebugMenu)
-            {
-                _ = CommonTaskDialogs.ShowDialog("调试菜单已禁用", "您的组织禁用了调试菜单。", this);
-                return;
-            }
-#if false
-            var r1 = new CommonDialogBuilder()
-                .SetPackIcon(MaterialIconKind.Bug)
-                .SetCaption("启用调试菜单")
-                .SetContent(
-                    "您正在发布版本的 ClassIsland 中启用仅供开发使用的调试菜单。请注意此功能仅限于开发和调试用途，ClassIsland 开发者不对以非开发用途使用此页面中功能造成的任何后果负责，也不接受以非开发用途使用时产生的 Bug 的反馈。\n\n如果您确实要启用此功能，请在下方文本框输入⌈我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈⌋，然后点击【继续】。")
-                .HasInput(true)
-                .AddCancelAction()
-                .AddAction("继续", MaterialIconKind.ArrowRight, true)
-                .ShowDialog(out var confirm, Window.GetWindow(this));
-            if (r1 != 1 || confirm != "我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈")
-            {
-                return;
-            }
-#endif
-            ViewModel.SettingsService.Settings.IsDebugOptionsEnabled = true;
-        }
-    }
-
     private void ButtonGithub_OnClick(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo()
@@ -104,16 +76,39 @@ public partial class AboutSettingsPage : SettingsPageBase
     private async void ButtonDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
     {
         var diagInfo = ViewModel.DiagnosticService.GetDiagnosticInfo();
-        await new ContentDialog()
+        var dialog = new ContentDialog()
         {
             Title = "诊断信息",
             Content = new TextBox()
             {
                 Text = diagInfo
             },
+            IsSecondaryButtonEnabled = true,
             PrimaryButtonText = "确定",
+            SecondaryButtonText = "复制",
             DefaultButton = ContentDialogButton.Primary
-        }.ShowAsync();
+        };
+        dialog.SecondaryButtonClick += ButtonCopyDiagnosticInfo_OnClick;
+        await dialog.ShowAsync();
+    }
+
+    private async void ButtonCopyDiagnosticInfo_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    {
+        bool success = false;
+        try
+        {
+            await TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(ViewModel.DiagnosticService.GetDiagnosticInfo());
+            success = true;
+        }
+        catch (Exception ex)
+        {
+            App.GetService<ILogger<AboutSettingsPage>>().LogError(ex, "复制诊断信息失败。");
+            ToastsHelper.ShowErrorToast(this, "复制失败，请全选诊断信息文本后手动复制。");
+        }
+        if (success)
+        {
+            ToastsHelper.ShowSuccessToast(this, "复制成功！");
+        }
     }
 
     private async void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
@@ -157,13 +152,11 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private void ButtonPrivacy_OnClick(object sender, RoutedEventArgs e)
     {
-        // TODO: 实现文档阅读窗口
-        // new DocumentReaderWindow()
-        // {
-        //     Source = new Uri("/Assets/Documents/Privacy_.md", UriKind.RelativeOrAbsolute),
-        //     Owner = Window.GetWindow(this),
-        //     Title = "ClassIsland 隐私政策"
-        // }.ShowDialog();
+        new DocumentReaderWindow()
+        {
+            Source = new Uri("avares://ClassIsland/Assets/Documents/Privacy_.md"),
+            Title = "ClassIsland 隐私政策"
+        }.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
     }
 
     private async void Sayings_OnMouseLeftButtonDown(object sender, RoutedEventArgs e)
@@ -181,7 +174,7 @@ public partial class AboutSettingsPage : SettingsPageBase
             string[] sayingsArray;
             if (sayings.Contains("\r\n"))
             {
-               sayingsArray = sayings.Split("\r\n");
+                sayingsArray = sayings.Split("\r\n");
             }
             else
             {
@@ -212,6 +205,79 @@ public partial class AboutSettingsPage : SettingsPageBase
         {
             TopLevel.GetTopLevel(this)?.Clipboard?
                 .SetTextAsync("5oS/5oiR5Lus5Zyo6YKj6bKc6Iqx6Iqs6Iqz55qE6KW/6aOO5bC95aS06YeN6YCi44CC");
+        }
+    }
+
+    private async void SettingsExpanderItemShowOssLicense_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var license = await new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/LICENSE.txt")))
+            .ReadToEndAsync();
+        await new ContentDialog()
+        {
+            Title = "开放源代码许可",
+            Content = new TextBlock()
+            {
+                Text = license
+            },
+            PrimaryButtonText = "关闭",
+            DefaultButton = ContentDialogButton.Primary
+        }.ShowAsync();
+    }
+
+    private async void DebugBorder_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        ViewModel.AppIconClickCount++;
+        if (ViewModel.SettingsService.Settings.IsDebugOptionsEnabled)
+        {
+            this.ShowToast("您已启用调试菜单，无需继续操作。");
+            return;
+        }
+        if (ViewModel.AppIconClickCount >= 10)
+        {
+            if (ViewModel.ManagementService.Policy.DisableDebugMenu)
+            {
+                _ = CommonTaskDialogs.ShowDialog("调试菜单已禁用", "您的组织禁用了调试菜单。", this);
+                return;
+            }
+
+#if !DEBUG
+            var textBox = new TextBox();
+            var r = await new ContentDialog()
+            {
+                Title = "启用调试菜单",
+                Content = new StackPanel
+                {
+                    Spacing = 4,
+                    Children =
+                    {
+                        new TextBlock()
+                        {
+                            TextWrapping = TextWrapping.Wrap,
+                            Text =
+                                "您正在发布版本的 ClassIsland 中启用仅供开发使用的调试菜单。请注意此功能仅限于开发和调试用途，ClassIsland 开发者不对以非开发用途使用此页面中功能造成的任何后果负责，也不接受以非开发用途使用时产生的 Bug 的反馈。\n\n如果您确实要启用此功能，请在下方文本框输入⌈我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈⌋，然后点击【继续】。"
+                        },
+                        textBox
+                    }
+                },
+                PrimaryButtonText = "继续",
+                SecondaryButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary
+            }.ShowAsync();
+            
+            
+            if (r != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            if (textBox.Text != "我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈")
+            {
+                this.ShowWarningToast("验证结果不正确，请重新输入。");
+                return;
+            }
+#endif
+            ViewModel.SettingsService.Settings.IsDebugOptionsEnabled = true;
+            this.ShowSuccessToast("已启用调试菜单。");
         }
     }
 }

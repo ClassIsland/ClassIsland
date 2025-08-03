@@ -57,6 +57,7 @@ SwitchDesktop
 CloseDesktop
 SetWindowDisplayAffinity
 SetLayeredWindowAttributes
+SetCurrentProcessExplicitAppUserModelID
 
 EVENT_SYSTEM_FOREGROUND
 WINEVENT_OUTOFCONTEXT

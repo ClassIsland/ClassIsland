@@ -11,6 +11,7 @@
       xmlns:controls2="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
       xmlns:settingsPages="clr-namespace:ClassIsland.ViewModels.SettingsPages"
       xmlns:classIsland="clr-namespace:ClassIsland"
+      xmlns:system="clr-namespace:System;assembly=System.Runtime"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       d:DataContext="{d:DesignInstance local:AppearanceSettingsPage}">
@@ -126,10 +127,18 @@
                               SelectionChanged="ButtonUpdateWallpaper_OnClick"
                               HorizontalContentAlignment="Left"
                               SelectedIndex="{Binding ViewModel.SettingsService.Settings.ColorSource}">
-                        <controls1:IconText Glyph="&#xED39;" Text="自定义" />
-                        <controls1:IconText Glyph="&#xF42D;" Text="系统壁纸" />
-                        <controls1:IconText Glyph="&#xEA1D;" Text="系统" />
-                        <controls1:IconText Glyph="&#xEEED;" Text="屏幕主题色" />
+                        <ComboBoxItem>
+                            <controls1:IconText Glyph="&#xED39;" Text="自定义" />
+                        </ComboBoxItem>
+                        <ComboBoxItem IsVisible="False" IsEnabled="False">
+                            <controls1:IconText Glyph="&#xF42D;" Text="系统壁纸" />
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <controls1:IconText Glyph="&#xEA1D;" Text="系统" />
+                        </ComboBoxItem>
+                        <ComboBoxItem IsVisible="False" IsEnabled="False">
+                            <controls1:IconText Glyph="&#xEEED;" Text="屏幕主题色"/>
+                        </ComboBoxItem>
                     </ComboBox>
                 </controls2:SettingsExpander.Footer>
             </controls2:SettingsExpander>
@@ -140,6 +149,14 @@
                 <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE51E;}"
                                             Header="强调色"
                                             Description="应用显示强调元素时所使用的颜色。">
+                    <controls2:SettingsExpander.IsVisible>
+                        <Binding Path="ViewModel.SettingsService.Settings.ColorSource"
+                                 Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <system:Int32>0</system:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls2:SettingsExpander.IsVisible>
                     <controls2:SettingsExpander.Footer>
                         <controls2:ColorPickerButton
                             Color="{Binding ViewModel.SettingsService.Settings.PrimaryColor, Mode=TwoWay}" />

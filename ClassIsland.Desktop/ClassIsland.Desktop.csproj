@@ -8,6 +8,7 @@
         <ApplicationId>cn.classisland.app</ApplicationId>
         <Company>ClassIsland</Company>
         <Product>ClassIsland</Product>
+        <SatelliteResourceLanguages>en;zh-cn</SatelliteResourceLanguages>
     </PropertyGroup>
     
     <!-- UOS DEB Packaging Properties -->
@@ -33,7 +34,6 @@
     
     <ItemGroup Condition="'$(Platforms_Windows)'=='true'">
         <ProjectReference Include="..\platforms\ClassIsland.Platforms.Windows\ClassIsland.Platforms.Windows.csproj" />
-        <PackageReference Include="Avalonia.Direct2D1" Version="$(AvaloniaVersion)"/>
     </ItemGroup>
     <ItemGroup Condition="'$(Platforms_Linux)'=='true'">
         <ProjectReference Include="..\platforms\ClassIsland.Platforms.Linux\ClassIsland.Platforms.Linux.csproj" />
@@ -66,6 +66,22 @@
       <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w 2.png" />
       <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w 1.png" />
       <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo_16x16.png" />
+    </ItemGroup>
+    
+    <!-- Drop Code analysis dep -->
+    <ItemGroup>
+        <Reference Update="Microsoft.CodeAnalysis.CSharp">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </Reference>
+        <Reference Update="Microsoft.CodeAnalysis.VisualBasic">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </Reference>
+        <Reference Update="Microsoft.CodeAnalysis">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </Reference>
     </ItemGroup>
     
     <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">

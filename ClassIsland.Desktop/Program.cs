@@ -55,9 +55,6 @@ class Program
                 ]
             })
             .UsePlatformDetect()
-#if Platforms_Windows
-            // .UseDirect2D1()  // 完全用不了，https://github.com/AvaloniaUI/Avalonia/issues/11802
-#endif
             .LogToHostSink();
 
         try
@@ -83,14 +80,26 @@ class Program
         PlatformServices.WindowPlatformService = new WindowPlatformService();
         PlatformServices.LocationService = new LocationService();
         PlatformServices.DesktopService = new DesktopService();
+        PlatformServices.SystemEventsService = new SystemEventsService();
+        PlatformServices.DesktopToastService = new DesktopToastService();
+        postInitCallback = () =>
+        {
+            AppBase.Current.AppStarted += (sender, args) =>
+            {
+                
+            };
+        };
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);
         PlatformServices.WindowPlatformService = windowPlatformService;
         PlatformServices.DesktopService = new DesktopService();
-        postInitCallback = () =>
+        var desktopToastService = new DesktopToastService();
+        PlatformServices.DesktopToastService = desktopToastService;
+        postInitCallback = async void () =>
         {
             windowPlatformService.PostInit();
+            await desktopToastService.InitializeAsync();
         };
 #endif
 #if Platforms_MacOs

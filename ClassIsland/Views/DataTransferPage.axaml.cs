@@ -130,7 +130,7 @@ public partial class DataTransferPage : UserControl
         {
             entry |= ImportEntries.OtherConfig;
         }
-        AppBase.Current.Restart(["--importV1", ViewModel.ImportSourcePath, "-m", "--importEntries", entry.ToString()]);
+        AppBase.Current.Restart(["--importV1", ViewModel.ImportSourcePath, "-m", "--importEntries", ((int)entry).ToString()]);
     }
 
     private void ImportSettings(string root)

@@ -8,21 +8,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
-      <ProjectReference Include="..\..\ClassIsland\ClassIsland.csproj" />
-      <ProjectReference Include="..\..\vendors\System.Device.Location\System.Device.Location.csproj" />
+        <ProjectReference Include="..\..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
+        <ProjectReference Include="..\..\ClassIsland\ClassIsland.csproj" />
+        <ProjectReference Include="..\..\vendors\ClassIsland.WinRTReferences\ClassIsland.WinRTReferences.csproj" 
+                          ExcludeAssets=""/>
+        <ProjectReference Include="..\..\vendors\System.Device.Location\System.Device.Location.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
+        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
+        <PackageReference Include="Microsoft.Win32.SystemEvents" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Helpers\" />
+        <Folder Include="Helpers\" />
     </ItemGroup>
-    <Import Project="../../Global.props"/>
+    <Import Project="../../Global.props" />
 </Project>

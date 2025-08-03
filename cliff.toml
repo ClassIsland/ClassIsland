@@ -32,7 +32,7 @@ body = """
 
 {% endif %}\
 {% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}
-  * @{{ contributor.username }}
+  - @{{ contributor.username }}
 {%- endfor -%}
 {%- endif %}
 
