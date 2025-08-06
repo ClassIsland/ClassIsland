@@ -1022,8 +1022,10 @@
                                             </StackPanel>
                                             <StackPanel x:Name="StackPanelBreakingTimePointSettings">
                                                 <ci:Field Label="课间名称">
-                                                    <TextBox
-                                                        Text="{Binding ViewModel.SelectedTimePoint.BreakName, UpdateSourceTrigger=PropertyChanged}" />
+                                                    <AutoCompleteBox
+                                                        ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CurrentProfileBreakNames}"
+                                                        Text="{Binding ViewModel.SelectedTimePoint.BreakName}"
+                                                        GotFocus="StackPanelBreakingTimePointSettings_OnGotFocus"/>
                                                 </ci:Field>
                                             </StackPanel>
                                             <Separator Margin="0 4 0 8" />

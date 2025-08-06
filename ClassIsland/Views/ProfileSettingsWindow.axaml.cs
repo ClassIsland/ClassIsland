@@ -813,6 +813,16 @@ public partial class ProfileSettingsWindow : MyWindow
         RemoveSelectedTimePoint();
     }
 
+    private void StackPanelBreakingTimePointSettings_OnGotFocus(object? sender, GotFocusEventArgs e)
+    {
+        ViewModel.CurrentProfileBreakNames = new HashSet<string>(
+            ViewModel.ProfileService.Profile.TimeLayouts.Values
+                .SelectMany(t => t.Layouts
+                .Select(l => l.BreakName))
+                .Where(n => !string.IsNullOrEmpty(n)));
+        // Console.WriteLine(string.Join(" ", ViewModel.CurrentProfileBreakNames));
+    }
+
     #endregion
 
     #region Subjects
