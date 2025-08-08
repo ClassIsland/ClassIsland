@@ -100,11 +100,11 @@ public static class Program
                 s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
             });
         }
-        if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is { } priorityStr && uint.TryParse(priorityStr, out uint priority))
-        {
-            SetProcessPriority(priority);
-        }
-        else SetProcessPriority(2); //If not set or invalid, default to Normal priority (2).
+        // if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is { } priorityStr && uint.TryParse(priorityStr, out uint priority))
+        // {
+        //     SetProcessPriority(priority);
+        // }
+        // else SetProcessPriority(2); //If not set or invalid, default to Normal priority (2).
 
         return () => new App()
         {
@@ -162,18 +162,18 @@ public static class Program
         options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
     }
     
-    static void SetProcessPriority(uint priority)
-    {
-        Process.GetCurrentProcess().PriorityClass = priority switch
-        {
-            0 => ProcessPriorityClass.Idle,
-            1 => ProcessPriorityClass.BelowNormal,
-            2 => ProcessPriorityClass.Normal,
-            3 => ProcessPriorityClass.AboveNormal,
-            4 => ProcessPriorityClass.High,
-            5 => ProcessPriorityClass.RealTime,
-            _ => ProcessPriorityClass.Normal,
-        };
-    }
+    // static void SetProcessPriority(uint priority)
+    // {
+    //     Process.GetCurrentProcess().PriorityClass = priority switch
+    //     {
+    //         0 => ProcessPriorityClass.Idle,
+    //         1 => ProcessPriorityClass.BelowNormal,
+    //         2 => ProcessPriorityClass.Normal,
+    //         3 => ProcessPriorityClass.AboveNormal,
+    //         4 => ProcessPriorityClass.High,
+    //         5 => ProcessPriorityClass.RealTime,
+    //         _ => ProcessPriorityClass.Normal,
+    //     };
+    // }
 }
 
