@@ -57,15 +57,7 @@ class Program
             .UsePlatformDetect()
             .LogToHostSink();
 
-        try
-        {
-            return r.StartWithClassicDesktopLifetime(args);
-        }
-        catch (Exception e)
-        {
-            await File.WriteAllTextAsync(Path.Combine(CommonDirectories.AppRootFolderPath, "crash.txt"), e.ToString());
-            return -1;
-        }
+        return r.StartWithClassicDesktopLifetime(args);
     }
     
     // AppBuilder for designer
