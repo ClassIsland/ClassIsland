@@ -73,6 +73,7 @@ using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Controls.AttachedSettingsControls;
+using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Controls.Components;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Controls.SpeechProviderSettingsControls;
@@ -689,7 +690,7 @@ public partial class App : AppBase, IAppHost
                 // services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
                 services.AddSettingsPage<ManagementSettingsPage>();
-                // services.AddSettingsPage<ManagementCredentialsSettingsPage>();
+                services.AddSettingsPage<ManagementCredentialsSettingsPage>();
                 services.AddSettingsPage<ManagementPolicySettingsPage>();
                 services.AddSettingsPage<ErrorSettingsPage>();
                 // 主界面组件
@@ -792,8 +793,8 @@ public partial class App : AppBase, IAppHost
                 // services.AddHostedService<RunActionHandler>();
                 // services.AddHostedService<AppSettingsActionHandler>();
                 // services.AddHostedService<SleepActionHandler>();
-                // // 认证提供方
-                // services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
+                // 认证提供方
+                services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
                 // // 语音提供方
                 services.AddSpeechProvider<SystemSpeechService>();
                 services.AddSpeechProvider<EdgeTtsService, EdgeTtsSpeechServiceSettingsControl>();

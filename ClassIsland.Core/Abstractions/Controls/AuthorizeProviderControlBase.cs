@@ -1,10 +1,10 @@
-#if false
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Windows.Input;
 using Avalonia.Controls;
+using Avalonia.Labs.Input;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Abstractions.Controls;
@@ -17,7 +17,7 @@ public abstract class AuthorizeProviderControlBase : UserControl
     /// <summary>
     /// 完成认证命令。
     /// </summary>
-    public static readonly ICommand CompleteAuthorizeCommand = new RoutedCommand();
+    public static readonly ICommand CompleteAuthorizeCommand = new RoutedCommand(nameof(CompleteAuthorizeCommand));
 
     /// <summary>
     /// 通过认证。
@@ -26,6 +26,12 @@ public abstract class AuthorizeProviderControlBase : UserControl
     {
         CompleteAuthorizeCommand.Execute(null);
     }
+
+    /// <summary>
+    /// 验证当前认证提供方的设置是否有效，仅在编辑环境下生效
+    /// </summary>
+    /// <returns>如果当前认证提供方的设置有效，返回 true </returns>
+    public abstract bool ValidateAuthorizeSettings();
 
     /// <summary>
     /// 当前认证提供方控件的设置
@@ -81,4 +87,3 @@ public abstract class AuthorizeProviderControlBase<T> : AuthorizeProviderControl
     /// </summary>
     public T Settings => (SettingsInternal as T)!;
 }
-#endif

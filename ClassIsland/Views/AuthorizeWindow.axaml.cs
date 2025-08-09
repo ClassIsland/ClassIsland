@@ -1,11 +1,15 @@
-#if false
 using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
-using ClassIsland.Core.Controls.CommonDialog;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Labs.Input;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Models.Authorize;
+using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -15,11 +19,13 @@ namespace ClassIsland.Views;
 /// <summary>
 /// AuthorizeWindow.xaml 的交互逻辑
 /// </summary>
-public partial class AuthorizeWindow
+public partial class AuthorizeWindow : MyWindow
 {
     public AuthorizeViewModel ViewModel { get; } = new();
 
     private ILogger<AuthorizeWindow> Logger { get; } = IAppHost.GetService<ILogger<AuthorizeWindow>>();
+
+    public bool DialogResult { get; set; } = false;
 
     public AuthorizeWindow(Credential credential, bool isEditingMode)
     {
@@ -30,10 +36,11 @@ public partial class AuthorizeWindow
         Loaded += (sender, args) => ViewModel.SelectedCredentialItem = ViewModel.Credential.Items.FirstOrDefault();
     }
 
-    protected override void OnContentRendered(EventArgs e)
+    public override void Show()
     {
-        var result = SetWindowDisplayAffinity((HWND)new WindowInteropHelper(this).Handle, WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE);
-        base.OnContentRendered(e);
+        base.Show();
+        Activate();
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Private, true);
     }
 
     private void ButtonAddAuthorizeMethod_OnClick(object sender, RoutedEventArgs e)
@@ -66,9 +73,18 @@ public partial class AuthorizeWindow
 
         if (ViewModel.Credential.Items.Count <= 0)
         {
-            CommonDialog.ShowError("请至少添加一个认证方式。");
+            this.ShowWarningToast("请至少添加一个认证方式。");
             return;
         }
+
+        var eventArgs = new RequestValidateAuthorizationProviderEventArgs(this);
+        RaiseEvent(eventArgs);
+        if (eventArgs.IsError)
+        {
+            this.ShowErrorToast("认证方式的设置验证失败，请检查认证方式配置。");
+            return;
+        }
+        
         DialogResult = true;
         Close();
     }
@@ -84,4 +100,3 @@ public partial class AuthorizeWindow
         Close();
     }
 }
-#endif

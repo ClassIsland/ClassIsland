@@ -1,5 +1,6 @@
-#if false
 using System.Windows;
+using Avalonia.Interactivity;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
@@ -11,7 +12,7 @@ namespace ClassIsland.Views.SettingPages;
 /// ManagementCredentialsSettingsPage.xaml 的交互逻辑
 /// </summary>
 [SettingsPageInfo("management.credentials", "集控凭据设置", true, SettingsPageCategory.About)]
-public partial class ManagementCredentialsSettingsPage
+public partial class ManagementCredentialsSettingsPage : SettingsPageBase
 {
     public ManagementCredentialsSettingsViewModel ViewModel { get; } = new();
 
@@ -44,4 +45,3 @@ public partial class ManagementCredentialsSettingsPage
         ViewModel.IsLocked = true;
     }
 }
-#endif
