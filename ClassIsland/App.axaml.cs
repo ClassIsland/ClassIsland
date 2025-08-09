@@ -690,7 +690,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<AboutSettingsPage>();
                 services.AddSettingsPage<ManagementSettingsPage>();
                 // services.AddSettingsPage<ManagementCredentialsSettingsPage>();
-                // services.AddSettingsPage<ManagementPolicySettingsPage>();
+                services.AddSettingsPage<ManagementPolicySettingsPage>();
                 services.AddSettingsPage<ErrorSettingsPage>();
                 // 主界面组件
                 services.AddComponent<TextComponent, TextComponentSettingsControl>();

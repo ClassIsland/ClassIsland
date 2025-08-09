@@ -1,6 +1,7 @@
-#if false
 using System.Windows;
+using Avalonia.Interactivity;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
@@ -12,7 +13,7 @@ namespace ClassIsland.Views.SettingPages;
 /// ManagementPolicySettingsPage.xaml 的交互逻辑
 /// </summary>
 [SettingsPageInfo("management.policy", "集控策略", true, SettingsPageCategory.About)]
-public partial class ManagementPolicySettingsPage
+public partial class ManagementPolicySettingsPage : SettingsPageBase
 {
     public IManagementService ManagementService { get; }
     public ManagementPolicySettingsViewModel ViewModel { get; } = new();
@@ -49,4 +50,3 @@ public partial class ManagementPolicySettingsPage
         ViewModel.IsLocked = true;
     }
 }
-#endif

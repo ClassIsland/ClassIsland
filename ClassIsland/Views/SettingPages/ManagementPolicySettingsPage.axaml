@@ -1,0 +1,105 @@
+﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.ManagementPolicySettingsPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Loaded="ManagementPolicySettingsPage_OnLoaded"
+      Unloaded="ManagementPolicySettingsPage_OnUnloaded"
+      d:DataContext="{d:DesignInstance local:ManagementPolicySettingsPage}">
+
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro" IsEnabled="{Binding ViewModel.IsLocked, Converter={StaticResource InvertBooleanConverter}}">
+            <controls:InfoBar Message="部分策略设置可能需要重启才能生效。"
+                              IsClosable="False"
+                              IsOpen="True">
+                <controls:InfoBar.ActionButton>
+                    <Button DockPanel.Dock="Right"
+                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Click="ButtonRestart_OnClick">
+                        <ci:IconText Glyph="&#xe0bd;" Text="重启应用"/>
+                    </Button>
+                </controls:InfoBar.ActionButton>
+            </controls:InfoBar>
+            
+            <ci:IconText Glyph="&#xe699;" Text="档案" Margin="0 0 0 4" />
+            <!-- 禁止编辑档案 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe6bb;}"
+                                       Header="禁止编辑档案"
+                                       Description="启用此项后，用户将不能编辑档案内所有内容，同时【导入/导出】功能也将被禁用。临时换课和启用临时课表功能不受影响。">
+                <controls:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ManagementService.Policy.DisableProfileEditing, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+            <!-- 禁止修改课表 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe6b1;}"
+                                       Header="禁止编辑课表"
+                                       Description="启用此项后，用户将不能创建、删除和编辑课表，同时【导入/导出】也将被禁用。临时换课和启用临时课表功能不受影响。">
+                <controls:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+            <!-- 禁止编辑时间表 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf0eb;}"
+                                       Header="禁止编辑时间表"
+                                       Description="启用此项后，用户将不能创建、删除和编辑时间表，同时【导入/导出】也将被禁用。">
+                <controls:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+            <!-- 禁止编辑科目 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe47a;}"
+                                       Header="禁止编辑科目"
+                                       Description="启用此项后，用户将不能创建、删除和编辑科目，同时【导入/导出】也将被禁用。">
+                <controls:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ManagementService.Policy.DisableProfileSubjectsEditing, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+
+            <Separator Margin="0 12 0 4" />
+            <ci:IconText Glyph="&#xef27;" Text="应用设置" Margin="0 0 0 4" />
+
+            <!-- 禁止编辑应用设置 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xef27;}"
+                                       Header="禁止编辑应用设置"
+                                       Description="启用此项后，用户将不能调整应用的设置。但先前调整过的设置在启用此项后不受影响。">
+                <controls:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ManagementService.Policy.DisableSettingsEditing, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+            <!-- 禁用调试菜单 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe2c8;}"
+                                       Header="禁用调试菜单"
+                                       Description="启用此项后，用户将不能进入调试页面。">
+                <controls:SettingsExpander.Footer>  
+                    <ToggleSwitch IsChecked="{Binding ManagementService.Policy.DisableDebugMenu, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+
+            <Separator Margin="0 12 0 4" />
+            <ci:IconText Glyph="&#xebaa;" Text="杂项" Margin="0 0 0 4" />
+
+            <!-- 允许退出集控 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe2b8;}"
+                                       Header="允许退出集控"
+                                       Description="控制用户是否能主动退出集控。禁用后，用户将无法自行退出集控。">
+                <controls:SettingsExpander.Footer>  
+                    <ToggleSwitch IsChecked="{Binding ManagementService.Policy.AllowExitManagement, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+            <!-- 禁用彩蛋 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe7eb;}"
+                                       Header="禁用彩蛋"
+                                       Description="启用此项后，界面中的彩蛋将被禁用。">
+                <controls:SettingsExpander.Footer>  
+                    <ToggleSwitch IsChecked="{Binding ManagementService.Policy.DisableEasterEggs, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

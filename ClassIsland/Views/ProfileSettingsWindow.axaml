@@ -408,6 +408,7 @@
                     </ComboBox>
                 </ci:Field>
                 <CheckBox
+                    IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                     IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}"
                     Margin="0 0 0 8">
                     永久换课
@@ -435,7 +436,7 @@
                         SelectionChanged="MasterTabControl_OnSelectionChanged"
                         x:Name="MasterTabControl"
                         SelectedIndex="{Binding ViewModel.MasterPageTabSelectIndex}">
-                <TabItem Header="课表">
+                <TabItem Header="课表" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500" />
@@ -445,7 +446,8 @@
                         <!-- 课表选择区域 -->
                         <Grid Grid.Column="0" RowDefinitions="Auto, *">
                             <controls:CommandBar Grid.Row="0"
-                                                 DefaultLabelPosition="Right">
+                                                 DefaultLabelPosition="Right"
+                                                 IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}">
                                 <controls:CommandBar.PrimaryCommands>
                                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe00d;}"
                                                                Label="添加" ToolTip.Tip="新建一个课表。"
@@ -473,7 +475,8 @@
                         <!-- 课表编辑区域 -->
                         
                         <ci:Emptiable Grid.Column="2" Data="{Binding ViewModel.SelectedClassPlan}"
-                                      IsDirectContentMode="True">
+                                      IsDirectContentMode="True"
+                                      IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}">
                             <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto">
                                 <controls:CommandBar Grid.Row="0" DefaultLabelPosition="Right" Classes="hide-popup-indicator">
                                     <controls:CommandBar.PrimaryCommands>
@@ -706,7 +709,7 @@
                         </ci:Emptiable>
                     </Grid>
                 </TabItem>
-                <TabItem Header="时间表">
+                <TabItem Header="时间表" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
@@ -786,6 +789,7 @@
                                 
                                 <controls:CommandBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
                                                      DefaultLabelPosition="Right"
+                                                     IsEnabled="{Binding !$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing}"
                                                      Classes="hide-popup-indicator">
                                     <controls:CommandBar.PrimaryCommands>
                                         <controls:CommandBarButton Click="ButtonAddClassTime_OnClick" 
@@ -1070,7 +1074,7 @@
                         </ci:Emptiable>
                     </Grid>
                 </TabItem>
-                <TabItem Header="科目">
+                <TabItem Header="科目" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <Grid RowDefinitions="Auto,*">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -1219,6 +1223,10 @@
 
                     </Grid>
                 </TabItem>
+                <TabItem Header="已禁止" IsVisible="{Binding ViewModel.ManagementService.Policy.DisableProfileEditing}">
+                    <ci:Empty Text="您的组织已禁用档案编辑功能。"
+                              Icon="{ci:FluentIconSource &#xee0f;, FontSize=48}"/>
+                </TabItem>
                 <TabItem Header="调课">
                     <Grid RowDefinitions="Auto,*,Auto">
                         <Grid.ColumnDefinitions>
@@ -1315,6 +1323,7 @@
                                         </MultiBinding>
                                     </controls:CommandBarElementContainer.IsVisible>
                                     <CheckBox
+                                        IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                         IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}">
                                         永久换课
                                     </CheckBox>

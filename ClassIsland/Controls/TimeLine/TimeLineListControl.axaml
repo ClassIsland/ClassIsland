@@ -209,7 +209,7 @@
                                                     <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                                             HorizontalAlignment="Right"
                                                             VerticalAlignment="Center"
-                                                            IsVisible="{Binding IsReadonly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InvertBooleanConverter}}"
+                                                            IsVisible="{Binding !IsReadonly}"
                                                             Margin="0 0 28 0"
                                                             Padding="2"
                                                             CornerRadius="4">
@@ -236,7 +236,7 @@
                                                     <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                                             HorizontalAlignment="Right"
                                                             VerticalAlignment="Center"
-                                                            IsVisible="{Binding IsReadonly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InvertBooleanConverter}}"
+                                                            IsVisible="{Binding !IsReadonly}"
                                                             Margin="0 0 28 0"
                                                             Padding="2"
                                                             CornerRadius="4">

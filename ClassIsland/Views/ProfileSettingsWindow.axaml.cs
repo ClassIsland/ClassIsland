@@ -48,6 +48,10 @@ public partial class ProfileSettingsWindow : MyWindow
     public ProfileSettingsWindow()
     {
         DataContext = this;
+        if (ViewModel.ManagementService.Policy.DisableProfileEditing)
+        {
+            ViewModel.MasterPageTabSelectIndex = 3;
+        }
         InitializeComponent();
     }
 
@@ -96,7 +100,7 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void MasterTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (MasterTabControl?.SelectedIndex == 3)
+        if (MasterTabControl?.SelectedIndex == 4)
         {
             RefreshWeekScheduleRows();
         }
