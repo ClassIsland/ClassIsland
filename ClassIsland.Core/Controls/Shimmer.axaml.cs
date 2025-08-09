@@ -49,6 +49,19 @@ public class Shimmer : TemplatedControl
 
     private Border? _mainBorder;
 
+    public Shimmer()
+    {
+        this.GetObservable(IsContentLoadedProperty).Subscribe(_ =>
+        {
+            if (_mainBorder == null || !IsContentLoaded)
+            {
+                return;
+            }
+
+            EndAnimation(_mainBorder);
+        });
+    }
+
     private void InitAnimation(Border border)
     {
         var visual = ElementComposition.GetElementVisual(border);
@@ -65,6 +78,22 @@ public class Shimmer : TemplatedControl
         anim.InsertKeyFrame(0f, 0.5f);
         anim.InsertKeyFrame(0.5f, 0.8f, Easing.Parse("0.80, 0.00, 0.40, 1.00"));
         anim.InsertKeyFrame(1f, 0.5f, Easing.Parse("0.60, 0.00, 0.20, 1.00"));
+        visual.StartAnimation(nameof(visual.Opacity), anim);
+    }
+    
+    private void EndAnimation(Border border)
+    {
+        var visual = ElementComposition.GetElementVisual(border);
+        if (visual == null)
+        {
+            return;
+        }
+
+        var compositor = visual.Compositor;
+        var anim = compositor.CreateScalarKeyFrameAnimation();
+        anim.Target = nameof(visual.Opacity);
+        anim.Duration = TimeSpan.FromSeconds(0.01);
+        anim.InsertKeyFrame(0f, 1.0f);
         visual.StartAnimation(nameof(visual.Opacity), anim);
     }
 
