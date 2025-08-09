@@ -86,9 +86,12 @@ class Program
         var windowPlatformService = new WindowPlatformService(stopToken);
         PlatformServices.WindowPlatformService = windowPlatformService;
         PlatformServices.DesktopService = new DesktopService();
-        postInitCallback = () =>
+        var desktopToastService = new DesktopToastService();
+        PlatformServices.DesktopToastService = desktopToastService;
+        postInitCallback = async void () =>
         {
             windowPlatformService.PostInit();
+            await desktopToastService.InitializeAsync();
         };
 #endif
 #if Platforms_MacOs

@@ -27,7 +27,7 @@
 	<key>NSSystemAdministrationUsageDescription</key>
 	<string></string>
 	<key>CFBundleExecutable</key>
-	<string></string>
+	<string>ClassIsland</string>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSHighResolutionCapable</key>
