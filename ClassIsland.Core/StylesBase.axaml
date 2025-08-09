@@ -211,6 +211,16 @@
         </Style>
     </Style>
     
+    <Style Selector="StackPanel.cardContainer">
+        <Style Selector="^> controls|SettingsExpanderItem:nth-child(1) /template/ Border#Root">
+            <Setter Property="CornerRadius" Value="4 4 0 0"/>
+        </Style>
+        <Style Selector="^> controls|SettingsExpanderItem:nth-child(1):nth-last-child(1) /template/ Border#Root">
+            <Setter Property="CornerRadius" Value="4"/>
+        </Style>
+        <Setter Property="Spacing" Value="1"/>
+    </Style>
+    
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

@@ -236,11 +236,11 @@ public class ManagementService : IManagementService
                     IsDefault = true
                 }
             },
-            XamlRoot = AppBase.Current.MainWindow,
+            XamlRoot = AppBase.Current.PhonyRootWindow,
         };
 
         var result = await dialog.ShowAsync();
-        if (result != (object?)true)
+        if (result?.Equals(true) != true)
             return;
 
         var w = CopyObject(settings);
@@ -286,11 +286,11 @@ public class ManagementService : IManagementService
                     IsDefault = true
                 }
             },
-            XamlRoot = AppBase.Current.MainWindow,
+            XamlRoot = AppBase.Current.PhonyRootWindow,
         };
 
         var result = await dialog.ShowAsync();
-        if (result != (object)true)
+        if (result?.Equals(true) != true)
             return;
         Settings.IsManagementEnabled = false;
         SaveConfig(ManagementSettingsPath, Settings);

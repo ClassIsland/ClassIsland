@@ -19,15 +19,7 @@
       d:DataContext="{d:DesignInstance local:AboutSettingsPage}">
 
     <controls:SettingsPageBase.Styles>
-        <Style Selector="StackPanel.cardContainer">
-            <Style Selector="^> controls3|SettingsExpanderItem:nth-child(1) /template/ Border#Root">
-                <Setter Property="CornerRadius" Value="4 4 0 0"/>
-            </Style>
-            <Style Selector="^> controls3|SettingsExpanderItem:nth-child(1):nth-last-child(1) /template/ Border#Root">
-                <Setter Property="CornerRadius" Value="4"/>
-            </Style>
-            <Setter Property="Spacing" Value="1"/>
-        </Style>
+        
     </controls:SettingsPageBase.Styles>
     <controls:SettingsPageBase.Resources>
         <Grid Margin="16" x:Key="ContributorsDrawer" Width="300" RowDefinitions="Auto,Auto,Auto,*">

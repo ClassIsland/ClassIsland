@@ -688,7 +688,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<DebugPage>();
                 // services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
-                // services.AddSettingsPage<ManagementSettingsPage>();
+                services.AddSettingsPage<ManagementSettingsPage>();
                 // services.AddSettingsPage<ManagementCredentialsSettingsPage>();
                 // services.AddSettingsPage<ManagementPolicySettingsPage>();
                 services.AddSettingsPage<ErrorSettingsPage>();

@@ -188,11 +188,11 @@
                                               Click="MenuItemDataTransfer_OnClick"/>
                                     <Separator />
                                     <MenuItem Icon="{controls:FluentIcon &#xE2B4;}" Header="集控选项…"
-                                              Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                              CommandParameter="classisland://app/settings/management?ci_keepHistory=true">
+                                              Click="MenuItemOpenManagementSettingsPage_OnClick">
                                     </MenuItem>
                                     <MenuItem Icon="{controls:FluentIcon &#xE2B6;}" Header="加入管理…"
-                                              IsVisible="{Binding ManagementService.IsManagementEnabled}">
+                                              IsVisible="{Binding !ManagementService.IsManagementEnabled}"
+                                              Click="MenuItemJoinManagement_OnClick">
 
                                     </MenuItem>
                                     <MenuItem Icon="{controls:FluentIcon &#xE2B8;}" Header="退出管理…"

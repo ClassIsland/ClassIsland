@@ -1,0 +1,64 @@
+﻿<ci:MyWindow x:Class="ClassIsland.Controls.JoinManagementDialog"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             SizeToContent="Height"
+             Width="400"
+             Title="加入管理"
+             CanResize="False">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:JoinManagementDialog}}">
+        <StackPanel Margin="16" 
+                    IsEnabled="{Binding ViewModel.IsWorking, Converter={StaticResource InvertBooleanConverter}}">
+            <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}">
+                <Run Text="加入管理"/>
+            </TextBlock>
+            <TextBlock Margin="0 8 0 0" TextWrapping="Wrap">
+                <Run Text="将当前ClassIsland实例连接到管理组织。"></Run>
+            </TextBlock>
+            <Grid Margin="0 8 0 0" ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                    <Run Text="配置文件："/>
+                    <Run Text="{Binding ViewModel.ConfigFilePath, Mode=OneWay}"/>
+                </TextBlock>
+                <local:FileBrowserButton Grid.Column="1"
+                                         FileTypes="{x:Static local:JoinManagementDialog.ManagementConfigFileTypes}"
+                                         FileSelected="FileBrowserButton_OnFileSelected"
+                                         Content="{ci:FluentIcon &#xe88d;}"
+                                         CurrentPath="{Binding ViewModel.ConfigFilePath, Mode=TwoWay}"/>
+            </Grid>
+            <ci:Field Label="ID（可选）">
+                <TextBox Text="{Binding ViewModel.ManagementSettings.ClassIdentity}" />
+            </ci:Field>
+            <TextBlock Margin="0 6 0 0" Text="{Binding ViewModel.ErrorMessage}"
+                       IsVisible="{Binding ViewModel.IsErrorMessageOpen}"
+                       Foreground="IndianRed"
+                       TextWrapping="Wrap"/>
+            <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                         IsIndeterminate="True"
+                         IsVisible="{Binding ViewModel.IsWorking}"
+            />
+            <Grid Margin="0 16 0 0" HorizontalAlignment="Stretch">
+                <Grid ColumnDefinitions="* *"  HorizontalAlignment="Stretch">
+                    <Button Grid.Column="0" Content="取消" 
+                            IsCancel="True"
+                            HorizontalAlignment="Stretch"
+                            Margin="0 0 2 0"
+                            Command="{Binding Close}"/>
+                    <Button Grid.Column="1" Content="连接" IsDefault="True" 
+                            IsEnabled="{Binding ViewModel.IsConfigLoaded}"
+                            Classes="accent"
+                            HorizontalAlignment="Stretch"
+                            Margin="2 0 0 0"
+                            Click="ButtonOk_OnClick"/>
+                </Grid>
+            </Grid>
+        </StackPanel>   
+    </Grid>
+</ci:MyWindow>

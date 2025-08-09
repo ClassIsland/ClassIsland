@@ -717,4 +717,15 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         IAppHost.GetService<DataTransferWindow>().ShowDialog(this);
     }
+
+    private void MenuItemOpenManagementSettingsPage_OnClick(object? sender, RoutedEventArgs e)
+    {
+        IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/management?ci_keepHistory=true"));
+    }
+
+    private void MenuItemJoinManagement_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var dialog = new JoinManagementDialog();
+        dialog.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
+    }
 }

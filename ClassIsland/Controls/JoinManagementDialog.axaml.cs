@@ -1,10 +1,11 @@
-#if false
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Management;
@@ -15,8 +16,16 @@ namespace ClassIsland.Controls;
 /// <summary>
 /// JoinManagementDialog.xaml 的交互逻辑
 /// </summary>
-public partial class JoinManagementDialog : UserControl
+public partial class JoinManagementDialog : MyWindow
 {
+    public static List<FilePickerFileType> ManagementConfigFileTypes { get; } =
+    [
+        new FilePickerFileType("配置文件")
+        {
+            Patterns =["*.json"]
+        }
+    ];
+    
     public JoinManagementViewModel ViewModel { get; } = new();
 
     public IManagementService ManagementService { get; } = IAppHost.GetService<IManagementService>();
@@ -26,14 +35,14 @@ public partial class JoinManagementDialog : UserControl
         InitializeComponent();
     }
 
-    protected override void OnInitialized(EventArgs e)
+    protected override void OnInitialized()
     {
         if (File.Exists(Services.Management.ManagementService.ManagementPresetPath))
         {
             ViewModel.ConfigFilePath = Services.Management.ManagementService.ManagementPresetPath;
             LoadManagementSettings();
         }
-        base.OnInitialized(e);
+        base.OnInitialized();
     }
 
     private void FileBrowserButton_OnFileSelected(object? sender, EventArgs e)
@@ -75,4 +84,3 @@ public partial class JoinManagementDialog : UserControl
         ViewModel.IsWorking = false;
     }
 }
-#endif
