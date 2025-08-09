@@ -105,6 +105,7 @@
                         <controls3:Frame Grid.Row="1" Content="{Binding ViewModel.FrameContent}"
                                          Navigated="NavigationServiceOnLoadCompleted"
                                          Navigating="NavigationServiceOnNavigating"
+                                         CacheSize="0"
                                          x:Name="NavigationFrame">
                         </controls3:Frame>
                     </Grid>
