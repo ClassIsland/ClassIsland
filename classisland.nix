@@ -4,6 +4,7 @@
   git,
   xorg,
   lib,
+  fontconfig,
 }:
 
 buildDotnetModule {
@@ -23,6 +24,7 @@ buildDotnetModule {
         xorg.libICE
         xorg.libSM
         xorg.libXfixes
+        fontconfig
       ]
     }"
   ];
