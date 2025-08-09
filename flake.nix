@@ -31,6 +31,7 @@
             xorg.libICE
             xorg.libSM
             xorg.libXfixes
+            fontconfig
           ];
         };
       }
