@@ -51,6 +51,6 @@ Cyrene_MSP（Cyrene Management Server Protocol） 是 ClassIsland 集控服务�
 | 属性     | 描述       |
 |--------|----------|
 | `cuid` | 客户端唯一 ID |
-| `protocol_name` | 协议名称 |
-| `protocol_version` | 协议版本 |
-| `session` | 绘画 ID |
+| `protocol_name` | 协议名称     |
+| `protocol_version` | 协议版本     |
+| `session` | 会话 ID    |
