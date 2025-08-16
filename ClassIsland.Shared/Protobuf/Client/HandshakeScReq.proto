@@ -1,0 +1,14 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Client;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Client";
+
+message HandshakeScBeginHandShakeReq {
+  string ClientUid = 1;
+  string ClientMac = 2;
+  string ChallengeTokenEncrypted = 3;
+  int64 RequestedServerKeyId = 4;
+}
+
+message HandshakeScCompleteHandshakeReq {
+  bool Accepted = 1;
+}
