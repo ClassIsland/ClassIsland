@@ -7,6 +7,7 @@ using System.Windows;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -177,9 +178,15 @@ public partial class ThemesSettingsPage : SettingsPageBase
         {
             ViewModel.XamlThemeService.EnabledThemes.Add(kvp.Key);
         }
-        if (!switcher.IsChecked.Equals(true))
+
+        if (switcher.IsChecked.Equals(true))
+            return;
+        if (ViewModel.XamlThemeService.EnabledThemes.Count <= 1)
         {
-            ViewModel.XamlThemeService.EnabledThemes.Remove(kvp.Key);
+            this.ShowWarningToast("您必须启用至少一个主题，以保证主界面有显示样式可用。");
+            Dispatcher.UIThread.InvokeAsync(() => switcher.IsChecked = true);
+            return;
         }
+        ViewModel.XamlThemeService.EnabledThemes.Remove(kvp.Key);
     }
 }
