@@ -253,7 +253,7 @@ public class ManagementServerConnection : IManagementServerConnection
             return false;
         }
         CurrentSessionId = completeRsp.SessionId;
-        Logger.LogWarning("与 {} 握手成功，SessionId：{}", ManagementSettings.ManagementServerGrpc, completeRsp.SessionId);
+        Logger.LogInformation("与 {} 握手成功，SessionId：{}", ManagementSettings.ManagementServerGrpc, completeRsp.SessionId);
         return true;
     }
     
