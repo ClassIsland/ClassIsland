@@ -165,4 +165,21 @@ public partial class ThemesSettingsPage : SettingsPageBase
     {
         ViewModel.SettingsService.Settings.IsThemeWarningVisible = false;
     }
+
+    private void ToggleButtonIsThemeEnabled_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleSwitch { DataContext: KeyValuePair<string, ThemeInfo> kvp } switcher)
+        {
+            return;
+        }
+
+        if (switcher.IsChecked.Equals(true) && !ViewModel.XamlThemeService.EnabledThemes.Contains(kvp.Key))
+        {
+            ViewModel.XamlThemeService.EnabledThemes.Add(kvp.Key);
+        }
+        if (!switcher.IsChecked.Equals(true))
+        {
+            ViewModel.XamlThemeService.EnabledThemes.Remove(kvp.Key);
+        }
+    }
 }

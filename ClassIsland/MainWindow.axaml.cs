@@ -293,7 +293,6 @@ public partial class MainWindow : Window
 
     private void PostInit()
     {
-        IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化托盘菜单");
         var menu = this.FindResource("AppMenu") as NativeMenu;
         TaskBarIconService.MainTaskBarIcon.Menu = menu;
@@ -349,6 +348,7 @@ public partial class MainWindow : Window
 
     public override void Show()
     {
+        IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
             ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（2）");

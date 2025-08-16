@@ -78,6 +78,7 @@ using ClassIsland.Controls.Components;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Controls.SpeechProviderSettingsControls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Enums;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction;
@@ -810,7 +811,17 @@ public partial class App : AppBase, IAppHost
                     (this.FindResource("FluentDesignWeatherIconTemplate") as IDataTemplate)!);
                 services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本",
                     (this.FindResource("SimpleTextWeatherIconTemplate") as IDataTemplate)!);
-                //
+                // Themes
+                services.AddXamlTheme(new Uri("avares://ClassIsland/XamlThemes/ClassicTheme/Styles.axaml"),
+                    new ThemeManifest()
+                    {
+                        Id = "classisland.classic",
+                        Name = "经典",
+                        Description = "ClassIsland 的经典外观。",
+                        Banner = "avares://ClassIsland/Assets/XamlThemePreviews/classisland.classic.png",
+                        Author = "ClassIsland",
+                        Url = "https://github.com/ClassIsland/ClassIsland"
+                    });
                 // Plugins
                 if (!ApplicationCommand.Safe)
                 {

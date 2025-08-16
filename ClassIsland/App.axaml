@@ -19,6 +19,7 @@
         
         <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
         <StyleInclude Source="/Controls/ScheduleDataGridCell/ScheduleDataGridCellControl.axaml"/>
+        <StyleInclude Source="/Controls/MainWindowLine.axaml"/>
         
         <Style Selector=":is(ci|MyWindow)">
             <Setter Property="Icon" Value="/Assets/AppLogo.png"/>
@@ -33,7 +34,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Assets/Fonts/Fonts.axaml"/>
                 <!-- <ResourceInclude Source="/Themes/Generic.axaml"/> -->
-                <ResourceInclude Source="/Controls/MainWindowLine.axaml"/>
                 <ResourceInclude Source="/Controls/TimeLine/TimeLineListControl.axaml"/>
                 <ResourceInclude Source="avares://ClassIsland.Core/ThemeBase.axaml"/>
                 <ResourceInclude Source="/Controls/WeatherIcons/Index.axaml"/>

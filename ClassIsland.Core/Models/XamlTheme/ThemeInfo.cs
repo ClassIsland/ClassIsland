@@ -24,6 +24,8 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     private long _starsCount = 0;
     private bool _isUpdateAvailable = false;
     private bool _restartRequired = false;
+    private bool _isExternal = true;
+    private Uri? _themeUri;
 
     /// <summary>
     /// 主题清单
@@ -37,6 +39,36 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
             _manifest = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(ManifestReadonly));
+        }
+    }
+
+    /// <summary>
+    /// 主题是否为从文件加载的外部主题
+    /// </summary>
+    [JsonIgnore]
+    public bool IsExternal
+    {
+        get => _isExternal;
+        set
+        {
+            if (value == _isExternal) return;
+            _isExternal = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 主题 Uri
+    /// </summary>
+    [JsonIgnore]
+    public Uri? ThemeUri
+    {
+        get => _themeUri;
+        set
+        {
+            if (Equals(value, _themeUri)) return;
+            _themeUri = value;
+            OnPropertyChanged();
         }
     }
 
@@ -98,33 +130,6 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
             if (Equals(value, _error)) return;
             _error = value;
             OnPropertyChanged();
-        }
-    }
-
-    /// <summary>
-    /// 主题是否已启用
-    /// </summary>
-    [JsonIgnore]
-    public bool IsEnabled
-    {
-        get => File.Exists(System.IO.Path.Combine(Path, ".enabled"));
-        set
-        {
-            try
-            {
-                if (value)
-                {
-                    File.WriteAllText(System.IO.Path.Combine(Path, ".enabled"), "");
-                }
-                else
-                {
-                    File.Delete(System.IO.Path.Combine(Path, ".enabled"));
-                }
-            }
-            catch (Exception e)
-            {
-                // ignored
-            }
         }
     }
 
