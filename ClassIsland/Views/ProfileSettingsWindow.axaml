@@ -1502,6 +1502,11 @@
                                                ToolTip.Tip="管理课表群"
                                                Label="{Binding Data.Name, Source={StaticResource ClassPlanGroupBindingProxy}, Mode=OneWay}"/>
                     <controls:CommandBarSeparator/>
+                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xf431;}"
+                                               Label="不信任"
+                                               Click="ButtonTrustProfile_OnClick"
+                                               ToolTip.Tip="当前档案不受信任，部分功能受限。"
+                                               IsVisible="{Binding ViewModel.ProfileService.IsCurrentProfileTrusted, Converter={StaticResource InvertBooleanConverter}}" />
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xeeb5;}"
                                                Label="保存"
                                                Click="ButtonSaveProfile_OnClick"

@@ -118,6 +118,23 @@ public partial class ProfileSettingsWindow : MyWindow
             select Path.GetFileName(i));
     }
 
+    private async void ButtonTrustProfile_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var result = await new ContentDialog()
+        {
+            Title = "不信任的档案",
+            Content = "当前档案不受信任，部分功能（如行动时间点等）将禁用。如果您信任此档案并希望启用这些受限的功能，请将此档案设置为信任。",
+            DefaultButton = ContentDialogButton.Primary,
+            PrimaryButtonText = "信任此档案",
+            SecondaryButtonText = "取消"
+        }.ShowAsync();
+
+        if (result == ContentDialogResult.Primary)
+        {
+            ViewModel.ProfileService.TrustCurrentProfile();
+        }
+    }
+
     private void ButtonSaveProfile_OnClick(object? sender, RoutedEventArgs e)
     {
         try
