@@ -36,6 +36,7 @@
                 </MultiBinding>
             </Setter.Value>
         </Setter>
+        <Setter Property="ClipToBounds" Value="False"/>
         
         <Style Selector="^:dock-left /template/:is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -45,12 +46,6 @@
         </Style>
         <Style Selector="^:dock-right /template/ :is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Right" />
-        </Style>
-        <Style Selector="^:dock-top" >
-            <Setter Property="Margin" Value="{Binding ViewModel.Settings.MainWindowLineVerticalMargin, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={x:Static controls:MainWindowLine.DoubleToThicknessBottomConverter}}"/>
-        </Style>
-        <Style Selector="^:dock-bottom">
-            <Setter Property="Margin" Value="{Binding ViewModel.Settings.MainWindowLineVerticalMargin, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={x:Static controls:MainWindowLine.DoubleToThicknessTopConverter}}"/>
         </Style>
         
         <Style Selector="^:pointerover">

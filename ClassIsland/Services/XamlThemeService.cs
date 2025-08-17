@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
@@ -30,6 +31,8 @@ namespace ClassIsland.Services;
 
 public class XamlThemeService : ObservableRecipient, IXamlThemeService
 {
+    private static readonly FieldInfo? s_stylesAppliedField = typeof(StyledElement).GetField("_stylesApplied", BindingFlags.Instance | BindingFlags.NonPublic);
+    
     public ILogger<XamlThemeService> Logger { get; }
     public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
@@ -100,6 +103,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         }
         RootStyles.Clear();
         ResourceLoaderBorder?.Styles.Remove(RootStyles);
+        s_stylesAppliedField?.SetValue(ResourceLoaderBorder, false); 
         RootStyles = [];
         ResourceLoaderBorder?.Styles.Add(RootStyles);
         foreach (var themeInfo in EnabledThemes.Select(x => Themes.FirstOrDefault(y => y.Manifest.Id == x))
@@ -123,10 +127,6 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
                 themeInfo.Error = e;
             }
         }
-
-        // 因为设置后的样式在卸载样式后会残存在控件上，这里要完全重载主界面来清除掉残留的样式。
-        // 不知道有没有更好的方法来实现这个功能，或者这个是一个 Bug（？）
-        ComponentsService.RefreshConfigs();
     }
 
     private void LoadThemeFromFile(string themePath)

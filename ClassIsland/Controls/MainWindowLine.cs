@@ -24,6 +24,7 @@ using Avalonia.Platform;
 using Avalonia.Reactive;
 using Avalonia.Styling;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions;
@@ -438,7 +439,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
     private bool GetMouseStatusByPos(Point ptr)
     {
-        if (GridWrapper == null)
+        if (GridWrapper == null || !GridWrapper.IsAttachedToVisualTree())
         {
             return false;
         }

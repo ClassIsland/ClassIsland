@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
+using Avalonia.Controls.Metadata;
 using Avalonia.Data.Core;
 using Avalonia.Diagnostics;
 using Avalonia.Input;
@@ -55,6 +56,7 @@ namespace ClassIsland;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
+[PseudoClasses(":dock-top", ":dock-bottom")]
 public partial class MainWindow : Window
 {
     // public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
@@ -513,6 +515,7 @@ public partial class MainWindow : Window
             return;
         }
         UpdateTheme();
+        UpdateStyleStates();
         if (e.PropertyName is nameof(ViewModel.Settings.IsMouseInFadingReversed)
                            or nameof(ViewModel.Settings.IsMouseInFadingEnabled))
         {
@@ -576,6 +579,12 @@ public partial class MainWindow : Window
             return;
         }
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost, true);
+    }
+    
+    private void UpdateStyleStates()
+    {
+        PseudoClasses.Set(":dock-top", ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2);
+        PseudoClasses.Set(":dock-bottom", ViewModel.Settings.WindowDockingLocation is 3 or 4 or 5);
     }
 
     private async void UpdateTheme()

@@ -187,15 +187,16 @@
                     </Border.Resources>
                     <Grid>
                         <ItemsControl Grid.Column="0"
+                                      x:Name="RootMainWindowLinesItemsControl"
                                       ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel />
+                                    <StackPanel Spacing="{Binding ViewModel.Settings.MainWindowLineVerticalMargin}"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid HorizontalAlignment="Stretch">
+                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                         <controls:MainWindowLine WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
                                                                  LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
                                                                  IsMainLine="{Binding IsMainLine}"

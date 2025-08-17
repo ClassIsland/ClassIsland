@@ -9,10 +9,11 @@ public class SizeDoubleToCornerRadiusConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
+        var p = double.TryParse(parameter as string ?? "", out var r1) ? r1 : 2.0;
         return value switch
         {
-            double v1 => new CornerRadius(v1 / 2.0), 
-            int v2 => new CornerRadius(v2 / 2.0),
+            double v1 => new CornerRadius(v1 / p), 
+            int v2 => new CornerRadius(v2 / p),
             _ => null
         };
     }
