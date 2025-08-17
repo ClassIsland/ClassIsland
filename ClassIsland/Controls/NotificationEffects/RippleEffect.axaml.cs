@@ -79,8 +79,8 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         var compositor = visual.Compositor;
         var animationScale = compositor.CreateVector3DKeyFrameAnimation();
         animationScale.InsertKeyFrame(0f, new Vector3D(0, 0, 0));
-        animationScale.InsertKeyFrame(1f, new Vector3D(1, 1, 1), new CubicEaseOut());
-        animationScale.Duration = TimeSpan.FromMilliseconds(750);
+        animationScale.InsertKeyFrame(1f, new Vector3D(1, 1, 1), new QuadraticEaseIn());
+        animationScale.Duration = TimeSpan.FromMilliseconds(600);
         visual.StartAnimation(nameof(visual.Scale), animationScale);
         // var animationOffset = compositor.CreateVector3DKeyFrameAnimation();
         // animationOffset.InsertKeyFrame(0f, visual.Offset with { X = 0, Y = 0});
@@ -89,8 +89,8 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         // visual.StartAnimation(nameof(visual.Offset), animationOffset);
         var animationOpacity = compositor.CreateScalarKeyFrameAnimation();
         animationOpacity.InsertKeyFrame(0f, 1f);
-        animationOpacity.InsertKeyFrame(1f, 0f, new CubicEaseOut());
-        animationOpacity.Duration = TimeSpan.FromMilliseconds(750);
+        animationOpacity.InsertKeyFrame(1f, 0f, new SineEaseIn());
+        animationOpacity.Duration = TimeSpan.FromMilliseconds(600);
         visual.StartAnimation(nameof(visual.Opacity), animationOpacity);
         
         await Task.Delay(750);
