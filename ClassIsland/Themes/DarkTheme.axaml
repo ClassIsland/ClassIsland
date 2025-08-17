@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="Rainy" Color="DeepSkyBlue"/>
+    <SolidColorBrush x:Key="RainyColorBrush" Color="DeepSkyBlue"/>
     <DropShadowEffect x:Key="LuminousClass"
                       BlurRadius="2"
                       OffsetX="0" OffsetY="0"
@@ -13,4 +13,7 @@
     <SolidColorBrush x:Key="AqiLevel4Brush">IndianRed</SolidColorBrush>
     <SolidColorBrush x:Key="AqiLevel5Brush">DarkRed</SolidColorBrush>
     <SolidColorBrush x:Key="AqiLevel6Brush">MediumPurple</SolidColorBrush>
+
+    <!-- 自定义背景色 -->
+    <SolidColorBrush x:Key="CustomizedAccentBarBackground1Brush" Color="#26374C" />
 </ResourceDictionary>

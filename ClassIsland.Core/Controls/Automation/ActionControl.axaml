@@ -1,0 +1,75 @@
+<UserControl x:Class="ClassIsland.Core.Controls.Automation.ActionControl"
+             x:DataType="local:ActionControl"
+             x:CompileBindings="True"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls.Automation"
+             xmlns:automation="clr-namespace:ClassIsland.Core.Models.Automation"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services">
+
+    <UserControl.DataTemplates>
+        <DataTemplate DataType="{x:Type automation:ActionMenuTreeGroup}">
+            <fa:MenuFlyoutSubItem Text="{Binding Name}"
+                                  ItemsSource="{Binding Children}">
+                <fa:MenuFlyoutSubItem.IconSource>
+                    <ci:FluentIconSource Glyph="{Binding IconGlyph}" />
+                </fa:MenuFlyoutSubItem.IconSource>
+            </fa:MenuFlyoutSubItem>
+        </DataTemplate>
+    </UserControl.DataTemplates>
+
+    <StackPanel>
+        <ItemsControl ItemsSource="{Binding $parent[local:ActionControl].ActionSet.ActionItems, Mode=TwoWay}">
+            <!-- <ItemsControl.ItemsPanel> -->
+            <!--     <ItemsPanelTemplate> -->
+            <!--         <VirtualizingStackPanel /> -->
+            <!--     </ItemsPanelTemplate> -->
+            <!-- </ItemsControl.ItemsPanel> -->
+
+            <ItemsControl.Styles>
+                <Style Selector="ItemsControl ContentPresenter">
+                    <Setter Property="Interaction.Behaviors">
+                        <BehaviorCollectionTemplate>
+                            <BehaviorCollection>
+                                <ItemDragBehavior HorizontalDragThreshold="33550336"
+                                                  Orientation="Vertical"
+                                                  VerticalDragThreshold="3" />
+                            </BehaviorCollection>
+                        </BehaviorCollectionTemplate>
+                    </Setter>
+                </Style>
+            </ItemsControl.Styles>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <local:ActionItemControl ActionItem="{Binding}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Button HorizontalAlignment="Left"
+                Theme="{StaticResource TransparentButton}">
+            <controls:IconText Glyph="&#xE00D;"
+                               Text="添加行动"
+                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+            <Button.Flyout>
+                <fa:FAMenuFlyout ItemsSource="{x:Static services:IActionService.IListActionMenuTree}" />
+            </Button.Flyout>
+            <Button.DataTemplates>
+                <DataTemplate DataType="{x:Type automation:ActionMenuTreeItem}">
+                    <fa:MenuFlyoutItem Text="{Binding Name}"
+                                       Command="{Binding $parent[local:ActionControl].AddActionCommand}"
+                                       CommandParameter="{Binding}">
+                        <fa:MenuFlyoutItem.IconSource>
+                            <ci:FluentIconSource Glyph="{Binding IconGlyph}" />
+                        </fa:MenuFlyoutItem.IconSource>
+                    </fa:MenuFlyoutItem>
+                </DataTemplate>
+            </Button.DataTemplates>
+        </Button>
+    </StackPanel>
+</UserControl>
+

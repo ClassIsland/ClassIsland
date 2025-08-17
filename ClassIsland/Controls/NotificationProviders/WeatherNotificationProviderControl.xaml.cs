@@ -1,11 +1,13 @@
-#if false
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Animation;
+using Avalonia.Animation.Easings;
+using Avalonia.Controls;
+using Avalonia.Data.Core;
+using Avalonia.Interactivity;
+using Avalonia.Rendering.Composition;
+using Avalonia.Rendering.Composition.Animations;
 using ClassIsland.Core.Models.Weather;
 
 namespace ClassIsland.Controls.NotificationProviders;
@@ -50,11 +52,6 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
         Duration = duration;
     }
 
-    protected override void OnInitialized(EventArgs e)
-    {
-        base.OnInitialized(e);
-    }
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -72,22 +69,20 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
 
     private void WeatherNotificationProviderControl_OnLoaded(object sender, RoutedEventArgs e)
     {
-        App.GetService<MainWindow>().GetCurrentDpi(out var dpi, out _);
-        var da = new DoubleAnimation()
+        var visual = ElementComposition.GetElementVisual(Description);
+        if (visual == null)
         {
-            From = -Description.ActualWidth,
-            To = RootCanvas.ActualWidth,
-            Duration = new Duration(Duration),
-        };
-        var storyboard = new Storyboard()
-        {
-        };
-        Storyboard.SetTarget(da, Description);
-        Storyboard.SetTargetProperty(da, new PropertyPath(Canvas.RightProperty));
-        storyboard.Children.Add(da);
-        storyboard.RepeatBehavior = RepeatBehavior.Forever;
-        storyboard.Begin();
-        //storyboard.Begin();
+            return;
+        }
+
+        var compositor = visual.Compositor;
+        var anim = compositor.CreateVector3DKeyFrameAnimation();
+        anim.Target = nameof(visual.Offset);
+        anim.Duration = Duration;
+        anim.IterationBehavior = AnimationIterationBehavior.Count;
+        anim.IterationCount = 2;
+        anim.InsertKeyFrame(0f, visual.Offset with { X = RootCanvas.Bounds.Width }, new LinearEasing());
+        anim.InsertKeyFrame(1f, visual.Offset with { X = -Description.Bounds.Width }, new LinearEasing());
+        visual.StartAnimation(nameof(visual.Offset), anim);
     }
 }
-#endif

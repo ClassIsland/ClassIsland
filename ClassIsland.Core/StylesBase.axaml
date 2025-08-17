@@ -21,14 +21,15 @@
             </StackPanel>
         </Border>
     </Design.PreviewWith>
-    
+
     <StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
-    
+
     <StyleInclude Source="/Controls/Field.axaml"/>
     <StyleInclude Source="/Controls/Emptiable.axaml"/>
     <StyleInclude Source="/Controls/Empty.axaml"/>
     <StyleInclude Source="/Controls/Shimmer.axaml"/>
+    <StyleInclude Source="/Controls/AnimatedIconButton.axaml" />
     <StyleInclude Source="/Themes/StackPanelIntroAnimation.axaml"/>
     <StyleInclude Source="/Themes/RichTextStyles.axaml"/>
     <StyleInclude Source="/Themes/WrapPanelResizingAnimation.axaml"/>
@@ -36,41 +37,41 @@
     <StyleInclude Source="/Controls/Thing.axaml"/>
 
     <!-- Add Styles Here -->
-    
+
     <!--日历选择器文字偏移修复-->
     <Style Selector="CalendarDatePicker">
         <Setter Property="Padding" Value="12,5,0,3"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
     </Style>
-    
+
     <Style Selector="StackPanel.settings-container">
         <Setter Property="Margin" Value="12 12 18 12" />
         <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}" />
         <Setter Property="Spacing" Value="4"/>
     </Style>
-    
+
     <Style Selector="controls|FontIcon.fi, ci|FluentIcon">
         <Setter Property="FontFamily" Value="{StaticResource FluentIcons}"/>
     </Style>
-    
+
     <Style Selector="controls|SettingsExpander.switcher">
         <Setter Property="FooterTemplate" Value="{StaticResource SwitcherTemplate}"/>
     </Style>
     <Style Selector="controls|SettingsExpanderItem.switcher">
         <Setter Property="FooterTemplate" Value="{StaticResource SwitcherTemplate}"/>
     </Style>
-    
+
     <Style Selector="Border.primaryColorZone">
         <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
         <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
     </Style>
-    
+
     <Style Selector="ToggleSwitch">
         <Setter Property="OnContent" Value="开"/>
         <Setter Property="OffContent" Value="关"/>
     </Style>
-    
+
     <Style Selector="controls|SettingsExpanderItem">
         <Style Selector="^ ToggleSwitch">
             <Setter Property="Margin" Value="0 -12"/>
@@ -82,17 +83,17 @@
             <Setter Property="Margin" Value="0 -12"/>
         </Style>
     </Style>
-    
+
     <Style Selector="TabControl TabItem">
         <Style Selector="^ TextBlock">
             <Setter Property="FontWeight" Value="Regular"/>
         </Style>
     </Style>
-    
+
     <Style Selector="TabControl.navigation TabItem /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="TextElement.FontSize" Value="20"/>
     </Style>
-    
+
     <Style Selector="TabControl.compact TabItem">
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="TextElement.FontSize" Value="14"/>
@@ -123,7 +124,7 @@
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
     </Style>
-    
+
     <Style Selector="TextBlock :is(HyperlinkButton)">
         <Setter Property="Padding" Value="0"/>
         <Setter Property="TextBlock.LineHeight" Value="NaN"/>
@@ -132,7 +133,7 @@
             <Setter Property="Margin" Value="0 0 0 -1"/>
         </Style>
     </Style>
-    
+
     <Style Selector="controls|CommandBar.hide-popup-indicator controls|CommandBarButton:labelright /template/ controls|FontIcon#SubItemChevron">
         <Setter Property="IsVisible" Value="False"/>
     </Style>
@@ -148,12 +149,12 @@
             <Setter Property="ToolTip.Placement" Value="Pointer"/>
         </Style>
     </Style>
-    
+
     <Style Selector="asyncImageLoader|AdvancedImage">
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid x:Name="Root" Classes.empty="{TemplateBinding CurrentImage, Converter={x:Static ObjectConverters.IsNull}, Mode=OneWay}">
-                    <ci:Shimmer VerticalAlignment="Stretch" MinWidth="0" 
+                    <ci:Shimmer VerticalAlignment="Stretch" MinWidth="0"
                             HorizontalAlignment="Stretch"
                             x:Name="LoadingBorder"
                             Padding="0"
@@ -169,7 +170,7 @@
                 </Grid>
             </ControlTemplate>
         </Setter>
-        
+
         <Style Selector="^[IsLoading=False] /template/ Grid#Root.empty">
             <Style Selector="^ Border#LoadingBorder">
                 <Setter Property="IsVisible" Value="True"/>
@@ -181,7 +182,7 @@
             </Style>
         </Style>
     </Style>
-    
+
     <Style Selector="controls|SettingsExpander.no-radius">
         <Style Selector="^">
             <Setter Property="CornerRadius" Value="0"/>
@@ -202,7 +203,7 @@
     <Style Selector="controls|SettingsExpanderItem.no-radius /template/ Border#Root">
         <Setter Property="CornerRadius" Value="0"/>
     </Style>
-    
+
     <Style Selector="TabControl.content-only">
         <Setter Property="Padding" Value="0"/>
         <Setter Property="Margin" Value="0"/>
@@ -210,7 +211,7 @@
             <Setter Property="IsVisible" Value="False"/>
         </Style>
     </Style>
-    
+
     <Style Selector="StackPanel.cardContainer">
         <Style Selector="^> controls|SettingsExpanderItem:nth-child(1) /template/ Border#Root">
             <Setter Property="CornerRadius" Value="4 4 0 0"/>
@@ -220,7 +221,7 @@
         </Style>
         <Setter Property="Spacing" Value="1"/>
     </Style>
-    
+
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

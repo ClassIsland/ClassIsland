@@ -1,0 +1,148 @@
+<UserControl x:Class="ClassIsland.Core.Controls.Automation.ActionItemControl"
+             x:DataType="local:ActionItemControl"
+             x:CompileBindings="True"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls.Automation"
+             xmlns:automation="clr-namespace:ClassIsland.Core.Models.Automation"
+             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services">
+
+    <UserControl.Resources>
+        <ci:ValuesToValueTupleMultiConverter x:Key="ValuesToValueTupleMultiConverter" />
+    </UserControl.Resources>
+
+    <StackPanel>
+        <Border Margin="0 0 0 12"
+                Background="{DynamicResource ComboBoxBackground}"
+                BorderBrush="{DynamicResource ComboBoxBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4">
+            <StackPanel>
+                <Panel>
+                    <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto">
+                        <!--  左：选择器  -->
+                        <Button x:Name="ChangeActionButton"
+                                Focusable="False"
+                                Theme="{StaticResource TransparentButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <ci:IconText x:Name="ActionInfoIconText" />
+
+                                <PathIcon Width="7"
+                                          Height="7"
+                                          Margin="10 3 0 0"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Data="M1939 486L2029 576L1024 1581L19 576L109 486L1024 1401L1939 486Z"
+                                          Foreground="{DynamicResource ComboBoxDropDownGlyphForeground}" />
+                            </StackPanel>
+
+                            <Button.Flyout>
+                                <fa:FAMenuFlyout ItemsSource="{x:Static services:IActionService.IListActionMenuTree}" />
+                            </Button.Flyout>
+
+                            <Button.DataTemplates>
+                                <DataTemplate DataType="{x:Type automation:ActionMenuTreeItem}">
+                                    <fa:MenuFlyoutItem Text="{Binding Name}"
+                                                       Command="{Binding $parent[local:ActionItemControl].ChangeActionCommand}">
+                                        <fa:MenuFlyoutItem.CommandParameter>
+                                            <MultiBinding Converter="{StaticResource ValuesToValueTupleMultiConverter}">
+                                                <Binding Path="#ChangeActionButton.DataContext" />
+                                                <Binding />
+                                            </MultiBinding>
+                                        </fa:MenuFlyoutItem.CommandParameter>
+                                        <fa:MenuFlyoutItem.IconSource>
+                                            <ci:FluentIconSource Glyph="{Binding IconGlyph}" />
+                                        </fa:MenuFlyoutItem.IconSource>
+                                    </fa:MenuFlyoutItem>
+                                </DataTemplate>
+                            </Button.DataTemplates>
+                        </Button>
+
+                        <!--  右：操作按钮  -->
+                        <ci:AnimatedIconButton Grid.Column="2"
+                                               Glyph="&#xE809;"
+                                               Text="错误"
+                                               Foreground="IndianRed"
+                                               IsVisible="{Binding $parent[local:ActionItemControl].ActionItem.Exception, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                               Theme="{StaticResource TransparentButton}"
+                                               ToolTip.Tip="上次运行此行动时发生错误。">
+                            <ci:AnimatedIconButton.Flyout>
+                                <Flyout>
+                                    <SelectableTextBlock Text="{Binding $parent[local:ActionItemControl].ActionItem.Exception, Mode=OneWay}"
+                                                         SelectionForegroundBrush="{DynamicResource TextOnAccentFillColorSelectedTextBrush}" />
+                                </Flyout>
+                            </ci:AnimatedIconButton.Flyout>
+                        </ci:AnimatedIconButton>
+
+                        <fa:ProgressRing Grid.Column="3"
+                                         Height="20"
+                                         Margin="0 0 -2 0"
+                                         IsActive="{Binding $parent[local:ActionItemControl].ActionItem.IsWorking}"
+                                         IsIndeterminate="{Binding $parent[local:ActionItemControl].ActionItem.IsWorking}"
+                                         IsVisible="{Binding $parent[local:ActionItemControl].ActionItem.IsWorking}" />
+
+                        <ci:AnimatedIconButton Grid.Column="4"
+                                               Margin="2 0"
+                                               VerticalContentAlignment="Center"
+                                               Glyph="&#xE671;"
+                                               Text="删除"
+                                               Classes="circle"
+                                               Command="{Binding $parent[local:ActionItemControl].RemoveActionCommand}"
+                                               CommandParameter="{Binding}"
+                                               IsVisible="{Binding !$parent[local:ActionItemControl].ActionItem.IsWorking}"
+                                               Theme="{StaticResource TransparentButton}"
+                                               ToolTip.Tip="删除该行动。" />
+                    </Grid>
+
+                    <ProgressBar Height="1"
+                                 VerticalAlignment="Bottom"
+                                 Background="Transparent">
+                        <ProgressBar.Transitions>
+                            <Transitions>
+                                <DoubleTransition Easing="SineEaseInOut"
+                                                  Property="Value"
+                                                  Duration="0:0:0.18" />
+                                <DoubleTransition Easing="SineEaseOut"
+                                                  Property="Opacity"
+                                                  Duration="0:0:0.3" />
+                            </Transitions>
+                        </ProgressBar.Transitions>
+
+                        <ProgressBar.IsIndeterminate>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="$parent[local:ActionItemControl].ActionItem.IsWorking" />
+                                <Binding Path="$parent[local:ActionItemControl].ActionItem.Progress"
+                                         Converter="{x:Static ObjectConverters.IsNull}" />
+                            </MultiBinding>
+                        </ProgressBar.IsIndeterminate>
+
+                        <ProgressBar.Styles>
+                            <Style Selector="ProgressBar">
+                                <Style Selector="^[IsEnabled=False]">
+                                    <Setter Property="Opacity" Value="0" />
+                                </Style>
+
+                                <Style Selector="^ /template/ Panel#DeterminateRoot">
+                                    <Setter Property="Transitions" Value="{x:Null}" />
+                                </Style>
+                                <Style Selector="^ /template/ Panel#IndeterminateRoot">
+                                    <Setter Property="Transitions" Value="{x:Null}" />
+                                </Style>
+                            </Style>
+                        </ProgressBar.Styles>
+
+                        <Interaction.Behaviors>
+                            <ci:ProgressBarRunBehavior />
+                        </Interaction.Behaviors>
+                    </ProgressBar>
+
+                </Panel>
+
+                <ContentPresenter x:Name="RootContentPresenter"
+                                  Margin="8 4 8 8"/>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

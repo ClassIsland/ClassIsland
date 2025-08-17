@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -26,8 +27,10 @@ using WindowsShortcutFactory;
 using File = System.IO.File;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Abstractions.Models.Speech;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.ComponentModels;
+using static ClassIsland.Core.Attributes.SettingsInfo;
 
 namespace ClassIsland.Models;
 
@@ -213,7 +216,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isSwapMode = true;
-    private Dictionary<string, Dictionary<string, dynamic?>> _settingsOverlay = [];
+    private Dictionary<string, OrderedDictionary> _settingsOverlays = [];
     private bool _showEchoCaveWhenSettingsPageLoading = false;
     private int _settingsPagesCachePolicy = 0;
     private string _notificationSpeechCustomSmgTokenSource = "";
@@ -243,6 +246,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("显示主界面", SettingsInfoCategory.MainWindow)]
     public bool IsMainWindowVisible
     {
         get => _isMainWindowVisible;
@@ -265,13 +269,14 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public Dictionary<string, Dictionary<string, dynamic?>> SettingsOverlay
+    [JsonPropertyName("SettingsOverlay")] // ClassIsland 1.x 名称
+    public Dictionary<string, OrderedDictionary> SettingsOverlays
     {
-        get => _settingsOverlay;
+        get => _settingsOverlays;
         set
         {
-            if (value == _settingsOverlay) return;
-            _settingsOverlay = value;
+            if (value == _settingsOverlays) return;
+            _settingsOverlays = value;
             OnPropertyChanged();
         }
     }
@@ -539,6 +544,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     ///     <item>3 - 打开换课窗口</item>
     /// </list>
     /// </value>
+
+    [SettingsInfo("点击托盘图标行为", enums:null)]
     public int TaskBarIconClickBehavior
     {
         get => _taskBarIconClickBehavior;
@@ -715,6 +722,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("时间偏移")]
     public double TimeOffsetSeconds
     {
         get => _timeOffsetSeconds;
@@ -840,6 +848,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Appearence
 
+    [SettingsInfo("应用主题", SettingsInfoCategory.MainWindow, enums:null)]
     public int Theme
     {
         get => _theme;
@@ -851,6 +860,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("应用主题色", SettingsInfoCategory.MainWindow)]
     public Color PrimaryColor
     {
         get => _primaryColor;
@@ -999,6 +1009,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("背景不透明度", SettingsInfoCategory.MainWindow, min:0, max:1)]
     public double Opacity
     {
         get => _opacity;
@@ -1010,6 +1021,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("界面缩放", SettingsInfoCategory.MainWindow, min: 0.1)]
     public double Scale
     {
         get => _scale;
@@ -1043,6 +1055,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("圆角半径", SettingsInfoCategory.MainWindow, min:0, max:20)]
     public double RadiusX
     {
         get => _radiusX;
@@ -1146,6 +1159,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Components
 
+    [SettingsInfo("组件配置方案")]
     public string CurrentComponentConfig
     {
         get => _currentComponentConfig;
@@ -1492,6 +1506,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _currentAutomationConfig) return;
+            OnPropertyChanging();
             _currentAutomationConfig = value;
             OnPropertyChanged();
         }
@@ -1702,6 +1717,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// #############
     /// </code>
     /// </value>
+    [SettingsInfo("窗口停靠位置", SettingsInfoCategory.MainWindow, enums:null)]
     public int WindowDockingLocation
     {
         get => _windowDockingLocation;
@@ -1740,7 +1756,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-    
+
+    [SettingsInfo("窗口向右偏移", SettingsInfoCategory.MainWindow)]
     public int WindowDockingOffsetX
     {
         get => _windowDockingOffsetX;
@@ -1752,6 +1769,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("窗口向下偏移", SettingsInfoCategory.MainWindow)]
     public int WindowDockingOffsetY
     {
         get => _windowDockingOffsetY;
@@ -1787,6 +1805,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// 0 - 置底<br/>
     /// 1 - 置顶
     /// </value>
+    [SettingsInfo("窗口层级", SettingsInfoCategory.MainWindow, enums:["置底", "置顶"])]
     public int WindowLayer
     {
         get => _windowLayer;

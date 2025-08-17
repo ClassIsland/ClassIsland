@@ -226,7 +226,7 @@
                         <Binding Path="Settings.ShowRainTime"/>
                     </MultiBinding>
                 </Grid.IsVisible>
-                <Border Background="{DynamicResource Rainy}"
+                <Border Background="{DynamicResource RainyColorBrush}"
                         Height="{Binding Bounds.Height, ElementName=BorderStroke}"
                         ClipToBounds="True"
                         BorderThickness="1"
@@ -236,7 +236,7 @@
                         CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                 </Border>
                 <Border ClipToBounds="True"
-                        BorderBrush="{DynamicResource Rainy}"
+                        BorderBrush="{DynamicResource RainyColorBrush}"
                         BorderThickness="1"
                         Padding="8 0"
                         x:Name="BorderStroke"

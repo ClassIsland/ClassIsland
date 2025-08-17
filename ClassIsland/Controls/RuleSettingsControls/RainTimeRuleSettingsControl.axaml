@@ -1,0 +1,24 @@
+﻿<ci:RuleSettingsControlBase x:Class="ClassIsland.Controls.RuleSettingsControls.RainTimeRuleSettingsControl"
+                            x:TypeArguments="rules:RainTimeRuleSettings"
+                            xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ClassIsland.Controls.RuleSettingsControls"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:rules="clr-namespace:ClassIsland.Models.Rules"
+                      mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <WrapPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RainTimeRuleSettingsControl}}">
+
+        <ToggleSwitch Grid.Column="0" IsChecked="{Binding Settings.IsRemainingTime}"
+                      OnContent="距离结束"
+                      OffContent="距离开始">
+        </ToggleSwitch>
+        <ci:Field Grid.Column="1" Suffix="分钟">
+        <NumericUpDown Value="{Binding Settings.RainTimeMinutes}"
+                            Grid.Column="1"
+                            Minimum="0" Maximum="120"/>
+        </ci:Field>
+    </WrapPanel>
+</ci:RuleSettingsControlBase>

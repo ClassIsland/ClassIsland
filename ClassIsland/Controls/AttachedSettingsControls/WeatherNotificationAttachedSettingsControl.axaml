@@ -1,0 +1,37 @@
+﻿<ci:AttachedSettingsControlBase x:TypeArguments="attachedSettings:WeatherNotificationAttachedSettings"
+                                x:Class="ClassIsland.Controls.AttachedSettingsControls.WeatherNotificationAttachedSettingsControl"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                                xmlns:local="clr-namespace:ClassIsland.Controls.AttachedSettingsControls"
+                                xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                                xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                                xmlns:converters="clr-namespace:ClassIsland.Converters"
+                                xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                                xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                                xmlns:attachedSettings="clr-namespace:ClassIsland.Models.AttachedSettings"
+                                mc:Ignorable="d" 
+                                d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters1:NotificationModeToIntConverter x:Key="NotificationModeToIntConverter" />
+    </UserControl.Resources>
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherNotificationAttachedSettingsControl}}">
+        <ci:Field Label="气象预警提醒模式">
+            <ComboBox SelectedIndex="{Binding Settings.AlertShowMode, Converter={StaticResource NotificationModeToIntConverter}}"
+                      Margin="0 0 0 4">
+                <system:String>在此处禁用</system:String>
+                <system:String>在此处启用</system:String>
+                <system:String>继承全局设置</system:String>
+            </ComboBox>
+        </ci:Field>
+        <ci:Field Label="天气预报提醒模式">
+            <ComboBox SelectedIndex="{Binding Settings.ForecastShowMode, Converter={StaticResource NotificationModeToIntConverter}}"
+                      Margin="0 0 0 4">
+                <system:String>在此处禁用</system:String>
+                <system:String>在此处启用</system:String>
+                <system:String>继承全局设置</system:String>
+            </ComboBox>
+        </ci:Field>
+    </StackPanel>
+</ci:AttachedSettingsControlBase>

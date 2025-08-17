@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="ClassIsland.Controls.NotificationProviders.WeatherNotificationProviderControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ClassIsland.Controls.NotificationProviders"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="WeatherNotificationProviderControl_OnLoaded">
+    <UserControl.Resources>
+        <!-- 预警 遮罩 -->
+
+
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherNotificationProviderControl}}">
+        <StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    IsVisible="{Binding IsOverlay}">
+            <asyncImageLoader:AdvancedImage Source="{Binding Alert.Images[icon]}"
+                                            Width="22" Height="22" Stretch="UniformToFill"
+                                            VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Alert.Title}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
+        </StackPanel>
+        <Grid IsVisible="{Binding !IsOverlay}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <asyncImageLoader:AdvancedImage Grid.Column="0" ZIndex="1"
+                                            Source="{Binding Alert.Images[icon]}"
+                                            Width="22" Height="22" Stretch="UniformToFill"
+                                            VerticalAlignment="Center"
+                                            Margin="10 0 16 0"
+                                            Opacity="1"/>
+            <Grid Grid.Column="0" Grid.ColumnSpan="2" ClipToBounds="True">
+                <Canvas VerticalAlignment="Center"
+                        Height="{Binding Bounds.Height, ElementName=Description}"
+                        HorizontalAlignment="Stretch"
+                        Margin="27 0 16 0"
+                        x:Name="RootCanvas"
+                        ClipToBounds="True">
+                    <Canvas.OpacityMask>
+                        <SolidColorBrush Color="White"/>
+                    </Canvas.OpacityMask>
+                    <TextBlock x:Name="Description" HorizontalAlignment="Right" RenderTransformOrigin="1,0.5"
+                               Text="{Binding Alert.Detail}"
+                               FontSize="17"
+                               Canvas.Right="0"
+                               VerticalAlignment="Center">
+                        <TextBlock.RenderTransform>
+                            <TranslateTransform />
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+                </Canvas>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

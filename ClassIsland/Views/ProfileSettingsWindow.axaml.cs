@@ -25,7 +25,7 @@ using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
-using ClassIsland.Shared.Models.Action;
+using ClassIsland.Shared.Models.Automation;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 using CommunityToolkit.Mvvm.Input;
@@ -810,7 +810,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             return;
         }
-        IAppHost.GetService<IActionService>().Invoke(action);
+        ViewModel.ActionService.InvokeActionSetAsync(action);
     }
     
     private void ButtonOverwriteClasses_OnClick(object sender, RoutedEventArgs e)

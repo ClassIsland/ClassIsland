@@ -103,12 +103,10 @@
                     <controls3:SettingsExpanderItem.Footer>
                         <ci:Field VerticalAlignment="Center"
                                   Suffix="周">
-                            <controls3:NumberBox MinWidth="120"
-                                                 Maximum="9"
-                                                 Minimum="2"
-                                                 SpinButtonPlacementMode="Inline"
-                                                 Value="{Binding ViewModel.SettingsService.Settings.MultiWeekRotationMaxCycle}" />
-                                            <!-- IsClearButtonVisible="False" -->
+                            <NumericUpDown MinWidth="120"
+                                           Maximum="9"
+                                           Minimum="2"
+                                           Value="{Binding ViewModel.SettingsService.Settings.MultiWeekRotationMaxCycle}" />
                         </ci:Field>
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>

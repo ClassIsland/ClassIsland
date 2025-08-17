@@ -27,7 +27,7 @@
 /ClassIsland.Core/Abstractions/Services/IAutomationService.cs @DryIce-cc @HelloWRC
 /ClassIsland/Services/ActionService.cs @DryIce-cc @HelloWRC
 /ClassIsland/Services/AutomationService.cs @DryIce-cc @HelloWRC
-/ClassIsland/Services/ActionHandlers @DryIce-cc @HelloWRC
+/ClassIsland/Models/Actions @DryIce-cc @HelloWRC
 /ClassIsland/Controls/ActionSettingsControls @DryIce-cc @HelloWRC
 
 # 类别：集控/Protobuf

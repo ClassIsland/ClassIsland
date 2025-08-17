@@ -148,65 +148,107 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         {
             return;
         }
-        Logger.LogInformation(note == "" ? "写入配置文件。" : $"写入配置文件：{note}");
+        Logger.LogInformation(note == "" ? "写入配置文件。" : "写入配置文件：{}", note);
         ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Settings);
     }
 
-    /// <summary>
-    /// 添加设置叠层。
-    /// </summary>
-    /// <param name="guid">叠层Guid</param>
-    /// <param name="binding">设置变量名</param>
-    public void AddSettingsOverlay(string guid, string binding, dynamic? value)
-    {
-        var property = typeof(Settings).GetProperty(binding);
-        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
 
-        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic?>? overlay))
+    public const BindingFlags SettingsPropertiesFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+
+    public static readonly JsonSerializerOptions AllowReadingFromString = new()
+    {
+        NumberHandling = JsonNumberHandling.AllowReadingFromString
+    };
+
+    /// <summary>
+    /// 添加应用设置叠层。
+    /// </summary>
+    /// <param name="guid">设置叠层 Guid。</param>
+    /// <param name="name">设置属性名称。</param>
+    /// <param name="value">要设置的值。</param>
+    /// <returns>是否成功。失败会抛出。</returns>
+    public bool AddSettingsOverlay(Guid guid, string name, object value)
+    {
+        var key = guid.ToString();
+        var isPropertyOverlayNotNull = Settings.SettingsOverlays.TryGetValue(name, out var propertyOverlay);
+        if (isPropertyOverlayNotNull)
+            propertyOverlay.Remove(key);
+
+        var info = typeof(Settings).GetProperty(name, SettingsPropertiesFlags);
+        if (info == null)
         {
-            overlay = [];
-            var original = property.GetValue(Settings);
-            if (value.ToString() == original.ToString()) return;
-            overlay["@"] = original;
+            throw new KeyNotFoundException($"应用设置中找不到属性“{name}”。");
+            return false;
         }
 
-        property.SetValue(Settings, value);
-        overlay[guid] = value;
-        Settings.SettingsOverlay[binding] = overlay;
+        var type = info.PropertyType;
+        value = Convert.ChangeType(value, type);
+
+        if (!isPropertyOverlayNotNull)
+        {
+            propertyOverlay = [];
+            var sourceValue = info.GetValue(Settings);
+            if (value == sourceValue)
+                return true;
+            propertyOverlay["@"] = sourceValue;
+        }
+
+        info.SetValue(Settings, value);
+        propertyOverlay[key] = value;
+        Settings.SettingsOverlays[name] = propertyOverlay;
+        return true;
     }
 
     /// <summary>
-    /// 删除设置叠层。
+    /// 删除应用设置叠层。
     /// </summary>
-    /// <param name="guid">叠层Guid</param>
-    /// <param name="binding">设置变量名</param>
-    public void RemoveSettingsOverlay(string guid, string binding)
+    /// <param name="guid">设置叠层 Guid。</param>
+    /// <param name="name">设置属性名。</param>
+    /// <returns>是否进行了删除。删除出错会抛出。</returns>
+    public bool RemoveSettingsOverlay(Guid guid, string name)
     {
-        var property = typeof(Settings).GetProperty(binding);
-        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
-        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic?>? overlay)) return;
+        var key = guid.ToString();
+        if (!Settings.SettingsOverlays.TryGetValue(name, out var propertyOverlay))
+            return false;
 
-        overlay.Remove(guid);
-        var last = overlay.Last().Value;
+        var lengthBefore = propertyOverlay.Count;
+        propertyOverlay.Remove(key);
+        var length = propertyOverlay.Count;
+        if (length == lengthBefore)
+            return false;
+
+        var info = typeof(Settings).GetProperty(name, SettingsPropertiesFlags);
+        if (info == null)
+            return false;
+
+        var type = info.PropertyType;
+        var last = propertyOverlay[length - 1]; // propertyOverlay 至少存在一项。
         if (last is JsonElement json)
-            last = json.Deserialize(property.GetValue(Settings).GetType());
-
-        property.SetValue(Settings, last);
-
-        if (overlay.Count > 1)
-            Settings.SettingsOverlay[binding] = overlay;
+            last = JsonSerializer.Deserialize(json.GetRawText(), type, AllowReadingFromString);
         else
-            Settings.SettingsOverlay.Remove(binding);
+            last = Convert.ChangeType(last, type);
+
+        info.SetValue(Settings, last);
+
+        if (length > 1)
+            Settings.SettingsOverlays[name] = propertyOverlay;
+        else
+            Settings.SettingsOverlays.Remove(name);
+        return true;
     }
 
-    private void SettingsChanged(string propertyName)
+    void SettingsChanged(string propertyName)
     {
-        if (propertyName != nameof(Settings.SettingsOverlay))
-            Settings.SettingsOverlay.Remove(propertyName);
+        if (propertyName != nameof(Settings.SettingsOverlays))
+        {
+            Console.WriteLine(propertyName);
+            Settings.SettingsOverlays.Remove(propertyName);
+        }
 
-        if (typeof(Settings).GetProperty(propertyName)
+        if (typeof(Settings).GetProperty(propertyName, SettingsPropertiesFlags)?
                             .GetCustomAttribute<JsonIgnoreAttribute>() != null)
             return;
+
         SaveSettings(propertyName);
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
         {
