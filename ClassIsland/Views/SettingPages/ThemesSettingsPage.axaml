@@ -12,11 +12,15 @@
                      xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                      xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
                      xmlns:converters="clr-namespace:ClassIsland.Converters"
+                     xmlns:xamlTheme="clr-namespace:ClassIsland.Core.Models.XamlTheme;assembly=ClassIsland.Core"
                      mc:Ignorable="d"
                      d:DesignHeight="450" d:DesignWidth="800"
                      d:DataContext="{d:DesignInstance local:ThemesSettingsPage}">
 
     <ci:SettingsPageBase.Resources>
+        <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:String, xamlTheme:ThemeInfo"
+                                              x:Key="ThemeDictionaryAccessConverter"
+                                              Dictionary="{Binding ViewModel.XamlThemeService.MergedThemes}"/>
         <Grid x:Key="ErrorInfoDrawer" Margin="16" Width="450" RowDefinitions="Auto,*">
             <TextBlock Text="错误信息" Grid.Row="0"
                        Theme="{StaticResource SubtitleTextBlockStyle}" />
@@ -28,7 +32,35 @@
             x:TypeArguments="local:ThemesSettingsPage"
             Data="{Binding}"
             x:Key="BindingProxy"/>
-
+        <Grid Width="300" x:Key="ThemeSortingDrawer" RowDefinitions="Auto, *" Margin="16 16 16 0">
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="主题加载顺序" Theme="{StaticResource SubtitleTextBlockStyle}"
+                           Margin="0 0 0 4" />
+                <TextBlock Text="主题将按照以下的顺序加载，后加载的主题可以覆盖前面主题的样式。拖动以对主题进行排序。" TextWrapping="Wrap"
+                           Margin="0 0 0 16" />
+            </StackPanel>
+            <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.XamlThemeService.EnabledThemes}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border DataContext="{Binding Converter={StaticResource ThemeDictionaryAccessConverter}}">
+                            <TextBlock Text="{Binding Manifest.Name}"/>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.Styles>
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="Interaction.Behaviors">
+                            <BehaviorCollectionTemplate>
+                                <BehaviorCollection>
+                                    <ItemDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="3"
+                                                      Orientation="Vertical"/>
+                                </BehaviorCollection>
+                            </BehaviorCollectionTemplate>
+                        </Setter>
+                    </Style>
+                </ListBox.Styles>
+            </ListBox>
+        </Grid>
             <!--<Style TargetType="Canvas">
             <Setter Property="UseLayoutRounding" Value="True"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -58,6 +90,10 @@
                 <Button Theme="{StaticResource TransparentButton}"
                         Click="ButtonOpenThemeFolder_OnClick">
                     <ci:IconText Glyph="&#xe88d;" Text="打开主题文件夹…" />
+                </Button>
+                <Button Theme="{StaticResource TransparentButton}"
+                        Click="ButtonOpenThemeLoadOrderDrawer_OnClick">
+                    <ci:IconText Glyph="&#xe13f;" Text="主题加载顺序" />
                 </Button>
             </StackPanel>
         </Grid>

@@ -189,4 +189,9 @@ public partial class ThemesSettingsPage : SettingsPageBase
         }
         ViewModel.XamlThemeService.EnabledThemes.Remove(kvp.Key);
     }
+
+    private void ButtonOpenThemeLoadOrderDrawer_OnClick(object? sender, RoutedEventArgs e)
+    {
+        OpenDrawer("ThemeSortingDrawer");
+    }
 }
