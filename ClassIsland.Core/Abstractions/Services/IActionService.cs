@@ -12,7 +12,7 @@ public interface IActionService
     /// 「添加行动」层叠菜单。
     /// </summary>
     static readonly ActionMenuTreeNodeCollection ActionMenuTree = [
-        new ActionMenuTreeGroup("应用设置", "\uef27", new ActionMenuTreeItem("classisland.settings", "应用设置…", "\uef27"))
+        new ActionMenuTreeGroup("应用设置", "\uef27" /*, new ActionMenuTreeItem("classisland.settings", "应用设置…", "\uef27")*/ )
     ];
 
     /// <summary>
