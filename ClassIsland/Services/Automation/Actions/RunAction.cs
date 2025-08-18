@@ -14,6 +14,7 @@ public class RunAction : ActionBase<RunActionSettings>
 {
     protected override async Task OnInvoke()
     {
+        await base.OnInvoke();
         switch (Settings.RunType)
         {
             case Application:

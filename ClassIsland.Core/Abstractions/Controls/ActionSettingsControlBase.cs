@@ -1,10 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Automation;
-using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Automation;
 using FluentAvalonia.UI.Controls;
@@ -17,50 +15,29 @@ namespace ClassIsland.Core.Abstractions.Controls;
 /// <typeparam name="TSettings">行动设置类型。需要获取行动设置的行动设置控件须标注此类型。</typeparam>
 public abstract class ActionSettingsControlBase : UserControl
 {
-    /// <summary>
-    /// 测试运行行动。（此方法未实现。）
-    /// </summary>
-    protected async Task InvokeActionItem(ActionItem actionItem)
-    {
-        var actionSet = new ActionSet { ActionItems = [actionItem] };
-        await ActionService.InvokeActionSetAsync(actionSet);
-    }
+    /// 当行动项被用户添加时，此方法将被调用。
+    protected virtual void OnAdded() { }
 
     /// <summary>
-    /// 当行动项需要更改显示的行动名时，请调用此方法。
+    /// 当行动项被用户删除时，此方法将被调用，以询问是否需要提供撤销删除按钮。
     /// </summary>
-    protected void ChangeActionName(string newName)
-    {
-        ActionNameChanged?.Invoke(this, newName);
-    }
-
-    /// <summary>
-    /// 当行动项需要更改显示的图标时，请调用此方法。
-    /// </summary>
-    protected void ChangeActionIcon(string? newIconGlyph)
-    {
-        ActionIconChanged?.Invoke(this, newIconGlyph);
-    }
-
-    /// <summary>
-    /// 当行动项被用户添加时，将调用此方法。
-    /// </summary>
-    public virtual void OnAdded() { }
-
-    /// <summary>
-    /// 当行动项被用户删除时，将调用此方法。
+    /// <returns>
     /// 如果需要提供撤销删除按钮，请返回 true。默认返回 false。
-    /// </summary>
+    /// </returns>
     /// <seealso cref="ActionBase{TSettings}.Settings"/>
-    public virtual bool IsUndoDeleteRequested()
-    {
-        return false;
-    }
+    protected virtual bool IsUndoDeleteRequested() => false;
 
 
-    /// <summary>
-    /// 打开抽屉并显示控件。
-    /// </summary>
+
+    /// 调用此方法，以更改行动项显示的行动名。
+    protected void ChangeActionName(string newName) =>
+        ActionNameChanged?.Invoke(this, newName);
+
+    /// 调用此方法，以更改行动项显示的图标时。
+    protected void ChangeActionIcon(string? newIconGlyph) =>
+        ActionIconChanged?.Invoke(this, newIconGlyph);
+
+    /// 调用此方法，以打开抽屉并显示控件。
     /// <param name="control">要显示的 ContentControl 控件。注意：此控件需设定宽度。</param>
     /// <param name="isOpenInDialog">优先在 Dialog 中打开。默认为 false，即优先在应用设置抽屉中打开。</param>
     protected async Task ShowDrawer(ContentControl control, bool isOpenInDialog = false)
@@ -91,12 +68,11 @@ public abstract class ActionSettingsControlBase : UserControl
 
 
 
+    internal void NotifyAdded() => OnAdded();
+    internal bool ShouldShowUndoDeleteButton() => IsUndoDeleteRequested();
     internal object? SettingsInternal { get; set; }
     internal event EventHandler<string>? ActionNameChanged;
     internal event EventHandler<string?>? ActionIconChanged;
-
-    readonly Lazy<IActionService> _lazyActionService = new(IAppHost.GetService<IActionService>);
-    protected IActionService ActionService => _lazyActionService.Value;
 
 
 
@@ -134,5 +110,5 @@ public abstract class ActionSettingsControlBase<TSettings> : ActionSettingsContr
     /// </summary>
     protected TSettings Settings =>
         SettingsInternal as TSettings ??
-        throw new ArgumentNullException(nameof(Settings), $"无法在构造函数中访问行动项设置（{typeof(TSettings).FullName}）。");
+        throw new ArgumentNullException(nameof(Settings), $"过早访问行动项设置（{typeof(TSettings).FullName}）。");
 }

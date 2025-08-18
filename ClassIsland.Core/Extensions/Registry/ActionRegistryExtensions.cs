@@ -50,19 +50,7 @@ public static class ActionRegistryExtensions
         if (!IActionService.ActionInfos.TryAdd(info.Id, info))
             throw new InvalidOperationException($"无法注册行动提供方 {actionType.FullName}: ID {info.Id} 已被占用。");
 
-        if (info.AddDefaultToMenu)
-        {
-            var group = IActionService.ActionMenuTree;
-
-            if (!string.IsNullOrEmpty(info.DefaultGroupToMenu))
-            {
-                if (IActionService.ActionMenuTree.TryGetValue(info.DefaultGroupToMenu, out var node) &&
-                    node is ActionMenuTreeGroup g)
-                    group = g.Children;
-            }
-
-            group.Add(new ActionMenuTreeItem(info.Id, info.Name, info.IconGlyph));
-        }
+        ProcessAddToGroup(info);
 
         return info;
     }
@@ -79,6 +67,28 @@ public static class ActionRegistryExtensions
         )?.DeclaringType == type;
     }
 
+    static void ProcessAddToGroup(ActionInfo info)
+    {
+        if (info.AddDefaultToMenu)
+        {
+            var group = IActionService.ActionMenuTree;
+
+            if (!string.IsNullOrEmpty(info.DefaultGroupToMenu))
+            {
+                if (IActionService.ActionMenuTree.TryGetValue(info.DefaultGroupToMenu, out var node) &&
+                    node is ActionMenuTreeGroup g)
+                    group = g.Children;
+                else
+                {
+                    g = new ActionMenuTreeGroup(info.DefaultGroupToMenu);
+                    group.Add(g);
+                    group = g.Children;
+                }
+            }
+            group.Add(new ActionMenuTreeItem(info.Id, info.Name, info.IconGlyph));
+        }
+    }
+
 
 
 
@@ -89,16 +99,14 @@ public static class ActionRegistryExtensions
          string id,
          string name = "",
          string iconGlyph = "\ue01f",
-         Delegate? onHandle = null)
+         Action<object, string>? onHandle = null)
     {
         var info = new ActionInfo(id, name, iconGlyph);
         info.IsRevertable = true;
         if (IActionService.ActionInfos.TryAdd(id, info))
         {
-            IActionService.ObsoleteActionHandlers[id] = (typeof(void), (_, _) => { }, (_, _) => { });
-            IActionService.ActionMenuTree.Add(
-                new ActionMenuTreeItem(info.Id, info.Name, info.IconGlyph)
-            );
+            IActionService.ObsoleteActionHandlers[id] = (typeof(void), onHandle, null);
+            ProcessAddToGroup(info);
             services.AddKeyedTransient<ActionBase, ObsoleteV2ActionAdapter>(id);
         }
 
@@ -112,24 +120,15 @@ public static class ActionRegistryExtensions
          string name = "",
          string iconGlyph = "\ue01f",
          string defaultGroupToMenu = "",
-         Delegate? onHandle = null)
+         Action<object, string>? onHandle = null)
          where TSettingsControl : ActionSettingsControlBase
     {
         var info = new ActionInfo(id, name, iconGlyph, defaultGroupToMenu: defaultGroupToMenu);
         info.IsRevertable = true;
         if (IActionService.ActionInfos.TryAdd(id, info))
         {
-            IActionService.ObsoleteActionHandlers[id] = (typeof(TSettings), (_, _) => { }, (_, _) => { });
-
-            var group = IActionService.ActionMenuTree;
-            if (!string.IsNullOrEmpty(info.DefaultGroupToMenu))
-            {
-                if (IActionService.ActionMenuTree.TryGetValue(info.DefaultGroupToMenu, out var node) &&
-                    node is ActionMenuTreeGroup g)
-                    group = g.Children;
-            }
-
-            group.Add(new ActionMenuTreeItem(info.Id, info.Name, info.IconGlyph));
+            IActionService.ObsoleteActionHandlers[id] = (typeof(TSettings), onHandle, null);
+            ProcessAddToGroup(info);
             services.AddKeyedTransient<ActionBase, ObsoleteV2ActionAdapter>(id);
             services.AddKeyedTransient<ActionSettingsControlBase, TSettingsControl>(id);
         }
@@ -143,6 +142,9 @@ public static class ActionRegistryExtensions
         protected override async Task OnInvoke()
         {
             var (ty, ac, _) = IActionService.ObsoleteActionHandlers[ActionItem.Id];
+            if (ac == null) return;
+            await base.OnInvoke();
+
             if (SettingsInternal is JsonElement json)
                 SettingsInternal = json.Deserialize(ty);
             if (SettingsInternal?.GetType() != ty)
@@ -154,6 +156,9 @@ public static class ActionRegistryExtensions
         protected override async Task OnRevert()
         {
             var (ty, _, ac) = IActionService.ObsoleteActionHandlers[ActionItem.Id];
+            if (ac == null) return;
+            await base.OnInvoke();
+
             if (SettingsInternal is JsonElement json)
                 SettingsInternal = json.Deserialize(ty);
             if (SettingsInternal?.GetType() != ty)

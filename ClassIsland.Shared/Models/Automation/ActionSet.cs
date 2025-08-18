@@ -19,7 +19,7 @@ public partial class ActionSet : ObservableRecipient
     public void SetStartRunning(bool isInvoke)
     {
         InterruptCts?.Dispose();
-        RunningTcs?.Task?.Dispose();
+        RunningTcs?.Task.Dispose();
         InterruptCts = new();
         RunningTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         Status = isInvoke ? ActionSetStatus.Invoking : ActionSetStatus.Reverting;
@@ -42,7 +42,7 @@ public partial class ActionSet : ObservableRecipient
             _ => Status
         };
         RunningTcs?.SetResult(null);
-        RunningTcs?.Task?.Dispose();
+        RunningTcs?.Task.Dispose();
         RunningTcs = null;
     }
 

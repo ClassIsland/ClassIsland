@@ -10,10 +10,9 @@ public interface IActionService
 {
     /// <summary>
     /// 「添加行动」层叠菜单。
+    /// 键为菜单元素中文名，值为菜单元素。
     /// </summary>
-    static readonly ActionMenuTreeNodeCollection ActionMenuTree = [
-        new ActionMenuTreeGroup("应用设置", "\uef27" /*, new ActionMenuTreeItem("classisland.settings", "应用设置…", "\uef27")*/ )
-    ];
+    static readonly ActionMenuTreeNodeCollection ActionMenuTree = [];
 
     /// <summary>
     /// 列表类型的只读「添加行动」层叠菜单。
@@ -22,6 +21,7 @@ public interface IActionService
 
     /// <summary>
     /// 所有行动提供方信息。
+    /// 键为行动提供方 ID，值为行动提供方信息。
     /// </summary>
     static readonly Dictionary<string, ActionInfo> ActionInfos = [];
 
@@ -57,7 +57,7 @@ public interface IActionService
 
 
     [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]
-    static readonly Dictionary<string, (Type, Action<object, string>, Action<object, string>)> ObsoleteActionHandlers = [];
+    static readonly Dictionary<string, (Type, Action<object, string>?, Action<object, string>?)> ObsoleteActionHandlers = [];
 
     [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]
     public void RegisterActionHandler(string id, Action<object, string> i2);

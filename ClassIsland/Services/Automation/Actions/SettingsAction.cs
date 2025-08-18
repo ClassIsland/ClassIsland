@@ -16,6 +16,7 @@ public class SettingsAction : ActionBase<SettingsActionSettings>
 
     protected override async Task OnInvoke()
     {
+        await base.OnInvoke();
         if (IsRevertable)
             SettingsService.AddSettingsOverlay(ActionSet.Guid, Settings.Name, Settings.Value);
         else
@@ -32,6 +33,7 @@ public class SettingsAction : ActionBase<SettingsActionSettings>
 
     protected override async Task OnRevert()
     {
+        await base.OnRevert();
         SettingsService.RemoveSettingsOverlay(ActionSet.Guid, Settings.Name);
     }
 }

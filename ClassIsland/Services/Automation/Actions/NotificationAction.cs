@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,17 +22,45 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
 
     protected override async Task OnInvoke()
     {
-        var task = ShowNotificationAsync(Settings);
-        if (Settings.IsWaitForCompleteEnabled)
+        await base.OnInvoke();
+        var notificationTask = ShowNotificationAsync(Settings);
+
+        if (!Settings.IsWaitForCompleteEnabled) return;
+
+        using var cts = new CancellationTokenSource();
+        PropertyChangedEventHandler propertyChangedHandler = null;
+
+        try
         {
-            var cancellationRegistration = InterruptCancellationToken.Register(async () => await OnRevert());
-            await task;
-            await cancellationRegistration.DisposeAsync();
+            Settings.PropertyChanged += PropertyChangedHandler;
+
+            var completedTask = await Task.WhenAny(
+                notificationTask,
+                Task.Delay(Timeout.Infinite, cts.Token)
+            ).ConfigureAwait(false);
+
+            if (completedTask == notificationTask)
+                await notificationTask.ConfigureAwait(false);
+        }
+        catch (TaskCanceledException) when (cts.IsCancellationRequested) { }
+        finally
+        {
+            Settings.PropertyChanged -= PropertyChangedHandler;
+            cts.Cancel();
+        }
+        return;
+
+        void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Settings.IsWaitForCompleteEnabled) && !Settings.IsWaitForCompleteEnabled)
+                cts.Cancel();
         }
     }
 
-    async Task OnRevert()
+
+    protected override async Task OnInterrupted()
     {
+        await base.OnInterrupted();
         _ = Dispatcher.UIThread.InvokeAsync(() =>
         {
             _cancellationTokenSource?.Cancel();

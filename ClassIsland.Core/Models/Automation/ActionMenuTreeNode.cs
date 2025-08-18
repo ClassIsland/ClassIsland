@@ -10,12 +10,12 @@ public abstract class ActionMenuTreeNode(string name, string? iconGlyph)
     /// <summary>
     /// 菜单节点名称。
     /// </summary>
-    public string Name { get; } = name;
+    public string Name { get; set; } = name;
 
     /// <summary>
     /// 菜单节点图标。形如 "\ue9a8" FluentIcon Glyph 格式。支持留空。
     /// </summary>
-    public string? IconGlyph { get; } = iconGlyph;
+    public string? IconGlyph { get; set; } = iconGlyph;
 }
 
 /// <inheritdoc cref="ActionMenuTreeItem{T}" />
@@ -30,7 +30,7 @@ public class ActionMenuTreeItem : ActionMenuTreeNode
     /// <summary>
     /// 菜单项的行动项 Id。
     /// </summary>
-    public string ActionItemId { get; }
+    public string ActionItemId { get; set; }
 }
 
 /// <summary>
@@ -49,7 +49,7 @@ public class ActionMenuTreeItem<TSettings> : ActionMenuTreeItem where TSettings 
     /// 用于对行动项进行设置的 <see cref="Action{TSettings}"/>。
     /// 此方法无返回值，直接对传入的 <typeparamref name="TSettings"/> 进行修改。请勿直接重新赋值。
     /// </summary>
-    public Action<TSettings> ActionItemSettingsSetter { get; }
+    public Action<TSettings> ActionItemSettingsSetter { get; set; }
 }
 
 /// <summary>
@@ -58,7 +58,7 @@ public class ActionMenuTreeItem<TSettings> : ActionMenuTreeItem where TSettings 
 public class ActionMenuTreeGroup : ActionMenuTreeNode
 {
     /// <inheritdoc cref="ActionMenuTreeGroup" />
-    public ActionMenuTreeGroup(string name, string? iconGlyph, params ActionMenuTreeNode[] children) : base(name, iconGlyph)
+    public ActionMenuTreeGroup(string name, string? iconGlyph = null, params ActionMenuTreeNode[] children) : base(name, iconGlyph)
     {
         Children.AddRange(children);
     }

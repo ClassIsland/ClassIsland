@@ -13,6 +13,7 @@ public class SleepAction : ActionBase<SleepActionSettings>
 {
     protected override async Task OnInvoke()
     {
+        await base.OnInvoke();
         ActionItem.Progress = 0;
         var sw = Stopwatch.StartNew();
         var tcs = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);

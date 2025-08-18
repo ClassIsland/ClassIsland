@@ -45,17 +45,32 @@ public partial class ActionItem : ObservableRecipient
     object? _settings;
 
     /// <summary>
-    /// 行动项是否启用恢复。在为恢复行动项时此项无效。在行动提供方不支持恢复时此项无效。
+    /// 行动项是否启用恢复。在为恢复行动项时此项无效。在行动提供方不支持恢复时此项无效。（未启用。）
     /// </summary>
-    [ObservableProperty] [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    // [ObservableProperty] [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     bool _isRevertEnabled = true;
 
+    /// （未启用。始终为 true。）
+    [JsonIgnore]
+    public bool IsRevertEnabled
+    {
+        get => true;
+        set { }
+    }
+
     /// <summary>
-    /// 行动项是否为恢复行动项。恢复行动项只会在"恢复行动"界面中展示。
+    /// 行动项是否为恢复行动项。恢复行动项只会在"恢复行动"界面中展示。（未启用。）
     /// </summary>
-    [ObservableProperty] [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    // [ObservableProperty] [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     bool _isRevertActionItem = false;
 
+    /// （未启用。始终为 false。）
+    [JsonIgnore]
+    public bool IsRevertActionItem
+    {
+        get => false;
+        set { }
+    }
 
 
     /// <summary>
@@ -73,9 +88,6 @@ public partial class ActionItem : ObservableRecipient
     /// </summary>
     [ObservableProperty] [property: JsonIgnore] double? _progress = null;
 
-    /// <summary>
-    /// 数据驱动用属性。
-    /// </summary>
-    [JsonIgnore]
-    internal bool IsNewAdded { get; set; } = false;
+    /// （数据驱动用属性。）
+    [JsonIgnore] internal bool IsNewAdded { get; set; } = false;
 }

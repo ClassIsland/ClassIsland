@@ -1,6 +1,6 @@
-using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -23,25 +23,16 @@ public partial class ActionItemControl : UserControl
     {
         base.OnAttachedToVisualTree(e);
         UpdateContent();
-        ActionItem.PropertyChanged += ActionItemOnPropertyChanged;
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
         Unload();
-        ActionItem.PropertyChanged -= ActionItemOnPropertyChanged;
-    }
-
-    void ActionItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(ActionItem.Id))
-            UpdateContent();
     }
 
     void UpdateContent()
     {
-        Unload();
         ActionInfoIconText.Glyph =
             IActionService.ActionInfos.TryGetValue(ActionItem.Id, out var actionInfo) ? actionInfo.IconGlyph : "\uee31";
         ActionInfoIconText.Text = actionInfo?.Name ?? $"{ActionItem.Id}（未知行动）";
@@ -54,9 +45,7 @@ public partial class ActionItemControl : UserControl
             RootContentPresenter.Content = newControl;
             RootContentPresenter.IsVisible = true;
             if (ActionItem.IsNewAdded)
-            {
-                newControl.AttachedToVisualTree += ControlOnAttachedToVisualTree;
-            }
+                newControl.Loaded += ControlOnLoaded;
         }
         else
         {
@@ -66,8 +55,8 @@ public partial class ActionItemControl : UserControl
         ActionItem.IsNewAdded = false;
     }
 
-    void ControlOnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e) =>
-        (sender as ActionSettingsControlBase).OnAdded();
+    void ControlOnLoaded(object? sender, RoutedEventArgs routedEventArgs) =>
+        (sender as ActionSettingsControlBase).NotifyAdded();
 
     void ControlOnActionNameChanged(object? sender, string e) => ActionInfoIconText.Text = e;
     void ControlOnActionIconChanged(object? sender, string? e) => ActionInfoIconText.Glyph = e;
@@ -79,8 +68,10 @@ public partial class ActionItemControl : UserControl
         {
             oldControl.ActionNameChanged -= ControlOnActionNameChanged;
             oldControl.ActionIconChanged -= ControlOnActionIconChanged;
-            oldControl.AttachedToVisualTree -= ControlOnAttachedToVisualTree;
+            oldControl.Loaded -= ControlOnLoaded;
         }
+
+        RootContentPresenter.Content = null;
     }
 
 
@@ -99,8 +90,9 @@ public partial class ActionItemControl : UserControl
                 var settings = actionItem.Settings;
                 if (settings?.GetType() != settingsType)
                 {
+                    Unload();
+                    ActionItem.IsNewAdded = true;
                     settings = Activator.CreateInstance(settingsType);
-                    actionItem.IsNewAdded = true;
                 }
 
                 var setterProperty = menu.GetType()
@@ -109,6 +101,13 @@ public partial class ActionItemControl : UserControl
                 setter?.DynamicInvoke(settings);
                 actionItem.Settings = settings;
             }
+            else
+            {
+                Unload();
+                ActionItem.IsNewAdded = true;
+            }
+
+            UpdateContent();
         }
     }
 
@@ -119,7 +118,7 @@ public partial class ActionItemControl : UserControl
 
         if (RootContentPresenter.Content is ActionSettingsControlBase controlBase)
         {
-            if (controlBase.IsUndoDeleteRequested() == true)
+            if (controlBase.ShouldShowUndoDeleteButton())
             {
                 var index = ActionSet.ActionItems.IndexOf(actionItem);
 

@@ -22,22 +22,10 @@
  {
      public NotificationActionSettingsControl() => InitializeComponent();
 
-     public void ButtonShowSettings_OnClick(object? sender, RoutedEventArgs e)
-     {
-         ShowNotificationActionSettingsDrawer();
-     }
+     protected override void OnAdded() => ShowNotificationActionSettingsDrawer();
 
-     public override void OnAdded()
-     {
-         ShowNotificationActionSettingsDrawer();
-     }
-
-     void ShowNotificationActionSettingsDrawer()
-     {
-         if (this.FindResource("NotificationActionSettingsDrawer") is not ContentControl cc) return;
-         cc.DataContext = this;
-         _ = ShowDrawer(cc);
-     }
+     protected override bool IsUndoDeleteRequested() =>
+         Settings.Mask.Length + Settings.Content.Length > 10;
 
      protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
      {
@@ -52,16 +40,22 @@
          Settings.PropertyChanged -= SettingsOnPropertyChanged;
      }
 
+
+     public void ButtonShowSettings_OnClick(object? sender, RoutedEventArgs e) =>
+         ShowNotificationActionSettingsDrawer();
+
+     void ShowNotificationActionSettingsDrawer()
+     {
+         if (this.FindResource("NotificationActionSettingsDrawer") is not ContentControl cc) return;
+         cc.DataContext = this;
+         _ = ShowDrawer(cc);
+     }
+
      void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
      {
          if (e.PropertyName == nameof(Settings.IsWaitForCompleteEnabled))
              UpdateActionName();
      }
-
-
-     public override bool IsUndoDeleteRequested() =>
-         Settings.Mask.Length + Settings.Content.Length > 10;
-
 
      void UpdateActionName()
      {

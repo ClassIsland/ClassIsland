@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Automation;
@@ -10,17 +9,36 @@ namespace ClassIsland.Core.Abstractions.Automation;
 /// </summary>
 public abstract class ActionBase
 {
-    /// 当此行动触发时，调用此方法。
+    /// 当此行动触发时，此方法将被调用。
+    /// <remarks>
+    /// 重写本方法时，请先调用基类的实现 <code>base.OnInvoke();</code>
+    /// </remarks>
     /// <seealso cref="ActionBase{TSettings}.Settings"/>
     /// <seealso cref="IsRevertable"/>
     /// <seealso cref="InterruptCancellationToken"/>
-    protected abstract Task OnInvoke();
+    protected virtual async Task OnInvoke()
+    {
+        ActionItem.SetStartRunning();
+    }
 
-    /// 当此行动恢复时，调用此方法。
-    /// 如果此行动提供方没有恢复行动，请勿重写此方法。
+    /// 当此行动恢复时，此方法将被调用。<br/>
+    /// 重要：如果此行动提供方没有恢复行动，请勿重写此方法。
+    /// <remarks>
+    /// 重写本方法时，请先调用基类的实现 <code>base.OnRevert();</code>
+    /// </remarks>
     /// <seealso cref="ActionBase{TSettings}.Settings"/>
     /// <seealso cref="InterruptCancellationToken"/>
-    protected virtual Task OnRevert() => throw new ArgumentException("该行动未支持恢复。");
+    protected virtual async Task OnRevert()
+    {
+        ActionItem.SetStartRunning();
+    }
+
+    /// 当此行动运行被中断时，此方法将被调用。
+    /// <remarks>
+    /// 此方法与 <see cref="InterruptCancellationToken"/> 等效。<br/>
+    /// 如果此行动是瞬间完成的，则不必实现此方法。
+    /// </remarks>
+    protected virtual async Task OnInterrupted() { }
 
 
 
@@ -47,28 +65,7 @@ public abstract class ActionBase
     /// <param name="isRevertable">行动是否将会被恢复。</param>
     public async Task InvokeAsync(ActionItem actionItem, ActionSet actionSet, bool isRevertable = true)
     {
-        actionItem.SetStartRunning();
-        ActionItem = actionItem;
-        ActionSet = actionSet;
-        IsRevertable = isRevertable;
-        InterruptCts = actionSet?.InterruptCts;
-        SettingsInternal = actionItem.Settings;
-        try
-        {
-            await OnInvoke();
-        }
-        catch (Exception ex)
-        {
-            if (ex is TaskCanceledException &&
-                InterruptCts?.IsCancellationRequested is true)
-                return;
-            actionItem.Exception = ex.ToString();
-            throw;
-        }
-        finally
-        {
-            actionItem.SetEndRunning();
-        }
+        await ExecuteAsync(actionItem, actionSet, isRevertable, OnInvoke);
     }
 
     /// 恢复行动。此方法已管理行动项运行生命周期。行动错误会抛出。
@@ -76,34 +73,39 @@ public abstract class ActionBase
     /// <param name="actionSet">行动项所在的行动组。</param>
     public async Task RevertAsync(ActionItem actionItem, ActionSet actionSet)
     {
-        actionItem.SetStartRunning();
+        await ExecuteAsync(actionItem, actionSet, false, OnRevert);
+    }
+
+    async Task ExecuteAsync(ActionItem actionItem, ActionSet actionSet, bool isRevertable, Func<Task> action)
+    {
         ActionItem = actionItem;
         ActionSet = actionSet;
-        IsRevertable = false;
-        InterruptCts = actionSet.InterruptCts;
+        IsRevertable = isRevertable;
         SettingsInternal = actionItem.Settings;
+        InterruptCts = actionSet.InterruptCts ?? throw new ArgumentNullException(nameof(actionSet.InterruptCts));
+        var cancellationRegistration = InterruptCancellationToken.Register(async () => { await OnInterrupted(); });
+
         try
         {
-            await OnRevert();
+            await action();
         }
+        catch (Exception ex) when (ex is TaskCanceledException && InterruptCts?.IsCancellationRequested == true) { }
         catch (Exception ex)
         {
-            if (ex is TaskCanceledException &&
-                InterruptCts?.IsCancellationRequested is true)
-                return;
             actionItem.Exception = ex.ToString();
             throw;
         }
         finally
         {
+            await cancellationRegistration.DisposeAsync();
             actionItem.SetEndRunning();
         }
     }
 
 
 
-    [NotNull] internal object? SettingsInternal { get; set; }
-    internal CancellationTokenSource? InterruptCts { get; set; }
+    internal object? SettingsInternal { get; set; }
+    internal CancellationTokenSource InterruptCts { get; set; }
 
 
 

@@ -17,6 +17,7 @@ public class WeatherNotificationAction : ActionBase<WeatherNotificationActionSet
 
     protected override async Task OnInvoke()
     {
+        await base.OnInvoke();
         switch (Settings.NotificationKind)
         {
             case 0:

@@ -23,6 +23,7 @@ public class ActionService : IActionService
             await InterruptActionSetAsync(actionSet);
         if (actionSet.IsWorking) return;
 
+        Logger.LogInformation("触发行动组“{行动组}”。", actionSet.Name);
         actionSet.SetStartRunning(true);
         try
         {
@@ -46,6 +47,7 @@ public class ActionService : IActionService
             await InterruptActionSetAsync(actionSet);
         if (actionSet.IsWorking) return;
 
+        Logger.LogInformation("恢复行动组“{行动组}”。", actionSet.Name);
         actionSet.SetStartRunning(false);
         try
         {
@@ -68,10 +70,18 @@ public class ActionService : IActionService
 
     public async Task InterruptActionSetAsync(ActionSet actionSet)
     {
-        if (actionSet.InterruptCts != null)
-            await actionSet.InterruptCts.CancelAsync();
-        if (actionSet.RunningTcs != null)
-            await actionSet.RunningTcs.Task;
+        Logger.LogInformation("中断运行行动组“{行动组}”。", actionSet.Name);
+        try
+        {
+            if (actionSet.InterruptCts != null)
+                await actionSet.InterruptCts.CancelAsync();
+            if (actionSet.RunningTcs != null)
+                await actionSet.RunningTcs.Task;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "中断运行行动组“{行动组}”时出现错误。", actionSet.Name);
+        }
     }
 
     public async Task InvokeActionItemAsync(ActionItem actionItem, ActionSet actionSet, bool isRevertable = true)
@@ -95,7 +105,7 @@ public class ActionService : IActionService
 
     public async Task RevertActionItemAsync(ActionItem actionItem, ActionSet actionSet)
     {
-        if (actionItem.IsRevertActionItem || (!actionItem.IsRevertEnabled && false) ||
+        if (actionItem.IsRevertActionItem || !actionItem.IsRevertEnabled ||
             actionSet.InterruptCts?.Token.IsCancellationRequested != false)
             return;
         var provider = ActionBase.GetInstance(actionItem);
@@ -147,6 +157,11 @@ public class ActionService : IActionService
     {
         Logger = logger;
 
+        ActionMenuTree.TryGetValue("应用设置", out var group);
+        ActionMenuTree.Remove(group);
+        group.IconGlyph = "\uef27";
+        ActionMenuTree.Add(group);
+
         ActionMenuTree.Add(new ActionMenuTreeGroup("运行", "\uec2e"));
         ActionMenuTree["运行"].AddRange([
             new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "应用程序", "\uF4B1",
@@ -182,11 +197,6 @@ public class ActionService : IActionService
             new ActionMenuTreeItem("classisland.app.quit", "退出 ClassIsland", "\ue0df"),
             new ActionMenuTreeItem("classisland.app.restart", "重启 ClassIsland", "\ue0bd"),
         ]);
-    }
-
-    static void AsTypeOrNew<T>(ref object? obj) where T : new()
-    {
-        obj = obj is T t ? t : new T();
     }
 
     [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]
