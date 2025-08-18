@@ -41,7 +41,11 @@ public class RunAction : ActionBase<RunActionSettings>
                 var path = Settings.Value;
                 if (!path.Contains("://"))
                     path = "http://" + path;
-                Process.Start("explorer.exe", path);
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = path,
+                    UseShellExecute = true
+                });
                 break;
             }
             case Command:
