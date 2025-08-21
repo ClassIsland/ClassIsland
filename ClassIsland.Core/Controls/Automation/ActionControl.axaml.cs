@@ -17,7 +17,7 @@ public partial class ActionControl : UserControl
     [RelayCommand]
     void AddAction(ActionMenuTreeItem menu)
     {
-        var actionItem = new ActionItem(menu.ActionItemId);
+        var actionItem = new ActionItem { Id = menu.ActionItemId };
 
         if (menu.GetType().IsGenericType &&
             menu.GetType().GetGenericTypeDefinition() == typeof(ActionMenuTreeItem<>))

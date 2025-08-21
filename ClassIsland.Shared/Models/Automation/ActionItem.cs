@@ -9,11 +9,9 @@ namespace ClassIsland.Shared.Models.Automation;
 /// <seealso cref="ActionSet"/>
 public partial class ActionItem : ObservableRecipient
 {
-    /// <inheritdoc cref="ActionItem" />
-    public ActionItem(string id = "") => Id = id;
-
     /// <summary>
     /// 将行动项设定为开始运行。
+    /// 此方法由 ActionBase 自动调用。
     /// </summary>
     public void SetStartRunning()
     {
@@ -24,6 +22,7 @@ public partial class ActionItem : ObservableRecipient
 
     /// <summary>
     /// 将行动项设定为结束运行。
+    /// 此方法由 ActionBase 自动调用。
     /// </summary>
     public void SetEndRunning()
     {

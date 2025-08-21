@@ -31,15 +31,9 @@ public class SleepAction : ActionBase<SleepActionSettings>
             catch (TaskCanceledException) {}
         });
 
+        Settings.PropertyChanged += OnPropertyChanged;
 
-        PropertyChangedEventHandler handler = (s, e) =>
-        {
-            if (e.PropertyName == nameof(Settings.Value))
-                CheckAndReport();
-        };
-        Settings.PropertyChanged += handler;
-
-        using var reg = InterruptCancellationToken.Register(() => tcs.TrySetCanceled());
+        await using var reg = InterruptCancellationToken.Register(() => tcs.TrySetCanceled());
 
         try
         {
@@ -48,9 +42,15 @@ public class SleepAction : ActionBase<SleepActionSettings>
         finally
         {
             await timer.DisposeAsync();
-            Settings.PropertyChanged -= handler;
+            Settings.PropertyChanged -= OnPropertyChanged;
         }
         return;
+
+        void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Settings.Value))
+                CheckAndReport();
+        }
 
         void CheckAndReport()
         {
@@ -70,8 +70,11 @@ public class SleepAction : ActionBase<SleepActionSettings>
 
             if (remaining <= 1)
             {
-                dueTimeChanged = true;
-                timer?.Change((int)(remaining * 1000), 100);
+                if (!dueTimeChanged)
+                {
+                    dueTimeChanged = true;
+                    timer?.Change((int)(remaining * 1000), 100);
+                }
             }
             else
             {

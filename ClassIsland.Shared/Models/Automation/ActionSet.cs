@@ -14,6 +14,7 @@ public partial class ActionSet : ObservableRecipient
 {
     /// <summary>
     /// 将行动组设定为开始运行。
+    /// 此方法由 ActionService 自动调用。
     /// </summary>
     /// <param name="isInvoke">开始触发为 true，开始恢复为 false。</param>
     public void SetStartRunning(bool isInvoke)
@@ -27,6 +28,7 @@ public partial class ActionSet : ObservableRecipient
 
     /// <summary>
     /// 将行动组设定为结束运行。
+    /// 此方法由 ActionService 自动调用。
     /// </summary>
     /// <param name="isInvoke">结束触发为 true，结束恢复为 false。</param>
     public void SetEndRunning(bool isInvoke)
