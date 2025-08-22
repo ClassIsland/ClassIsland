@@ -1,11 +1,14 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
-using Mono.Unix;
 
 #if Platforms_Windows
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+#endif
+
+#if Platforms_Linux
+using Mono.Unix;
 #endif
 
 var root = Path.GetFullPath(Path.GetDirectoryName(Environment.ProcessPath) ?? "");
