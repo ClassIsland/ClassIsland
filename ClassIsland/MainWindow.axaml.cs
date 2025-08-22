@@ -652,6 +652,10 @@ public partial class MainWindow : Window
                 Topmost = true;
                 break;
         }
+
+        // BUG: 这个不生效！！！！！！
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
+            ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
     }
 
     private void ButtonSettings_OnClick(object sender, EventArgs e)
@@ -699,7 +703,10 @@ public partial class MainWindow : Window
 
     private void UpdateWindowPos(bool updateEffectWindow=false)
     {
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, false);
+        if (!IsLoaded)
+        {
+            return;
+        }
         GetCurrentDpi(out var dpiX, out var dpiY);
 
         var scale = ViewModel.Settings.Scale;
@@ -741,19 +748,23 @@ public partial class MainWindow : Window
                 (offsetAreaBottom - ah + oy),
             _ => 0.0
         };
-        Position = new PixelPoint((int)x, (int)y);
+        var newPos = new PixelPoint((int)x, (int)y);
+        if (Position != newPos)
+        {
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, false);
+            Position = newPos;
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                // PlatformServices.WindowPlatformService.ClearWindow(this);
+                PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
+                    ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
+            }, DispatcherPriority.ApplicationIdle);
+        }
 
         if (updateEffectWindow)
         {
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
         }
-
-        Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            PlatformServices.WindowPlatformService.ClearWindow(this);
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
-                ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
-        }, DispatcherPriority.ApplicationIdle);
     }
 
     public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)
