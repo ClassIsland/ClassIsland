@@ -99,7 +99,7 @@ public partial class DataTransferPage : UserControl
             return;
         }
 
-        ViewModel.ImportSourcePath = Path.GetDirectoryName(file[0].Path.AbsolutePath) ?? "";
+        ViewModel.ImportSourcePath = Path.GetDirectoryName(file[0].TryGetLocalPath()) ?? "";
     }
 
     private async Task BeginPerformClassIslandImport()
@@ -305,8 +305,8 @@ public partial class DataTransferPage : UserControl
         {
             return;
         }
-
-        ViewModel.ImportSourcePath = file[0].Path.AbsolutePath;
+        
+        ViewModel.ImportSourcePath = file[0].TryGetLocalPath() ?? "";
     }
 
     private void ImportClassWidgetsProfile(string root, IniData ini)
