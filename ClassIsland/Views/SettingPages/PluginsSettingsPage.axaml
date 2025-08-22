@@ -45,7 +45,7 @@
                         <TextBlock Margin="0 0 0 2">
                             <Run Text="{Binding Manifest.Version}"/>
                             <Run Text=" "/>
-                            <ci:NavHyperlink CommandParameter="{Binding Manifest.Url}">项目主页</ci:NavHyperlink>
+                            <ci:NavHyperlink NavTarget="{Binding Manifest.Url}">项目主页</ci:NavHyperlink>
                             <Run Text=" "/>
                             <Run Text="{Binding Manifest.Author}"/>
                         </TextBlock>
