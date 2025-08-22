@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using Mono.Unix;
 
 #if Platforms_Windows
 using Windows.Win32;
@@ -56,9 +57,26 @@ if (installation == null || !File.Exists(Path.Combine(installation, executableNa
     return 1;
 }
 
+var exePath = Path.Combine(Path.Combine(installation, executableName));
+
+// 自动添加可执行权限，防止出现无法运行的问题 https://github.com/ClassIsland/ClassIsland/issues/1212
+#if Platforms_Linux
+try
+{
+    var unixFileInfo = new UnixFileInfo(exePath);
+    unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute |
+                                      FileAccessPermissions.OtherExecute;
+}
+catch (Exception e)
+{
+    Console.Error.WriteLine($"无法设置可执行文件 {exePath} 的执行权限，可能导致应用无法启动：{e}");
+}
+
+#endif
+
 var startInfo = new ProcessStartInfo()
 {
-    FileName = Path.Combine(Path.Combine(installation, executableName)),
+    FileName = exePath,
     WorkingDirectory = root,
     EnvironmentVariables =
     {

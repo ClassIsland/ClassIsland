@@ -14,6 +14,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  
+  <ItemGroup Condition="'$(Platforms_Linux)'=='true'">
+    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0"/>
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
