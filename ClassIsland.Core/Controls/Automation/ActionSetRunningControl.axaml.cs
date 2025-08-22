@@ -8,7 +8,7 @@ namespace ClassIsland.Core.Controls.Automation;
 
 public partial class ActionSetRunningControl : UserControl
 {
-    static IActionService ActionService { get; } = IAppHost.GetService<IActionService>();
+    private IActionService ActionService { get; } = IAppHost.GetService<IActionService>();
 
     public ActionSetRunningControl() => InitializeComponent();
 
