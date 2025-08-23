@@ -26,6 +26,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public SettingsService SettingsService { get; }
     public ILessonsService LessonsService { get; }
     public IExactTimeService ExactTimeService { get; }
+    public IActionService ActionService { get; }
     public ILogger<ProfileSettingsWindow> Logger { get; }
 
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
@@ -81,10 +82,12 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private ToastMessage? _currentTimePointDeleteRevertToast;
     [ObservableProperty] private ToastMessage? _currentClassPlanEditDoneToast = null;
     [ObservableProperty] private KeyValuePair<Guid, TimeLayout>? _classPlanInfoSelectedTimeLayoutKvp;
+    [ObservableProperty] private HashSet<string> _currentProfileBreakNames = [];
 
 /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
         SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
+        IActionService actionService,
         ILogger<ProfileSettingsWindow> logger)
     {
         ProfileService = profileService;
@@ -92,6 +95,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         SettingsService = settingsService;
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;
+        ActionService = actionService;
         Logger = logger;
 
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);

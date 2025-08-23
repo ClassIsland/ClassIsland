@@ -37,7 +37,7 @@ public class ClassPlan : AttachableSettingsObject
     {
         get
         {
-            if (!_isValidTimeLayoutItemsDirty) 
+            if (!_isValidTimeLayoutItemsDirty)
                 return _validTimeLayoutItems;
             _validTimeLayoutItems = GetValidTimeLayoutItems();
             _isValidTimeLayoutItemsDirty = false;
@@ -209,8 +209,8 @@ public class ClassPlan : AttachableSettingsObject
 
         if (!IsActivated) return;
 
-        // TODO: 支持预定临时层后，移除 IsActivated 判断。
-        if (e.PropertyName is not "IsChangedClass")
+        // 支持预定临时层后，移除 IsActivated 判断。
+        if (e.PropertyName != nameof(ClassInfo.IsChangedClass))
             RefreshIsChangedClass();
     }
 
@@ -369,7 +369,7 @@ public class ClassPlan : AttachableSettingsObject
 #if NETCOREAPP
         TimeLayouts.GetValueOrDefault(TimeLayoutId);
 #else
-        TimeLayouts.TryGetValue(TimeLayoutId, out var value) ? value : null;   
+        TimeLayouts.TryGetValue(TimeLayoutId, out var value) ? value : null;
 #endif
 
     /// <summary>
@@ -438,7 +438,7 @@ public class ClassPlan : AttachableSettingsObject
         {
             return;
         }
-        
+
         var c = (from i in TimeLayout.Layouts where i.TimeType == 0 select i).ToList();
         var l = c.Count;
         //Debug.WriteLine(l);
@@ -450,7 +450,7 @@ public class ClassPlan : AttachableSettingsObject
                 Classes.Add(new ClassInfo());
             }
         }
-        else if (Classes.Count > l) 
+        else if (Classes.Count > l)
         {
             var d = Classes.Count - l;
             for (var i = 0; i < d; i++)

@@ -1,0 +1,114 @@
+<ci:ActionSettingsControlBase x:Class="ClassIsland.Controls.ActionSettingsControls.NotificationActionSettingsControl"
+                              x:TypeArguments="actionSettings:NotificationActionSettings"
+                              d:DataContext="{d:DesignInstance Type=local:NotificationActionSettingsControl}"
+                              xmlns="https://github.com/avaloniaui"
+                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                              xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                              xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
+                              xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions"
+                              xmlns:controls="clr-namespace:ClassIsland.Controls">
+    <ci:ActionSettingsControlBase.Resources>
+        <ScrollViewer x:Key="NotificationActionSettingsDrawer"
+                      x:Shared="False"
+                      d:DataContext="{d:DesignInstance local:NotificationActionSettingsControl}"
+                      Width="400">
+            <StackPanel Classes="animated-intro">
+                <TextBlock Margin="0 0 0 8"
+                           Text="提醒设置"
+                           Theme="{StaticResource SubtitleTextBlockStyle}" />
+
+
+                <ci:Field Margin="0 0 0 8"
+                          Label="标题内容">
+                    <TextBox Text="{Binding Settings.Mask}"
+                             TextWrapping="Wrap" />
+                </ci:Field>
+                <ci:Field Margin="0 0 0 20"
+                          Label="标题持续时间"
+                          Suffix="秒">
+                    <NumericUpDown MinWidth="150"
+                                   Minimum="0"
+                                   Value="{Binding Settings.MaskDurationSeconds}" />
+                </ci:Field>
+
+
+                <ci:Field Margin="0 0 0 8"
+                          Label="正文内容">
+                    <TextBox Text="{Binding Settings.Content}"
+                             TextWrapping="Wrap"
+                             Watermark="选填" />
+                </ci:Field>
+                <ci:Field Margin="0 0 0 20"
+                          Label="正文持续时间"
+                          Suffix="秒">
+                    <NumericUpDown MinWidth="150"
+                                   Minimum="0"
+                                   Value="{Binding Settings.ContentDurationSeconds}" />
+                </ci:Field>
+
+
+                <CheckBox Content="启用标题语音"
+                          IsChecked="{Binding Settings.IsMaskSpeechEnabled}" />
+                <CheckBox Content="启用正文语音"
+                          IsChecked="{Binding Settings.IsContentSpeechEnabled}" />
+                <CheckBox Content="等待提醒结束"
+                          IsChecked="{Binding Settings.IsWaitForCompleteEnabled}"
+                          ToolTip.Tip="启用后，行动将等待此提醒直至提醒结束。"/>
+
+                <Separator Margin="0 8" />
+
+                <CheckBox Content="启用高级设置"
+                          IsChecked="{Binding Settings.IsAdvancedSettingsEnabled}" />
+                <StackPanel IsVisible="{Binding Settings.IsAdvancedSettingsEnabled}">
+                    <CheckBox Content="置顶提醒"
+                              IsChecked="{Binding Settings.IsTopmostEnabled}" />
+                    <CheckBox Content="启用提醒特效"
+                              IsChecked="{Binding Settings.IsEffectEnabled}" />
+                    <CheckBox Margin="0 0 0 4"
+                              Content="启用提醒音效"
+                              IsChecked="{Binding Settings.IsSoundEffectEnabled}" />
+                    <ci:Field IsVisible="{Binding Settings.IsSoundEffectEnabled}"
+                              Label="自定义提醒音效">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox Text="{Binding Settings.CustomSoundEffectPath}"
+                                     Watermark="（默认音效）" />
+                            <controls:FileBrowserButton Grid.Column="1"
+                                                        VerticalAlignment="Stretch"
+                                                        Content="{ci:FluentIcon &#xE88D;}"
+                                                        CurrentPath="{Binding Settings.CustomSoundEffectPath, Mode=TwoWay}"
+                                                        Theme="{StaticResource TransparentButton}" />
+                        </Grid>
+                    </ci:Field>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </ci:ActionSettingsControlBase.Resources>
+    <Grid ColumnDefinitions="Auto *">
+        <Button Click="ButtonShowSettings_OnClick"
+                Theme="{StaticResource TransparentButton}">
+            <ci:IconText Glyph="&#xEF27;"
+                         Text="提醒设置…"
+                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+        </Button>
+        <StackPanel Grid.Column="1"
+                    Margin="4 0 0 0"
+                    VerticalAlignment="Center">
+            <TextBlock VerticalAlignment="Center"
+                       Text="{Binding Settings.Mask}"
+                       FontSize="13"
+                       FontWeight="Medium"
+                       Opacity="0.4"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap" />
+            <TextBlock VerticalAlignment="Center"
+                       Text="{Binding Settings.Content}"
+                       FontSize="13"
+                       FontWeight="Normal"
+                       IsVisible="{Binding Settings.Content, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Opacity="0.4"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap" />
+        </StackPanel>
+    </Grid>
+</ci:ActionSettingsControlBase>

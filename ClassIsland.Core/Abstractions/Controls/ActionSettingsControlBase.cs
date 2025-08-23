@@ -1,84 +1,114 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Avalonia.Controls;
-using ClassIsland.Core.Models.Action;
+using Avalonia.Markup.Xaml.Templates;
+using Avalonia.VisualTree;
+using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Models.Automation;
+using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.DependencyInjection;
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
-/// 可附加设置的控件
+/// 行动设置控件基类。
 /// </summary>
-public abstract class ActionSettingsControlBase : UserControl, INotifyPropertyChanged
+/// <typeparam name="TSettings">行动设置类型。需要获取行动设置的行动设置控件须标注此类型。</typeparam>
+public abstract class ActionSettingsControlBase : UserControl
 {
-    [NotNull] internal object? SettingsInternal { get; set; }
+    /// 当行动项被用户添加时，此方法将被调用。
+    protected virtual void OnAdded() { }
 
     /// <summary>
-    /// 从设置对象获取控件实例。
+    /// 当行动项被用户删除时，此方法将被调用，以询问是否需要提供撤销删除按钮。
     /// </summary>
-    /// <param name="info">控件信息</param>
-    /// <param name="settings">要附加的设置对象</param>
-    /// <returns>初始化的控件对象。</returns>
-    public static ActionSettingsControlBase? GetInstance(ActionRegistryInfo info, ref object? settings)
+    /// <returns>
+    /// 如果需要提供撤销删除按钮，请返回 true。默认返回 false。
+    /// </returns>
+    /// <seealso cref="ActionBase{TSettings}.Settings"/>
+    protected virtual bool IsUndoDeleteRequested() => false;
+
+
+
+    /// 调用此方法，以更改行动项显示的行动名。
+    protected void ChangeActionName(string newName) =>
+        ActionNameChanged?.Invoke(this, newName);
+
+    /// 调用此方法，以更改行动项显示的图标时。
+    protected void ChangeActionIcon(string? newIconGlyph) =>
+        ActionIconChanged?.Invoke(this, newIconGlyph);
+
+    /// 调用此方法，以打开抽屉并显示控件。
+    /// <param name="control">要显示的 ContentControl 控件。注意：此控件需设定宽度。</param>
+    /// <param name="isOpenInDialog">优先在 Dialog 中打开。默认为 false，即优先在应用设置抽屉中打开。</param>
+    protected async Task ShowDrawer(ContentControl control, bool isOpenInDialog = false)
     {
-        var control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(info.Id);
-        if (control == null || info.SettingsControlType == null)
+        if (!isOpenInDialog &&
+            this.GetVisualRoot() is Window window &&
+            window.GetType().FullName == "ClassIsland.Views.SettingsWindowNew")
         {
-            return null;
+            control.Classes.Add("in-drawer");
+            control.Padding = new(16);
+            SettingsPageBase.OpenDrawerCommand.Execute(control);
+        }
+        else
+        {
+            control.Classes.Add("in-dialog");
+            var dialog = new ContentDialog
+            {
+                Content = control,
+                TitleTemplate = new DataTemplate(),
+                PrimaryButtonText = "确定",
+                DefaultButton = ContentDialogButton.Primary,
+                DataContext = this
+            };
+
+            await dialog.ShowAsync();
+        }
+    }
+
+
+
+    internal void NotifyAdded() => OnAdded();
+    internal bool ShouldShowUndoDeleteButton() => IsUndoDeleteRequested();
+    internal object? SettingsInternal { get; set; }
+    internal event EventHandler<string>? ActionNameChanged;
+    internal event EventHandler<string?>? ActionIconChanged;
+
+
+
+    /// <summary>
+    /// 获取行动设置控件实例。
+    /// </summary>
+    /// <param name="actionItem">要获取行动设置控件的行动项。</param>
+    public static ActionSettingsControlBase? GetInstance(ActionItem? actionItem)
+    {
+        if (string.IsNullOrEmpty(actionItem?.Id)) return null;
+
+        // Bug：过于简单的控件会在此开始加载 AXAML，此时 Settings 仍为 null。
+        var control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(actionItem.Id);
+        if (control == null) return null;
+
+        var settingsType = control.GetType().BaseType?.GetGenericArguments().FirstOrDefault();
+        if (settingsType != null)
+        {
+            if (actionItem.Settings is JsonElement json)
+                actionItem.Settings = json.Deserialize(settingsType);
+            if (actionItem.Settings?.GetType() != settingsType)
+                actionItem.Settings = Activator.CreateInstance(settingsType);
         }
 
-        var baseType = info.SettingsControlType.BaseType;
-        if (baseType?.GetGenericArguments().Length > 0)
-        {
-            var settingsType = baseType.GetGenericArguments().First();
-            var settingsReal = settings ?? Activator.CreateInstance(settingsType);
-            if (settingsReal is JsonElement json)
-            {
-                settingsReal = json.Deserialize(settingsType);
-            }
-
-            if (settingsReal?.GetType() != settingsType)
-            {
-                settingsReal = Activator.CreateInstance(settingsType);
-            }
-
-            settings = settingsReal;
-
-            control.SettingsInternal = settingsReal;
-        }
-
+        control.SettingsInternal = actionItem.Settings;
         return control;
     }
-
-    #region PropertyChanged
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
-    }
-
-    #endregion
 }
 
-/// <summary>
-/// 可附加设置的控件
-/// </summary>
-public abstract class ActionSettingsControlBase<T> : ActionSettingsControlBase where T : class
+/// <inheritdoc />
+public abstract class ActionSettingsControlBase<TSettings> : ActionSettingsControlBase where TSettings : class
 {
     /// <summary>
-    /// 当前控件的设置
+    /// 当前行动项的设置。注意：请勿在构造函数中访问。
     /// </summary>
-    public T Settings => (SettingsInternal as T)!;
+    protected TSettings Settings =>
+        SettingsInternal as TSettings ??
+        throw new ArgumentNullException(nameof(Settings), $"过早访问行动项设置（{typeof(TSettings).FullName}）。");
 }

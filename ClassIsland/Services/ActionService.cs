@@ -1,192 +1,217 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Models.Action;
-using System.Text.Json;
-using Action = ClassIsland.Shared.Models.Action.Action;
 using System.Threading.Tasks;
-using ClassIsland.Shared.Models.Action;
-
+using AvaloniaEdit.Utils;
+using ClassIsland.Core.Abstractions.Automation;
+using ClassIsland.Core.Models.Automation;
+using ClassIsland.Models.Actions;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Automation;
+using static ClassIsland.Core.Abstractions.Services.IActionService;
 namespace ClassIsland.Services;
 
+/// <inheritdoc />
 public class ActionService : IActionService
 {
-    private ILogger<ActionService> Logger { get; }
+    public async Task InvokeActionSetAsync(ActionSet actionSet, bool isRevertable = true)
+    {
+        if (actionSet.Status == ActionSetStatus.Reverting)
+            await InterruptActionSetAsync(actionSet);
+        if (actionSet.IsWorking) return;
 
-    private DateTime LastActionRunTime { get; set; } 
+        Logger.LogInformation("触发行动组“{行动组}”。", actionSet.Name);
+        actionSet.SetStartRunning(true);
+        try
+        {
+            await ChangeableListForEachAsync(
+                () => actionSet.ActionItems.Where(x => !x.IsRevertActionItem),
+                async Task (x) =>
+                {
+                    await InvokeActionItemAsync(x, actionSet, isRevertable && actionSet.IsRevertEnabled);
+                },
+                actionSet.InterruptCts?.Token);
+        }
+        finally
+        {
+            actionSet.SetEndRunning(true);
+        }
+    }
 
-    public ActionService(ILogger<ActionService> logger, ILessonsService lessonsService, IExactTimeService exactTimeService, IProfileService profileService)
+    public async Task RevertActionSetAsync(ActionSet actionSet)
+    {
+        if (actionSet.Status == ActionSetStatus.Invoking)
+            await InterruptActionSetAsync(actionSet);
+        if (actionSet.IsWorking) return;
+
+        Logger.LogInformation("恢复行动组“{行动组}”。", actionSet.Name);
+        actionSet.SetStartRunning(false);
+        try
+        {
+            await ChangeableListForEachAsync(
+                () => actionSet.ActionItems.Where(x => x.IsRevertActionItem || x.IsRevertEnabled),
+                async Task(x) =>
+                {
+                    if (x.IsRevertActionItem)
+                        await InvokeActionItemAsync(x, actionSet, isRevertable: false);
+                    else if (x.IsRevertEnabled)
+                        await RevertActionItemAsync(x, actionSet);
+                },
+                actionSet.InterruptCts?.Token);
+        }
+        finally
+        {
+            actionSet.SetEndRunning(false);
+        }
+    }
+
+    public async Task InterruptActionSetAsync(ActionSet actionSet)
+    {
+        Logger.LogInformation("中断运行行动组“{行动组}”。", actionSet.Name);
+        try
+        {
+            if (actionSet.InterruptCts != null)
+                await actionSet.InterruptCts.CancelAsync();
+            if (actionSet.RunningTcs != null)
+                await actionSet.RunningTcs.Task;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "中断运行行动组“{行动组}”时出现错误。", actionSet.Name);
+        }
+    }
+
+    public async Task InvokeActionItemAsync(ActionItem actionItem, ActionSet actionSet, bool isRevertable = true)
+    {
+        if (actionSet.InterruptCts?.Token.IsCancellationRequested != false) return;
+        var provider = ActionBase.GetInstance(actionItem);
+        if (provider == null) return;
+        if (!ActionInfos.TryGetValue(actionItem.Id, out var actionInfo)) return;
+
+        var actionItemText = $"行动组“{actionSet.Name}”中的{(actionItem.IsRevertActionItem ? "恢复" : "")}行动项“{actionInfo.Name}”";
+        Logger.LogTrace("触发{行动项}。", actionItemText);
+        try
+        {
+            await provider.InvokeAsync(actionItem, actionSet, isRevertable && actionItem.IsRevertEnabled);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "触发{行动项}时出现错误。", actionItemText);
+        }
+    }
+
+    public async Task RevertActionItemAsync(ActionItem actionItem, ActionSet actionSet)
+    {
+        if (actionItem.IsRevertActionItem || !actionItem.IsRevertEnabled ||
+            actionSet.InterruptCts?.Token.IsCancellationRequested != false)
+            return;
+        var provider = ActionBase.GetInstance(actionItem);
+        if (provider == null) return;
+        if (!ActionInfos.TryGetValue(actionItem.Id, out var actionInfo) || actionInfo.IsRevertable == false) return;
+
+        var actionItemText = $"行动组“{actionSet.Name}”中的行动项“{actionInfo.Name}”";
+        Logger.LogTrace("恢复{行动项}。", actionItemText);
+        try
+        {
+            await provider.RevertAsync(actionItem, actionSet);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "恢复{行动项}时出现错误。", actionItemText);
+        }
+    }
+
+    static async Task ChangeableListForEachAsync<TItem>(
+        Func<IEnumerable<TItem>> listProvider,
+        Func<TItem, Task> action,
+        CancellationToken? cancellationToken = null)
+    {
+        if (cancellationToken?.IsCancellationRequested == true) return;
+        var currentList = listProvider().ToList();
+
+        var i = 0;
+        while (true)
+        {
+            if (i >= currentList.Count) break;
+
+            var item = currentList[i];
+            await action(item);
+
+            if (cancellationToken?.IsCancellationRequested == true) break;
+
+            currentList = listProvider().ToList();
+            var newIndex = currentList.IndexOf(item);
+
+            if (newIndex == -1) continue;
+            i = newIndex + 1;
+        }
+    }
+
+    readonly ILogger<ActionService> Logger;
+
+    /// <inheritdoc cref="IActionService" />
+    public ActionService(ILogger<ActionService> logger)
     {
         Logger = logger;
-        LessonsService = lessonsService;
-        ExactTimeService = exactTimeService;
-        ProfileService = profileService;
 
-        LastActionRunTime = ExactTimeService.GetCurrentLocalDateTime();
-        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+        ActionMenuTree.TryGetValue("应用设置", out var group);
+        ActionMenuTree.Remove(group);
+        group.IconGlyph = "\uef27";
+        ActionMenuTree.Add(group);
+
+        ActionMenuTree.Add(new ActionMenuTreeGroup("运行", "\uec2e"));
+        ActionMenuTree["运行"].AddRange([
+            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "应用程序", "\uF4B1",
+                s => s.RunType = RunActionSettings.RunActionRunType.Application),
+            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run",
+                OperatingSystem.IsWindows() ? "cmd 命令" : "终端命令",
+                "\uE508",
+                s => s.RunType = RunActionSettings.RunActionRunType.Command),
+            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件", "\uE687",
+                s => s.RunType = RunActionSettings.RunActionRunType.File),
+            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件夹", "\uE875",
+                s => s.RunType = RunActionSettings.RunActionRunType.Folder),
+            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "Url 链接", "\uE905",
+                s => s.RunType = RunActionSettings.RunActionRunType.Url),
+        ]);
+
+        ActionMenuTree.Add(new ActionMenuTreeGroup("提醒", "\ue025"));
+        ActionMenuTree["提醒"].AddRange([
+            new ActionMenuTreeItem<NotificationActionSettings>("classisland.showNotification", "显示提醒…", "\ue02f",
+                s => s.IsWaitForCompleteEnabled = false),
+            new ActionMenuTreeItem<NotificationActionSettings>("classisland.showNotification", "显示提醒并等待…", "\ue02b",
+                s => s.IsWaitForCompleteEnabled = true),
+            new ActionMenuTreeItem<WeatherNotificationActionSettings>("classisland.notification.weather", "三天天气预报", "\ue4dc",
+                s => s.NotificationKind = 0),
+            new ActionMenuTreeItem<WeatherNotificationActionSettings>("classisland.notification.weather", "气象预警", "\uf431",
+                s => s.NotificationKind = 1),
+            new ActionMenuTreeItem<WeatherNotificationActionSettings>("classisland.notification.weather", "逐小时天气预报", "\uf357",
+                s => s.NotificationKind = 2),
+        ]);
+
+        ActionMenuTree.Add(new ActionMenuTreeGroup("ClassIsland", "\ue454"));
+        ActionMenuTree["ClassIsland"].AddRange([
+            new ActionMenuTreeItem("classisland.app.quit", "退出 ClassIsland", "\ue0df"),
+            new ActionMenuTreeItem("classisland.app.restart", "重启 ClassIsland", "\ue0bd"),
+        ]);
     }
 
-    private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
+    [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]
+    public void RegisterActionHandler(string id, Action<object, string> i2)
     {
-        if (!ProfileService.IsCurrentProfileTrusted)
-        {
-            return;
-        }
-        var currentTime = ExactTimeService.GetCurrentLocalDateTime();
-        var triggeredActions = LessonsService.CurrentClassPlan?.TimeLayout?.Layouts
-            .Where(x => x.TimeType == 3 && x.StartTime > LastActionRunTime.TimeOfDay &&
-                        x.StartTime <= currentTime.TimeOfDay)
-            .Select(x => x)
-            .ToList();
-        LastActionRunTime = currentTime;
-        if (triggeredActions == null)
-        {
-            return;
-        }
-
-        foreach (var i in triggeredActions)
-        {
-            if (i.ActionSet == null)
-            {
-                continue;
-            }
-            Logger.LogInformation("触发时间点行动：{}/[{}]", LessonsService.CurrentClassPlan?.TimeLayout?.Name, i.StartTime);
-            Invoke(i.ActionSet);
-        }
+        var i1 = ObsoleteActionHandlers[id].Item1;
+        var i3 = ObsoleteActionHandlers[id].Item3;
+        ObsoleteActionHandlers[id] = (i1, i2, i3);
     }
 
-    public ILessonsService LessonsService { get; }
-    public IExactTimeService ExactTimeService { get; }
-    public IProfileService ProfileService { get; }
-
-    public void RegisterActionHandler(string id, ActionRegistryInfo.HandleDelegate handler)
+    [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]
+    public void RegisterRevertHandler(string id, Action<object, string> i3)
     {
-        // TODO: stub
-        return;
-        if (!IActionService.Actions.TryGetValue(id, out var actionRegistryInfo))
-            throw new KeyNotFoundException($"找不到行动 {id}。");
-
-        actionRegistryInfo.Handle += handler;
-        Logger.LogTrace($"注册行动：{id}（{IActionService.Actions[id].Name}）");
-    }
-
-    public void RegisterRevertHandler(string id, ActionRegistryInfo.HandleDelegate handler)
-    {
-        return;
-        if (!IActionService.Actions.TryGetValue(id, out var actionRegistryInfo))
-            throw new KeyNotFoundException($"找不到行动 {id}。");
-
-        actionRegistryInfo.RevertHandle += handler;
-        Logger.LogTrace($"注册恢复行动：{id}（{IActionService.Actions[id].Name}）");
-    }
-
-    public void Invoke(ActionSet actionSet)
-    {
-        if (App.ApplicationCommand.Safe)
-        {
-            return;
-        }
-        foreach (var action in actionSet.Actions)
-            action.Exception = null;
-        if (actionSet.IsRevertEnabled)
-        {
-            actionSet.IsOn = true;
-        }
-        Task.Run(() =>
-        {
-            foreach (var action in actionSet.Actions)
-            {
-                InvokeAction(action, actionSet.Guid);
-            }
-        });
-    }
-
-    public void Revert(ActionSet actionSet)
-    {
-        if (App.ApplicationCommand.Safe)
-        {
-            return;
-        }
-        foreach (var action in actionSet.Actions)
-            action.Exception = null;
-        actionSet.IsOn = false;
-        Task.Run(() =>
-        {
-            foreach (var action in actionSet.Actions)
-            {
-                InvokeAction(action, actionSet.Guid, isBack: true);
-            }
-        });
-    }
-
-    void InvokeAction(Action action, string guid, bool isBack = false)
-    {
-        if (action.Id == string.Empty) return;
-        if (!IActionService.Actions.TryGetValue(action.Id, out var actionRegistryInfo))
-        {
-            Logger.LogWarning($"找不到行动 {action.Id} 的注册信息。");
-            return;
-        }
-
-        object? settings = null;
-        var settingsType = actionRegistryInfo.SettingsType;
-        if (settingsType != null)
-        {
-            settings = action.Settings ?? Activator.CreateInstance(settingsType);
-            if (settings is JsonElement json)
-            {
-                settings = json.Deserialize(settingsType);
-            }
-        }
-        if (isBack)
-        {
-            if (actionRegistryInfo.RevertHandle != null)
-            {
-                actionRegistryInfo.RevertHandle.Invoke(settings, guid);
-                Logger.LogTrace($"恢复行动：{action.Id}（{IActionService.Actions[action.Id].Name}）");
-            }
-        }
-        else
-        {
-            if (actionRegistryInfo.Handle != null)
-            {
-                Logger.LogTrace($"触发行动：{action.Id}（{IActionService.Actions[action.Id].Name}）");
-                action.IsWorking = true;
-                try
-                {
-                    actionRegistryInfo.Handle(settings, guid);
-                }
-                catch (Exception ex)
-                {
-                    action.Exception = ex;
-                }
-                finally
-                {
-                    action.IsWorking = false;
-                }
-            }
-            else
-            {
-                Logger.LogWarning($"行动 {action.Id}（{IActionService.Actions[action.Id].Name}）的处理程序没有注册。");
-            }
-        }
-    }
-
-
-
-    public bool ExistRevertHandler(Action action)
-    {
-        if (action.Id == string.Empty) return false;
-        if (!IActionService.Actions.TryGetValue(action.Id, out var actionRegistryInfo))
-        {
-            return false;
-        }
-        if (actionRegistryInfo.RevertHandle != null)
-        {
-            return true;
-        }
-        return false;
+        var i1 = ObsoleteActionHandlers[id].Item1;
+        var i2 = ObsoleteActionHandlers[id].Item2;
+        ObsoleteActionHandlers[id] = (i1, i2, i3);
     }
 }

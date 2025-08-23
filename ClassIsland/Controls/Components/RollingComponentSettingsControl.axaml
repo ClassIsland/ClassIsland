@@ -13,7 +13,7 @@
                   mc:Ignorable="d"
                   d:DesignHeight="450" d:DesignWidth="800">
     <ci:ComponentBase.Resources>
-        <ci:RulesetControl x:Key="RulesetControl"/>
+        <ci:RulesetControl x:Key="RulesetControl" Classes="in-drawer"/>
     </ci:ComponentBase.Resources>
     <ScrollViewer>
         <StackPanel

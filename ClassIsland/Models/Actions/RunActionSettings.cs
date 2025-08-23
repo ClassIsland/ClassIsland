@@ -1,29 +1,50 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
 namespace ClassIsland.Models.Actions;
 
-public class RunActionSettings : ObservableRecipient
+/// <summary>
+/// "运行"行动设置。
+/// </summary>
+public partial class RunActionSettings : ObservableRecipient
 {
-    string _value = "";
-    public string Value
-    {
-        get => _value;
-        set
-        {
-            if (value == _value) return;
-            _value = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    RunActionRunType _runType;
 
+    [ObservableProperty]
+    string _value = "";
+
+    [ObservableProperty]
     string _args = "";
-    public string Args
+
+    /// <summary>
+    /// "运行"行动运行类型。
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum RunActionRunType
     {
-        get => _args;
-        set
-        {
-            if (value == _args) return;
-            _args = value;
-            OnPropertyChanged();
-        }
+        /// <summary>
+        /// 应用程序
+        /// </summary>
+        Application,
+
+        /// <summary>
+        /// 命令
+        /// </summary>
+        Command,
+
+        /// <summary>
+        /// 文件
+        /// </summary>
+        File,
+
+        /// <summary>
+        /// 文件夹
+        /// </summary>
+        Folder,
+
+        /// <summary>
+        /// Url 链接
+        /// </summary>
+        Url
     }
 }

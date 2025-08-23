@@ -74,7 +74,7 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
-    
+
 
     /// <summary>
     /// 针对此次提醒的特殊设置。如果要使此设置生效，还要将<see cref="NotificationSettings.IsSettingsEnabled"/>设置为true。
@@ -118,7 +118,7 @@ public class NotificationRequest : ObservableRecipient
     /// 发送提醒的提醒渠道 ID
     /// </summary>
     public Guid ChannelId { get; set; }
-    
+
     internal NotificationRequest? ChainedNextRequest { get; set; }
 
     internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;

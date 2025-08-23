@@ -1,5 +1,4 @@
-﻿#if false
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -24,7 +23,7 @@ using ClassIsland.Helpers;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("7625DE96-38AA-4B71-B478-3F156DD9458D", "天气预警", MaterialIconKind.CloudWarning, "当有降雨或者极端天气时发出提醒。")]
+[NotificationProviderInfo("7625DE96-38AA-4B71-B478-3F156DD9458D", "天气预警", "\ue4db", "当有降雨或者极端天气时发出提醒。")]
 public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotificationProviderSettings>
 {
 
@@ -57,30 +56,6 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
 
         LessonsService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
         LessonsService.OnClass += NotificationHostServiceOnOnClass;
-
-        ActionService.RegisterActionHandler("classisland.notification.weather", (settings, _) => 
-            AppBase.Current.Dispatcher.Invoke(() => HandleWeatherAction(settings)));
-    }
-
-    private void HandleWeatherAction(object? s)
-    {
-        if (s is not WeatherNotificationActionSettings settings)
-        {
-            return;
-        }
-
-        switch (settings.NotificationKind)
-        {
-            case 0:
-                ShowWeatherForecastCore();
-                break;
-            case 1:
-                ShowAlertsNotificationCore();
-                break;
-            case 2:
-                ShowWeatherForecastHourlyCore();
-                break;
-        }
     }
 
     private void NotificationHostServiceOnOnClass(object? sender, EventArgs e)
@@ -105,7 +80,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
         ShowWeatherForecastCore();
     }
 
-    private void ShowWeatherForecastCore()
+    internal void ShowWeatherForecastCore()
     {
         ShowNotification(new NotificationRequest()
         {
@@ -124,7 +99,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
         return remainder == 0 ? dateTime : dateTime.AddTicks(ticksInHour - remainder);
     }
 
-    private void ShowWeatherForecastHourlyCore()
+    internal void ShowWeatherForecastHourlyCore()
     {
         var baseTime = SettingsService.Settings.LastWeatherInfo.UpdateTime;
         baseTime = RoundUpToHour(baseTime);
@@ -161,9 +136,9 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
         ShowAlertsNotificationCore();
     }
 
-    private void ShowAlertsNotificationCore()
+    internal void ShowAlertsNotificationCore()
     {
-        foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts.Where(i => !ShownAlerts.Contains(i.Detail)))
+        foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts.Where(i => !ShownAlerts.Contains(i.Detail) || true))
         {
             var t = i.Detail.Length / Settings.WeatherAlertSpeed;
             if (t <= 10) t = 10.0;
@@ -196,4 +171,3 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
     {
     }
 }
-#endif
