@@ -56,13 +56,19 @@ public class RulesetService : IRulesetService
         }
         if (rule.Handle != null)
         {
-            return rule.Handle(settings);
+            try
+            {
+                return rule.Handle(settings);
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning(e, "规则 {} 的处理程序在处理过程中发生异常，已默认其结果为 false.", rule.Id);
+                return false;
+            }
         }
-        else
-        {
-            Logger.LogWarning("规则 {} 的处理程序没有注册，已默认其结果为 false.", rule.Id);
-            return false;
-        }
+
+        Logger.LogWarning("规则 {} 的处理程序没有注册，已默认其结果为 false.", rule.Id);
+        return false;
     }
 
     private bool? IsRulesetGroupSatisfied(RuleGroup ruleset)

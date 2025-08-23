@@ -42,8 +42,20 @@ public class WindowRuleService : IWindowRuleService
         if (settings is not StringMatchingSettings s) return false;
         var pid = PlatformServices.WindowPlatformService.GetWindowPid(PlatformServices.WindowPlatformService
             .ForegroundWindowHandle);
-        var process = Process.GetProcessById((int)pid);
-        return s.IsMatching(process.ProcessName);
+        if (pid == 0)
+        {
+            return false;
+        }
+        try
+        {
+            var process = Process.GetProcessById((int)pid);
+            return s.IsMatching(process.ProcessName);
+        }
+        catch (Exception e)
+        {
+            Logger.LogWarning(e, "无法获取 pid 为 {} 的进程信息", pid);
+            return false;
+        }
     }
 
     private bool StatusHandler(object? settings)
