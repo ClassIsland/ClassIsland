@@ -35,6 +35,7 @@
     <StyleInclude Source="/Themes/WrapPanelResizingAnimation.axaml"/>
     <StyleInclude Source="/Themes/PopupAnimations.axaml"/>
     <StyleInclude Source="/Themes/ComponentsPanelStyles.axaml"/>
+    <StyleInclude Source="/Themes/SlidingListBox.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
 
     <!-- Add Styles Here -->

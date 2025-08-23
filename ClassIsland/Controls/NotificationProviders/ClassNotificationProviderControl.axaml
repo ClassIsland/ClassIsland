@@ -28,17 +28,14 @@
         <converters1:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
 
         <!-- 准备上课 -->
-        <Grid x:Key="ClassPrepareNotifyOverlay">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+        <Grid x:Key="ClassPrepareNotifyOverlay" ColumnDefinitions="*,*" >
 
             <!-- 倒计时 -->
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
                        Margin="12 0">
                 <Run Text="距上课还剩"/>
-                <Run Text="{Binding LessonsService.OnClassLeftTime, Converter={StaticResource TimeSpanToTotalSecondsConverter}, Mode=OneWay}" FontWeight="Bold"/>
+                <Run Text="{Binding LessonsService.OnClassLeftTime, Converter={StaticResource TimeSpanToTotalSecondsConverter}, Mode=OneWay}" 
+                     FontWeight="Bold"/>
                 <Run Text="秒"/>
             </TextBlock>
 
@@ -81,12 +78,7 @@
         </StackPanel>
 
         <!-- 下课提醒 -->
-        <Grid x:Key="ClassOffOverlay">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
+        <Grid x:Key="ClassOffOverlay" ColumnDefinitions="*,*">
             <!-- 课间时间 -->
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0">
                 <Run Text="{Binding LessonsService.CurrentTimeLayoutItem.BreakNameText, StringFormat=本节{0}长, Mode=OneWay}"/>
@@ -110,19 +102,9 @@
         </Grid>
     </UserControl.Resources>
     <Grid Margin="16 0" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}">
-        <!-- TODO: 添加动画 -->
         <ListBox
+            Classes="sliding"
             SelectedIndex="{Binding SlideIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}, Mode=OneWay}">
-            <ListBox.Styles>
-                <Style Selector="ListBoxItem">
-                    <Setter Property="IsVisible" Value="{Binding $self.IsSelected}"/>
-                    <Setter Property="Template">
-                        <ControlTemplate TargetType="ListBoxItem">
-                            <ContentPresenter Content="{TemplateBinding Content}"/>
-                        </ControlTemplate>
-                    </Setter>
-                </Style>
-            </ListBox.Styles>
             <ListBoxItem>
                 <ContentPresenter Content="{Binding Element, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}"/>
             </ListBoxItem>
