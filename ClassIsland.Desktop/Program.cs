@@ -54,6 +54,15 @@ class Program
                     }
                 ]
             })
+            .With(new Win32PlatformOptions()
+            {
+                // 禁用 DirectComposition 以修复在部分版本 Windows 上 CPU 占用过高的问题。
+                // https://github.com/AvaloniaUI/Avalonia/issues/16750
+                CompositionMode = [
+                    Win32CompositionMode.WinUIComposition,
+                    Win32CompositionMode.RedirectionSurface
+                ]
+            })
             .UsePlatformDetect()
             .LogToHostSink();
 

@@ -293,7 +293,8 @@ public partial class App : AppBase, IAppHost
             ShowActivated = false,
             SystemDecorations = SystemDecorations.None,
             ShowInTaskbar = false,
-            Background = Brushes.Transparent
+            Background = Brushes.Transparent,
+            TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ]
         };
         PhonyRootWindow.Closing += (sender, args) => args.Cancel = true;
         PhonyRootWindow.Show();
