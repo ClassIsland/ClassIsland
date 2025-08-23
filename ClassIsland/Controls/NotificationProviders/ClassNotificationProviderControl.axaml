@@ -105,10 +105,10 @@
         <ListBox
             Classes="sliding"
             SelectedIndex="{Binding SlideIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}, Mode=OneWay}">
-            <ListBoxItem>
+            <ListBoxItem FontSize="{DynamicResource MainWindowBodyFontSize}">
                 <ContentPresenter Content="{Binding Element, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}"/>
             </ListBoxItem>
-            <ListBoxItem>
+            <ListBoxItem FontSize="{DynamicResource MainWindowBodyFontSize}">
                 <TextBlock Text="{Binding Message, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"/>
