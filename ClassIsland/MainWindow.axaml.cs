@@ -356,6 +356,7 @@ public partial class MainWindow : Window
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（2）");
         UpdateTheme();
         base.Show();
+        UpdateWindowPos();
         Dispatcher.UIThread.InvokeAsync(PostInit, DispatcherPriority.ApplicationIdle);
     }
 
@@ -703,10 +704,6 @@ public partial class MainWindow : Window
 
     private void UpdateWindowPos(bool updateEffectWindow=false)
     {
-        if (!IsLoaded)
-        {
-            return;
-        }
         GetCurrentDpi(out var dpiX, out var dpiY);
 
         var scale = ViewModel.Settings.Scale;
