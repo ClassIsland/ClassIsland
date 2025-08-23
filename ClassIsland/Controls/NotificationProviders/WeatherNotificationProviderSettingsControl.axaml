@@ -83,6 +83,7 @@
                                     TickFrequency="0.1"
                                     TickPlacement="None"
                                     IsSnapToTickEnabled="True"
+                                    ci:SliderDragTooltipAssist.StringFormat="F1"
                                     Classes="auto-tooltip" />
                         </Grid>
                     </fa:SettingsExpander.Footer>

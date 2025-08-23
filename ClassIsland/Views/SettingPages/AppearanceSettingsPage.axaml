@@ -12,6 +12,7 @@
       xmlns:settingsPages="clr-namespace:ClassIsland.ViewModels.SettingsPages"
       xmlns:classIsland="clr-namespace:ClassIsland"
       xmlns:system="clr-namespace:System;assembly=System.Runtime"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       d:DataContext="{d:DesignInstance local:AppearanceSettingsPage}">
@@ -30,6 +31,7 @@
                     <Slider Width="180" Minimum="0.75" Maximum="2.5"
                             VerticalAlignment="Center"
                             Classes="auto-tooltip"
+                            ci:SliderDragTooltipAssist.StringFormat="F2"
                             Value="{Binding ViewModel.SettingsService.Settings.Scale}"
                             TickFrequency="0.05"
                             TickPlacement="None"
@@ -62,6 +64,7 @@
                 <controls2:SettingsExpander.Footer>
                     <Slider Width="180" Minimum="0" Maximum="1"
                             Classes="auto-tooltip"
+                            ci:SliderDragTooltipAssist.StringFormat="F2"
                             Value="{Binding ViewModel.SettingsService.Settings.Opacity}"
                             TickFrequency="0.05"
                             IsSnapToTickEnabled="True"/>
@@ -76,6 +79,7 @@
                     <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
                             Value="{Binding ViewModel.SettingsService.Settings.RadiusX}"
                             TickFrequency="0.5"
+                            ci:SliderDragTooltipAssist.StringFormat="F1"
                             Classes="auto-tooltip"
                             IsSnapToTickEnabled="True"
                             VerticalAlignment="Center"/>
@@ -91,6 +95,7 @@
                         <Slider Width="130" Minimum="0" Maximum="150"
                                 Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
                                 TickFrequency="5"
+                                ci:SliderDragTooltipAssist.StringFormat="F1"
                                 Classes="auto-tooltip"
                                 VerticalAlignment="Center"
                                 IsSnapToTickEnabled="True"/>

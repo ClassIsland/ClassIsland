@@ -25,6 +25,7 @@
                 <Slider Width="180" Minimum="0.75" Maximum="2.5"
                         VerticalAlignment="Center"
                         Classes="auto-tooltip"
+                        ci:SliderDragTooltipAssist.StringFormat="F2"
                         Value="{Binding ViewModel.SettingsService.Settings.Scale}"
                         TickFrequency="0.05"
                         TickPlacement="None"
@@ -38,6 +39,7 @@
             <controls:SettingsExpander.Footer>
                 <Slider Width="180" Minimum="0" Maximum="1"
                         Classes="auto-tooltip"
+                        ci:SliderDragTooltipAssist.StringFormat="F2"
                         Value="{Binding ViewModel.SettingsService.Settings.Opacity}"
                         TickFrequency="0.05"
                         IsSnapToTickEnabled="True"/>
@@ -52,6 +54,7 @@
                 <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
                         Value="{Binding ViewModel.SettingsService.Settings.RadiusX}"
                         TickFrequency="0.5"
+                        ci:SliderDragTooltipAssist.StringFormat="F1"
                         Classes="auto-tooltip"
                         IsSnapToTickEnabled="True"
                         VerticalAlignment="Center"/>

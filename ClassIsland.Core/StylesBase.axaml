@@ -143,7 +143,14 @@
         <Setter Property="IsTabStop" Value="False"/>
     </Style>
     <Style Selector="Slider.auto-tooltip">
-        <Setter Property="ToolTip.Tip" Value="{Binding $self.Value}"/>
+        <Setter Property="ToolTip.Tip">
+            <Setter.Value>
+                <MultiBinding Converter="{x:Static ci:SliderDragTooltipAssist.ConverterInstance}">
+                    <Binding Path="$self.Value"/>
+                    <Binding Path="$self.(ci:SliderDragTooltipAssist.StringFormat)"/>
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
         <Style Selector="^:pressed">
             <Setter Property="ToolTip.IsOpen" Value="True"/>
             <Setter Property="ToolTip.Placement" Value="Pointer"/>
