@@ -130,6 +130,7 @@
                                         </ProgressBar>
                                     </Border>
                                     <ContentPresenter
+                                        MaxHeight="{DynamicResource IslandContainerHeight}"
                                         Content="{Binding OverlayContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
                                         ContentTemplate="{Binding OverlayContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
 
@@ -147,6 +148,7 @@
                             VerticalAlignment="Stretch"
                             Opacity="0"
                             ClipToBounds="True"
+                            Height="{DynamicResource IslandContainerHeight}"
                             RenderTransformOrigin="{x:Static RelativePoint.Center}"
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
                         <Border.RenderTransform>
