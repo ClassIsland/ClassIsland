@@ -61,5 +61,16 @@ public class ThemeService : IHostedService, IThemeService
         faTheme.CustomAccentColor = primary;
         faTheme.PreferUserAccentColor = primary == null;
         faTheme.PreferSystemTheme = themeMode == 0;
+        
+        // 计算应用画刷
+        var brush = AppBase.Current.TryFindResource("AccentFillColorSelectedTextBackgroundBrush",
+            ThemeVariant.Default, out var v)
+            ? v as SolidColorBrush
+            : null;
+        var newBrush = brush == null ? null : new SolidColorBrush(brush.Color, 0.10);
+        if (newBrush != null)
+        {
+            AppBase.Current.Resources["CustomizedAccentBarBackground1Brush"] = newBrush;
+        }
     }
 }
