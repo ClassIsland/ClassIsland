@@ -672,7 +672,7 @@
                                             <Grid RowDefinitions="*, Auto">
                                                 <ListBox
                                                     Grid.Row="0"
-                                                    SelectedValue="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.SubjectId}"
+                                                    SelectedValue="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.SubjectId, Mode=OneWay}"
                                                     SelectedValueBinding="{Binding Key}"
                                                     ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}">
                                                     <ListBox.Styles>
@@ -688,7 +688,9 @@
                                                     </ListBox.ItemsPanel>
                                                     <ListBox.ItemTemplate>
                                                         <DataTemplate>
-                                                            <Border Background="Transparent" PointerReleased="InputElementSubjectItem_OnTapped"
+                                                            <Border Background="Transparent"
+                                                                    PointerReleased="InputElementSubjectItem_OnTapped"
+                                                                    PointerPressed="InputElementSubjectItem_OnPointerPressed"
                                                                     Padding="8">
                                                                 <TextBlock Text="{Binding Value.Initial}"
                                                                            ToolTip.Tip="{Binding Value.Name}"

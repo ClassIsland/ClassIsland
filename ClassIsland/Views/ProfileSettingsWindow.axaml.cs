@@ -501,6 +501,15 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.MasterPageTabSelectIndex = 1;
     }
     
+    private void InputElementSubjectItem_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (ViewModel.SelectedClassInfo != null && sender is Border { DataContext: KeyValuePair<Guid, Subject> kvp })
+        {
+            ViewModel.SelectedClassInfo.SubjectId = kvp.Key;
+        }
+        
+    }
+    
     private void InputElementSubjectItem_OnTapped(object? sender, PointerReleasedEventArgs pointerReleasedEventArgs)
     {
         if (!ViewModel.SettingsService.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled)
