@@ -150,7 +150,7 @@
                             ClipToBounds="True"
                             Height="{DynamicResource IslandContainerHeight}"
                             RenderTransformOrigin="{x:Static RelativePoint.Center}"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+                            Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}">
                         <Border.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform />
