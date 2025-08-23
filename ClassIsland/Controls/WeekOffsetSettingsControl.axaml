@@ -14,7 +14,7 @@
 
         <WrapPanel Margin="0 12 0 0">
             <Button HorizontalAlignment="Left" Click="ButtonFinish_OnClick" Classes="accent">
-                <ci:IconText Symbol="Checkmark" Text="应用" />
+                <ci:IconText Glyph="&#xE424;" Text="应用" />
             </Button>
             <Button Click="ButtonClear_OnClick" Margin="6 0 0 0 "
                     ToolTip.Tip="将多周轮换偏移重置为学期开始时间。">
