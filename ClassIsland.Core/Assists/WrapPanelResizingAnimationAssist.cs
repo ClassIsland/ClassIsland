@@ -4,39 +4,49 @@ using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Rendering.Composition;
-using Avalonia.Rendering.Composition.Animations;
-using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
 
-namespace ClassIsland.Core.Behaviors;
+namespace ClassIsland.Core.Assists;
 
 /// <summary>
 /// <see cref="WrapPanel"/> 元素大小改变动画过渡行为
 /// </summary>
-public class WrapPanelResizingAnimationBehavior
+public class WrapPanelResizingAnimationAssist
 {
     public static readonly AttachedProperty<bool> IsResizingAnimationEnabledProperty =
-        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationBehavior, Panel, bool>("IsResizingAnimationEnabled");
+        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationAssist, Panel, bool>("IsResizingAnimationEnabled");
 
     public static void SetIsResizingAnimationEnabled(Panel obj, bool value) => obj.SetValue(IsResizingAnimationEnabledProperty, value);
     public static bool GetIsResizingAnimationEnabled(Panel obj) => obj.GetValue(IsResizingAnimationEnabledProperty);
 
     public static readonly AttachedProperty<bool> IsAnimationAttachedProperty =
-        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationBehavior, Visual, bool>("IsAnimationAttached");
+        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationAssist, Visual, bool>("IsAnimationAttached");
 
     private static void SetIsAnimationAttached(Visual obj, bool value) => obj.SetValue(IsAnimationAttachedProperty, value);
     public static bool GetIsAnimationAttached(Visual obj) => obj.GetValue(IsAnimationAttachedProperty);
     
-    static WrapPanelResizingAnimationBehavior()
+    static WrapPanelResizingAnimationAssist()
     {
         IsResizingAnimationEnabledProperty.Changed.AddClassHandler<Panel>(HandleIsResizingAnimationEnabledChanged);
     }
 
     public static readonly AttachedProperty<bool> IsLoadedHandlerAttachedProperty =
-        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationBehavior, Control, bool>("IsLoadedHandlerAttached");
+        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationAssist, Control, bool>("IsLoadedHandlerAttached");
 
     private static void SetIsLoadedHandlerAttached(Control obj, bool value) => obj.SetValue(IsLoadedHandlerAttachedProperty, value);
     public static bool GetIsLoadedHandlerAttached(Control obj) => obj.GetValue(IsLoadedHandlerAttachedProperty);
+
+    public static readonly AttachedProperty<Easing> EasingProperty =
+        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationAssist, Visual, Easing>("Easing", new CubicEaseInOut(), inherits:true);
+
+    public static void SetEasing(Visual obj, Easing value) => obj.SetValue(EasingProperty, value);
+    public static Easing GetEasing(Visual obj) => obj.GetValue(EasingProperty);
+
+    public static readonly AttachedProperty<TimeSpan> DurationProperty =
+        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationAssist, Visual, TimeSpan>("Duration", TimeSpan.FromMilliseconds(225), inherits: true);
+
+    public static void SetDuration(Visual obj, TimeSpan value) => obj.SetValue(DurationProperty, value);
+    public static TimeSpan GetDuration(Visual obj) => obj.GetValue(DurationProperty);
     
     private static void HandleIsResizingAnimationEnabledChanged(Panel panel, AvaloniaPropertyChangedEventArgs args)
     {
@@ -120,8 +130,8 @@ public class WrapPanelResizingAnimationBehavior
         var compositor = compositionVisual.Compositor;
         var offsetAnimation = compositor.CreateVector3KeyFrameAnimation();
         offsetAnimation.Target = nameof(compositionVisual.Offset);
-        offsetAnimation.InsertExpressionKeyFrame(1.0f, "this.FinalValue", new CubicEaseInOut());
-        offsetAnimation.Duration = TimeSpan.FromMilliseconds(225);
+        offsetAnimation.InsertExpressionKeyFrame(1.0f, "this.FinalValue", GetEasing(control));
+        offsetAnimation.Duration = GetDuration(control);
         var implicitAnimationCollection = compositor.CreateImplicitAnimationCollection();
         implicitAnimationCollection[nameof(compositionVisual.Offset)] = offsetAnimation;
         compositionVisual.ImplicitAnimations = implicitAnimationCollection;

@@ -7,7 +7,11 @@
         </Border>
     </Design.PreviewWith>
 
-    <Style Selector=":is(Panel).animated-resize">
+    <!-- Add Styles Here -->
+    <Style Selector=":is(Panel).components-panel">
         <Setter Property="ci:WrapPanelResizingAnimationAssist.IsResizingAnimationEnabled" Value="True"/>
+    </Style>
+    <Style Selector=":is(StackPanel).components-panel">
+        <Setter Property="Orientation" Value="Horizontal"/>
     </Style>
 </Styles>

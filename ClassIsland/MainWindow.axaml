@@ -162,7 +162,11 @@
                   Classes.HideOnFullscreen="{Binding ViewModel.Settings.HideOnFullscreen, Mode=OneWay}"
                   Classes.ForegroundMaxWindow="{Binding ViewModel.IsForegroundMaxWindow, Mode=OneWay}"
                   Classes.ForegroundFullscreen="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}"
-                  Classes.HideRuleSatisfied="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}">
+                  Classes.HideRuleSatisfied="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}"
+                  
+                  ci:MainWindowStylesAssist.ComponentsSpacing="12"
+                  ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
+                  ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
                 <Interaction.Behaviors>
                     <DataTriggerBehavior Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}" Value="0">
                         <AddClassAction ClassName="BasicHidingMode"/>
@@ -209,7 +213,7 @@
                                                           ClipToBounds="False">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal" />
+                                                        <StackPanel Classes="components-panel" />
                                                     </ItemsPanelTemplate>
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>

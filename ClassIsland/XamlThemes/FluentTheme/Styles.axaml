@@ -64,7 +64,7 @@
                             Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
                             Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                             Height="{DynamicResource IslandContainerHeight}" />
-                    <Grid x:Name="ContentClipBorder">
+                    <Grid x:Name="ContentClipBorder" >
                         <Grid.Clip>
                             <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
                                 <Binding Path="BackgroundWidth" Mode="OneWay"
@@ -79,45 +79,47 @@
                                          RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
                             </MultiBinding>
                         </Grid.Clip>
+                        
                         <Border x:Name="BackgroundBorderOverlay"
                                 Classes="docking background"
                                 Width="{Binding Bounds.Width, ElementName=BackgroundBorder, Mode=OneWay}"
                                 Opacity="0"
                                 Height="{DynamicResource IslandContainerHeight}"/>
 
-                        <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
-                              Height="{DynamicResource IslandContainerHeight}"
-                              Classes="docking">
+                        <Panel Classes="animated-resize" ClipToBounds="False">
+                            <Grid x:Name="PART_GridWrapper" ClipToBounds="False"
+                                  Height="{DynamicResource IslandContainerHeight}"
+                                  Classes="docking">
+                                <Grid Height="{DynamicResource IslandContainerHeight}"
+                                      x:Name="GridContentRoot"
+                                      MinWidth="20"
+                                      Margin="12 0">
+                                    <ContentPresenter
+                                        Content="{Binding Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
+                                </Grid>
 
-                            <Grid Height="{DynamicResource IslandContainerHeight}"
-                                  x:Name="GridContentRoot"
-                                  MinWidth="20"
-                                  Margin="12 0">
-                                <ContentPresenter
-                                    Content="{Binding Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
+                                <!-- Overlay View -->
+                                <Grid x:Name="GridOverlay"
+                                      ClipToBounds="True"
+                                      Opacity="0">
+                                    <Border ClipToBounds="True"
+                                            IsHitTestVisible="False">
+
+                                        <ProgressBar VerticalAlignment="Bottom"
+                                                     Maximum="1"
+                                                     Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
+                                                     x:Name="OverlayTimeProgressBar"
+                                                     MinWidth="0">
+                                        </ProgressBar>
+                                    </Border>
+                                    <ContentPresenter
+                                        Content="{Binding OverlayContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
+                                        ContentTemplate="{Binding OverlayContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
+
+                                </Grid>
+
                             </Grid>
-
-                            <!-- Overlay View -->
-                            <Grid x:Name="GridOverlay"
-                                  ClipToBounds="True"
-                                  Opacity="0">
-                                <Border ClipToBounds="True"
-                                        IsHitTestVisible="False">
-
-                                    <ProgressBar VerticalAlignment="Bottom"
-                                                 Maximum="1"
-                                                 Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
-                                                 x:Name="OverlayTimeProgressBar"
-                                                 MinWidth="0">
-                                    </ProgressBar>
-                                </Border>
-                                <ContentPresenter
-                                    Content="{Binding OverlayContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
-                                    ContentTemplate="{Binding OverlayContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
-
-                            </Grid>
-
-                        </Grid>
+                        </Panel>
                     </Grid>
                     <!-- Mask -->
                     <Border x:Name="OverlayMask" Classes="docking"

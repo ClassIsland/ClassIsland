@@ -2,11 +2,13 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Reactive;
+using Avalonia.Rendering.Composition;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
@@ -205,7 +207,38 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     {
         SettingsProperty.Changed.AddClassHandler<ComponentPresenter>(PropertyChangedCallback);
         IsMainWindowLoadedProperty.Changed.AddClassHandler<ComponentPresenter>(IsMainWindowLoadedChanged);
+        IsVisibleProperty.Changed.AddClassHandler<ComponentPresenter>(IsVisiblePropertyChanged);
+    }
 
+    private static void IsVisiblePropertyChanged(ComponentPresenter control, AvaloniaPropertyChangedEventArgs args)
+    {
+        if (!true.Equals(args.NewValue))
+        {
+            return;
+        }
+
+        PlayFadeInAnimation(control);
+    }
+
+    private static void PlayFadeInAnimation(ComponentPresenter control)
+    {
+        if (IThemeService.AnimationLevel < 2)
+        {
+            return;
+        }
+        
+        var compositionVisual = ElementComposition.GetElementVisual(control);
+        if (compositionVisual == null)
+        {
+            return;
+        }
+        var compositor = compositionVisual.Compositor;
+        var anim = compositor.CreateScalarKeyFrameAnimation();
+        anim.InsertKeyFrame(0f, 0f);
+        anim.InsertKeyFrame(1f, 1f, Easing.Parse("0.25, 1, 0.5, 1"));
+        anim.Duration = TimeSpan.FromMilliseconds(250);
+        anim.Target = nameof(compositionVisual.Opacity);
+        compositionVisual.StartAnimation(nameof(compositionVisual.Opacity), anim);
     }
 
     private static void IsMainWindowLoadedChanged(ComponentPresenter cp, AvaloniaPropertyChangedEventArgs args)
@@ -220,10 +253,15 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     public ComponentPresenter()
     {
         InitializeComponent();
-
         this.GetObservable(HidingRulesProperty).Subscribe(new AnonymousObserver<Models.Ruleset.Ruleset?>(_ => UpdateWindowRuleState()));
         this.GetObservable(IsOnMainWindowProperty).Subscribe(new AnonymousObserver<bool>(_ => UpdateTheme()));
         this.GetObservable(HideOnRuleProperty).Subscribe(new AnonymousObserver<bool>(_ => UpdateWindowRuleState()));
+        AttachedToVisualTree += OnAttachedToVisualTree;
+    }
+
+    private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        PlayFadeInAnimation(this);
     }
 
     private void UpdateWindowRuleState()
