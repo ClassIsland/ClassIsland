@@ -649,7 +649,7 @@
                                                         <Button HorizontalAlignment="Right"
                                                                 Click="ButtonCreateTempOverlayClassPlan_OnClick"
                                                                 Classes="accent">
-                                                            <ci:IconText Symbol="Checkmark" UseFontIcon="False" Text="创建" />
+                                                            <ci:IconText Glyph="&#xE424;" Text="创建" />
                                                         </Button>
                                                     </StackPanel>
                                                 </Flyout>
