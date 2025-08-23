@@ -226,6 +226,10 @@
         <Setter Property="Width" Value="600"/>
         <Setter Property="ShowTitle" Value="True"/>
     </Style>
+    
+    <Style Selector="controls|MenuFlyoutSubItem">
+        <Setter Property="ci:FaMenuFlyoutSubItemTouchFixAssist.IsRepairApplied" Value="True"/>
+    </Style>
 
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
