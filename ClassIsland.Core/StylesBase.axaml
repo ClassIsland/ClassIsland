@@ -221,6 +221,11 @@
         </Style>
         <Setter Property="Spacing" Value="1"/>
     </Style>
+    
+    <Style Selector="ci|RulesetControl.in-drawer">
+        <Setter Property="Width" Value="600"/>
+        <Setter Property="ShowTitle" Value="True"/>
+    </Style>
 
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>

@@ -24,6 +24,7 @@
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
 
         <ci:RulesetControl x:Key="RulesetControl"
+                           Classes="in-drawer"
                            Ruleset="{Binding ViewModel.SettingsService.Settings.HiedRules, Mode=TwoWay}"/>
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>

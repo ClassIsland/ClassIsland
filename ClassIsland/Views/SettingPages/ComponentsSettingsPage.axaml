@@ -84,7 +84,7 @@
     <ci:SettingsPageBase.Resources>
         <converters:HorizontalAlignmentToIntConverter x:Key="HorizontalAlignmentToIntConverter" />
         
-        <ci:RulesetControl x:Key="RulesetControl" />
+        <ci:RulesetControl x:Key="RulesetControl" Classes="in-drawer"/>
     </ci:SettingsPageBase.Resources>
     <Grid Margin="12 0">
         <Grid.RowDefinitions>
