@@ -175,27 +175,27 @@
     <value>集控选项</value>
   </data>
   <data name="JoinManagement_string" xml:space="preserve">
-    <value />
+    <value>加入管理...</value>
   </data>
   <data name="ViewAppLog_string" xml:space="preserve">
-    <value />
+    <value>日志...</value>
   </data>
   <data name="ExportDiagData_string" xml:space="preserve">
-    <value />
+    <value>导出诊断数据</value>
   </data>
   <data name="RestartToRecoveryMode_string" xml:space="preserve">
-    <value />
+    <value>重启至恢复模式</value>
   </data>
   <data name="OpenLogDir_string" xml:space="preserve">
-    <value />
+    <value>打开日志目录...</value>
   </data>
   <data name="OpenDataDir_string" xml:space="preserve">
-    <value />
+    <value>打开数据目录...</value>
   </data>
   <data name="OpenAppDir_string" xml:space="preserve">
-    <value />
+    <value>打开应用目录...</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value />
+    <value>应用设置</value>
   </data>
 </root>

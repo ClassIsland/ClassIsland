@@ -132,10 +132,14 @@
 	  <Compile Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.Designer.cs" />
 	</ItemGroup>
 	<ItemGroup>
+	  <EmbeddedResource Remove="Assets\Localization\Localization.SplashScreen.resx" />
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.en.resx" />
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.resx" />
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.zh-Hans.resx" />
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.zh-Hant.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\SplashScreen\Localization.SplashScreen.en.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\SplashScreen\Localization.SplashScreen.zh-Hans.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\SplashScreen\Localization.SplashScreen.zh-Hant.resx" />
 	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.en.resx" />
 	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
 	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.zh-Hans.resx" />
@@ -147,8 +151,26 @@
         <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
     </ItemGroup>
 	<ItemGroup>
+	  <AvaloniaResource Update="Assets\Localization\SettingsPage\Localization.SettingsPage.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Localization.SettingsPage.Designer.cs</LastGenOutput>
+	  </AvaloniaResource>
+	  <AvaloniaResource Update="Assets\Localization\SplashScreen\Localization.SplashScreen.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Localization.SplashScreen.resx</DependentUpon>
+	  </AvaloniaResource>
+	  <AvaloniaResource Update="Assets\Localization\SplashScreen\Localization.SplashScreen.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Localization.SplashScreen.Designer.cs</LastGenOutput>
+	  </AvaloniaResource>
 	</ItemGroup>
 	<ItemGroup>
+	  <Compile Update="Assets\Localization\SettingsPage\Localization.SettingsPage.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Localization.SettingsPage.resx</DependentUpon>
+	  </Compile>
 	  <Compile Update="Controls\TimeLine\TimeLineListItemControl.axaml.cs">
 	    <DependentUpon>TimeLineListItemControl.axaml</DependentUpon>
 	    <SubType>Code</SubType>
