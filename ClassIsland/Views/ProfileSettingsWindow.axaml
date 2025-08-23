@@ -422,10 +422,9 @@
             </StackPanel>
         </Flyout>
     </ci:MyWindow.Resources>
-    <SplitView DisplayMode="Overlay" PanePlacement="Right"
-               IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
-               OpenPaneLength="332"
-               Pane="{Binding ViewModel.DrawerContent, Mode=OneWay}">
+    <ci:DrawerHost DrawerPlacement="Right"
+               IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
+               DrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
         <Grid RowDefinitions="48, *">
             <!-- Background Layer -->
             <Border Grid.Row="1" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
@@ -1580,5 +1579,5 @@
                 </controls:CommandBar.PrimaryCommands>
             </controls:CommandBar>
         </Grid>
-    </SplitView>
+    </ci:DrawerHost>
 </ci:MyWindow>
