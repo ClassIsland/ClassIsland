@@ -164,6 +164,7 @@
                   Classes.ForegroundFullscreen="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}"
                   Classes.HideRuleSatisfied="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}"
                   
+                  ci:MainWindowStylesAssist.IsIslandSeperated="{Binding ViewModel.Settings.IsIslandSeperated}"
                   ci:MainWindowStylesAssist.ComponentsSpacing="12"
                   ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
                   ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
@@ -210,6 +211,7 @@
                                                                  Settings="{Binding}"
                                                                  IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
                                             <ItemsControl ItemsSource="{Binding Children}"
+                                                          Classes="root-components-control"
                                                           ClipToBounds="False">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>

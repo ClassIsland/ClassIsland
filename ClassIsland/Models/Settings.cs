@@ -1155,6 +1155,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool IsIslandSeperated
+    {
+        get => _isIslandSeperated;
+        set
+        {
+            if (value == _isIslandSeperated) return;
+            _isIslandSeperated = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Components
@@ -1745,6 +1756,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _weatherIconId = "classisland.weatherIcons.fluentDesign";
     private bool _isRollingComponentWarningVisible = true;
     private int _animationLevel = 1;
+    private bool _isIslandSeperated = false;
 
     public bool IsIgnoreWorkAreaEnabled
     {

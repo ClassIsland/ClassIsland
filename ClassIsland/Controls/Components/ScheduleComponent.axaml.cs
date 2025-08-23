@@ -68,8 +68,8 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
 
     private IDisposable? _tomorrowScheduleShowModeObserver;
     private IDisposable? _hideFinishedClassObserver;
-    private IDisposable? _showEmptyPlaceholderObserver
-        ;
+    private IDisposable? _showEmptyPlaceholderObserver;
+    private IDisposable? _lessonsListBoxSelectedIndexObserver;
 
     public int LessonsListBoxSelectedIndex
     {
@@ -140,9 +140,12 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         _showEmptyPlaceholderObserver ??= Settings
             .ObservableForProperty(x => x.ShowPlaceholderOnEmptyClassPlan)
             .Subscribe(_ => ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan);
+        _lessonsListBoxSelectedIndexObserver ??= this.GetObservable(LessonsListBoxSelectedIndexProperty)
+            .Subscribe(_ => MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex);
 
         HideFinishedClass = Settings.HideFinishedClass;
         ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan;
+        MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex;
     }
 
     private void CheckTomorrowClassShowMode()

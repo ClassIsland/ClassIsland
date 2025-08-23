@@ -106,6 +106,15 @@
                 </controls2:SettingsExpander.Footer>
             </controls2:SettingsExpander>
             
+            <!-- 分体主界面 -->
+            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xf023;}"
+                                        Header="分体主界面"
+                                        Description="启用后组件会分开。">
+                <controls2:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsIslandSeperated}"/>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            
             <Separator Margin="0 12 0 4" />
             <controls1:IconText Glyph="&#xE51E;" Text="主题" Margin="0 0 0 4" />
             <!-- 应用主题 -->
