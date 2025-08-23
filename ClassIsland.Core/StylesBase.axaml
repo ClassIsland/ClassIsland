@@ -95,6 +95,10 @@
     <Style Selector="TabControl.navigation TabItem /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="TextElement.FontSize" Value="20"/>
     </Style>
+    
+    <Style Selector="TabControl[TabStripPlacement=Bottom] TabItem:selected /template/ Rectangle#PART_SelectedPipe">
+        <Setter Property="Height" Value="2"/>
+    </Style>
 
     <Style Selector="TabControl.compact TabItem">
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
