@@ -35,7 +35,9 @@
     <StyleInclude Source="/Themes/WrapPanelResizingAnimation.axaml"/>
     <StyleInclude Source="/Themes/PopupAnimations.axaml"/>
     <StyleInclude Source="/Themes/ComponentsPanelStyles.axaml"/>
+    <StyleInclude Source="/Themes/SlidingListBox.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
+    <StyleInclude Source="/Controls/DrawerHost.axaml"/>
 
     <!-- Add Styles Here -->
 
@@ -93,6 +95,10 @@
 
     <Style Selector="TabControl.navigation TabItem /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="TextElement.FontSize" Value="20"/>
+    </Style>
+    
+    <Style Selector="TabControl[TabStripPlacement=Bottom] TabItem:selected /template/ Rectangle#PART_SelectedPipe">
+        <Setter Property="Height" Value="2"/>
     </Style>
 
     <Style Selector="TabControl.compact TabItem">

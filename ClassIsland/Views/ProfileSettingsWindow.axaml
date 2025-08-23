@@ -1,4 +1,8 @@
 <ci:MyWindow xmlns="https://github.com/avaloniaui"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="PreferSystemChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        SystemDecorations="Full"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -422,10 +426,9 @@
             </StackPanel>
         </Flyout>
     </ci:MyWindow.Resources>
-    <SplitView DisplayMode="Overlay" PanePlacement="Right"
-               IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
-               OpenPaneLength="332"
-               Pane="{Binding ViewModel.DrawerContent, Mode=OneWay}">
+    <ci:DrawerHost DrawerPlacement="Right"
+               IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
+               DrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
         <Grid RowDefinitions="48, *">
             <!-- Background Layer -->
             <Border Grid.Row="1" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
@@ -802,7 +805,7 @@
                                             <Grid RowDefinitions="*, Auto">
                                                 <ListBox
                                                     Grid.Row="0"
-                                                    SelectedValue="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.SubjectId}"
+                                                    SelectedValue="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.SubjectId, Mode=OneWay}"
                                                     SelectedValueBinding="{Binding Key}"
                                                     ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}">
                                                     <ListBox.Styles>
@@ -818,7 +821,9 @@
                                                     </ListBox.ItemsPanel>
                                                     <ListBox.ItemTemplate>
                                                         <DataTemplate>
-                                                            <Border Background="Transparent" PointerReleased="InputElementSubjectItem_OnTapped"
+                                                            <Border Background="Transparent"
+                                                                    PointerReleased="InputElementSubjectItem_OnTapped"
+                                                                    PointerPressed="InputElementSubjectItem_OnPointerPressed"
                                                                     Padding="8">
                                                                 <TextBlock Text="{Binding Value.Initial}"
                                                                            ToolTip.Tip="{Binding Value.Name}"
@@ -983,7 +988,8 @@
                                             SelectedIndex="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SettingsService.Settings.TimeLayoutEditorIndex, Mode=TwoWay}"
                                             TabStripPlacement="Bottom">
                                     <TabItem Header="{ci:FluentIcon &#xE075;}">
-                                        <ListBox ItemsSource="{Binding Layouts}"
+                                        <ListBox x:Name="ListViewTimePoints"
+                                                 ItemsSource="{Binding Layouts}"
                                                  SelectedIndex="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePointIndex}"
                                                  SelectedItem="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint}">
 
@@ -1017,6 +1023,66 @@
                                         </timeLine:TimeLineListControl>
                                     </TabItem>
                                 </TabControl>
+                                <!-- 底部操作按钮 -->
+                                <StackPanel Grid.Row="3" Grid.Column="0" Spacing="2"
+                                            Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom">
+                                    <ToggleButton Theme="{StaticResource TransparentToggleButton}"
+                                            Content="{ci:FluentIcon &#xE095;}"
+                                            ToolTip.Tip="时间点吸附"
+                                            IsChecked="{Binding $parent[views:ProfileSettingsWindow].ViewModel.IsTimeLineSticky}">
+                                        <ToggleButton.IsVisible>
+                                            <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.SettingsService.Settings.TimeLayoutEditorIndex"
+                                                     Converter="{x:Static ObjectConverters.Equal}">
+                                                <Binding.ConverterParameter>
+                                                    <system:Int32>1</system:Int32>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                        </ToggleButton.IsVisible>
+                                    </ToggleButton>
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xf4d3;}"
+                                            ToolTip.Tip="缩小"
+                                            Click="ButtonZoomOut_OnClick">
+                                        <ToggleButton.IsVisible>
+                                            <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.SettingsService.Settings.TimeLayoutEditorIndex"
+                                                     Converter="{x:Static ObjectConverters.Equal}">
+                                                <Binding.ConverterParameter>
+                                                    <system:Int32>1</system:Int32>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                        </ToggleButton.IsVisible>
+                                    </Button>
+                                    <TextBlock Text="{Binding $parent[views:ProfileSettingsWindow].ViewModel.TimeLineScale, StringFormat='P0'}"
+                                               VerticalAlignment="Center">
+                                        <ToggleButton.IsVisible>
+                                            <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.SettingsService.Settings.TimeLayoutEditorIndex"
+                                                     Converter="{x:Static ObjectConverters.Equal}">
+                                                <Binding.ConverterParameter>
+                                                    <system:Int32>1</system:Int32>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                        </ToggleButton.IsVisible>
+                                    </TextBlock>
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xf4d1;}"
+                                            ToolTip.Tip="放大"
+                                            Click="ButtonZoomIn_OnClick">
+                                        <ToggleButton.IsVisible>
+                                            <Binding Path="$parent[views:ProfileSettingsWindow].ViewModel.SettingsService.Settings.TimeLayoutEditorIndex"
+                                                     Converter="{x:Static ObjectConverters.Equal}">
+                                                <Binding.ConverterParameter>
+                                                    <system:Int32>1</system:Int32>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                        </ToggleButton.IsVisible>
+                                    </Button>
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xEBD2;}"
+                                            ToolTip.Tip="定位到选择的时间点"
+                                            Click="ButtonTimeLayoutItemScrollIntoItem"/>
+                                </StackPanel>
                                 <GridSplitter Grid.Row="2" Grid.Column="1" Margin="2 0"/>
                                 <ci:Emptiable Grid.Row="2" Grid.Column="2" Grid.RowSpan="2"
                                               IsDirectContentMode="True"
@@ -1648,5 +1714,5 @@
                 </controls:CommandBar.PrimaryCommands>
             </controls:CommandBar>
         </Grid>
-    </SplitView>
+    </ci:DrawerHost>
 </ci:MyWindow>

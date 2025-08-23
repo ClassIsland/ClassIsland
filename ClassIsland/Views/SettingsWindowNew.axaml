@@ -1,4 +1,8 @@
 ﻿<controls:MyWindow x:Class="ClassIsland.Views.SettingsWindowNew"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="PreferSystemChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        SystemDecorations="Full"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -63,11 +67,9 @@
                     </Style>
                 </controls3:NavigationView.Styles>
                 <!-- 页面内容 -->
-                <SplitView IsPaneOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
-                           PanePlacement="Right"
-                           Pane="{Binding ViewModel.DrawerContent}"
-                           OpenPaneLength="{Binding ViewModel.DrawerContent, FallbackValue=0, Converter={x:Static local:SettingsWindowNew.ControlToWidthConverter}}"
-                           PaneBackground="{DynamicResource SolidBackgroundFillColorBaseAltBrush}">
+                <controls:DrawerHost IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
+                           DrawerPlacement="Right"
+                           DrawerContent="{Binding ViewModel.DrawerContent}">
                     <Grid RowDefinitions="Auto, *">
                         <Grid Grid.Row="1"
                             HorizontalAlignment="Left"
@@ -109,7 +111,7 @@
                                          x:Name="NavigationFrame">
                         </controls3:Frame>
                     </Grid>
-                </SplitView>
+                </controls:DrawerHost>
             </controls3:NavigationView>
             <Border Grid.Column="0" Grid.Row="0" Padding="0 8"
                                       Margin="0 0 8 4">

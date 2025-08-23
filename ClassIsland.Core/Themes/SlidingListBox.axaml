@@ -1,0 +1,78 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="ListBox.sliding">
+        <Style Selector="^ ScrollViewer">
+            <Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
+        </Style>
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <Panel/>
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="ItemContainerTheme">
+            <ControlTheme TargetType="ListBoxItem" >
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                
+                <Setter Property="Template">
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <ContentPresenter HorizontalAlignment="Stretch"
+                                          Content="{Binding $parent[ListBoxItem].Content}"
+                                          x:Name="ContentPresenter"
+                                          ContentTemplate="{Binding $parent[ListBoxItem].ContentTemplate}">
+                            <ContentPresenter.RenderTransform>
+                                <TransformGroup>
+                                    <TranslateTransform Y="0"/>
+                                </TransformGroup>
+                            </ContentPresenter.RenderTransform>
+                        </ContentPresenter>
+                    </ControlTemplate>
+                </Setter>
+                <!-- Slide in -->
+                <Style Selector="^[IsSelected=True] /template/ ContentPresenter#ContentPresenter">
+                    <Style.Animations>
+                        <Animation Duration="00:00:00.25" FillMode="Forward">
+                            <KeyFrame Cue="0%">
+                                <Setter Property="IsVisible" Value="True"/>
+                                <Setter Property="Opacity" Value="0.0"/>
+                                <Setter Property="TranslateTransform.Y" Value="-40"/>
+                            </KeyFrame>
+                            <KeyFrame Cue="100%">
+                                <Setter Property="Opacity" Value="1.0"/>
+                            </KeyFrame>
+                            <KeyFrame Cue="100%" KeySpline="0.65, 0, 0.35, 1">
+                                <Setter Property="TranslateTransform.Y" Value="0"/>
+                            </KeyFrame>
+                        </Animation>
+                    </Style.Animations>
+                    <Setter Property="IsVisible" Value="True"/>
+                </Style>
+                <!-- Slide out -->
+                <Style Selector="^[IsSelected=False] /template/ ContentPresenter#ContentPresenter">
+                    <Style.Animations>
+                        <Animation Duration="00:00:00.25" FillMode="Forward">
+                            <KeyFrame Cue="0%">
+                                <Setter Property="IsVisible" Value="True"/>
+                            </KeyFrame>
+                            <KeyFrame Cue="100%">
+                                <Setter Property="Opacity" Value="0.0"/>
+                            </KeyFrame>
+                            <KeyFrame Cue="100%" KeySpline="0.65, 0, 0.35, 1">
+                                <Setter Property="TranslateTransform.Y" Value="40"/>
+                            </KeyFrame>
+                        </Animation>
+                    </Style.Animations>
+                    <Setter Property="Opacity" Value="0"/>
+                    <Setter Property="TranslateTransform.Y" Value="-40"/>
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+            </ControlTheme>
+        </Setter>
+    </Style>
+</Styles>

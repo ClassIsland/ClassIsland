@@ -24,6 +24,43 @@
         <Setter Property="Margin" Value="0 16 0 0"/>
     </Style>
     
+    <Style Selector=":is(Control).clip-host[(ci|MainWindowStylesAssist.IsIslandSeperated)=False]">
+        <Setter Property="Clip">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
+                    <Binding Path="BackgroundWidth" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
+                    <Binding Path="Bounds.Width" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="Bounds.Height" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                    <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                    <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style Selector="Border.line-background">
+        <Style.Resources>
+            <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter"/>
+        </Style.Resources>
+        <Setter Property="Opacity" Value="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"/>
+        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{Binding ViewModel.Settings.RadiusX, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0} "/>
+        <Setter Property="BoxShadow" Value="0 4 8 2 #48000000"/>
+    </Style>
+    <Style Selector="controls|MainWindowLine:custom-background Border.line-background">
+        <Style.Resources>
+            <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
+        </Style.Resources>
+        <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"/>
+    </Style>
+    
     <Style Selector="controls|MainWindowLine">
         <Style.Resources>
             <ci:BindingProxy x:TypeArguments="SolidColorBrush" x:Key="AccentFillColorDefaultBrushProxy" 
@@ -60,32 +97,11 @@
                     
                     <!-- Background -->
                     <Border x:Name="BackgroundBorder"
-                            Classes="docking background"
+                            IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"
+                            Classes="docking line-background"
                             Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                            Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                             Height="{DynamicResource IslandContainerHeight}" />
-                    <Grid x:Name="ContentClipBorder" >
-                        <Grid.Clip>
-                            <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
-                                <Binding Path="BackgroundWidth" Mode="OneWay"
-                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
-                                <Binding Path="Bounds.Width" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
-                                <Binding Path="Bounds.Height" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
-                                <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"
-                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                                <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
-                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                                <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
-                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                            </MultiBinding>
-                        </Grid.Clip>
-                        
-                        <Border x:Name="BackgroundBorderOverlay"
-                                Classes="docking background"
-                                Width="{Binding Bounds.Width, ElementName=BackgroundBorder, Mode=OneWay}"
-                                Opacity="0"
-                                Height="{DynamicResource IslandContainerHeight}"/>
-
+                    <Grid x:Name="ContentClipBorder" Classes="clip-host">
                         <Panel Classes="animated-resize" ClipToBounds="False">
                             <Grid x:Name="PART_GridWrapper" ClipToBounds="False"
                                   Height="{DynamicResource IslandContainerHeight}"
@@ -103,7 +119,8 @@
                                       ClipToBounds="True"
                                       Opacity="0">
                                     <Border ClipToBounds="True"
-                                            IsHitTestVisible="False">
+                                            IsHitTestVisible="False"
+                                            Classes.line-background="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}">
 
                                         <ProgressBar VerticalAlignment="Bottom"
                                                      Maximum="1"
@@ -113,6 +130,7 @@
                                         </ProgressBar>
                                     </Border>
                                     <ContentPresenter
+                                        MaxHeight="{DynamicResource IslandContainerHeight}"
                                         Content="{Binding OverlayContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
                                         ContentTemplate="{Binding OverlayContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
 
@@ -130,8 +148,9 @@
                             VerticalAlignment="Stretch"
                             Opacity="0"
                             ClipToBounds="True"
+                            Height="{DynamicResource IslandContainerHeight}"
                             RenderTransformOrigin="{x:Static RelativePoint.Center}"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+                            Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}">
                         <Border.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform />
@@ -153,46 +172,58 @@
                 </Grid>
             </ControlTemplate>
             <ControlTemplate x:Key="MainWindowLineMinControlTemplate" TargetType="controls:MainWindowLine">
-                <Grid
-                    ClipToBounds="True"
-                    Classes="docking">
-                    <Grid.Clip>
-                        <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
-                            <Binding Path="BackgroundWidth" Mode="OneWay"
-                                     RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
-                            <Binding Path="Bounds.Width" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
-                            <Binding Path="Bounds.Height" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
-                            <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"
-                                     RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                            <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
-                                     RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                            <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
-                                     RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
-                        </MultiBinding>
-                    </Grid.Clip>
+                <Grid 
+                    ClipToBounds="False"
+                    x:Name="GridRoot"
+                    HorizontalAlignment="Stretch">
+                    
                     <!-- Background -->
                     <Border x:Name="BackgroundBorder"
-                            Classes="docking background"
+                            IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"
+                            Classes="docking line-background"
                             Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                            Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                             Height="{DynamicResource IslandContainerHeight}" />
+                    <Grid x:Name="ContentClipBorder" Classes="clip-host">
+                        <Panel Classes="animated-resize" ClipToBounds="False">
+                            <Grid x:Name="PART_GridWrapper" ClipToBounds="False"
+                                  Height="{DynamicResource IslandContainerHeight}"
+                                  Classes="docking">
+                                <Grid Height="{DynamicResource IslandContainerHeight}"
+                                      x:Name="GridContentRoot"
+                                      MinWidth="20"
+                                      Margin="12 0">
+                                    <ContentPresenter
+                                        Content="{Binding Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
+                                </Grid>
 
-
-                    <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
-                          Height="{DynamicResource IslandContainerHeight}"
-                          Classes="docking">
-
-                        <Grid Height="{DynamicResource IslandContainerHeight}"
-                              x:Name="GridContentRoot"
-                              Margin="12 0">
-                            <ContentPresenter
-                                Content="{Binding Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
-                        </Grid>
+                            </Grid>
+                        </Panel>
                     </Grid>
                 </Grid>
             </ControlTemplate>
             <ci:DoubleToThicknessMultiConverter x:Key="DoubleToThicknessMultiConverter" />
         </Style.Resources>
+        
+        <Style Selector="^ ci|ComponentPresenter[IsRootComponent=True]">
+            <Setter Property="ContentTemplate">
+                <DataTemplate>
+                    <Panel>
+                        <ContentPresenter Content="{Binding}"/>
+                    </Panel>
+                </DataTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="^ ci|ComponentPresenter[IsRootComponent=True][(ci|MainWindowStylesAssist.IsIslandSeperated)=True]">
+            <Setter Property="ContentTemplate">
+                <DataTemplate>
+                    <Panel Margin="-2 0">
+                        <Border Classes="line-background"/>
+                        <ContentPresenter Content="{Binding}" Margin="16 0"/>
+                    </Panel>
+                </DataTemplate>
+            </Setter>
+        </Style>
+        
         
         <Setter Property="Template" Value="{StaticResource MainWindowLineFullControlTemplate}"/>
         
@@ -207,18 +238,6 @@
             </Setter>
         </Style>
         
-        <Style Selector="^ /template/ Border#BackgroundBorder">
-            <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"/>
-        </Style>
-        <Style Selector="^ /template/ Border#BackgroundBorder">
-            <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="{Binding ViewModel.Settings.RadiusX, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0} "/>
-            <Setter Property="BoxShadow" Value="0 4 8 2 #48000000"/>
-        </Style>
-        <Style Selector="^:custom-background /template/ Border.background">
-            <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"/>
-        </Style>
         <Style Selector="^[IsNotificationEnabled=False]">
             <Setter Property="Template" Value="{StaticResource MainWindowLineMinControlTemplate}"/>
             <Setter Property="IsVisible" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InvertBooleanConverter}}"/>
