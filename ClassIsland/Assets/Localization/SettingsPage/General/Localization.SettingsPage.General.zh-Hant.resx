@@ -118,28 +118,28 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="LangName_string" xml:space="preserve">
-    <value>中文(繁體)</value>
+    <value>中文(簡體)</value>
   </data>
   <data name="LoadOnBoot_string" xml:space="preserve">
-    <value>開機自啓</value>
+    <value>開機自啟</value>
   </data>
   <data name="RegURLProto_string" xml:space="preserve">
     <value>註冊URL協議</value>
   </data>
   <data name="LoadOnBoot_Description" xml:space="preserve">
-    <value>在您的系統啓動時自動運行本應用</value>
+    <value>在您的系統啟動時自動運行本應用</value>
   </data>
   <data name="RegURLProto_Description" xml:space="preserve">
     <value>允許第三方應用或網頁通過URL協議(classisland://)調用本應用的部分功能，詳見幫助文檔</value>
   </data>
   <data name="Behavior_string" xml:space="preserve">
-    <value>行为</value>
+    <value>行為</value>
   </data>
   <data name="SemesterStartDate_string" xml:space="preserve">
-    <value>学期开始时间</value>
+    <value>學期開始時間</value>
   </data>
   <data name="SemesterStartDate_Description" xml:space="preserve">
-    <value>此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。</value>
+    <value>此時間將作為學期的第一天，用於多周輪換課表的計算。應設為一週的第一天。</value>
   </data>
   <data name="HideWindow_string" xml:space="preserve">
     <value>隱藏窗口</value>
@@ -148,6 +148,6 @@
     <value>將在以下選定的情況隱藏主界面，以防止遮擋屏幕影響授課。</value>
   </data>
   <data name="AdjustOffset_string" xml:space="preserve">
-    <value />
+    <value>調整偏移...</value>
   </data>
 </root>

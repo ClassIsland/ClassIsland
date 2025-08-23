@@ -148,6 +148,6 @@
     <value>Hide the main interface in the selected situations to prevent it from obstructing the screen and affecting teaching.</value>
   </data>
   <data name="AdjustOffset_string" xml:space="preserve">
-    <value />
+    <value>Adjust offset...</value>
   </data>
 </root>

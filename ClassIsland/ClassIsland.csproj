@@ -151,9 +151,11 @@
         <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
     </ItemGroup>
 	<ItemGroup>
+	  <AvaloniaResource Update="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.resx">
+	    <Generator></Generator>
+	  </AvaloniaResource>
 	  <AvaloniaResource Update="Assets\Localization\SettingsPage\Localization.SettingsPage.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Localization.SettingsPage.Designer.cs</LastGenOutput>
+	    <Generator></Generator>
 	  </AvaloniaResource>
 	  <AvaloniaResource Update="Assets\Localization\SplashScreen\Localization.SplashScreen.Designer.cs">
 	    <DesignTime>True</DesignTime>
@@ -161,16 +163,10 @@
 	    <DependentUpon>Localization.SplashScreen.resx</DependentUpon>
 	  </AvaloniaResource>
 	  <AvaloniaResource Update="Assets\Localization\SplashScreen\Localization.SplashScreen.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Localization.SplashScreen.Designer.cs</LastGenOutput>
+	    <Generator></Generator>
 	  </AvaloniaResource>
 	</ItemGroup>
 	<ItemGroup>
-	  <Compile Update="Assets\Localization\SettingsPage\Localization.SettingsPage.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Localization.SettingsPage.resx</DependentUpon>
-	  </Compile>
 	  <Compile Update="Controls\TimeLine\TimeLineListItemControl.axaml.cs">
 	    <DependentUpon>TimeLineListItemControl.axaml</DependentUpon>
 	    <SubType>Code</SubType>
