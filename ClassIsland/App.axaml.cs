@@ -830,7 +830,7 @@ public partial class App : AppBase, IAppHost
                         Id = "classisland.fluent",
                         Name = "Fluent",
                         Description = "焕然一新的 ClassIsland 外观。",
-                        Banner = "avares://ClassIsland/Assets/XamlThemePreviews/classisland.classic.png",
+                        Banner = "avares://ClassIsland/Assets/XamlThemePreviews/classisland.fluent.png",
                         Author = "ClassIsland",
                         Url = "https://github.com/ClassIsland/ClassIsland"
                     });
