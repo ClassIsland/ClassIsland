@@ -41,11 +41,6 @@ public partial class TopmostEffectWindow : Window
         DataContext = this;
         ViewModel.EffectControls.CollectionChanged += EffectControlsOnCollectionChanged;
         TransparencyLevelHint = [WindowTransparencyLevel.Transparent];
-        if (!SettingsService.Settings.IsCompatibleWindowTransparentEnabled)
-        {
-            Show();
-            Hide();
-        }
 #if DEBUG
         // RendererDiagnostics.DebugOverlays = RendererDebugOverlays.Fps;
 #endif

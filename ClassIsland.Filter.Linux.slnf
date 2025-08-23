@@ -12,7 +12,6 @@
       "ClassIsland.Shared.IPC\\ClassIsland.Shared.IPC.csproj",
       "ClassIsland.Shared\\ClassIsland.Shared.csproj",
       "ClassIsland\\ClassIsland.csproj",
-      "Demos\\ClassIsland.IpcDemo\\ClassIsland.IpcDemo.csproj",
       "platforms\\ClassIsland.Platforms.Linux\\ClassIsland.Platforms.Linux.csproj",
       "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj"
     ]
