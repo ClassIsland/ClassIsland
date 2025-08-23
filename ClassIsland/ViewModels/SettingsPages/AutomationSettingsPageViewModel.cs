@@ -1,43 +1,43 @@
-﻿using ClassIsland.Core.Models;
+﻿using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Services;
+using ClassIsland.Views.SettingPages;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
+using Workflow = ClassIsland.Core.Models.Automation.Workflow;
+
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class AutomationSettingsViewModel : ObservableRecipient
+public partial class AutomationSettingsViewModel : ObservableRecipient
 {
+    public IRulesetService RulesetService { get; }
+    public SettingsService SettingsService { get; }
+    public IAutomationService AutomationService { get; }
+    public IActionService ActionService { get; }
+    public ILogger<AutomationSettingsPage> Logger { get; }
+
+    public AutomationSettingsViewModel(
+        IRulesetService rulesetService,
+        SettingsService settingsService,
+        ILogger<AutomationSettingsPage> logger,
+        IAutomationService automationService,
+        IActionService actionService)
+    {
+        RulesetService = rulesetService;
+        SettingsService = settingsService;
+        Logger = logger;
+        AutomationService = automationService;
+        ActionService = actionService;
+    }
+
+    [ObservableProperty]
     bool _isPanelOpened = false;
-    public bool IsPanelOpened
+
+    partial void OnIsPanelOpenedChanged(bool value)
     {
-        get => _isPanelOpened;
-        set
-        {
-            if (value == _isPanelOpened) return;
-            _isPanelOpened = value;
-            OnPropertyChanged();
-        }
+        if (!value)
+            SelectedWorkflow = null;
     }
 
-    Workflow? _selectedAutomation;
-    public Workflow? SelectedAutomation
-    {
-        get => _selectedAutomation;
-        set
-        {
-            if (value == _selectedAutomation) return;
-            _selectedAutomation = value;
-            OnPropertyChanged();
-        }
-    }
-
-
-    string _createProfileName = "";
-    public string CreateProfileName
-    {
-        get => _createProfileName;
-        set
-        {
-            if (value == _createProfileName) return;
-            _createProfileName = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    Workflow? _selectedWorkflow;
 }

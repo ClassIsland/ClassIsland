@@ -1,0 +1,66 @@
+<ci:ActionSettingsControlBase x:Class="ClassIsland.Controls.ActionSettingsControls.RunActionSettingsControl"
+                              x:TypeArguments="actionSettings:RunActionSettings"
+                              d:DataContext="{d:DesignInstance Type=local:RunActionSettingsControl}"
+                              xmlns="https://github.com/avaloniaui"
+                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                              xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                              xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
+                              xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions">
+    <Panel>
+        <Grid ColumnDefinitions="Auto * Auto"
+              RowDefinitions="Auto Auto">
+            <ComboBox Margin="0 0 3 0"
+                      SelectedIndex="{Binding Settings.RunType}">
+                <ci:IconText Glyph="&#xF4B1;"
+                             Text="应用程序" />
+                <ci:IconText Glyph="&#xE508;">
+                    <ci:IconText.Text>
+                        <OnPlatform Default="终端命令">
+                            <On Options="Windows" Content="cmd 命令" />
+                        </OnPlatform>
+                    </ci:IconText.Text>
+                </ci:IconText>
+                <ci:IconText Glyph="&#xE687;"
+                             Text="文件" />
+                <ci:IconText Glyph="&#xE875;"
+                             Text="文件夹" />
+                <ci:IconText Glyph="&#xE905;"
+                             Text="Url 链接" />
+            </ComboBox>
+            <TextBox Grid.Row="0"
+                     Grid.Column="1"
+                     Margin="0 0 0 2"
+                     Text="{Binding Settings.Value, Mode=TwoWay}"
+                     Watermark="{Binding $parent[local:RunActionSettingsControl].Watermark}"
+                     ToolTip.Tip="{Binding $parent[local:RunActionSettingsControl].Watermark}"
+                     Tag="{Binding ElementName=FileSelectorButton, Path=IsVisible}">
+                <TextBox.Styles>
+                    <Style Selector="TextBox[Tag=True]">
+                        <Setter Property="Padding"
+                                Value="{Binding ElementName=FileSelectorButton, Path=Bounds.Width,
+                                Converter={x:Static local:RunActionSettingsControl.TextBlockPaddingFuncConverter}}"/>
+                    </Style>
+                </TextBox.Styles>
+            </TextBox>
+            <ci:AnimatedIconButton Name="FileSelectorButton"
+                                   Grid.Row="0"
+                                   Grid.Column="1"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Stretch"
+                                   VerticalContentAlignment="Center"
+                                   Glyph="&#xE88D;"
+                                   Text="选择…"
+                                   IsVisible="{Binding $parent[local:RunActionSettingsControl].IsFileSelector}"
+                                   Theme="{StaticResource TransparentButton}"
+                                   Click="FileSelectorButton_OnClick"
+                                   ToolTip.Tip="{Binding $parent[local:RunActionSettingsControl].Watermark, StringFormat='选择{0}…'}" />
+            <TextBox Grid.Row="1"
+                     Grid.Column="1"
+                     Text="{Binding Settings.Args, Mode=TwoWay}"
+                     IsVisible="{Binding $parent[local:RunActionSettingsControl].IsApplication}"
+                     Watermark="（可选）应用程序启动参数"
+                     ToolTip.Tip="（可选）应用程序启动参数" />
+        </Grid>
+    </Panel>
+</ci:ActionSettingsControlBase>

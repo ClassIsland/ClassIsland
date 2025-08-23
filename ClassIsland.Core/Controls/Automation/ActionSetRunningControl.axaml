@@ -1,0 +1,105 @@
+<UserControl x:Class="ClassIsland.Core.Controls.Automation.ActionSetRunningControl"
+             x:DataType="local:ActionSetRunningControl"
+             x:CompileBindings="True"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls.Automation"
+             xmlns:enums="clr-namespace:ClassIsland.Shared.Enums;assembly=ClassIsland.Shared">
+    <StackPanel Orientation="Horizontal">
+        <StackPanel.Styles>
+            <Style Selector="StackPanel > ci|AnimatedIconButton">
+                <Setter Property="Theme" Value="{StaticResource TransparentButton}" />
+                <Style Selector="^.transitions-foreground /template/ Button#PART_Button /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <BrushTransition Property="Background"
+                                             Duration="0:0:0.15" />
+                        </Transitions>
+                    </Setter>
+                </Style>
+                <Style Selector="^.foreground-accent /template/ Button#PART_Button /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+                    <Setter Property="FontWeight" Value="Medium" />
+                </Style>
+                <Style Selector="^.fade /template/ Button#PART_Button /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Opacity" Value="0.5" />
+                </Style>
+            </Style>
+        </StackPanel.Styles>
+
+        <ci:AnimatedIconButton Glyph="&#xEDBF;"
+                               Text="触发"
+                               Classes="transitions-foreground"
+                               Command="{Binding $parent[local:ActionSetRunningControl].InvokeActionCommand}"
+                               ToolTip.Tip="触发行动。">
+            <Classes.foreground-accent>
+                <Binding Path="$parent[local:ActionSetRunningControl].ActionSet.Status"
+                         Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <enums:ActionSetStatus>Normal</enums:ActionSetStatus>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </Classes.foreground-accent>
+            <Classes.fade>
+                <Binding Path="$self.IsKeepingExpanded"
+                         Converter="{x:Static BoolConverters.Not}" />
+            </Classes.fade>
+            <ci:AnimatedIconButton.IsKeepingExpanded>
+                <Binding Path="$parent[local:ActionSetRunningControl].ActionSet.Status"
+                         Converter="{x:Static ObjectConverters.NotEqual}">
+                    <Binding.ConverterParameter>
+                        <enums:ActionSetStatus>Invoking</enums:ActionSetStatus>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </ci:AnimatedIconButton.IsKeepingExpanded>
+        </ci:AnimatedIconButton>
+
+        <ci:AnimatedIconButton Glyph="&#xEE67;"
+                               Text="中断"
+                               Classes="transitions-foreground"
+                               Command="{Binding $parent[local:ActionSetRunningControl].InterruptActionCommand}"
+                               ToolTip.Tip="中断行动运行。">
+            <Classes.foreground-accent>
+                <Binding Path="$self.IsKeepingExpanded" />
+            </Classes.foreground-accent>
+            <Classes.fade>
+                <Binding Path="$self.IsKeepingExpanded"
+                         Converter="{x:Static BoolConverters.Not}" />
+            </Classes.fade>
+            <ci:AnimatedIconButton.IsKeepingExpanded>
+                <Binding Path="$parent[local:ActionSetRunningControl].ActionSet.IsWorking" />
+            </ci:AnimatedIconButton.IsKeepingExpanded>
+        </ci:AnimatedIconButton>
+
+        <ci:AnimatedIconButton Glyph="&#xE101;"
+                               Text="恢复"
+                               Command="{Binding $parent[local:ActionSetRunningControl].RevertActionCommand}"
+                               ToolTip.Tip="触发恢复行动。"
+                               IsVisible="{Binding $parent[local:ActionSetRunningControl].IsRevertEnabled}">
+            <Classes.foreground-accent>
+                <Binding Path="$parent[local:ActionSetRunningControl].ActionSet.Status"
+                         Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <enums:ActionSetStatus>IsOn</enums:ActionSetStatus>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </Classes.foreground-accent>
+            <Classes.fade>
+                <Binding Path="$self.IsKeepingExpanded"
+                         Converter="{x:Static BoolConverters.Not}" />
+            </Classes.fade>
+            <ci:AnimatedIconButton.IsKeepingExpanded>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="$parent[local:ActionSetRunningControl].ActionSet.IsRevertEnabled" />
+                    <Binding Path="$parent[local:ActionSetRunningControl].ActionSet.Status"
+                             Converter="{x:Static ObjectConverters.NotEqual}">
+                        <Binding.ConverterParameter>
+                            <enums:ActionSetStatus>Reverting</enums:ActionSetStatus>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </MultiBinding>
+            </ci:AnimatedIconButton.IsKeepingExpanded>
+        </ci:AnimatedIconButton>
+    </StackPanel>
+</UserControl>

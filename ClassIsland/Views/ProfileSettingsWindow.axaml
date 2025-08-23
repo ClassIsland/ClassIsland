@@ -10,11 +10,11 @@
         xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
         xmlns:controls1="clr-namespace:ClassIsland.Controls"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
-        xmlns:action="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
         xmlns:timeLine="clr-namespace:ClassIsland.Controls.TimeLine"
         xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
         xmlns:data="clr-namespace:FluentAvalonia.UI.Data;assembly=FluentAvalonia"
         xmlns:scheduleDataGridCell="clr-namespace:ClassIsland.Controls.ScheduleDataGridCell"
+        xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
@@ -1022,8 +1022,10 @@
                                             </StackPanel>
                                             <StackPanel x:Name="StackPanelBreakingTimePointSettings">
                                                 <ci:Field Label="课间名称">
-                                                    <TextBox
-                                                        Text="{Binding ViewModel.SelectedTimePoint.BreakName, UpdateSourceTrigger=PropertyChanged}" />
+                                                    <AutoCompleteBox
+                                                        ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CurrentProfileBreakNames}"
+                                                        Text="{Binding ViewModel.SelectedTimePoint.BreakName}"
+                                                        GotFocus="StackPanelBreakingTimePointSettings_OnGotFocus"/>
                                                 </ci:Field>
                                             </StackPanel>
                                             <Separator Margin="0 4 0 8" />
@@ -1063,7 +1065,7 @@
                                                         Margin="0 0 0 2">
                                                     <ci:IconText Glyph="&#xEDBB;" Text="触发" />
                                                 </Button>
-                                                <action:ActionControl
+                                                <automation:ActionControl
                                                     ActionSet="{Binding ViewModel.SelectedTimePoint.ActionSet}" />
                                             </StackPanel>
                                         </StackPanel>
@@ -1500,6 +1502,11 @@
                                                ToolTip.Tip="管理课表群"
                                                Label="{Binding Data.Name, Source={StaticResource ClassPlanGroupBindingProxy}, Mode=OneWay}"/>
                     <controls:CommandBarSeparator/>
+                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xf431;}"
+                                               Label="不信任"
+                                               Click="ButtonTrustProfile_OnClick"
+                                               ToolTip.Tip="当前档案不受信任，部分功能受限。"
+                                               IsVisible="{Binding ViewModel.ProfileService.IsCurrentProfileTrusted, Converter={StaticResource InvertBooleanConverter}}" />
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xeeb5;}"
                                                Label="保存"
                                                Click="ButtonSaveProfile_OnClick"

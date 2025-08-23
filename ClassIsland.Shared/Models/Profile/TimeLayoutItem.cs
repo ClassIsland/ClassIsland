@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text.Json.Serialization;
 using ClassIsland.Shared.JsonConverters;
-using ClassIsland.Shared.Models.Action;
+using ClassIsland.Shared.Models.Automation;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -52,7 +52,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
             //EnsureTime(StartSecond, value);
             _endSecond = value;
             OnPropertyChanged();
-            
+
         }
     }
 
@@ -174,7 +174,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     public string BreakNameText => string.IsNullOrEmpty(BreakName) ? "课间休息" : BreakName;
 
     /// <summary>
-    /// 自定义课间名称。应使用<see cref="BreakNameText"/>获取实际课间名称。
+    /// 自定义课间名称，可能为空。通过 <see cref="BreakNameText"/> 获取实际显示的课间名称。
     /// </summary>
     public string BreakName
     {

@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 namespace ClassIsland.Core.Extensions;
 
 /// <summary>
@@ -14,10 +15,10 @@ public static class ListExtensions
     /// <param name="defaultValue">索引越界时返回的默认值（可选）</param>
     /// <returns>索引处的元素或默认值</returns>
     /// <example>
-    /// var list = new List&lt;int&gt; { 1, 2, 3 };
-    /// var value = list.GetValueOrDefault(5, -1); // 返回 -1
+    /// var list = new List&lt;int&gt; { 1, 2, 3 };<br/>
+    /// list.GetValueOrDefault(5, -1); // 返回 -1
     /// </example>
-    public static T? GetValueOrDefault<T>(this IReadOnlyList<T>? source, int index, T? defaultValue = default)
+    [Pure] public static T? GetValueOrDefault<T>(this IReadOnlyList<T>? source, int index, T? defaultValue = default)
     {
         if (source == null) return defaultValue;
         return index >= 0 && index < source.Count

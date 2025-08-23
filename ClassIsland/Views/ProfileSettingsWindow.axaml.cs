@@ -25,7 +25,7 @@ using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
-using ClassIsland.Shared.Models.Action;
+using ClassIsland.Shared.Models.Automation;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 using CommunityToolkit.Mvvm.Input;
@@ -116,6 +116,23 @@ public partial class ProfileSettingsWindow : MyWindow
         (from i in Directory.GetFiles(Services.ProfileService.ProfilePath)
             where i.EndsWith(".json")
             select Path.GetFileName(i));
+    }
+
+    private async void ButtonTrustProfile_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var result = await new ContentDialog()
+        {
+            Title = "不信任的档案",
+            Content = "当前档案不受信任，部分功能（如行动时间点等）将禁用。如果您信任此档案并希望启用这些受限的功能，请将此档案设置为信任。",
+            DefaultButton = ContentDialogButton.Primary,
+            PrimaryButtonText = "信任此档案",
+            SecondaryButtonText = "取消"
+        }.ShowAsync();
+
+        if (result == ContentDialogResult.Primary)
+        {
+            ViewModel.ProfileService.TrustCurrentProfile();
+        }
     }
 
     private void ButtonSaveProfile_OnClick(object? sender, RoutedEventArgs e)
@@ -793,7 +810,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             return;
         }
-        IAppHost.GetService<IActionService>().Invoke(action);
+        ViewModel.ActionService.InvokeActionSetAsync(action);
     }
     
     private void ButtonOverwriteClasses_OnClick(object sender, RoutedEventArgs e)
@@ -811,6 +828,16 @@ public partial class ProfileSettingsWindow : MyWindow
     private void CommandBindingRemoveTimePoint_OnExecuted(object? sender, ExecutedRoutedEventArgs e)
     {
         RemoveSelectedTimePoint();
+    }
+
+    private void StackPanelBreakingTimePointSettings_OnGotFocus(object? sender, GotFocusEventArgs e)
+    {
+        ViewModel.CurrentProfileBreakNames = new HashSet<string>(
+            ViewModel.ProfileService.Profile.TimeLayouts.Values
+                .SelectMany(t => t.Layouts
+                .Select(l => l.BreakName))
+                .Where(n => !string.IsNullOrEmpty(n)));
+        // Console.WriteLine(string.Join(" ", ViewModel.CurrentProfileBreakNames));
     }
 
     #endregion

@@ -142,7 +142,6 @@ public class RulesetService : IRulesetService
 
     public void RegisterRuleHandler(string id, RuleRegistryInfo.HandleDelegate handler)
     {
-        return;  // TODO: stub
         if (!IRulesetService.Rules.TryGetValue(id, out var ruleRegistryInfo))
         {
             throw new KeyNotFoundException($"找不到规则 {id}。");

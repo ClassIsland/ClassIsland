@@ -1,0 +1,68 @@
+<UserControl x:Class="ClassIsland.Core.Controls.Automation.TriggerSettingsControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dd="urn:gong-wpf-dragdrop"
+                      xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
+             xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=automation:TriggerSettingsControl}}">
+        <ItemsControl ItemsSource="{Binding Triggers}"
+                      HorizontalAlignment="Stretch">
+            <Interaction.Behaviors>
+                <ItemDragBehavior />
+            </Interaction.Behaviors>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border HorizontalAlignment="Stretch"
+                            Background="{DynamicResource MaterialDesignCardBackground}">
+                        <Grid Margin="0 4" ColumnDefinitions="Auto,*">
+                            <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 0 4">
+                                    <Button Grid.Column="0"
+                                            Theme="{StaticResource TransparentButton}"
+                                            Classes="circle"
+                                            ToolTip.Tip="删除"
+                                            Command="{Binding RemoveTriggerCommand, RelativeSource={RelativeSource AncestorType=automation:TriggerSettingsControl}}"
+                                            CommandParameter="{Binding}"
+                                            Margin="0 0 2 0"
+                                            IsVisible="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=automation:TriggerSettingsControl}}"
+                                            Content="{controls:FluentIcon &#xE671;}"
+                                            VerticalAlignment="Stretch">
+                                    </Button>
+                                    <ComboBox SelectedValue="{Binding Id}"
+                                              SelectedValueBinding="{Binding Id}"
+                                              ItemsSource="{x:Static services:IAutomationService.RegisteredTriggers}"
+                                              MinWidth="100">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <controls:IconText Glyph="{Binding IconGlyph}"
+                                                                   Text="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                                <automation:TriggerSettingsControlPresenter Settings="{Binding}"
+                                                                       Id="{Binding Id}"
+                                                                      Margin="4 0 0 0"
+                                                                      Grid.Column="1" />
+                            </WrapPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Theme="{StaticResource TransparentButton}"
+                Click="ButtonAddTrigger_OnClick"
+                HorizontalAlignment="Left">
+            <controls:IconText Glyph="&#xE00D;"
+                               Text="添加触发器"
+                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+        </Button>
+    </StackPanel>
+</UserControl>
+

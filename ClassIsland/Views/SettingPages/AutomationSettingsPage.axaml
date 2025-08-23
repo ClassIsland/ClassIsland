@@ -1,0 +1,390 @@
+<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AutomationSettingsPage"
+                     x:DataType="local:AutomationSettingsPage"
+                     x:CompileBindings="True"
+                     xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                     xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                     xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+                     xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
+                     xmlns:controls="clr-namespace:ClassIsland.Controls"
+                     xmlns:enums="clr-namespace:ClassIsland.Shared.Enums;assembly=ClassIsland.Shared"
+                     xmlns:models="clr-namespace:ClassIsland.Core.Models.Automation;assembly=ClassIsland.Core">
+    <ci:SettingsPageBase.Resources>
+        <ci:PreventNullConverter x:Key="PreventNullConverter" />
+    </ci:SettingsPageBase.Resources>
+    <Panel>
+        <!--  自动化编辑  -->
+        <controls:ListDetailView Margin="12 12 0 0"
+                                 IsPanelOpened="{Binding ViewModel.IsPanelOpened, Mode=TwoWay}"
+                                 IsVisible="{Binding ViewModel.SettingsService.Settings.IsAutomationWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
+                                 ShowTitleWhenNotCompressed="True">
+            <controls:ListDetailView.LeftContent>
+                <Grid RowDefinitions="Auto,Auto,*,Auto" Classes="animated-intro">
+                    <!--  左上：自动化开关  -->
+                    <fa:SettingsExpander Description="自动化是一种可使 ClassIsland 自动作出行动的功能。"
+                                         Header="启用自动化"
+                                         IconSource="{ci:FluentIconSource &#xEEF1;}">
+                        <fa:SettingsExpander.Resources>
+                            <x:Double x:Key="SettingsExpanderItemAdaptiveWidthTrigger">495</x:Double>
+                        </fa:SettingsExpander.Resources>
+                        <fa:SettingsExpander.Styles>
+                            <Style Selector="fa|SettingsExpander /template/ fa|SettingsExpanderItem#ContentHost:footerBottom ci|AnimatedIconButton#HelperButton">
+                                <Setter Property="IsKeepingExpanded" Value="True" />
+                            </Style>
+                        </fa:SettingsExpander.Styles>
+                        <fa:SettingsExpander.Footer>
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="6">
+                                <ci:AnimatedIconButton x:Name="HelperButton"
+                                                       Glyph="&#xE23C;"
+                                                       Text="帮助…"
+                                                       Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                                       CommandParameter="https://docs.classisland.tech/app/automation.html"
+                                                       Theme="{StaticResource TransparentButton}"
+                                                       ToolTip.Tip="打开自动化帮助文档…" />
+                                <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsAutomationEnabled}" />
+                            </StackPanel>
+                        </fa:SettingsExpander.Footer>
+                    </fa:SettingsExpander>
+                    <Grid Grid.Row="1"
+                          Margin="0 6 0 0"
+                          ColumnDefinitions="Auto,*,Auto">
+                        <Button Margin="6"
+                                Command="{Binding $parent[local:AutomationSettingsPage].AddWorkflowCommand}"
+                                Classes.invert-foreground-accent="{Binding ViewModel.AutomationService.Workflows.Count}">
+                            <Button.Styles>
+                                <Style Selector="Button.invert-foreground-accent">
+                                    <Setter Property="Theme" Value="{StaticResource TransparentButton}"/>
+                                </Style>
+                                <Style Selector="Button:not(.invert-foreground-accent) /template/ ContentPresenter#PART_ContentPresenter">
+                                    <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+                                </Style>
+                            </Button.Styles>
+                            <ci:IconText Glyph="&#xE00D;"
+                                         Text="添加自动化"
+                                         ToolTip.Tip="添加一个自动化。"
+                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                        </Button>
+                        <!--  左上：自动化配置方案  -->
+                        <StackPanel Grid.Column="2"
+                                    Orientation="Horizontal">
+                            <ComboBox MinWidth="120"
+                                      MaxWidth="150"
+                                      Margin="0 0 4 0"
+                                      VerticalAlignment="Center"
+                                      DropDownOpened="RefreshWorkflows"
+                                      ItemsSource="{Binding ViewModel.AutomationService.Configs}"
+                                      SelectedItem="{Binding ViewModel.SettingsService.Settings.CurrentAutomationConfig, Converter={StaticResource PreventNullConverter}}"
+                                      ToolTip.ShowDelay="50"
+                                      ToolTip.Tip="自动化配置方案" />
+                            <ci:AnimatedIconButton Glyph="&#xE689;"
+                                                   Text="新建…"
+                                                   Command="{Binding $parent[local:AutomationSettingsPage].CreateConfigCommand}"
+                                                   Theme="{StaticResource TransparentButton}"
+                                                   ToolTip.Tip="新建自动化配置方案…" />
+                            <ci:AnimatedIconButton Glyph="&#xE88D;"
+                                                   Text="打开…"
+                                                   Command="{Binding $parent[local:AutomationSettingsPage].OpenConfigFolderCommand}"
+                                                   Theme="{StaticResource TransparentButton}"
+                                                   ToolTip.Tip="打开自动化配置文件夹…" />
+                        </StackPanel>
+                    </Grid>
+                    <!--  左：自动化导航栏  -->
+                    <ScrollViewer Grid.Row="2">
+                        <ListBox ItemsSource="{Binding ViewModel.AutomationService.Workflows}"
+                                 SelectedItem="{Binding ViewModel.SelectedWorkflow, Mode=TwoWay}"
+                                 SelectionChanged="SelectorMain_OnSelected"
+                                 SelectionMode="Single">
+                            <ListBox.Styles>
+                                <Style Selector="ListBox:not(.no-drag) ListBoxItem">
+                                    <Setter Property="Interaction.Behaviors">
+                                        <BehaviorCollectionTemplate>
+                                            <BehaviorCollection>
+                                                <ItemDragBehavior HorizontalDragThreshold="33550336"
+                                                                  Orientation="Vertical"
+                                                                  VerticalDragThreshold="3" />
+                                            </BehaviorCollection>
+                                        </BehaviorCollectionTemplate>
+                                    </Setter>
+                                </Style>
+                            </ListBox.Styles>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Classes="animated-intro" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="3 0"
+                                          Background="Transparent"
+                                          ColumnDefinitions="* 8 Auto"
+                                          Height="50">
+                                        <!--  工作流标题  -->
+                                        <TextBlock VerticalAlignment="Center"
+                                                   Text="{Binding ActionSet.Name}"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   TextWrapping="Wrap" />
+
+                                        <!-- <fa:ProgressRing Grid.Column="1" -->
+                                        <!--                  Height="25" -->
+                                        <!--                  IsActive="{Binding ActionSet.IsWorking}" -->
+                                        <!--                  IsIndeterminate="{Binding ActionSet.IsWorking}" -->
+                                        <!--                  IsVisible="{Binding ActionSet.IsWorking}" -->
+                                        <!--                  Background="Transparent" -->
+                                        <!--                  ToolTip.Tip="该自动化正在运行。"/> -->
+
+                                        <ToggleSwitch Grid.Column="2"
+                                                      IsChecked="{Binding ActionSet.IsEnabled}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+                </Grid>
+            </controls:ListDetailView.LeftContent>
+            <!--  右上：工作流操作  -->
+            <controls:ListDetailView.TitleElement>
+                <WrapPanel DataContext="{Binding ViewModel.SelectedWorkflow}"
+                           Margin="0 0 0 4"
+                           Classes="animated-resize"
+                           IsVisible="{Binding Converter={x:Static ObjectConverters.IsNotNull}}"
+                           Orientation="Horizontal">
+                    <TextBox MinWidth="150"
+                             Margin="2 2 6 2"
+                             HorizontalAlignment="Left"
+                             Text="{Binding ActionSet.Name, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="15"
+                             FontWeight="Medium"
+                             Watermark="自动化名称"
+                             ToolTip.Tip="自动化名称。" />
+                    <StackPanel Margin="4 0 0 0"
+                                Orientation="Horizontal"
+                                Tag="{Binding ActionSet.IsRevertEnabled}">
+                        <StackPanel.Styles>
+                            <Style Selector="StackPanel">
+                                <Style Selector="^[Tag=False]">
+                                    <Setter Property="MinWidth" Value="359" />
+                                </Style>
+                                <Style Selector="^[Tag=True]">
+                                    <Setter Property="MinWidth" Value="391" />
+                                </Style>
+
+                                <Style Selector="^ > ci|AnimatedIconButton">
+                                    <Setter Property="Theme" Value="{StaticResource TransparentButton}" />
+                                </Style>
+                            </Style>
+                        </StackPanel.Styles>
+
+                        <CheckBox Content="启用恢复"
+                                  ToolTip.Tip="该自动化是否启用恢复。"
+                                  IsChecked="{Binding ActionSet.IsRevertEnabled}" />
+
+                        <automation:ActionSetRunningControl ActionSet="{Binding ActionSet}"/>
+
+                        <Separator Width="1"
+                                   Height="25"
+                                   Margin="4 0"
+                                   Foreground="{DynamicResource TextFillColorDisabledBrush}" />
+
+                        <ci:AnimatedIconButton Glyph="&#xE58B;"
+                                               Text="复制"
+                                               Command="{Binding $parent[local:AutomationSettingsPage].DuplicateWorkflowCommand}"
+                                               CommandParameter="{Binding}"
+                                               ToolTip.Tip="创建该自动化的副本。" />
+                        <ci:AnimatedIconButton Glyph="&#xE61D;"
+                                               Text="删除"
+                                               Command="{Binding $parent[local:AutomationSettingsPage].DeleteWorkflowCommand}"
+                                               CommandParameter="{Binding}"
+                                               Foreground="IndianRed"
+                                               ToolTip.Tip="删除该自动化。" />
+                    </StackPanel>
+                </WrapPanel>
+            </controls:ListDetailView.TitleElement>
+
+
+
+
+            <!--  右：主编辑区  -->
+            <controls:ListDetailView.RightContent>
+                <Panel>
+                    <ci:Emptiable Content="{Binding ViewModel.SelectedWorkflow}">
+                        <ci:Emptiable.ContentTemplate>
+                            <DataTemplate x:DataType="models:Workflow">
+                                <Panel>
+                                    <ScrollViewer Margin="0 0 1 0"
+                                                  Padding="0 0 11 0">
+                                        <StackPanel Classes="animated-intro">
+                                            <StackPanel.Styles>
+                                                <Style Selector="StackPanel > Expander /template/ ToggleButton#ExpanderHeader">
+                                                    <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+                                                </Style>
+                                                <Style Selector="StackPanel > Expander">
+                                                    <Setter Property="IsExpanded" Value="True" />
+                                                    <Setter Property="Margin" Value="2 2 2 10" />
+                                                </Style>
+                                            </StackPanel.Styles>
+                                            <!--  v2: 触发器编辑  -->
+                                            <Expander Classes="compact stretch-header">
+                                                <Expander.Header>
+                                                    <ci:IconText Glyph="&#xE84F;"
+                                                                 Text="当事件触发时" />
+                                                </Expander.Header>
+                                                <automation:TriggerSettingsControl Triggers="{Binding Triggers}" />
+                                            </Expander>
+                                            <!--  规则编辑  -->
+                                            <Expander Classes="compact stretch-header">
+                                                <Expander.Header>
+                                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                                        <ci:IconText Glyph="&#xF17E;"
+                                                                     Text="并且满足规则集时" />
+                                                        <ToggleSwitch Grid.Column="2"
+                                                                      Margin="0 -6 2 0"
+                                                                      VerticalAlignment="Center"
+                                                                      VerticalContentAlignment="Center"
+                                                                      IsChecked="{Binding IsConditionEnabled}" />
+                                                    </Grid>
+                                                </Expander.Header>
+                                                <Grid>
+                                                    <TextBlock Margin="9 0 0 0"
+                                                               VerticalAlignment="Center"
+                                                               Text="工作流运行时不会考虑规则集。"
+                                                               IsVisible="{Binding !IsConditionEnabled}" />
+                                                    <ci:RulesetControl IsVisible="{Binding IsConditionEnabled}"
+                                                                       Ruleset="{Binding Ruleset}"
+                                                                       ShowTitle="False" />
+                                                </Grid>
+                                            </Expander>
+                                            <!--  行动编辑  -->
+                                            <Expander Classes="compact stretch-header">
+                                                <Expander.Header>
+                                                    <ci:IconText Glyph="&#xE01F;"
+                                                                 Text="触发行动" />
+                                                </Expander.Header>
+                                                <automation:ActionControl ActionSet="{Binding ActionSet}" />
+                                            </Expander>
+                                            <!--  v3: 恢复行动编辑  -->
+                                            <!--<Expander Grid.Row="3" Classes="compact stretch-header"
+                                                          Margin="2"
+                                                          IsExpanded="True">
+                                                    <Expander.Header>
+                                                            <ci:IconText Text="当规则不再满足时，恢复行动。"
+                                                                         Kind="AirplaneLanding" />
+                                                    </Expander.Header>
+                                                    <TextBlock Text="Coming S∞n" />
+                                                </Expander>-->
+                                            <ci:IconText Margin="10 2 2 10"
+                                                         Glyph="&#xE01D;"
+                                                         Text="当规则集不再满足时，将自动恢复行动。"
+                                                         IsVisible="{Binding ActionSet.IsRevertEnabled}" />
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Panel>
+                            </DataTemplate>
+                        </ci:Emptiable.ContentTemplate>
+                        <ci:Emptiable.EmptyContent>
+                            <!--  右：未选择自动化时，显示占位符  -->
+                            <StackPanel VerticalAlignment="Center">
+                                <ci:Empty Text="在左侧选择或添加一个自动化，然后在此处进行设置。"
+                                          IconHeight="75"
+                                          IconWidth="75"
+                                          ToolTip.Tip="光辉矢愿_瞄准">
+                                    <ci:Empty.Icon>
+                                        <fa:BitmapIconSource UriSource="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_瞄准.png" />
+                                    </ci:Empty.Icon>
+                                </ci:Empty>
+                                <Button Margin="0 16 0 0"
+                                        HorizontalAlignment="Center"
+                                        Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                        CommandParameter="https://docs.classisland.tech/app/automation.html"
+                                        Theme="{StaticResource TransparentButton}"
+                                        ToolTip.Tip="https://docs.classisland.tech/app/automation">
+                                    <ci:IconText Glyph="&#xEC2D;"
+                                                 Text="阅读自动化帮助"
+                                                 Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                </Button>
+                            </StackPanel>
+                        </ci:Emptiable.EmptyContent>
+                    </ci:Emptiable>
+                </Panel>
+            </controls:ListDetailView.RightContent>
+        </controls:ListDetailView>
+
+
+
+
+
+
+
+        <!--  自动化使用须知  -->
+        <ScrollViewer IsVisible="{Binding ViewModel.SettingsService.Settings.IsAutomationWarningVisible}">
+            <StackPanel Classes="animated-intro">
+                <StackPanel.Styles>
+                    <Style Selector=":is(Layoutable)">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="HorizontalAlignment" Value="Center" />
+                    </Style>
+                    <Style Selector=":is(ContentControl)">
+                        <Setter Property="VerticalContentAlignment" Value="Center" />
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    </Style>
+                    <Style Selector="TextBlock">
+                        <Setter Property="TextAlignment" Value="Center" />
+                        <Setter Property="HorizontalAlignment" Value="Center" />
+                        <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+                    </Style>
+                </StackPanel.Styles>
+                <Grid ColumnDefinitions="75,Auto,75">
+                    <Image Source="/Assets/AppLogo.png" />
+                    <ci:FluentIcon Grid.Column="1"
+                                   Width="25"
+                                   Height="25"
+                                   Margin="16 0"
+                                   Glyph="&#xE00C;"
+                                   FontSize="25" />
+                    <ci:FluentIcon Grid.Column="2"
+                                   Width="75"
+                                   Height="75"
+                                   Glyph="&#xEEF1;"
+                                   FontSize="75" />
+                </Grid>
+                <TextBlock Margin="0 8 0 0"
+                           Text="自动化"
+                           Theme="{StaticResource SubtitleTextBlockStyle}" />
+                <TextBlock Margin="0 10 0 0"
+                           xml:space="preserve" LineSpacing="4">
+　欢迎使用自动化！
+　自动化可以使 ClassIsland 根据条件自动作出行动，
+　比如修改应用设置、打开应用，等等。</TextBlock>
+                <Button Margin="0 15"
+                        Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                        CommandParameter="https://docs.classisland.tech/app/automation.html"
+                        Theme="{StaticResource TransparentButton}"
+                        ToolTip.Tip="https://docs.classisland.tech/app/automation">
+                    <ci:IconText Glyph="&#xEC2D;"
+                                 Text="阅读自动化帮助"
+                                 Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                </Button>
+                <Border Padding="10 10 10 14"
+                        Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                        CornerRadius="4">
+                    <StackPanel Spacing="-7">
+                        <ci:IconText Glyph="&#xF430;"
+                                     Text="警告" />
+                        <TextBlock xml:space="preserve" LineSpacing="3">
+自动化允许自动修改 ClassIsland 的各项设置，并调用
+　外部程序，可能有一定安全风险。
+　不当的自动化编写可能对正常教学造成影响，请勿滥用。</TextBlock>
+                    </StackPanel>
+                </Border>
+                <Button Margin="0 20 0 0"
+                        Classes="accent"
+                        Command="{Binding $parent[local:AutomationSettingsPage].AgreeAutomationNoticeCommand}">
+                    <ci:IconText Glyph="&#xE424;"
+                                 Text="同意并开始使用自动化" />
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+    </Panel>
+</ci:SettingsPageBase>

@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Automation;
 
 namespace ClassIsland.Core.Abstractions.Automation;
 
@@ -23,7 +23,7 @@ public abstract class TriggerBase
     /// </summary>
     protected void TriggerRevert()
     {
-        TriggeredRecover?.Invoke(this, EventArgs.Empty);
+        TriggeredRevert?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public abstract class TriggerBase
 
     internal event EventHandler? Triggered;
 
-    internal event EventHandler? TriggeredRecover;
+    internal event EventHandler? TriggeredRevert;
 
     /// <summary>
     /// 此触发器关联的工作流。

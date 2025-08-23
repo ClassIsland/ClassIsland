@@ -43,14 +43,14 @@ public class AppSettingsActionHandler : IHostedService
         void Add(string g, string binding, dynamic value)
         {
             Dispatcher.UIThread.Invoke(
-                new Action(() => SettingsService.AddSettingsOverlay(g, binding, value)),
+                new Action(() => SettingsService.AddSettingsOverlay(Guid.Parse(g), binding, value)),
                 DispatcherPriority.Render);
         }
 
         void Remove(string g, string binding)
         {
             Dispatcher.UIThread.Invoke(
-                new Action(() => SettingsService.RemoveSettingsOverlay(g, binding)),
+                new Action(() => SettingsService.RemoveSettingsOverlay(Guid.Parse(g), binding)),
                 DispatcherPriority.Render);
         }
     }
