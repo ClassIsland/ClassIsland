@@ -848,6 +848,43 @@ public partial class ProfileSettingsWindow : MyWindow
                 .Where(n => !string.IsNullOrEmpty(n)));
         // Console.WriteLine(string.Join(" ", ViewModel.CurrentProfileBreakNames));
     }
+    
+    private void ButtonZoomOut_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.TimeLineScale > 1.0)
+        {
+            ViewModel.TimeLineScale -= 0.2;
+        }
+        ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
+        if (TimeLineListControl.SelectedItem != null)
+            TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+    }
+
+    private void ButtonZoomIn_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.TimeLineScale < 5.0)
+        {
+            ViewModel.TimeLineScale += 0.2;
+        }
+        ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
+        if (TimeLineListControl.SelectedItem != null)
+            TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+    }
+
+    private void ButtonTimeLayoutItemScrollIntoItem(object? sender, RoutedEventArgs e)
+    {
+        var timeLayoutItems = ViewModel.SelectedTimeLayout?.Layouts;
+        var tpr = ViewModel.SelectedTimePoint ?? (timeLayoutItems is { Count: > 0 } ? timeLayoutItems?[0] : null);
+        if (tpr == null)
+        {
+            return;
+        }
+
+        ViewModel.SelectedTimePoint = null;
+        ViewModel.SelectedTimePoint = tpr;
+        TimeLineListControl.ScrollIntoView(tpr);
+        ListViewTimePoints.ScrollIntoView(tpr);
+    }
 
     #endregion
 
@@ -1187,41 +1224,5 @@ public partial class ProfileSettingsWindow : MyWindow
     }
 
     #endregion
-
-    private void ButtonZoomOut_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel.TimeLineScale > 1.0)
-        {
-            ViewModel.TimeLineScale -= 0.2;
-        }
-        ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
-        if (TimeLineListControl.SelectedItem != null)
-            TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
-    }
-
-    private void ButtonZoomIn_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel.TimeLineScale < 5.0)
-        {
-            ViewModel.TimeLineScale += 0.2;
-        }
-        ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
-        if (TimeLineListControl.SelectedItem != null)
-            TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
-    }
-
-    private void ButtonTimeLayoutItemScrollIntoItem(object? sender, RoutedEventArgs e)
-    {
-        var timeLayoutItems = ViewModel.SelectedTimeLayout?.Layouts;
-        var tpr = ViewModel.SelectedTimePoint ?? (timeLayoutItems is { Count: > 0 } ? timeLayoutItems?[0] : null);
-        if (tpr == null)
-        {
-            return;
-        }
-
-        ViewModel.SelectedTimePoint = null;
-        ViewModel.SelectedTimePoint = tpr;
-        TimeLineListControl.ScrollIntoView(tpr);
-        ListViewTimePoints.ScrollIntoView(tpr);
-    }
+    
 }
