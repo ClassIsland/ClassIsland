@@ -468,7 +468,7 @@
                                      SelectionChanged="SelectingItemsControlClassPlans_OnSelectionChanged">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <WrapPanel Orientation="Horizontal">
+                                        <WrapPanel Orientation="Horizontal" Classes="animated-resize">
                                             <WrapPanel.Styles>
                                                 <Style Selector="Border.ClassTableTag">
                                                     <Setter Property="BorderThickness" Value="1" />
