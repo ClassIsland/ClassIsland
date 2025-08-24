@@ -13,6 +13,7 @@
         xmlns:logging="clr-namespace:Microsoft.Extensions.Logging;assembly=Microsoft.Extensions.Logging.Abstractions"
         mc:Ignorable="d"
         Title="日志" Height="600" Width="1200"
+        EnableMicaWindow="True"
         d:DataContext="{d:DesignInstance local:AppLogsWindow}"
         Closing="AppLogsWindow_OnClosing">
     <Grid RowDefinitions="Auto,*,Auto">
@@ -53,7 +54,8 @@
         <DataGrid Grid.Row="1" ItemsSource="{Binding ViewModel.Logs}" 
                   AutoGenerateColumns="False"
                   x:Name="DataGridMain"
-                  GridLinesVisibility="Horizontal">
+                  GridLinesVisibility="Horizontal"
+                  Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}">
             <DataGrid.Styles>
                 <Style Selector="TextBlock, SelectableTextBlock">
                     <Setter Property="FontSize" Value="13"/>
