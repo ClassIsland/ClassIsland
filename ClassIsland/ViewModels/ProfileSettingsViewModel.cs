@@ -19,17 +19,17 @@ using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.ViewModels;
 
-public class ClassPlanTreeViewNode
-{
-    public required Guid Guid { get; set; }
-    public bool IsClassPlanNode { get; set; }
-    
-    public ClassPlan? ClassPlan { get; set; }
-    public ReadOnlyObservableCollection<ClassPlanTreeViewNode>? Children { get; set; }
-}
-
 public partial class ProfileSettingsViewModel : ObservableRecipient
 {
+    public class ClassPlanTreeViewNode
+    {
+        public required Guid Guid { get; set; }
+        public bool IsClassPlanNode { get; set; }
+    
+        public ClassPlan? ClassPlan { get; set; }
+        public ReadOnlyObservableCollection<ClassPlanTreeViewNode>? Children { get; set; }
+    }
+    
     public IProfileService ProfileService { get; }
     public IManagementService ManagementService { get; }
     public SettingsService SettingsService { get; }
