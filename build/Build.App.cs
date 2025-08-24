@@ -74,6 +74,7 @@ partial class Build
                 .SetProperty("SelfContained", BuildType == "selfContained")
                 .SetProperty("PublishDir", Package == "pkg" ? AppOutputPath : AppPublishPath)
                 .SetProperty("DebUOSOutputFilePath", AppOutputPath / PublishArtifactName + ".deb")
+                .SetProperty("PackageName", PublishArtifactName)
                 .SetProperty("UOSDebVersion", AppVersion)
                 .SetProperty("ApplicationVersion", AppVersion)
                 .SetProperty("ApplicationDisplayVersion", AppVersion)
