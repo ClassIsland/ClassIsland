@@ -101,7 +101,11 @@ public abstract class AppBase : Application, IAppHost
     /// 应用长版本号
     /// </summary>
     public static string AppVersionLong =>
-        $"{AppVersion}-{AppCodeName}-ee5031e5(dev) (Core {IAppHost.CoreVersion})";
+        #if NIX
+        $"{AppVersion}-{AppCodeName}-NIXBUILD_COMMIT(NIXBUILD_BRANCH) (Core {IAppHost.CoreVersion})";
+        #else
+        $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
+        #endif
     
     /// <summary>
     /// 应用当前生命周期状态

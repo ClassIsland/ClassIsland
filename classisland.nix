@@ -9,12 +9,15 @@
 
 buildDotnetModule {
   pname = "classisland";
-  version = "1.7.104.0";
+  version = "1.7.105.0";
   src = ./.;
   projectFile = "ClassIsland.Desktop/ClassIsland.Desktop.csproj";
   nugetDeps = ./deps.json;
   dotnet-sdk = dotnetCorePackages.sdk_8_0-bin;
   dotnet-runtime = dotnetCorePackages.runtime_8_0-bin;
+  dotnetBuildFlags = [
+    "-p:NIX=true"
+  ];
   executables = [ "ClassIsland.Desktop" ];
   nativeBuildInputs = [ git ];
   makeWrapperArgs = [
