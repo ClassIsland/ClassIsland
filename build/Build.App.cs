@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Build.Tasks;
 using Nuke.Common;
 using Nuke.Common.IO;
@@ -74,11 +75,15 @@ partial class Build
                 .SetProperty("SelfContained", BuildType == "selfContained")
                 .SetProperty("PublishDir", Package == "pkg" ? AppOutputPath : AppPublishPath)
                 .SetProperty("DebUOSOutputFilePath", AppOutputPath / PublishArtifactName + ".deb")
-                .SetProperty("PackageName", PublishArtifactName)
                 .SetProperty("UOSDebVersion", AppVersion)
                 .SetProperty("ApplicationVersion", AppVersion)
                 .SetProperty("ApplicationDisplayVersion", AppVersion)
                 .SetProperty("AutoCreateDebUOSAfterPublish", createDeb));
+            if (Package == "pkg")
+            {
+                File.Move(Directory.GetFiles(AppOutputPath).First(x => Path.GetExtension(x) == ".pkg"),
+                    AppOutputPath / PublishArtifactName + ".pkg");
+            }
         });
 
     Target GenerateAppZipArchive => _ => _
