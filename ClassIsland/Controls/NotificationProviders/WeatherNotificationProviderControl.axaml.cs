@@ -8,6 +8,8 @@ using Avalonia.Data.Core;
 using Avalonia.Interactivity;
 using Avalonia.Rendering.Composition;
 using Avalonia.Rendering.Composition.Animations;
+using ClassIsland.Core.Controls.NotificationTemplates;
+using ClassIsland.Core.Models.Notification.Templates;
 using ClassIsland.Core.Models.Weather;
 
 namespace ClassIsland.Controls.NotificationProviders;
@@ -69,20 +71,11 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
 
     private void WeatherNotificationProviderControl_OnLoaded(object sender, RoutedEventArgs e)
     {
-        var visual = ElementComposition.GetElementVisual(Description);
-        if (visual == null)
+        RootPanel.Children.Add(new RollingTextTemplate(new RollingTextTemplateData()
         {
-            return;
-        }
-
-        var compositor = visual.Compositor;
-        var anim = compositor.CreateVector3DKeyFrameAnimation();
-        anim.Target = nameof(visual.Offset);
-        anim.Duration = Duration;
-        anim.IterationBehavior = AnimationIterationBehavior.Count;
-        anim.IterationCount = 2;
-        anim.InsertKeyFrame(0f, visual.Offset with { X = RootCanvas.Bounds.Width }, new LinearEasing());
-        anim.InsertKeyFrame(1f, visual.Offset with { X = -Description.Bounds.Width }, new LinearEasing());
-        visual.StartAnimation(nameof(visual.Offset), anim);
+            Duration = Duration * 2,  // 此处接收的是单次滚动的时长
+            RepeatCount = 2,
+            Text = Alert.Detail
+        }));
     }
 }
