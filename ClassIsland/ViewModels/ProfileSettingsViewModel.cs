@@ -19,6 +19,15 @@ using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.ViewModels;
 
+public class ClassPlanTreeViewNode
+{
+    public required Guid Guid { get; set; }
+    public bool IsClassPlanNode { get; set; }
+    
+    public ClassPlan? ClassPlan { get; set; }
+    public ReadOnlyObservableCollection<ClassPlanTreeViewNode>? Children { get; set; }
+}
+
 public partial class ProfileSettingsViewModel : ObservableRecipient
 {
     public IProfileService ProfileService { get; }
@@ -83,8 +92,26 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private ToastMessage? _currentClassPlanEditDoneToast = null;
     [ObservableProperty] private KeyValuePair<Guid, TimeLayout>? _classPlanInfoSelectedTimeLayoutKvp;
     [ObservableProperty] private HashSet<string> _currentProfileBreakNames = [];
+    
+    [ObservableProperty] private ReadOnlyObservableCollection<ClassPlanTreeViewNode> _groupedClassPlans;
+    private ClassPlanTreeViewNode? _selectedClassPlanTreeViewNode = null;
+    private Guid _prevSelectedClassPlanGuid = Guid.Empty;
+    
+    public ClassPlanTreeViewNode? SelectedClassPlanTreeViewNode
+    {
+        get => _selectedClassPlanTreeViewNode;
+        set
+        {
+            if (value == _selectedClassPlanTreeViewNode) return;
 
-/// <inheritdoc/>
+            _prevSelectedClassPlanGuid = _selectedClassPlanTreeViewNode?.Guid ?? Guid.Empty;
+            _selectedClassPlanTreeViewNode = value;
+            SelectedClassPlan = value?.ClassPlan;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
         SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
         IActionService actionService,
@@ -110,5 +137,95 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             .ToObservableChangeSet()
             .Filter(x => !x.Value.IsOverlay)
             .AsObservableList();
+
+        var classPlansSourceList = new SourceList<KeyValuePair<Guid, ClassPlan>>();
+        foreach (var kvp in ProfileService.Profile.ClassPlans)
+        {
+            classPlansSourceList.Add(kvp);
+        }
+
+        ProfileService.Profile.ClassPlans
+            .ToObservableChangeSet<ObservableDictionary<Guid, ClassPlan>, KeyValuePair<Guid, ClassPlan>>()
+            .Subscribe(changeSet =>
+            {
+                foreach (var change in changeSet)
+                {
+                    switch (change.Reason)
+                    {
+                        case ListChangeReason.Add:
+                            classPlansSourceList.Add(change.Item.Current);
+                            break;
+                        case ListChangeReason.Remove:
+                            classPlansSourceList.Remove(change.Item.Current);
+                            break;
+                        case ListChangeReason.Replace:
+                            classPlansSourceList.Replace(change.Item.Previous.Value, change.Item.Current);
+                            break;
+                    }
+                }
+            });
+        
+        classPlansSourceList.Connect()
+            .Transform(pair => new ObservableKeyValuePair<Guid, ClassPlan>(pair))
+            .AutoRefresh(pair => pair.Value.AssociatedGroup)
+            .GroupOn(pair => pair.Value.AssociatedGroup)
+            .Transform(group =>
+            {
+                group.List
+                    .Connect()
+                    .Transform(kv =>
+                    {
+                        var node = new ClassPlanTreeViewNode()
+                        {
+                            Guid = kv.Key,
+                            IsClassPlanNode = true,
+                            ClassPlan = kv.Value,
+                            Children = null
+                        };
+
+                        if (kv.Key == _prevSelectedClassPlanGuid)
+                        {
+                            SelectedClassPlanTreeViewNode = node;
+                        }
+                        
+                        return node;
+                    })
+                    .Bind(out var children)
+                    .Subscribe();
+
+                return new ClassPlanTreeViewNode()
+                {
+                    Guid = group.GroupKey,
+                    IsClassPlanNode = false,
+                    ClassPlan = null,
+                    Children = children
+                };
+            })
+            .Bind(out _groupedClassPlans)
+            .DisposeMany()
+            .Subscribe();
+    }
+
+    /// <summary>
+    /// 通过 Guid 来选中课表。
+    /// </summary>
+    /// <param name="guid">要选中的课表 Guid</param>
+    /// <returns>布尔值，true 为找到，false 为未找到。</returns>
+    public bool SelectClassPlanByGuid(Guid guid)
+    {
+        foreach (var group in GroupedClassPlans)
+        {
+            if (group.Children is null) continue;
+            
+            foreach (var child in group.Children)
+            {
+                if (child.Guid != guid) continue;
+                
+                SelectedClassPlanTreeViewNode = child;
+                return true;
+            }
+        }
+
+        return false;
     }
 }

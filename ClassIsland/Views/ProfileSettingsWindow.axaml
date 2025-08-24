@@ -32,8 +32,25 @@
         <input:CommandBinding Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
                               Executed="CommandBindingRemoveTimePoint_OnExecuted"/>
     </input:CommandManager.CommandBindings>
-    <ci:MyWindow.DataTemplates>
-    </ci:MyWindow.DataTemplates>
+    <ci:MyWindow.Styles>
+        <Style Selector="Border.ClassTableTag">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                                
+            <Style Selector="^.IsTagActivated">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+            </Style>
+                                
+            <Style Selector="^.IsWrong">
+                <Setter Property="BorderBrush" Value="IndianRed" />
+                <Setter Property="TextElement.Foreground" Value="IndianRed"/>
+            </Style>
+        </Style>
+    </ci:MyWindow.Styles>
     <ci:MyWindow.Resources>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
                                               x:Key="SubjectIdToSubjectConverter"/>
@@ -462,49 +479,60 @@
                                 </controls:CommandBar.PrimaryCommands>
                             </controls:CommandBar>
                             
-                            <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.ClassPlans.List, Mode=OneWay}"
-                                     SelectedValue="{Binding ViewModel.SelectedClassPlan}"
-                                     SelectedValueBinding="{Binding Value}"
-                                     SelectionChanged="SelectingItemsControlClassPlans_OnSelectionChanged">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <WrapPanel Orientation="Horizontal" Classes="animated-resize">
-                                            <WrapPanel.Styles>
-                                                <Style Selector="Border.ClassTableTag">
-                                                    <Setter Property="BorderThickness" Value="1" />
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
-                                                    <Setter Property="Background" Value="{DynamicResource ControlFillColorTransparentBrush}" />
-                                                    
-                                                    <Style Selector="^.IsTagActivated">
-                                                        <Setter Property="BorderThickness" Value="0" />
-                                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
-                                                        <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                                                    </Style>
-                                                    
-                                                    <Style Selector="^.IsWrong">
-                                                        <Setter Property="BorderBrush" Value="IndianRed" />
-                                                        <Setter Property="TextElement.Foreground" Value="IndianRed"/>
-                                                    </Style>
-                                                </Style>
-                                            </WrapPanel.Styles>
+                            <!-- 课表 -->
+                            <TreeView Grid.Row="1"
+                                      Classes="ClassPlansTreeView"
+                                      SelectionMode="Single"
+                                      ItemsSource="{Binding ViewModel.GroupedClassPlans}"
+                                      SelectedItem="{Binding ViewModel.SelectedClassPlanTreeViewNode}"
+                                      SelectionChanged="SelectingItemsControlClassPlans_OnSelectionChanged">
+                                <TreeView.Styles>
+                                    <Style Selector="TreeView.ClassPlansTreeView > TreeViewItem">
+                                        <Setter Property="IsExpanded" Value="True" />
+                                    </Style>
+                                </TreeView.Styles>
+                                
+                                <TreeView.ItemTemplate>
+                                    <TreeDataTemplate ItemsSource="{Binding Children}">
+                                        <Panel>
+                                            <StackPanel Orientation="Horizontal" IsVisible="{Binding !IsClassPlanNode}">
+                                                <TextBlock 
+                                                    DataContext="{Binding Guid, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}}"
+                                                    Text="{Binding Name}"
+                                                    VerticalAlignment="Center"/>
+                                                
+                                                <!-- 课表群 -->
+                                                <Border MinWidth="20" Height="24" CornerRadius="12"
+                                                        Margin="4 0 0 0" Padding="8 0"
+                                                        VerticalAlignment="Center"
+                                                        Classes="ClassTableTag">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <ci:FluentIcon Glyph="&#xE92F;" />
+                            
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   Margin="4 0 0 0"
+                                                                   Text="课表群" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </StackPanel>
                                             
-                                            <WrapPanel Orientation="Horizontal">
+                                            <WrapPanel Orientation="Horizontal"
+                                                       IsVisible="{Binding IsClassPlanNode}">
                                                 <!-- 名称 -->
                                                 <ci:FluentIcon Glyph="&#xE6B1;" Margin="0 0 4 0" />
-                                                <TextBlock Text="{Binding Value.Name}" VerticalAlignment="Center" />
-                                                
+                                                <TextBlock Text="{Binding ClassPlan.Name}" VerticalAlignment="Center" />
+                            
                                                 <!-- 触发规则 -->
                                                 <Border MinWidth="20" Height="24" CornerRadius="12"
-                                                        Margin="4 2 2 0" Padding="8 0"
+                                                        Margin="4 0 0 0" Padding="8 0"
                                                         VerticalAlignment="Center"
                                                         ToolTip.Tip="触发规则"
                                                         Classes="ClassTableTag"
-                                                        Classes.IsTagActivated="{Binding Value.IsActivated}">
+                                                        Classes.IsTagActivated="{Binding ClassPlan.IsActivated}">
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <ci:FluentIcon Classes="ClassTableTagIcon"
-                                                                       Classes.IsEnabled="{Binding Value.IsEnabled}"
-                                                                       Classes.IsOverlay="{Binding Value.IsOverlay}">
+                                                                       Classes.IsEnabled="{Binding ClassPlan.IsEnabled}"
+                                                                       Classes.IsOverlay="{Binding ClassPlan.IsOverlay}">
                                                             <ci:FluentIcon.Styles>
                                                                 <Style Selector="ci|FluentIcon.ClassTableTagIcon">
                                                                     <Setter Property="Glyph" Value="&#xF180;" />
@@ -517,79 +545,61 @@
                                                                 </Style>
                                                             </ci:FluentIcon.Styles>
                                                         </ci:FluentIcon>
-                                                        
+                            
                                                         <TextBlock Margin="2 0 0 0"
-                                                                   Text="{Binding Value.TimeRule.WeekDay, Converter={StaticResource WeekIndexToWeekStringConverter}}">
+                                                                   Text="{Binding ClassPlan.TimeRule.WeekDay, Converter={StaticResource WeekIndexToWeekStringConverter}}">
                                                             <TextBlock.IsVisible>
                                                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                                    <Binding Path="Value.IsEnabled" />
-                                                                    <Binding Path="!Value.IsOverlay" />
+                                                                    <Binding Path="ClassPlan.IsEnabled" />
+                                                                    <Binding Path="!ClassPlan.IsOverlay" />
                                                                 </MultiBinding>
                                                             </TextBlock.IsVisible>
                                                         </TextBlock>
-                                                        
+                            
                                                         <TextBlock Margin="2 0 0 0">
                                                             <TextBlock.Resources>
                                                                 <system:Int32 x:Key="Zero">0</system:Int32>
                                                             </TextBlock.Resources>
-                                                            
+                            
                                                             <TextBlock.IsVisible>
                                                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                                    <Binding Path="Value.TimeRule.WeekCountDiv"
+                                                                    <Binding Path="ClassPlan.TimeRule.WeekCountDiv"
                                                                              Converter="{x:Static ObjectConverters.NotEqual}"
                                                                              ConverterParameter="{StaticResource Zero}" />
-                                                                    <Binding Path="Value.IsEnabled" />
-                                                                    <Binding Path="!Value.IsOverlay" />
+                                                                    <Binding Path="ClassPlan.IsEnabled" />
+                                                                    <Binding Path="!ClassPlan.IsOverlay" />
                                                                 </MultiBinding>
                                                             </TextBlock.IsVisible>
-                                                            
-                                                            <Run Text="{Binding Value.TimeRule.WeekCountDiv}" />
+                            
+                                                            <Run Text="{Binding ClassPlan.TimeRule.WeekCountDiv}" />
                                                             <Run Text="/" />
-                                                            <Run Text="{Binding Value.TimeRule.WeekCountDivTotal}" />
+                                                            <Run Text="{Binding ClassPlan.TimeRule.WeekCountDivTotal}" />
                                                             <Run Text="周" />
                                                         </TextBlock>
-                                                        
+                            
                                                         <TextBlock Margin="2 0 0 0" Padding="0 0 4 0"
-                                                                   Text="临时层" IsVisible="{Binding Value.IsOverlay}"
+                                                                   Text="临时层" IsVisible="{Binding ClassPlan.IsOverlay}"
                                                                    FontWeight="Bold" FontStyle="Italic"/>
                                                     </StackPanel>
                                                 </Border>
-                                            </WrapPanel>
-                                            
-                                            <WrapPanel Orientation="Horizontal">
-                                                <!-- 课表群 -->
-                                                <Border MinWidth="20" Height="24" CornerRadius="12"
-                                                        Margin="2 0" Padding="8 0"
-                                                        VerticalAlignment="Center"
-                                                        Classes="ClassTableTag"
-                                                        ToolTip.Tip="课表群"
-                                                        DataContext="{Binding Value.AssociatedGroup, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}}">
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <ci:FluentIcon Glyph="&#xE92F;" />
-                                                        
-                                                        <TextBlock VerticalAlignment="Center"
-                                                                   Margin="4 0 0 0"
-                                                                   Text="{Binding Name}"/>
-                                                    </StackPanel>
-                                                </Border>
-                                                
+                            
                                                 <!-- 时间表 -->
                                                 <Border MinWidth="20" Height="24" CornerRadius="12"
-                                                        Margin="2 0" Padding="8 0"
+                                                        Margin="4 0 0 0" Padding="8 0"
                                                         VerticalAlignment="Center"
                                                         ToolTip.Tip="时间表"
                                                         Classes="ClassTableTag"
-                                                        Classes.IsWrong="{Binding Value.TimeLayoutId, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static system:Guid.Empty}}">
+                                                        Classes.IsWrong="{Binding ClassPlan.TimeLayoutId, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static system:Guid.Empty}}">
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <ci:FluentIcon Glyph="&#xF0EB;" />
-                                                        
+                            
                                                         <TextBlock VerticalAlignment="Center"
                                                                    Margin="4 0 0 0"
                                                                    Classes="ClassTableTimeLayoutTagText"
-                                                                   Classes.IsWrong="{Binding Value.TimeLayoutId, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static system:Guid.Empty}}">
+                                                                   Classes.IsWrong="{Binding ClassPlan.TimeLayoutId, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static system:Guid.Empty}}">
                                                             <TextBlock.Styles>
                                                                 <Style Selector="TextBlock.ClassTableTimeLayoutTagText">
-                                                                    <Setter Property="Text" Value="{Binding Value.TimeLayout.Name}" />
+                                                                    <Setter Property="Text" Value="{Binding ClassPlan.TimeLayout.Name}" />
                                                                     <Style Selector="^.IsWrong">
                                                                         <Setter Property="Text" Value="？？？" />
                                                                     </Style>
@@ -599,10 +609,10 @@
                                                     </StackPanel>
                                                 </Border>
                                             </WrapPanel>
-                                        </WrapPanel>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                                        </Panel>
+                                    </TreeDataTemplate>
+                                </TreeView.ItemTemplate>
+                            </TreeView>
                         </Grid>
                         <GridSplitter Grid.Column="1" Margin="2 0" />
                         <!-- 课表编辑区域 -->

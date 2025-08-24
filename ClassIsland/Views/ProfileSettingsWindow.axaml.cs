@@ -423,7 +423,7 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.OverlayEnableDateTime);
         if (id is { } guid)
         {
-            ViewModel.SelectedClassPlan = ViewModel.ProfileService.Profile.ClassPlans[guid];
+            ViewModel.SelectClassPlanByGuid(guid);
             UpdateClassPlanInfoEditorTimeLayoutComboBox();
             OpenDrawer("ClassPlansInfoEditor");
             FlyoutHelper.CloseAncestorFlyout(sender);
@@ -453,8 +453,24 @@ public partial class ProfileSettingsWindow : MyWindow
     private void CreateClassPlan()
     {
         var newClassPlan = new ClassPlan();
-        ViewModel.ProfileService.Profile.ClassPlans.Add(Guid.NewGuid(), newClassPlan);
-        ViewModel.SelectedClassPlan = newClassPlan;
+        var selectedNode = ViewModel.SelectedClassPlanTreeViewNode;
+        if (selectedNode is not null)
+        {
+            var selectedClassPlanGroup = 
+                selectedNode.IsClassPlanNode
+                ? selectedNode.ClassPlan?.AssociatedGroup
+                : selectedNode.Guid;
+
+            newClassPlan.AssociatedGroup = selectedClassPlanGroup ?? ClassPlanGroup.DefaultGroupGuid;
+            // 或者使用当前启用的课表群
+            // newClassPlan.AssociatedGroup = 
+            //     selectedClassPlanGroup ?? ViewModel.ProfileService.Profile.SelectedClassPlanGroupId;
+        }
+        
+        var newClassPlanGuid = Guid.NewGuid();
+        ViewModel.ProfileService.Profile.ClassPlans.Add(newClassPlanGuid, newClassPlan);
+        ViewModel.SelectClassPlanByGuid(newClassPlanGuid);
+        
         UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
     }
@@ -469,6 +485,7 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.ProfileService.Profile.OrderedSchedules.Remove(key);
         }
         FlyoutHelper.CloseAncestorFlyout(sender);
+        ViewModel.SelectedClassPlanTreeViewNode = null;
     }
 
     private void ButtonOpenCreateOverlayClassPlanFlyout_OnClick(object? sender, RoutedEventArgs e)
@@ -489,8 +506,10 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
 
-        ViewModel.ProfileService.Profile.ClassPlans.Add(Guid.NewGuid(), s);
-        ViewModel.SelectedClassPlan = s;
+        var newClassPlanGuid = Guid.NewGuid();
+        ViewModel.ProfileService.Profile.ClassPlans.Add(newClassPlanGuid, s);
+        ViewModel.SelectClassPlanByGuid(newClassPlanGuid);
+        
         UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.classPlan.duplicate");
@@ -526,7 +545,7 @@ public partial class ProfileSettingsWindow : MyWindow
                 Content = "新建课表"
             };
             ViewModel.CurrentClassPlanEditDoneToast = new ToastMessage()
-            {
+            { 
                 Severity = InfoBarSeverity.Success,
                 Message = "已完成此课表的课程录入。",
                 ActionContent = actionButton,
