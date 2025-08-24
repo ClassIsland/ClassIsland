@@ -138,7 +138,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
 
     internal void ShowAlertsNotificationCore()
     {
-        foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts.Where(i => !ShownAlerts.Contains(i.Detail) || true))
+        foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts.Where(i => !ShownAlerts.Contains(i.Detail)))
         {
             var t = i.Detail.Length / Settings.WeatherAlertSpeed;
             if (t <= 10) t = 10.0;
