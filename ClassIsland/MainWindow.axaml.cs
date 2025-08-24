@@ -199,6 +199,8 @@ public partial class MainWindow : Window
         ManagementService = managementService;
 
         DataContext = this;
+        
+        RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
 
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         SettingsService.PropertyChanged += (sender, args) =>
