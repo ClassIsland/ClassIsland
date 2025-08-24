@@ -12,8 +12,7 @@
              SizeToContent="Height"
              Width="400"
              Title="加入管理"
-             CanResize="False"
-             EnableMicaWindow="True">
+             CanResize="False">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:JoinManagementDialog}}">
         <StackPanel Margin="16" 
                     IsEnabled="{Binding ViewModel.IsWorking, Converter={StaticResource InvertBooleanConverter}}">

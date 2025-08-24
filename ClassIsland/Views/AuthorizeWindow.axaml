@@ -18,8 +18,7 @@
         MinHeight="300"
         MaxHeight="700"
         Topmost="True"
-        Title="ClassIsland"
-        EnableMicaWindow="True">
+        Title="ClassIsland">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static ci:AuthorizeProviderControlBase.CompleteAuthorizeCommand}" Executed="CommandBindingCompleteAuthorize_OnExecuted"></input:CommandBinding>
     </input:CommandManager.CommandBindings>
