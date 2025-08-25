@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
@@ -136,6 +137,21 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         requiresRestarting = false;
         if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse("1.4.1.0"))
         {
+            return;
+        }
+        if (Assembly.GetExecutingAssembly().GetName().Version <= Version.Parse("1.7.105.0"))
+        { 
+            bool NotEmpty(Ruleset? ruleset)
+            {
+                return ruleset?.Groups?.Any(g => g?.Rules?.Any(r => !string.IsNullOrEmpty(r?.Id)) == true) == true;
+            }
+            
+            if (NotEmpty(Settings.HiedRules) && !NotEmpty(Settings.HideRules))
+            {
+                Logger.LogInformation("正在迁移 1.7.105.0 及以下版本的设置文件。");
+                Settings.HideRules = Settings.HiedRules;
+                Settings.HiedRules = new Ruleset();
+            }
             return;
         }
         

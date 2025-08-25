@@ -25,7 +25,7 @@
 
         <ci:RulesetControl x:Key="RulesetControl"
                            Classes="in-drawer"
-                           Ruleset="{Binding ViewModel.SettingsService.Settings.HiedRules, Mode=TwoWay}"/>
+                           Ruleset="{Binding ViewModel.SettingsService.Settings.HideRules, Mode=TwoWay}"/>
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">

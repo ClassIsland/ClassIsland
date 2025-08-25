@@ -192,6 +192,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _radiusY = 0.0;
     private int _hideMode = 0;
     private Ruleset _hiedRules = new();
+    private Ruleset _hideRules = new();
     private bool _isAutoBackupEnabled = true;
     private DateTime _lastAutoBackupTime = DateTime.Now;
     private string _backupFilesSize = "计算中...";
@@ -466,6 +467,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (Equals(value, _hiedRules)) return;
             _hiedRules = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    public Ruleset HideRules
+    {
+        get => _hideRules;
+        set
+        {
+            if (Equals(value, _hideRules)) return;
+            _hideRules = value;
             OnPropertyChanged();
         }
     }
