@@ -74,7 +74,8 @@
                             CornerRadius="2"
                             Margin="-4">
                         <Grid RowDefinitions="Auto,*">
-                            <ScrollViewer Grid.Row="0" PointerWheelChanged="ScrollViewerRulesetActions_OnPointerWheelChanged" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled">
+                            <ScrollViewer Grid.Row="0" PointerWheelChanged="ScrollViewerRulesetActions_OnPointerWheelChanged"
+                                          HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                                 <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Stretch" Margin="0 0 0 2">
                                     <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                                         <ComboBox Margin="0 0 8 0"
