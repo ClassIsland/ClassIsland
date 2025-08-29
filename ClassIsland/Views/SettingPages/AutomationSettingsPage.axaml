@@ -119,7 +119,7 @@
                                     <Grid Margin="3 0"
                                           Background="Transparent"
                                           ColumnDefinitions="* 8 Auto"
-                                          Height="50">
+                                          Height="42">
                                         <!--  工作流标题  -->
                                         <TextBlock VerticalAlignment="Center"
                                                    Text="{Binding ActionSet.Name}"

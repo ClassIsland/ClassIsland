@@ -110,7 +110,7 @@
                     <ComboBox ItemsSource="{Binding ViewModel.ComponentsService.ComponentConfigs}"
                               MinWidth="150"
                               MaxWidth="300"
-                              SelectedItem="{Binding ViewModel.SettingsService.Settings.CurrentComponentConfig}" />
+                              SelectedItem="{Binding ViewModel.SettingsService.Settings.CurrentComponentConfig, Converter={StaticResource PreventNullConverter}}" />
                 </ci:Field>
                 <Button Content="{ci:FluentIcon &#xE0B5;}"
                         ToolTip.Tip="刷新"
