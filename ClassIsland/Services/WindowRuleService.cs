@@ -86,14 +86,14 @@ public class WindowRuleService : IWindowRuleService
     private bool TextHandler(object? settings)
     {
         if (settings is not StringMatchingSettings s) return false;
-        return s.IsMatching(PlatformServices.WindowPlatformService.GetWindowClassName(PlatformServices.WindowPlatformService
+        return s.IsMatching(PlatformServices.WindowPlatformService.GetWindowTitle(PlatformServices.WindowPlatformService
             .ForegroundWindowHandle));
     }
 
     private bool ClassNameHandler(object? settings)
     {
         if (settings is not StringMatchingSettings s) return false;
-        return s.IsMatching(PlatformServices.WindowPlatformService.GetWindowTitle(PlatformServices.WindowPlatformService
+        return s.IsMatching(PlatformServices.WindowPlatformService.GetWindowClassName(PlatformServices.WindowPlatformService
             .ForegroundWindowHandle));
     }
 
