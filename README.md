@@ -172,7 +172,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-31-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-33-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -225,6 +225,8 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/HuYihe2008"><img src="https://avatars.githubusercontent.com/u/76118866?v=4?s=100" width="100px;" alt="JamYido"/><br /><sub><b>JamYido</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=HuYihe2008" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://cszj.wang/"><img src="https://avatars.githubusercontent.com/u/41245552?v=4?s=100" width="100px;" alt="吕舒君"/><br /><sub><b>吕舒君</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Lvshujun0918" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tlnkmc"><img src="https://avatars.githubusercontent.com/u/122972130?v=4?s=100" width="100px;" alt="Mux_Yang"/><br /><sub><b>Mux_Yang</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=tlnkmc" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.pizero.top/"><img src="https://avatars.githubusercontent.com/u/71167373?v=4?s=100" width="100px;" alt="Pizero"/><br /><sub><b>Pizero</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=pizeroLOL" title="Code">💻</a> <a href="#platform-pizeroLOL" title="Packaging/porting to new platform">📦</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/lrsgzs"><img src="https://avatars.githubusercontent.com/u/99574908?v=4?s=100" width="100px;" alt="lrs2187"/><br /><sub><b>lrs2187</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=lrsgzs" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
