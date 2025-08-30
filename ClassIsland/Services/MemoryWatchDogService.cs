@@ -7,6 +7,7 @@ using System.Timers;
 using ClassIsland.Core;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Runtime.InteropServices;
 
 using Timer = System.Timers.Timer;
 
@@ -59,20 +60,13 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
         {
             try
             {
-                var psi = new ProcessStartInfo
+                var mib = new int[2] { CTL_HW, HW_MEMSIZE };
+                long physicalMemory = 0;
+                var length = Marshal.SizeOf(typeof(long));
+
+                if (sysctl(mib, 2, ref physicalMemory, ref length, IntPtr.Zero, 0) == 0)
                 {
-                    FileName = "sysctl",
-                    Arguments = "hw.memsize",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using var process = Process.Start(psi);
-                if (process != null)
-                {
-                    var output = process.StandardOutput.ReadToEnd();
-                    var memorySize = output.Split(':')[1].Trim();
-                    return long.Parse(memorySize);
+                    return physicalMemory;
                 }
             }
             catch (Exception ex)
@@ -82,6 +76,18 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
         }
         return 0;
     }
+
+    private const int CTL_HW = 6;
+    private const int HW_MEMSIZE = 24;
+
+    [DllImport("libc", SetLastError = true)]
+    private static extern int sysctl(
+        int[] name,
+        uint namelen,
+        ref long oldp,
+        ref int oldlenp,
+        IntPtr newp,
+        uint newlen);
 
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
