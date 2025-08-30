@@ -63,6 +63,8 @@ public class MyWindow : AppWindow
         set => SetAndRaise(EnableMicaWindowProperty, ref _enableMicaWindow, value);
     }
 
+    private AppToastAdorner? _appToastAdorner;
+
     /// <summary>
     /// 构造函数
     /// </summary>
@@ -92,31 +94,39 @@ public class MyWindow : AppWindow
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.Key == Key.F3)
+        switch (e.Key)
         {
-            if (_debugGraphState == 0)
+            case Key.F3:
             {
-                _debugGraphState = (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ? 2 : 1;
-            }
-            else
-            {
-                _debugGraphState = 0;
-            }
+                if (_debugGraphState == 0)
+                {
+                    _debugGraphState = (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ? 2 : 1;
+                }
+                else
+                {
+                    _debugGraphState = 0;
+                }
 
-            RendererDiagnostics.DebugOverlays = _debugGraphState switch
-            {
-                0 => RendererDebugOverlays.None,
-                1 => RendererDebugOverlays.Fps,
-                2 => RendererDebugOverlays.Fps | RendererDebugOverlays.LayoutTimeGraph |
-                     RendererDebugOverlays.RenderTimeGraph,
-                _ => RendererDebugOverlays.None
-            };
-        }
-
-        if (e.Key == Key.F6)
-        {
-            PointerStateAssist.SetIsTouchMode(this, true);
-            this.ShowToast("(debug) IsTouchMode=true");
+                RendererDiagnostics.DebugOverlays = _debugGraphState switch
+                {
+                    0 => RendererDebugOverlays.None,
+                    1 => RendererDebugOverlays.Fps,
+                    2 => RendererDebugOverlays.Fps | RendererDebugOverlays.LayoutTimeGraph |
+                         RendererDebugOverlays.RenderTimeGraph,
+                    _ => RendererDebugOverlays.None
+                };
+                break;
+            }
+            case Key.F6:
+                PointerStateAssist.SetIsTouchMode(this, true);
+                this.ShowToast("(debug) IsTouchMode=true");
+                break;
+            case Key.F7 when _appToastAdorner != null:
+                foreach (var message in _appToastAdorner.Messages)
+                {
+                    message.Close();
+                }
+                break;
         }
     }
 
@@ -144,7 +154,7 @@ public class MyWindow : AppWindow
         }
 
         var layer = AdornerLayer.GetAdornerLayer(element);
-        var appToastAdorner = new AppToastAdorner(this);
+        var appToastAdorner = _appToastAdorner = new AppToastAdorner(this);
         layer?.Children.Add(appToastAdorner);
         AdornerLayer.SetAdornedElement(appToastAdorner, this);
         
