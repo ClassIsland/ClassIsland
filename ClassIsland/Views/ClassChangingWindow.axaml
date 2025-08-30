@@ -19,6 +19,7 @@
         MinWidth="730"
         MinHeight="175"
         Icon="/Assets/AppLogo.png"
+        EnableMicaWindow="True"
         SizeToContent="WidthAndHeight"
         d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
         WindowStartupLocation="CenterScreen"
@@ -139,75 +140,76 @@
         <Separator Grid.Row="2" Margin="0 8 0 0" />
 
         <!-- Bottom -->
-        <StackPanel Grid.Row="3"
+        <Grid Grid.Row="3" ColumnDefinitions="Auto, *, Auto" 
+              Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}">
+            <StackPanel Grid.Column="0"
                     Orientation="Horizontal"
-                    HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
                     Margin="6">
-            <Button Margin="0 0 4 0"
-                    IsCancel="True"
-                    Click="ButtonCancel_OnClick"
-                    ToolTip.Tip="取消换课操作。">
-                <controls1:IconText Glyph="&#xe671;" Text="取消" />
-            </Button>
-            <Button Margin="0 0 4 0"
-                    Click="ButtonPrev_OnClick"
-                    ToolTip.Tip="返回上一步。">
-                <Button.IsVisible>
-                    <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
-                        <Binding.ConverterParameter>
-                            <system:Int32>1</system:Int32>
-                        </Binding.ConverterParameter>
-                    </Binding>
-                </Button.IsVisible>
-                <controls1:IconText Glyph="&#xe109;" Text="上一步" />
-            </Button>
-        </StackPanel>
-        <StackPanel Grid.Row="3"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom"
-                    Margin="6">
-            <StackPanel Orientation="Horizontal">
-                <StackPanel.IsVisible>
-                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                        <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.NotEqual}">
+                <Button Margin="0 0 4 0"
+                        IsCancel="True"
+                        Click="ButtonCancel_OnClick"
+                        ToolTip.Tip="取消换课操作。">
+                    <controls1:IconText Glyph="&#xe671;" Text="取消" />
+                </Button>
+                <Button Margin="0 0 4 0"
+                        Click="ButtonPrev_OnClick"
+                        ToolTip.Tip="返回上一步。">
+                    <Button.IsVisible>
+                        <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <system:Int32>1</system:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                        <Binding Path="ViewModel.SourceIndex" Converter="{x:Static ObjectConverters.NotEqual}">
-                            <Binding.ConverterParameter>
-                                <system:Int32>-1</system:Int32>
-                            </Binding.ConverterParameter>
-                        </Binding>
-                    </MultiBinding>
-                </StackPanel.IsVisible>
-                <Button Margin="12 0 0 0" Click="ButtonNext_OnClick"
-                        ToolTip.Tip="进入下一步。" Classes="accent">
-                    <controls1:IconText Glyph="&#xe131;" Text="下一步" />
+                    </Button.IsVisible>
+                    <controls1:IconText Glyph="&#xe109;" Text="上一步" />
                 </Button>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" IsVisible="{Binding ViewModel.CanCompleteClassChanging}">
-                <CheckBox Margin="4 -8 0 -8"
-                          Content="永久换课"
-                          ToolTip.Tip="如果选择，将不会在换课时创建临时层课表，而会直接应用到原课表上。"
-                          IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
-                          IsVisible="{Binding !ClassPlan.IsOverlay}">
-                    <CheckBox.IsEnabled>
-                        <MultiBinding Converter="{StaticResource InvertBooleanOrExpressionMultiConverter}" Mode="OneWay">
-                            <Binding Path="ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing" Mode="OneWay"/>
-                            <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing" Mode="OneWay"/>
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Bottom"
+                        Margin="6">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.NotEqual}">
+                                <Binding.ConverterParameter>
+                                    <system:Int32>1</system:Int32>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                            <Binding Path="ViewModel.SourceIndex" Converter="{x:Static ObjectConverters.NotEqual}">
+                                <Binding.ConverterParameter>
+                                    <system:Int32>-1</system:Int32>
+                                </Binding.ConverterParameter>
+                            </Binding>
                         </MultiBinding>
-                    </CheckBox.IsEnabled>
-                </CheckBox>
-                <Button Margin="12 0 0 0" ToolTip.Tip="确认并应用换课。"
-                        Click="ButtonConfirmClassChanging_OnClick"
-                        Classes="accent">
-                    <controls1:IconText Glyph="&#xe424;" Text="确认换课" />
-                </Button>
+                    </StackPanel.IsVisible>
+                    <Button Margin="12 0 0 0" Click="ButtonNext_OnClick"
+                            ToolTip.Tip="进入下一步。" Classes="accent">
+                        <controls1:IconText Glyph="&#xe131;" Text="下一步" />
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" IsVisible="{Binding ViewModel.CanCompleteClassChanging}">
+                    <CheckBox Margin="4 -8 0 -8"
+                              Content="永久换课"
+                              ToolTip.Tip="如果选择，将不会在换课时创建临时层课表，而会直接应用到原课表上。"
+                              IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
+                              IsVisible="{Binding !ClassPlan.IsOverlay}">
+                        <CheckBox.IsEnabled>
+                            <MultiBinding Converter="{StaticResource InvertBooleanOrExpressionMultiConverter}" Mode="OneWay">
+                                <Binding Path="ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing" Mode="OneWay"/>
+                                <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing" Mode="OneWay"/>
+                            </MultiBinding>
+                        </CheckBox.IsEnabled>
+                    </CheckBox>
+                    <Button Margin="12 0 0 0" ToolTip.Tip="确认并应用换课。"
+                            Click="ButtonConfirmClassChanging_OnClick"
+                            Classes="accent">
+                        <controls1:IconText Glyph="&#xe424;" Text="确认换课" />
+                    </Button>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Grid>
 
         <!-- AppBar -->
         <Border Grid.Row="0" 

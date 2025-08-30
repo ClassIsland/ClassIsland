@@ -77,9 +77,9 @@
                     Margin="0 18 0 0">
             <ci:Field Label="时间偏移" Suffix="秒"
                       HorizontalAlignment="Center">
-                <TextBox MinWidth="100" HorizontalAlignment="Center"
-                         FontSize="15"
-                         Text="{Binding SettingsService.Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                <NumericUpDown MinWidth="100" HorizontalAlignment="Center"
+                               FontSize="15"
+                               Value="{Binding SettingsService.Settings.TimeOffsetSeconds, UpdateSourceTrigger=PropertyChanged}" />
             </ci:Field>
             <Button Margin="0 16 0 0"
                     Width="48" Height="48" CornerRadius="24"

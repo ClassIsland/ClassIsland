@@ -199,6 +199,8 @@ public partial class MainWindow : Window
         ManagementService = managementService;
 
         DataContext = this;
+        
+        RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
 
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         SettingsService.PropertyChanged += (sender, args) =>
@@ -722,7 +724,8 @@ public partial class MainWindow : Window
         var oy = ViewModel.Settings.WindowDockingOffsetY;
         Width = screen.WorkingArea.Width / dpiX;
         //Height = GridRoot.ActualHeight * scale;
-        var x = (screen.WorkingArea.X + ox) / dpiX;
+        // 和 WPF 不同，Avalonia 定位窗口用的基于物理屏幕的像素坐标，而非逻辑坐标，无需 dpi 转换。
+        var x = screen.WorkingArea.X + ox;
         var y = ViewModel.Settings.WindowDockingLocation switch
         {
             0 => //左上
@@ -774,7 +777,7 @@ public partial class MainWindow : Window
         }
         try
         {
-            var screen = Screens.ScreenFromWindow(this);
+            var screen = GetSelectedScreenSafe() ?? Screens.ScreenFromWindow(this);
             dpiX = screen?.Scaling ?? 1.0;
             dpiY = screen?.Scaling ?? 1.0;
         }

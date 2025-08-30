@@ -241,7 +241,6 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     {
         if (propertyName != nameof(Settings.SettingsOverlays))
         {
-            Console.WriteLine(propertyName);
             Settings.SettingsOverlays.Remove(propertyName);
         }
 

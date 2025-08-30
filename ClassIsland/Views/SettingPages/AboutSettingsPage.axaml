@@ -254,22 +254,22 @@
                                     <Button Theme="{StaticResource TransparentButton}"
                                             Content="{controls1:FluentIcon &#xE905;, FontSize=20}"
                                             ToolTip.Tip="项目主页"
-                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                            Click="UriNavigationCommands_OnClick"
                                             CommandParameter="https://classisland.tech"/>
                                     <Button Theme="{StaticResource TransparentButton}"
                                             Content="{controls1:FluentIcon &#xE23C;, FontSize=20}"
                                             ToolTip.Tip="文档"
-                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                            Click="UriNavigationCommands_OnClick"
                                             CommandParameter="https://docs.classisland.tech"/>
                                     <Button Theme="{StaticResource TransparentButton}"
                                             Content="{commands:LucideIcon &#xE0EA;, FontSize=16}"
                                             ToolTip.Tip="GitHub"
-                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                            Click="UriNavigationCommands_OnClick"
                                             CommandParameter="https://github.com/ClassIsland/ClassIsland"/>
                                     <Button Theme="{StaticResource TransparentButton}"
                                             Content="{controls1:FluentIcon &#xE3EE;, FontSize=20}"
                                             ToolTip.Tip="加入社区"
-                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                            Click="UriNavigationCommands_OnClick"
                                             CommandParameter="https://docs.classisland.tech/community/"/>
                                 </StackPanel>
                             </Grid>
@@ -279,14 +279,14 @@
             </StackPanel>
 
             <StackPanel Margin="0 12 0 0" Classes="cardContainer">
-                <controls3:SettingsExpanderItem 
-                    Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                <controls3:SettingsExpanderItem
+                    Click="UriNavigationCommands_OnClick"
                     CommandParameter="https://github.com/ClassIsland/ClassIsland/issues/"
                     Content="问题反馈/功能建议"
                     ActionIconSource="{controls1:FluentIconSource &#xEC2E;} "
                     IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem 
-                    Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                <controls3:SettingsExpanderItem
+                    Click="UriNavigationCommands_OnClick"
                     CommandParameter="https://github.com/ClassIsland/voting/discussions/categories/classisland?discussions_q=is%3Aopen+category%3AClassIsland+sort%3Atop"
                     Content="功能投票"
                     ActionIconSource="{controls1:FluentIconSource &#xEC2E;} "
@@ -325,7 +325,7 @@
                         本项目受到
                         <HyperlinkButton Click="Hyperlink2_OnClick">DuguSand/class_form</HyperlinkButton>
                         的启发而开发。<LineBreak/>
-                        界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。<LineBreak/>
+                        界面主题和部分控件使用了 FluentAvalonia 框架。<LineBreak/>
                         应用字体使用了华为出品的 HarmonyOS Sans。<LineBreak/>
                         感谢协助本应用测试的同学。<LineBreak/>
                         感谢<commands:NavHyperlink NavTarget="https://forum.smart-teach.cn/">智教联盟</commands:NavHyperlink>提供服务器资源，<commands:NavHyperlink NavTarget="https://xiaowuap.com/">吴恩泽</commands:NavHyperlink>提供 TTS、遥测等服务资源。<LineBreak/>

@@ -22,12 +22,14 @@
                             VerticalAlignment="Stretch"/>
                     <Canvas x:Name="DrawerCanvas" Width="{TemplateBinding ActualDrawerWidth}"
                             VerticalAlignment="Stretch"
-                            ClipToBounds="False">
+                            ClipToBounds="False"
+                            IsHitTestVisible="{TemplateBinding IsDrawerOpen}">
                         <Border Focusable="{Binding IsDrawerOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                 IsEnabled="{Binding IsDrawerOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                 Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                 Height="{Binding Bounds.Height, RelativeSource={RelativeSource TemplatedParent}}"
                                 x:Name="PART_DrawerContentBorder"
+                                Opacity="0"
                                 BoxShadow="0 0 8 #33000000">
                             <ContentPresenter Content="{TemplateBinding DrawerContent}"
                                               ContentTemplate="{TemplateBinding DrawerContentTemplate}"/>
@@ -64,6 +66,9 @@
         </Style>
         
         <Style Selector="^[IsDrawerOpen=True] /template/ Border#PART_IgnoreLayer">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+        <Style Selector="^[IsDrawerOpen=True] /template/ Border#PART_DrawerContentBorder">
             <Setter Property="Opacity" Value="1"/>
         </Style>
         <Style Selector="^:drawer-left[IsDrawerOpen=False] /template/ Border#PART_DrawerContentBorder">

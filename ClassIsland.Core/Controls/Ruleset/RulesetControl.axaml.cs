@@ -82,7 +82,7 @@ public partial class RulesetControl : UserControl
         if (sender is not ScrollViewer viewer) return;
 
         var before = viewer.Offset.X;
-        if (e.Delta.Y > 0)
+        if (e.Delta.X > 0 || e.Delta.Y > 0)
         {
             viewer.PageLeft();
         }

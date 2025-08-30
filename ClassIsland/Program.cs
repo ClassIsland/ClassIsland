@@ -100,11 +100,17 @@ public static class Program
                 s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
             });
         }
-        if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is { } priorityStr && uint.TryParse(priorityStr, out uint priority))
-        {
-            SetProcessPriority(priority);
+        try {
+            if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is { } priorityStr && uint.TryParse(priorityStr, out uint priority))
+            {
+                SetProcessPriority(priority);
+            }
+            else SetProcessPriority(2); //If not set or invalid, default to Normal priority (2).
         }
-        else SetProcessPriority(2); //If not set or invalid, default to Normal priority (2).
+        catch
+        {
+            // ignore
+        }
 
         return () => new App()
         {

@@ -191,8 +191,22 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
                 $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude={cityLatitude}&longitude={cityLongitude}&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
             var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
+
+            // 排除天气预警
             info.Alerts.RemoveAll(i => Settings.ExcludedWeatherAlerts.FirstOrDefault(x =>
                 (!string.IsNullOrWhiteSpace(x)) && i.Title.Contains(x)) != null);
+
+            // 去重天气预警
+            var latest = info.Alerts
+                .GroupBy(a => a.Type)
+                .ToDictionary(g => g.Key, g => g.MaxBy(a => a.PubTime)!);
+            foreach (var a in info.Alerts)
+            {
+                if (latest[a.Type].AlertId != a.AlertId)
+                    Logger.LogInformation("已丢弃旧预警：（{}，{}）{}", a.Title, a.PubTime, a.Detail);
+            }
+            info.Alerts = latest.Values.ToList();
+
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
         }

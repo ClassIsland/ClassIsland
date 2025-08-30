@@ -13,11 +13,11 @@
         <StackPanel Orientation="Horizontal"
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     IsVisible="{Binding IsOverlay}">
-            <ci:FluentIcon Glyph="&#xF431;" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+            <ci:FluentIcon Glyph="&#xe9e4;" VerticalAlignment="Center"
+                                     Height="20" Width="20" FontSize="20"/>
             <TextBlock Text="天气预报" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
             <controls:WeatherPackIconControl Code="{Binding Info.ForecastDaily.Weather.Value[0].To}" VerticalAlignment="Center"
-                                             Height="20" AllowColor="False"/>
+                                             Height="22" AllowColor="False" />
         </StackPanel>
         <Grid HorizontalAlignment="Center" IsVisible="{Binding !IsOverlay}">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12 0">
@@ -30,9 +30,9 @@
                 <!-- Today -->
                 <TextBlock Text="{Binding DateTimes[0], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[0], Converter={StaticResource IntToStringConverter}}"
-                                                 Height="22"
+                                                 Height="24"
                                                  VerticalAlignment="Center"
-                                                 Margin="0 0 2 0"/>
+                                                 Margin="0 0 2 2"/>
                 <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                     <Run Text="{Binding Info.ForecastHourly.Temperature.Value[0]}"/><Run Text="℃"/>
                 </TextBlock>
@@ -40,9 +40,9 @@
 
                 <TextBlock Text="{Binding DateTimes[1], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[1], Converter={StaticResource IntToStringConverter}}"
-                                                 Height="22"
+                                                 Height="24"
                                                  VerticalAlignment="Center"
-                                                 Margin="0 0 2 0"/>
+                                                 Margin="0 0 2 2"/>
                 <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                     <Run Text="{Binding Info.ForecastHourly.Temperature.Value[1]}"/><Run Text="℃"/>
                 </TextBlock>
@@ -50,9 +50,9 @@
 
                 <TextBlock Text="{Binding DateTimes[2], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[2], Converter={StaticResource IntToStringConverter}}"
-                                                  Height="22"
+                                                  Height="24"
                                                   VerticalAlignment="Center"
-                                                  Margin="0 0 2 0"/>
+                                                  Margin="0 0 2 2"/>
                 <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                     <Run Text="{Binding Info.ForecastHourly.Temperature.Value[2]}"/><Run Text="℃"/>
                 </TextBlock>
@@ -60,9 +60,9 @@
 
                 <TextBlock Text="{Binding DateTimes[3], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[3], Converter={StaticResource IntToStringConverter}}"
-                                                 Height="22"
+                                                 Height="24"
                                                  VerticalAlignment="Center"
-                                                 Margin="0 0 2 0"/>
+                                                 Margin="0 0 2 2"/>
                 <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                     <Run Text="{Binding Info.ForecastHourly.Temperature.Value[3]}"/><Run Text="℃"/>
                 </TextBlock>
@@ -70,9 +70,9 @@
 
                 <TextBlock Text="{Binding DateTimes[4], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[4], Converter={StaticResource IntToStringConverter}}"
-                                                 Height="22"
+                                                 Height="24"
                                                  VerticalAlignment="Center"
-                                                 Margin="0 0 2 0"/>
+                                                 Margin="0 0 2 2"/>
                 <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                     <Run Text="{Binding Info.ForecastHourly.Temperature.Value[4]}"/><Run Text="℃"/>
                 </TextBlock>
@@ -80,9 +80,9 @@
 
                 <TextBlock Text="{Binding DateTimes[5], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[5], Converter={StaticResource IntToStringConverter}}"
-                                                 Height="22"
+                                                 Height="24"
                                                  VerticalAlignment="Center"
-                                                 Margin="0 0 2 0"/>
+                                                 Margin="0 0 2 2"/>
                 <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                     <Run Text="{Binding Info.ForecastHourly.Temperature.Value[5]}"/><Run Text="℃"/>
                 </TextBlock>

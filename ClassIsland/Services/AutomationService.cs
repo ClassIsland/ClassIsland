@@ -38,11 +38,6 @@ public class AutomationService(ILogger<AutomationService> Logger, IRulesetServic
         LoadConfig();
         RefreshConfigs();
 
-        if (App.ApplicationCommand.Safe) return;
-
-        LastActionRunTime = ExactTimeService.GetCurrentLocalDateTime();
-        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-        RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         SettingsService.Settings.PropertyChanging += (_, e) =>
         {
             if (e.PropertyName == nameof(Settings.CurrentAutomationConfig))
@@ -59,6 +54,13 @@ public class AutomationService(ILogger<AutomationService> Logger, IRulesetServic
                      !SettingsService.Settings.IsAutomationEnabled)
                 InterruptAllWorkflows();
         };
+
+        if (App.ApplicationCommand.Safe) return;
+        // 注意：以下代码在安全模式下不会运行。
+
+        LastActionRunTime = ExactTimeService.GetCurrentLocalDateTime();
+        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+        RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
     }
 
 #region 时间点行动

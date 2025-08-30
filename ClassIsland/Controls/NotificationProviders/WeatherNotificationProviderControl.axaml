@@ -36,25 +36,11 @@
                                             Margin="10 0 16 0"
                                             Opacity="1"/>
             <Grid Grid.Column="0" Grid.ColumnSpan="2" ClipToBounds="True">
-                <Canvas VerticalAlignment="Center"
-                        Height="{Binding Bounds.Height, ElementName=Description}"
+                <Panel VerticalAlignment="Center"
                         HorizontalAlignment="Stretch"
-                        Margin="27 0 16 0"
-                        x:Name="RootCanvas"
-                        ClipToBounds="True">
-                    <Canvas.OpacityMask>
-                        <SolidColorBrush Color="White"/>
-                    </Canvas.OpacityMask>
-                    <TextBlock x:Name="Description" HorizontalAlignment="Right" RenderTransformOrigin="1,0.5"
-                               Text="{Binding Alert.Detail}"
-                               FontSize="17"
-                               Canvas.Right="0"
-                               VerticalAlignment="Center">
-                        <TextBlock.RenderTransform>
-                            <TranslateTransform />
-                        </TextBlock.RenderTransform>
-                    </TextBlock>
-                </Canvas>
+                        Margin="27 0 0 0"
+                        x:Name="RootPanel"
+                        ClipToBounds="True"/>
             </Grid>
         </Grid>
     </Grid>

@@ -13,6 +13,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
@@ -46,22 +47,15 @@ public partial class AboutSettingsPage : SettingsPageBase
         ViewModel.License = r.ReadToEnd();
     }
 
-    private void ButtonGithub_OnClick(object sender, RoutedEventArgs e)
+    private void UriNavigationCommands_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        var url = e.Source switch
         {
-            FileName = "https://github.com/HelloWRC/ClassIsland",
-            UseShellExecute = true
-        });
-    }
-
-    private void ButtonFeedback_OnClick(object sender, RoutedEventArgs e)
-    {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = "https://github.com/HelloWRC/ClassIsland/issues",
-            UseShellExecute = true
-        });
+            SettingsExpanderItem s => s.CommandParameter?.ToString(),
+            Button s => s.CommandParameter?.ToString(),
+            _ => "classisland://app/test/"
+        };
+        IAppHost.TryGetService<IUriNavigationService>()?.NavigateWrapped(new Uri(url));
     }
 
     private void Hyperlink2_OnClick(object sender, RoutedEventArgs e)

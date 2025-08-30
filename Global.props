@@ -68,4 +68,8 @@
 		<DebugSymbols>true</DebugSymbols>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>
+	
+	<PropertyGroup>
+        <DefineConstants Condition="'$(NIX)' == 'true'">$(DefineConstants);NIX</DefineConstants>
+    </PropertyGroup>
 </Project>

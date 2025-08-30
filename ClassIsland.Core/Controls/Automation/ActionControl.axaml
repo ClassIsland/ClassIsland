@@ -34,9 +34,9 @@
                     <Setter Property="Interaction.Behaviors">
                         <BehaviorCollectionTemplate>
                             <BehaviorCollection>
-                                <ItemDragBehavior HorizontalDragThreshold="33550336"
-                                                  Orientation="Vertical"
-                                                  VerticalDragThreshold="3" />
+                                <ci:AdvancedItemDragBehavior HorizontalDragThreshold="33550336"
+                                                             Orientation="Vertical"
+                                                             VerticalDragThreshold="3" />
                             </BehaviorCollection>
                         </BehaviorCollectionTemplate>
                     </Setter>

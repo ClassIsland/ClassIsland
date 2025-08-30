@@ -72,6 +72,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
                 EndTime = value;
             }
             OnPropertyChanged();
+            OnPropertyChanged(nameof(Last));
         }
     }
 
