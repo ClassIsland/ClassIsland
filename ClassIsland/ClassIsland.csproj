@@ -87,32 +87,37 @@
         <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
 	</ItemGroup>
     <ItemGroup>
-        <Folder Include="Assets\Localization\SettingsPages\Component\" />
-        <Folder Include="Assets\Localization\SettingsPages\Appearance\" />
-        <Folder Include="Assets\Localization\SettingsPages\Notification\" />
-        <Folder Include="Assets\Localization\SettingsPages\Window\" />
-        <Folder Include="Assets\Localization\SettingsPages\Weather\" />
-        <Folder Include="Assets\Localization\SettingsPages\Update\" />
-        <Folder Include="Assets\Localization\SettingsPages\Automation\" />
-        <Folder Include="Assets\Localization\SettingsPages\Storage\" />
-        <Folder Include="Assets\Localization\SettingsPages\Privacy\" />
-        <Folder Include="Assets\Localization\SettingsPages\About\" />
-        <Folder Include="Assets\Localization\AppLogsWindow\" />
-        <Folder Include="Assets\Localization\AuthorizeWindow\" />
-        <Folder Include="Assets\Localization\ClassChangingWindow\" />
-        <Folder Include="Assets\Localization\ClassPlanDetailsWindow\" />
-        <Folder Include="Assets\Localization\CrashWindow\" />
-        <Folder Include="Assets\Localization\DataTransferPage\" />
-        <Folder Include="Assets\Localization\DataTransferWindow\" />
-        <Folder Include="Assets\Localization\DevPortalWindow\" />
-        <Folder Include="Assets\Localization\ExcelExportWindow\" />
-        <Folder Include="Assets\Localization\ExcelImportWindow\" />
-        <Folder Include="Assets\Localization\FeatureDebugWindow\" />
-        <Folder Include="Assets\Localization\InstanceExistedWindow\" />
-        <Folder Include="Assets\Localization\ProfileSettingsWindow\" />
-        <Folder Include="Assets\Localization\RecoveryWindow\" />
-        <Folder Include="Assets\Localization\SettingsWindowNew\" />
-        <Folder Include="Assets\Localization\TimeAdjustmentWindow\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\Component\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\Appearance\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\Notification\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\Window\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\Weather\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\Update\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\Automation\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\Storage\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\Privacy\" />
+        <Folder Include="Assets\Localization\Views\SettingsPages\About\" />
+        <Folder Include="Assets\Localization\Views\AppLogsWindow\" />
+        <Folder Include="Assets\Localization\Views\AuthorizeWindow\" />
+        <Folder Include="Assets\Localization\Views\ClassChangingWindow\" />
+        <Folder Include="Assets\Localization\Views\ClassPlanDetailsWindow\" />
+        <Folder Include="Assets\Localization\Views\CrashWindow\" />
+        <Folder Include="Assets\Localization\Views\DataTransferPage\" />
+        <Folder Include="Assets\Localization\Views\DataTransferWindow\" />
+        <Folder Include="Assets\Localization\Views\DevPortalWindow\" />
+        <Folder Include="Assets\Localization\Views\ExcelExportWindow\" />
+        <Folder Include="Assets\Localization\Views\ExcelImportWindow\" />
+        <Folder Include="Assets\Localization\Views\FeatureDebugWindow\" />
+        <Folder Include="Assets\Localization\Views\InstanceExistedWindow\" />
+        <Folder Include="Assets\Localization\Views\ProfileSettingsWindow\" />
+        <Folder Include="Assets\Localization\Views\RecoveryWindow\" />
+        <Folder Include="Assets\Localization\Views\SettingsWindowNew\" />
+        <Folder Include="Assets\Localization\Views\TimeAdjustmentWindow\" />
+        <Folder Include="Assets\Localization\Views\UpdateProgressWindow\" />
+        <Folder Include="Assets\Localization\Views\WallpaperPreviewWindow\" />
+        <Folder Include="Assets\Localization\Views\WelcomeWindow\" />
+        <Folder Include="Assets\Localization\Views\WindowRuleDebugWindow\" />
+        <Folder Include="Assets\Localization\Views\WindowsPicker\" />
         <Folder Include="Models\Logging\" />
         <Folder Include="Models\Native\" />
         <Folder Include="Models\TimeRules\" />
@@ -126,11 +131,6 @@
     </ItemGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
-        <AvaloniaResource Remove="Assets\Localization\新文件夹\**" />
-        <AvaloniaXaml Remove="Assets\Localization\新文件夹\**" />
-        <Compile Remove="Assets\Localization\新文件夹\**" />
-        <EmbeddedResource Remove="Assets\Localization\新文件夹\**" />
-        <None Remove="Assets\Localization\新文件夹\**" />
         <None Include="Assets\AppLogo.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
@@ -149,27 +149,27 @@
 		<DefineConstants>$(DefineConstants);IsMsix</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Remove="Assets\Localization\SettingsPages\General\Localization.SettingsPages.General.Designer.cs" />
-	  <Compile Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.Designer.cs" />
+	  <Compile Remove="Assets\Localization\Views\SettingsPages\General\Localization.SettingsPages.General.Designer.cs" />
+	  <Compile Remove="Assets\Localization\Views\TrayMenu\Localization.TrayMenu.Designer.cs" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Remove="Assets\Localization\Localization.SplashScreen.resx" />
 	  <EmbeddedResource Remove="Assets\Localization\Localization.WelcomePages.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\RecoveryPages\Localization.RecoveryPages.en.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\RecoveryPages\Localization.RecoveryPages.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\RecoveryPages\Localization.RecoveryPages.zh-Hans.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\RecoveryPages\Localization.RecoveryPages.zh-Hant.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\SettingsPages\General\Localization.SettingsPages.General.en.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\SettingsPages\General\Localization.SettingsPages.General.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\SettingsPages\General\Localization.SettingsPages.General.zh-Hans.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\SettingsPages\General\Localization.SettingsPages.General.zh-Hant.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\SplashWindow\Localization.SplashWindow.en.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\SplashWindow\Localization.SplashWindow.zh-Hans.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\SplashWindow\Localization.SplashWindow.zh-Hant.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.en.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.zh-Hans.resx" />
-	  <EmbeddedResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.zh-Hant.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\RecoveryPages\Localization.RecoveryPages.en.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\RecoveryPages\Localization.RecoveryPages.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\RecoveryPages\Localization.RecoveryPages.zh-Hans.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\RecoveryPages\Localization.RecoveryPages.zh-Hant.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\SettingsPages\General\Localization.SettingsPages.General.en.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\SettingsPages\General\Localization.SettingsPages.General.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\SettingsPages\General\Localization.SettingsPages.General.zh-Hans.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\SettingsPages\General\Localization.SettingsPages.General.zh-Hant.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\SplashWindow\Localization.SplashWindow.en.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\SplashWindow\Localization.SplashWindow.zh-Hans.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\SplashWindow\Localization.SplashWindow.zh-Hant.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\TrayMenu\Localization.TrayMenu.en.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\TrayMenu\Localization.TrayMenu.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\TrayMenu\Localization.TrayMenu.zh-Hans.resx" />
+	  <EmbeddedResource Remove="Assets\Localization\Views\TrayMenu\Localization.TrayMenu.zh-Hant.resx" />
 	</ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
@@ -177,34 +177,34 @@
         <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
     </ItemGroup>
 	<ItemGroup>
-	  <AvaloniaResource Update="Assets\Localization\RecoveryPages\Localization.RecoveryPages.Designer.cs">
+	  <AvaloniaResource Update="Assets\Localization\Views\RecoveryPages\Localization.RecoveryPages.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Localization.RecoveryPages.resx</DependentUpon>
 	  </AvaloniaResource>
-	  <AvaloniaResource Update="Assets\Localization\RecoveryPages\Localization.RecoveryPages.resx">
+	  <AvaloniaResource Update="Assets\Localization\Views\RecoveryPages\Localization.RecoveryPages.resx">
 	    <Generator></Generator>
 	  </AvaloniaResource>
-	  <AvaloniaResource Update="Assets\Localization\WelcomePages\Localization.WelcomePages.Designer.cs">
+	  <AvaloniaResource Update="Assets\Localization\Views\WelcomePages\Localization.WelcomePages.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Localization.WelcomePages.resx</DependentUpon>
 	  </AvaloniaResource>
-	  <AvaloniaResource Update="Assets\Localization\WelcomePages\Localization.WelcomePages.resx">
+	  <AvaloniaResource Update="Assets\Localization\Views\WelcomePages\Localization.WelcomePages.resx">
 	    <Generator></Generator>
 	  </AvaloniaResource>
-	  <AvaloniaResource Update="Assets\Localization\SettingsPages\General\Localization.SettingsPages.General.resx">
+	  <AvaloniaResource Update="Assets\Localization\Views\SettingsPages\General\Localization.SettingsPages.General.resx">
 	    <Generator></Generator>
 	  </AvaloniaResource>
-	  <AvaloniaResource Update="Assets\Localization\SettingsPages\Localization.SettingsPages.resx">
+	  <AvaloniaResource Update="Assets\Localization\Views\SettingsPages\Localization.SettingsPages.resx">
 	    <Generator></Generator>
 	  </AvaloniaResource>
-	  <AvaloniaResource Update="Assets\Localization\SplashWindow\Localization.SplashWindow.Designer.cs">
+	  <AvaloniaResource Update="Assets\Localization\Views\SplashWindow\Localization.SplashWindow.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Localization.SplashWindow.resx</DependentUpon>
 	  </AvaloniaResource>
-	  <AvaloniaResource Update="Assets\Localization\SplashWindow\Localization.SplashWindow.resx">
+	  <AvaloniaResource Update="Assets\Localization\Views\SplashWindow\Localization.SplashWindow.resx">
 	    <Generator></Generator>
 	  </AvaloniaResource>
 	</ItemGroup>
