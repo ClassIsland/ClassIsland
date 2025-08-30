@@ -24,4 +24,13 @@ public class TouchDragThumb : Thumb
         get => GetValue(IsCompactProperty);
         set => SetValue(IsCompactProperty, value);
     }
+
+    public static readonly StyledProperty<bool> IsExplicitVisibleProperty = AvaloniaProperty.Register<TouchDragThumb, bool>(
+        nameof(IsExplicitVisible));
+
+    public bool IsExplicitVisible
+    {
+        get => GetValue(IsExplicitVisibleProperty);
+        set => SetValue(IsExplicitVisibleProperty, value);
+    }
 }

@@ -25,7 +25,6 @@
                 </Border>
             </ControlTemplate>
         </Setter>
-        <Setter Property="IsVisible" Value="{Binding $self.(ci:PointerStateAssist.IsTouchMode)}"/>
         <Setter Property="Opacity" Value="0"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>
         
@@ -41,9 +40,12 @@
         <Style Selector="^[Orientation=Vertical][IsCompact=True] /template/ controls|FluentIcon#FluentIcon">
             <Setter Property="Glyph" Value="&#xee49;"/>
         </Style>
-        <Style Selector="^[(ci|PointerStateAssist.IsTouchMode)=True]">
+        <Style Selector="^[IsVisible=True]">
             <Setter Property="Opacity" Value="1"/>
         </Style>
+        <Style Selector="^[IsExplicitVisible=False]">
+            <Setter Property="IsVisible" Value="{Binding $self.(ci:PointerStateAssist.IsTouchMode)}"/>
+        </Style>    
         
         <Style Selector="^.in-listbox">
             <Setter Property="Margin" Value="-8 -8 0 -8"/>

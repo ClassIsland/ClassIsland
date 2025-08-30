@@ -21,7 +21,7 @@
             <Setter Property="Interaction.Behaviors">
                 <BehaviorCollectionTemplate>
                     <BehaviorCollection>
-                        <ci:TouchFixedContextDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3" Handler=""/>
+                        <ContextDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3" Handler=""/>
                     </BehaviorCollection>
                 </BehaviorCollectionTemplate>
             </Setter>
@@ -72,8 +72,8 @@
                 <Setter Property="Interaction.Behaviors">
                     <BehaviorCollectionTemplate>
                         <BehaviorCollection>
-                            <ItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"
-                                              Orientation="Horizontal"/>
+                            <ci:AdvancedItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"
+                                                         Orientation="Horizontal"/>
                             <ContextDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="45"
                                                  Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}">
                             </ContextDragBehavior>
@@ -140,9 +140,25 @@
                  SelectedItem="{Binding ViewModel.SelectedMainWindowLineSettings}"
                  x:Name="ListBoxMainWindowLines"
                  Margin="-12 0">
+            <ListBox.ItemContainerTheme>
+                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="Interaction.Behaviors">
+                        <BehaviorCollectionTemplate>
+                            <BehaviorCollection>
+                                <ci:AdvancedItemDragBehavior Orientation="Vertical"
+                                                             HorizontalDragThreshold="33550336"
+                                                             AllowDragFromDragThumbOnly="True"/>
+                            </BehaviorCollection>
+                        </BehaviorCollectionTemplate>
+                    </Setter>
+                </ControlTheme>
+            </ListBox.ItemContainerTheme>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="Auto, *, Auto" Height="40">
+                        <ci:TouchDragThumb Grid.Column="0" Width="20" IsExplicitVisible="True"
+                                           IsCompact="True"
+                                           Classes="in-listbox"/>
                         
                         <ListBox Grid.Column="1" ItemsSource="{Binding Children}" 
                                  SelectionChanged="SelectorComponents_OnSelectionChanged"
