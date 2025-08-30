@@ -141,7 +141,7 @@
                 <!-- 提醒提供方列表 -->
                 <TabControl Grid.Row="1" Classes="compact" Padding="0" Margin="0">
                     <TabItem Header="提醒提供方">
-                        <ListBox ItemsSource="{Binding ViewModel.NotificationProvidersFiltered.Items}"
+                        <ListBox ItemsSource="{Binding ViewModel.NotificationProvidersFiltered}"
                                  SelectionMode="Single"
                                  SelectionChanged="SelectorMain_OnSelected"
                                  SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}">

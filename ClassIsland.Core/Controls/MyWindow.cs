@@ -76,6 +76,7 @@ public class MyWindow : AppWindow
         }
 
         IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version.Build > 22000;
+        Initialized += OnInitialized;
         Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
         KeyDown += OnKeyDown;
@@ -107,7 +108,7 @@ public class MyWindow : AppWindow
         };
     }
 
-    private void OnLoaded(object? sender, RoutedEventArgs e)
+    private void OnInitialized(object? sender, EventArgs e)
     {
         var commands = CommandManager.GetCommandBindings(this);
         commands.Add(new CommandBinding(UriNavigationCommands.UriNavigationCommand,
@@ -115,7 +116,10 @@ public class MyWindow : AppWindow
                 ?.NavigateWrapped(new Uri(args.Parameter?.ToString() ?? "classisland:")),
             (_, args) => args.CanExecute = true));
         CommandManager.SetCommandBindings(this, commands);
-        
+    }
+
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
         if (EnableMicaWindow && IsMicaSupported)
         {
             TransparencyLevelHint = [WindowTransparencyLevel.Mica];

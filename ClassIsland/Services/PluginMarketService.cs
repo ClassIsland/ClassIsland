@@ -154,7 +154,7 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
             ? FallbackMirrors
             : SettingsService.Settings.OfficialIndexMirrors;
         const string repo = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/plugin/index.zip?time={time}";
-        return SettingsService.Settings.PluginIndexes.Append(new PluginIndexInfo()
+        return SettingsService.Settings.PluginIndexes.Where(x => !string.IsNullOrWhiteSpace(x.Url)).Append(new PluginIndexInfo()
         {
             Id = DefaultPluginIndexKey,
             Url = repo,
