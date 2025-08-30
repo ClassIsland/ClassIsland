@@ -84,9 +84,10 @@
                                             Width="120"/>
                         <Button Theme="{StaticResource TransparentButton}"
                                 Classes="accent"
-                                Content="{ci:FluentIcon &#xE304;}"
+                                Content="{ci:FluentIcon &#xE324;}"
                                 Click="ButtonWeekOffsetSettingsOpen_OnClick"
-                                ToolTip.Tip="调整偏移…"
+                                ToolTip.Tip="调整多周轮换偏移…"
+                                VerticalAlignment="Stretch"
                                 x:Name="WeekOffsetSettingsControlButton">
                             <Button.Flyout>
                                 <Flyout>

@@ -12,7 +12,9 @@ using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Assists;
 using ClassIsland.Core.Commands;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Theming;
 using FluentAvalonia.UI.Windowing;
 
@@ -61,6 +63,8 @@ public class MyWindow : AppWindow
         set => SetAndRaise(EnableMicaWindowProperty, ref _enableMicaWindow, value);
     }
 
+    private AppToastAdorner? _appToastAdorner;
+
     /// <summary>
     /// 构造函数
     /// </summary>
@@ -76,38 +80,57 @@ public class MyWindow : AppWindow
         }
 
         IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version.Build > 22000;
+        Initialized += OnInitialized;
         Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
         KeyDown += OnKeyDown;
+        PointerPressed += OnPointerPressed;
+    }
+
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        PointerStateAssist.SetIsTouchMode(this, e.Pointer.Type == PointerType.Touch);
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.Key != Key.F3)
+        switch (e.Key)
         {
-            return;
-        }
+            case Key.F3:
+            {
+                if (_debugGraphState == 0)
+                {
+                    _debugGraphState = (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ? 2 : 1;
+                }
+                else
+                {
+                    _debugGraphState = 0;
+                }
 
-        if (_debugGraphState == 0)
-        {
-            _debugGraphState = (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ? 2 : 1;
+                RendererDiagnostics.DebugOverlays = _debugGraphState switch
+                {
+                    0 => RendererDebugOverlays.None,
+                    1 => RendererDebugOverlays.Fps,
+                    2 => RendererDebugOverlays.Fps | RendererDebugOverlays.LayoutTimeGraph |
+                         RendererDebugOverlays.RenderTimeGraph,
+                    _ => RendererDebugOverlays.None
+                };
+                break;
+            }
+            case Key.F6:
+                PointerStateAssist.SetIsTouchMode(this, true);
+                this.ShowToast("(debug) IsTouchMode=true");
+                break;
+            case Key.F7 when _appToastAdorner != null:
+                foreach (var message in _appToastAdorner.Messages)
+                {
+                    message.Close();
+                }
+                break;
         }
-        else
-        {
-            _debugGraphState = 0;
-        }
-
-        RendererDiagnostics.DebugOverlays = _debugGraphState switch
-        {
-            0 => RendererDebugOverlays.None,
-            1 => RendererDebugOverlays.Fps,
-            2 => RendererDebugOverlays.Fps | RendererDebugOverlays.LayoutTimeGraph |
-                 RendererDebugOverlays.RenderTimeGraph,
-            _ => RendererDebugOverlays.None
-        };
     }
 
-    private void OnLoaded(object? sender, RoutedEventArgs e)
+    private void OnInitialized(object? sender, EventArgs e)
     {
         var commands = CommandManager.GetCommandBindings(this);
         commands.Add(new CommandBinding(UriNavigationCommands.UriNavigationCommand,
@@ -115,7 +138,10 @@ public class MyWindow : AppWindow
                 ?.NavigateWrapped(new Uri(args.Parameter?.ToString() ?? "classisland:")),
             (_, args) => args.CanExecute = true));
         CommandManager.SetCommandBindings(this, commands);
-        
+    }
+
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
         if (EnableMicaWindow && IsMicaSupported)
         {
             TransparencyLevelHint = [WindowTransparencyLevel.Mica];
@@ -128,7 +154,7 @@ public class MyWindow : AppWindow
         }
 
         var layer = AdornerLayer.GetAdornerLayer(element);
-        var appToastAdorner = new AppToastAdorner(this);
+        var appToastAdorner = _appToastAdorner = new AppToastAdorner(this);
         layer?.Children.Add(appToastAdorner);
         AdornerLayer.SetAdornedElement(appToastAdorner, this);
         
