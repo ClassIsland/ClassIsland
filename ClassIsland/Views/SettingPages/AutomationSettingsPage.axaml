@@ -118,16 +118,18 @@
                                 <DataTemplate>
                                     <Grid Margin="3 0"
                                           Background="Transparent"
-                                          ColumnDefinitions="* 8 Auto"
+                                          ColumnDefinitions="Auto * 8 Auto"
                                           Height="42">
+                                        <ci:TouchDragThumb Grid.Column="0" Margin="-12 0 0 0"
+                                                           Width="20"/>
                                         <!--  工作流标题  -->
-                                        <TextBlock VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="1" VerticalAlignment="Center"
                                                    Text="{Binding ActionSet.Name}"
                                                    FontSize="13"
                                                    FontWeight="Medium"
                                                    TextWrapping="Wrap" />
 
-                                        <!-- <fa:ProgressRing Grid.Column="1" -->
+                                        <!-- <fa:ProgressRing Grid.Column="2" -->
                                         <!--                  Height="25" -->
                                         <!--                  IsActive="{Binding ActionSet.IsWorking}" -->
                                         <!--                  IsIndeterminate="{Binding ActionSet.IsWorking}" -->
@@ -135,7 +137,7 @@
                                         <!--                  Background="Transparent" -->
                                         <!--                  ToolTip.Tip="该自动化正在运行。"/> -->
 
-                                        <ToggleSwitch Grid.Column="2"
+                                        <ToggleSwitch Grid.Column="3"
                                                       IsChecked="{Binding ActionSet.IsEnabled}" />
                                     </Grid>
                                 </DataTemplate>

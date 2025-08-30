@@ -163,10 +163,11 @@
                                     <Grid DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
                                           d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}"
                                           Margin="-8 8"
-                                          Background="Transparent" RowDefinitions="*,*,Auto" ColumnDefinitions="Auto,*">
+                                          Background="Transparent" RowDefinitions="*,*,Auto" ColumnDefinitions="Auto,Auto,*">
 
+                                        <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
                                         <!-- 图标 -->
-                                        <ContentPresenter Grid.Column="0" Grid.Row="0"
+                                        <ContentPresenter Grid.Column="1" Grid.Row="0"
                                                           Grid.RowSpan="2"
                                                           Width="24" Height="24"
                                                           VerticalAlignment="Center"
@@ -174,19 +175,19 @@
                                                           Content="{Binding ProviderInstance.IconElement}" />
                                         
                                         <!-- 标题 -->
-                                        <TextBlock Grid.Column="1" Grid.Row="0"
+                                        <TextBlock Grid.Column="2" Grid.Row="0"
                                                    TextWrapping="Wrap"
                                                    Margin="0 0 0 2"
                                                    Text="{Binding Name}"
                                                    FontSize="16" FontWeight="Bold" />
                                         
                                         <!-- 描述 -->
-                                        <TextBlock Grid.Column="1" Grid.Row="1"
+                                        <TextBlock Grid.Column="2" Grid.Row="1"
                                                    TextWrapping="Wrap"
                                                    Text="{Binding Description}"
                                                    FontSize="12" />
 
-                                        <Expander Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
+                                        <Expander Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2"
                                                   Background="{x:Null}"
                                                   Collapsed="Expander_OnCollapsed"
                                                   Padding="0"

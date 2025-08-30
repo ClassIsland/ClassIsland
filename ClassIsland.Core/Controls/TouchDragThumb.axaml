@@ -1,0 +1,52 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <Design.PreviewWith>
+        <controls:TouchDragThumb />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|TouchDragThumb">
+        <!-- Set Defaults -->
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Easing="0,0 0,1" Duration="0:0:0.2"/>
+            </Transitions>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="Transparent">
+                    <Viewbox VerticalAlignment="Center">
+                        <controls:FluentIcon x:Name="FluentIcon"
+                                             Width="18"
+                                             VerticalAlignment="Center"
+                                             FontSize="18" Opacity="0.8" />
+                    </Viewbox>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Setter Property="IsVisible" Value="{Binding $self.(ci:PointerStateAssist.IsTouchMode)}"/>
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        
+        <Style Selector="^[Orientation=Horizontal] /template/ controls|FluentIcon#FluentIcon">
+            <Setter Property="Glyph" Value="&#xee44;"/>
+        </Style>
+        <Style Selector="^[Orientation=Vertical] /template/ controls|FluentIcon#FluentIcon">
+            <Setter Property="Glyph" Value="&#xee46;"/>
+        </Style>
+        <Style Selector="^[Orientation=Horizontal][IsCompact=True] /template/ controls|FluentIcon#FluentIcon">
+            <Setter Property="Glyph" Value="&#xee49;"/>
+        </Style>
+        <Style Selector="^[Orientation=Vertical][IsCompact=True] /template/ controls|FluentIcon#FluentIcon">
+            <Setter Property="Glyph" Value="&#xee49;"/>
+        </Style>
+        <Style Selector="^[(ci|PointerStateAssist.IsTouchMode)=True]">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+        
+        <Style Selector="^.in-listbox">
+            <Setter Property="Margin" Value="-8 -8 0 -8"/>
+        </Style>
+    </Style>
+</Styles>

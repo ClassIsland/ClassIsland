@@ -66,7 +66,7 @@
                         <BehaviorCollectionTemplate>
                             <BehaviorCollection>
                                 <ItemDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="3"
-                                                  Orientation="Horizontal"/>
+                                                  Orientation="Vertical"/>
                             </BehaviorCollection>
                         </BehaviorCollectionTemplate>
                     </Setter>
@@ -75,7 +75,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="0 8 4 8" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
-
+                        
                         <ci:FluentIcon Grid.Column="0" Grid.Row="0"
                                        Foreground="{DynamicResource AccentFillColorDefaultBrush}"
                                        Glyph="{Binding ProviderInfo.IconGlyph}"
@@ -95,6 +95,7 @@
                         <StackPanel Grid.Column="1" Grid.Row="0" 
                                     VerticalAlignment="Center"
                                     Margin="0 -8"
+                                    Orientation="Horizontal"
                                     HorizontalAlignment="Right">
                             <StackPanel.IsVisible>
                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -102,11 +103,22 @@
                                     <Binding Path="ViewModel.IsEditingMode" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:AuthorizeWindow}"/>
                                 </MultiBinding>
                             </StackPanel.IsVisible>
+                            <ci:TouchDragThumb/>
                             <Button Theme="{StaticResource TransparentButton}"
                                     ToolTip.Tip="删除"
                                     Content="{ci:FluentIcon &#xe671;}"
-                                    Foreground="IndianRed"
-                                    Click="ButtonRemoveSelectedAuthProvider_OnClick"/>
+                                    Foreground="IndianRed">
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel Spacing="8" TextElement.Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+                                            <TextBlock Text="要删除此认证方式吗？" FontWeight="Bold"/>
+                                            <TextBlock Text="此操作无法撤销。"/>
+                                            <Button Content="删除" Click="ButtonRemoveSelectedAuthProvider_OnClick"
+                                                    Classes="accent"/>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
                         </StackPanel>
 
                         <controls:AuthorizeProviderPresenter 

@@ -42,9 +42,13 @@
             <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.XamlThemeService.EnabledThemes}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border DataContext="{Binding Converter={StaticResource ThemeDictionaryAccessConverter}}">
-                            <TextBlock Text="{Binding Manifest.Name}"/>
-                        </Border>
+                        <StackPanel Orientation="Horizontal">
+                            <ci:TouchDragThumb Classes="in-listbox"/>
+                            <Border DataContext="{Binding Converter={StaticResource ThemeDictionaryAccessConverter}}"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Manifest.Name}" />
+                            </Border>
+                        </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
                 <ListBox.Styles>

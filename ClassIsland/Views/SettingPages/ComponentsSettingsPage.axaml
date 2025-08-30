@@ -28,7 +28,8 @@
             <Setter Property="Height" Value="40"/>
             <Setter Property="ItemTemplate">
                 <DataTemplate DataType="{x:Type components:ComponentSettings}">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <ci:TouchDragThumb Margin="-4 0 -2 0" IsCompact="True"/>
                         <ci:FluentIcon Glyph="{Binding AssociatedComponentInfo.IconGlyph}"
                                        VerticalAlignment="Center" />
                         <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
@@ -76,8 +77,10 @@
                         </BehaviorCollection>
                     </BehaviorCollectionTemplate>
                 </Setter>
-                <Setter Property="Padding" Value="8 0"></Setter>
-                <Setter Property="MinWidth" Value="0"></Setter>
+                <Setter Property="Padding" Value="8 0"/>
+                <Setter Property="MinWidth" Value="0"/>
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             </Style>
         </Style>
     </ci:SettingsPageBase.Styles>
@@ -259,22 +262,26 @@
                              Classes="drag-source">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,*"
+                                <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*"
                                       Margin="0 8" Height="50">
-                                    <ci:FluentIcon Grid.Column="0" Grid.Row="0"
+                                    <ci:TouchDragThumb  Grid.Column="0" Grid.Row="0"
+                                                        Grid.RowSpan="2"
+                                                        Margin="-12 0 0 0"
+                                                        Width="24"/>
+                                    <ci:FluentIcon Grid.Column="1" Grid.Row="0"
                                                    Grid.RowSpan="2"
                                                    Width="32" Height="32"
                                                    FontSize="32"
                                                    VerticalAlignment="Center"
                                                    Margin="0 -4 4 0"
                                                    Glyph="{Binding IconGlyph}"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="1"
+                                    <TextBlock Grid.Row="0" Grid.Column="2"
                                                Text="{Binding Name}"
                                                HorizontalAlignment="Left"
                                                VerticalAlignment="Top"
                                                Margin="0 0 0 1"
                                                TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="1"
+                                    <TextBlock Grid.Row="1" Grid.Column="2"
                                                Text="{Binding Description}"
                                                Opacity="0.75"
                                                FontSize="12"

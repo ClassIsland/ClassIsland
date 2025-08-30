@@ -12,7 +12,9 @@ using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Assists;
 using ClassIsland.Core.Commands;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Theming;
 using FluentAvalonia.UI.Windowing;
 
@@ -80,32 +82,42 @@ public class MyWindow : AppWindow
         Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
         KeyDown += OnKeyDown;
+        PointerPressed += OnPointerPressed;
+    }
+
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        PointerStateAssist.SetIsTouchMode(this, e.Pointer.Type == PointerType.Touch);
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.Key != Key.F3)
+        if (e.Key == Key.F3)
         {
-            return;
+            if (_debugGraphState == 0)
+            {
+                _debugGraphState = (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ? 2 : 1;
+            }
+            else
+            {
+                _debugGraphState = 0;
+            }
+
+            RendererDiagnostics.DebugOverlays = _debugGraphState switch
+            {
+                0 => RendererDebugOverlays.None,
+                1 => RendererDebugOverlays.Fps,
+                2 => RendererDebugOverlays.Fps | RendererDebugOverlays.LayoutTimeGraph |
+                     RendererDebugOverlays.RenderTimeGraph,
+                _ => RendererDebugOverlays.None
+            };
         }
 
-        if (_debugGraphState == 0)
+        if (e.Key == Key.F6)
         {
-            _debugGraphState = (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ? 2 : 1;
+            PointerStateAssist.SetIsTouchMode(this, true);
+            this.ShowToast("(debug) IsTouchMode=true");
         }
-        else
-        {
-            _debugGraphState = 0;
-        }
-
-        RendererDiagnostics.DebugOverlays = _debugGraphState switch
-        {
-            0 => RendererDebugOverlays.None,
-            1 => RendererDebugOverlays.Fps,
-            2 => RendererDebugOverlays.Fps | RendererDebugOverlays.LayoutTimeGraph |
-                 RendererDebugOverlays.RenderTimeGraph,
-            _ => RendererDebugOverlays.None
-        };
     }
 
     private void OnInitialized(object? sender, EventArgs e)
