@@ -102,9 +102,9 @@
                                 Value="{Binding ViewModel.SettingsService.Settings.DebugTimeSpeed, Mode=TwoWay}"
                                 MinWidth="200"
                                 TickFrequency="10" Minimum="-100" Maximum="500" IsSnapToTickEnabled="True"/>-->
-                        <TextBox Grid.Column="1"
-                                 Text="{Binding ViewModel.SettingsService.Settings.DebugTimeSpeed, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
-                                 MinWidth="102"/>
+                        <NumericUpDown Grid.Column="1"
+                                       Value="{Binding ViewModel.SettingsService.Settings.DebugTimeSpeed}"
+                                       MinWidth="102"/>
                         <Button Grid.Column="2" Click="ButtonResetTimeSpeed_OnClick" 
                                 ToolTip.Tip="重置时间流速"
                                 Theme="{StaticResource TransparentButton}"

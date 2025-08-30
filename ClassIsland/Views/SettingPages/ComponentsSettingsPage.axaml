@@ -13,6 +13,9 @@
                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                   x:Class="ClassIsland.Views.SettingPages.ComponentsSettingsPage"
                   d:DataContext="{d:DesignInstance settingPages:ComponentsSettingsPage}">
+    <ci:SettingsPageBase.GestureRecognizers>
+        <ci:DragGestureRecognizer/>
+    </ci:SettingsPageBase.GestureRecognizers>
     <ci:SettingsPageBase.Styles>
         <Style Selector="ListBox.drag-source ListBoxItem">
             <Setter Property="Interaction.Behaviors">
@@ -28,7 +31,8 @@
             <Setter Property="Height" Value="40"/>
             <Setter Property="ItemTemplate">
                 <DataTemplate DataType="{x:Type components:ComponentSettings}">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <ci:TouchDragThumb Margin="-4 0 -2 0" IsCompact="True"/>
                         <ci:FluentIcon Glyph="{Binding AssociatedComponentInfo.IconGlyph}"
                                        VerticalAlignment="Center" />
                         <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
@@ -68,16 +72,18 @@
                 <Setter Property="Interaction.Behaviors">
                     <BehaviorCollectionTemplate>
                         <BehaviorCollection>
-                            <ItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"
-                                              Orientation="Horizontal"/>
+                            <ci:AdvancedItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"
+                                                         Orientation="Horizontal"/>
                             <ContextDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="45"
                                                  Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}">
                             </ContextDragBehavior>
                         </BehaviorCollection>
                     </BehaviorCollectionTemplate>
                 </Setter>
-                <Setter Property="Padding" Value="8 0"></Setter>
-                <Setter Property="MinWidth" Value="0"></Setter>
+                <Setter Property="Padding" Value="8 0"/>
+                <Setter Property="MinWidth" Value="0"/>
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             </Style>
         </Style>
     </ci:SettingsPageBase.Styles>
@@ -110,7 +116,7 @@
                     <ComboBox ItemsSource="{Binding ViewModel.ComponentsService.ComponentConfigs}"
                               MinWidth="150"
                               MaxWidth="300"
-                              SelectedItem="{Binding ViewModel.SettingsService.Settings.CurrentComponentConfig}" />
+                              SelectedItem="{Binding ViewModel.SettingsService.Settings.CurrentComponentConfig, Converter={StaticResource PreventNullConverter}}" />
                 </ci:Field>
                 <Button Content="{ci:FluentIcon &#xE0B5;}"
                         ToolTip.Tip="刷新"
@@ -134,9 +140,25 @@
                  SelectedItem="{Binding ViewModel.SelectedMainWindowLineSettings}"
                  x:Name="ListBoxMainWindowLines"
                  Margin="-12 0">
+            <ListBox.ItemContainerTheme>
+                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="Interaction.Behaviors">
+                        <BehaviorCollectionTemplate>
+                            <BehaviorCollection>
+                                <ci:AdvancedItemDragBehavior Orientation="Vertical"
+                                                             HorizontalDragThreshold="33550336"
+                                                             AllowDragFromDragThumbOnly="True"/>
+                            </BehaviorCollection>
+                        </BehaviorCollectionTemplate>
+                    </Setter>
+                </ControlTheme>
+            </ListBox.ItemContainerTheme>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="Auto, *, Auto" Height="40">
+                        <ci:TouchDragThumb Grid.Column="0" Width="20" IsExplicitVisible="True"
+                                           IsCompact="True"
+                                           Classes="in-listbox"/>
                         
                         <ListBox Grid.Column="1" ItemsSource="{Binding Children}" 
                                  SelectionChanged="SelectorComponents_OnSelectionChanged"
@@ -144,6 +166,9 @@
                                  AttachedToVisualTree="ListBoxMainWindowLineSettings_OnAttachedToVisualTree"
                                  DetachedFromVisualTree="ListBoxMainWindowLineSettings_OnDetachedFromVisualTree"
                                  Classes="component-listBox">
+                            <ListBox.GestureRecognizers>
+                                <ci:DragGestureRecognizer/>
+                            </ListBox.GestureRecognizers>
                             <Interaction.Behaviors>
                                 <BehaviorCollection>
                                     <ContextDropBehavior Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
@@ -238,6 +263,9 @@
                              Classes="component-listBox"
                              x:Name="ListBoxComponentsChildren"
                              SelectionChanged="SelectorComponentsChildren_OnSelectionChanged">
+                        <ListBox.GestureRecognizers>
+                            <ci:DragGestureRecognizer/>
+                        </ListBox.GestureRecognizers>
                         <Interaction.Behaviors>
                             <BehaviorCollection>
                                 <ContextDropBehavior Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
@@ -259,22 +287,26 @@
                              Classes="drag-source">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,*"
+                                <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*"
                                       Margin="0 8" Height="50">
-                                    <ci:FluentIcon Grid.Column="0" Grid.Row="0"
+                                    <ci:TouchDragThumb  Grid.Column="0" Grid.Row="0"
+                                                        Grid.RowSpan="2"
+                                                        Margin="-12 0 0 0"
+                                                        Width="24"/>
+                                    <ci:FluentIcon Grid.Column="1" Grid.Row="0"
                                                    Grid.RowSpan="2"
                                                    Width="32" Height="32"
                                                    FontSize="32"
                                                    VerticalAlignment="Center"
                                                    Margin="0 -4 4 0"
                                                    Glyph="{Binding IconGlyph}"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="1"
+                                    <TextBlock Grid.Row="0" Grid.Column="2"
                                                Text="{Binding Name}"
                                                HorizontalAlignment="Left"
                                                VerticalAlignment="Top"
                                                Margin="0 0 0 1"
                                                TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="1"
+                                    <TextBlock Grid.Row="1" Grid.Column="2"
                                                Text="{Binding Description}"
                                                Opacity="0.75"
                                                FontSize="12"
@@ -286,6 +318,9 @@
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
+                        <ListBox.GestureRecognizers>
+                            <ci:DragGestureRecognizer/>
+                        </ListBox.GestureRecognizers>
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel Classes="animated-resize">
