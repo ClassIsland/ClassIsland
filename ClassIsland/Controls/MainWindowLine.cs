@@ -257,7 +257,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         ComponentPresenter.ComponentVisibilityChangedEvent.AddClassHandler(typeof(MainWindowLine), 
-            UpdateVisibilityState, RoutingStrategies.Tunnel);
+            UpdateVisibilityState, RoutingStrategies.Bubble);
 
         this.GetObservable(WindowDockingLocationProperty)
             .Skip(1)
@@ -285,9 +285,8 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     private void UpdateVisibilityState(object? sender, RoutedEventArgs args)
     {
         Logger.LogTrace("ComponentVisibilityChangedEvent handled");
-        IsAllComponentsHid = Settings.Children
-            .Where(x => x.RelativeLineNumber == LineNumber)
-            .FirstOrDefault(x => x.IsVisible) == null;
+        IsAllComponentsHid = Settings?.Children
+            .Any(x => x.IsVisible) == false;
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
