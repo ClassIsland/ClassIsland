@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -252,6 +254,8 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     public static FuncValueConverter<double, Thickness> DoubleToThicknessBottomConverter { get; } =
         new(x => new Thickness(0, 0, 0, x));
 
+    private ObservableCollection<ComponentSettings>? _prevSubscription;
+
     public MainWindowLine()
     {
         Loaded += OnLoaded;
@@ -267,10 +271,38 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
             .Subscribe(_ => UpdateFadeStatus());
         this.GetObservable(PointerOverProperty)
             .Subscribe(_ => UpdateFadeStatus());
+        this.GetObservable(SettingsProperty)
+            .Subscribe(_ =>
+            {
+                if (Settings == null)
+                {
+                    return;
+                }
+
+                if (_prevSubscription != null)
+                {
+                    _prevSubscription.CollectionChanged -= ChildrenOnCollectionChanged;
+                }
+
+                _prevSubscription = Settings.Children;
+                Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
+                UpdateHiddenState();
+            });
         SettingsService.Settings.ObservableForProperty(x => x.IsCustomBackgroundColorEnabled)
             .Subscribe(v => PseudoClasses.Set(":custom-background", v.Value));
         PseudoClasses.Set(":custom-background", SettingsService.Settings.IsCustomBackgroundColorEnabled);
         UpdateStyleStates();
+    }
+
+    private void ChildrenOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateHiddenState();
+    }
+
+    private void UpdateHiddenState()
+    {
+        IsAllComponentsHid = Settings?.Children
+            .Any(x => x.IsVisible) == false;
     }
 
     private void UpdateStyleStates()
@@ -285,8 +317,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     private void UpdateVisibilityState(object? sender, RoutedEventArgs args)
     {
         Logger.LogTrace("ComponentVisibilityChangedEvent handled");
-        IsAllComponentsHid = Settings?.Children
-            .Any(x => x.IsVisible) == false;
+        UpdateHiddenState();
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)

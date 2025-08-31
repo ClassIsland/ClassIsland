@@ -32,7 +32,7 @@
                 <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
                     <Binding Path="IsAllComponentsHid" RelativeSource="{RelativeSource Self}" 
                              Converter="{StaticResource InvertBooleanConverter}"/>
-                    <Binding Path="ViewModel.IsOverlayOpened" RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
+                    <Binding Path="IsOverlayOpen" RelativeSource="{RelativeSource Self}"/>
                 </MultiBinding>
             </Setter.Value>
         </Setter>
