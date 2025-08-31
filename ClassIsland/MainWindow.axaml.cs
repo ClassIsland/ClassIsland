@@ -1001,4 +1001,9 @@ public partial class MainWindow : Window
         ViewModel.Settings.IsWelcomeWindowShowed = false;
         AppBase.Current.Restart();
     }
+
+    private void LayoutContainerGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        Height = LayoutContainerGrid.Bounds.Height;
+    }
 }
