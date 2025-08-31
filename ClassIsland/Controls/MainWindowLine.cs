@@ -24,6 +24,7 @@ using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Metadata;
 using Avalonia.Platform;
 using Avalonia.Reactive;
+using Avalonia.Rendering.Composition;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -288,10 +289,40 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                 Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
                 UpdateHiddenState();
             });
+        this.GetObservable(IsVisibleProperty).Subscribe(_ =>
+        {
+            if (!IsVisible)
+            {
+                return;
+            }
+
+            PlayFadeInAnimation(this);
+        });
         SettingsService.Settings.ObservableForProperty(x => x.IsCustomBackgroundColorEnabled)
             .Subscribe(v => PseudoClasses.Set(":custom-background", v.Value));
         PseudoClasses.Set(":custom-background", SettingsService.Settings.IsCustomBackgroundColorEnabled);
         UpdateStyleStates();
+    }
+    
+    private static void PlayFadeInAnimation(Control control)
+    {
+        if (IThemeService.AnimationLevel < 2)
+        {
+            return;
+        }
+        
+        var compositionVisual = ElementComposition.GetElementVisual(control);
+        if (compositionVisual == null)
+        {
+            return;
+        }
+        var compositor = compositionVisual.Compositor;
+        var anim = compositor.CreateScalarKeyFrameAnimation();
+        anim.InsertKeyFrame(0f, 0f);
+        anim.InsertKeyFrame(1f, 1f, Easing.Parse("0.25, 1, 0.5, 1"));
+        anim.Duration = TimeSpan.FromMilliseconds(250);
+        anim.Target = nameof(compositionVisual.Opacity);
+        compositionVisual.StartAnimation(nameof(compositionVisual.Opacity), anim);
     }
 
     private void ChildrenOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
