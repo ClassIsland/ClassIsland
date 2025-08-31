@@ -367,6 +367,10 @@ public partial class MainWindow : Window
         switch (SettingsService.Settings.TaskBarIconClickBehavior)
         {
             case 0:
+                if (!OperatingSystem.IsWindows())
+                {
+                    break;
+                }
                 // Get this tray icon's implementation
                 ITrayIconImpl? impl = (ITrayIconImpl?)typeof(TrayIcon)
                     .GetProperty ("Impl", BindingFlags.NonPublic | BindingFlags.Instance)?
