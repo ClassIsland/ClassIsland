@@ -184,7 +184,7 @@
                                           ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel Spacing="{Binding ViewModel.Settings.MainWindowLineVerticalMargin}" />
+                                        <StackPanel />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
