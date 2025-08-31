@@ -952,6 +952,11 @@ public partial class App : AppBase, IAppHost
             return;
         }
 
+        // 如果不是开发构建, 则自动重置部分可能影响使用的调试选项
+        #if !DEBUG
+        Settings.IsMainWindowDebugEnabled = false;
+        #endif
+        
         var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
         Logger.LogInformation("正在初始化MainWindow。");
         GetService<ISplashService>().SetDetailedStatus("正在启动主界面所需的服务");
