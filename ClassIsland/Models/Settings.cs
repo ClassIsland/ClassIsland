@@ -191,7 +191,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _radiusX = 0.0;
     private double _radiusY = 0.0;
     private int _hideMode = 0;
-    private Ruleset _hiedRules = new();
     private Ruleset _hideRules = new();
     private bool _isAutoBackupEnabled = true;
     private DateTime _lastAutoBackupTime = DateTime.Now;
@@ -460,17 +459,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public Ruleset HiedRules
-    {
-        get => _hiedRules;
-        set
-        {
-            if (Equals(value, _hiedRules)) return;
-            _hiedRules = value;
-            OnPropertyChanged();
-        }
-    }
-    
     public Ruleset HideRules
     {
         get => _hideRules;
@@ -480,6 +468,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             _hideRules = value;
             OnPropertyChanged();
         }
+    }
+
+    [JsonInclude]
+    public Ruleset HiedRules
+    {
+        set => HideRules = value;
     }
 
     public bool HideOnFullscreen

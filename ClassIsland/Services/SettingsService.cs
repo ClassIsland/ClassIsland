@@ -139,21 +139,6 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         {
             return;
         }
-        if (Assembly.GetExecutingAssembly().GetName().Version <= Version.Parse("1.7.105.0"))
-        { 
-            bool NotEmpty(Ruleset? ruleset)
-            {
-                return ruleset?.Groups?.Any(g => g?.Rules?.Any(r => !string.IsNullOrEmpty(r?.Id)) == true) == true;
-            }
-            
-            if (NotEmpty(Settings.HiedRules) && !NotEmpty(Settings.HideRules))
-            {
-                Logger.LogInformation("正在迁移 1.7.105.0 及以下版本的设置文件。");
-                Settings.HideRules = Settings.HiedRules;
-                Settings.HiedRules = new Ruleset();
-            }
-            return;
-        }
         
     }
 #pragma warning restore CS0612 // 类型或成员已过时
