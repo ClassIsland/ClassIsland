@@ -32,11 +32,18 @@
                 <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
                     <Binding Path="IsAllComponentsHid" RelativeSource="{RelativeSource Self}" 
                              Converter="{StaticResource InvertBooleanConverter}"/>
-                    <Binding Path="ViewModel.IsOverlayOpened" RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
+                    <Binding Path="IsOverlayOpen" RelativeSource="{RelativeSource Self}"/>
                 </MultiBinding>
             </Setter.Value>
         </Setter>
         <Setter Property="ClipToBounds" Value="False"/>
+        
+        <Style Selector="^:dock-top" >
+            <Setter Property="Margin" Value="{Binding ViewModel.Settings.MainWindowLineVerticalMargin, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={x:Static controls:MainWindowLine.DoubleToThicknessBottomConverter}}"/>
+        </Style>
+        <Style Selector="^:dock-bottom">
+            <Setter Property="Margin" Value="{Binding ViewModel.Settings.MainWindowLineVerticalMargin, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={x:Static controls:MainWindowLine.DoubleToThicknessTopConverter}}"/>
+        </Style>
         
         <Style Selector="^:dock-left /template/:is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Left" />
