@@ -574,8 +574,10 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         {
             NotificationHostService.RequestQueue.Clear();
         }
-        
+
         SoundPlayer? player = null;
+        var device = AudioService.AudioEngine.InitializePlaybackDevice(null, IAudioService.DefaultAudioFormat);
+        device.Start();
         while (_notificationQueue.Count > 0)
         {
             var request = _notificationQueue.Dequeue();
@@ -624,21 +626,19 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                 {
                     try
                     {
-                        var provider = new StreamDataProvider(string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                        if (player != null)
+                        {
+                            player.Stop();
+                            device.MasterMixer.RemoveComponent(player);
+                            player.Dispose();
+                        }
+                        var provider = new StreamDataProvider(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, 
+                            string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
                             ? AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)
                             : File.OpenRead(settings.NotificationSoundPath));
-                        player = new SoundPlayer(provider)
-                        {
-                            Volume = (float)SettingsService.Settings.NotificationSoundVolume
-                        };
-                        var player1 = player;
-                        player.PlaybackEnded += PlayerOnPlaybackEnded;
-                        void PlayerOnPlaybackEnded(object? sender, EventArgs e)
-                        {
-                            player1.PlaybackEnded -= PlayerOnPlaybackEnded;
-                            Mixer.Master.RemoveComponent(player1);
-                        }
-                        Mixer.Master.AddComponent(player1);
+                        player = new SoundPlayer(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, provider);
+                        player.Volume = (float)SettingsService.Settings.NotificationSoundVolume;
+                        device.MasterMixer.AddComponent(player);
                         player.Play();
                     }
                     catch (Exception e)
@@ -734,6 +734,8 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         MaskContent = null;
         _isOverlayOpen = false;
         player?.Stop();
+        player?.Dispose();
+        device?.Dispose();
         MainWindow.ReleaseTopmostLock(TopmostLock);
     }
 
