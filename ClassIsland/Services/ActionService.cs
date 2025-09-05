@@ -27,13 +27,17 @@ public class ActionService : IActionService
         actionSet.SetStartRunning(true);
         try
         {
-            await ChangeableListForEachAsync(
-                () => actionSet.ActionItems.Where(x => !x.IsRevertActionItem),
-                async Task (x) =>
-                {
-                    await InvokeActionItemAsync(x, actionSet, isRevertable && actionSet.IsRevertEnabled);
-                },
-                actionSet.InterruptCts?.Token);
+            await Task.Run(
+                    async () =>
+                        await ChangeableListForEachAsync(
+                            () => actionSet.ActionItems.Where(x => !x.IsRevertActionItem),
+                            async x =>
+                            {
+                                await InvokeActionItemAsync(x, actionSet, isRevertable && actionSet.IsRevertEnabled);
+                            },
+                            actionSet.InterruptCts?.Token),
+                    actionSet.InterruptCts?.Token ?? CancellationToken.None)
+                .ConfigureAwait(false);
         }
         finally
         {
@@ -51,16 +55,20 @@ public class ActionService : IActionService
         actionSet.SetStartRunning(false);
         try
         {
-            await ChangeableListForEachAsync(
-                () => actionSet.ActionItems.Where(x => x.IsRevertActionItem || x.IsRevertEnabled),
-                async Task(x) =>
-                {
-                    if (x.IsRevertActionItem)
-                        await InvokeActionItemAsync(x, actionSet, isRevertable: false);
-                    else if (x.IsRevertEnabled)
-                        await RevertActionItemAsync(x, actionSet);
-                },
-                actionSet.InterruptCts?.Token);
+            await Task.Run(
+                    async () =>
+                        await ChangeableListForEachAsync(
+                            () => actionSet.ActionItems.Where(x => x.IsRevertActionItem || x.IsRevertEnabled),
+                            async x =>
+                            {
+                                if (x.IsRevertActionItem)
+                                    await InvokeActionItemAsync(x, actionSet, isRevertable: false);
+                                else if (x.IsRevertEnabled)
+                                    await RevertActionItemAsync(x, actionSet);
+                            },
+                            actionSet.InterruptCts?.Token),
+                    actionSet.InterruptCts?.Token ?? CancellationToken.None)
+                .ConfigureAwait(false);
         }
         finally
         {
