@@ -36,6 +36,8 @@ public class MyWindow : AppWindow
 
     private int _debugGraphState = 0;
 
+    private bool _suppressTouchMode = false;
+
     /// <summary>
     /// 启用云母窗口背景的直接属性
     /// </summary>
@@ -84,12 +86,13 @@ public class MyWindow : AppWindow
         Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
         KeyDown += OnKeyDown;
-        PointerPressed += OnPointerPressed;
+        PointerPressed += OnPointerUpdated;
+        PointerMoved += OnPointerUpdated;
     }
-
-    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    
+    private void OnPointerUpdated(object? sender, PointerEventArgs e)
     {
-        PointerStateAssist.SetIsTouchMode(this, e.Pointer.Type == PointerType.Touch);
+        PointerStateAssist.SetIsTouchMode(this, _suppressTouchMode | e.Pointer.Type == PointerType.Touch);
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -118,8 +121,20 @@ public class MyWindow : AppWindow
                 break;
             }
             case Key.F6:
-                PointerStateAssist.SetIsTouchMode(this, true);
-                this.ShowToast("(debug) IsTouchMode=true");
+                if (PointerStateAssist.GetIsTouchMode(this))
+                {
+                    PointerStateAssist.SetIsTouchMode(this, false);
+                    _suppressTouchMode = false;
+                }
+                else
+                {
+                    PointerStateAssist.SetIsTouchMode(this, true);
+                    if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                    {
+                        _suppressTouchMode = true;
+                    }
+                }
+                this.ShowToast($"(debug) IsTouchMode={PointerStateAssist.GetIsTouchMode(this)}, Suppress={_suppressTouchMode}");
                 break;
             case Key.F7 when _appToastAdorner != null:
                 foreach (var message in _appToastAdorner.Messages)

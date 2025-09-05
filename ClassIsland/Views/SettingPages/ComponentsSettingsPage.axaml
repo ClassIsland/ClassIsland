@@ -27,6 +27,48 @@
             </Setter>
         </Style>
         <Style Selector="ListBox.component-listBox">
+            <Style.Resources>
+                <MenuFlyout x:Key="ComponentsOperationMenuFlyout">
+                    <MenuItem Header="向上移动一行" Icon="{ci:FluentIcon &#xe197;}" 
+                              Classes="main-only"
+                              Command="{Binding $parent[settingPages:ComponentsSettingsPage].MoveComponentToPreviousLineCommand}"
+                              CommandParameter="{Binding}"/>
+                    <MenuItem Header="向下移动一行" Icon="{ci:FluentIcon &#xe0cb;}"
+                              Classes="main-only"
+                              Command="{Binding $parent[settingPages:ComponentsSettingsPage].MoveComponentToNextLineCommand}"
+                              CommandParameter="{Binding}"/>
+                    <MenuItem Header="移动到选中的容器" Icon="{ci:FluentIcon &#xe280;}"
+                              IsEnabled="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.IsComponentChildrenViewOpen}"
+                              Classes="main-only"
+                              Command="{Binding $parent[settingPages:ComponentsSettingsPage].MoveToCurrentContainerComponentCommand}"
+                              CommandParameter="{Binding}"/>
+                    <MenuItem Header="从容器组件移出" Icon="{ci:FluentIcon &#xe286;}"
+                              Classes="children-only"
+                              Command="{Binding $parent[settingPages:ComponentsSettingsPage].MoveComponentsToMainLinesCommand}"
+                              CommandParameter="{Binding}"/>
+                    <Separator/>
+                    <MenuItem Header="包裹到新容器" Icon="{ci:FluentIcon &#xe27e;}"
+                              ItemsSource="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.ContainerComponents}">
+                        <MenuItem.ItemContainerTheme>
+                            <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                <Setter Property="Header" Value="{Binding Name}"/>
+                                <Setter Property="Icon">
+                                    <Template>
+                                        <Border>
+                                            <ci:FluentIcon Glyph="{Binding IconGlyph}"/>
+                                        </Border>
+                                    </Template>
+                                </Setter>
+                                <Setter Property="Command" Value="{Binding $parent[settingPages:ComponentsSettingsPage].CreateContainerComponentCommand}"/>
+                                <Setter Property="CommandParameter" Value="{Binding}"/>
+                            </ControlTheme>
+                        </MenuItem.ItemContainerTheme>
+                    </MenuItem>
+                    <MenuItem Header="创建副本" Icon="{ci:FluentIcon &#xeeb9;}"
+                              Command="{Binding $parent[settingPages:ComponentsSettingsPage].DuplicateComponentCommand}"
+                              CommandParameter="{Binding}"/>
+                </MenuFlyout>
+            </Style.Resources>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
             <Setter Property="Height" Value="40"/>
             <Setter Property="ItemTemplate">
@@ -37,6 +79,13 @@
                                        VerticalAlignment="Center" />
                         <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
                                    VerticalAlignment="Center" />
+                        <Button Content="{ci:FluentIcon &#xebac;}"
+                                VerticalAlignment="Center"
+                                ToolTip.Tip="更多选项…"
+                                Flyout="{StaticResource ComponentsOperationMenuFlyout}"
+                                Theme="{StaticResource TransparentButton}"
+                                IsVisible="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}">
+                        </Button>
                         <Button Content="{ci:FluentIcon &#xEC30;}"
                                 VerticalAlignment="Center"
                                 ToolTip.Tip="查看子组件"
@@ -67,23 +116,32 @@
                     <VirtualizingStackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
                 </ItemsPanelTemplate>
             </Setter>
+            <Setter Property="ItemContainerTheme">
+                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="Interaction.Behaviors">
+                        <BehaviorCollectionTemplate>
+                            <BehaviorCollection>
+                                <ci:AdvancedItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"
+                                                             Orientation="Horizontal"/>
+                                <ContextDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="45"
+                                                     Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}">
+                                </ContextDragBehavior>
+                            </BehaviorCollection>
+                        </BehaviorCollectionTemplate>
+                    </Setter>
+                    <Setter Property="Padding" Value="8 0"/>
+                    <Setter Property="MinWidth" Value="0"/>
+                    <Setter Property="VerticalAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                    <Setter Property="ContextFlyout" Value="{StaticResource ComponentsOperationMenuFlyout}"/>
+                </ControlTheme>
+            </Setter>
             
-            <Style Selector="^ ListBoxItem">
-                <Setter Property="Interaction.Behaviors">
-                    <BehaviorCollectionTemplate>
-                        <BehaviorCollection>
-                            <ci:AdvancedItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"
-                                                         Orientation="Horizontal"/>
-                            <ContextDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="45"
-                                                 Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}">
-                            </ContextDragBehavior>
-                        </BehaviorCollection>
-                    </BehaviorCollectionTemplate>
-                </Setter>
-                <Setter Property="Padding" Value="8 0"/>
-                <Setter Property="MinWidth" Value="0"/>
-                <Setter Property="VerticalAlignment" Value="Stretch"/>
-                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Style Selector="^#ListBoxComponentsChildren MenuItem.main-only">
+                <Setter Property="IsVisible" Value="False"/>
+            </Style>
+            <Style Selector="^:not(#ListBoxComponentsChildren) MenuItem.children-only">
+                <Setter Property="IsVisible" Value="False"/>
             </Style>
         </Style>
     </ci:SettingsPageBase.Styles>
@@ -287,12 +345,8 @@
                              Classes="drag-source">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*"
+                                <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
                                       Margin="0 8" Height="50">
-                                    <ci:TouchDragThumb  Grid.Column="0" Grid.Row="0"
-                                                        Grid.RowSpan="2"
-                                                        Margin="-12 0 0 0"
-                                                        Width="24"/>
                                     <ci:FluentIcon Grid.Column="1" Grid.Row="0"
                                                    Grid.RowSpan="2"
                                                    Width="32" Height="32"
@@ -315,6 +369,23 @@
                                                HorizontalAlignment="Stretch"
                                                TextAlignment="Left"
                                                TextTrimming="CharacterEllipsis"/>
+                                    
+                                    <Button Grid.Row="0" Grid.Column="3" Grid.RowSpan="2"
+                                            IsVisible="{Binding $self.(ci:PointerStateAssist.IsTouchMode)}"
+                                            VerticalAlignment="Center" HorizontalAlignment="Right"
+                                            Content="{ci:FluentIcon &#xe00d;}"
+                                            Margin="2 0 0 0"
+                                            Width="32" Height="32" CornerRadius="16"
+                                            Padding="0"
+                                            ToolTip.Tip="添加到主界面"
+                                            Command="{Binding $parent[settingPages:ComponentsSettingsPage].AddSelectedComponentToMainLinesCommand}"
+                                            CommandParameter="{Binding}">
+                                        <Button.Styles>
+                                            <Style Selector="Button:not(.invert-foreground-accent) /template/ ContentPresenter#PART_ContentPresenter">
+                                                <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+                                            </Style>
+                                        </Button.Styles>
+                                    </Button>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
