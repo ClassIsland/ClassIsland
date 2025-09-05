@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -22,6 +24,7 @@ using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Metadata;
 using Avalonia.Platform;
 using Avalonia.Reactive;
+using Avalonia.Rendering.Composition;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -252,12 +255,14 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     public static FuncValueConverter<double, Thickness> DoubleToThicknessBottomConverter { get; } =
         new(x => new Thickness(0, 0, 0, x));
 
+    private ObservableCollection<ComponentSettings>? _prevSubscription;
+
     public MainWindowLine()
     {
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         ComponentPresenter.ComponentVisibilityChangedEvent.AddClassHandler(typeof(MainWindowLine), 
-            UpdateVisibilityState, RoutingStrategies.Tunnel);
+            UpdateVisibilityState, RoutingStrategies.Bubble);
 
         this.GetObservable(WindowDockingLocationProperty)
             .Skip(1)
@@ -267,10 +272,68 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
             .Subscribe(_ => UpdateFadeStatus());
         this.GetObservable(PointerOverProperty)
             .Subscribe(_ => UpdateFadeStatus());
+        this.GetObservable(SettingsProperty)
+            .Subscribe(_ =>
+            {
+                if (Settings == null)
+                {
+                    return;
+                }
+
+                if (_prevSubscription != null)
+                {
+                    _prevSubscription.CollectionChanged -= ChildrenOnCollectionChanged;
+                }
+
+                _prevSubscription = Settings.Children;
+                Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
+                UpdateHiddenState();
+            });
+        this.GetObservable(IsVisibleProperty).Subscribe(_ =>
+        {
+            if (!IsVisible)
+            {
+                return;
+            }
+
+            PlayFadeInAnimation(this);
+        });
         SettingsService.Settings.ObservableForProperty(x => x.IsCustomBackgroundColorEnabled)
             .Subscribe(v => PseudoClasses.Set(":custom-background", v.Value));
         PseudoClasses.Set(":custom-background", SettingsService.Settings.IsCustomBackgroundColorEnabled);
         UpdateStyleStates();
+    }
+    
+    private static void PlayFadeInAnimation(Control control)
+    {
+        if (IThemeService.AnimationLevel < 2)
+        {
+            return;
+        }
+        
+        var compositionVisual = ElementComposition.GetElementVisual(control);
+        if (compositionVisual == null)
+        {
+            return;
+        }
+        var compositor = compositionVisual.Compositor;
+        var anim = compositor.CreateScalarKeyFrameAnimation();
+        anim.InsertKeyFrame(0f, 0f);
+        anim.InsertKeyFrame(1f, 1f, Easing.Parse("0.25, 1, 0.5, 1"));
+        anim.Duration = TimeSpan.FromMilliseconds(250);
+        anim.Target = nameof(compositionVisual.Opacity);
+        compositionVisual.StartAnimation(nameof(compositionVisual.Opacity), anim);
+    }
+
+    private void ChildrenOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateHiddenState();
+    }
+
+    private void UpdateHiddenState()
+    {
+        IsAllComponentsHid = Settings?.Children
+            .Any(x => x.IsVisible) == false;
     }
 
     private void UpdateStyleStates()
@@ -285,9 +348,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     private void UpdateVisibilityState(object? sender, RoutedEventArgs args)
     {
         Logger.LogTrace("ComponentVisibilityChangedEvent handled");
-        IsAllComponentsHid = Settings.Children
-            .Where(x => x.RelativeLineNumber == LineNumber)
-            .FirstOrDefault(x => x.IsVisible) == null;
+        UpdateHiddenState();
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
