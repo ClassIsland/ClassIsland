@@ -43,6 +43,7 @@
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>
             <ci:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
             <ci:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
+            <ci:PreventNullConverter x:Key="PreventNullConverter" />
             <converters:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
             
             <StaticResource x:Key="ContentControlThemeFontFamily" ResourceKey="AppFont"/>

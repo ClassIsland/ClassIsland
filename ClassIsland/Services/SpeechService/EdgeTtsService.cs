@@ -21,6 +21,7 @@ using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Components;
 using SoundFlow.Enums;
 using SoundFlow.Providers;
+using SoundFlow.Structs;
 
 namespace ClassIsland.Services.SpeechService;
 
@@ -29,6 +30,7 @@ public class EdgeTtsService : ISpeechService
 {
     public static readonly string EdgeTtsCacheFolderPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "EdgeTTS");
 
+    public IAudioService AudioService { get; }
     private ILogger<EdgeTtsService> Logger { get; }
 
     private SettingsService SettingsService { get; }
@@ -43,11 +45,14 @@ public class EdgeTtsService : ISpeechService
 
     private CancellationTokenSource? requestingCancellationTokenSource;
 
+    private EdgeTtsPlayInfo? _currentPlayInfo;
+
     private SoundPlayer? CurrentWavePlayer { get; set; }
 
 
     public EdgeTtsService(IAudioService audioService, ILogger<EdgeTtsService> logger, SettingsService settingsService)
     {
+        AudioService = audioService;
         Logger = logger;
         SettingsService = settingsService;
         
@@ -118,7 +123,9 @@ public class EdgeTtsService : ISpeechService
     {
         requestingCancellationTokenSource?.Cancel();
         CurrentWavePlayer?.Stop();
+        CurrentWavePlayer?.Dispose();
         CurrentWavePlayer = null;
+        _currentPlayInfo?.CancellationTokenSource.Cancel();
         foreach (var pair in PlayingQueue)
         {
             pair.CancellationTokenSource.Cancel();
@@ -131,9 +138,12 @@ public class EdgeTtsService : ISpeechService
         if (IsPlaying)
             return;
         IsPlaying = true;
+        using var device = AudioService.AudioEngine.InitializePlaybackDevice(null, IAudioService.DefaultAudioFormat);
+        device.Start();
+
         while (PlayingQueue.Count > 0)
         {
-            var playInfo = PlayingQueue.Dequeue();
+            var playInfo = _currentPlayInfo = PlayingQueue.Dequeue();
             if (playInfo.CancellationTokenSource.IsCancellationRequested)
                 continue;
             if (playInfo.DownloadTask != null)
@@ -144,28 +154,28 @@ public class EdgeTtsService : ISpeechService
             }
 
             CurrentWavePlayer?.Stop();
+            CurrentWavePlayer?.Dispose();
             try
             {
-                var player = CurrentWavePlayer = new SoundPlayer(new StreamDataProvider(File.OpenRead(playInfo.FilePath)))
+                var player = CurrentWavePlayer = new SoundPlayer(AudioService.AudioEngine, IAudioService.DefaultAudioFormat,
+                    new StreamDataProvider(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, File.OpenRead(playInfo.FilePath)))
                 {
-                    Volume = (float)SettingsService.Settings.SpeechVolume * 100
+                    Volume = (float)SettingsService.Settings.SpeechVolume
                 };
                 Logger.LogDebug("开始播放 {}", playInfo.FilePath);
-                Mixer.Master.AddComponent(player);
+                device.MasterMixer.AddComponent(player);
+                var tcs = new TaskCompletionSource<bool>();
                 player.PlaybackEnded += (sender, args) =>
                 {
-                    Mixer.Master.RemoveComponent(player);
                     playInfo.IsPlayingCompleted = true;
+                    tcs.SetResult(true);
                 };
-                player.Play();
-
-                await Task.Run(() =>
+                playInfo.CancellationTokenSource.Token.Register(() =>
                 {
-                    while (player.State == PlaybackState.Playing &&
-                           !playInfo.CancellationTokenSource.IsCancellationRequested)
-                    {
-                    }
+                    tcs.SetResult(false);
                 });
+                player.Play();
+                await tcs.Task;
                 Logger.LogDebug("结束播放 {}", playInfo.FilePath);
             }
             catch (Exception ex)
@@ -173,8 +183,10 @@ public class EdgeTtsService : ISpeechService
                 Logger.LogError(ex, "无法播放语音。");
             }
         }
-
+        
+        CurrentWavePlayer?.Dispose();
         CurrentWavePlayer = null;
+        _currentPlayInfo = null;
         IsPlaying = false;
     }
 }

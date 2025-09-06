@@ -21,9 +21,11 @@
                 CornerRadius="4">
             <StackPanel>
                 <Panel>
-                    <Grid ColumnDefinitions="Auto, *, Auto, Auto, Auto">
+                    <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto">
                         <!--  左：选择器  -->
-                        <Button x:Name="ChangeActionButton"
+                        <ci:TouchDragThumb Grid.Column="0"/>
+                        <Button Grid.Column="1"
+                                x:Name="ChangeActionButton"
                                 Focusable="False"
                                 Theme="{StaticResource TransparentButton}">
                             <StackPanel Orientation="Horizontal">
@@ -61,7 +63,7 @@
                         </Button>
 
                         <!--  右：操作按钮  -->
-                        <ci:AnimatedIconButton Grid.Column="2"
+                        <ci:AnimatedIconButton Grid.Column="3"
                                                Glyph="&#xE809;"
                                                Text="错误"
                                                Foreground="IndianRed"
@@ -76,14 +78,14 @@
                             </ci:AnimatedIconButton.Flyout>
                         </ci:AnimatedIconButton>
 
-                        <fa:ProgressRing Grid.Column="3"
+                        <fa:ProgressRing Grid.Column="4"
                                          Height="20"
                                          Margin="0 0 -2 0"
                                          IsActive="{Binding $parent[local:ActionItemControl].ActionItem.IsWorking}"
                                          IsIndeterminate="{Binding $parent[local:ActionItemControl].ActionItem.IsWorking}"
                                          IsVisible="{Binding $parent[local:ActionItemControl].ActionItem.IsWorking}" />
 
-                        <ci:AnimatedIconButton Grid.Column="4"
+                        <ci:AnimatedIconButton Grid.Column="5"
                                                Margin="2 0"
                                                VerticalContentAlignment="Center"
                                                Glyph="&#xE671;"
