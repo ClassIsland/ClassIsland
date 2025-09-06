@@ -152,6 +152,7 @@
 
                       ci:MainWindowStylesAssist.IsIslandSeperated="{Binding ViewModel.Settings.IsIslandSeperated}"
                       ci:MainWindowStylesAssist.ComponentsSpacing="12"
+                      ci:MainWindowStylesAssist.IsProgressAccuracyReduced="{Binding ViewModel.Settings.ReduceProgressAccuracy}"
                       ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
                       ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
                     <Interaction.Behaviors>

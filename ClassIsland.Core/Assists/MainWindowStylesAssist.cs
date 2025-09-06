@@ -31,4 +31,10 @@ public class MainWindowStylesAssist
 
     public static void SetComponentsSpacing(Control obj, double value) => obj.SetValue(ComponentsSpacingProperty, value);
     public static double GetComponentsSpacing(Control obj) => obj.GetValue(ComponentsSpacingProperty);
+
+    public static readonly AttachedProperty<bool> IsProgressAccuracyReducedProperty =
+        AvaloniaProperty.RegisterAttached<MainWindowStylesAssist, Control, bool>("IsProgressAccuracyReduced", inherits:true);
+
+    public static void SetIsProgressAccuracyReduced(Control obj, bool value) => obj.SetValue(IsProgressAccuracyReducedProperty, value);
+    public static bool GetIsProgressAccuracyReduced(Control obj) => obj.GetValue(IsProgressAccuracyReducedProperty);
 }
