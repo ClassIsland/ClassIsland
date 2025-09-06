@@ -1139,13 +1139,13 @@ public partial class App : AppBase, IAppHost
     {
         var dialog = new TaskDialog()
         {
-            Title = "ClassIsland 已正在运行",
-            Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行修改设置等操作。\n" +
-                      "如果您无法看到应用主界面，这有可能是您在托盘图标菜单中选择了【隐藏主界面】，或者【按规则隐藏主界面】设置正在生效，也有可能是自动化功能修改了上述设置。",
+            Title = "ClassIsland 已在运行",
+            Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行设置等操作。\n\n" +
+                      "如果您无法看到主界面，可能是因为您在托盘图标菜单中选择了【隐藏主界面】，或者有隐藏主界面的规则或行动正在生效。",
             XamlRoot = PhonyRootWindow,
             Buttons =
             [
-                new TaskDialogButton("退出应用", false)
+                new TaskDialogButton("取消", false)
             ],
             Commands =
             [
@@ -1154,7 +1154,7 @@ public partial class App : AppBase, IAppHost
                     DialogResult = true,
                     ClosesOnInvoked = true,
                     Text = "重启当前实例",
-                    Description = "结束当前正在运行的 ClassIsland 实例，然后重启当前实例。",
+                    Description = "结束正在运行的 ClassIsland 实例，然后再次启动本实例。",
                     IconSource = new FluentIconSource("\ue0bd"),
                 }
             ]

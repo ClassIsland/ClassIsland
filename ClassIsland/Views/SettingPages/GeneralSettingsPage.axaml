@@ -152,14 +152,17 @@
             <!-- 教学安全模式 -->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE809;}" 
                                         Header="教学安全模式"
-                                        Description="启用后，如果 ClassIsland 发生意外崩溃，将自动按照右侧选择的方法处理崩溃，以确保教学不受到影响。如果发生的是不可忽略的异常，应用将自动退出。您可以在日志目录查看崩溃详情。">
+                                        Description="启用后，如果 ClassIsland 发生意外崩溃，将自动按照右侧选择的方法处理崩溃，以确保教学不受到影响。如果发生的是不可忽略的异常，应用将自动退出。您可以在日志记录中查看崩溃详情。">
                 <controls3:SettingsExpander.Footer>
-                    <DockPanel>
-                        <ToggleSwitch DockPanel.Dock="Right"
-                                      VerticalAlignment="Center"
-                                      Margin="8 0 0 0"
-                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"/>
-                        <ComboBox Width="120"
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <ComboBox Width="135"
+                                  VerticalAlignment="Center"
+                                  IsVisible="{Binding !ViewModel.SettingsService.Settings.IsCriticalSafeMode}"
+                                  IsEnabled="False"
+                                  SelectedIndex="0">
+                            <ComboBoxItem>显示崩溃报告</ComboBoxItem>
+                        </ComboBox>
+                        <ComboBox Width="135"
                                   VerticalAlignment="Center"
                                   IsVisible="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"
                                   SelectedIndex="{Binding ViewModel.SettingsService.Settings.CriticalSafeModeMethod}">
@@ -168,7 +171,10 @@
                             <ComboBoxItem>显示通知</ComboBoxItem>
                             <ComboBoxItem>忽略（不推荐）</ComboBoxItem>
                         </ComboBox>
-                    </DockPanel>
+                        <ToggleSwitch VerticalAlignment="Center"
+                                      Margin="8 0 0 0"
+                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}" />
+                    </StackPanel>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
             
