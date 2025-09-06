@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
+using ClassIsland.Core.Services.Registry;
 using ClassIsland.Services;
 using ClassIsland.Views;
 using ClassIsland.Views.SettingPages;
@@ -37,6 +40,9 @@ public partial class ComponentsSettingsViewModel : ObservableRecipient
     [ObservableProperty] private Dictionary<ListBox, MainWindowLineSettings> _mainWindowLineListBoxCacheReversed = new();
 
     public static FuncValueConverter<int, double> ComponentsEditorHeightConverter { get; } = new(x => x * 43.2);
+
+    public IReadOnlyList<ComponentInfo> ContainerComponents { get; } =
+        ComponentRegistryService.Registered.Where(x => x.IsComponentContainer).ToList();
 
     /// <inheritdoc/>
     public ComponentsSettingsViewModel(IComponentsService componentsService, SettingsService settingsService)

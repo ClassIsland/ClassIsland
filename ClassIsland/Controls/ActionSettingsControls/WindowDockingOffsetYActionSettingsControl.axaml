@@ -15,7 +15,6 @@
         <TextBlock Text="修改为" VerticalAlignment="Center" Margin="0 0 4 0"/>
         <NumericUpDown VerticalAlignment="Center"
                        MinWidth="80"
-                       Foreground="{DynamicResource MaterialDesignBody}"
-                       Text="{Binding Settings.Value}"/>
+                       Value="{Binding Settings.Value}"/>
     </StackPanel>
 </ci:ActionSettingsControlBase>

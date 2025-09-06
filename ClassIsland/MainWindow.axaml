@@ -6,8 +6,7 @@
         xmlns:local="clr-namespace:ClassIsland"
         mc:Ignorable="d"
         Title="ClassIsland" 
-        Height="40" 
-        Width="800"
+        Height="1"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
@@ -33,7 +32,6 @@
         Activated="MainWindow_OnActivated"
         Icon="/Assets/AppLogo.ico"
         Loaded="MainWindow_OnLoaded"
-        SizeToContent="Height"
         X11Properties.WmClass="classisland_main"
         Closing="MainWindow_OnClosing"
         ShowActivated="False">
@@ -124,122 +122,113 @@
             <Setter Property="IsVisible" Value="{Binding ViewModel.Settings.IsMainWindowVisible}" />
         </Style>
     </Window.Styles>
-    <!-- <Window.Style> -->
-    <!--     <Style TargetType="Window"> -->
-    <!--         <Style.Triggers> -->
-    <!--             ~1~ Debug @1@ -->
-    <!--             <DataTrigger Binding="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Mode=OneWay}" Value="True"> -->
-    <!--                 <Setter Property="Background" Value="#2FAA0000"/> -->
-    <!--             </DataTrigger> -->
-    <!--         </Style.Triggers> -->
-    <!--         ~1~ 默认状态 @1@ -->
-    <!--         <Setter Property="Topmost" Value="False"/> -->
-    <!--         <Setter Property="Background" Value="{x:Null}"/> -->
-    <!--     </Style> -->
-    <!-- </Window.Style> -->
-    <Grid>
-        <!-- ROOT -->
-        <LayoutTransformControl>
-            <LayoutTransformControl.LayoutTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="{Binding ViewModel.Settings.Scale, Mode=OneWay}"
-                                    ScaleY="{Binding ViewModel.Settings.Scale, Mode=OneWay}" />
-                    <SkewTransform />
-                    <RotateTransform />
-                    <TranslateTransform />
-                </TransformGroup>
-            </LayoutTransformControl.LayoutTransform>
-            <Grid ClipToBounds="True"
-                  VerticalAlignment="Top"
-                  HorizontalAlignment="Stretch"
-                  x:Name="GridRoot"
-                  RenderTransformOrigin="0,0"
-                  
-                  Classes.ExplicitShowed="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
-                  Classes.OverlayOpened="{Binding ViewModel.IsOverlayOpened, Mode=OneWay}"
-                  Classes.HideOnClass="{Binding ViewModel.Settings.HideOnClass, Mode=OneWay}"
-                  Classes.HideOnMaxWindow="{Binding ViewModel.Settings.HideOnMaxWindow, Mode=OneWay}"
-                  Classes.HideOnFullscreen="{Binding ViewModel.Settings.HideOnFullscreen, Mode=OneWay}"
-                  Classes.ForegroundMaxWindow="{Binding ViewModel.IsForegroundMaxWindow, Mode=OneWay}"
-                  Classes.ForegroundFullscreen="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}"
-                  Classes.HideRuleSatisfied="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}"
-                  
-                  ci:MainWindowStylesAssist.IsIslandSeperated="{Binding ViewModel.Settings.IsIslandSeperated}"
-                  ci:MainWindowStylesAssist.ComponentsSpacing="12"
-                  ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
-                  ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
-                <Interaction.Behaviors>
-                    <DataTriggerBehavior Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}" Value="0">
-                        <AddClassAction ClassName="BasicHidingMode"/>
-                    </DataTriggerBehavior>
-                    <DataTriggerBehavior Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}" Value="1">
-                        <AddClassAction ClassName="AdvancedHidingMode"/>
-                    </DataTriggerBehavior>
-                    <DataTriggerBehavior Binding="{Binding LessonsService.CurrentState, Mode=OneWay}" Value="OnClass">
-                        <AddClassAction ClassName="StateOnClass"/>
-                    </DataTriggerBehavior>
-                </Interaction.Behaviors>
-                <Grid.Effect>
-                    <DropShadowEffect BlurRadius="8" Opacity="0" 
-                                      Color="Black"/>
-                </Grid.Effect>
+    <StackPanel>
+        <Grid x:Name="LayoutContainerGrid" SizeChanged="LayoutContainerGrid_OnSizeChanged">
+            <!-- ROOT -->
+            <LayoutTransformControl>
+                <LayoutTransformControl.LayoutTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="{Binding ViewModel.Settings.Scale, Mode=OneWay}"
+                                        ScaleY="{Binding ViewModel.Settings.Scale, Mode=OneWay}" />
+                        <SkewTransform />
+                        <RotateTransform />
+                        <TranslateTransform />
+                    </TransformGroup>
+                </LayoutTransformControl.LayoutTransform>
+                <Grid ClipToBounds="True"
+                      VerticalAlignment="Top"
+                      HorizontalAlignment="Stretch"
+                      x:Name="GridRoot"
+                      RenderTransformOrigin="0,0"
 
-                <Border ClipToBounds="True"
-                        x:Name="ResourceLoaderBorder"
-                        TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
-                    <Border.Resources>
+                      Classes.ExplicitShowed="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
+                      Classes.OverlayOpened="{Binding ViewModel.IsOverlayOpened, Mode=OneWay}"
+                      Classes.HideOnClass="{Binding ViewModel.Settings.HideOnClass, Mode=OneWay}"
+                      Classes.HideOnMaxWindow="{Binding ViewModel.Settings.HideOnMaxWindow, Mode=OneWay}"
+                      Classes.HideOnFullscreen="{Binding ViewModel.Settings.HideOnFullscreen, Mode=OneWay}"
+                      Classes.ForegroundMaxWindow="{Binding ViewModel.IsForegroundMaxWindow, Mode=OneWay}"
+                      Classes.ForegroundFullscreen="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}"
+                      Classes.HideRuleSatisfied="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}"
 
-                    </Border.Resources>
-                    <Grid>
-                        <ItemsControl Grid.Column="0"
-                                      x:Name="RootMainWindowLinesItemsControl"
-                                      ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Spacing="{Binding ViewModel.Settings.MainWindowLineVerticalMargin}"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                        <controls:MainWindowLine WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                                 LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                                 IsMainLine="{Binding IsMainLine}"
-                                                                 IsNotificationEnabled="{Binding IsNotificationEnabled}"
-                                                                 LineNumber="0"
-                                                                 HorizontalAlignment="Stretch"
-                                                                 Settings="{Binding}"
-                                                                 IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
-                                            <ItemsControl ItemsSource="{Binding Children}"
-                                                          Classes="root-components-control"
-                                                          ClipToBounds="False">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <StackPanel Classes="components-panel" />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <ci:ComponentPresenter IsOnMainWindow="True" 
-                                                                               IsRootComponent="True"
-                                                                               Settings="{Binding}"
-                                                                               HidingRules="{Binding HidingRules, Mode=OneWay}"
-                                                                               HideOnRule="{Binding HideOnRule, Mode=OneWay}"
-                                                                               Margin="6 0" />
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </controls:MainWindowLine>
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Grid>
+                      ci:MainWindowStylesAssist.IsIslandSeperated="{Binding ViewModel.Settings.IsIslandSeperated}"
+                      ci:MainWindowStylesAssist.ComponentsSpacing="12"
+                      ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
+                      ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
+                    <Interaction.Behaviors>
+                        <DataTriggerBehavior Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}" Value="0">
+                            <AddClassAction ClassName="BasicHidingMode" />
+                        </DataTriggerBehavior>
+                        <DataTriggerBehavior Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}" Value="1">
+                            <AddClassAction ClassName="AdvancedHidingMode" />
+                        </DataTriggerBehavior>
+                        <DataTriggerBehavior Binding="{Binding LessonsService.CurrentState, Mode=OneWay}"
+                                             Value="OnClass">
+                            <AddClassAction ClassName="StateOnClass" />
+                        </DataTriggerBehavior>
+                    </Interaction.Behaviors>
+                    <Grid.Effect>
+                        <DropShadowEffect BlurRadius="8" Opacity="0"
+                                          Color="Black" />
+                    </Grid.Effect>
 
-                </Border>
+                    <Border ClipToBounds="True"
+                            x:Name="ResourceLoaderBorder"
+                            TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
+                        <Border.Resources>
 
-                <!--<hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>-->
-                <!--<tb:TaskbarIcon ContextMenu="{StaticResource AppConteGriddu}"
+                        </Border.Resources>
+                        <Grid>
+                            <ItemsControl Grid.Column="0"
+                                          x:Name="RootMainWindowLinesItemsControl"
+                                          VerticalAlignment="Stretch"
+                                          ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Classes="animated-resize"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <controls:MainWindowLine
+                                                WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                IsMainLine="{Binding IsMainLine}"
+                                                IsNotificationEnabled="{Binding IsNotificationEnabled}"
+                                                LineNumber="0"
+                                                HorizontalAlignment="Stretch"
+                                                Settings="{Binding}"
+                                                IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
+                                                <ItemsControl ItemsSource="{Binding Children}"
+                                                              Classes="root-components-control"
+                                                              ClipToBounds="False">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel Classes="components-panel" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <ci:ComponentPresenter IsOnMainWindow="True"
+                                                                IsRootComponent="True"
+                                                                Settings="{Binding}"
+                                                                HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                                HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                                Margin="6 0" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </controls:MainWindowLine>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+
+                    </Border>
+
+                    <!--<hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>-->
+                    <!--<tb:TaskbarIcon ContextMenu="{StaticResource AppConteGriddu}"
                         DataContext="{Binding}"
                         x:Name="MyTaskBarIcon"
                         IconSource="/Assets/AppLogo.ico"
@@ -248,37 +237,27 @@
                         ToolTip.Tip="ClassIsland">
             </tb:TaskbarIcon>-->
 
-                <!-- Content -->
+                    <!-- Content -->
 
-            </Grid>
-        </LayoutTransformControl>
+                </Grid>
+            </LayoutTransformControl>
 
-        <!-- Scale debug -->
-        <TextBlock Foreground="Cyan" 
-                   d:Visibility="Collapsed"
-                   IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}">
-            <Run Text="GridRoot:"/>
-            <Run Text="{Binding ActualWidth, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}"/>
-            <Run Text="{Binding ActualHeight, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}"/>
-            <LineBreak/>
-            <Run Text="CurrentTime:"/>
-            <Run Text="{Binding ViewModel.DebugCurrentTime}"/>
-        </TextBlock>
-        <TextBlock Foreground="Cyan" 
-                   HorizontalAlignment="Right"
-                   d:Visibility="Collapsed"
-                   IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}">
-            <Run Text="{x:Static local:App.AppVersionLong}"/>
-        </TextBlock>
-
-        <!-- Reserved transforms -->
-        <Grid.RenderTransform>
-            <TransformGroup>
-                <TranslateTransform/>
-                <ScaleTransform/>
-                <RotateTransform/>
-                <MatrixTransform/>
-            </TransformGroup>
-        </Grid.RenderTransform>
-    </Grid>
+            <!-- Scale debug -->
+            <TextBlock Foreground="Cyan"
+                       d:Visibility="Collapsed"
+                       IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}">
+                <Run Text="GridRoot:" />
+                <Run Text="{Binding ActualWidth, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}" />
+                <Run Text="{Binding ActualHeight, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}" />
+                <LineBreak />
+                <Run Text="CurrentTime:" />
+                <Run Text="{Binding ViewModel.DebugCurrentTime}" />
+            </TextBlock>
+            <TextBlock Foreground="Cyan"
+                       HorizontalAlignment="Right"
+                       d:Visibility="Collapsed"
+                       IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}">
+                <Run Text="{x:Static local:App.AppVersionLong}" />
+            </TextBlock>
+        </Grid></StackPanel>
 </Window>

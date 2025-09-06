@@ -10,6 +10,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
 using ClassIsland.Core.Abstractions.Controls;
@@ -24,6 +25,7 @@ using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels.SettingsPages;
+using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 
@@ -332,5 +334,216 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsChild;
         ViewModel.SelectedComponentSettingsMain = null;
         UpdateSettingsVisibility();
+    }
+
+    [RelayCommand]
+    private void DuplicateComponent(ComponentSettings settings)
+    {
+        var list = GetSelectedComponentSource(settings);
+        var index = list.IndexOf(settings);
+        if (index == -1)
+        {
+            return;
+        }
+        index = Math.Min(list.Count - 1, index);
+
+        var newSettings = ConfigureFileHelper.CopyObject(settings);
+        list.Insert(index, newSettings);
+        if (settings == ViewModel.SelectedComponentSettingsMain)
+        {
+            ViewModel.SelectedComponentSettingsMain = newSettings;
+        }
+        else
+        {
+            ViewModel.SelectedComponentSettingsChild = newSettings;
+        }
+        ViewModel.SelectedComponentSettings = newSettings;
+    }
+    
+    [RelayCommand]
+    private void CreateContainerComponent(ComponentInfo container)
+    {
+        if (ViewModel.SelectedComponentSettings == null)
+        {
+            return;
+        }
+
+        var selected = ViewModel.SelectedComponentSettings;
+        var list = GetSelectedComponentSource(selected);
+        var index = list.IndexOf(ViewModel.SelectedComponentSettings);
+
+        if (index == -1)
+        {
+            return;
+        }
+
+        index = Math.Min(list.Count - 1, index);
+        var newComp = new ComponentSettings()
+        {
+            Id = container.Guid.ToString(),
+        };
+        if (container.ComponentType?.BaseType != null)
+        {
+            newComp.Settings =
+                Services.ComponentsService.LoadComponentSettings(newComp, container.ComponentType.BaseType);
+        }
+        list.Insert(index, newComp);
+        if (selected == ViewModel.SelectedComponentSettingsMain)
+        {
+            ViewModel.SelectedComponentSettingsMain = newComp;
+        }
+        else
+        {
+            ViewModel.SelectedComponentSettingsChild = newComp;
+        }
+        SetCurrentSelectedComponentContainer(newComp);
+        list.Remove(selected);
+        newComp.Children?.Add(selected);
+        ViewModel.SelectedComponentSettings = newComp;
+    }
+
+    private ObservableCollection<ComponentSettings> GetSelectedComponentSource(ComponentSettings selected)
+    {
+        return ViewModel.ComponentsService.CurrentComponents.Lines
+            .FirstOrDefault(x => x.Children.Contains(selected))?
+            .Children ?? ViewModel.SelectedComponentContainerChildren;
+    }
+
+    [RelayCommand]
+    private void MoveComponentToPreviousLine(ComponentSettings settings)
+    {
+        var list = GetSelectedComponentSource(settings);
+        if (list == ViewModel.SelectedComponentContainerChildren)
+        {
+            return;
+        }
+
+        var index = -1;
+        for (var i = 0; i < ViewModel.ComponentsService.CurrentComponents.Lines.Count; i++)
+        {
+            var line = ViewModel.ComponentsService.CurrentComponents.Lines[i];
+            if (line.Children != list) 
+                continue;
+            index = i;
+        }
+
+        if (index == -1)
+        {
+            return;
+        }
+
+        list.Remove(settings);
+        if (index - 1 >= 0)
+        {
+            ViewModel.ComponentsService.CurrentComponents.Lines[index - 1].Children.Add(settings);
+            return;
+        }
+
+        var newLine = new MainWindowLineSettings()
+        {
+            Children =
+            {
+                settings
+            }
+        };
+        ViewModel.ComponentsService.CurrentComponents.Lines.Insert(0, newLine);
+        this.ShowToast("已向上创建新主界面行。");
+    }
+    
+    [RelayCommand]
+    private void MoveComponentToNextLine(ComponentSettings settings)
+    {
+        var list = GetSelectedComponentSource(settings);
+        if (list == ViewModel.SelectedComponentContainerChildren)
+        {
+            return;
+        }
+
+        var index = -1;
+        for (var i = 0; i < ViewModel.ComponentsService.CurrentComponents.Lines.Count; i++)
+        {
+            var line = ViewModel.ComponentsService.CurrentComponents.Lines[i];
+            if (line.Children != list) 
+                continue;
+            index = i;
+        }
+
+        if (index == -1)
+        {
+            return;
+        }
+
+        list.Remove(settings);
+        if (index + 1 < ViewModel.ComponentsService.CurrentComponents.Lines.Count)
+        {
+            ViewModel.ComponentsService.CurrentComponents.Lines[index + 1].Children.Add(settings);
+            return;
+        }
+
+        var newLine = new MainWindowLineSettings()
+        {
+            Children =
+            {
+                settings
+            }
+        };
+        ViewModel.ComponentsService.CurrentComponents.Lines.Add(newLine);
+        this.ShowToast("已向下创建新主界面行。");
+    }
+
+    [RelayCommand]
+    private void MoveToCurrentContainerComponent(ComponentSettings settings)
+    {
+        var list = GetSelectedComponentSource(settings);
+        if (list == ViewModel.SelectedComponentContainerChildren)
+        {
+            return;
+        }
+        
+        if (settings == ViewModel.SelectedRootComponent)
+        {
+            this.ShowWarningToast("不能将容器组件移动到自身（或其子级）的子组件中。");
+            return;
+        }
+        
+        list.Remove(settings);
+        ViewModel.SelectedComponentContainerChildren.Add(settings);
+        Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            ViewModel.SelectedComponentSettingsChild = settings;
+        });
+    }
+
+    [RelayCommand]
+    private void MoveComponentsToMainLines(ComponentSettings settings)
+    {
+        if (!ViewModel.SelectedComponentContainerChildren.Remove(settings))
+        {
+            return;
+        }
+
+        var selectedList = ViewModel.SelectedMainWindowLineSettings?.Children ??
+                           ViewModel.ComponentsService.CurrentComponents.Lines.FirstOrDefault()?.Children;
+
+        selectedList?.Add(settings);
+    }
+
+    [RelayCommand]
+    private void AddSelectedComponentToMainLines(ComponentInfo info)
+    {
+        var selectedList = ViewModel.SelectedMainWindowLineSettings?.Children ??
+                           ViewModel.ComponentsService.CurrentComponents.Lines.FirstOrDefault()?.Children;
+        if (selectedList == null)
+        {
+            return;
+        }
+        
+        var componentSettings = new ComponentSettings()
+        {
+            Id = info.Guid.ToString()
+        };
+        selectedList.Add(componentSettings);
+        ComponentsService.LoadComponentSettings(componentSettings,
+            componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!); 
     }
 }

@@ -40,13 +40,31 @@ public class RunAction : ActionBase<RunActionSettings>
             case Url:
             {
                 var path = Settings.Value;
-                if (!path.Contains("://"))
-                    path = "http://" + path;
-                Process.Start(new ProcessStartInfo
+                if (!string.IsNullOrWhiteSpace(path) && !path.Contains(':') && !path.StartsWith('\\'))
+                    path = "https://" + path;
+
+                if (OperatingSystem.IsWindows())
                 {
-                    FileName = path,
-                    UseShellExecute = true
-                });
+                    Process.Start(new ProcessStartInfo(path)
+                    {
+                        UseShellExecute = true
+                    });
+                }
+                else if (OperatingSystem.IsLinux())
+                {
+                    Process.Start(new ProcessStartInfo("xdg-open", path)
+                    {
+                        UseShellExecute = false
+                    });
+                }
+                else if (OperatingSystem.IsMacOS())
+                {
+                    Process.Start(new ProcessStartInfo("open", path)
+                    {
+                        UseShellExecute = false
+                    });
+                }
+
                 break;
             }
             case Command:
