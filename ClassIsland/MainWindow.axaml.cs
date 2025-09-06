@@ -227,7 +227,7 @@ public partial class MainWindow : Window
     {
         if (ViewModel.Settings.HideMode == 1)
         {
-            ViewModel.IsHideRuleSatisfied = RulesetService.IsRulesetSatisfied(ViewModel.Settings.HiedRules);
+            ViewModel.IsHideRuleSatisfied = RulesetService.IsRulesetSatisfied(ViewModel.Settings.HideRules);
         }
         // Detect fullscreen
         var screen = GetSelectedScreenSafe();

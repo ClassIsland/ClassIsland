@@ -10,6 +10,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Reactive;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Assists;
 using ClassIsland.Core.Models.AttachedSettings;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
@@ -41,6 +42,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private Subject _displayingSubject = Subject.Fallback;
     private bool _attachedToVisualTree = false;
     private string _detailedInfoText = "";
+    private double _progressPercent = 0.0;
 
     public static readonly StyledProperty<int> DetailIndexProperty = AvaloniaProperty.Register<LessonControlExpanded, int>(
         nameof(DetailIndex));
@@ -87,6 +89,17 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     {
         get => _detailedInfoText;
         set => SetField(ref _detailedInfoText, value);
+    }
+
+    public double ProgressPercent
+    {
+        get => _progressPercent;
+        set
+        {
+            if (value.Equals(_progressPercent)) return;
+            _progressPercent = value;
+            OnPropertyChanged();
+        }
     }
 
     private void OnIsLiveUpdatePropertyChanged()
@@ -192,24 +205,31 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
             TotalSeconds = (long)CurrentTimeLayoutItem.Last.TotalSeconds;
             Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - CurrentTimeLayoutItem.StartTime).TotalSeconds;
             LeftSeconds = TotalSeconds - Seconds;
+            
+            var progressTick = MainWindowStylesAssist.GetIsProgressAccuracyReduced(this)
+                ? Math.Max(5.0, TotalSeconds / 1000.0)
+                : 1.0;
+            var secondsTicked = Math.Round(Seconds / progressTick) * progressTick;
+            ProgressPercent = TotalSeconds == 0 ? 0 : secondsTicked / TotalSeconds;
         }
-        
-        if (SettingsSource != null)
+
+        if (SettingsSource == null) 
+            return;
+        MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&
+                         SettingsSource.IsCountdownEnabled &&
+                         IsLiveUpdatingEnabled ? 1 : 0;
+        ExtraInfo4ShowSeconds = SettingsSource.ExtraInfoType == 4 &&
+                                LeftSeconds <= SettingsSource.ExtraInfo4ShowSecondsSeconds;
+        if (ExtraInfo4ShowSeconds)
         {
-            MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&
-                             SettingsSource.IsCountdownEnabled &&
-                             IsLiveUpdatingEnabled ? 1 : 0;
-            ExtraInfo4ShowSeconds = SettingsSource.ExtraInfoType == 4 &&
-                                    LeftSeconds <= SettingsSource.ExtraInfo4ShowSecondsSeconds;
-            if (ExtraInfo4ShowSeconds)
-            {
-                DetailIndex = 5;
-            }
-            else
-            {
-                DetailIndex = IsLiveUpdatingEnabled ? SettingsSource.ExtraInfoType : 0;
-            }
+            DetailIndex = 5;
         }
+        else
+        {
+            DetailIndex = IsLiveUpdatingEnabled ? SettingsSource.ExtraInfoType : 0;
+        }
+
+        
     }
 
     #region INotifyPropertyChanged Impletion

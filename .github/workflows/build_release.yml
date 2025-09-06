@@ -73,6 +73,9 @@ jobs:
         if: ${{ matrix.os == 'macos' }}
         run: dotnet workload install macos
         
+      - name: Add GitHub Package Registry
+        run: dotnet nuget add source --username ClassIsland --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
+        
       - uses: little-core-labs/get-git-tag@v3.0.1
         id: tagName
       
