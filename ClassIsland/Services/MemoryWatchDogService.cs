@@ -34,29 +34,7 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
 
     private long GetMemoryUsage()
     {
-        if (OperatingSystem.IsWindows())
-        {
-            return Process.GetCurrentProcess().PrivateMemorySize64;
-        }
-        else if (OperatingSystem.IsLinux())
-        {
-            try
-            {
-                var statmPath = "/proc/self/statm";
-                if (File.Exists(statmPath))
-                {
-                    var contents = File.ReadAllText(statmPath);
-                    var memoryPages = contents.Split(' ')[0];
-                    var pageSize = Environment.SystemPageSize;
-                    return long.Parse(memoryPages) * pageSize;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "无法读取 /proc/self/statm 获取内存使用情况");
-            }
-        }
-        else if (OperatingSystem.IsMacOS())
+        if (OperatingSystem.IsMacOS())
         {
             try
             {
@@ -74,6 +52,11 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
                 Logger.LogError(ex, "无法通过 sysctl 获取内存使用情况");
             }
         }
+        else
+        {
+            return Process.GetCurrentProcess().PrivateMemorySize64;
+        }
+
         return 0;
     }
 
