@@ -844,6 +844,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool ReduceProgressAccuracy
+    {
+        get => _reduceProgressAccuracy;
+        set
+        {
+            if (value == _reduceProgressAccuracy) return;
+            _reduceProgressAccuracy = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Appearence
@@ -1757,6 +1768,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isRollingComponentWarningVisible = true;
     private int _animationLevel = 1;
     private bool _isIslandSeperated = false;
+    private bool _reduceProgressAccuracy = true;
 
     public bool IsIgnoreWorkAreaEnabled
     {
