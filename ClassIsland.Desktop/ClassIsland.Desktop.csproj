@@ -40,8 +40,10 @@
     </ItemGroup>
     <ItemGroup Condition="'$(Platforms_MacOs)'=='true'">
         <ProjectReference Include="..\platforms\ClassIsland.Platforms.MacOs\ClassIsland.Platforms.MacOs.csproj" />
+        <!-- Add Liquid Glass icon for macOS Tahoe and above -->
+        <BundleResource Include="Assets\AppIcon.icon\**" />
+        <!-- Keep xcassets for fallback in older macOS versions -->
         <BundleResource Include="Assets\AppLogo.xcassets\**" />
-        <MauiIcon Include="Assets\AppLogo.svg"/>
     </ItemGroup>
     <ItemGroup Condition="'$(Platforms_Linux)'=='true' and '$(PublishBuilding)'=='true'">
         <PackageReference Include="Packaging.DebUOS" Version="3.17.6"/>

@@ -1,5 +1,7 @@
 {
-  "fill" : "system-dark",
+  "fill" : {
+    "automatic-gradient" : "srgb:0.92143,0.92145,0.92144,1.00000"
+  },
   "groups" : [
     {
       "layers" : [

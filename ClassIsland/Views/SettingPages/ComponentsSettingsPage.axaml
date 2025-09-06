@@ -13,9 +13,6 @@
                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                   x:Class="ClassIsland.Views.SettingPages.ComponentsSettingsPage"
                   d:DataContext="{d:DesignInstance settingPages:ComponentsSettingsPage}">
-    <ci:SettingsPageBase.GestureRecognizers>
-        <ci:DragGestureRecognizer/>
-    </ci:SettingsPageBase.GestureRecognizers>
     <ci:SettingsPageBase.Styles>
         <Style Selector="ListBox.drag-source ListBoxItem">
             <Setter Property="Interaction.Behaviors">
@@ -224,9 +221,6 @@
                                  AttachedToVisualTree="ListBoxMainWindowLineSettings_OnAttachedToVisualTree"
                                  DetachedFromVisualTree="ListBoxMainWindowLineSettings_OnDetachedFromVisualTree"
                                  Classes="component-listBox">
-                            <ListBox.GestureRecognizers>
-                                <ci:DragGestureRecognizer/>
-                            </ListBox.GestureRecognizers>
                             <Interaction.Behaviors>
                                 <BehaviorCollection>
                                     <ContextDropBehavior Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
@@ -321,9 +315,6 @@
                              Classes="component-listBox"
                              x:Name="ListBoxComponentsChildren"
                              SelectionChanged="SelectorComponentsChildren_OnSelectionChanged">
-                        <ListBox.GestureRecognizers>
-                            <ci:DragGestureRecognizer/>
-                        </ListBox.GestureRecognizers>
                         <Interaction.Behaviors>
                             <BehaviorCollection>
                                 <ContextDropBehavior Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
@@ -389,9 +380,6 @@
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
-                        <ListBox.GestureRecognizers>
-                            <ci:DragGestureRecognizer/>
-                        </ListBox.GestureRecognizers>
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel Classes="animated-resize">
