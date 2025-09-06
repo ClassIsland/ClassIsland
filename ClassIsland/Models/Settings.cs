@@ -458,7 +458,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-
+    
+    [JsonPropertyName("HiedRules")]
     public Ruleset HideRules
     {
         get => _hideRules;
@@ -468,12 +469,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             _hideRules = value;
             OnPropertyChanged();
         }
-    }
-
-    [JsonInclude]
-    public Ruleset HiedRules
-    {
-        set => HideRules = value;
     }
 
     public bool HideOnFullscreen
