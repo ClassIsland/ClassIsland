@@ -101,9 +101,9 @@
                                     <Setter Property="Interaction.Behaviors">
                                         <BehaviorCollectionTemplate>
                                             <BehaviorCollection>
-                                                <ItemDragBehavior HorizontalDragThreshold="33550336"
-                                                                  Orientation="Vertical"
-                                                                  VerticalDragThreshold="3" />
+                                                <ci:AdvancedItemDragBehavior HorizontalDragThreshold="33550336"
+                                                                             Orientation="Vertical"
+                                                                             VerticalDragThreshold="3" />
                                             </BehaviorCollection>
                                         </BehaviorCollectionTemplate>
                                     </Setter>
@@ -118,16 +118,18 @@
                                 <DataTemplate>
                                     <Grid Margin="3 0"
                                           Background="Transparent"
-                                          ColumnDefinitions="* 8 Auto"
-                                          Height="50">
+                                          ColumnDefinitions="Auto * 8 Auto"
+                                          Height="42">
+                                        <ci:TouchDragThumb Grid.Column="0" Margin="-12 0 0 0"
+                                                           Width="20"/>
                                         <!--  工作流标题  -->
-                                        <TextBlock VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="1" VerticalAlignment="Center"
                                                    Text="{Binding ActionSet.Name}"
                                                    FontSize="13"
                                                    FontWeight="Medium"
                                                    TextWrapping="Wrap" />
 
-                                        <!-- <fa:ProgressRing Grid.Column="1" -->
+                                        <!-- <fa:ProgressRing Grid.Column="2" -->
                                         <!--                  Height="25" -->
                                         <!--                  IsActive="{Binding ActionSet.IsWorking}" -->
                                         <!--                  IsIndeterminate="{Binding ActionSet.IsWorking}" -->
@@ -135,7 +137,7 @@
                                         <!--                  Background="Transparent" -->
                                         <!--                  ToolTip.Tip="该自动化正在运行。"/> -->
 
-                                        <ToggleSwitch Grid.Column="2"
+                                        <ToggleSwitch Grid.Column="3"
                                                       IsChecked="{Binding ActionSet.IsEnabled}" />
                                     </Grid>
                                 </DataTemplate>
@@ -286,14 +288,12 @@
                         <ci:Emptiable.EmptyContent>
                             <!--  右：未选择自动化时，显示占位符  -->
                             <StackPanel VerticalAlignment="Center">
-                                <ci:Empty Text="在左侧选择或添加一个自动化，然后在此处进行设置。"
-                                          IconHeight="75"
-                                          IconWidth="75"
-                                          ToolTip.Tip="光辉矢愿_瞄准">
-                                    <ci:Empty.Icon>
-                                        <fa:BitmapIconSource UriSource="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_瞄准.png" />
-                                    </ci:Empty.Icon>
-                                </ci:Empty>
+                                <Image Source="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_瞄准.png"
+                                       Width="75" Height="75"
+                                       ToolTip.Tip="光辉矢愿_瞄准"/>
+                                <TextBlock Text="在左侧选择或添加一个自动化，然后在此处进行设置。"
+                                           Margin="0 8 0 0"
+                                           HorizontalAlignment="Center"/>
                                 <Button Margin="0 16 0 0"
                                         HorizontalAlignment="Center"
                                         Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"

@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
@@ -13,6 +14,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
@@ -46,22 +48,15 @@ public partial class AboutSettingsPage : SettingsPageBase
         ViewModel.License = r.ReadToEnd();
     }
 
-    private void ButtonGithub_OnClick(object sender, RoutedEventArgs e)
+    private void UriNavigationCommands_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        var url = e.Source switch
         {
-            FileName = "https://github.com/HelloWRC/ClassIsland",
-            UseShellExecute = true
-        });
-    }
-
-    private void ButtonFeedback_OnClick(object sender, RoutedEventArgs e)
-    {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = "https://github.com/HelloWRC/ClassIsland/issues",
-            UseShellExecute = true
-        });
+            SettingsExpanderItem s => s.CommandParameter?.ToString(),
+            Button s => s.CommandParameter?.ToString(),
+            _ => "classisland://app/test/"
+        };
+        IAppHost.TryGetService<IUriNavigationService>()?.NavigateWrapped(new Uri(url));
     }
 
     private void Hyperlink2_OnClick(object sender, RoutedEventArgs e)
@@ -242,6 +237,14 @@ public partial class AboutSettingsPage : SettingsPageBase
 
 #if !DEBUG
             var textBox = new TextBox();
+            var textBlock = new TextBlock {
+                TextWrapping = TextWrapping.Wrap,
+                Text = "您正在发布版本的 ClassIsland 中启用仅供开发使用的调试菜单。请注意此功能仅限于开发和调试用途，ClassIsland 开发者不对以非开发用途使用此页面中功能造成的任何后果负责，也不接受以非开发用途使用时产生的 Bug 的反馈。\n"
+            };
+            var timesBlockClicked = 0;
+            textBlock.PointerPressed += (_,_) => {
+                timesBlockClicked++;
+            };
             var r = await new ContentDialog()
             {
                 Title = "启用调试菜单",
@@ -250,11 +253,11 @@ public partial class AboutSettingsPage : SettingsPageBase
                     Spacing = 4,
                     Children =
                     {
+                        textBlock,
                         new TextBlock()
                         {
                             TextWrapping = TextWrapping.Wrap,
-                            Text =
-                                "您正在发布版本的 ClassIsland 中启用仅供开发使用的调试菜单。请注意此功能仅限于开发和调试用途，ClassIsland 开发者不对以非开发用途使用此页面中功能造成的任何后果负责，也不接受以非开发用途使用时产生的 Bug 的反馈。\n\n如果您确实要启用此功能，请在下方文本框输入⌈我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈⌋，然后点击【继续】。"
+                            Text = "如果您确实要启用此功能，请在下方文本框输入⌈我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈⌋，然后点击【继续】。"
                         },
                         textBox
                     }
@@ -270,7 +273,7 @@ public partial class AboutSettingsPage : SettingsPageBase
                 return;
             }
 
-            if (textBox.Text != "我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈")
+            if (timesBlockClicked != 3 & textBox.Text != "我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈")
             {
                 this.ShowWarningToast("验证结果不正确，请重新输入。");
                 return;

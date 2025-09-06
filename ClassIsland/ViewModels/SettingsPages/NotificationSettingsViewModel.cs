@@ -81,7 +81,7 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
     private string? _notificationSettingsSelectedChannel;
     private object? _speechProviderSettingsControl;
     
-    [ObservableProperty] private IObservableList<string> _notificationProvidersFiltered = null!;
+    [ObservableProperty] private ObservableCollection<string> _notificationProvidersFiltered = null!;
 
     public NotificationSettingsViewModel(SettingsService settingsService,
         INotificationHostService notificationHostService,
@@ -93,10 +93,14 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
         SpeechService = speechService;
         ManagementService = managementService;
 
-        NotificationProvidersFiltered = SettingsService.Settings.NotificationProvidersPriority
-            .ToObservableChangeSet()
-            .Filter(x => NotificationHostService.NotificationProviders.Any(y => y.ProviderGuid.ToString() == x))
-            .AsObservableList();
+        var filtered = SettingsService.Settings.NotificationProvidersPriority
+            .Where(x => NotificationHostService.NotificationProviders.Any(y => y.ProviderGuid.ToString() == x));
+
+        NotificationProvidersFiltered = new(filtered);
+        NotificationProvidersFiltered.CollectionChanged += (_, __) =>
+        {
+            SettingsService.Settings.NotificationProvidersPriority = NotificationProvidersFiltered;
+        };
     }
 
     public string TestSpeechText

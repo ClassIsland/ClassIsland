@@ -7,13 +7,18 @@ namespace ClassIsland.Models.ComponentSettings;
 public class CountDownComponentSettings : ObservableRecipient
 {
     private string _countDownName = "倒计时";
-    private DateTime _overTime = DateTime.Now;
+    private DateTime _overTime = DateTime.Now.Date;
     private int _daysLeft = 0;
     private Color _fontColor = Color.FromArgb(255, 255,0,0);
     private int _fontSize = 16;
     private bool _isCompactModeEnabled = false;
     private string _countDownConnector = "还有";
     private bool _isConnectorColorEmphasized = false;
+    private DateTime _startTime = DateTime.Now.Date;
+    private bool _useAccentOnProgressBar = true;
+    private int _progressBarMode = 0;
+    private bool _showProgress = false;
+    private bool _isProgressInverted = false;
 
     public string CountDownName
     {
@@ -101,6 +106,64 @@ public class CountDownComponentSettings : ObservableRecipient
         {
             if (value.Equals(_fontColor)) return;
             _fontColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime StartTime
+    {
+        get => _startTime;
+        set
+        {
+            if (value.Equals(_startTime)) return;
+            _startTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool UseAccentOnProgressBar
+    {
+        get => _useAccentOnProgressBar;
+        set
+        {
+            if (value == _useAccentOnProgressBar) return;
+            _useAccentOnProgressBar = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 0 - 进度环;1 - 进度条
+    /// </summary>
+    public int ProgressBarMode
+    {
+        get => _progressBarMode;
+        set
+        {
+            if (value == _progressBarMode) return;
+            _progressBarMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowProgress
+    {
+        get => _showProgress;
+        set
+        {
+            if (value == _showProgress) return;
+            _showProgress = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsProgressInverted
+    {
+        get => _isProgressInverted;
+        set
+        {
+            if (value == _isProgressInverted) return;
+            _isProgressInverted = value;
             OnPropertyChanged();
         }
     }

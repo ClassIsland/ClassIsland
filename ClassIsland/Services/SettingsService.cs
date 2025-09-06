@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
@@ -241,7 +242,6 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     {
         if (propertyName != nameof(Settings.SettingsOverlays))
         {
-            Console.WriteLine(propertyName);
             Settings.SettingsOverlays.Remove(propertyName);
         }
 

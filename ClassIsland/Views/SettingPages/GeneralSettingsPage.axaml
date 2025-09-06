@@ -25,7 +25,7 @@
 
         <ci:RulesetControl x:Key="RulesetControl"
                            Classes="in-drawer"
-                           Ruleset="{Binding ViewModel.SettingsService.Settings.HiedRules, Mode=TwoWay}"/>
+                           Ruleset="{Binding ViewModel.SettingsService.Settings.HideRules, Mode=TwoWay}"/>
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
@@ -84,9 +84,10 @@
                                             Width="120"/>
                         <Button Theme="{StaticResource TransparentButton}"
                                 Classes="accent"
-                                Content="{ci:FluentIcon &#xE304;}"
+                                Content="{ci:FluentIcon &#xE324;}"
                                 Click="ButtonWeekOffsetSettingsOpen_OnClick"
-                                ToolTip.Tip="调整偏移…"
+                                ToolTip.Tip="调整多周轮换偏移…"
+                                VerticalAlignment="Stretch"
                                 x:Name="WeekOffsetSettingsControlButton">
                             <Button.Flyout>
                                 <Flyout>
@@ -112,37 +113,7 @@
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
-            <!-- 隐藏窗口 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}" 
-                                        Header="隐藏窗口"
-                                        Description="将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。">
-                <controls3:SettingsExpanderItem>
-                    <TabControl HorizontalContentAlignment="Left"
-                                SelectedIndex="{Binding ViewModel.SettingsService.Settings.HideMode}"
-                                Classes="compact">
-                        <TabItem Header="基础模式">
-                            <StackPanel Margin="6 6 0 0" Spacing="2">
-                                <CheckBox Content="上课时"
-                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnClass}"/>
-                                <CheckBox Content="前台是最大化窗口时"
-                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnMaxWindow}" />
-                                <CheckBox Content="前台是全屏窗口时"
-                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnFullscreen}" />
-                            </StackPanel>
-                        </TabItem>
-                        <TabItem Header="高级模式">
-                            <StackPanel>
-                                <Button HorizontalAlignment="Left" Theme="{StaticResource TransparentButton}"
-                                        Classes="accent"
-                                        Command="{x:Static ci:SettingsPageBase.OpenDrawerCommand}"
-                                        CommandParameter="{StaticResource RulesetControl}">
-                                    <controls1:IconText Glyph="&#xF17E;" Text="编辑规则集…"/>
-                                </Button>
-                            </StackPanel>
-                        </TabItem>
-                    </TabControl>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+            
             <!-- 点击托盘图标行为 -->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C1;}" 
                                         Header="点击托盘图标行为"
@@ -175,6 +146,94 @@
                             </ComboBoxItem>
                         </ComboBox>
                     </Grid>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <!-- 教学安全模式 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE809;}" 
+                                        Header="教学安全模式"
+                                        Description="启用后，如果 ClassIsland 发生意外崩溃，将自动按照右侧选择的方法处理崩溃，以确保教学不受到影响。如果发生的是不可忽略的异常，应用将自动退出。您可以在日志记录中查看崩溃详情。">
+                <controls3:SettingsExpander.Footer>
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <ComboBox Width="135"
+                                  VerticalAlignment="Center"
+                                  IsVisible="{Binding !ViewModel.SettingsService.Settings.IsCriticalSafeMode}"
+                                  IsEnabled="False"
+                                  SelectedIndex="0">
+                            <ComboBoxItem>显示崩溃报告</ComboBoxItem>
+                        </ComboBox>
+                        <ComboBox Width="135"
+                                  VerticalAlignment="Center"
+                                  IsVisible="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"
+                                  SelectedIndex="{Binding ViewModel.SettingsService.Settings.CriticalSafeModeMethod}">
+                            <ComboBoxItem>退出应用</ComboBoxItem>
+                            <ComboBoxItem>静默重启应用</ComboBoxItem>
+                            <ComboBoxItem>显示通知</ComboBoxItem>
+                            <ComboBoxItem>忽略（不推荐）</ComboBoxItem>
+                        </ComboBox>
+                        <ToggleSwitch VerticalAlignment="Center"
+                                      Margin="8 0 0 0"
+                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}" />
+                    </StackPanel>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <Separator Margin="0 12 0 4" />
+            <controls1:IconText Glyph="&#xf485;" Text="界面" Margin="0 0 0 4" />
+            
+            <!-- 隐藏窗口 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}" 
+                                        Header="隐藏窗口"
+                                        Description="将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。">
+                <controls3:SettingsExpanderItem>
+                    <TabControl HorizontalContentAlignment="Left"
+                                SelectedIndex="{Binding ViewModel.SettingsService.Settings.HideMode}"
+                                Classes="compact">
+                        <TabItem Header="基础模式">
+                            <StackPanel Margin="6 6 0 0" Spacing="2">
+                                <CheckBox Content="上课时"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnClass}"/>
+                                <CheckBox Content="前台是最大化窗口时"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnMaxWindow}" />
+                                <CheckBox Content="前台是全屏窗口时"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnFullscreen}" />
+                            </StackPanel>
+                        </TabItem>
+                        <TabItem Header="高级模式">
+                            <StackPanel>
+                                <Button HorizontalAlignment="Left" Theme="{StaticResource TransparentButton}"
+                                        Classes="accent"
+                                        Command="{x:Static ci:SettingsPageBase.OpenDrawerCommand}"
+                                        CommandParameter="{StaticResource RulesetControl}">
+                                    <controls1:IconText Glyph="&#xF17E;" Text="编辑规则集…"/>
+                                </Button>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
+                </controls3:SettingsExpanderItem>
+            </controls3:SettingsExpander>
+            
+            <!-- 动画级别 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEDC1;}" 
+                                        Header="动画级别"
+                                        Description="控制应用界面的动画级别，禁用动画选项不适用于应用主界面和部分控件。">
+                <controls3:SettingsExpander.Footer>
+                    <ComboBox Width="120"
+                              VerticalAlignment="Center"
+                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.AnimationLevel}">
+                        <ComboBoxItem>禁用</ComboBoxItem>
+                        <ComboBoxItem>标准</ComboBoxItem>
+                        <ComboBoxItem>华丽</ComboBoxItem>
+                    </ComboBox>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <!-- 降低主界面进度条精度 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xe5e3;}" 
+                                        Header="降低主界面进度条精度"
+                                        Description="启用后将降低主界面精度条精度，降低主界面更新频率，以减少应用的性能占用。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.ReduceProgressAccuracy}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
 
@@ -261,21 +320,7 @@
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AutoDisableCorruptPlugins, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
-            <!-- 动画级别 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEDC1;}" 
-                                        Header="动画级别"
-                                        Description="控制应用界面的动画级别，禁用动画选项不适用于应用主界面和部分控件。"
-                                        >
-                <controls3:SettingsExpander.Footer>
-                    <ComboBox Width="120"
-                              VerticalAlignment="Center"
-                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.AnimationLevel}">
-                        <ComboBoxItem>禁用</ComboBoxItem>
-                        <ComboBoxItem>标准</ComboBoxItem>
-                        <ComboBoxItem>华丽</ComboBoxItem>
-                    </ComboBox>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+            
             <!-- 禁用动画等待 -->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xF365;}" 
                                         Header="禁用动画等待"
@@ -283,28 +328,6 @@
                                         >
                 <controls3:SettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsWaitForTransientDisabled, Mode=TwoWay}"/>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
-            <!-- 教学安全模式 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE809;}" 
-                                        Header="教学安全模式"
-                                        Description="启用后，如果 ClassIsland 发生意外崩溃，将自动按照右侧选择的方法处理崩溃，以确保教学不受到影响。如果发生的是不可忽略的异常，应用将自动退出。您可以在日志目录查看崩溃详情。">
-                <controls3:SettingsExpander.Footer>
-                    <DockPanel>
-                        <ToggleSwitch DockPanel.Dock="Right"
-                                      VerticalAlignment="Center"
-                                      Margin="8 0 0 0"
-                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"/>
-                        <ComboBox Width="120"
-                                  VerticalAlignment="Center"
-                                  IsVisible="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"
-                                  SelectedIndex="{Binding ViewModel.SettingsService.Settings.CriticalSafeModeMethod}">
-                            <ComboBoxItem>退出应用</ComboBoxItem>
-                            <ComboBoxItem>静默重启应用</ComboBoxItem>
-                            <ComboBoxItem>显示通知</ComboBoxItem>
-                            <ComboBoxItem>忽略（不推荐）</ComboBoxItem>
-                        </ComboBox>
-                    </DockPanel>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
         </StackPanel>

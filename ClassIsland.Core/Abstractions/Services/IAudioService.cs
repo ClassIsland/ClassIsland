@@ -1,4 +1,6 @@
 using SoundFlow.Abstracts;
+using SoundFlow.Abstracts.Devices;
+using SoundFlow.Structs;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -7,6 +9,11 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface IAudioService : IDisposable
 {
+    /// <summary>
+    /// 默认的音频格式
+    /// </summary>
+    public static readonly AudioFormat DefaultAudioFormat = AudioFormat.Dvd;
+    
     /// <summary>
     /// 当前的音频引擎。
     /// </summary>

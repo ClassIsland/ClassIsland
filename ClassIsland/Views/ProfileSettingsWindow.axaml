@@ -329,7 +329,7 @@
                                 </Border>
                             </Flyout>
                         </Button.Flyout>
-                        <ci:IconText Glyph="&#xE304;" Text="调整多周轮换偏移…"/>
+                        <ci:IconText Glyph="&#xE324;" Text="调整多周轮换偏移…"/>
                     </Button>
                 </StackPanel>
             </Grid>
@@ -953,7 +953,6 @@
                                         <controls:CommandBarButton Click="ButtonAddActionTimePoint_OnClick" 
                                                                    IconSource="{ci:FluentIconSource &#xE01F;}"
                                                                    ToolTip.Tip="添加行动时间点。"
-                                                                   IsEnabled="{Binding ViewModel.ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=views:ProfileSettingsWindow}}"
                                                                    Label="行动"/>
                                         <controls:CommandBarSeparator/>
                                         <controls:CommandBarButton Click="ButtonRemoveTimePoint_OnClick"
@@ -1265,10 +1264,17 @@
                                             <StackPanel x:Name="StackPanelActionTimePointSettings"
                                                         IsVisible="{Binding ViewModel.SelectedTimePoint.ActionSet, Converter={x:Static ObjectConverters.IsNotNull}}">
                                                 <ci:IconText Glyph="&#xE01F;" Text="行动" Margin="0 0 0 8" />
+                                                <controls:InfoBar
+                                                    IsClosable="False"
+                                                    IsOpen="True"
+                                                    IsVisible="{Binding !ViewModel.ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=views:ProfileSettingsWindow}}"
+                                                    Severity="Warning"
+                                                    Title="不信任的档案"
+                                                    Message="当前档案不受信任，行动时间点不会自动运行。"
+                                                    Margin="0 4"/>
                                                 <Button Theme="{StaticResource TransparentButton}"
                                                         HorizontalAlignment="Left"
                                                         Click="ButtonDebugTriggerAction_OnClick"
-                                                        IsEnabled="{Binding ViewModel.ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=views:ProfileSettingsWindow}}"
                                                         Margin="0 0 0 2">
                                                     <ci:IconText Glyph="&#xEDBB;" Text="触发" />
                                                 </Button>
@@ -1720,6 +1726,8 @@
                                                ToolTip.Tip="保存当前档案文件。"/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xee2f;}"
                                                Label="帮助"
+                                               Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                               CommandParameter="https://docs.classisland.tech/app/profile/"
                                                ToolTip.Tip="查看档案编辑器帮助"/>
                 </controls:CommandBar.PrimaryCommands>
             </controls:CommandBar>

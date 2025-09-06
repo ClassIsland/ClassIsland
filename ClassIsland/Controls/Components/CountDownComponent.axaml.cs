@@ -7,9 +7,13 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
 using System.Windows;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
+using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using ClassIsland.Core.Assists;
 using ReactiveUI;
 
 namespace ClassIsland.Controls.Components;
@@ -17,11 +21,67 @@ namespace ClassIsland.Controls.Components;
 /// <summary>
 /// CountDownComponent.xaml 的交互逻辑
 /// </summary>
-[PseudoClasses(":connector-colored", ":compact")]
+[PseudoClasses(":connector-colored", ":compact", ":progress-colored", ":progress-visible")]
 [ComponentInfo("7C645D35-8151-48BA-B4AC-15017460D994", "倒计时日", "\uf361", "显示距离某一天的倒计时。")]
 public partial class CountDownComponent : ComponentBase<CountDownComponentSettings>, INotifyPropertyChanged
 {
+    public static readonly FuncValueConverter<double, Geometry?> PercentToPathGeometryConverter = new(percentage =>
+    {
+        // 控件尺寸
+        const double width = 22;
+        const double height = 22;
+
+        // 描边厚度，我们需要它来计算半径，以防止圆角超出边界
+        const double strokeThickness = 3;
+
+        const double radius = (width / 2) - (strokeThickness / 2);
+        var center = new Point(width / 2, height / 2);
+
+        if (percentage >= 100) percentage = 99.9999; // 防止闭合时出现渲染问题
+        if (percentage <= 0) return null;
+
+        double angle = (percentage / 100) * 360;
+            
+        // 计算起点和终点
+        var startPoint = new Point(
+            center.X,
+            center.Y - radius
+        );
+
+        double angleRad = (Math.PI / 180.0) * (angle - 90);
+        var endPoint = new Point(
+            center.X + radius * Math.Cos(angleRad),
+            center.Y + radius * Math.Sin(angleRad)
+        );
+
+        // 创建路径数据
+        var segments = new PathSegments
+        {
+            new ArcSegment
+            {
+                Point = endPoint,
+                Size = new Size(radius, radius),
+                IsLargeArc = angle > 180,
+                SweepDirection = SweepDirection.Clockwise,
+                IsStroked = true
+            }
+        };
+            
+        var figure = new PathFigure
+        {
+            StartPoint = startPoint,
+            Segments = segments,
+            IsClosed = false
+        };
+
+        var geometry = new PathGeometry();
+        geometry.Figures?.Add(figure);
+            
+        return geometry;
+    });
+    
     private string _daysLeft = "";
+    private double _percent = 0.0;
     private ILessonsService LessonsService { get; }
 
     private IExactTimeService ExactTimerService { get; }
@@ -37,6 +97,17 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         }
     }
 
+    public double Percent
+    {
+        get => _percent;
+        set
+        {
+            if (value.Equals(_percent)) return;
+            _percent = value;
+            OnPropertyChanged();
+        }
+    }
+
     public CountDownComponent(ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         InitializeComponent();
@@ -44,14 +115,22 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         ExactTimerService = exactTimeService;
         IDisposable? observer1 = null;
         IDisposable? observer2 = null;
+        IDisposable? observer3 = null;
+        IDisposable? observer4 = null;
         Loaded += (_, _) =>
         {
             UpdateContent();
             observer1?.Dispose();
             observer2?.Dispose();
+            observer3?.Dispose();
+            observer4?.Dispose();
             observer1 = Settings.ObservableForProperty(x => x.IsConnectorColorEmphasized)
                 .Subscribe(_ => UpdateStyleClasses());
             observer2 = Settings.ObservableForProperty(x => x.IsCompactModeEnabled)
+                .Subscribe(_ => UpdateStyleClasses());
+            observer3 = Settings.ObservableForProperty(x => x.UseAccentOnProgressBar)
+                .Subscribe(_ => UpdateStyleClasses());
+            observer4 = Settings.ObservableForProperty(x => x.ShowProgress)
                 .Subscribe(_ => UpdateStyleClasses());
             UpdateStyleClasses();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
@@ -59,6 +138,8 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         Unloaded += (_, _) => {
             observer1?.Dispose();
             observer2?.Dispose();
+            observer3?.Dispose();
+            observer4?.Dispose();
             LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
         };
     }
@@ -67,6 +148,8 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
     {
         PseudoClasses.Set(":connector-colored", Settings.IsConnectorColorEmphasized);
         PseudoClasses.Set(":compact", Settings.IsCompactModeEnabled);
+        PseudoClasses.Set(":progress-colored", Settings.UseAccentOnProgressBar);
+        PseudoClasses.Set(":progress-visible", Settings.ShowProgress);
     }
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
@@ -76,7 +159,17 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
 
     private void UpdateContent()
     {
-        DaysLeft = $"{Math.Max((Settings.OverTime.Date - ExactTimerService.GetCurrentLocalDateTime().Date).Days, 0)}";
+        var delta = Settings.OverTime.Date - ExactTimerService.GetCurrentLocalDateTime().Date;
+        DaysLeft = $"{Math.Max(delta.Days, 0)}";
+        var value = (Settings.IsProgressInverted
+            ? Settings.OverTime - ExactTimerService.GetCurrentLocalDateTime()
+            : ExactTimerService.GetCurrentLocalDateTime() - Settings.StartTime).TotalSeconds;
+        var totalSeconds = (Settings.OverTime - Settings.StartTime).TotalSeconds;
+        var progressTick = MainWindowStylesAssist.GetIsProgressAccuracyReduced(this)
+            ? Math.Max(10.0, totalSeconds / 500.0)
+            : 1.0;
+        var secondsTicked = Math.Round(value / progressTick) * progressTick;
+        Percent = totalSeconds <= 0 ? 0 : secondsTicked / totalSeconds * 100.0;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
