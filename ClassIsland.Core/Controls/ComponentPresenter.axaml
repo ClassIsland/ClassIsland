@@ -28,6 +28,7 @@
     </UserControl.Styles>
     <Panel>
         <local:Shimmer x:Name="Shimmer" AutoDetectContentLoadState="False"
+                       ClipToBounds="False"
                        Padding="0 8">
             <Border x:Name="ComponentRootBorder"
                     SizeChanged="ComponentRootBorder_OnSizeChanged"
