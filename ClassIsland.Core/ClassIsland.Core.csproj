@@ -44,7 +44,7 @@
     <PackageReference Include="Xaml.Behaviors" Version="11.2.0.14" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
 
-    <PackageReference Include="SoundFlow" Version="1.1.1" />
+    <PackageReference Include="SoundFlow" Version="1.2.1" />
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->

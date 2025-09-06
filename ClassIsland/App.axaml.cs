@@ -893,6 +893,9 @@ public partial class App : AppBase, IAppHost
         CurrentLifetime = Core.Enums.ApplicationLifetime.StartingOnline;
         Logger.LogInformation("初始化应用。");
 
+        // 提前初始化好音频服务，防止在其他地方出现重复初始化的问题
+        IAppHost.GetService<IAudioService>();
+
         IThemeService.IsTransientDisabled = Settings.AnimationLevel < 1;
         IThemeService.IsWaitForTransientDisabled = Settings.IsWaitForTransientDisabled;
         IThemeService.AnimationLevel = Settings.AnimationLevel;

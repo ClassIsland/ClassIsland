@@ -367,6 +367,10 @@ public partial class MainWindow : Window
         switch (SettingsService.Settings.TaskBarIconClickBehavior)
         {
             case 0:
+                if (!OperatingSystem.IsWindows())
+                {
+                    break;
+                }
                 // Get this tray icon's implementation
                 ITrayIconImpl? impl = (ITrayIconImpl?)typeof(TrayIcon)
                     .GetProperty ("Impl", BindingFlags.NonPublic | BindingFlags.Instance)?
@@ -724,7 +728,8 @@ public partial class MainWindow : Window
         var oy = ViewModel.Settings.WindowDockingOffsetY;
         Width = screen.WorkingArea.Width / dpiX;
         //Height = GridRoot.ActualHeight * scale;
-        var x = (screen.WorkingArea.X + ox) / dpiX;
+        // 和 WPF 不同，Avalonia 定位窗口用的基于物理屏幕的像素坐标，而非逻辑坐标，无需 dpi 转换。
+        var x = screen.WorkingArea.X + ox;
         var y = ViewModel.Settings.WindowDockingLocation switch
         {
             0 => //左上
@@ -776,7 +781,7 @@ public partial class MainWindow : Window
         }
         try
         {
-            var screen = Screens.ScreenFromWindow(this);
+            var screen = GetSelectedScreenSafe() ?? Screens.ScreenFromWindow(this);
             dpiX = screen?.Scaling ?? 1.0;
             dpiY = screen?.Scaling ?? 1.0;
         }
@@ -995,5 +1000,10 @@ public partial class MainWindow : Window
     {
         ViewModel.Settings.IsWelcomeWindowShowed = false;
         AppBase.Current.Restart();
+    }
+
+    private void LayoutContainerGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        Height = LayoutContainerGrid.Bounds.Height;
     }
 }

@@ -99,9 +99,10 @@
                                 Classes="auto-tooltip"
                                 VerticalAlignment="Center"
                                 IsSnapToTickEnabled="True"/>
-                        <TextBox Text="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={StaticResource IntToStringConverter}}"
-                                 Margin="6,0,0,0"
-                                 Width="50"/>
+                        <NumericUpDown
+                            Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
+                            Margin="6,0,0,0"
+                            Width="50"/>
                     </StackPanel>
                 </controls2:SettingsExpander.Footer>
             </controls2:SettingsExpander>
@@ -270,12 +271,12 @@
             <!--                                                                   Description="自动从壁纸提取主题色时间隔的时间，建议根据动态壁纸更新速度按需设置，不宜低于10秒。"> -->
             <!--                     <controls1:SettingsControl.Switcher> -->
             <!--                         <Grid> -->
-            <!--                             <controls1:NumbericTextBox MaxValue="36000" MinValue="0" -->
+            <!--                             <NumericUpDown MaxValue="36000" MinValue="0" -->
             <!--                                                        Width="150" -->
             <!--                                                        materialDesign:TextFieldAssist.SuffixText="秒" -->
             <!--                                                        Foreground="{DynamicResource MaterialDesignBody}" -->
             <!--                                                        Style="{StaticResource MaterialDesignTextBox}" -->
-            <!--                                                        Text="{Binding ViewModel.SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" /> -->
+            <!--                                                        Value="{Binding ViewModel.SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds}" /> -->
             <!--                         </Grid> -->
             <!--                     </controls1:SettingsControl.Switcher> -->
             <!--                 </controls1:SettingsControl> -->
@@ -314,10 +315,10 @@
             <!--                             Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）"> -->
             <!--         <controls1:SettingsCard.Switcher> -->
             <!--             <Grid> -->
-            <!--                 <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="150" -->
+            <!--                 <NumericUpDown MaxValue="1" MinValue="0" Width="150" -->
             <!--                                            Foreground="{DynamicResource MaterialDesignBody}" -->
             <!--                                            Style="{StaticResource MaterialDesignTextBox}" -->
-            <!--                                            Text="{Binding ViewModel.SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" /> -->
+            <!--                                            Value="{Binding ViewModel.SettingsService.Settings.TargetLightValue}" /> -->
             <!--             </Grid> -->
             <!--         </controls1:SettingsCard.Switcher> -->
             <!--     </controls1:SettingsCard> -->
@@ -383,8 +384,8 @@
             <!--     <controls1:SettingsCard Margin="0 6" IconGlyph="ClockOutline" Header="自动提取主题色间隔" Description="自动从屏幕上提取主题色时间隔的时间，建议设为10秒左右。"> -->
             <!--         <controls1:SettingsCard.Switcher> -->
             <!--             <Grid> -->
-            <!--                 <controls1:NumbericTextBox MaxValue="300" MinValue="0" Width="100" materialDesign:TextFieldAssist.SuffixText="秒" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}" -->
-            <!--                                            Text="{Binding ViewModel.SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/> -->
+            <!--                 <NumericUpDown MaxValue="300" MinValue="0" Width="100" materialDesign:TextFieldAssist.SuffixText="秒" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}" -->
+            <!--                                            Value="{Binding ViewModel.SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds}"/> -->
             <!--             </Grid> -->
             <!--         </controls1:SettingsCard.Switcher> -->
             <!--     </controls1:SettingsCard> -->
@@ -392,8 +393,8 @@
             <!--     <controls1:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰" Description="取色时为亮度更接近此值的颜色赋予更高的权重。（默认值：0.6）"> -->
             <!--         <controls1:SettingsCard.Switcher> -->
             <!--             <Grid> -->
-            <!--                 <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="100" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}" -->
-            <!--                                            Text="{Binding ViewModel.SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" /> -->
+            <!--                 <NumericUpDown MaxValue="1" MinValue="0" Width="100" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}" -->
+            <!--                                            Value="{Binding ViewModel.SettingsService.Settings.TargetLightValue}" /> -->
             <!--             </Grid> -->
             <!--         </controls1:SettingsCard.Switcher> -->
             <!--     </controls1:SettingsCard> -->
