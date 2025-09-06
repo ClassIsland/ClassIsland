@@ -494,7 +494,7 @@
                                 
                                 <TreeView.ItemTemplate>
                                     <TreeDataTemplate ItemsSource="{Binding Children}">
-                                        <Panel>
+                                        <Panel Background="Transparent">
                                             <StackPanel Orientation="Horizontal" IsVisible="{Binding !IsClassPlanNode}">
                                                 <TextBlock 
                                                     DataContext="{Binding Guid, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}}"
