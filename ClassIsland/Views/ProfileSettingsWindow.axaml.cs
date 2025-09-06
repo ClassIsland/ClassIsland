@@ -461,10 +461,11 @@ public partial class ProfileSettingsWindow : MyWindow
                 ? selectedNode.ClassPlan?.AssociatedGroup
                 : selectedNode.Guid;
 
-            newClassPlan.AssociatedGroup = selectedClassPlanGroup ?? ClassPlanGroup.DefaultGroupGuid;
-            // 或者使用当前启用的课表群
-            // newClassPlan.AssociatedGroup = 
-            //     selectedClassPlanGroup ?? ViewModel.ProfileService.Profile.SelectedClassPlanGroupId;
+            newClassPlan.AssociatedGroup = selectedClassPlanGroup ?? ViewModel.ProfileService.Profile.SelectedClassPlanGroupId;
+        }
+        else
+        {
+            newClassPlan.AssociatedGroup = ViewModel.ProfileService.Profile.SelectedClassPlanGroupId;
         }
         
         var newClassPlanGuid = Guid.NewGuid();
