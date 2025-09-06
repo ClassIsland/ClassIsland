@@ -166,7 +166,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
             : ExactTimerService.GetCurrentLocalDateTime() - Settings.StartTime).TotalSeconds;
         var totalSeconds = (Settings.OverTime - Settings.StartTime).TotalSeconds;
         var progressTick = MainWindowStylesAssist.GetIsProgressAccuracyReduced(this)
-            ? Math.Max(10.0, totalSeconds / 2000.0)
+            ? Math.Max(10.0, totalSeconds / 500.0)
             : 1.0;
         var secondsTicked = Math.Round(value / progressTick) * progressTick;
         Percent = totalSeconds <= 0 ? 0 : secondsTicked / totalSeconds * 100.0;
