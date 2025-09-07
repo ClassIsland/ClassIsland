@@ -62,7 +62,7 @@ namespace ClassIsland.Controls;
 [TemplatePart(Name = "PART_GridWrapper", Type = typeof(Grid))]
 [PseudoClasses(":dock-left", ":dock-right", ":dock-center", ":dock-top", ":dock-bottom",
     ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out", ":custom-background")]
-public class MainWindowLine : TemplatedControl, INotificationConsumer
+public class MainWindowLine : ContentControl, INotificationConsumer
 {
     public static readonly StyledProperty<bool> PointerOverProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(PointerOver));
@@ -71,16 +71,6 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     {
         get => GetValue(PointerOverProperty);
         set => SetValue(PointerOverProperty, value);
-    }
-    
-    public static readonly StyledProperty<object> ContentProperty = AvaloniaProperty.Register<MainWindowLine, object>(
-        nameof(Content));
-    
-    [Content]
-    public object Content
-    {
-        get => GetValue(ContentProperty);
-        set => SetValue(ContentProperty, value);
     }
 
     public static readonly StyledProperty<string> LastStoryboardNameProperty = AvaloniaProperty.Register<MainWindowLine, string>(
