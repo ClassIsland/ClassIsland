@@ -1004,6 +1004,6 @@ public partial class MainWindow : Window
 
     private void LayoutContainerGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        Height = LayoutContainerGrid.Bounds.Height;
+        Dispatcher.UIThread.InvokeAsync(() => Height = LayoutContainerGrid.Bounds.Height, DispatcherPriority.Render);
     }
 }
