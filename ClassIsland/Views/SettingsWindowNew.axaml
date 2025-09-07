@@ -179,6 +179,12 @@
                                               Click="MenuItemDebugWindowRule_OnClick" />
                                     <MenuItem Icon="{controls:FluentIcon &#xE0B1;}"
                                               Header="创建快捷方式....">
+                                        <MenuItem.IsVisible>
+                                            <OnPlatform Default="False">
+                                                <On Options="Windows" Content="True" />
+                                                <On Options="Linux" Content="True" />
+                                            </OnPlatform>
+                                        </MenuItem.IsVisible>
                                         <MenuItem Icon="{controls:FluentIcon &#xE62F;}"
                                                   Header="创建桌面快捷方式"
                                                   Click="MenuItemAddDesktopShortcut_OnClick" />
