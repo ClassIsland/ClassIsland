@@ -235,7 +235,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private Grid? GridWrapper;
     
-    private Point _centerPointCache = new Point(0, 0);
+    private PixelPoint _centerPointCache = new PixelPoint(0, 0);
 
     private object TopmostLock { get; } = new();
 
@@ -533,16 +533,16 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         }
     }
     
-    private Point GetCenter()
+    private PixelPoint GetCenter()
     {
         var scale = SettingsService.Settings.Scale;
         // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
-        var p = GridWrapper?.TranslatePoint(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2), this);
+        var p = GridWrapper?.PointToScreen(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2));
         if (p == null)
         {
             return _centerPointCache;
         }
-        return _centerPointCache = new Point(p.Value.X * scale, (Bounds.Top + (Bounds.Height / 2)) * scale);
+        return _centerPointCache = p.Value;
     }
 
     private async void ProcessNotification()
@@ -641,11 +641,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible)
                 {
                     var center = GetCenter();
-                    TopmostEffectWindow.PlayEffect(new RippleEffect()
-                    {
-                        CenterX = center.X,
-                        CenterY = center.Y
-                    });
+                    TopmostEffectWindow.PlayEffect(new RippleEffect(center));
                 }
 
                 if (!cancellationToken.IsCancellationRequested)

@@ -46,9 +46,11 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         set => SetValue(EllipseSizeProperty, value);
     }
     
+    private PixelPoint CenterPoint { get; }
 
-    public RippleEffect()
+    public RippleEffect(PixelPoint center)
     {
+        CenterPoint = center;
         InitializeComponent();
         EllipseMain.IsVisible = true;
         
@@ -58,11 +60,14 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
     public async void Play()
     { 
         // 计算到达四个顶点的距离，取其最大值作为圆的最大半径。
+        var (cx, cy) = this.PointToClient(CenterPoint);
+        CenterX = cx;
+        CenterY = cy;
         var topLevel = TopLevel.GetTopLevel(this);
-        var r11 = Math.Sqrt(Math.Pow(CenterX, 2) + Math.Pow(CenterY, 2));
-        var r12 = Math.Sqrt(Math.Pow(topLevel?.Width ?? 0 - CenterX, 2) + Math.Pow(CenterY, 2));
-        var r21 = Math.Sqrt(Math.Pow(CenterX, 2) + Math.Pow(topLevel?.Height ?? 0  - CenterY, 2));
-        var r22 = Math.Sqrt(Math.Pow(topLevel?.Width ?? 0  - CenterX, 2) + Math.Pow(topLevel?.Height ?? 0  - CenterY, 2));
+        var r11 = Math.Sqrt(Math.Pow(cx, 2) + Math.Pow(cy, 2));
+        var r12 = Math.Sqrt(Math.Pow(topLevel?.Width ?? 0 - cx, 2) + Math.Pow(cy, 2));
+        var r21 = Math.Sqrt(Math.Pow(cx, 2) + Math.Pow(topLevel?.Height ?? 0  - cy, 2));
+        var r22 = Math.Sqrt(Math.Pow(topLevel?.Width ?? 0  - cx, 2) + Math.Pow(topLevel?.Height ?? 0  - cy, 2));
         var r = Math.Ceiling(((List<double>) [r11, r12, r21, r22]).Max());
 
         EllipseSize = EllipseMain.Width = EllipseMain.Height = r * 2;
@@ -75,7 +80,7 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         visual.Opacity = 1.0f;
         // visual.CenterPoint = visual.CenterPoint with {X = r, Y = r};
         // visual.Offset = visual.Offset with{X = -1000, Y = r};
-        // visual.AnchorPoint = new Vector(CenterX, CenterY);
+        // visual.AnchorPoint = new Vector(cx, cy);
         var compositor = visual.Compositor;
         var animationScale = compositor.CreateVector3DKeyFrameAnimation();
         animationScale.InsertKeyFrame(0f, new Vector3D(0, 0, 0));
