@@ -28,11 +28,11 @@ namespace System.Device.Location
     internal sealed class GeoCoordinateWatcherInternal : 
         GeoCoordinateWatcherBase, ILocationEvents, IDisposable
     {
-        private object m_lock;
+        private object m_lock = new object();
         private int m_positionEventsProcessingCount = 0;
         private volatile bool m_dontProcessPositionEvents = false;
 
-        private ILocation m_location;
+        private ILocation? m_location = null;
 
         private bool m_disposed;
 
@@ -41,7 +41,7 @@ namespace System.Device.Location
         private bool m_latLongRegistered;
         private bool m_civicAddrRegistered;
 
-        private ManualResetEvent m_eventGetLocDone;
+        private ManualResetEvent? m_eventGetLocDone = null;
 
         private ReportStatus m_latLongStatus   = ReportStatus.NotSupported; 
         private ReportStatus m_civicAddrStatus = ReportStatus.NotSupported;
@@ -149,11 +149,15 @@ namespace System.Device.Location
         // </summary>
         public GeoCoordinateWatcherInternal(GeoPositionAccuracy desiredAccuracy)
         {
+            m_lock = new object();
+            m_location = null;
+            m_eventGetLocDone = null;
+
             //
             // Create the native location object on a worker thread, so that it exists
             // in a multithreaded apartment.
             //
-            ThreadPool.QueueUserWorkItem(new WaitCallback(this.CreateHandler), desiredAccuracy);
+            ThreadPool.QueueUserWorkItem(state => this.CreateHandler(state!), desiredAccuracy);
 
             Utility.Trace("GeoCoordinateWatcherInternal.ctor:" +
                           " desiredAccuracy: " + desiredAccuracy.ToString() +
@@ -692,6 +696,10 @@ namespace System.Device.Location
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+
+            // 清理事件订阅
+            OnPositionChanged = null;
+            OnPositionStatusChanged = null;
         }
 
         ~GeoCoordinateWatcherInternal()
@@ -720,47 +728,34 @@ namespace System.Device.Location
         [SecuritySafeCritical]
         private void Cleanup()
         {
-#if !SILVERLIGHT
-            SpinWait.SpinUntil(NoPositionEventsCurrentlyProcessing);
-#else
-            SpinUntil_NoPositionEventsCurrentlyProcessing();
-#endif  // !SILVERLIGHT
-                        
-            lock (this.InternalSyncObject)
+            if (m_location != null)
             {
-                if (m_location != null)
+                if (m_latLongRegistered)
                 {
-                    //
-                    // unregister for reports and status
-                    //
-                    if (m_latLongRegistered)
+                    Guid reportType = LocationReportKey.LatLongReport;
+                    if (m_location.UnregisterForReport(ref reportType) == 0)
                     {
-                        Guid reportType = LocationReportKey.LatLongReport;
-                        if (m_location.UnregisterForReport(ref reportType) == 0)
-                        {
-                            m_latLongRegistered = false;
-                        }
+                        m_latLongRegistered = false;
                     }
-
-                    if (m_civicAddrRegistered)
-                    {
-                        Guid reportType = LocationReportKey.CivicAddressReport;
-                        if (m_location.UnregisterForReport(ref reportType) == 0)
-                        {
-                            m_civicAddrRegistered = false;
-                        }
-                    }
-#if !SILVERLIGHT
-                    Marshal.ReleaseComObject(m_location);
-#endif
-                    m_location = null;
                 }
 
-                if (m_eventGetLocDone != null)
+                if (m_civicAddrRegistered)
                 {
-                    m_eventGetLocDone.Close();
-                    m_eventGetLocDone = null;
+                    Guid reportType = LocationReportKey.CivicAddressReport;
+                    if (m_location.UnregisterForReport(ref reportType) == 0)
+                    {
+                        m_civicAddrRegistered = false;
+                    }
                 }
+
+                Marshal.ReleaseComObject(m_location);
+                m_location = null;
+            }
+
+            if (m_eventGetLocDone != null)
+            {
+                m_eventGetLocDone.Close();
+                m_eventGetLocDone = null;
             }
         }
 

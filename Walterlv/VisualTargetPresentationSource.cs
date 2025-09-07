@@ -162,5 +162,6 @@ public class VisualTargetPresentationSource : PresentationSource, IDisposable
     {
         _visualTarget?.Dispose();
         _isDisposed = true;
+        SizeChanged = null;
     }
 }

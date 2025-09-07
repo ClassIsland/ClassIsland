@@ -38,18 +38,18 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
         {
             try
             {
-                var mib = new int[2] { CTL_HW, HW_MEMSIZE };
-                long physicalMemory = 0;
-                var length = Marshal.SizeOf(typeof(long));
+                var info = new TaskBasicInfo();
+                var size = Marshal.SizeOf(typeof(TaskBasicInfo));
+                var result = task_info(mach_task_self(), TaskFlavorBasicInfo, ref info, ref size);
 
-                if (sysctl(mib, 2, ref physicalMemory, ref length, IntPtr.Zero, 0) == 0)
+                if (result == 0)
                 {
-                    return physicalMemory;
+                    return info.ResidentSize;
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "无法通过 sysctl 获取内存使用情况");
+                Logger.LogError(ex, "无法通过 task_info 获取内存使用情况");
             }
         }
         else
@@ -60,17 +60,25 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
         return 0;
     }
 
-    private const int CTL_HW = 6;
-    private const int HW_MEMSIZE = 24;
+    private const int TaskFlavorBasicInfo = 20;
 
-    [DllImport("libc", SetLastError = true)]
-    private static extern int sysctl(
-        int[] name,
-        uint namelen,
-        ref long oldp,
-        ref int oldlenp,
-        IntPtr newp,
-        uint newlen);
+    [StructLayout(LayoutKind.Sequential)]
+    private struct TaskBasicInfo
+    {
+        public int VirtualSize;
+        public int ResidentSize;
+        public int ResidentSizeMax;
+        public int UserTime;
+        public int SystemTime;
+        public int Policy;
+        public int SuspendCount;
+    }
+
+    [DllImport("libc")]
+    private static extern int task_info(IntPtr task, int flavor, ref TaskBasicInfo info, ref int size);
+
+    [DllImport("libc")]
+    private static extern IntPtr mach_task_self();
 
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
     {

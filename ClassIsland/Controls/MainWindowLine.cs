@@ -261,6 +261,10 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     {
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
+
+        OverlayContent = new NotificationContent();
+        MaskContent = new NotificationContent();
+
         ComponentPresenter.ComponentVisibilityChangedEvent.AddClassHandler(typeof(MainWindowLine), 
             UpdateVisibilityState, RoutingStrategies.Bubble);
 
@@ -277,6 +281,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
             {
                 if (Settings == null)
                 {
+                    Logger.LogWarning("Settings 属性未初始化");
                     return;
                 }
 
