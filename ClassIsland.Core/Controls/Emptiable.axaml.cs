@@ -11,7 +11,7 @@ namespace ClassIsland.Core.Controls;
 /// 可为空的内容控件。
 /// </summary>
 [PseudoClasses(":empty", ":default-empty-content")]
-public class Emptiable : TemplatedControl
+public class Emptiable : ContentControl
 {
     public static readonly StyledProperty<object?> DataProperty = AvaloniaProperty.Register<Emptiable, object?>(
         nameof(Data));
@@ -29,25 +29,6 @@ public class Emptiable : TemplatedControl
     {
         get => GetValue(IsDirectContentModeProperty);
         set => SetValue(IsDirectContentModeProperty, value);
-    }
-    
-    public static readonly StyledProperty<object?> ContentProperty = AvaloniaProperty.Register<Emptiable, object?>(
-        nameof(Content));
-
-    [Content]
-    public object? Content
-    {
-        get => GetValue(ContentProperty);
-        set => SetValue(ContentProperty, value);
-    }
-
-    public static readonly StyledProperty<IDataTemplate> ContentTemplateProperty = AvaloniaProperty.Register<Emptiable, IDataTemplate>(
-        nameof(ContentTemplate));
-
-    public IDataTemplate ContentTemplate
-    {
-        get => GetValue(ContentTemplateProperty);
-        set => SetValue(ContentTemplateProperty, value);
     }
 
     public static readonly StyledProperty<object?> EmptyContentProperty = AvaloniaProperty.Register<Emptiable, object?>(
