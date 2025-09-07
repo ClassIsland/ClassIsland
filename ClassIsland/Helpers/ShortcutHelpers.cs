@@ -1,14 +1,58 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
 using Avalonia.Platform;
 using ClassIsland.Core;
+using WindowsShortcutFactory;
 
 namespace ClassIsland.Helpers;
 
 public static class ShortcutHelpers
 {
+    public static async Task CreateDesktopShortcutAsync()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+                "ClassIsland.lnk");
+
+            using var shortcut = new WindowsShortcut();
+            shortcut.Path = Environment.ProcessPath;
+            shortcut.WorkingDirectory = Environment.CurrentDirectory;
+            shortcut.Save(desktopPath);
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+                "ClassIsland.desktop");
+
+            await CreateFreedesktopShortcutAsync(desktopPath);
+            await CopyFreeDesktopIconAsync();
+        }
+    }
+
+    public static async Task CreateStartMenuShortcutAsync()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
+                "ClassIsland.lnk");
+
+            using var shortcut = new WindowsShortcut();
+            shortcut.Path = Environment.ProcessPath;
+            shortcut.WorkingDirectory = Environment.CurrentDirectory;
+            shortcut.Save(startMenuPath);
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                ".local/share/applications/cn.classisland.app.desktop");
+
+            await CreateFreedesktopShortcutAsync(startMenuPath);
+            await CopyFreeDesktopIconAsync();
+        }
+    }
+    
     public static async Task CreateClassSwapShortcutAsync(string path="")
     {
         var desktopPath = string.IsNullOrEmpty(path) ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "快捷换课.url") : path;
