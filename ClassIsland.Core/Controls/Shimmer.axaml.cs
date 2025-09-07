@@ -122,7 +122,7 @@ public class Shimmer : TemplatedControl
 
     private void MainBorderOnLoaded(object? sender, RoutedEventArgs e)
     {
-        if (_mainBorder != null) InitAnimation(_mainBorder);
+        if (_mainBorder != null && !IsContentLoaded) InitAnimation(_mainBorder);
     }
 
     private void ControlOnLoaded(object? sender, RoutedEventArgs e)
