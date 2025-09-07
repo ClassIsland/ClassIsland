@@ -453,7 +453,14 @@ public partial class App : AppBase, IAppHost
                 break;
             case 2:
                 Logger?.LogInformation("因教学安全模式设定，应用将忽略异常并显示一条通知");
-                await PlatformServices.DesktopToastService.ShowToastAsync("崩溃报告", $"ClassIsland 发生了一个无法处理的错误：{e.Message}");
+                try
+                {
+                    await PlatformServices.DesktopToastService.ShowToastAsync("崩溃报告", $"ClassIsland 发生了一个无法处理的错误：{e.Message}");
+                }
+                catch (Exception exception)
+                {
+                    Logger?.LogError(exception, "显示通知失败");
+                }
                 break;
             case 3:
                 Logger?.LogInformation("因教学安全模式设定，应用将直接忽略异常");
