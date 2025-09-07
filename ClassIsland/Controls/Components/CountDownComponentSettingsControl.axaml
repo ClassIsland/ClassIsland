@@ -26,23 +26,77 @@
             </controls3:SettingsExpander>
             
             <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xE304;}"
-                                        Header="结束日期"
-                                        Description="倒计时为 0 天时的日期。">
-                <controls3:SettingsExpander.Footer>
-                    <CalendarDatePicker
-                        SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
-                        Width="120" />
-                </controls3:SettingsExpander.Footer>
+                                        Header="时间"
+                                        Description="倒计时的开始和结束时间。"
+                                        IsExpanded="True">
+                <controls3:SettingsExpanderItem Content="开始日期"
+                                                Description="倒计时开始的日期。">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <CalendarDatePicker
+                            SelectedDate="{Binding Settings.StartTime, Mode=TwoWay}"
+                            Width="120" />
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="结束日期"
+                                                Description="倒计时为 0 天时的日期。">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <CalendarDatePicker
+                            SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
+                            Width="120" />
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
             
-
+            <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xe079;}"
+                                        Header="显示内容"
+                                        Description="要在组件上显示的信息"
+                                        IsExpanded="True">
+                <controls3:SettingsExpanderItem>
+                    <controls3:SettingsExpanderItem.Content>
+                        <CheckBox Content="进度条" IsChecked="{Binding Settings.ShowProgress}"/>
+                    </controls3:SettingsExpanderItem.Content>
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ComboBox SelectedIndex="{Binding Settings.ProgressBarMode}"
+                                  IsVisible="{Binding Settings.ShowProgress}">
+                            <ComboBoxItem Content="进度环"/>
+                            <ComboBoxItem Content="进度条"/>
+                        </ComboBox>    
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem>
+                    <controls3:SettingsExpanderItem.Content>
+                        <CheckBox Content="倒计时连接词" IsChecked="{Binding !Settings.IsCompactModeEnabled}"/>
+                    </controls3:SettingsExpanderItem.Content>
+                    <controls3:SettingsExpanderItem.Footer>
+                        <TextBox Text="{Binding Settings.CountDownConnector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 MinWidth="120"
+                                 MaxWidth="300"
+                                 IsVisible="{Binding !Settings.IsCompactModeEnabled}"/>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="倒计时"/>
+            </controls3:SettingsExpander>
+            
             <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xEC54;}"
-                                        Header="字体颜色"
-                                        Description="事件名称和倒计时的字体颜色。">
+                                        Header="强调色"
+                                        Description="事件名称和倒计时的字体颜色。"
+                                        IsExpanded="True">
                 <controls3:SettingsExpander.Footer>
                     <controls3:ColorPickerButton 
                         Color="{Binding Settings.FontColor,Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
+                <controls3:SettingsExpanderItem Content="进度条使用强调色"
+                                                Description="启用后，进度条将使用选定的主题色作为主题色，而不是使用应用的主题色。">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.UseAccentOnProgressBar, Mode=TwoWay}"/>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="倒计时连接词使用强调颜色"
+                                                Description="启用后，倒计时连接词颜色与字体颜色一致，否则为默认颜色。">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.IsConnectorColorEmphasized, Mode=TwoWay}"/>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
             
             <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xF26F;}"
@@ -55,31 +109,6 @@
                             Classes="auto-tooltip"
                             Value="{Binding Settings.FontSize}" />
                 </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
-            
-            <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xE111;}"
-                                        Header="紧凑模式"
-                                        Description="启用后，将隐藏“距离”、“还有”和“仅剩”。">
-                <controls3:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding Settings.IsCompactModeEnabled, Mode=TwoWay}"/>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
-            
-            <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xEAB0;}"
-                                        Header="倒计时连接词"
-                                        Description="选择倒计时的连接词。"
-                                        IsExpanded="True">
-                <controls3:SettingsExpander.Footer>
-                    <TextBox Text="{Binding Settings.CountDownConnector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             MinWidth="120"/>
-                </controls3:SettingsExpander.Footer>
-                <controls3:SettingsExpanderItem IconSource="{controls1:FluentIconSource &#xF22A;}"
-                                                Content="倒计时连接词使用强调颜色"
-                                                Description="启用后，倒计时连接词颜色与字体颜色一致，否则为默认颜色。">
-                    <controls3:SettingsExpanderItem.Footer>
-                        <ToggleSwitch IsChecked="{Binding Settings.IsConnectorColorEmphasized, Mode=TwoWay}"/>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
         </StackPanel>
     </ScrollViewer>

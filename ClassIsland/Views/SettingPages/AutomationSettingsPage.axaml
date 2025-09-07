@@ -288,14 +288,12 @@
                         <ci:Emptiable.EmptyContent>
                             <!--  右：未选择自动化时，显示占位符  -->
                             <StackPanel VerticalAlignment="Center">
-                                <ci:Empty Text="在左侧选择或添加一个自动化，然后在此处进行设置。"
-                                          IconHeight="75"
-                                          IconWidth="75"
-                                          ToolTip.Tip="光辉矢愿_瞄准">
-                                    <ci:Empty.Icon>
-                                        <fa:BitmapIconSource UriSource="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_瞄准.png" />
-                                    </ci:Empty.Icon>
-                                </ci:Empty>
+                                <Image Source="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_瞄准.png"
+                                       Width="75" Height="75"
+                                       ToolTip.Tip="光辉矢愿_瞄准"/>
+                                <TextBlock Text="在左侧选择或添加一个自动化，然后在此处进行设置。"
+                                           Margin="0 8 0 0"
+                                           HorizontalAlignment="Center"/>
                                 <Button Margin="0 16 0 0"
                                         HorizontalAlignment="Center"
                                         Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"

@@ -227,7 +227,7 @@ public partial class MainWindow : Window
     {
         if (ViewModel.Settings.HideMode == 1)
         {
-            ViewModel.IsHideRuleSatisfied = RulesetService.IsRulesetSatisfied(ViewModel.Settings.HiedRules);
+            ViewModel.IsHideRuleSatisfied = RulesetService.IsRulesetSatisfied(ViewModel.Settings.HideRules);
         }
         // Detect fullscreen
         var screen = GetSelectedScreenSafe();
@@ -1004,6 +1004,6 @@ public partial class MainWindow : Window
 
     private void LayoutContainerGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        Height = LayoutContainerGrid.Bounds.Height;
+        Dispatcher.UIThread.InvokeAsync(() => Height = LayoutContainerGrid.Bounds.Height, DispatcherPriority.Render);
     }
 }

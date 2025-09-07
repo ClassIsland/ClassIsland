@@ -221,7 +221,7 @@
         </StackPanel>
         <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                      MinWidth="0"
-                     Value="{Binding Seconds}" Maximum="{Binding TotalSeconds}"/>
+                     Value="{Binding ProgressPercent}" Maximum="1"/>
         
     </Grid>
 </local:LessonControlBase>

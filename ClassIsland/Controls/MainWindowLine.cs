@@ -62,7 +62,7 @@ namespace ClassIsland.Controls;
 [TemplatePart(Name = "PART_GridWrapper", Type = typeof(Grid))]
 [PseudoClasses(":dock-left", ":dock-right", ":dock-center", ":dock-top", ":dock-bottom",
     ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out", ":custom-background")]
-public class MainWindowLine : TemplatedControl, INotificationConsumer
+public class MainWindowLine : ContentControl, INotificationConsumer
 {
     public static readonly StyledProperty<bool> PointerOverProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(PointerOver));
@@ -71,16 +71,6 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     {
         get => GetValue(PointerOverProperty);
         set => SetValue(PointerOverProperty, value);
-    }
-    
-    public static readonly StyledProperty<object> ContentProperty = AvaloniaProperty.Register<MainWindowLine, object>(
-        nameof(Content));
-    
-    [Content]
-    public object Content
-    {
-        get => GetValue(ContentProperty);
-        set => SetValue(ContentProperty, value);
     }
 
     public static readonly StyledProperty<string> LastStoryboardNameProperty = AvaloniaProperty.Register<MainWindowLine, string>(
@@ -245,7 +235,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
     private Grid? GridWrapper;
     
-    private Point _centerPointCache = new Point(0, 0);
+    private PixelPoint _centerPointCache = new PixelPoint(0, 0);
 
     private object TopmostLock { get; } = new();
 
@@ -548,16 +538,16 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         }
     }
     
-    private Point GetCenter()
+    private PixelPoint GetCenter()
     {
         var scale = SettingsService.Settings.Scale;
         // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
-        var p = GridWrapper?.TranslatePoint(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2), this);
+        var p = GridWrapper?.PointToScreen(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2));
         if (p == null)
         {
             return _centerPointCache;
         }
-        return _centerPointCache = new Point(p.Value.X * scale, (Bounds.Top + (Bounds.Height / 2)) * scale);
+        return _centerPointCache = p.Value;
     }
 
     private async void ProcessNotification()
@@ -579,8 +569,10 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         {
             NotificationHostService.RequestQueue.Clear();
         }
-        
+
         SoundPlayer? player = null;
+        var device = AudioService.AudioEngine.InitializePlaybackDevice(null, IAudioService.DefaultAudioFormat);
+        device.Start();
         while (_notificationQueue.Count > 0)
         {
             var request = _notificationQueue.Dequeue();
@@ -629,21 +621,19 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                 {
                     try
                     {
-                        var provider = new StreamDataProvider(string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                        if (player != null)
+                        {
+                            player.Stop();
+                            device.MasterMixer.RemoveComponent(player);
+                            player.Dispose();
+                        }
+                        var provider = new StreamDataProvider(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, 
+                            string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
                             ? AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)
                             : File.OpenRead(settings.NotificationSoundPath));
-                        player = new SoundPlayer(provider)
-                        {
-                            Volume = (float)SettingsService.Settings.NotificationSoundVolume
-                        };
-                        var player1 = player;
-                        player.PlaybackEnded += PlayerOnPlaybackEnded;
-                        void PlayerOnPlaybackEnded(object? sender, EventArgs e)
-                        {
-                            player1.PlaybackEnded -= PlayerOnPlaybackEnded;
-                            Mixer.Master.RemoveComponent(player1);
-                        }
-                        Mixer.Master.AddComponent(player1);
+                        player = new SoundPlayer(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, provider);
+                        player.Volume = (float)SettingsService.Settings.NotificationSoundVolume;
+                        device.MasterMixer.AddComponent(player);
                         player.Play();
                     }
                     catch (Exception e)
@@ -656,11 +646,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                     !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible)
                 {
                     var center = GetCenter();
-                    TopmostEffectWindow.PlayEffect(new RippleEffect()
-                    {
-                        CenterX = center.X,
-                        CenterY = center.Y
-                    });
+                    TopmostEffectWindow.PlayEffect(new RippleEffect(center));
                 }
 
                 if (!cancellationToken.IsCancellationRequested)
@@ -739,6 +725,8 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         MaskContent = null;
         _isOverlayOpen = false;
         player?.Stop();
+        player?.Dispose();
+        device?.Dispose();
         MainWindow.ReleaseTopmostLock(TopmostLock);
     }
 
