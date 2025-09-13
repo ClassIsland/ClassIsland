@@ -304,6 +304,14 @@ public partial class MainWindow : Window
         TaskBarIconService.MainTaskBarIcon.Menu = menu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         TaskBarIconService.MainTaskBarIcon.Clicked += MainTaskBarIconOnClicked;
+        PopupHelper.DisablePopupsRequested += (_, _) =>
+        {
+            TaskBarIconService.MainTaskBarIcon.Menu = null;
+        };
+        PopupHelper.RestorePopupsRequested += (_, _) =>
+        {
+            TaskBarIconService.MainTaskBarIcon.Menu = menu;
+        };
         ViewModel.OverlayRemainTimePercents = 0.5;
         DiagnosticService.EndStartup();
 

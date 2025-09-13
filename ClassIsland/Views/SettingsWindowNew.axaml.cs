@@ -541,6 +541,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 return;
 
             this.ShowToast(message);
+            PopupHelper.DisableAllPopups();
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
             {
                 Title = "导出诊断数据",
@@ -555,6 +556,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                     }
                 ]
             });
+            PopupHelper.RestoreAllPopups();
             if (file == null)
             {
                 return;
@@ -630,6 +632,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
             PlatformServices.DesktopService.IsUrlSchemeRegistered = true;
         }
+        PopupHelper.DisableAllPopups();
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
         {
             SuggestedFileName = "快捷换课.url",
@@ -643,6 +646,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 }
             ]
         });
+        PopupHelper.RestoreAllPopups();
         if (file == null)
         {
             return;

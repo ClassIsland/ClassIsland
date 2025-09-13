@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Models.Actions;
 using static ClassIsland.Models.Actions.RunActionSettings.RunActionRunType;
 namespace ClassIsland.Controls.ActionSettingsControls;
@@ -82,12 +83,14 @@ public partial class RunActionSettingsControl : ActionSettingsControlBase<RunAct
         // 启动异步操作以打开对话框。
         if (!IsFolder)
         {
+            PopupHelper.DisableAllPopups();
             var files = await storageProvider.OpenFilePickerAsync(new()
             {
                 SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(Settings.Value),
                 FileTypeFilter = FileTypes,
-                SuggestedFileName = Settings.Value
+                SuggestedFileName = Settings.Value,
             });
+            PopupHelper.RestoreAllPopups();
 
             if (files.Count > 0)
             {
@@ -96,11 +99,13 @@ public partial class RunActionSettingsControl : ActionSettingsControlBase<RunAct
         }
         else
         {
+            PopupHelper.DisableAllPopups();
             var folders = await storageProvider.OpenFolderPickerAsync(new()
             {
                 SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(Settings.Value),
                 SuggestedFileName = Settings.Value
             });
+            PopupHelper.RestoreAllPopups();
 
             if (folders.Count > 0)
             {

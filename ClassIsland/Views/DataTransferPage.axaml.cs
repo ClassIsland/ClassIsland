@@ -83,6 +83,7 @@ public partial class DataTransferPage : UserControl
             return;
         }
 
+        PopupHelper.DisableAllPopups();
         var file = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
             Title = "选择先前版本的 ClassIsland 实例",
@@ -94,6 +95,7 @@ public partial class DataTransferPage : UserControl
                 }
             ]
         });
+        PopupHelper.RestoreAllPopups();
         if (file.Count <= 0)
         {
             return;
@@ -297,10 +299,12 @@ public partial class DataTransferPage : UserControl
             return;
         }
 
+        PopupHelper.DisableAllPopups();
         var file = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
         {
             Title = "浏览 Class Widgets 数据目录"
         });
+        PopupHelper.RestoreAllPopups();
         if (file.Count <= 0)
         {
             return;

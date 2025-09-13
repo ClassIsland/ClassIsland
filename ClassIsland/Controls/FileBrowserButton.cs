@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core;
+using ClassIsland.Core.Helpers.UI;
 using Microsoft.Win32;
 
 namespace ClassIsland.Controls;
@@ -69,6 +70,7 @@ public class FileBrowserButton : Button
         // 启动异步操作以打开对话框。
         if (!IsFolder)
         {
+            PopupHelper.DisableAllPopups();
             var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(StartFolder),
@@ -76,6 +78,7 @@ public class FileBrowserButton : Button
                 AllowMultiple = false,
                 SuggestedFileName = CurrentPath
             });
+            PopupHelper.RestoreAllPopups();
 
             if (files.Count > 0)
             {
@@ -84,12 +87,14 @@ public class FileBrowserButton : Button
         }
         else
         {
+            PopupHelper.DisableAllPopups();
             var folders = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
             {
                 SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(StartFolder),
                 AllowMultiple = false,
                 SuggestedFileName = CurrentPath
             });
+            PopupHelper.RestoreAllPopups();
 
             if (folders.Count > 0)
             {
