@@ -45,7 +45,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ### 课表编辑与管理
 
 - [x] 简洁直观的 [课表编辑工具](https://docs.classisland.tech/app/classplan)
-- [x] 从 Excel 表格、[CSES](https://github.com/cses-org/cses) 或其他软件 [导入课表](https://docs.classisland.tech/app/profile/#%E4%BB%8E%E8%A1%A8%E6%A0%BC%E5%AF%BC%E5%85%A5)
+- [x] 从 Excel 表格、[CSES](https://github.com/SmartTeachCN/CSES) 或其他软件 [导入课表](https://docs.classisland.tech/app/profile/#%E4%BB%8E%E8%A1%A8%E6%A0%BC%E5%AF%BC%E5%85%A5)
 - [x] 将课表信息导出到 Excel 表格
 - [x] 多周轮换、快速录入时间表、自定义设置
 - [x] 单日/跨天临时换课
