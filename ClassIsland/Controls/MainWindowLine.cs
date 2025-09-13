@@ -31,8 +31,10 @@ using Avalonia.VisualTree;
 using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.Notification;
@@ -61,7 +63,7 @@ namespace ClassIsland.Controls;
 // [ContentProperty("Content")]
 [TemplatePart(Name = "PART_GridWrapper", Type = typeof(Grid))]
 [PseudoClasses(":dock-left", ":dock-right", ":dock-center", ":dock-top", ":dock-bottom",
-    ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out", ":custom-background")]
+    ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out")]
 public class MainWindowLine : ContentControl, INotificationConsumer
 {
     public static readonly StyledProperty<bool> PointerOverProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
@@ -288,9 +290,6 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
             PlayFadeInAnimation(this);
         });
-        SettingsService.Settings.ObservableForProperty(x => x.IsCustomBackgroundColorEnabled)
-            .Subscribe(v => PseudoClasses.Set(":custom-background", v.Value));
-        PseudoClasses.Set(":custom-background", SettingsService.Settings.IsCustomBackgroundColorEnabled);
         UpdateStyleStates();
     }
     
@@ -349,10 +348,15 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateFadeStatus();
         NotificationHostService.RegisterNotificationConsumer(this, Settings.IsMainLine ? -1 : LineNumber);
-
+        if (Settings != null)
+        {
+            Settings.PropertyChanged -= MySettingsOnPropertyChanged;
+            Settings.PropertyChanged += MySettingsOnPropertyChanged;
+        }
+        
+        UpdateStyles();
         _isLoadCompleted = true;
     }
-
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
@@ -361,6 +365,31 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         MainWindow.MainWindowAnimationEvent -= MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
         NotificationHostService.UnregisterNotificationConsumer(this);
+        if (Settings != null)
+        {
+            Settings.PropertyChanged -= MySettingsOnPropertyChanged;
+        }
+    }
+    
+    private void MySettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        UpdateStyles();
+    }
+
+    private void UpdateStyles()
+    {
+        if (Settings == null || !IsLoaded) 
+            return;
+        MainWindowCustomizableNodeHelper.ApplyStyles(this, Settings);
+
+        if (Settings.IslandSeparationMode != 0)
+        {
+            SetValue(MainWindowStylesAssist.IsIslandSeperatedProperty, Settings.IslandSeparationMode == 2);
+        }
+        else
+        {
+            ClearValue(MainWindowStylesAssist.IsIslandSeperatedProperty);
+        }
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

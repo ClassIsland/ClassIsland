@@ -398,6 +398,15 @@
                                            IsPresentingSettings="True"/>
                 </TabItem>
                 <TabItem Header="高级设置" IsVisible="{Binding ViewModel.IsComponentAdvancedSettingsVisible}">
+                    <TabItem.Styles>
+                        <Style Selector="controls|SettingsExpander.bg-settings">
+                            <Setter Property="IsVisible">
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="$parent[settingPages:ComponentsSettingsPage].ViewModel.IsSelectedComponentOnRoot"/>
+                                </MultiBinding>
+                            </Setter>
+                        </Style>
+                    </TabItem.Styles>
                     <ScrollViewer HorizontalAlignment="Stretch" 
                                   DataContext="{Binding ViewModel.SelectedComponentSettings}">
                         <StackPanel Classes="settings-container animated-intro" Margin="0">
@@ -415,6 +424,85 @@
                                         </Button>
                                         <ToggleSwitch VerticalAlignment="Center"
                                                       IsChecked="{Binding HideOnRule}" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
+                            
+                            <Separator Margin="0 12 0 4" />
+                            <ci:IconText Glyph="&#xec4a;" Text="外观" Margin="0 0 0 4" />
+                            
+                            <!-- 不透明度 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF37D;}"
+                                                       Header="不透明度"
+                                                       Description="组件整体的不透明度。">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Slider Width="180" Minimum="0" Maximum="1"
+                                                Classes="auto-tooltip"
+                                                ci:SliderDragTooltipAssist.StringFormat="F2"
+                                                Value="{Binding Opacity}"
+                                                TickFrequency="0.05"
+                                                IsSnapToTickEnabled="True" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
+                            
+                            <!--自定义背景颜色-->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE523;}"
+                                                       Header="自定义背景颜色"
+                                                       Description="当前组件背景颜色，禁用时将使用上级默认值。"
+                                                       Classes="bg-settings">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                    
+                                        <controls:ColorPickerButton
+                                            VerticalAlignment="Center"
+                                            Margin="0 0 6 0"
+                                            Color="{Binding BackgroundColor, Mode=TwoWay}"
+                                            IsVisible="{Binding IsCustomBackgroundColorEnabled}"/>
+                                        <ToggleSwitch VerticalAlignment="Center"
+                                                      IsChecked="{Binding IsCustomBackgroundColorEnabled}" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
+                            
+                            <!-- 自定义背景不透明度 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF37D;}"
+                                                       Header="自定义背景不透明度"
+                                                       Description="当前组件的背景的不透明度，禁用将使用上级默认值。"
+                                                       Classes="bg-settings">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Slider Width="180" Minimum="0" Maximum="1"
+                                                Classes="auto-tooltip"
+                                                ci:SliderDragTooltipAssist.StringFormat="F2"
+                                                Value="{Binding BackgroundOpacity}"
+                                                TickFrequency="0.05"
+                                                IsSnapToTickEnabled="True" 
+                                                IsVisible="{Binding IsCustomBackgroundOpacityEnabled}"/>
+                                        <ToggleSwitch VerticalAlignment="Center"
+                                                      IsChecked="{Binding IsCustomBackgroundOpacityEnabled}" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
+                            
+                            <!-- 自定义背景圆角半径 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF031;}"
+                                                       Header="自定义背景圆角半径"
+                                                       Description="当前组件背景圆角半径，调至最大数值时左右边缘为半圆。"
+                                                       Classes="bg-settings">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
+                                                Value="{Binding CustomCornerRadius}"
+                                                TickFrequency="0.5"
+                                                ci:SliderDragTooltipAssist.StringFormat="F1"
+                                                Classes="auto-tooltip"
+                                                IsSnapToTickEnabled="True"
+                                                VerticalAlignment="Center" 
+                                                IsVisible="{Binding IsCustomCornerRadiusEnabled}"/>
+                                        <ToggleSwitch VerticalAlignment="Center"
+                                                      IsChecked="{Binding IsCustomCornerRadiusEnabled}" />
                                     </StackPanel>
                                 </controls:SettingsExpander.Footer>
                             </controls:SettingsExpander>
@@ -589,12 +677,243 @@
                                 </controls:SettingsExpanderItem>
                             </controls:SettingsExpander>
                             
+                            <!-- 自定义边距 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE0E1;}"
+                                                       Header="自定义边距"
+                                                       Description="设置此组件与其他组件的距离。"
+                                                       IsExpanded="{Binding IsCustomMarginEnabled, Mode=OneWay}">
+                                <controls:SettingsExpander.Footer>  
+                                    <ToggleSwitch VerticalAlignment="Center"
+                                                  IsChecked="{Binding IsCustomMarginEnabled}" />
+                                </controls:SettingsExpander.Footer>
+                                <controls:SettingsExpanderItem>
+                                    <Grid ColumnDefinitions="*, Auto, Auto, Auto, *"
+                                          RowDefinitions="*, Auto, Auto, Auto, *">
+                                        <Grid.Styles>
+                                            <Style Selector="controls|NumberBox">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="SpinButtonPlacementMode" Value="Compact"/>
+                                                <Setter Property="Width" Value="100"/>
+                                            </Style>
+                                        </Grid.Styles>
+                                        <controls:NumberBox Grid.Row="2" Grid.Column="1"
+                                                            Value="{Binding MarginLeft}"/>
+                                        <controls:NumberBox Grid.Row="1" Grid.Column="2"
+                                                            Value="{Binding MarginTop}"/>
+                                        <controls:NumberBox Grid.Row="2" Grid.Column="3"
+                                                            Value="{Binding MarginRight}"/>
+                                        <controls:NumberBox Grid.Row="3" Grid.Column="2"
+                                                            Value="{Binding MarginBottom}"/>
+                                        
+                                        <Rectangle Grid.Row="2" Grid.Column="2"
+                                                Width="100" Height="40" Margin="4"
+                                                Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+                                                StrokeThickness="1"
+                                                StrokeDashArray="2"
+                                                RadiusX="4" RadiusY="4"/>
+                                    </Grid>
+                                </controls:SettingsExpanderItem>
+                            </controls:SettingsExpander>
+                            
                             <StackPanel Orientation="Horizontal" ToolTip.Tip="GUID" HorizontalAlignment="Left">
                                 <ci:FluentIcon Glyph="&#xE508;" VerticalAlignment="Center" />
                                 <SelectableTextBlock Text="{Binding Id, Mode=OneWay}"
                                          Margin="4 0 0 0"
                                          VerticalAlignment="Center"/>
                             </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="行设置" IsVisible="{Binding ViewModel.SelectedMainWindowLineSettings, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <ScrollViewer HorizontalAlignment="Stretch" 
+                                  DataContext="{Binding ViewModel.SelectedMainWindowLineSettings}">
+                        <StackPanel Classes="settings-container animated-intro" Margin="0">
+                            <!-- ~1~ 按规则隐藏 @1@ -->
+                            <!-- <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}" -->
+                            <!--                            Header="按规则隐藏" -->
+                            <!--                            Description="在指定规则满足时，自动隐藏此组件。注意此处的隐藏不会释放组件资源。"> -->
+                            <!--     <controls:SettingsExpander.Footer> -->
+                            <!--         <StackPanel Orientation="Horizontal"> -->
+                            <!--             <Button HorizontalAlignment="Left" -->
+                            <!--                     Theme="{StaticResource TransparentButton}" -->
+                            <!--                     Click="ButtonOpenRuleset_OnClick" -->
+                            <!--                     IsVisible="{Binding HideOnRule}"> -->
+                            <!--                 <ci:IconText Glyph="&#xF17E;" Text="编辑规则集…" /> -->
+                            <!--             </Button> -->
+                            <!--             <ToggleSwitch VerticalAlignment="Center" -->
+                            <!--                           IsChecked="{Binding HideOnRule}" /> -->
+                            <!--         </StackPanel> -->
+                            <!--     </controls:SettingsExpander.Footer> -->
+                            <!-- </controls:SettingsExpander> -->
+                            <!-- 不透明度 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf023;}"
+                                                       Header="分体主界面"
+                                                       Description="启用后主界面会分开。">
+                                <controls:SettingsExpander.Footer>
+                                    <ComboBox SelectedIndex="{Binding IslandSeparationMode}">
+                                        <ComboBoxItem>继承</ComboBoxItem>
+                                        <ComboBoxItem>禁用</ComboBoxItem>
+                                        <ComboBoxItem>启用</ComboBoxItem>
+                                    </ComboBox>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
+                            
+                            <Separator Margin="0 12 0 4" />
+                            <ci:IconText Glyph="&#xec4a;" Text="外观" Margin="0 0 0 4" />
+                            
+                            <!-- 不透明度 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF37D;}"
+                                                       Header="不透明度"
+                                                       Description="主界面行整体的不透明度。">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Slider Width="180" Minimum="0.1" Maximum="1"
+                                                Classes="auto-tooltip"
+                                                ci:SliderDragTooltipAssist.StringFormat="F2"
+                                                Value="{Binding Opacity}"
+                                                TickFrequency="0.05"
+                                                IsSnapToTickEnabled="True" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
+                            
+                            <!--自定义背景颜色-->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE523;}"
+                                                       Header="自定义背景颜色"
+                                                       Description="当前主界面行背景颜色，禁用时将使用上级默认值。">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                    
+                                        <controls:ColorPickerButton
+                                            VerticalAlignment="Center"
+                                            Margin="0 0 6 0"
+                                            Color="{Binding BackgroundColor, Mode=TwoWay}"
+                                            IsVisible="{Binding IsCustomBackgroundColorEnabled}"/>
+                                        <ToggleSwitch VerticalAlignment="Center"
+                                                      IsChecked="{Binding IsCustomBackgroundColorEnabled}" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
+                            
+                            <!-- 自定义背景不透明度 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF37D;}"
+                                                       Header="自定义背景不透明度"
+                                                       Description="当前主界面行的背景的不透明度，禁用将使用上级默认值。">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Slider Width="180" Minimum="0" Maximum="1"
+                                                Classes="auto-tooltip"
+                                                ci:SliderDragTooltipAssist.StringFormat="F2"
+                                                Value="{Binding BackgroundOpacity}"
+                                                TickFrequency="0.05"
+                                                IsSnapToTickEnabled="True" 
+                                                IsVisible="{Binding IsCustomBackgroundOpacityEnabled}"/>
+                                        <ToggleSwitch VerticalAlignment="Center"
+                                                      IsChecked="{Binding IsCustomBackgroundOpacityEnabled}" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
+                            
+                            <!-- 自定义背景圆角半径 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF031;}"
+                                                       Header="自定义背景圆角半径"
+                                                       Description="当前主界面行背景圆角半径，调至最大数值时左右边缘为半圆。">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
+                                                Value="{Binding CustomCornerRadius}"
+                                                TickFrequency="0.5"
+                                                ci:SliderDragTooltipAssist.StringFormat="F1"
+                                                Classes="auto-tooltip"
+                                                IsSnapToTickEnabled="True"
+                                                VerticalAlignment="Center" 
+                                                IsVisible="{Binding IsCustomCornerRadiusEnabled}"/>
+                                        <ToggleSwitch VerticalAlignment="Center"
+                                                      IsChecked="{Binding IsCustomCornerRadiusEnabled}" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
+
+                            <Separator Margin="0 12 0 4" />
+                            <ci:IconText Glyph="&#xF26F;" Text="字体" Margin="0 0 0 4" />
+                            <!-- 字体大小 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF273;}"
+                                                        Header="字体大小"
+                                                        Description="调整组件上各类字体的大小，将覆盖【外观】设置和主界面行中设置的字体大小。"
+                                                        IsExpanded="{Binding IsResourceOverridingEnabled, Mode=OneWay}">
+                                <controls:SettingsExpander.Footer>
+                                    <ToggleSwitch IsChecked="{Binding IsResourceOverridingEnabled}"/>
+                                </controls:SettingsExpander.Footer>
+                                <controls:SettingsExpander.Styles>
+                                    <Style Selector="ci|Field">
+                                        <Setter Property="Width" Value="175" />
+                                        <Setter Property="Suffix" Value="px" />
+                                        <Style Selector="^ controls|NumberBox">
+                                            <Setter Property="SpinButtonPlacementMode" Value="Inline" />
+                                            <Setter Property="Minimum" Value="1" />
+                                            <Setter Property="Maximum" Value="40" />
+                                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        </Style>
+                                    </Style>
+                                </controls:SettingsExpander.Styles>
+                                <controls:SettingsExpanderItem Content="次级字体大小"
+                                                                Description="时间点附加信息等">
+
+                                    <controls:SettingsExpanderItem.Footer>
+                                        <ci:Field>
+                                            <controls:NumberBox
+                                                Value="{Binding MainWindowSecondaryFontSize}" />
+                                        </ci:Field>
+                                    </controls:SettingsExpanderItem.Footer>
+                                </controls:SettingsExpanderItem>
+                                <controls:SettingsExpanderItem Content="正文字体大小"
+                                                                Description="主界面默认字体大小">
+
+                                    <controls:SettingsExpanderItem.Footer>
+                                        <ci:Field>
+                                            <controls:NumberBox
+                                                Value="{Binding MainWindowBodyFontSize}" />
+                                        </ci:Field>
+                                    </controls:SettingsExpanderItem.Footer>
+                                </controls:SettingsExpanderItem>
+                                <controls:SettingsExpanderItem Content="强调字体大小"
+                                                                Description="课程表、时钟、提醒标题、天气预报等内容">
+
+                                    <controls:SettingsExpanderItem.Footer>
+                                        <ci:Field>
+                                            <controls:NumberBox
+                                                Value="{Binding MainWindowEmphasizedFontSize}" />
+                                        </ci:Field>
+                                    </controls:SettingsExpanderItem.Footer>
+                                </controls:SettingsExpanderItem>
+                                <controls:SettingsExpanderItem Content="大号字体大小"
+                                                                Description="课程预报等内容">
+
+                                    <controls:SettingsExpanderItem.Footer>
+                                        <ci:Field>
+                                            <controls:NumberBox
+                                                Value="{Binding MainWindowLargeFontSize}" />
+                                        </ci:Field>
+                                    </controls:SettingsExpanderItem.Footer>
+                                </controls:SettingsExpanderItem>
+                            </controls:SettingsExpander>
+                            <!-- 字体颜色 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF22A;}"
+                                                        Header="字体颜色"
+                                                        Description="调整字体颜色，将覆盖【外观】设置和主界面行中设置的值。">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                        <controls:ColorPickerButton
+                                            VerticalAlignment="Center"
+                                            Margin="0 0 6 0"
+                                            Color="{Binding ForegroundColor, Mode=TwoWay}"
+                                            IsVisible="{Binding IsCustomForegroundColorEnabled}"/>
+                                        <ToggleSwitch VerticalAlignment="Center"
+                                                      IsChecked="{Binding IsCustomForegroundColorEnabled}" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>

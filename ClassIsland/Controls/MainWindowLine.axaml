@@ -37,6 +37,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="ClipToBounds" Value="False"/>
+        <Setter Property="Opacity" Value="{Binding $self.Settings.Opacity}"/>
         
         <Style Selector="^:dock-top" >
             <Setter Property="Margin" Value="{Binding ViewModel.Settings.MainWindowLineVerticalMargin, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={x:Static controls:MainWindowLine.DoubleToThicknessBottomConverter}}"/>

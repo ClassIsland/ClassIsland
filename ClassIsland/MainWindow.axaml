@@ -119,7 +119,6 @@
             <Style Selector="^.AdvancedHidingMode.HideRuleSatisfied:not(.ExplicitShowed)">
                 <Setter Property="IsVisible" Value="False"/>
             </Style>
-            <Setter Property="IsVisible" Value="{Binding ViewModel.Settings.IsMainWindowVisible}" />
         </Style>
     </Window.Styles>
     <StackPanel>
@@ -151,8 +150,11 @@
                       Classes.HideRuleSatisfied="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}"
 
                       ci:MainWindowStylesAssist.IsIslandSeperated="{Binding ViewModel.Settings.IsIslandSeperated}"
-                      ci:MainWindowStylesAssist.ComponentsSpacing="12"
                       ci:MainWindowStylesAssist.IsProgressAccuracyReduced="{Binding ViewModel.Settings.ReduceProgressAccuracy}"
+                      ci:MainWindowStylesAssist.CornerRadius="{Binding ViewModel.Settings.RadiusX}"
+                      ci:MainWindowStylesAssist.BackgroundOpacity="{Binding ViewModel.Settings.Opacity}"
+                      ci:MainWindowStylesAssist.BackgroundCorlor="{Binding ViewModel.Settings.BackgroundColor}"
+                      ci:MainWindowStylesAssist.IsCustomBackgroundColorEnabled="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}"
                       ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
                       ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
                     <Interaction.Behaviors>

@@ -195,7 +195,7 @@
         <Style Selector="^ /template/ Border#BackgroundBorder">
             <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
         </Style>
-        <Style Selector="^:custom-background /template/ Border.background">
+        <Style Selector="^[(ci|MainWindowStylesAssist.IsCustomBackgroundColorEnabled)=True] /template/ Border.background">
             <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"/>
         </Style>
         <Style Selector="^[IsNotificationEnabled=False]">
