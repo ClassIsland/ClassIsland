@@ -19,6 +19,7 @@
         xmlns:data="clr-namespace:FluentAvalonia.UI.Data;assembly=FluentAvalonia"
         xmlns:scheduleDataGridCell="clr-namespace:ClassIsland.Controls.ScheduleDataGridCell"
         xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
+        xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
@@ -780,6 +781,11 @@
                                                                 HorizontalAlignment="Stretch"
                                                                 SelectedValueBinding="{Binding Key}"
                                                                 FontSize="13">
+                                                                <Interaction.Behaviors>
+                                                                    <BehaviorCollection>
+                                                                        <behaviors:ComboBoxEmptyFixBehavior/>
+                                                                    </BehaviorCollection>
+                                                                </Interaction.Behaviors>
                                                                 <ComboBox.ItemTemplate>
                                                                     <DataTemplate>
                                                                         <TextBlock Text="{Binding Value.Name}"
