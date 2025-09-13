@@ -193,8 +193,15 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
             var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
 
             // 排除天气预警
-            info.Alerts.RemoveAll(i => Settings.ExcludedWeatherAlerts.FirstOrDefault(x =>
-                (!string.IsNullOrWhiteSpace(x)) && i.Title.Contains(x)) != null);
+            var validExclusions = Settings.ExcludedWeatherAlerts
+                .Where(x => !string.IsNullOrWhiteSpace(x));
+
+            info.Alerts.RemoveAll(alert =>
+                validExclusions
+                    .Any(exclusion =>
+                        alert.Title.Contains(exclusion) || alert.Detail.Contains(exclusion)
+                )
+            );
 
             // 去重天气预警
             var latest = info.Alerts
