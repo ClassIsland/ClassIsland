@@ -1136,7 +1136,7 @@ public partial class App : AppBase, IAppHost
             Title = "ClassIsland 已在运行",
             Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行设置等操作。\n\n" +
                       "如果您无法看到主界面，可能是因为您在托盘图标菜单中选择了【隐藏主界面】，或者有隐藏主界面的规则或行动正在生效。",
-            XamlRoot = PhonyRootWindow,
+            XamlRoot = GetRootWindow(),
             Buttons =
             [
                 new TaskDialogButton("取消", false)

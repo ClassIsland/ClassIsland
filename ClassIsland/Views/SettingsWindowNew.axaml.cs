@@ -466,7 +466,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             PrimaryButtonText = "重启",
             CloseButtonText = "取消",
             DefaultButton = ContentDialogButton.Primary,
-        }.ShowAsync();
+        }.ShowAsync(this);
         if (r != ContentDialogResult.Primary)
             return;
         AppBase.Current.Restart();

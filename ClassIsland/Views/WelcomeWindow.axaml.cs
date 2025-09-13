@@ -184,7 +184,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
             PrimaryButtonText = "退出",
             SecondaryButtonText = "取消",
             DefaultButton = ContentDialogButton.Primary
-        }.ShowAsync();
+        }.ShowAsync(this);
         if (r != ContentDialogResult.Primary)
         {
             return;
