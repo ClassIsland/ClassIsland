@@ -30,7 +30,7 @@ namespace ClassIsland.Controls.Components;
 /// RollingComponent.xaml 的交互逻辑
 /// </summary>
 [ContainerComponent]
-[ComponentInfo("70FCD5EA-3FAE-4E06-ACA2-4F4DF47F9ACD", "滚动组件", "\uf279", "滚动显示组件内的内容。")]
+[ComponentInfo("70FCD5EA-3FAE-4E06-ACA2-4F4DF47F9ACD", "轮播容器", "\uf279", "滚动显示组件内的内容。")]
 public partial class RollingComponent : ComponentBase<RollingComponentSettings>
 {
     public IRulesetService RulesetService { get; } = IAppHost.GetService<IRulesetService>();
