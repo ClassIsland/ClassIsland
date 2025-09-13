@@ -16,6 +16,7 @@ using Avalonia.Diagnostics;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using ClassIsland.Core;
@@ -201,6 +202,7 @@ public partial class MainWindow : Window
         DataContext = this;
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
+        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
 
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         SettingsService.PropertyChanged += (sender, args) =>
