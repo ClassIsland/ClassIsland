@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -159,12 +160,34 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
 
     private void UpdateContent()
     {
-        var delta = Settings.OverTime.Date - ExactTimerService.GetCurrentLocalDateTime().Date;
-        DaysLeft = $"{Math.Max(delta.Days, 0)}";
+        var delta = Settings.OverTime - ExactTimerService.GetCurrentLocalDateTime();
+        if (delta < TimeSpan.Zero)
+        {
+            delta = TimeSpan.Zero;
+        }
+
+        var totalTime = Settings.OverTime - Settings.StartTime;
+        var totalSeconds = totalTime.TotalSeconds;
+        DaysLeft = Settings.CustomStringFormat
+            .Replace("%D", Math.Ceiling(delta.TotalDays).ToString(CultureInfo.InvariantCulture))
+            .Replace("%H", Math.Ceiling(delta.TotalHours).ToString(CultureInfo.InvariantCulture))
+            .Replace("%M", Math.Ceiling(delta.TotalMinutes).ToString("00", CultureInfo.InvariantCulture))
+            .Replace("%S", Math.Ceiling(delta.TotalSeconds).ToString("00", CultureInfo.InvariantCulture))
+            .Replace("%X", Math.Ceiling(delta.TotalMilliseconds).ToString("000", CultureInfo.InvariantCulture))
+            .Replace("%P",
+                Math.Round(totalTime <= TimeSpan.Zero ? 0.0 : (totalTime - delta) / totalTime, 2)
+                    .ToString("P0", CultureInfo.InvariantCulture))
+            .Replace("%L",
+                Math.Round(totalTime <= TimeSpan.Zero ? 0.0 : delta / totalTime, 2)
+                    .ToString("P0", CultureInfo.InvariantCulture))
+            .Replace("%d", delta.Days.ToString(CultureInfo.InvariantCulture))
+            .Replace("%h", delta.Hours.ToString(CultureInfo.InvariantCulture))
+            .Replace("%m", delta.Minutes.ToString("00", CultureInfo.InvariantCulture))
+            .Replace("%s", delta.Seconds.ToString("00", CultureInfo.InvariantCulture))
+            .Replace("%x", delta.Milliseconds.ToString("000", CultureInfo.InvariantCulture));
         var value = (Settings.IsProgressInverted
             ? Settings.OverTime - ExactTimerService.GetCurrentLocalDateTime()
             : ExactTimerService.GetCurrentLocalDateTime() - Settings.StartTime).TotalSeconds;
-        var totalSeconds = (Settings.OverTime - Settings.StartTime).TotalSeconds;
         var progressTick = MainWindowStylesAssist.GetIsProgressAccuracyReduced(this)
             ? Math.Max(10.0, totalSeconds / 500.0)
             : 1.0;

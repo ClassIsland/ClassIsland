@@ -19,6 +19,7 @@ public class CountDownComponentSettings : ObservableRecipient
     private int _progressBarMode = 0;
     private bool _showProgress = false;
     private bool _isProgressInverted = false;
+    private string _customStringFormat = "%D天";
 
     public string CountDownName
     {
@@ -164,6 +165,17 @@ public class CountDownComponentSettings : ObservableRecipient
         {
             if (value == _isProgressInverted) return;
             _isProgressInverted = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CustomStringFormat
+    {
+        get => _customStringFormat;
+        set
+        {
+            if (value == _customStringFormat) return;
+            _customStringFormat = value;
             OnPropertyChanged();
         }
     }

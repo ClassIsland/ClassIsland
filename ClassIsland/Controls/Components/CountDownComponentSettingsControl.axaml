@@ -74,7 +74,47 @@
                                  IsVisible="{Binding !Settings.IsCompactModeEnabled}"/>
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="倒计时"/>
+                <controls3:SettingsExpanderItem Content="倒计时">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox
+                                Text="{Binding Settings.CustomStringFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                MinWidth="120"
+                                MaxWidth="300" />
+                            <Button Theme="{StaticResource TransparentButton}"
+                                    Content="{controls1:FluentIcon &#xee31;}">
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                                                <Run Text="格式化变量说明" FontWeight="Bold" />
+                                            </TextBlock>
+                                            <SelectableTextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 4 0">
+                                                <Run Text="%D - 总天数"/><LineBreak/>
+                                                <Run Text="%H - 总小时数"/><LineBreak/>
+                                                <Run Text="%M - 总分钟数"/><LineBreak/>
+                                                <Run Text="%S - 总秒数"/><LineBreak/>
+                                                <Run Text="%X - 总毫秒数"/><LineBreak/>
+                                                <Run Text="以上数值向上取整。" FontWeight="Medium"/><LineBreak/><LineBreak/>
+                                                <Run Text="%L - 剩余百分比"/><LineBreak/>
+                                                <Run Text="%P - 已过百分比"/><LineBreak/>
+                                                <Run Text="以上数值四舍五入取整。" FontWeight="Medium"/>
+                                            </SelectableTextBlock>
+                                            <SelectableTextBlock Grid.Row="1" Grid.Column="1">
+                                                <Run Text="%d - 天"/><LineBreak/>
+                                                <Run Text="%h - 小时"/><LineBreak/>
+                                                <Run Text="%m - 分钟"/><LineBreak/>
+                                                <Run Text="%s - 秒"/><LineBreak/>
+                                                <Run Text="%x - 毫秒"/><LineBreak/>
+                                                <Run Text="以上数值取对应元素的值。" FontWeight="Medium"/>
+                                            </SelectableTextBlock>
+                                        </Grid>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </StackPanel>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
             
             <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xEC54;}"
