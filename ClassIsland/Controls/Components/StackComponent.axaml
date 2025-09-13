@@ -1,22 +1,21 @@
-﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.GroupComponent"
-                  x:TypeArguments="componentSettings:GroupComponentSettings"
-             xmlns="https://github.com/avaloniaui"
+<ci:ComponentBase xmlns="https://github.com/avaloniaui"
+                  x:TypeArguments="componentSettings:StackComponentSettings"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:GroupComponent}}">
+             xmlns:components="clr-namespace:ClassIsland.Controls.Components"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Controls.Components.StackComponent">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=components:StackComponent}}">
         <ItemsControl Grid.Column="0"
                       Margin="-6 0"
-                      ItemsSource="{Binding Settings.Children}"
-                      ClipToBounds="False">
+                      ClipToBounds="False"
+                      ItemsSource="{Binding Settings.Children}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Classes="components-panel" VerticalAlignment="Stretch"/>
+                    <Panel Classes="components-panel" VerticalAlignment="Stretch"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>

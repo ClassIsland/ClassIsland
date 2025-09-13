@@ -718,6 +718,7 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<SlideComponent, SlideComponentSettingsControl>();
                 services.AddComponent<RollingComponent, RollingComponentSettingsControl>();
                 services.AddComponent<GroupComponent>();
+                services.AddComponent<StackComponent>();
                 // 提醒提供方
                 services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
                 services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
