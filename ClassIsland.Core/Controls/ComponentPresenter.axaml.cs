@@ -324,6 +324,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     private void ComponentPresenter_OnLoaded(object sender, RoutedEventArgs e)
     {
         UpdateComponentHidState();
+        UpdateTheme();
     }
 
     private void ComponentRootBorder_OnSizeChanged(object? sender, SizeChangedEventArgs e)
