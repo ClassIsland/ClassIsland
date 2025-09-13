@@ -7,6 +7,7 @@
              xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
              xmlns:components="clr-namespace:ClassIsland.Controls.Components"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             ClipToBounds="False"
              x:Class="ClassIsland.Controls.Components.StackComponent">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=components:StackComponent}}">
         <ItemsControl Grid.Column="0"
