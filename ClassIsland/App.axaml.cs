@@ -47,10 +47,6 @@ using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
-#if IsMsix
-using Windows.ApplicationModel;
-using Windows.Storage;
-#endif
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Core.Abstractions.Views;
@@ -236,22 +232,12 @@ public partial class App : AppBase, IAppHost
     private void ActivateAppDirectories()
     {
         PackagingType = PackagingType.Replace("\n", "").Replace("\r", "");
-        if (IsMsix)
-        {
-#if IsMsix
-            CommonDirectories.AppRootFolderPath = ApplicationData.Current.LocalFolder.Path;
-            CommonDirectories.OverrideAppCacheFolderPath = ApplicationData.Current.LocalCacheFolder.Path;
-            CommonDirectories.OverrideAppTempFolderPath = ApplicationData.Current.TemporaryFolder.Path;
-            ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
-#endif
-            return;
-        }
 
         ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
         CommonDirectories.AppRootFolderPath = PackagingType switch
         {
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
-            "installer" or "deb" or "appImage" or "pkg" => Path.GetFullPath(Path.Combine(
+            "installer" or "deb" or "appImage" or "pkg" or "msix" => Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
             _ => System.OperatingSystem.IsMacOS() ? Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")) :
