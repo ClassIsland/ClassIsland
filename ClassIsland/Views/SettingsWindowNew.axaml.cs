@@ -47,6 +47,7 @@ using FluentAvalonia.UI.Data;
 using FluentAvalonia.UI.Navigation;
 using FluentAvalonia.UI.Windowing;
 using ReactiveUI;
+using WindowsShortcutFactory;
 using Control = Avalonia.Controls.Control;
 using SaveFileDialog = Avalonia.Controls.SaveFileDialog;
 using TaskDialog = FluentAvalonia.UI.Controls.TaskDialog;
@@ -603,6 +604,32 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             FileName = Path.GetFullPath(CommonDirectories.AppRootFolderPath) ?? "",
             UseShellExecute = true
         });
+    }
+
+    private async void MenuItemAddDesktopShortcut_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ShortcutHelpers.CreateDesktopShortcutAsync();
+            this.ShowSuccessToast("已创建桌面快捷方式。");
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法创建桌面快捷方式", exception);
+        }
+    }
+
+    private async void MenuItemAddStartMenuShortcut_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ShortcutHelpers.CreateStartMenuShortcutAsync();
+            this.ShowSuccessToast("已创建开始菜单快捷方式。");
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法创建开始菜单快捷方式", exception);
+        }
     }
 
     private async void MenuItemAddClassSwapShortcut_OnClick(object sender, RoutedEventArgs e)
