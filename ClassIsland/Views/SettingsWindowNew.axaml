@@ -177,14 +177,29 @@
                                     <MenuItem Icon="{controls:FluentIcon &#xF485;}"
                                               Header="调试窗口规则…"
                                               Click="MenuItemDebugWindowRule_OnClick" />
-                                    <MenuItem Icon="{controls:FluentIcon &#xE15F;}"
-                                              Header="创建快捷换课图标"
-                                              Click="MenuItemAddClassSwapShortcut_OnClick">
+                                    <MenuItem Icon="{controls:FluentIcon &#xE0B1;}"
+                                              Header="创建快捷方式....">
                                         <MenuItem.IsVisible>
                                             <OnPlatform Default="False">
                                                 <On Options="Windows" Content="True" />
+                                                <On Options="Linux" Content="True" />
                                             </OnPlatform>
                                         </MenuItem.IsVisible>
+                                        <MenuItem Icon="{controls:FluentIcon &#xE62F;}"
+                                                  Header="创建桌面快捷方式"
+                                                  Click="MenuItemAddDesktopShortcut_OnClick" />
+                                        <MenuItem Icon="{controls:FluentIcon &#xE06F;}"
+                                                  Header="创建开始菜单快捷方式"
+                                                  Click="MenuItemAddStartMenuShortcut_OnClick" />
+                                        <MenuItem Icon="{controls:FluentIcon &#xE15F;}"
+                                                  Header="创建快捷换课图标"
+                                                  Click="MenuItemAddClassSwapShortcut_OnClick">
+                                            <MenuItem.IsVisible>
+                                                <OnPlatform Default="False">
+                                                    <On Options="Windows" Content="True" />
+                                                </OnPlatform>
+                                            </MenuItem.IsVisible>
+                                        </MenuItem>
                                     </MenuItem>
                                     <MenuItem Icon="{commands:FluentIcon &#xe083;}"
                                               Header="数据迁移…"
