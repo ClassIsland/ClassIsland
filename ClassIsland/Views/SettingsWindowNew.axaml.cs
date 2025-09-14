@@ -291,6 +291,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             return;
         }
         Logger.LogTrace("开始导航");
+        NavigationFrame.Content = null;
         ViewModel.IsPopupOpen = false;
         ViewModel.IsNavigating = true;
         try
