@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
 using ClassIsland.Shared;
@@ -24,6 +25,7 @@ public partial class GeneralSettingsPage : SettingsPageBase
     {
         InitializeComponent();
         DataContext = this;
+        ((RulesetControl)this.FindResource("RulesetControl")).Ruleset = this.ViewModel.SettingsService.Settings.HideRules;
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

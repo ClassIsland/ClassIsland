@@ -97,6 +97,7 @@
                                     </KeyFrame>
                                     <KeyFrame Cue="100%" KeySpline="0.65, 0, 0.35, 1">
                                         <Setter Property="TranslateTransform.Y" Value="40"/>
+                                        <Setter Property="IsVisible" Value="False"/>
                                     </KeyFrame>
                                 </Animation>
                             </Style.Animations>
@@ -114,6 +115,7 @@
                                            Settings="{Binding}"
                                            HidingRules="{Binding HidingRules, Mode=OneWay}"
                                            HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                           VerticalAlignment="Stretch"
                                            Margin="6 0" />
                     </Grid>
                 </DataTemplate>

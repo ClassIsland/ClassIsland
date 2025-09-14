@@ -77,7 +77,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         EnabledThemes = ConfigureFileHelper.LoadConfig<ObservableCollection<string>>(EnabledThemesPath);
         if (EnabledThemes.Count == 0)
         {
-            EnabledThemes.Add("classisland.classic");
+            EnabledThemes.Add("classisland.fluent");
         }
         EnabledThemes.CollectionChanged +=
             (_, _) => ConfigureFileHelper.SaveConfig(EnabledThemesPath, EnabledThemes);

@@ -87,7 +87,7 @@ public class MyWindow : AppWindow
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
         KeyDown += OnKeyDown;
         PointerPressed += OnPointerUpdated;
-        PointerMoved += OnPointerUpdated;
+        // PointerMoved += OnPointerUpdated;
     }
     
     private void OnPointerUpdated(object? sender, PointerEventArgs e)

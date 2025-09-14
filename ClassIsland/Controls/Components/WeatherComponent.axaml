@@ -49,10 +49,16 @@
     </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-            <TabControl IsVisible="{Binding Settings.ShowMainWeatherInfo}"
-                        SelectedIndex="{Binding Settings.MainWeatherInfoKind}"
-                        Classes="content-only">
-                <TabItem>
+            <Panel IsVisible="{Binding Settings.ShowMainWeatherInfo}"
+                   Classes="content-only">
+                <Border>
+                    <Border.IsVisible>
+                        <Binding Path="Settings.MainWeatherInfoKind" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>0</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Border.IsVisible>
                     <StackPanel Orientation="Horizontal">
                         <controls1:WeatherPackIconControl
                             Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
@@ -63,8 +69,15 @@
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" />
                         </TextBlock>
                     </StackPanel>
-                </TabItem>
-                <TabItem>
+                </Border>
+                <Border>
+                    <Border.IsVisible>
+                        <Binding Path="Settings.MainWeatherInfoKind" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>1</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Border.IsVisible>
                     <StackPanel Orientation="Horizontal">
                         <ci:FluentIcon 
                             Height="22" Width="22"
@@ -77,8 +90,15 @@
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" />
                         </TextBlock>
                     </StackPanel>
-                </TabItem>
-                <TabItem>
+                </Border>
+                <Border>
+                    <Border.IsVisible>
+                        <Binding Path="Settings.MainWeatherInfoKind" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>2</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Border.IsVisible>
                     <StackPanel Orientation="Horizontal">
                         <ci:FluentIcon Height="22" Width="22"
                                                  Glyph="&#xF43B;"
@@ -100,8 +120,15 @@
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" />
                         </TextBlock>
                     </StackPanel>
-                </TabItem>
-                <TabItem>
+                </Border>
+                <Border>
+                    <Border.IsVisible>
+                        <Binding Path="Settings.MainWeatherInfoKind" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>3</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Border.IsVisible>
                     <StackPanel Orientation="Horizontal">
                         <ci:FluentIcon Glyph="&#xEA7D;" Width="22" Height="22"
                                        VerticalAlignment="Center"
@@ -112,8 +139,15 @@
                             </Run>
                         </TextBlock>
                     </StackPanel>
-                </TabItem>
-                <TabItem>
+                </Border>
+                <Border>
+                    <Border.IsVisible>
+                        <Binding Path="Settings.MainWeatherInfoKind" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>4</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Border.IsVisible>
                     <StackPanel Orientation="Horizontal">
                         <ci:FluentIcon Height="22" Width="22"
                                        FontSize="22"
@@ -124,8 +158,15 @@
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Unit}" />
                         </TextBlock>
                     </StackPanel>
-                </TabItem>
-                <TabItem>
+                </Border>
+                <Border>
+                    <Border.IsVisible>
+                        <Binding Path="Settings.MainWeatherInfoKind" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>5</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Border.IsVisible>
                     <StackPanel Orientation="Horizontal">
                         <ci:FluentIcon Height="22" Width="22"
                                        Glyph="&#xF1B3;"
@@ -137,8 +178,8 @@
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Unit}" />
                         </TextBlock>
                     </StackPanel>
-                </TabItem>
-            </TabControl>
+                </Border>
+            </Panel>
             <!-- 预警信号 -->
             <ItemsControl ItemsSource="{Binding SettingsService.Settings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
                           IsVisible="{Binding Settings.ShowAlerts}"

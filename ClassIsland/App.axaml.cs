@@ -47,10 +47,6 @@ using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
-#if IsMsix
-using Windows.ApplicationModel;
-using Windows.Storage;
-#endif
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Core.Abstractions.Views;
@@ -236,22 +232,12 @@ public partial class App : AppBase, IAppHost
     private void ActivateAppDirectories()
     {
         PackagingType = PackagingType.Replace("\n", "").Replace("\r", "");
-        if (IsMsix)
-        {
-#if IsMsix
-            CommonDirectories.AppRootFolderPath = ApplicationData.Current.LocalFolder.Path;
-            CommonDirectories.OverrideAppCacheFolderPath = ApplicationData.Current.LocalCacheFolder.Path;
-            CommonDirectories.OverrideAppTempFolderPath = ApplicationData.Current.TemporaryFolder.Path;
-            ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
-#endif
-            return;
-        }
 
         ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
         CommonDirectories.AppRootFolderPath = PackagingType switch
         {
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
-            "installer" or "deb" or "appImage" or "pkg" => Path.GetFullPath(Path.Combine(
+            "installer" or "deb" or "appImage" or "pkg" or "msix" => Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
             _ => System.OperatingSystem.IsMacOS() ? Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")) :
@@ -300,7 +286,14 @@ public partial class App : AppBase, IAppHost
             Background = Brushes.Transparent,
             TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ]
         };
-        PhonyRootWindow.Closing += (sender, args) => args.Cancel = true;
+        PhonyRootWindow.Closing += (sender, args) =>
+        {
+            if (args.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+            {
+                return;
+            }
+            args.Cancel = true;
+        };
         PhonyRootWindow.Show();
         PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         base.Initialize();
@@ -435,7 +428,7 @@ public partial class App : AppBase, IAppHost
                 AllowIgnore = _isStartedCompleted && !critical,
                 IsCritical = critical
             };
-            await CrashWindow.ShowDialog(PhonyRootWindow);
+            await CrashWindow.ShowDialog(GetRootWindow());
             return;
         }
 
@@ -453,7 +446,14 @@ public partial class App : AppBase, IAppHost
                 break;
             case 2:
                 Logger?.LogInformation("因教学安全模式设定，应用将忽略异常并显示一条通知");
-                await PlatformServices.DesktopToastService.ShowToastAsync("崩溃报告", $"ClassIsland 发生了一个无法处理的错误：{e.Message}");
+                try
+                {
+                    await PlatformServices.DesktopToastService.ShowToastAsync("崩溃报告", $"ClassIsland 发生了一个无法处理的错误：{e.Message}");
+                }
+                catch (Exception exception)
+                {
+                    Logger?.LogError(exception, "显示通知失败");
+                }
                 break;
             case 3:
                 Logger?.LogInformation("因教学安全模式设定，应用将直接忽略异常");
@@ -483,8 +483,8 @@ public partial class App : AppBase, IAppHost
         DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-
+        
+        
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-CN");
         Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-CN");
 
@@ -711,6 +711,7 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<SlideComponent, SlideComponentSettingsControl>();
                 services.AddComponent<RollingComponent, RollingComponentSettingsControl>();
                 services.AddComponent<GroupComponent>();
+                services.AddComponent<StackComponent>();
                 // 提醒提供方
                 services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
                 services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
@@ -952,6 +953,11 @@ public partial class App : AppBase, IAppHost
             return;
         }
 
+        // 如果不是开发构建, 则自动重置部分可能影响使用的调试选项
+        #if !DEBUG
+        Settings.IsMainWindowDebugEnabled = false;
+        #endif
+        
         var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
         Logger.LogInformation("正在初始化MainWindow。");
         GetService<ISplashService>().SetDetailedStatus("正在启动主界面所需的服务");
@@ -1134,13 +1140,13 @@ public partial class App : AppBase, IAppHost
     {
         var dialog = new TaskDialog()
         {
-            Title = "ClassIsland 已正在运行",
-            Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行修改设置等操作。\n" +
-                      "如果您无法看到应用主界面，这有可能是您在托盘图标菜单中选择了【隐藏主界面】，或者【按规则隐藏主界面】设置正在生效，也有可能是自动化功能修改了上述设置。",
-            XamlRoot = PhonyRootWindow,
+            Title = "ClassIsland 已在运行",
+            Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行设置等操作。\n\n" +
+                      "如果您无法看到主界面，可能是因为您在托盘图标菜单中选择了【隐藏主界面】，或者有隐藏主界面的规则或行动正在生效。",
+            XamlRoot = GetRootWindow(),
             Buttons =
             [
-                new TaskDialogButton("退出应用", false)
+                new TaskDialogButton("取消", false)
             ],
             Commands =
             [
@@ -1149,7 +1155,7 @@ public partial class App : AppBase, IAppHost
                     DialogResult = true,
                     ClosesOnInvoked = true,
                     Text = "重启当前实例",
-                    Description = "结束当前正在运行的 ClassIsland 实例，然后重启当前实例。",
+                    Description = "结束正在运行的 ClassIsland 实例，然后再次启动本实例。",
                     IconSource = new FluentIconSource("\ue0bd"),
                 }
             ]

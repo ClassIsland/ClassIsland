@@ -47,18 +47,18 @@
         <Style.Resources>
             <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter"/>
         </Style.Resources>
-        <Setter Property="Opacity" Value="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"/>
+        <Setter Property="Opacity" Value="{Binding $self.(ci:MainWindowStylesAssist.BackgroundOpacity), Mode=OneWay}"/>
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="{Binding ViewModel.Settings.RadiusX, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0} "/>
+        <Setter Property="CornerRadius" Value="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0} "/>
         <Setter Property="BoxShadow" Value="0 4 8 2 #48000000"/>
     </Style>
-    <Style Selector="controls|MainWindowLine:custom-background Border.line-background">
+    <Style Selector="controls|MainWindowLine Border[(ci|MainWindowStylesAssist.IsCustomBackgroundColorEnabled)=True].line-background">
         <Style.Resources>
             <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
         </Style.Resources>
-        <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"/>
+        <Setter Property="Background" Value="{Binding $self.(ci:MainWindowStylesAssist.BackgroundColor), Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
     </Style>
     
     <Style Selector="controls|MainWindowLine">
@@ -218,7 +218,11 @@
                 <DataTemplate>
                     <Panel Margin="-2 0">
                         <Border Classes="line-background"/>
-                        <ContentPresenter Content="{Binding}" Margin="16 0"/>
+                        <Border ClipToBounds="True"
+                                CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}">
+                            <ContentPresenter Content="{Binding}"
+                                              Margin="16 0" />
+                        </Border>
                     </Panel>
                 </DataTemplate>
             </Setter>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="ClassIsland.ClassIsland.Development"
-    Publisher="CN=ClassIsland_TestSigning"
-    Version="0.0.0.0" />
+    Name="HelloWRC.Dev.ClassIsland"
+    Publisher="CN=0F42E803-C6F4-41E5-BFFA-29610108F338"
+    Version="1.7.105.0" />
 
   <Properties>
-    <DisplayName>ClassIsland (DEV)</DisplayName>
-    <PublisherDisplayName>ClassIsland</PublisherDisplayName>
+    <DisplayName>ClassIsland</DisplayName>
+    <PublisherDisplayName>HelloWRC.Dev</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
@@ -28,11 +28,11 @@
 
   <Applications>
     <Application Id="App"
-      Executable="$targetnametoken$.exe"
+      Executable="ClassIsland.Desktop.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="ClassIsland (DEV)"
-        Description="ClassIsland (DEV)"
+        DisplayName="ClassIsland"
+        Description="ClassIsland"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">

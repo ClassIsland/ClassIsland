@@ -133,7 +133,7 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
             PrimaryButtonText = "解散",
             SecondaryButtonText = "取消",
             DefaultButton = ContentDialogButton.Primary
-        }.ShowAsync();
+        }.ShowAsync(TopLevel.GetTopLevel(this));
         if (result != ContentDialogResult.Primary)
         {
             return;
@@ -151,7 +151,7 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
             PrimaryButtonText = "删除",
             SecondaryButtonText = "取消",
             DefaultButton = ContentDialogButton.Primary
-        }.ShowAsync();
+        }.ShowAsync(TopLevel.GetTopLevel(this));
         if (result != ContentDialogResult.Primary)
         {
             return;

@@ -132,6 +132,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
         {
             return;
         }
+        PopupHelper.DisableAllPopups();
         var file = await topLevel.StorageProvider
             .SaveFilePickerAsync(new FilePickerSaveOptions()
             {
@@ -144,6 +145,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
                     }
                 ]
             });
+        PopupHelper.RestoreAllPopups();
         var path = file?.TryGetLocalPath();
         if (path == null)
             return;

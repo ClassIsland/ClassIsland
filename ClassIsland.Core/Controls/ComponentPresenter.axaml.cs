@@ -10,6 +10,7 @@ using Avalonia.Media;
 using Avalonia.Reactive;
 using Avalonia.Rendering.Composition;
 using Avalonia.Threading;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
@@ -160,30 +161,17 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     {
         if (Settings == null || !IsOnMainWindow)
             return;
-        if (Settings.IsResourceOverridingEnabled)
+        MainWindowCustomizableNodeHelper.ApplyStyles(this, Settings);
+
+        if (Settings.IsCustomMarginEnabled)
         {
-            Resources[nameof(Settings.MainWindowSecondaryFontSize)] = Settings.MainWindowSecondaryFontSize;
-            Resources[nameof(Settings.MainWindowBodyFontSize)] = Settings.MainWindowBodyFontSize;
-            Resources[nameof(Settings.MainWindowEmphasizedFontSize)] = Settings.MainWindowEmphasizedFontSize;
-            Resources[nameof(Settings.MainWindowLargeFontSize)] = Settings.MainWindowLargeFontSize;
+            ComponentRootBorder.Margin = new Thickness(Settings.MarginLeft, Settings.MarginTop, Settings.MarginRight,
+                Settings.MarginBottom);
         }
         else
         {
-            foreach (var key in (string[])
-                     [
-                         nameof(Settings.MainWindowSecondaryFontSize), nameof(Settings.MainWindowBodyFontSize),
-                         nameof(Settings.MainWindowEmphasizedFontSize), nameof(Settings.MainWindowLargeFontSize)
-                     ])
-            {
-                if (Resources.ContainsKey(key))
-                {
-                    Resources.Remove(key);
-                }
-            }
+            ComponentRootBorder.ClearValue(MarginProperty);
         }
-
-        ControlColorHelper.SetControlForegroundColor(this, Settings.ForegroundColor, 
-            Settings.IsCustomForegroundColorEnabled);
     }
 
     public object? PresentingContent
@@ -336,6 +324,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     private void ComponentPresenter_OnLoaded(object sender, RoutedEventArgs e)
     {
         UpdateComponentHidState();
+        UpdateTheme();
     }
 
     private void ComponentRootBorder_OnSizeChanged(object? sender, SizeChangedEventArgs e)

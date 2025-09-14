@@ -146,6 +146,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         if (ViewModel.SelectedPluginInfo == null || StorageProvider == null)
             return;
+        PopupHelper.DisableAllPopups();
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
         {
             Title = "打包插件",
@@ -154,6 +155,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
             ],
             SuggestedFileName = ViewModel.SelectedPluginInfo.Manifest.Id + IPluginService.PluginPackageExtension
         });
+        PopupHelper.RestoreAllPopups();
         
         if (file == null)
             return;
@@ -190,11 +192,13 @@ public partial class PluginsSettingsPage : SettingsPageBase
             return;
         }
         ViewModel.IsPluginMarketOperationsPopupOpened = false;
+        PopupHelper.DisableAllPopups();
         var file = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
             Title = "从本地安装插件",
             FileTypeFilter = [IPluginService.PluginPackageFileType]
         });
+        PopupHelper.RestoreAllPopups();
         if (file.Count <= 0)
             return;
         var path = file[0].TryGetLocalPath();

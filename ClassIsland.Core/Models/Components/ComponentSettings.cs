@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Avalonia.Layout;
 using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Models;
+using ClassIsland.Core.Abstractions.Models.Components;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Services.Registry;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,7 +13,7 @@ namespace ClassIsland.Core.Models.Components;
 /// <summary>
 /// 代表一个在主界面上显示的组件项目。
 /// </summary>
-public class ComponentSettings : ObservableRecipient
+public class ComponentSettings : ObservableRecipient, IMainWindowCustomizableNodeSettings
 {
     private bool _hideOnRule = false;
     private object? _settings;
@@ -36,6 +37,18 @@ public class ComponentSettings : ObservableRecipient
     private int _relativeLineNumber = 0;
     private bool _isVisible = true;
     private double _lastWidthCache = 100;
+    private double _backgroundOpacity = 0.5;
+    private bool _isCustomBackgroundOpacityEnabled = false;
+    private Color _backgroundColor = Colors.Black;
+    private bool _isCustomBackgroundColorEnabled = false;
+    private double _customCornerRadius = 8.0;
+    private bool _isCustomCornerRadiusEnabled = false;
+    private double _opacity = 1.0;
+    private bool _isCustomMarginEnabled = false;
+    private double _marginLeft = 0.0;
+    private double _marginTop = 0.0;
+    private double _marginRight = 0.0;
+    private double _marginBottom = 0.0;
 
     /// <summary>
     /// 要显示的组件Id，ClassIsland用这个来索引组件，与<see cref="ComponentInfo"/>的Guid一致。
@@ -132,9 +145,7 @@ public class ComponentSettings : ObservableRecipient
 
     #region Resources
 
-    /// <summary>
-    /// 是否启用资源覆盖
-    /// </summary>
+    /// <inheritdoc />
     public bool IsResourceOverridingEnabled
     {
         get => _isResourceOverridingEnabled;
@@ -146,9 +157,7 @@ public class ComponentSettings : ObservableRecipient
         }
     }
 
-    /// <summary>
-    /// 次级字体大小
-    /// </summary>
+    /// <inheritdoc />
     public double MainWindowSecondaryFontSize
     {
         get => _mainWindowSecondaryFontSize;
@@ -160,9 +169,7 @@ public class ComponentSettings : ObservableRecipient
         }
     }
 
-    /// <summary>
-    /// 正文字体大小
-    /// </summary>
+    /// <inheritdoc />
     public double MainWindowBodyFontSize
     {
         get => _mainWindowBodyFontSize;
@@ -174,9 +181,7 @@ public class ComponentSettings : ObservableRecipient
         }
     }
 
-    /// <summary>
-    /// 强调字体大小
-    /// </summary>
+    /// <inheritdoc />
     public double MainWindowEmphasizedFontSize
     {
         get => _mainWindowEmphasizedFontSize;
@@ -188,9 +193,7 @@ public class ComponentSettings : ObservableRecipient
         }
     }
 
-    /// <summary>
-    /// 大号字体大小
-    /// </summary>
+    /// <inheritdoc />
     public double MainWindowLargeFontSize
     {
         get => _mainWindowLargeFontSize;
@@ -202,9 +205,7 @@ public class ComponentSettings : ObservableRecipient
         }
     }
 
-    /// <summary>
-    /// 是否启用自定义前景色
-    /// </summary>
+    /// <inheritdoc />
     public bool IsCustomForegroundColorEnabled
     {
         get => _isCustomForegroundColorEnabled;
@@ -216,9 +217,7 @@ public class ComponentSettings : ObservableRecipient
         }
     }
 
-    /// <summary>
-    /// 自定义前景色
-    /// </summary>
+    /// <inheritdoc />
     public Color ForegroundColor
     {
         get => _foregroundColor;
@@ -226,6 +225,90 @@ public class ComponentSettings : ObservableRecipient
         {
             if (Nullable.Equals(value, _foregroundColor)) return;
             _foregroundColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public double BackgroundOpacity
+    {
+        get => _backgroundOpacity;
+        set
+        {
+            if (value.Equals(_backgroundOpacity)) return;
+            _backgroundOpacity = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public bool IsCustomBackgroundOpacityEnabled
+    {
+        get => _isCustomBackgroundOpacityEnabled;
+        set
+        {
+            if (value == _isCustomBackgroundOpacityEnabled) return;
+            _isCustomBackgroundOpacityEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public Color BackgroundColor
+    {
+        get => _backgroundColor;
+        set
+        {
+            if (value.Equals(_backgroundColor)) return;
+            _backgroundColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public bool IsCustomBackgroundColorEnabled
+    {
+        get => _isCustomBackgroundColorEnabled;
+        set
+        {
+            if (value == _isCustomBackgroundColorEnabled) return;
+            _isCustomBackgroundColorEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public double CustomCornerRadius
+    {
+        get => _customCornerRadius;
+        set
+        {
+            if (value.Equals(_customCornerRadius)) return;
+            _customCornerRadius = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public bool IsCustomCornerRadiusEnabled
+    {
+        get => _isCustomCornerRadiusEnabled;
+        set
+        {
+            if (value == _isCustomCornerRadiusEnabled) return;
+            _isCustomCornerRadiusEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public double Opacity
+    {
+        get => _opacity;
+        set
+        {
+            if (value.Equals(_opacity)) return;
+            _opacity = value;
             OnPropertyChanged();
         }
     }
@@ -351,6 +434,76 @@ public class ComponentSettings : ObservableRecipient
         {
             if (value == _horizontalAlignment) return;
             _horizontalAlignment = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 启用自定义间距
+    /// </summary>
+    public bool IsCustomMarginEnabled
+    {
+        get => _isCustomMarginEnabled;
+        set
+        {
+            if (value == _isCustomMarginEnabled) return;
+            _isCustomMarginEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 左间距
+    /// </summary>
+    public double MarginLeft
+    {
+        get => _marginLeft;
+        set
+        {
+            if (value.Equals(_marginLeft)) return;
+            _marginLeft = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 上间距
+    /// </summary>
+    public double MarginTop
+    {
+        get => _marginTop;
+        set
+        {
+            if (value.Equals(_marginTop)) return;
+            _marginTop = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 右间距
+    /// </summary>
+    public double MarginRight
+    {
+        get => _marginRight;
+        set
+        {
+            if (value.Equals(_marginRight)) return;
+            _marginRight = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 下间距
+    /// </summary>
+    public double MarginBottom
+    {
+        get => _marginBottom;
+        set
+        {
+            if (value.Equals(_marginBottom)) return;
+            _marginBottom = value;
             OnPropertyChanged();
         }
     }

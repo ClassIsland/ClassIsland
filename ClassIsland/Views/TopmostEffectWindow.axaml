@@ -7,11 +7,9 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:TopmostEffectWindow}"
         Topmost="True"
-        ShowActivated="False"
         Title="顶层效果窗口" Height="1" Width="1"
         Background="Transparent"
         Closing="TopmostEffectWindow_OnClosing"
-        ShowInTaskbar="False"
         CanResize="False"
         SystemDecorations="None"
         Loaded="Control_OnLoaded">

@@ -105,17 +105,26 @@ public partial class TopmostEffectWindow : Window
 
     private void TopmostEffectWindow_OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        if (e.CloseReason == WindowCloseReason.OSShutdown || e.CloseReason == WindowCloseReason.ApplicationShutdown)
+        if (e.CloseReason is WindowCloseReason.OSShutdown or WindowCloseReason.ApplicationShutdown)
         {
             return;
         }
         e.Cancel = true;
     }
 
+    public override void Show()
+    {
+        ShowActivated = false;
+        ShowInTaskbar = false;
+        Topmost = true;
+        base.Show();
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, 
+            WindowFeatures.Transparent | WindowFeatures.ToolWindow | WindowFeatures.Topmost | WindowFeatures.SkipManagement, true);
+    }
+
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, 
-            WindowFeatures.Transparent | WindowFeatures.ToolWindow, true);
+        
     }
 }
 

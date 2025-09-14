@@ -94,6 +94,10 @@ public partial class AppLogsWindow : MyWindow
 
     private void AppLogsWindow_OnClosing(object? sender, WindowClosingEventArgs e)
     {
+        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+        {
+            return;
+        }
         e.Cancel = true;
         Hide();
         _isOpened = false;

@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
@@ -145,7 +146,10 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     public async Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid)
     {
-        ShowNotification(request, providerGuid, channelGuid, true);
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            ShowNotification(request, providerGuid, channelGuid, true);
+        });
         await Task.Run(() =>
         {
             request.CompletedTokenSource.Token.WaitHandle.WaitOne();
@@ -198,7 +202,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             return;
         }
-        ShowChainedNotifications(requests, providerGuid, channelGuid);
+
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            ShowChainedNotifications(requests, providerGuid, channelGuid);
+        });
         await Task.Run(() =>
         {
             requests.Last().CompletedTokenSource.Token.WaitHandle.WaitOne();

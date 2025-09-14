@@ -30,4 +30,26 @@ public class GeneralSettingsViewModel(
             OnPropertyChanged();
         }
     }
+
+    public int CriticalSafeModeSelectedIndex
+    {
+        get
+        {
+            return SettingsService.Settings.IsCriticalSafeMode
+                ? SettingsService.Settings.CriticalSafeModeMethod + 1
+                : 0;
+        }
+        set
+        {
+            if (value == 0)
+            {
+                SettingsService.Settings.IsCriticalSafeMode = false;
+            }
+            else
+            {
+                SettingsService.Settings.IsCriticalSafeMode = true;
+                SettingsService.Settings.CriticalSafeModeMethod = value - 1;
+            }
+        }
+    }
 }

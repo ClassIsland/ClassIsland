@@ -16,6 +16,7 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
         <HotAvaloniaIncludeExtensions>True</HotAvaloniaIncludeExtensions>
         <OutputType>Library</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX'">
     </PropertyGroup>
@@ -26,7 +27,6 @@
       <IsMsix>true</IsMsix>
     </PropertyGroup>
     <PropertyGroup Condition="'$(IsMsix)'=='true'">
-        <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
         <!-- <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
         <EnableMsixTooling>true</EnableMsixTooling>
         <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>
@@ -41,7 +41,6 @@
         </AppxManifest>
     </ItemGroup>
     <PropertyGroup Condition="'$(IsMsix)'!='true'">
-        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
         <None Remove="assets\documents\ChangeLog.md" />
@@ -132,6 +131,9 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
         <None Include="Assets\AppLogo.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="Assets\AppLogo_Monochrome.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />

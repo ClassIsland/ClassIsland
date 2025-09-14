@@ -70,6 +70,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
     private IDisposable? _hideFinishedClassObserver;
     private IDisposable? _showEmptyPlaceholderObserver;
     private IDisposable? _lessonsListBoxSelectedIndexObserver;
+    private IDisposable? _currentClassPlanObserver;
 
     public int LessonsListBoxSelectedIndex
     {
@@ -124,8 +125,24 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
         Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged;
         Unloaded += (_, _) => LessonsService.PropertyChanged -= LessonsServiceOnPropertyChanged;
+        Unloaded += OnUnloaded;
         InitializeComponent();
         CurrentTimeStateChanged();
+    }
+
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        _tomorrowScheduleShowModeObserver?.Dispose();
+        _hideFinishedClassObserver?.Dispose();
+        _showEmptyPlaceholderObserver?.Dispose();
+        _lessonsListBoxSelectedIndexObserver?.Dispose();
+        _currentClassPlanObserver?.Dispose();
+        
+        _tomorrowScheduleShowModeObserver = null;
+        _hideFinishedClassObserver = null;
+        _showEmptyPlaceholderObserver = null;
+        _lessonsListBoxSelectedIndexObserver = null;
+        _currentClassPlanObserver = null;
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
@@ -141,6 +158,8 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
             .ObservableForProperty(x => x.ShowPlaceholderOnEmptyClassPlan)
             .Subscribe(_ => ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan);
         _lessonsListBoxSelectedIndexObserver ??= this.GetObservable(LessonsListBoxSelectedIndexProperty)
+            .Subscribe(_ => MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex);
+        _currentClassPlanObserver ??= LessonsService.ObservableForProperty(x => x.CurrentClassPlan)
             .Subscribe(_ => MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex);
 
         HideFinishedClass = Settings.HideFinishedClass;

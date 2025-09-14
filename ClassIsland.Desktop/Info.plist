@@ -33,7 +33,7 @@
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>CFBundleIconFile</key>
-	<string>Assets/AppIcon.icns</string>
+	<string>Assets/AppIcon</string>
 	<key>CFBundleIconName</key>
 	<string>AppIcon</string>
 	<key>CFBundleDisplayName</key>

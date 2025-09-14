@@ -12,16 +12,23 @@ using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
-public class TaskBarIconService(ILogger<TaskBarIconService> logger) : IHostedService, ITaskBarIconService
+public class TaskBarIconService : IHostedService, ITaskBarIconService
 {
-    public ILogger<TaskBarIconService> Logger { get; } = logger;
+    public TaskBarIconService(ILogger<TaskBarIconService> logger)
+    {
+        Logger = logger;
+        
+        
+    }
+
+    public ILogger<TaskBarIconService> Logger { get; }
 
     public TrayIcon MainTaskBarIcon
     {
         get;
     } = new()
     {
-        Icon = new WindowIcon(OperatingSystem.IsMacOS() ? "../Resources/Assets/AppLogo.png" : "Assets/AppLogo.png"),
+        Icon = new WindowIcon(OperatingSystem.IsMacOS() ? "../Resources/Assets/AppLogo_Monochrome.png" : "Assets/AppLogo.png"),
         ToolTipText = "ClassIsland"
     };
 

@@ -11,4 +11,7 @@
     <Style Selector="PopupRoot">
         <Setter Property="ci:PopupIntroAnimationBehavior.IsIntroAnimationEnabled" Value="True"/>
     </Style>
+    <Style Selector="OverlayPopupHost">
+        <Setter Property="ci:PopupIntroAnimationBehavior.IsIntroAnimationEnabled" Value="True"/>
+    </Style>
 </Styles>

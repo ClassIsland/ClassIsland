@@ -172,6 +172,9 @@ public class AutomationService(ILogger<AutomationService> Logger, IRulesetServic
             SaveConfig("新建自动化配置");
         }
 
+        if (App.ApplicationCommand.Safe) return;
+        // 注意：以下代码在安全模式下不会运行。
+
         foreach (var i in Workflows)
         {
             LoadWorkflow(i);

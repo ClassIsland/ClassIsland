@@ -14,34 +14,50 @@ namespace ClassIsland.Core.Behaviors;
 public class PopupIntroAnimationBehavior
 {
     public static readonly AttachedProperty<bool> IsIntroAnimationEnabledProperty =
-        AvaloniaProperty.RegisterAttached<PopupIntroAnimationBehavior, PopupRoot, bool>("IsIntroAnimationEnabled");
+        AvaloniaProperty.RegisterAttached<PopupIntroAnimationBehavior, Control, bool>("IsIntroAnimationEnabled");
 
-    public static void SetIsIntroAnimationEnabled(PopupRoot obj, bool value) => obj.SetValue(IsIntroAnimationEnabledProperty, value);
-    public static bool GetIsIntroAnimationEnabled(PopupRoot obj) => obj.GetValue(IsIntroAnimationEnabledProperty);
+    public static void SetIsIntroAnimationEnabled(Control obj, bool value) => obj.SetValue(IsIntroAnimationEnabledProperty, value);
+    public static bool GetIsIntroAnimationEnabled(Control obj) => obj.GetValue(IsIntroAnimationEnabledProperty);
 
     static PopupIntroAnimationBehavior()
     {
-        IsIntroAnimationEnabledProperty.Changed.AddClassHandler<PopupRoot>(IsIntroAnimationEnabledChanged);
+        IsIntroAnimationEnabledProperty.Changed.AddClassHandler<Control>(IsIntroAnimationEnabledChanged);
     }
 
-    private static void IsIntroAnimationEnabledChanged(PopupRoot control, AvaloniaPropertyChangedEventArgs args)
+    private static void IsIntroAnimationEnabledChanged(Control control, AvaloniaPropertyChangedEventArgs args)
     {
         if (!GetIsIntroAnimationEnabled(control))
         {
             return;
         }
-        
-        control.Opened += ControlOnOpened;
+
+        switch (control)
+        {
+            case PopupRoot popupRoot:
+                popupRoot.Opened += ControlOnOpened;
+                break;
+            case OverlayPopupHost overlayPopupHost:
+                overlayPopupHost.AttachedToVisualTree += ControlOnOpened;
+                break;
+        }
     }
 
     private static void ControlOnOpened(object? sender, EventArgs e)
     {
-        if (sender is not PopupRoot control)
+        if (sender is not Control control)
         {
             return;
         }
 
-        control.Opened -= ControlOnOpened;
+        switch (control)
+        {
+            case PopupRoot popupRoot:
+                popupRoot.Opened -= ControlOnOpened;
+                break;
+            case OverlayPopupHost overlayPopupHost:
+                overlayPopupHost.AttachedToVisualTree -= ControlOnOpened;
+                break;
+        }
         var visual = ElementComposition.GetElementVisual(control);
         if (visual == null)
         {

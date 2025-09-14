@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Actions;
@@ -18,17 +19,20 @@ public class WeatherNotificationAction : ActionBase<WeatherNotificationActionSet
     protected override async Task OnInvoke()
     {
         await base.OnInvoke();
-        switch (Settings.NotificationKind)
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
         {
-            case 0:
-                WeatherNotificationProvider.ShowWeatherForecastCore();
-                break;
-            case 1:
-                WeatherNotificationProvider.ShowAlertsNotificationCore();
-                break;
-            case 2:
-                WeatherNotificationProvider.ShowWeatherForecastHourlyCore();
-                break;
-        }
+            switch (Settings.NotificationKind)
+            {
+                case 0:
+                    WeatherNotificationProvider.ShowWeatherForecastCore();
+                    break;
+                case 1:
+                    WeatherNotificationProvider.ShowAlertsNotificationCore();
+                    break;
+                case 2:
+                    WeatherNotificationProvider.ShowWeatherForecastHourlyCore();
+                    break;
+            }
+        });
     }
 }

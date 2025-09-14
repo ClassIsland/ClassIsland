@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+// ReSharper disable UsageOfDefaultStructEquality
 
 namespace ClassIsland.Core.ComponentModels;
 
@@ -17,16 +18,26 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
     /// <summary>
     /// 公开的用于进行绑定的列表。
     /// </summary>
-    public ObservableCollection<KeyValuePair<TKey, TValue>> List { get; } = []; 
+    public ObservableCollection<KeyValuePair<TKey, TValue>> List { get; } = [];
+    
+    /// <summary>
+    /// 要向列表中添加的默认值。此默认值不会同步回字典。
+    /// </summary>
+    public KeyValuePair<TKey, TValue>? DefaultValue { get; } 
     
     /// <summary>
     /// 初始化一个 <see cref="SyncDictionaryList{TKey,TValue}"/> 对象。
     /// </summary>
-    public SyncDictionaryList(IDictionary<TKey, TValue> dictionary, Func<TKey> newKey)
+    public SyncDictionaryList(IDictionary<TKey, TValue> dictionary, Func<TKey> newKey, KeyValuePair<TKey, TValue>? defaultValue=null)
     {
         _dictionary = dictionary;
         _newKey = newKey;
+        DefaultValue = defaultValue;
 
+        if (DefaultValue != null)
+        {
+            List.Add(DefaultValue.Value);
+        }
         foreach (var v in _dictionary)
         {
             List.Add(v);
@@ -75,9 +86,7 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     }
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    break;
                 case NotifyCollectionChangedAction.Move:
-                    break;
                 case NotifyCollectionChangedAction.Reset:
                     break;
                 default:
@@ -109,6 +118,10 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     }
                     foreach (var i in e.NewItems)
                     {
+                        if (DefaultValue != null && Equals(i, DefaultValue.Value))
+                        {
+                            continue;
+                        }
                         _dictionary[_newKey()] = (TValue)i;
                     }
                     break;
@@ -119,6 +132,10 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     }
                     foreach (var i in e.OldItems)
                     {
+                        if (DefaultValue != null && Equals(i, DefaultValue.Value))
+                        {
+                            continue;
+                        }
                         foreach (var k in _dictionary.Where(k => k.Value?.Equals(i) ?? false))
                         {
                             _dictionary.Remove(k.Key);
@@ -129,9 +146,7 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
                     //Subjects = ConfigureFileHelper.CopyObject(Subjects);
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    break;
                 case NotifyCollectionChangedAction.Move:
-                    break;
                 case NotifyCollectionChangedAction.Reset:
                     break;
                 default:

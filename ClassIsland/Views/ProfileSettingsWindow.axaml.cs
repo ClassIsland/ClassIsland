@@ -93,6 +93,10 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void Window_OnClosing(object? sender, WindowClosingEventArgs e)
     {
+        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+        {
+            return;
+        }
         e.Cancel = true;
         _isOpen = false;
         Hide();

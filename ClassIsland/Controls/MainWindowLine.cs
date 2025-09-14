@@ -31,8 +31,10 @@ using Avalonia.VisualTree;
 using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.Notification;
@@ -61,8 +63,8 @@ namespace ClassIsland.Controls;
 // [ContentProperty("Content")]
 [TemplatePart(Name = "PART_GridWrapper", Type = typeof(Grid))]
 [PseudoClasses(":dock-left", ":dock-right", ":dock-center", ":dock-top", ":dock-bottom",
-    ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out", ":custom-background")]
-public class MainWindowLine : TemplatedControl, INotificationConsumer
+    ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out")]
+public class MainWindowLine : ContentControl, INotificationConsumer
 {
     public static readonly StyledProperty<bool> PointerOverProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(PointerOver));
@@ -71,16 +73,6 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
     {
         get => GetValue(PointerOverProperty);
         set => SetValue(PointerOverProperty, value);
-    }
-    
-    public static readonly StyledProperty<object> ContentProperty = AvaloniaProperty.Register<MainWindowLine, object>(
-        nameof(Content));
-    
-    [Content]
-    public object Content
-    {
-        get => GetValue(ContentProperty);
-        set => SetValue(ContentProperty, value);
     }
 
     public static readonly StyledProperty<string> LastStoryboardNameProperty = AvaloniaProperty.Register<MainWindowLine, string>(
@@ -245,7 +237,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
     private Grid? GridWrapper;
     
-    private Point _centerPointCache = new Point(0, 0);
+    private PixelPoint _centerPointCache = new PixelPoint(0, 0);
 
     private object TopmostLock { get; } = new();
 
@@ -298,9 +290,6 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
 
             PlayFadeInAnimation(this);
         });
-        SettingsService.Settings.ObservableForProperty(x => x.IsCustomBackgroundColorEnabled)
-            .Subscribe(v => PseudoClasses.Set(":custom-background", v.Value));
-        PseudoClasses.Set(":custom-background", SettingsService.Settings.IsCustomBackgroundColorEnabled);
         UpdateStyleStates();
     }
     
@@ -359,10 +348,15 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateFadeStatus();
         NotificationHostService.RegisterNotificationConsumer(this, Settings.IsMainLine ? -1 : LineNumber);
-
+        if (Settings != null)
+        {
+            Settings.PropertyChanged -= MySettingsOnPropertyChanged;
+            Settings.PropertyChanged += MySettingsOnPropertyChanged;
+        }
+        
+        UpdateStyles();
         _isLoadCompleted = true;
     }
-
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
@@ -371,6 +365,31 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         MainWindow.MainWindowAnimationEvent -= MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
         NotificationHostService.UnregisterNotificationConsumer(this);
+        if (Settings != null)
+        {
+            Settings.PropertyChanged -= MySettingsOnPropertyChanged;
+        }
+    }
+    
+    private void MySettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        UpdateStyles();
+    }
+
+    private void UpdateStyles()
+    {
+        if (Settings == null || !IsLoaded) 
+            return;
+        MainWindowCustomizableNodeHelper.ApplyStyles(this, Settings);
+
+        if (Settings.IslandSeparationMode != 0)
+        {
+            SetValue(MainWindowStylesAssist.IsIslandSeperatedProperty, Settings.IslandSeparationMode == 2);
+        }
+        else
+        {
+            ClearValue(MainWindowStylesAssist.IsIslandSeperatedProperty);
+        }
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -543,16 +562,16 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
         }
     }
     
-    private Point GetCenter()
+    private PixelPoint GetCenter()
     {
         var scale = SettingsService.Settings.Scale;
         // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
-        var p = GridWrapper?.TranslatePoint(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2), this);
+        var p = GridWrapper?.PointToScreen(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2));
         if (p == null)
         {
             return _centerPointCache;
         }
-        return _centerPointCache = new Point(p.Value.X * scale, (Bounds.Top + (Bounds.Height / 2)) * scale);
+        return _centerPointCache = p.Value;
     }
 
     private async void ProcessNotification()
@@ -651,11 +670,7 @@ public class MainWindowLine : TemplatedControl, INotificationConsumer
                     !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible)
                 {
                     var center = GetCenter();
-                    TopmostEffectWindow.PlayEffect(new RippleEffect()
-                    {
-                        CenterX = center.X,
-                        CenterY = center.Y
-                    });
+                    TopmostEffectWindow.PlayEffect(new RippleEffect(center));
                 }
 
                 if (!cancellationToken.IsCancellationRequested)

@@ -61,7 +61,10 @@ class Program
                 CompositionMode = [
                     Win32CompositionMode.WinUIComposition,
                     Win32CompositionMode.RedirectionSurface
-                ]
+                ],
+                // 这算是没有办法的办法了
+                // https://github.com/AvaloniaUI/Avalonia/issues/18969
+                OverlayPopups = true
             })
             .UsePlatformDetect()
             .LogToHostSink();

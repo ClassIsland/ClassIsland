@@ -46,7 +46,7 @@
                 <Setter Property="LessonsListBoxSelectedIndex" Value="-1"/>
             </Style>
         </Style>
-        <Style Selector="local|ScheduleComponent.TodayScheduleEmpty">
+        <Style Selector="local|ScheduleComponent.TodayScheduleEmpty, local|ScheduleComponent:show-tomorrow-schedule:show-tomorrow-schedule-always.TomorrowScheduleEmpty">
             <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
                 <Setter Property="IsVisible" Value="False"/>
             </Style>
@@ -84,7 +84,8 @@
             Padding="8 2"
             CornerRadius="16"
             x:Name="Tomorrow">
-            <TextBlock Text="明天" Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+            <TextBlock Text="明天" Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                       Margin="0,1,0,-1"/>
         </Border>
         <ci:LessonsListBox Grid.Column="1" 
                            Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"

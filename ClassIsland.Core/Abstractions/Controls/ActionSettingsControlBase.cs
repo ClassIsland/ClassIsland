@@ -62,7 +62,7 @@ public abstract class ActionSettingsControlBase : UserControl
                 DataContext = this
             };
 
-            await dialog.ShowAsync();
+            await dialog.ShowAsync(TopLevel.GetTopLevel(this));
         }
     }
 

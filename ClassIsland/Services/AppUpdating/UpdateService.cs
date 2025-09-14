@@ -13,9 +13,6 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Threading;
-#if IsMsix
-using Windows.Storage;
-#endif
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.Native;
@@ -56,12 +53,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     internal const string UpdateMetadataUrl =
         "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/disturb/index.json";
 
-    public static string UpdateTempPath =>
-#if IsMsix
-        Path.Combine(ApplicationData.Current.TemporaryFolder.Path, "UpdateTemp");
-#else
-        Path.Combine(CommonDirectories.AppRootFolderPath, "UpdateTemp");
-#endif
+    public static string UpdateTempPath => Path.Combine(CommonDirectories.AppRootFolderPath, "UpdateTemp");
 
     public VersionsIndex Index { get; set; }
 

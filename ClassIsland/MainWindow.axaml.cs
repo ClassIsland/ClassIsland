@@ -16,6 +16,7 @@ using Avalonia.Diagnostics;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using ClassIsland.Core;
@@ -201,6 +202,7 @@ public partial class MainWindow : Window
         DataContext = this;
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
+        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
 
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         SettingsService.PropertyChanged += (sender, args) =>
@@ -227,7 +229,7 @@ public partial class MainWindow : Window
     {
         if (ViewModel.Settings.HideMode == 1)
         {
-            ViewModel.IsHideRuleSatisfied = RulesetService.IsRulesetSatisfied(ViewModel.Settings.HiedRules);
+            ViewModel.IsHideRuleSatisfied = RulesetService.IsRulesetSatisfied(ViewModel.Settings.HideRules);
         }
         // Detect fullscreen
         var screen = GetSelectedScreenSafe();
@@ -302,6 +304,14 @@ public partial class MainWindow : Window
         TaskBarIconService.MainTaskBarIcon.Menu = menu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         TaskBarIconService.MainTaskBarIcon.Clicked += MainTaskBarIconOnClicked;
+        PopupHelper.DisablePopupsRequested += (_, _) =>
+        {
+            TaskBarIconService.MainTaskBarIcon.Menu = null;
+        };
+        PopupHelper.RestorePopupsRequested += (_, _) =>
+        {
+            TaskBarIconService.MainTaskBarIcon.Menu = menu;
+        };
         ViewModel.OverlayRemainTimePercents = 0.5;
         DiagnosticService.EndStartup();
 
@@ -1004,6 +1014,6 @@ public partial class MainWindow : Window
 
     private void LayoutContainerGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        Height = LayoutContainerGrid.Bounds.Height;
+        Dispatcher.UIThread.InvokeAsync(() => Height = LayoutContainerGrid.Bounds.Height, DispatcherPriority.Render);
     }
 }
