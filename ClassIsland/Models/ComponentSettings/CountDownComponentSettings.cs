@@ -20,6 +20,14 @@ public class CountDownComponentSettings : ObservableRecipient
     private bool _showProgress = false;
     private bool _isProgressInverted = false;
     private string _customStringFormat = "%D天";
+    private int _countdownSource = 0;
+    private DateTime _cycleStartTime = DateTime.Now;
+    private TimeSpan _cycleBeforeDuration = TimeSpan.Zero;
+    private TimeSpan _cycleDuration = TimeSpan.FromDays(1);
+    private TimeSpan _cycleAfterDuration = TimeSpan.Zero;
+    private bool _isCycleCountLimited = false;
+    private int _cycleCountLimit = 2;
+    private bool _isAdvancedCycleTimingEnabled = false;
 
     public string CountDownName
     {
@@ -176,6 +184,113 @@ public class CountDownComponentSettings : ObservableRecipient
         {
             if (value == _customStringFormat) return;
             _customStringFormat = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 倒计时来源
+    /// 0 - 固定时间
+    /// 1 - 周期
+    /// 2 - 今天
+    /// 3 - 本周
+    /// </summary>
+    public int CountdownSource
+    {
+        get => _countdownSource;
+        set
+        {
+            if (value == _countdownSource) return;
+            _countdownSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 周期开始时间
+    /// </summary>
+    public DateTime CycleStartTime
+    {
+        get => _cycleStartTime;
+        set
+        {
+            if (value.Equals(_cycleStartTime)) return;
+            _cycleStartTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 单个周期前时长
+    /// </summary>
+    public TimeSpan CycleBeforeDuration
+    {
+        get => _cycleBeforeDuration;
+        set
+        {
+            if (value.Equals(_cycleBeforeDuration)) return;
+            _cycleBeforeDuration = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 单个周期计时时长
+    /// </summary>
+    public TimeSpan CycleDuration
+    {
+        get => _cycleDuration;
+        set
+        {
+            if (value.Equals(_cycleDuration)) return;
+            _cycleDuration = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 单个周期后时长
+    /// </summary>
+    public TimeSpan CycleAfterDuration
+    {
+        get => _cycleAfterDuration;
+        set
+        {
+            if (value.Equals(_cycleAfterDuration)) return;
+            _cycleAfterDuration = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsCycleCountLimited
+    {
+        get => _isCycleCountLimited;
+        set
+        {
+            if (value == _isCycleCountLimited) return;
+            _isCycleCountLimited = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int CycleCountLimit
+    {
+        get => _cycleCountLimit;
+        set
+        {
+            if (value == _cycleCountLimit) return;
+            _cycleCountLimit = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAdvancedCycleTimingEnabled
+    {
+        get => _isAdvancedCycleTimingEnabled;
+        set
+        {
+            if (value == _isAdvancedCycleTimingEnabled) return;
+            _isAdvancedCycleTimingEnabled = value;
             OnPropertyChanged();
         }
     }

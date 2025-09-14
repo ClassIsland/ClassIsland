@@ -158,22 +158,52 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         UpdateContent();
     }
 
+    private (DateTime start, DateTime end) GetTimeRangeForStaticTime()
+    {
+        return (Settings.StartTime, Settings.OverTime);
+    }
+    
+    private (DateTime start, DateTime end) GetTimeRangeForCycle(DateTime now)
+    {
+        var start = Settings.CycleStartTime;
+        var before = Settings.IsAdvancedCycleTimingEnabled ? Settings.CycleBeforeDuration : TimeSpan.Zero;
+        var after = Settings.IsAdvancedCycleTimingEnabled ? Settings.CycleAfterDuration : TimeSpan.Zero;
+        var duration = Settings.CycleDuration;
+        var totalDuration = before + duration + after;
+        if (totalDuration <= TimeSpan.Zero)
+        {
+            return (start, start);
+        }
+        // 学生再次踏上轮回
+        var cycles = (int)Math.Min(Math.Floor((now - start) / totalDuration),
+            Settings.IsCycleCountLimited ? Settings.CycleCountLimit : double.PositiveInfinity);
+        var timingStart = start + (cycles * totalDuration) + before;
+        return (timingStart, timingStart + duration);
+    }
+
     private void UpdateContent()
     {
-        var delta = Settings.OverTime - ExactTimerService.GetCurrentLocalDateTime();
+        var now = ExactTimerService.GetCurrentLocalDateTime();
+        var (start, end) = Settings.CountdownSource switch
+        {
+            0 => GetTimeRangeForStaticTime(),
+            1 => GetTimeRangeForCycle(now),
+            _ => (DateTime.MinValue, DateTime.MinValue)
+        };
+        var delta = end - now;
         if (delta < TimeSpan.Zero)
         {
             delta = TimeSpan.Zero;
         }
 
-        var totalTime = Settings.OverTime - Settings.StartTime;
+        var totalTime = end - start;
         var totalSeconds = totalTime.TotalSeconds;
         DaysLeft = Settings.CustomStringFormat
             .Replace("%D", Math.Ceiling(delta.TotalDays).ToString(CultureInfo.InvariantCulture))
             .Replace("%H", Math.Ceiling(delta.TotalHours).ToString(CultureInfo.InvariantCulture))
-            .Replace("%M", Math.Ceiling(delta.TotalMinutes).ToString("00", CultureInfo.InvariantCulture))
-            .Replace("%S", Math.Ceiling(delta.TotalSeconds).ToString("00", CultureInfo.InvariantCulture))
-            .Replace("%X", Math.Ceiling(delta.TotalMilliseconds).ToString("000", CultureInfo.InvariantCulture))
+            .Replace("%M", Math.Ceiling(delta.TotalMinutes).ToString(CultureInfo.InvariantCulture))
+            .Replace("%S", Math.Ceiling(delta.TotalSeconds).ToString(CultureInfo.InvariantCulture))
+            .Replace("%X", Math.Ceiling(delta.TotalMilliseconds).ToString(CultureInfo.InvariantCulture))
             .Replace("%P",
                 Math.Round(totalTime <= TimeSpan.Zero ? 0.0 : (totalTime - delta) / totalTime, 2)
                     .ToString("P0", CultureInfo.InvariantCulture))
@@ -186,8 +216,8 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
             .Replace("%s", delta.Seconds.ToString("00", CultureInfo.InvariantCulture))
             .Replace("%x", delta.Milliseconds.ToString("000", CultureInfo.InvariantCulture));
         var value = (Settings.IsProgressInverted
-            ? Settings.OverTime - ExactTimerService.GetCurrentLocalDateTime()
-            : ExactTimerService.GetCurrentLocalDateTime() - Settings.StartTime).TotalSeconds;
+            ? end - now
+            : now - start).TotalSeconds;
         var progressTick = MainWindowStylesAssist.GetIsProgressAccuracyReduced(this)
             ? Math.Max(10.0, totalSeconds / 500.0)
             : 1.0;

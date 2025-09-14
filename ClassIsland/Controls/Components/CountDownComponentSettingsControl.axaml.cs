@@ -1,3 +1,5 @@
+using System;
+using Avalonia.Data.Converters;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Models.ComponentSettings;
 
