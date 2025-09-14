@@ -187,14 +187,14 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
         UpdateScrollState();
     }
 
-    private void RollingComponent_OnLoaded(object sender, RoutedEventArgs e)
+    private void RollingComponent_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         Settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
 
-    private void RollingComponent_OnUnloaded(object sender, RoutedEventArgs e)
+    private void RollingComponent_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
         Settings.PropertyChanged -= SettingsOnPropertyChanged;

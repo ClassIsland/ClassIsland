@@ -123,7 +123,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         IDisposable? observer2 = null;
         IDisposable? observer3 = null;
         IDisposable? observer4 = null;
-        Loaded += (_, _) =>
+        AttachedToVisualTree += (_, _) =>
         {
             UpdateContent();
             observer1?.Dispose();
@@ -141,7 +141,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
             UpdateStyleClasses();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         };
-        Unloaded += (_, _) => {
+        DetachedFromVisualTree += (_, _) => {
             observer1?.Dispose();
             observer2?.Dispose();
             observer3?.Dispose();
