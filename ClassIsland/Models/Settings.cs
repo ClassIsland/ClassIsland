@@ -188,8 +188,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private DateTime _lastRefreshPluginSourceTime = DateTime.MinValue;
     private bool _isProfileEditorClassInfoSubjectAutoMoveNextEnabled = true;
     private double _notificationSoundVolume = 1.0;
-    private double _radiusX = 0.0;
-    private double _radiusY = 0.0;
+    private double _radiusX = 8.0;
+    private double _radiusY = 8.0;
     private int _hideMode = 0;
     private Ruleset _hideRules = new();
     private bool _isAutoBackupEnabled = true;
