@@ -245,6 +245,68 @@
                         </StackPanel>
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="时间模式"
+                                                Description="默认情况下将从当日课程安排获取倒计时时间，以当天的第一个上课或课间休息时间点的开始时间为开始时间，最后一个上课或课间休息时间点的结束时间为结束时间。如果当日课程不可用，将使用从当日凌晨至次日凌晨的自然时间。当在右侧复选框指定了时间模式后，如果选择的时间模式不可用，将不会进行倒计时。"
+                                                Classes="has-radius">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ComboBox SelectedIndex="{Binding Settings.NatureTimeUseMode}">
+                            <ComboBoxItem Content="默认"/>
+                            <ComboBoxItem Content="强制自然时间"/>
+                            <ComboBoxItem Content="强制课程时间"/>
+                        </ComboBox>
+                    </controls3:SettingsExpanderItem.Footer>
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>2</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                    
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="时间模式"
+                                                Description="默认情况下将从本周课程安排获取倒计时时间，以本周的第一个上课或课间休息时间点的开始时间为开始时间，最后一个上课或课间休息时间点的结束时间为结束时间。如果本周课程不可用，将使用从本周第一天凌晨至本周最后一天次日凌晨的自然时间。当在右侧复选框指定了时间模式后，如果选择的时间模式不可用，将不会进行倒计时。">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ComboBox SelectedIndex="{Binding Settings.NatureTimeUseMode}">
+                            <ComboBoxItem Content="默认"/>
+                            <ComboBoxItem Content="强制自然时间"/>
+                            <ComboBoxItem Content="强制课程时间"/>
+                        </ComboBox>
+                    </controls3:SettingsExpanderItem.Footer>
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>3</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="自定义每周的第一天"
+                                                Description="默认情况下将使用在【基本】中设置的学期开始时间的星期作为每周的第一天，启用后将使用此处指定的星期。"
+                                                Classes="has-radius">
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>3</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:SettingsExpanderItem.Footer>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <ComboBox SelectedIndex="{Binding Settings.WeekCountdownStartDay}"
+                                      IsVisible="{Binding Settings.IsCustomWeekCountdownStartDayEnabled}">
+                                <ComboBoxItem Content="星期日"/>
+                                <ComboBoxItem Content="星期一"/>
+                                <ComboBoxItem Content="星期二"/>
+                                <ComboBoxItem Content="星期三"/>
+                                <ComboBoxItem Content="星期四"/>
+                                <ComboBoxItem Content="星期五"/>
+                                <ComboBoxItem Content="星期六"/>
+                            </ComboBox>
+                            <ToggleSwitch IsChecked="{Binding Settings.IsCustomWeekCountdownStartDayEnabled}"/>
+                        </StackPanel>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
             
             <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xe079;}"

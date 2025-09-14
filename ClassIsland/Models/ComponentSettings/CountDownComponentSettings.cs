@@ -28,6 +28,9 @@ public class CountDownComponentSettings : ObservableRecipient
     private bool _isCycleCountLimited = false;
     private int _cycleCountLimit = 2;
     private bool _isAdvancedCycleTimingEnabled = false;
+    private int _natureTimeUseMode = 0;
+    private DayOfWeek _weekCountdownStartDay = DayOfWeek.Monday;
+    private bool _isCustomWeekCountdownStartDayEnabled = false;
 
     public string CountDownName
     {
@@ -291,6 +294,44 @@ public class CountDownComponentSettings : ObservableRecipient
         {
             if (value == _isAdvancedCycleTimingEnabled) return;
             _isAdvancedCycleTimingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 0 - 默认
+    /// 1 - 强制自然时间
+    /// 2 - 强制课程时间
+    /// </summary>
+    public int NatureTimeUseMode
+    {
+        get => _natureTimeUseMode;
+        set
+        {
+            if (value == _natureTimeUseMode) return;
+            _natureTimeUseMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DayOfWeek WeekCountdownStartDay
+    {
+        get => _weekCountdownStartDay;
+        set
+        {
+            if (value == _weekCountdownStartDay) return;
+            _weekCountdownStartDay = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsCustomWeekCountdownStartDayEnabled
+    {
+        get => _isCustomWeekCountdownStartDayEnabled;
+        set
+        {
+            if (value == _isCustomWeekCountdownStartDayEnabled) return;
+            _isCustomWeekCountdownStartDayEnabled = value;
             OnPropertyChanged();
         }
     }
