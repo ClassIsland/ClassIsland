@@ -112,10 +112,19 @@ public partial class TopmostEffectWindow : Window
         e.Cancel = true;
     }
 
+    public override void Show()
+    {
+        ShowActivated = false;
+        ShowInTaskbar = false;
+        Topmost = true;
+        base.Show();
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, 
+            WindowFeatures.Transparent | WindowFeatures.ToolWindow | WindowFeatures.Topmost | WindowFeatures.SkipManagement, true);
+    }
+
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, 
-            WindowFeatures.Transparent | WindowFeatures.ToolWindow, true);
+        
     }
 }
 
