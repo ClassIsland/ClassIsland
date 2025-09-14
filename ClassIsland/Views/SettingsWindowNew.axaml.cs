@@ -427,6 +427,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private void SettingsWindowNew_OnClosing(object? sender, WindowClosingEventArgs e)
     {
+        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+        {
+            return;
+        }
         e.Cancel = true;
         IsOpened = false;
         Hide();

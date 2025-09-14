@@ -286,7 +286,14 @@ public partial class App : AppBase, IAppHost
             Background = Brushes.Transparent,
             TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ]
         };
-        PhonyRootWindow.Closing += (sender, args) => args.Cancel = true;
+        PhonyRootWindow.Closing += (sender, args) =>
+        {
+            if (args.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+            {
+                return;
+            }
+            args.Cancel = true;
+        };
         PhonyRootWindow.Show();
         PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         base.Initialize();
@@ -476,8 +483,8 @@ public partial class App : AppBase, IAppHost
         DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-
+        
+        
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-CN");
         Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-CN");
 
