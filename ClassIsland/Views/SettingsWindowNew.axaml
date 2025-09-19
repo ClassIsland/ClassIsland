@@ -79,6 +79,7 @@
                             <Grid.IsVisible>
                                 <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}">
                                     <Binding Path="SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading"/>
+                                    <Binding Path="ViewModel.IsNavigating"/>
                                     <Binding Path="ManagementService.Policy.DisableEasterEggs" Converter="{StaticResource BooleanToBooleanReConverter}"/>
                                 </MultiBinding>
                             </Grid.IsVisible>
