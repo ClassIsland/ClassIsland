@@ -46,7 +46,7 @@ public partial class WeatherComponent : ComponentBase<WeatherComponentSettings>
     }
 
 
-    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    private void Control_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         _observer?.Dispose();
         _observer = SettingsService.Settings.ObservableForProperty(x => x.LastWeatherInfo)
@@ -54,7 +54,7 @@ public partial class WeatherComponent : ComponentBase<WeatherComponentSettings>
         UpdateAqiInfo();
     }
 
-    private void Control_OnUnloaded(object? sender, RoutedEventArgs e)
+    private void Control_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         _observer?.Dispose();
     }

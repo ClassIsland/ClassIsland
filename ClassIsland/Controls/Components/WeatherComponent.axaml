@@ -16,8 +16,8 @@
                         mc:Ignorable="d"
                         d:DesignHeight="450" d:DesignWidth="800"
                         ClipToBounds="False"
-                        Loaded="Control_OnLoaded"
-                        Unloaded="Control_OnUnloaded">
+                        AttachedToVisualTree="Control_OnAttachedToVisualTree"
+                        DetachedFromVisualTree="Control_OnDetachedFromVisualTree">
     <controls:ComponentBase.Styles>
         <Style Selector="local|WeatherComponent">
             <Style Selector="^[AqiLevel=1] ci|FluentIcon#AqiIcon">
