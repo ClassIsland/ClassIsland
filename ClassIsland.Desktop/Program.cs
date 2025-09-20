@@ -22,11 +22,11 @@ namespace ClassIsland.Desktop;
 class Program
 {
     [STAThread]
-    static async Task<int> Main(string[] args)
+    static int Main(string[] args)
     {
         var stopTokenSource = new CancellationTokenSource();
         ActivatePlatforms(out var postInit, stopTokenSource.Token);
-        var buildApp = await ClassIsland.Program.AppEntry(args);
+        var buildApp = ClassIsland.Program.AppEntry(args).Result;
         var r =  AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
