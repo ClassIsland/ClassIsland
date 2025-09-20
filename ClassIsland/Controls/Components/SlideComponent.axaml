@@ -10,8 +10,8 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
                   ClipToBounds="False"
-             Loaded="SlideComponent_OnLoaded"
-             Unloaded="SlideComponent_OnUnloaded"
+             AttachedToVisualTree="SlideComponent_OnAttachedToVisualTree"
+             DetachedFromVisualTree="SlideComponent_OnDetachedFromVisualTree"
              d:DesignHeight="450" d:DesignWidth="800">
     
     <Grid d:DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponent}}"

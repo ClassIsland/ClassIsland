@@ -108,7 +108,8 @@
                             <NumericUpDown MinWidth="120"
                                            Maximum="9"
                                            Minimum="2"
-                                           Value="{Binding ViewModel.SettingsService.Settings.MultiWeekRotationMaxCycle}" />
+                                           Value="{Binding ViewModel.SettingsService.Settings.MultiWeekRotationMaxCycle}"
+                                           FormatString="0" />
                         </ci:Field>
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>

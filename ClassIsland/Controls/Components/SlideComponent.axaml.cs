@@ -120,7 +120,7 @@ public partial class SlideComponent : ComponentBase<SlideComponentSettings>
         }
     }
 
-    private void SlideComponent_OnLoaded(object sender, RoutedEventArgs e)
+    private void SlideComponent_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         GridRoot.DataContext = this;
         SelectedIndex = 0;
@@ -138,7 +138,7 @@ public partial class SlideComponent : ComponentBase<SlideComponentSettings>
         LoadSettings();
     }
 
-    private void SlideComponent_OnUnloaded(object sender, RoutedEventArgs e)
+    private void SlideComponent_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
         Settings.Children.CollectionChanged -= ChildrenOnCollectionChanged;

@@ -67,7 +67,7 @@ public static class Program
             // AllocConsole();
         }
 
-        var mutex = new Mutex(true, "ClassIsland.Lock", out var createNew);
+        var mutex = new Mutex(true, "Global\\ClassIsland.Lock", out var createNew);
 
         if (!createNew)
         {

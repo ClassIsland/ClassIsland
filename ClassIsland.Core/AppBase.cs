@@ -144,7 +144,7 @@ public abstract class AppBase : Application, IAppHost
     /// <returns>优先返回当前激活的窗口。如果没有激活的窗口，则返回虚窗口。</returns>
     public Window GetRootWindow()
     {
-        return Current.DesktopLifetime?.Windows.FirstOrDefault(x => x.IsActive) ??
+        return Current.DesktopLifetime?.Windows.FirstOrDefault(x => x is { IsActive: true, IsVisible: true }) ??
                Current.PhonyRootWindow;
     }
 

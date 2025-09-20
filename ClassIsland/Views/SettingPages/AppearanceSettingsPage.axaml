@@ -102,7 +102,7 @@
                         <NumericUpDown
                             Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
                             Margin="6,0,0,0"
-                            Width="50"/>
+                            Width="125"/>
                     </StackPanel>
                 </controls2:SettingsExpander.Footer>
             </controls2:SettingsExpander>

@@ -118,19 +118,19 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
         
-        Loaded += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-        Loaded += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged;
-        Loaded += (_, _) => LessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
-        Loaded += OnLoaded;
-        Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
-        Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged;
-        Unloaded += (_, _) => LessonsService.PropertyChanged -= LessonsServiceOnPropertyChanged;
-        Unloaded += OnUnloaded;
+        AttachedToVisualTree += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+        AttachedToVisualTree += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged;
+        AttachedToVisualTree += (_, _) => LessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
+        AttachedToVisualTree += OnAttachedToVisualTree;
+        DetachedFromVisualTree += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        DetachedFromVisualTree += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged;
+        DetachedFromVisualTree += (_, _) => LessonsService.PropertyChanged -= LessonsServiceOnPropertyChanged;
+        DetachedFromVisualTree += OnDetachedFromVisualTree;
         InitializeComponent();
         CurrentTimeStateChanged();
     }
 
-    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         _tomorrowScheduleShowModeObserver?.Dispose();
         _hideFinishedClassObserver?.Dispose();
@@ -145,7 +145,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         _currentClassPlanObserver = null;
     }
 
-    private void OnLoaded(object? sender, RoutedEventArgs e)
+    private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         CheckTomorrowClassShowMode();
         _tomorrowScheduleShowModeObserver ??= Settings

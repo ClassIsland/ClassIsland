@@ -42,9 +42,7 @@ public class DesktopToastService : IDesktopToastService
     
     public DesktopToastService()
     {
-        var appPathHash = SHA256.HashData(Encoding.UTF8.GetBytes(AppBase.ExecutingEntrance));
-        var base64 = Convert.ToHexString(appPathHash);
-        AumId = $"cn.classisland.app+{base64}";
+        AumId = $"cn.classisland.app";
         RegisterAumidInRegistry(AumId, "ClassIsland", Path.Combine(Environment.CurrentDirectory, "Assets", "AppLogo.png"));
     }
     

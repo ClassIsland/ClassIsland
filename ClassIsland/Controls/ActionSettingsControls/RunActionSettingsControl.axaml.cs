@@ -77,8 +77,7 @@ public partial class RunActionSettingsControl : ActionSettingsControlBase<RunAct
 
     async void FileSelectorButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        var storageProvider = AppBase.Current.MainWindow?.StorageProvider;
-        if (storageProvider == null) return;
+        var storageProvider = AppBase.Current.GetRootWindow().StorageProvider;
 
         // 启动异步操作以打开对话框。
         if (!IsFolder)
