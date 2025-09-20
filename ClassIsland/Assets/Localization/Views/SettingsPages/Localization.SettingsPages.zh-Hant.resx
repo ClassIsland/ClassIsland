@@ -117,37 +117,85 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LangName_string" xml:space="preserve">
-    <value>English</value>
+  <data name="General_string" xml:space="preserve">
+    <value>基本</value>
   </data>
-  <data name="LoadOnBoot_string" xml:space="preserve">
-    <value>Start on Boot</value>
+  <data name="Components_string" xml:space="preserve">
+    <value>組件</value>
   </data>
-  <data name="RegURLProto_string" xml:space="preserve">
-    <value>Register URL Protocol</value>
+  <data name="Appearance_string" xml:space="preserve">
+    <value>外觀</value>
   </data>
-  <data name="LoadOnBoot_Description" xml:space="preserve">
-    <value>Automatically run this application when your system starts.</value>
+  <data name="Notification_string" xml:space="preserve">
+    <value>通知</value>
   </data>
-  <data name="RegURLProto_Description" xml:space="preserve">
-    <value>Allows third-party applications or web pages to call some functions of this application through the URL protocol classisland://. See the help documentation for details.</value>
+  <data name="Window_string" xml:space="preserve">
+    <value>窗口</value>
+  </data>
+  <data name="Weather_string" xml:space="preserve">
+    <value>天氣</value>
+  </data>
+  <data name="Update_string" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Automation_string" xml:space="preserve">
+    <value>自動化</value>
+  </data>
+  <data name="Storage_string" xml:space="preserve">
+    <value>存儲</value>
+  </data>
+  <data name="Privacy_string" xml:space="preserve">
+    <value>隱私</value>
+  </data>
+  <data name="Plugins_string" xml:space="preserve">
+    <value>插件</value>
+  </data>
+  <data name="About_string" xml:space="preserve">
+    <value>關於 ClassIsland</value>
+  </data>
+  <data name="Theme_string" xml:space="preserve">
+    <value>主題</value>
   </data>
   <data name="Behavior_string" xml:space="preserve">
-    <value>Behavior</value>
+    <value>行为</value>
   </data>
-  <data name="SemesterStartDate_string" xml:space="preserve">
-    <value>Semester Start Date</value>
+  <data name="OpenSourceStatement" xml:space="preserve">
+    <value>ClassIsland 是開源免費的軟件，官方沒有提供任何形式的付費支持服務，源代碼倉庫地址在{sourcecodeurl}。如果您通過有償協助等付費方式取得本應用，在遇到問題時請在與賣家約定的服務框架下，優先向賣家求助。如果賣家沒有提供您預期的服務，請退款或通過其它形式積極維護您的合法權益。</value>
   </data>
-  <data name="SemesterStartDate_Description" xml:space="preserve">
-    <value>This date will be considered the first day of the semester, used for calculating multiple-week rotating schedules. It should be set as the first day of the week.</value>
+  <data name="ExperimentalFeature_string" xml:space="preserve">
+    <value>實驗性功能</value>
   </data>
-  <data name="HideWindow_string" xml:space="preserve">
-    <value>Hide window</value>
+  <data name="DebuggingWindowRules_string" xml:space="preserve">
+    <value>調試窗口規則</value>
   </data>
-  <data name="HideWindow_Description" xml:space="preserve">
-    <value>Hide the main interface in the selected situations to prevent it from obstructing the screen and affecting teaching.</value>
+  <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
+    <value>創建快捷換課圖標</value>
   </data>
-  <data name="AdjustOffset_string" xml:space="preserve">
-    <value />
+  <data name="ManagementOptions_string" xml:space="preserve">
+    <value>集控選項</value>
+  </data>
+  <data name="JoinManagement_string" xml:space="preserve">
+    <value>加入管理...</value>
+  </data>
+  <data name="ViewAppLog_string" xml:space="preserve">
+    <value>日誌...</value>
+  </data>
+  <data name="ExportDiagData_string" xml:space="preserve">
+    <value>導出診斷數據</value>
+  </data>
+  <data name="RestartToRecoveryMode_string" xml:space="preserve">
+    <value>重啓至恢復模式</value>
+  </data>
+  <data name="OpenLogDir_string" xml:space="preserve">
+    <value>打開日誌目錄...</value>
+  </data>
+  <data name="OpenDataDir_string" xml:space="preserve">
+    <value>打開數據目錄...</value>
+  </data>
+  <data name="OpenAppDir_string" xml:space="preserve">
+    <value>打開應用目錄...</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>應用設置</value>
   </data>
 </root>

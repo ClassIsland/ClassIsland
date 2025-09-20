@@ -117,37 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LangName_string" xml:space="preserve">
-    <value>中文(简体)</value>
+  <data name="InitInput_string" xml:space="preserve">
+    <value>正在初始化輸入</value>
   </data>
-  <data name="LoadOnBoot_string" xml:space="preserve">
-    <value>开机自启</value>
+  <data name="InitInterface1_string" xml:space="preserve">
+    <value>正在初始化主界面（步驟 1/2）</value>
   </data>
-  <data name="RegURLProto_string" xml:space="preserve">
-    <value>注册URL协议</value>
+  <data name="InitInterface2_string" xml:space="preserve">
+    <value>正在初始化主界面（步驟 2/2）</value>
   </data>
-  <data name="LoadOnBoot_Description" xml:space="preserve">
-    <value>在您的系统启动时自动运行本应用</value>
+  <data name="InitTheme1_string" xml:space="preserve">
+    <value>正在加載界面主題（1）</value>
   </data>
-  <data name="RegURLProto_Description" xml:space="preserve">
-    <value>允许第三方应用或网页通过URL协议(classisland://)调用本应用的部分功能，详见帮助文档</value>
+  <data name="InitTheme2_string" xml:space="preserve">
+    <value>正在加載界面主題（2）</value>
   </data>
-  <data name="Behavior_string" xml:space="preserve">
-    <value>行为</value>
+  <data name="InitTrayMenu_string" xml:space="preserve">
+    <value>正在初始化托盤菜單</value>
   </data>
-  <data name="SemesterStartDate_string" xml:space="preserve">
-    <value>学期开始时间</value>
+  <data name="LoadProfile_string" xml:space="preserve">
+    <value>正在加載檔案</value>
   </data>
-  <data name="SemesterStartDate_Description" xml:space="preserve">
-    <value>此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。</value>
+  <data name="MainServiceStart_string" xml:space="preserve">
+    <value>正在啟動主界面所需的服務</value>
   </data>
-  <data name="HideWindow_string" xml:space="preserve">
-    <value>隐藏窗口</value>
+  <data name="PostServiceStart_string" xml:space="preserve">
+    <value>正在進行啟動後操作</value>
   </data>
-  <data name="HideWindow_Description" xml:space="preserve">
-    <value>将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。</value>
+  <data name="Starting_string" xml:space="preserve">
+    <value>正在啟動</value>
   </data>
-  <data name="AdjustOffset_string" xml:space="preserve">
-    <value />
+  <data name="Suspension_check_service_string" xml:space="preserve">
+    <value>正在啟動掛起檢查服務</value>
+  </data>
+  <data name="TaskBarIcon_string" xml:space="preserve">
+    <value>正在創建任務欄圖標</value>
+  </data>
+  <data name="UpdateServiceStart_string" xml:space="preserve">
+    <value>正在進行更新服務啟動操作</value>
   </data>
 </root>
