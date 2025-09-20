@@ -60,12 +60,7 @@ public class FileBrowserButton : Button
     protected async override void OnClick()
     {
         base.OnClick();
-        var storageProvider = AppBase.Current.MainWindow?.StorageProvider;
-
-        if (storageProvider == null)
-        {
-            return;
-        }
+        var storageProvider = AppBase.Current.GetRootWindow().StorageProvider;
 
         // 启动异步操作以打开对话框。
         if (!IsFolder)
