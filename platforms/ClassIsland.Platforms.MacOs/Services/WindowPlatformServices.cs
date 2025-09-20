@@ -258,6 +258,9 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
             NSNotificationCenter.DefaultCenter.RemoveObserver(_observer);
             _observer = null;
         }
+        
+        _handlers.Clear();
+        _cachedWindowList.Clear();
     }
     
     public void ClearWindow(TopLevel topLevel)
