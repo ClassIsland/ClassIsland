@@ -1199,7 +1199,7 @@ public partial class App : AppBase, IAppHost
         {
             return;
         }
-        _ = Dispatcher.UIThread.InvokeAsync(async () =>
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
         {
             var partial = CurrentLifetime < Core.Enums.ApplicationLifetime.StartingOnline;
             CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Stopping;
