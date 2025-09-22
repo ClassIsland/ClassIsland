@@ -26,7 +26,7 @@ class Program
     {
         var stopTokenSource = new CancellationTokenSource();
         ActivatePlatforms(out var postInit, stopTokenSource.Token);
-        var buildApp = ClassIsland.Program.AppEntry(args).Result;
+        var buildApp = ClassIsland.Program.AppEntry(args);
         var r =  AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
