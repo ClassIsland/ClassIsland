@@ -970,6 +970,10 @@ public partial class MainWindow : Window
     public void AcquireTopmostLock(object o)
     {
         var prevEmpty = TopmostLocks.Count <= 0;
+        if (TopmostLocks.Contains(o))
+        {
+            return;
+        }
         TopmostLocks.Add(o);
         if (!prevEmpty)
         {
@@ -986,7 +990,7 @@ public partial class MainWindow : Window
 
     public void ReleaseTopmostLock(object o)
     {
-        TopmostLocks.Remove(o);
+        TopmostLocks.RemoveAll(x => x == o);
 
         if (TopmostLocks.Count > 0)
         {
