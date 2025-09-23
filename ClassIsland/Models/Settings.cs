@@ -88,7 +88,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Color _selectedPlatte = Colors.DodgerBlue;
     private int _selectedPlatteIndex = 0;
     private ObservableCollection<Color> _wallpaperColorPlatte = new(Enumerable.Repeat(Colors.DodgerBlue, 5));
-    private int _colorSource = 1;
+    private int _colorSource = 2;
     private string _wallpaperClassName = "";
     private double _targetLightValue = 0.6;
     private double _scale = 1.0;
