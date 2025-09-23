@@ -83,7 +83,7 @@ public partial class TimeRuleEditControl : UserControl
 
         var w = ViewModel.WeekCountDivIndex;
         WeekCountDivListBox.ItemsSource = ViewModel.WeekCountDivOptions;
-        ViewModel.WeekCountDivIndex = w; // 在单双周和多周间切换时，索引会掉为 -1
+        ViewModel.WeekCountDivIndex = Math.Min(w, ViewModel.WeekCountDivOptions.Count - 1); // 在单双周和多周间切换时，索引会掉为 -1
 
         _updating = false;
     }
@@ -99,9 +99,17 @@ public partial class TimeRuleEditControl : UserControl
         {
             ViewModel.WeekCountDivTotalOptions.Add($"{i.ToChinese()}周");
         }
-        WeekCountDivTotalListBox.ItemsSource = ViewModel.WeekCountDivTotalOptions;
+
+        var w = ViewModel.WeekCountDivTotalIndex;
+        ViewModel.WeekCountDivTotalIndex = -1;
         
-        _updating = false;
+        Dispatcher.UIThread.Post(() =>
+        {
+            WeekCountDivTotalListBox.ItemsSource = ViewModel.WeekCountDivTotalOptions;
+            ViewModel.WeekCountDivTotalIndex = Math.Min(w, ViewModel.WeekCountDivTotalOptions.Count - 1);
+            
+            _updating = false;
+        });
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -115,7 +123,7 @@ public partial class TimeRuleEditControl : UserControl
     public TimeRuleEditViewModel ViewModel { get; } = new();
     private SettingsService SettingsService { get; } = App.GetService<SettingsService>();
     private bool _updating;
-    private int MaxCycle => Math.Max(SettingsService.Settings.MultiWeekRotationMaxCycle, TimeRule.WeekCountDivTotal);
+    private int MaxCycle => Math.Max(SettingsService.Settings.MultiWeekRotationMaxCycle, TimeRule?.WeekCountDivTotal ?? 0);
     public TimeRule? TimeRule
     {
         get => GetValue(TimeRuleProperty);
