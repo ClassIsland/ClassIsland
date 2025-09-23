@@ -87,6 +87,14 @@
                     <Setter Property="Template" >
                         <ControlTemplate>
                             <Panel>
+                                <Panel.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Margin" Value="0"/>
+                                    </Style>
+                                    <Style Selector="AccessText">
+                                        <Setter Property="Margin" Value="0"/>
+                                    </Style>
+                                </Panel.Styles>
                                 <ContentPresenter Name="PART_ContentPresenter"
                                                   Background="{TemplateBinding Background}"
                                                   BorderBrush="{TemplateBinding BorderBrush}"
