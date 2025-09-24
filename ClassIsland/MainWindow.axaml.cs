@@ -369,6 +369,7 @@ public partial class MainWindow : Window
         UpdateTheme();
         base.Show();
         UpdateWindowPos();
+        Win32Properties.AddWndProcHookCallback(this, ProcWnd);
         Dispatcher.UIThread.InvokeAsync(PostInit, DispatcherPriority.ApplicationIdle);
     }
 
@@ -434,7 +435,6 @@ public partial class MainWindow : Window
             RawInputDeviceFlags.InputSink, handle);
 
         RawInputUpdateStopWatch.Start();
-        Win32Properties.AddWndProcHookCallback(this, ProcWnd);
     }
 
     private void ProcessMousePos(object? sender, EventArgs e)
