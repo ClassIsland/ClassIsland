@@ -30,7 +30,8 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(SettingsService.Settings.IsWaitForTransientDisabled) or nameof(SettingsService.Settings.AnimationLevel))
+        if (e.PropertyName is nameof(SettingsService.Settings.IsWaitForTransientDisabled) 
+            or nameof(SettingsService.Settings.AnimationLevel))
         {
             RequestRestart();
         }
@@ -60,15 +61,25 @@ public partial class GeneralSettingsPage : SettingsPageBase
     {
         ViewModel.SettingsService.Settings.ShowSellingAnnouncement = false;
     }
+    
+    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(ViewModel.RenderingModeSelectedIndex))
+        {
+            RequestRestart();
+        }
+    }
 
     private void GeneralSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
         ViewModel.SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
     }
-
+    
     private void GeneralSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
     {
         ViewModel.SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
     }
 
     private void ButtonAdjustTime_OnClick(object sender, RoutedEventArgs e)

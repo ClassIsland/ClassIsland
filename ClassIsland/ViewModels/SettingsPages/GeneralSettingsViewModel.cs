@@ -1,6 +1,7 @@
 ﻿using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.Metadata;
+using ClassIsland.Core.Services;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -50,6 +51,18 @@ public class GeneralSettingsViewModel(
                 SettingsService.Settings.IsCriticalSafeMode = true;
                 SettingsService.Settings.CriticalSafeModeMethod = value - 1;
             }
+        }
+    }
+
+    public int RenderingModeSelectedIndex
+    {
+        get => int.TryParse(GlobalStorageService.GetValue("Win32RenderingMode") ?? "", out var v1)
+            ? v1
+            : 0;
+        set
+        {
+            GlobalStorageService.SetValue("Win32RenderingMode", value.ToString());
+            OnPropertyChanged();
         }
     }
 }
