@@ -331,6 +331,27 @@
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsWaitForTransientDisabled, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
+            
+            <!-- 渲染模式 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE62F;}" 
+                                        Header="渲染模式"
+                                        Description="渲染 UI 时将优先使用此处指定的渲染模式渲染。如果您遇到渲染问题，可尝试更改此选项，否则不要动这个选项。此选项仅在此设备生效。"
+            >
+                <controls3:SettingsExpander.IsVisible>
+                    <OnPlatform Default="False">
+                        <On Options="Windows" Content="True"/>
+                    </OnPlatform>
+                </controls3:SettingsExpander.IsVisible>
+                <controls3:SettingsExpander.Footer>
+                    <ComboBox SelectedIndex="{Binding ViewModel.RenderingModeSelectedIndex}">
+                        <ComboBoxItem>默认</ComboBoxItem>
+                        <ComboBoxItem>软件（不推荐）</ComboBoxItem>
+                        <ComboBoxItem>AngleEgl</ComboBoxItem>
+                        <ComboBoxItem>Wgl</ComboBoxItem>
+                        <ComboBoxItem>Vulkan</ComboBoxItem>
+                    </ComboBox>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

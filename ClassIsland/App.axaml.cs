@@ -442,8 +442,15 @@ public partial class App : AppBase, IAppHost
         }
     }
 
-    public async override void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
+        DesktopLifetime!.Startup += DesktopLifetimeOnStartup;
+        base.OnFrameworkInitializationCompleted();
+    }
+
+    private async void DesktopLifetimeOnStartup(object? sender, ControlledApplicationLifetimeStartupEventArgs e)
+    {
+
         PhonyRootWindow = new Window()
         {
             Width = 1,
@@ -1090,9 +1097,8 @@ public partial class App : AppBase, IAppHost
                 uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update"));
             await PlatformServices.DesktopToastService.ShowToastAsync(content);
         }
-
-        base.OnFrameworkInitializationCompleted();
     }
+    
 
     private ISpeechService GetSpeechService(IServiceProvider provider)
     {
