@@ -274,28 +274,6 @@ public partial class App : AppBase, IAppHost
         {
             DesktopLifetime.ShutdownMode = ShutdownMode.OnExplicitShutdown;
         }
-
-        PhonyRootWindow = new Window()
-        {
-            Width = 1,
-            Height = 1,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            ShowActivated = false,
-            SystemDecorations = SystemDecorations.None,
-            ShowInTaskbar = false,
-            Background = Brushes.Transparent,
-            TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ]
-        };
-        PhonyRootWindow.Closing += (sender, args) =>
-        {
-            if (args.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
-            {
-                return;
-            }
-            args.Cancel = true;
-        };
-        PhonyRootWindow.Show();
-        PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         base.Initialize();
     }
 
@@ -464,8 +442,37 @@ public partial class App : AppBase, IAppHost
         }
     }
 
-    public async override void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
+        DesktopLifetime!.Startup += DesktopLifetimeOnStartup;
+        base.OnFrameworkInitializationCompleted();
+    }
+
+    private async void DesktopLifetimeOnStartup(object? sender, ControlledApplicationLifetimeStartupEventArgs e)
+    {
+
+        PhonyRootWindow = new Window()
+        {
+            Width = 1,
+            Height = 1,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            ShowActivated = false,
+            SystemDecorations = SystemDecorations.None,
+            ShowInTaskbar = false,
+            Background = Brushes.Transparent,
+            TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ],
+            Title = "PhonyRootWindow"
+        };
+        PhonyRootWindow.Closing += (sender, args) =>
+        {
+            if (args.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+            {
+                return;
+            }
+            args.Cancel = true;
+        };
+        PhonyRootWindow.Show();
+        PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         Initialized?.Invoke(this, EventArgs.Empty);
         var transaction = SentrySdk.StartTransaction(
             "startup",
@@ -1090,9 +1097,8 @@ public partial class App : AppBase, IAppHost
                 uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update"));
             await PlatformServices.DesktopToastService.ShowToastAsync(content);
         }
-
-        base.OnFrameworkInitializationCompleted();
     }
+    
 
     private ISpeechService GetSpeechService(IServiceProvider provider)
     {
@@ -1199,7 +1205,7 @@ public partial class App : AppBase, IAppHost
         {
             return;
         }
-        _ = Dispatcher.UIThread.InvokeAsync(async () =>
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
         {
             var partial = CurrentLifetime < Core.Enums.ApplicationLifetime.StartingOnline;
             CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Stopping;

@@ -369,6 +369,7 @@ public partial class MainWindow : Window
         UpdateTheme();
         base.Show();
         UpdateWindowPos();
+        Win32Properties.AddWndProcHookCallback(this, ProcWnd);
         Dispatcher.UIThread.InvokeAsync(PostInit, DispatcherPriority.ApplicationIdle);
     }
 
@@ -434,7 +435,6 @@ public partial class MainWindow : Window
             RawInputDeviceFlags.InputSink, handle);
 
         RawInputUpdateStopWatch.Start();
-        Win32Properties.AddWndProcHookCallback(this, ProcWnd);
     }
 
     private void ProcessMousePos(object? sender, EventArgs e)
@@ -970,6 +970,10 @@ public partial class MainWindow : Window
     public void AcquireTopmostLock(object o)
     {
         var prevEmpty = TopmostLocks.Count <= 0;
+        if (TopmostLocks.Contains(o))
+        {
+            return;
+        }
         TopmostLocks.Add(o);
         if (!prevEmpty)
         {
@@ -986,7 +990,7 @@ public partial class MainWindow : Window
 
     public void ReleaseTopmostLock(object o)
     {
-        TopmostLocks.Remove(o);
+        TopmostLocks.RemoveAll(x => x == o);
 
         if (TopmostLocks.Count > 0)
         {

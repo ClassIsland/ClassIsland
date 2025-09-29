@@ -27,7 +27,7 @@ namespace ClassIsland;
 public static class Program
 {
     [STAThread]
-    public static async Task<Func<App>> AppEntry(string[] args, Action? postInit = null)
+    public static Func<App> AppEntry(string[] args, Action? postInit = null)
     {
         AppDomain.CurrentDomain.UnhandledException += DiagnosticService.ProcessDomainUnhandledException;
         AppBase.CurrentLifetime = ApplicationLifetime.EarlyLoading;
@@ -86,7 +86,7 @@ public static class Program
             {
                 if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
                 {
-                    await ProcessUriNavigationAsync();
+                    ProcessUriNavigationAsync().Wait();
                 }
             }
         }

@@ -370,3 +370,4 @@ cipx/
 .DS_Store
 
 **/.idea/avalonia.xml
+**/.idea/copilot.*
