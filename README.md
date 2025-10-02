@@ -259,6 +259,14 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
     Free code signing on Windows provided by <a href="https://signpath.io">SignPath.io</a>, certficate by <a href="https://signpath.org/">SignPath Foundation</a>
     </td>
   </tr> 
+  <tr>
+    <td>
+      <img alt="苏州晔淞信息科技有限公司" src="https://res.classisland.tech/sponsors/ystron.png" width="50" height="50"/>
+    </td>
+    <td>
+    由<a href="https://www.yesongit.com">苏州晔淞信息科技有限公司</a>提供云计算支持。苏州晔淞信息科技有限公司以自主创新、灵活开放的理念，以行业领先的云计算平台助力云上业务创新。
+    </td>
+  </tr> 
 </table>
 
 ## 代码签名策略 / Code signing policy
