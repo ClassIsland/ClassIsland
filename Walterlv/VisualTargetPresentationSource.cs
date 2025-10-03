@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -162,6 +162,5 @@ public class VisualTargetPresentationSource : PresentationSource, IDisposable
     {
         _visualTarget?.Dispose();
         _isDisposed = true;
-        SizeChanged = null;
     }
 }
