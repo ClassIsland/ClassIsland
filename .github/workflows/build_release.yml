@@ -23,7 +23,7 @@ on:
 
 jobs:
   build_app:
-    runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-15' || 'windows-latest' ) }}
+    runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-15' || 'windows-2022' ) }}
     env:
       build_id: appBase_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       artifact_name: out_${{ matrix.package == 'folder' &&  'appBase' || 'app' }}_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -106,7 +106,7 @@ jobs:
             ./out/*.pkg
             
   build_launcher:
-    runs-on: ${{ matrix.os == 'windows' && 'windows-latest' || ( matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') }}
+    runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || ( matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04') }}
     env:
       build_id: launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       artifact_name: out_launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -276,7 +276,7 @@ jobs:
           path: ./out_pack/*.zip
           
   build_nupkg:
-    runs-on: windows-latest  # For a list of available runner types, refer to
+    runs-on: windows-2022  # For a list of available runner types, refer to
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     env:
       Solution_Name: ClassIsland.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
@@ -328,7 +328,7 @@ jobs:
           path: ./out/*.nupkg
 
   publish:
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == true }}
     if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' }}

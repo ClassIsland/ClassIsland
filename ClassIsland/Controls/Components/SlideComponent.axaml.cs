@@ -21,7 +21,7 @@ namespace ClassIsland.Controls.Components;
 /// SlideComponent.xaml 的交互逻辑
 /// </summary>
 [ContainerComponent]
-[ComponentInfo("7E19A113-D281-4F33-970A-834A0B78B5AD", "轮播组件", "\uefc9", "轮播多个组件。")]
+[ComponentInfo("7E19A113-D281-4F33-970A-834A0B78B5AD", "轮播容器", "\uefc9", "轮播多个组件。")]
 public partial class SlideComponent : ComponentBase<SlideComponentSettings>
 {
     public IRulesetService RulesetService { get; } = IAppHost.GetService<IRulesetService>();
@@ -120,7 +120,7 @@ public partial class SlideComponent : ComponentBase<SlideComponentSettings>
         }
     }
 
-    private void SlideComponent_OnLoaded(object sender, RoutedEventArgs e)
+    private void SlideComponent_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         GridRoot.DataContext = this;
         SelectedIndex = 0;
@@ -138,7 +138,7 @@ public partial class SlideComponent : ComponentBase<SlideComponentSettings>
         LoadSettings();
     }
 
-    private void SlideComponent_OnUnloaded(object sender, RoutedEventArgs e)
+    private void SlideComponent_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
         Settings.Children.CollectionChanged -= ChildrenOnCollectionChanged;

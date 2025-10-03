@@ -29,8 +29,29 @@
                                         Header="时间"
                                         Description="倒计时的开始和结束时间。"
                                         IsExpanded="True">
+                <controls3:SettingsExpander.Styles>
+                    <Style Selector="controls3|SettingsExpanderItem.has-radius /template/ Border#Root">
+                        <Setter Property="CornerRadius" Value="0 0 4 4"/>
+                    </Style>
+                </controls3:SettingsExpander.Styles>
+                <controls3:SettingsExpander.Footer>
+                    <ComboBox SelectedIndex="{Binding Settings.CountdownSource}">
+                        <ComboBoxItem Content="固定时间"/>
+                        <ComboBoxItem Content="周期"/>
+                        <ComboBoxItem Content="今天"/>
+                        <ComboBoxItem Content="本周"/>
+                    </ComboBox>
+                </controls3:SettingsExpander.Footer>
+                <!-- 固定时间 -->
                 <controls3:SettingsExpanderItem Content="开始日期"
                                                 Description="倒计时开始的日期。">
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>0</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
                     <controls3:SettingsExpanderItem.Footer>
                         <CalendarDatePicker
                             SelectedDate="{Binding Settings.StartTime, Mode=TwoWay}"
@@ -38,11 +59,252 @@
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>
                 <controls3:SettingsExpanderItem Content="结束日期"
-                                                Description="倒计时为 0 天时的日期。">
+                                                Description="倒计时为 0 天时的日期。"
+                                                Classes="has-radius">
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>0</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
                     <controls3:SettingsExpanderItem.Footer>
                         <CalendarDatePicker
                             SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
                             Width="120" />
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <!-- 周期 -->
+                <controls3:SettingsExpanderItem>
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>1</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                    <CheckBox IsChecked="{Binding Settings.IsAdvancedCycleTimingEnabled}">高级计时</CheckBox>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem>
+                    <controls3:SettingsExpanderItem.Footer>
+                        <TextBox IsVisible="{Binding !Settings.IsAdvancedCycleTimingEnabled}"
+                                 Text="{Binding Settings.CycleDuration, UpdateSourceTrigger=LostFocus, Converter={x:Static converters:TimeSpanToStringConverter.Instance}}" />
+                    </controls3:SettingsExpanderItem.Footer>
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>1</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                    <Panel>
+                        <Grid ColumnDefinitions="Auto 1* Auto 1* Auto 2* Auto 2* Auto 1* Auto 1* Auto"
+                              RowDefinitions="32,6,Auto"
+                              IsVisible="{Binding Settings.IsAdvancedCycleTimingEnabled}">
+                            <!-- ROW1 -->
+                            <Line Grid.Row="0" Grid.Column="0"
+                                  StartPoint="0 0" EndPoint="0 32"
+                                  Stroke="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                  StrokeThickness="1" StrokeLineCap="Round" />
+                            <Viewbox Grid.Row="0" Grid.Column="1"
+                                     Stretch="Fill" HorizontalAlignment="Stretch" Height="32">
+                                <Canvas Width="120" Height="32">
+                                    <Line StartPoint="0 16" EndPoint="120 16"
+                                          Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+                                          StrokeThickness="1" StrokeLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBox Grid.Row="0" Grid.Column="2" Margin="4 0"
+                                     Text="{Binding Settings.CycleBeforeDuration, UpdateSourceTrigger=LostFocus, Converter={x:Static converters:TimeSpanToStringConverter.Instance}}" />
+                            <Viewbox Grid.Row="0" Grid.Column="3"
+                                     Stretch="Fill" HorizontalAlignment="Stretch" Height="32">
+                                <Canvas Width="120" Height="32">
+                                    <Line StartPoint="0 16" EndPoint="120 16"
+                                          Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+                                          StrokeThickness="1" StrokeLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                            <Line Grid.Row="0" Grid.Column="4"
+                                  StartPoint="0 0" EndPoint="0 32"
+                                  Stroke="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                  StrokeThickness="1" StrokeLineCap="Round" />
+                            <Viewbox Grid.Row="0" Grid.Column="5"
+                                     Stretch="Fill" HorizontalAlignment="Stretch" Height="32">
+                                <Canvas Width="120" Height="32">
+                                    <Line StartPoint="0 16" EndPoint="120 16"
+                                          Stroke="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                          StrokeThickness="1" StrokeLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBox Grid.Row="0" Grid.Column="6" Margin="4 0"
+                                     Text="{Binding Settings.CycleDuration, UpdateSourceTrigger=LostFocus, Converter={x:Static converters:TimeSpanToStringConverter.Instance}}" />
+                            <Viewbox Grid.Row="0" Grid.Column="7"
+                                     Stretch="Fill" HorizontalAlignment="Stretch" Height="32">
+                                <Canvas Width="120" Height="32">
+                                    <Line StartPoint="0 16" EndPoint="120 16"
+                                          Stroke="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                          StrokeThickness="1" StrokeLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                            <Line Grid.Row="0" Grid.Column="8"
+                                  StartPoint="0 0" EndPoint="0 32"
+                                  Stroke="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                  StrokeThickness="1" StrokeLineCap="Round" />
+                            <Viewbox Grid.Row="0" Grid.Column="9"
+                                     Stretch="Fill" HorizontalAlignment="Stretch" Height="32">
+                                <Canvas Width="120" Height="32">
+                                    <Line StartPoint="0 16" EndPoint="120 16"
+                                          Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+                                          StrokeThickness="1" StrokeLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBox Grid.Row="0" Grid.Column="10" Margin="4 0"
+                                     Text="{Binding Settings.CycleAfterDuration, UpdateSourceTrigger=LostFocus, Converter={x:Static converters:TimeSpanToStringConverter.Instance}}" />
+                            <Viewbox Grid.Row="0" Grid.Column="11"
+                                     Stretch="Fill" HorizontalAlignment="Stretch" Height="32">
+                                <Canvas Width="120" Height="32">
+                                    <Line StartPoint="0 16" EndPoint="120 16"
+                                          Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+                                          StrokeThickness="1" StrokeLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                            <controls1:FluentIcon Grid.Row="0" Grid.Column="11"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                  Glyph="&#xe44e;"
+                                                  FontSize="20"
+                                                  Foreground="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                                  Margin="0 -2.5 -4.5 0" />
+                            <Line Grid.Row="0" Grid.Column="12"
+                                  StartPoint="0 0" EndPoint="0 32"
+                                  Stroke="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                  StrokeThickness="1" StrokeLineCap="Round" />
+
+                            <!-- ROW2 -->
+                            <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
+                                       HorizontalAlignment="Center" FontSize="13"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center">
+                                <Run Text="周期前时长" /><LineBreak />
+                                <Run Text="在本周期开始计时前的间隔时长"
+                                     Foreground="{DynamicResource ControlStrongFillColorDefaultBrush}" />
+                            </TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="3"
+                                       HorizontalAlignment="Center" FontSize="13"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center">
+                                <Run Text="周期计时时长" /><LineBreak />
+                                <Run Text="周期要显示倒计时的时长"
+                                     Foreground="{DynamicResource ControlStrongFillColorDefaultBrush}" />
+                            </TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="9" Grid.ColumnSpan="3"
+                                       HorizontalAlignment="Center" FontSize="13"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center">
+                                <Run Text="周期后时长" /><LineBreak />
+                                <Run Text="从本周期计时结束，到下个周期开始的间隔时长"
+                                     Foreground="{DynamicResource ControlStrongFillColorDefaultBrush}" />
+                            </TextBlock>
+                        </Grid>
+                        <TextBlock Text="周期持续时间" IsVisible="{Binding !Settings.IsAdvancedCycleTimingEnabled}"/>
+                    </Panel>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="周期开始时间"
+                                                Description="整个周期的开始时间，从周期前阶段开始计时。">
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>1</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:SettingsExpanderItem.Footer>
+                        <CalendarDatePicker
+                            SelectedDate="{Binding Settings.CycleStartTime, Mode=TwoWay}"
+                            Width="120" />
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="限制周期循环次数"
+                                                Description="启用后，将限制倒计时周期的最大循环次数。"
+                                                Classes="has-radius">
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>1</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:SettingsExpanderItem.Footer>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <controls3:NumberBox MinWidth="150"
+                                                 SpinButtonPlacementMode="Inline"
+                                                 Value="{Binding Settings.CycleCountLimit}"
+                                                 Maximum="33550336" Minimum="1"
+                                                 IsVisible="{Binding Settings.IsCycleCountLimited}"
+                                                 VerticalAlignment="Center"/>
+                            <ToggleSwitch IsChecked="{Binding Settings.IsCycleCountLimited}"/>
+                        </StackPanel>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="时间模式"
+                                                Description="默认情况下将从当日课程安排获取倒计时时间，以当天的第一个上课或课间休息时间点的开始时间为开始时间，最后一个上课或课间休息时间点的结束时间为结束时间。如果当日课程不可用，将使用从当日凌晨至次日凌晨的自然时间。当在右侧复选框指定了时间模式后，如果选择的时间模式不可用，将不会进行倒计时。"
+                                                Classes="has-radius">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ComboBox SelectedIndex="{Binding Settings.NatureTimeUseMode}">
+                            <ComboBoxItem Content="默认"/>
+                            <ComboBoxItem Content="强制自然时间"/>
+                            <ComboBoxItem Content="强制课程时间"/>
+                        </ComboBox>
+                    </controls3:SettingsExpanderItem.Footer>
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>2</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                    
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="时间模式"
+                                                Description="默认情况下将从本周课程安排获取倒计时时间，以本周的第一个上课或课间休息时间点的开始时间为开始时间，最后一个上课或课间休息时间点的结束时间为结束时间。如果本周课程不可用，将使用从本周第一天凌晨至本周最后一天次日凌晨的自然时间。当在右侧复选框指定了时间模式后，如果选择的时间模式不可用，将不会进行倒计时。">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ComboBox SelectedIndex="{Binding Settings.NatureTimeUseMode}">
+                            <ComboBoxItem Content="默认"/>
+                            <ComboBoxItem Content="强制自然时间"/>
+                            <ComboBoxItem Content="强制课程时间"/>
+                        </ComboBox>
+                    </controls3:SettingsExpanderItem.Footer>
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>3</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="自定义每周的第一天"
+                                                Description="默认情况下将使用在【基本】中设置的学期开始时间的星期作为每周的第一天，启用后将使用此处指定的星期。"
+                                                Classes="has-radius">
+                    <controls3:SettingsExpanderItem.IsVisible>
+                        <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>3</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:SettingsExpanderItem.Footer>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <ComboBox SelectedIndex="{Binding Settings.WeekCountdownStartDay}"
+                                      IsVisible="{Binding Settings.IsCustomWeekCountdownStartDayEnabled}">
+                                <ComboBoxItem Content="星期日"/>
+                                <ComboBoxItem Content="星期一"/>
+                                <ComboBoxItem Content="星期二"/>
+                                <ComboBoxItem Content="星期三"/>
+                                <ComboBoxItem Content="星期四"/>
+                                <ComboBoxItem Content="星期五"/>
+                                <ComboBoxItem Content="星期六"/>
+                            </ComboBox>
+                            <ToggleSwitch IsChecked="{Binding Settings.IsCustomWeekCountdownStartDayEnabled}"/>
+                        </StackPanel>
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
@@ -74,7 +336,47 @@
                                  IsVisible="{Binding !Settings.IsCompactModeEnabled}"/>
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="倒计时"/>
+                <controls3:SettingsExpanderItem Content="倒计时">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox
+                                Text="{Binding Settings.CustomStringFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                MinWidth="120"
+                                MaxWidth="300" />
+                            <Button Theme="{StaticResource TransparentButton}"
+                                    Content="{controls1:FluentIcon &#xee31;}">
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                                                <Run Text="格式化变量说明" FontWeight="Bold" />
+                                            </TextBlock>
+                                            <SelectableTextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 4 0">
+                                                <Run Text="%D - 总天数"/><LineBreak/>
+                                                <Run Text="%H - 总小时数"/><LineBreak/>
+                                                <Run Text="%M - 总分钟数"/><LineBreak/>
+                                                <Run Text="%S - 总秒数"/><LineBreak/>
+                                                <Run Text="%X - 总毫秒数"/><LineBreak/>
+                                                <Run Text="以上数值向上取整。" FontWeight="Medium"/><LineBreak/><LineBreak/>
+                                                <Run Text="%L - 剩余百分比"/><LineBreak/>
+                                                <Run Text="%P - 已过百分比"/><LineBreak/>
+                                                <Run Text="以上数值四舍五入取整。" FontWeight="Medium"/>
+                                            </SelectableTextBlock>
+                                            <SelectableTextBlock Grid.Row="1" Grid.Column="1">
+                                                <Run Text="%d - 天"/><LineBreak/>
+                                                <Run Text="%h - 小时"/><LineBreak/>
+                                                <Run Text="%m - 分钟"/><LineBreak/>
+                                                <Run Text="%s - 秒"/><LineBreak/>
+                                                <Run Text="%x - 毫秒"/><LineBreak/>
+                                                <Run Text="以上数值取对应元素的值。" FontWeight="Medium"/>
+                                            </SelectableTextBlock>
+                                        </Grid>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </StackPanel>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
             
             <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xEC54;}"

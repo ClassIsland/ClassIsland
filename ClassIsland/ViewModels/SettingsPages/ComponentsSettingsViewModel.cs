@@ -38,6 +38,7 @@ public partial class ComponentsSettingsViewModel : ObservableRecipient
     [ObservableProperty] private MainWindowLineSettings? _selectedMainWindowLineSettings;
     [ObservableProperty] private Dictionary<MainWindowLineSettings, ListBox> _mainWindowLineListBoxCache = new();
     [ObservableProperty] private Dictionary<ListBox, MainWindowLineSettings> _mainWindowLineListBoxCacheReversed = new();
+    [ObservableProperty] private bool _isSelectedComponentOnRoot = false;
 
     public static FuncValueConverter<int, double> ComponentsEditorHeightConverter { get; } = new(x => x * 43.2);
 

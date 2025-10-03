@@ -236,7 +236,7 @@ public class ManagementService : IManagementService
                     IsDefault = true
                 }
             },
-            XamlRoot = AppBase.Current.PhonyRootWindow,
+            XamlRoot = AppBase.Current.GetRootWindow(),
         };
 
         var result = await dialog.ShowAsync();
@@ -286,7 +286,7 @@ public class ManagementService : IManagementService
                     IsDefault = true
                 }
             },
-            XamlRoot = AppBase.Current.PhonyRootWindow,
+            XamlRoot = AppBase.Current.GetRootWindow(),
         };
 
         var result = await dialog.ShowAsync();

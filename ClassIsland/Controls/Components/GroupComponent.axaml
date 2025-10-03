@@ -6,13 +6,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls.Components"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
-             xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+             xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings" 
+             ClipToBounds="False"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:GroupComponent}}">
         <ItemsControl Grid.Column="0"
                       Margin="-6 0"
-                      ItemsSource="{Binding Settings.Children}">
+                      ItemsSource="{Binding Settings.Children}"
+                      ClipToBounds="False">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Classes="components-panel" VerticalAlignment="Stretch"/>

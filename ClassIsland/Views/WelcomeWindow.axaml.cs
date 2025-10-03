@@ -139,18 +139,9 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         if (ViewModel.CreateDesktopShortcut)
             await ShortcutHelpers.CreateFreedesktopShortcutAsync(desktopPath);
 
-        if ((ViewModel.CreateStartupShortcut || ViewModel.CreateStartMenuShortcut || ViewModel.CreateDesktopShortcut)
-            && AppBase.Current.PackagingType is "folder" or "folderClassic") // 仅在绿色版下才需要手动复制图标，安装版应当由安装程序将图标复制到系统目录。
+        if (ViewModel.CreateStartupShortcut || ViewModel.CreateStartMenuShortcut || ViewModel.CreateDesktopShortcut)
         {
-            var iconsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "icons/hicolor/128x128/apps/");
-            if (!Directory.Exists(iconsDir))
-            {
-                Directory.CreateDirectory(iconsDir);
-            }
-
-            await using var src = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/FreedesktopIcons/AppLogo@128w.png"));
-            await using var file = File.OpenWrite(Path.Combine(iconsDir, "classisland.png"));
-            await src.CopyToAsync(file);
+            await ShortcutHelpers.CopyFreeDesktopIconAsync();
         }
     }
 
@@ -193,7 +184,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
             PrimaryButtonText = "退出",
             SecondaryButtonText = "取消",
             DefaultButton = ContentDialogButton.Primary
-        }.ShowAsync();
+        }.ShowAsync(this);
         if (r != ContentDialogResult.Primary)
         {
             return;

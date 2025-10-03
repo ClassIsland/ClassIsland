@@ -9,8 +9,8 @@
                   xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                   mc:Ignorable="d"
                   d:DesignHeight="450" d:DesignWidth="800"
-                  Loaded="RollingComponent_OnLoaded"
-                  Unloaded="RollingComponent_OnUnloaded">
+                  AttachedToVisualTree="RollingComponent_OnAttachedToVisualTree"
+                  DetachedFromVisualTree="RollingComponent_OnDetachedFromVisualTree">
     <Border SizeChanged="OuterContainerStackPanel_OnSizeChanged"
             x:Name="OuterContainerStackPanel" ClipToBounds="False"
             Margin="-6 0">

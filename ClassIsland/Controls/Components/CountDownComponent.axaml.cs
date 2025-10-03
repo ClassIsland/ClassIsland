@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -14,6 +16,8 @@ using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using ClassIsland.Core.Assists;
+using ClassIsland.Services;
+using ClassIsland.Shared.Models.Profile;
 using ReactiveUI;
 
 namespace ClassIsland.Controls.Components;
@@ -22,7 +26,7 @@ namespace ClassIsland.Controls.Components;
 /// CountDownComponent.xaml 的交互逻辑
 /// </summary>
 [PseudoClasses(":connector-colored", ":compact", ":progress-colored", ":progress-visible")]
-[ComponentInfo("7C645D35-8151-48BA-B4AC-15017460D994", "倒计时日", "\uf361", "显示距离某一天的倒计时。")]
+[ComponentInfo("7C645D35-8151-48BA-B4AC-15017460D994", "倒计时", "\uf361", "显示距离某一天的倒计时。")]
 public partial class CountDownComponent : ComponentBase<CountDownComponentSettings>, INotifyPropertyChanged
 {
     public static readonly FuncValueConverter<double, Geometry?> PercentToPathGeometryConverter = new(percentage =>
@@ -85,6 +89,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
     private ILessonsService LessonsService { get; }
 
     private IExactTimeService ExactTimerService { get; }
+    public SettingsService SettingsService { get; }
 
     public string DaysLeft
     {
@@ -108,16 +113,17 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         }
     }
 
-    public CountDownComponent(ILessonsService lessonsService, IExactTimeService exactTimeService)
+    public CountDownComponent(ILessonsService lessonsService, IExactTimeService exactTimeService, SettingsService settingsService)
     {
         InitializeComponent();
         LessonsService = lessonsService;
         ExactTimerService = exactTimeService;
+        SettingsService = settingsService;
         IDisposable? observer1 = null;
         IDisposable? observer2 = null;
         IDisposable? observer3 = null;
         IDisposable? observer4 = null;
-        Loaded += (_, _) =>
+        AttachedToVisualTree += (_, _) =>
         {
             UpdateContent();
             observer1?.Dispose();
@@ -135,7 +141,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
             UpdateStyleClasses();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         };
-        Unloaded += (_, _) => {
+        DetachedFromVisualTree += (_, _) => {
             observer1?.Dispose();
             observer2?.Dispose();
             observer3?.Dispose();
@@ -157,14 +163,128 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         UpdateContent();
     }
 
+    private (DateTime start, DateTime end) GetTimeRangeForStaticTime()
+    {
+        return (Settings.StartTime, Settings.OverTime);
+    }
+    
+    private (DateTime start, DateTime end) GetTimeRangeForCycle(DateTime now)
+    {
+        var start = Settings.CycleStartTime;
+        var before = Settings.IsAdvancedCycleTimingEnabled ? Settings.CycleBeforeDuration : TimeSpan.Zero;
+        var after = Settings.IsAdvancedCycleTimingEnabled ? Settings.CycleAfterDuration : TimeSpan.Zero;
+        var duration = Settings.CycleDuration;
+        var totalDuration = before + duration + after;
+        if (totalDuration <= TimeSpan.Zero)
+        {
+            return (start, start);
+        }
+        // 学生再次踏上轮回
+        var cycles = (int)Math.Min(Math.Floor((now - start) / totalDuration),
+            Settings.IsCycleCountLimited ? Settings.CycleCountLimit : double.PositiveInfinity);
+        var timingStart = start + (cycles * totalDuration) + before;
+        return (timingStart, timingStart + duration);
+    }
+    
+    private (DateTime start, DateTime end) GetTimeRangeForToday(DateTime now)
+    {
+        var today = now.Date;
+        var tl = LessonsService.CurrentClassPlan?.TimeLayout;
+        if (Settings.NatureTimeUseMode == 1)
+        {
+            return (today, today.AddDays(1));
+        }
+
+        var fallbackStart = Settings.NatureTimeUseMode == 2 ? DateTime.MinValue : today;
+        var fallbackEnd = Settings.NatureTimeUseMode == 2 ? DateTime.MinValue : today.AddDays(1);
+        var start = today + tl?.Layouts.FirstOrDefault(x => x.TimeType is 0 or 1)?.StartTime ?? fallbackStart;
+        var end = today + tl?.Layouts.LastOrDefault(x => x.TimeType is 0 or 1)?.EndTime ?? fallbackEnd;
+        return (start, end);
+    }
+    
+    private (DateTime start, DateTime end) GetTimeRangeForWeek(DateTime now)
+    {
+        var today = now.Date;
+        var startWeekDay = Settings.IsCustomWeekCountdownStartDayEnabled
+            ? Settings.WeekCountdownStartDay
+            : SettingsService.Settings.SingleWeekStartTime.DayOfWeek;
+        var startWeekTime = today.AddDays(-((today.DayOfWeek - startWeekDay + 7) % 7));
+        var endWeekTime = today.AddDays(7);
+        if (Settings.NatureTimeUseMode == 1)
+        {
+            return (startWeekTime, endWeekTime.AddDays(1));
+        }
+        ClassPlan? firstCp = null;
+        ClassPlan? lastCp = null;
+        var firstCpDate = startWeekTime;
+        var lastCpDate = endWeekTime;
+        for (int i = 0; i < 7; i++)
+        {
+            var day = startWeekTime.AddDays(i);
+            if (firstCp == null)
+            {
+                firstCp = LessonsService.GetClassPlanByDate(day);
+                firstCpDate = day;
+            }
+            var l = LessonsService.GetClassPlanByDate(day);
+            if (l != null)
+            {
+                lastCp = l;
+                lastCpDate = day;
+            }
+        }
+
+        var firstTl = firstCp?.TimeLayout?.Layouts.FirstOrDefault(x => x.TimeType is 0 or 1);
+        var lastTl = lastCp?.TimeLayout?.Layouts.LastOrDefault(x => x.TimeType is 0 or 1);
+        if (firstTl == null || lastTl == null)
+        {
+            return Settings.NatureTimeUseMode == 2
+                ? (DateTime.MinValue, DateTime.MinValue)
+                : (startWeekTime, endWeekTime.AddDays(1));
+        }
+
+        return (firstCpDate + firstTl.StartTime, lastCpDate + lastTl.EndTime);
+    }
+
     private void UpdateContent()
     {
-        var delta = Settings.OverTime.Date - ExactTimerService.GetCurrentLocalDateTime().Date;
-        DaysLeft = $"{Math.Max(delta.Days, 0)}";
+        var now = ExactTimerService.GetCurrentLocalDateTime();
+        var (start, end) = Settings.CountdownSource switch
+        {
+            0 => GetTimeRangeForStaticTime(),
+            1 => GetTimeRangeForCycle(now),
+            2 => GetTimeRangeForToday(now),
+            3 => GetTimeRangeForWeek(now),
+            _ => (DateTime.MinValue, DateTime.MinValue)
+        };
+        var delta = end - now;
+        if (delta < TimeSpan.Zero)
+        {
+            delta = TimeSpan.Zero;
+        }
+
+        var totalTime = end - start;
+        var totalSeconds = totalTime.TotalSeconds;
+        DaysLeft = Settings.CustomStringFormat
+            .Replace("%D", Math.Ceiling(delta.TotalDays).ToString(CultureInfo.InvariantCulture))
+            .Replace("%H", Math.Ceiling(delta.TotalHours).ToString(CultureInfo.InvariantCulture))
+            .Replace("%M", Math.Ceiling(delta.TotalMinutes).ToString(CultureInfo.InvariantCulture))
+            .Replace("%S", Math.Ceiling(delta.TotalSeconds).ToString(CultureInfo.InvariantCulture))
+            .Replace("%X", Math.Ceiling(delta.TotalMilliseconds).ToString(CultureInfo.InvariantCulture))
+            .Replace("%P",
+                Math.Round(totalTime <= TimeSpan.Zero ? 0.0 : (totalTime - delta) / totalTime, 2)
+                    .ToString("P0", CultureInfo.InvariantCulture))
+            .Replace("%L",
+                Math.Round(totalTime <= TimeSpan.Zero ? 0.0 : delta / totalTime, 2)
+                    .ToString("P0", CultureInfo.InvariantCulture))
+            .Replace("%d", delta.Days.ToString(CultureInfo.InvariantCulture))
+            .Replace("%h", delta.Hours.ToString(CultureInfo.InvariantCulture))
+            .Replace("%m", delta.Minutes.ToString("00", CultureInfo.InvariantCulture))
+            .Replace("%s", delta.Seconds.ToString("00", CultureInfo.InvariantCulture))
+            .Replace("%x", delta.Milliseconds.ToString("000", CultureInfo.InvariantCulture));
         var value = (Settings.IsProgressInverted
-            ? Settings.OverTime - ExactTimerService.GetCurrentLocalDateTime()
-            : ExactTimerService.GetCurrentLocalDateTime() - Settings.StartTime).TotalSeconds;
-        var totalSeconds = (Settings.OverTime - Settings.StartTime).TotalSeconds;
+            ? end - now
+            : now - start).TotalSeconds;
         var progressTick = MainWindowStylesAssist.GetIsProgressAccuracyReduced(this)
             ? Math.Max(10.0, totalSeconds / 500.0)
             : 1.0;

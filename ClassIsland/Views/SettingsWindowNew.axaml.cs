@@ -47,6 +47,7 @@ using FluentAvalonia.UI.Data;
 using FluentAvalonia.UI.Navigation;
 using FluentAvalonia.UI.Windowing;
 using ReactiveUI;
+using WindowsShortcutFactory;
 using Control = Avalonia.Controls.Control;
 using SaveFileDialog = Avalonia.Controls.SaveFileDialog;
 using TaskDialog = FluentAvalonia.UI.Controls.TaskDialog;
@@ -290,6 +291,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             return;
         }
         Logger.LogTrace("开始导航");
+        NavigationFrame.Content = null;
         ViewModel.IsPopupOpen = false;
         ViewModel.IsNavigating = true;
         try
@@ -426,6 +428,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private void SettingsWindowNew_OnClosing(object? sender, WindowClosingEventArgs e)
     {
+        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+        {
+            return;
+        }
         e.Cancel = true;
         IsOpened = false;
         Hide();
@@ -465,7 +471,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             PrimaryButtonText = "重启",
             CloseButtonText = "取消",
             DefaultButton = ContentDialogButton.Primary,
-        }.ShowAsync();
+        }.ShowAsync(this);
         if (r != ContentDialogResult.Primary)
             return;
         AppBase.Current.Restart();
@@ -541,6 +547,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 return;
 
             this.ShowToast(message);
+            PopupHelper.DisableAllPopups();
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
             {
                 Title = "导出诊断数据",
@@ -555,6 +562,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                     }
                 ]
             });
+            PopupHelper.RestoreAllPopups();
             if (file == null)
             {
                 return;
@@ -605,6 +613,32 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         });
     }
 
+    private async void MenuItemAddDesktopShortcut_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ShortcutHelpers.CreateDesktopShortcutAsync();
+            this.ShowSuccessToast("已创建桌面快捷方式。");
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法创建桌面快捷方式", exception);
+        }
+    }
+
+    private async void MenuItemAddStartMenuShortcut_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ShortcutHelpers.CreateStartMenuShortcutAsync();
+            this.ShowSuccessToast("已创建开始菜单快捷方式。");
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法创建开始菜单快捷方式", exception);
+        }
+    }
+
     private async void MenuItemAddClassSwapShortcut_OnClick(object sender, RoutedEventArgs e)
     {
         if (!PlatformServices.DesktopService.IsUrlSchemeRegistered)
@@ -630,6 +664,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
             PlatformServices.DesktopService.IsUrlSchemeRegistered = true;
         }
+        PopupHelper.DisableAllPopups();
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
         {
             SuggestedFileName = "快捷换课.url",
@@ -643,6 +678,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 }
             ]
         });
+        PopupHelper.RestoreAllPopups();
         if (file == null)
         {
             return;

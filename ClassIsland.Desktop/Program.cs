@@ -12,9 +12,11 @@ using Avalonia;
 using Avalonia.Logging;
 using Avalonia.Media;
 using ClassIsland.Core;
+using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
+using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
-
+using ClassIsland.Shared.Helpers;
 
 
 namespace ClassIsland.Desktop;
@@ -22,11 +24,15 @@ namespace ClassIsland.Desktop;
 class Program
 {
     [STAThread]
-    static async Task<int> Main(string[] args)
+    static int Main(string[] args)
     {
         var stopTokenSource = new CancellationTokenSource();
         ActivatePlatforms(out var postInit, stopTokenSource.Token);
-        var buildApp = await ClassIsland.Program.AppEntry(args);
+        var buildApp = ClassIsland.Program.AppEntry(args);
+        var renderingMode = int.TryParse(GlobalStorageService.GetValue("Win32RenderingMode") ?? "", out var v1)
+            ? v1
+            : 0;
+        
         var r =  AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
@@ -61,7 +67,8 @@ class Program
                 CompositionMode = [
                     Win32CompositionMode.WinUIComposition,
                     Win32CompositionMode.RedirectionSurface
-                ]
+                ],
+                RenderingMode = BuildRenderingMode(renderingMode)
             })
             .UsePlatformDetect()
             .LogToHostSink();
@@ -112,5 +119,24 @@ class Program
             service.PostInit();
         };
 #endif
+    }
+
+    private static IReadOnlyList<Win32RenderingMode> BuildRenderingMode(int userValue)
+    {
+        if (userValue is <= 0 or > 4)
+        {
+            return
+            [
+                Win32RenderingMode.AngleEgl,
+                Win32RenderingMode.Software
+            ];
+        }
+
+        return
+        [
+            (Win32RenderingMode)userValue,
+            Win32RenderingMode.AngleEgl,
+            Win32RenderingMode.Software
+        ];
     }
 }

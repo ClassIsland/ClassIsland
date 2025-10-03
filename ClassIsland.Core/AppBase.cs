@@ -139,6 +139,16 @@ public abstract class AppBase : Application, IAppHost
     public Window PhonyRootWindow = null!;
 
     /// <summary>
+    /// 获得一个根窗口。
+    /// </summary>
+    /// <returns>优先返回当前激活的窗口。如果没有激活的窗口，则返回虚窗口。</returns>
+    public Window GetRootWindow()
+    {
+        return Current.DesktopLifetime?.Windows.FirstOrDefault(x => x is { IsActive: true, IsVisible: true }) ??
+               Current.PhonyRootWindow;
+    }
+
+    /// <summary>
     /// 应用入口二进制文件路径。
     /// </summary>
     public static string ExecutingEntrance { get; internal set; } = "";

@@ -9,6 +9,9 @@
              ClipToBounds="False"
              Loaded="ComponentPresenter_OnLoaded">
     <UserControl.Styles>
+        <Style Selector="local|ComponentPresenter[IsOnMainWindow=True]">
+            <Setter Property="Opacity" Value="{Binding $self.Settings.Opacity, FallbackValue=1.0}"/>
+        </Style>
         <Style Selector="Border#ComponentRootBorder.OnMainWindow">
             <Setter Property="TextElement.FontSize" Value="{DynamicResource MainWindowBodyFontSize}"/>
             <Style Selector="^.MaxWidthEnabled">

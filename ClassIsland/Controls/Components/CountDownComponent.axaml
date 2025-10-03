@@ -99,12 +99,6 @@
                        FontSize="{Binding Settings.FontSize}"
                        VerticalAlignment="Center"
                        FontWeight="Medium"/>
-            <TextBlock Text="天"
-                       x:Name="TextBlockDay"
-                       Classes="connector"
-                       FontSize="{Binding Settings.FontSize}"
-                       VerticalAlignment="Center"
-                       FontWeight="Medium"/>
         </StackPanel>
         <ProgressBar VerticalAlignment="Bottom"
                      Maximum="100" Minimum="0"

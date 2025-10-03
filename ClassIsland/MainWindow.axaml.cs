@@ -16,6 +16,7 @@ using Avalonia.Diagnostics;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using ClassIsland.Core;
@@ -201,6 +202,7 @@ public partial class MainWindow : Window
         DataContext = this;
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
+        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
 
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         SettingsService.PropertyChanged += (sender, args) =>
@@ -302,6 +304,14 @@ public partial class MainWindow : Window
         TaskBarIconService.MainTaskBarIcon.Menu = menu;
         TaskBarIconService.MainTaskBarIcon.IsVisible = true;
         TaskBarIconService.MainTaskBarIcon.Clicked += MainTaskBarIconOnClicked;
+        PopupHelper.DisablePopupsRequested += (_, _) =>
+        {
+            TaskBarIconService.MainTaskBarIcon.Menu = null;
+        };
+        PopupHelper.RestorePopupsRequested += (_, _) =>
+        {
+            TaskBarIconService.MainTaskBarIcon.Menu = menu;
+        };
         ViewModel.OverlayRemainTimePercents = 0.5;
         DiagnosticService.EndStartup();
 
@@ -359,6 +369,7 @@ public partial class MainWindow : Window
         UpdateTheme();
         base.Show();
         UpdateWindowPos();
+        Win32Properties.AddWndProcHookCallback(this, ProcWnd);
         Dispatcher.UIThread.InvokeAsync(PostInit, DispatcherPriority.ApplicationIdle);
     }
 
@@ -424,7 +435,6 @@ public partial class MainWindow : Window
             RawInputDeviceFlags.InputSink, handle);
 
         RawInputUpdateStopWatch.Start();
-        Win32Properties.AddWndProcHookCallback(this, ProcWnd);
     }
 
     private void ProcessMousePos(object? sender, EventArgs e)
@@ -960,6 +970,10 @@ public partial class MainWindow : Window
     public void AcquireTopmostLock(object o)
     {
         var prevEmpty = TopmostLocks.Count <= 0;
+        if (TopmostLocks.Contains(o))
+        {
+            return;
+        }
         TopmostLocks.Add(o);
         if (!prevEmpty)
         {
@@ -976,7 +990,7 @@ public partial class MainWindow : Window
 
     public void ReleaseTopmostLock(object o)
     {
-        TopmostLocks.Remove(o);
+        TopmostLocks.RemoveAll(x => x == o);
 
         if (TopmostLocks.Count > 0)
         {

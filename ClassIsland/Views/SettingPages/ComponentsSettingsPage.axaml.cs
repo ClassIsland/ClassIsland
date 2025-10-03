@@ -127,6 +127,8 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         }
 
         ViewModel.IsComponentAdvancedSettingsVisible = true;
+        ViewModel.IsSelectedComponentOnRoot =
+            ViewModel.SelectedComponentSettings == ViewModel.SelectedComponentSettingsMain;
         if (ViewModel.SelectedComponentSettings.AssociatedComponentInfo.SettingsType == null)
         {
             ViewModel.IsComponentSettingsVisible = false;

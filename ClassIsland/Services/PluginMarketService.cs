@@ -298,7 +298,9 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
                 root = index.DownloadMirrors.First().Value;
             }
             Logger.LogDebug("插件源 {} 选择的镜像根：{}", name, root);
-            foreach (var plugin in index.Plugins)
+            foreach (var plugin in index.Plugins.Where(x =>
+                         Version.TryParse(x.Manifest.ApiVersion, out var version) &&
+                         version >= Version.Parse("2.0.0.0")))
             {
                 var id = plugin.Manifest.Id;
                 plugin.DownloadUrl = plugin.DownloadUrl.Replace("{root}", root);
