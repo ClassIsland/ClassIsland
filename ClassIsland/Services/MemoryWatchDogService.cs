@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -35,29 +35,17 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     private long GetMemoryUsage()
     {
         if (OperatingSystem.IsMacOS())
-        {
-            try
             {
-                var info = new TaskBasicInfo();
-                var size = Marshal.SizeOf(typeof(TaskBasicInfo));
-                var result = task_info(mach_task_self(), TaskFlavorBasicInfo, ref info, ref size);
-
-                if (result == 0)
-                {
-                    return info.ResidentSize;
-                }
+                // 在macOS平台上，不可使用PrivateMemorySize64字段，详见https://github.com/dotnet/runtime/issues/105665
+                // 使用WorkingSet64字段，**结果可能略大**
+                return Process.GetCurrentProcess().WorkingSet64;
             }
-            catch (Exception ex)
+            else
             {
-                Logger.LogError(ex, "无法通过 task_info 获取内存使用情况");
+                return Process.GetCurrentProcess().PrivateMemorySize64;
             }
-        }
-        else
-        {
-            return Process.GetCurrentProcess().PrivateMemorySize64;
-        }
 
-        return 0;
+            return 0;
     }
 
     private const int TaskFlavorBasicInfo = 20;
