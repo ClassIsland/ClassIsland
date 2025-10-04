@@ -14,27 +14,13 @@ public class LocationService : ILocationService
     {
         using var manager = new CLLocationManager();
         manager.RequestWhenInUseAuthorization();
-        manager.StartUpdatingLocation();
-        try
+        var tokenSource = new CancellationTokenSource();
+        tokenSource.CancelAfter(TimeSpan.FromSeconds(10.0));
+        var location = manager.Location ?? new CLLocation();
+        return new LocationCoordinate()
         {
-            var tokenSource = new CancellationTokenSource();
-            var location = new CLLocation();
-            tokenSource.CancelAfter(TimeSpan.FromSeconds(10.0));
-            manager.UpdatedLocation += (sender, args) =>
-            {
-                location = args.NewLocation;
-                tokenSource.Cancel();
-            };
-            await Task.Run(() => tokenSource.Token.WaitHandle.WaitOne(), tokenSource.Token);
-            return new LocationCoordinate()
-            {
-                Longitude = location.Coordinate.Longitude,
-                Latitude = location.Coordinate.Latitude
-            };
-        }
-        finally
-        {
-            manager.StopUpdatingLocation();
-        }
+            Longitude = location.Coordinate.Longitude,
+            Latitude = location.Coordinate.Latitude
+        };
     }
 }
