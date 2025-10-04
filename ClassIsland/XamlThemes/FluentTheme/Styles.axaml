@@ -63,10 +63,6 @@
     
     <Style Selector="controls|MainWindowLine">
         <Style.Resources>
-            <ci:BindingProxy x:TypeArguments="SolidColorBrush" x:Key="AccentFillColorDefaultBrushProxy" 
-                             Data="{DynamicResource AccentFillColorDefaultBrush}"/>
-            <ci:BindingProxy x:TypeArguments="SolidColorBrush" x:Key="AccentFillColorSecondaryBrushProxy"
-                             Data="{DynamicResource AccentFillColorTertiaryBrush}"/>
             <ci:SolidColorBrushToColorConverter x:Key="SolidColorBrushToColorConverter" />
             <!--#endregion 1-->
             <ci:WidthDoubleToRectConverter x:Key="WidthDoubleToRectConverter" />
@@ -156,13 +152,7 @@
                                 <ScaleTransform />
                             </TransformGroup>
                         </Border.RenderTransform>
-                        <Border>
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                                    <GradientStop Color="{Binding Data, Source={StaticResource AccentFillColorDefaultBrushProxy}, Converter={StaticResource SolidColorBrushToColorConverter}}" Offset="0.0"/>
-                                    <GradientStop Color="{Binding Data, Source={StaticResource AccentFillColorSecondaryBrushProxy}, Converter={StaticResource SolidColorBrushToColorConverter}}" Offset="1.0"/>
-                                </LinearGradientBrush>
-                            </Border.Background>
+                        <Border Background="{DynamicResource AccentFillColorDefaultBrush}">
                             <ContentPresenter x:Name="OverlayMaskContent"
                                               Opacity="0"
                                               Content="{Binding MaskContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"

@@ -8,33 +8,19 @@ public class LocationService : ILocationService
 {
     public LocationService()
     {
+        using var manager = new CLLocationManager();
+        manager.RequestWhenInUseAuthorization();
     }
-    
+
     public async Task<LocationCoordinate> GetLocationAsync()
     {
         using var manager = new CLLocationManager();
-        manager.RequestWhenInUseAuthorization();
-        manager.StartUpdatingLocation();
-        try
+        var location = manager.Location ?? new CLLocation();
+        manager.StopUpdatingLocation();
+        return new LocationCoordinate()
         {
-            var tokenSource = new CancellationTokenSource();
-            var location = new CLLocation();
-            tokenSource.CancelAfter(TimeSpan.FromSeconds(10.0));
-            manager.UpdatedLocation += (sender, args) =>
-            {
-                location = args.NewLocation;
-                tokenSource.Cancel();
-            };
-            await Task.Run(() => tokenSource.Token.WaitHandle.WaitOne(), tokenSource.Token);
-            return new LocationCoordinate()
-            {
-                Longitude = location.Coordinate.Longitude,
-                Latitude = location.Coordinate.Latitude
-            };
-        }
-        finally
-        {
-            manager.StopUpdatingLocation();
-        }
+            Longitude = location.Coordinate.Longitude,
+            Latitude = location.Coordinate.Latitude
+        };
     }
 }

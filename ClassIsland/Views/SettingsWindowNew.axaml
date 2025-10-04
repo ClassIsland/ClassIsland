@@ -119,6 +119,14 @@
                 <Grid Margin="0 0 0 0" ColumnDefinitions="Auto,Auto,*,Auto">
                     <StackPanel Orientation="Horizontal" Grid.Column="1"
                                 VerticalAlignment="Center">
+                        <!-- 红绿灯空位 -->
+                        <Border Grid.Column="3" Width="60">
+                            <Border.IsVisible>
+                                <OnPlatform Default="False">
+                                    <On Options="macOS" Content="True" />
+                                </OnPlatform>
+                            </Border.IsVisible>
+                        </Border>
                         <Button Name="TogglePaneButton"
                                 Grid.Column=""
                                 Theme="{StaticResource PaneToggleButtonStyle}"

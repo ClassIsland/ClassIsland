@@ -121,6 +121,9 @@
                 <Setter Property="IsVisible" Value="False"/>
             </Style>
         </Style>
+        <Style Selector=":is(Control)">
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
     </Window.Styles>
     <StackPanel>
         <Grid x:Name="LayoutContainerGrid" SizeChanged="LayoutContainerGrid_OnSizeChanged">

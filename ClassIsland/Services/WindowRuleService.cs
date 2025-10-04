@@ -69,8 +69,7 @@ public class WindowRuleService : IWindowRuleService
         }
 
         var fullscreen = PlatformServices.WindowPlatformService.IsForegroundWindowFullscreen(screen);
-        var maximize = PlatformServices.WindowPlatformService.IsWindowMaximized(PlatformServices.WindowPlatformService
-            .ForegroundWindowHandle);
+        var maximize = PlatformServices.WindowPlatformService.IsForegroundWindowMaximized(screen);
         var minimize = PlatformServices.WindowPlatformService.IsWindowMinimized(PlatformServices.WindowPlatformService
             .ForegroundWindowHandle);
         return s.State switch

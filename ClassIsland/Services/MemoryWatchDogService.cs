@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -35,42 +35,38 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     private long GetMemoryUsage()
     {
         if (OperatingSystem.IsMacOS())
-        {
-            try
             {
-                var mib = new int[2] { CTL_HW, HW_MEMSIZE };
-                long physicalMemory = 0;
-                var length = Marshal.SizeOf(typeof(long));
-
-                if (sysctl(mib, 2, ref physicalMemory, ref length, IntPtr.Zero, 0) == 0)
-                {
-                    return physicalMemory;
-                }
+                // 在macOS平台上，不可使用PrivateMemorySize64字段，详见https://github.com/dotnet/runtime/issues/105665
+                // 使用WorkingSet64字段，**结果可能略大**
+                return Process.GetCurrentProcess().WorkingSet64;
             }
-            catch (Exception ex)
+            else
             {
-                Logger.LogError(ex, "无法通过 sysctl 获取内存使用情况");
+                return Process.GetCurrentProcess().PrivateMemorySize64;
             }
-        }
-        else
-        {
-            return Process.GetCurrentProcess().PrivateMemorySize64;
-        }
 
-        return 0;
+            return 0;
     }
 
-    private const int CTL_HW = 6;
-    private const int HW_MEMSIZE = 24;
+    private const int TaskFlavorBasicInfo = 20;
 
-    [DllImport("libc", SetLastError = true)]
-    private static extern int sysctl(
-        int[] name,
-        uint namelen,
-        ref long oldp,
-        ref int oldlenp,
-        IntPtr newp,
-        uint newlen);
+    [StructLayout(LayoutKind.Sequential)]
+    private struct TaskBasicInfo
+    {
+        public int VirtualSize;
+        public int ResidentSize;
+        public int ResidentSizeMax;
+        public int UserTime;
+        public int SystemTime;
+        public int Policy;
+        public int SuspendCount;
+    }
+
+    [DllImport("libc")]
+    private static extern int task_info(IntPtr task, int flavor, ref TaskBasicInfo info, ref int size);
+
+    [DllImport("libc")]
+    private static extern IntPtr mach_task_self();
 
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
