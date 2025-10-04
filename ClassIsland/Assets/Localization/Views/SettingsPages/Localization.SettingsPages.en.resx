@@ -118,84 +118,84 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="General_string" xml:space="preserve">
-    <value>基本</value>
+    <value>General</value>
   </data>
   <data name="Components_string" xml:space="preserve">
-    <value>組件</value>
+    <value>Components</value>
   </data>
   <data name="Appearance_string" xml:space="preserve">
-    <value>外觀</value>
+    <value>Appearance</value>
   </data>
   <data name="Notification_string" xml:space="preserve">
-    <value>通知</value>
+    <value>Notification</value>
   </data>
   <data name="Window_string" xml:space="preserve">
-    <value>窗口</value>
+    <value>Window</value>
   </data>
   <data name="Weather_string" xml:space="preserve">
-    <value>天氣</value>
+    <value>Weather</value>
   </data>
   <data name="Update_string" xml:space="preserve">
-    <value>更新</value>
+    <value>Update</value>
   </data>
   <data name="Automation_string" xml:space="preserve">
-    <value>自動化</value>
+    <value>Automation</value>
   </data>
   <data name="Storage_string" xml:space="preserve">
-    <value>存儲</value>
+    <value>Storage</value>
   </data>
   <data name="Privacy_string" xml:space="preserve">
-    <value>隱私</value>
+    <value>Privacy</value>
   </data>
   <data name="Plugins_string" xml:space="preserve">
-    <value>插件</value>
+    <value>Plugins</value>
   </data>
   <data name="About_string" xml:space="preserve">
-    <value>關於 ClassIsland</value>
+    <value>About ClassIsland</value>
   </data>
   <data name="Theme_string" xml:space="preserve">
-    <value>主題</value>
+    <value>Theme</value>
   </data>
   <data name="Behavior_string" xml:space="preserve">
-    <value>行为</value>
+    <value>Behavior</value>
   </data>
   <data name="OpenSourceStatement" xml:space="preserve">
-    <value>ClassIsland 是開源免費的軟件，官方沒有提供任何形式的付費支持服務，源代碼倉庫地址在{sourcecodeurl}。如果您通過有償協助等付費方式取得本應用，在遇到問題時請在與賣家約定的服務框架下，優先向賣家求助。如果賣家沒有提供您預期的服務，請退款或通過其它形式積極維護您的合法權益。</value>
+    <value>ClassIsland is an open source and free software, and the official does not provide any form of paid support services. The source code is hosted at {sourcecodeurl}.If you obtain this application through paid assistance or other payment methods, please prioritize seeking help from the seller within the service framework agreed upon with them when encountering problems. If the seller does not provide the service you expected, please refund or actively protect your legitimate rights and interests through other ways.</value>
   </data>
   <data name="ExperimentalFeature_string" xml:space="preserve">
-    <value>實驗性功能</value>
+    <value>Experimental feature</value>
   </data>
   <data name="DebuggingWindowRules_string" xml:space="preserve">
-    <value>調試窗口規則</value>
+    <value>Debugging window rules</value>
   </data>
   <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
-    <value>創建快捷換課圖標</value>
+    <value>Create a quick adjust course shortcut</value>
   </data>
   <data name="ManagementOptions_string" xml:space="preserve">
-    <value>集控選項</value>
+    <value>Management options</value>
   </data>
   <data name="JoinManagement_string" xml:space="preserve">
-    <value />
+    <value>Join management</value>
   </data>
   <data name="ViewAppLog_string" xml:space="preserve">
-    <value />
+    <value>Logs</value>
   </data>
   <data name="ExportDiagData_string" xml:space="preserve">
-    <value />
+    <value>Export diagnostics data</value>
   </data>
   <data name="RestartToRecoveryMode_string" xml:space="preserve">
-    <value />
+    <value>Restart to recovery mode</value>
   </data>
   <data name="OpenLogDir_string" xml:space="preserve">
-    <value />
+    <value>Open logs directory</value>
   </data>
   <data name="OpenDataDir_string" xml:space="preserve">
-    <value />
+    <value>Open data directory</value>
   </data>
   <data name="OpenAppDir_string" xml:space="preserve">
-    <value />
+    <value>Open App directory</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value />
+    <value>App Settings</value>
   </data>
 </root>
