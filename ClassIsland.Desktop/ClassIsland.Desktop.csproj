@@ -9,6 +9,8 @@
         <Company>ClassIsland</Company>
         <Product>ClassIsland</Product>
         <SatelliteResourceLanguages>en;zh-cn</SatelliteResourceLanguages>
+        <Title>ClassIsland</Title>
+        <AssemblyTitle>ClassIsland</AssemblyTitle>
     </PropertyGroup>
     
     <!-- UOS DEB Packaging Properties -->
