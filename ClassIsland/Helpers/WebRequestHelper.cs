@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -72,9 +73,10 @@ public class WebRequestHelper(Uri? baseUri = null, bool phainon = false)
                 innerException = ex;
                 logger?.LogWarning(ex, "Json GET 请求失败（第 {} 次重试）{}", i, uri);
                 retryTime *= 2;
+                var realRetryTime = retryTime + retryTime * RandomNumberGenerator.GetInt32(0, 500) / 1000;
                 if (i < retries)
                 {
-                    await Task.Run(() => cancellationToken.Value.WaitHandle.WaitOne(retryTime), cancellationToken.Value);
+                    await Task.Run(() => cancellationToken.Value.WaitHandle.WaitOne(realRetryTime), cancellationToken.Value);
                 }
             }
         }
