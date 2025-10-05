@@ -16,5 +16,9 @@ public enum UpdateStatus
     /// <summary>
     /// 已下载更新
     /// </summary>
-    UpdateDownloaded
+    UpdateDownloaded,
+    /// <summary>
+    /// 更新已部署
+    /// </summary>
+    UpdateDeployed
 }

@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -28,7 +30,11 @@ using ClassIsland.Views;
 using Downloader;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PhainonDistributionCenter.Shared.Models.Api.Responses.Distribution;
+using PhainonDistributionCenter.Shared.Models.Client;
+using PhainonDistributionCenter.Shared.Models.FileMap;
 using Sentry;
+using Tmds.DBus.Protocol;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 using File = System.IO.File;
 
@@ -44,23 +50,28 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private bool _isCanceled = false;
     private Exception? _networkErrorException;
     private TimeSpan _downloadEtcSeconds = TimeSpan.Zero;
-    private VersionInfo _selectedVersionInfo = new();
+    private DistributionInfoClient _distributionInfo;
+    private string _currentWorkingMessage = "";
 
     public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
 
     internal static string UpdateCachePath { get; } = Path.Combine(CommonDirectories.AppCacheFolderPath, "Update");
 
-    internal const string UpdateMetadataUrl =
-        "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/disturb/index.json";
+    public static string UpdateTempPath => Path.Combine(CommonDirectories.AppTempFolderPath, "Updating");
 
-    public static string UpdateTempPath => Path.Combine(CommonDirectories.AppRootFolderPath, "UpdateTemp");
+    private static string UpdateDistributionInfoPath = Path.Combine(UpdateCachePath, "DistributionInfo.json");
+    private static string UpdateDistributionMetadataPath = Path.Combine(UpdateCachePath, "DistributionMetadata.json");
 
-    public VersionsIndex Index { get; set; }
-
-    public VersionInfo SelectedVersionInfo
+    public DistributionInfoClient DistributionInfo
     {
-        get => _selectedVersionInfo;
-        set => SetField(ref _selectedVersionInfo, value);
+        get => _distributionInfo;
+        set => SetField(ref _distributionInfo, value);
+    }
+
+    public DistributionMetadata DistributionMetadata
+    {
+        get;
+        set;
     }
 
     public Stopwatch DownloadStatusUpdateStopwatch { get; } = new();
@@ -74,6 +85,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private SettingsService SettingsService
     {
         get;
+    }
+
+    public string CurrentWorkingMessage
+    {
+        get => _currentWorkingMessage;
+        set => SetField(ref _currentWorkingMessage, value);
     }
 
     private Settings Settings => SettingsService.Settings;
@@ -90,6 +107,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private string MetadataPublisherPublicKey { get; }
 
     public event EventHandler? UpdateInfoUpdated;
+    
+    private WebRequestHelper RequestHelper { get; }
 
     public UpdateService(SettingsService settingsService, ITaskBarIconService taskBarIconService, IHostApplicationLifetime lifetime,
         ISplashService splashService, ILogger<UpdateService> logger)
@@ -102,23 +121,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         var keyStream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute));
         MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
 
-        Index = ConfigureFileHelper.LoadConfig<VersionsIndex>(Path.Combine(UpdateCachePath, "Index.json"));
-        SelectedVersionInfo = ConfigureFileHelper.LoadConfig<VersionInfo>(Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"));
-
-
-        SyncSpeedTestResults();
-    }
-
-    private void SyncSpeedTestResults()
-    {
-        foreach (var i in Index.Mirrors)
-        {
-            if (!Settings.SpeedTestResults.ContainsKey(i.Key))
-            {
-                Settings.SpeedTestResults.Add(i.Key, new SpeedTestResult());
-            }
-            i.Value.SpeedTestResult = Settings.SpeedTestResults[i.Key];
-        }
+        RequestHelper = new WebRequestHelper(new Uri("http://localhost:5205"), true);
+        _distributionInfo = ConfigureFileHelper.LoadConfig<DistributionInfoClient>(UpdateDistributionInfoPath);
+        DistributionMetadata = ConfigureFileHelper.LoadConfig<DistributionMetadata>(UpdateDistributionMetadataPath);
     }
 
     public bool IsCanceled
@@ -252,15 +257,17 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         try
         {
             var spanGetIndex = transaction.StartChild("getIndex");
+            var subChannel =
+                AppBase.Current.IsDevelopmentBuild && !string.IsNullOrWhiteSpace(Settings.DebugSubChannelOverride)
+                    ? Settings.DebugSubChannelOverride
+                    : AppBase.Current.AppSubChannel;
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
-            Index = await WebRequestHelper.Default.SaveJson<VersionsIndex>(new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "Index.json"), verifySign:true, publicKey:MetadataPublisherPublicKey);
-            SyncSpeedTestResults();
-            var version = Index.Versions
-                .Where(x => Version.TryParse(x.Version, out _) && x.Channels.Contains(Settings.SelectedUpdateChannelV2))
-                .OrderByDescending(x => Version.Parse(x.Version))
-                .FirstOrDefault();
+            DistributionMetadata = await RequestHelper.SaveJson<DistributionMetadata>(
+                new Uri("api/v1/public/distributions/metadata", UriKind.Relative), UpdateDistributionMetadataPath);
+            var latest = await RequestHelper.GetJson<LatestDistributionInfoMinResponse>(
+                new Uri($"api/v1/public/distributions/latest/{Settings.SelectedUpdateChannelV3}", UriKind.Relative));
             spanGetIndex.Finish(SpanStatus.Ok);
-            if (version == null || !IsNewerVersion(isForce, isCancel, Version.Parse(version.Version)))
+            if (!IsNewerVersion(isForce, isCancel, Version.Parse(latest.Version)))
             {
                 Settings.LastUpdateStatus = UpdateStatus.UpToDate;
                 transaction.Finish(SpanStatus.Ok);
@@ -268,10 +275,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             }
 
             var spanGetDetail = transaction.StartChild("getDetail");
-            SelectedVersionInfo = await WebRequestHelper.Default.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
+            DistributionInfo = await RequestHelper.SaveJson<DistributionInfoClient>(
+                new Uri($"api/v1/public/distributions/{latest.DistributionId}/{subChannel}", UriKind.Relative),
+                UpdateDistributionInfoPath);
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             await PlatformServices.DesktopToastService.ShowToastAsync("发现新版本",
-                $"{Assembly.GetExecutingAssembly().GetName().Version} -> {version.Version}\n" +
+                $"{Assembly.GetExecutingAssembly().GetName().Version} -> {latest.Version}\n" +
                 "点击以查看详细信息。", UpdateNotificationClickedCallback);
 
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
@@ -308,7 +317,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task DownloadUpdateAsync()
     {
-        if (Design.IsDesignMode || true)
+        return;
+        if (Design.IsDesignMode)
         {
             return;
         }
@@ -331,70 +341,29 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         var spanDownload = transaction.StartChild("download");
         try
         {
-            var downloadInfo = SelectedVersionInfo.DownloadInfos[AppBase.Current.AppSubChannel];
-            Settings.UpdateArtifactHash = downloadInfo.ArchiveSHA256;
-            Logger.LogInformation("下载应用更新包：{}", downloadInfo.ArchiveDownloadUrls[Settings.SelectedUpdateMirrorV2]);
+            var valid = DetachedSignatureProcessor.VerifyDetachedSignature(DistributionInfo.FileMapJson,
+                Encoding.UTF8.GetBytes(DistributionInfo.FileMapSignature), MetadataPublisherPublicKey);
+            if (!valid)
+            {
+                throw new InvalidOperationException("文件图签名校验不通过");
+            }
+
+            var fileMap = JsonSerializer.Deserialize<FileMap>(DistributionInfo.FileMapJson);
+            
             TotalSize = 0;
             DownloadedSize = 0;
             DownloadSpeed = 0;
             DownloadStatusUpdateStopwatch.Start();
             CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
-            transaction.SetExtra("download.url", downloadInfo.ArchiveDownloadUrls[Settings.SelectedUpdateMirrorV2]);
 
-            Downloader = DownloadBuilder.New()
-                .WithUrl(downloadInfo.ArchiveDownloadUrls[Settings.SelectedUpdateMirrorV2])
-                .Configure((c) =>
-                {
-                    c.ChunkCount = 32;
-                    c.ParallelCount = 32;
-                    c.ParallelDownload = true;
-                    //c.Timeout = 4096;
-                })
-                .WithDirectory(UpdateTempPath)
-                .WithFileName("update.zip")
-                .Build();
-            Downloader.DownloadProgressChanged += DownloaderOnDownloadProgressChanged;
-            Downloader.DownloadFileCompleted += (sender, args) =>
+            var options = new DownloadConfiguration()
             {
-                DownloadStatusUpdateStopwatch.Stop();
-                transaction.SetExtra("download.size", Downloader.TotalFileSize);
-                var speed = DownloadStatusUpdateStopwatch.Elapsed.TotalSeconds == 0
-                    ? 0.0
-                    : Downloader.TotalFileSize / DownloadStatusUpdateStopwatch.Elapsed.TotalSeconds;
-                transaction.SetExtra("download.bytesPerSecond", speed);
-                DownloadStatusUpdateStopwatch.Reset();
-                if (IsCanceled)
-                {
-                    IsCanceled = false;
-                    spanDownload.Finish(SpanStatus.Cancelled);
-                    transaction.Finish(SpanStatus.Cancelled);
-                    return;
-                }
-
-                if (!File.Exists(Path.Combine(UpdateTempPath, @"update.zip")) || args.Error != null)
-                {
-                    //await RemoveDownloadedFiles();
-                    if (args.Error != null)
-                    {
-                        spanDownload.Finish(args.Error, SpanStatus.InternalError);
-                    }
-                    else
-                    {
-                        spanDownload.Finish(SpanStatus.InternalError);
-                    }
-                    throw new Exception("更新下载失败。", args.Error);
-                }
-                else
-                {
-                    Dispatcher.UIThread.Invoke(() =>
-                    {
-                        Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
-                    });
-                    spanDownload.Finish(SpanStatus.Ok);
-                    transaction.Finish(SpanStatus.Ok);
-                }
+                ChunkCount = 32,
+                ParallelCount = 8,
+                ParallelDownload = true
             };
-            await Downloader.StartAsync();
+            
+            
         }
         catch (Exception ex)
         {

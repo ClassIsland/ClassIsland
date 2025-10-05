@@ -1611,85 +1611,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public Dictionary<string, SpeedTestResult> SpeedTestResults
-    {
-        get => _speedTestResults;
-        set
-        {
-            if (Equals(value, _speedTestResults)) return;
-            _speedTestResults = value;
-            OnPropertyChanged();
-        }
-    }
-
-
-    public bool IsAutoSelectUpgradeMirror
-    {
-        get => _isAutoSelectUpgradeMirror;
-        set
-        {
-            if (value == _isAutoSelectUpgradeMirror) return;
-            _isAutoSelectUpgradeMirror = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime LastSpeedTest
-    {
-        get => _lastSpeedTest;
-        set
-        {
-            if (value.Equals(_lastSpeedTest)) return;
-            _lastSpeedTest = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public UpdateSourceKind LastUpdateSourceKind
-    {
-        get => _lastUpdateSourceKind;
-        set
-        {
-            if (value == _lastUpdateSourceKind) return;
-            _lastUpdateSourceKind = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string UpdateReleaseInfo
-    {
-        get => _updateReleaseInfo;
-        set
-        {
-            if (value == _updateReleaseInfo) return;
-            _updateReleaseInfo = value;
-            OnPropertyChanged();
-        }
-    }
-
-
-    public string UpdateDownloadUrl
-    {
-        get => _updateDownloadUrl;
-        set
-        {
-            if (value == _updateDownloadUrl) return;
-            _updateDownloadUrl = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public Version UpdateVersion
-    {
-        get => _updateVersion;
-        set
-        {
-            if (Equals(value, _updateVersion)) return;
-            _updateVersion = value;
-            OnPropertyChanged();
-        }
-    }
-
     public string UpdateArtifactHash
     {
         get => _updateArtifactHash;
@@ -1719,6 +1640,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _selectedUpdateChannelV2) return;
             _selectedUpdateChannelV2 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Guid SelectedUpdateChannelV3
+    {
+        get => _selectedUpdateChannelV3;
+        set
+        {
+            if (value == _selectedUpdateChannelV3) return;
+            _selectedUpdateChannelV3 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DebugSubChannelOverride
+    {
+        get => _debugSubChannelOverride;
+        set
+        {
+            if (value == _debugSubChannelOverride) return;
+            _debugSubChannelOverride = value;
             OnPropertyChanged();
         }
     }
@@ -1770,6 +1713,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _animationLevel = 1;
     private bool _isIslandSeperated = false;
     private bool _reduceProgressAccuracy = true;
+    private Guid _selectedUpdateChannelV3 = Guid.Empty;
+    private string _debugSubChannelOverride = "";
 
     public bool IsIgnoreWorkAreaEnabled
     {

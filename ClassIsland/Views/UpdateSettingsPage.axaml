@@ -1,0 +1,142 @@
+<ci:SettingsPageBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             xmlns:enums="clr-namespace:ClassIsland.Shared.Enums;assembly=ClassIsland.Shared"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:client="clr-namespace:PhainonDistributionCenter.Shared.Models.Client;assembly=PhainonDistributionCenter.Shared"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Views.UpdateSettingsPage"
+             d:DataContext="{d:DesignInstance views:UpdateSettingsPage}"
+             Loaded="Control_OnLoaded" Unloaded="Control_OnUnloaded">
+    <ci:SettingsPageBase.Resources>
+        
+    </ci:SettingsPageBase.Resources>
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro" Spacing="6">
+            <Grid ColumnDefinitions="Auto *" RowDefinitions="Auto Auto">
+                <ci:FluentIcon Grid.Column="0" FontSize="48"
+                               Grid.RowSpan="2" Grid.Row="0"
+                               Margin="0 0 4 0"
+                               VerticalAlignment="Center"
+                               Glyph="{Binding ViewModel.SettingsService.Settings.LastUpdateStatus, Converter={x:Static views:UpdateSettingsPage.UpdateStatusToIconGlyphConverter}}"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ViewModel.SettingsService.Settings.LastUpdateStatus, Converter={x:Static views:UpdateSettingsPage.UpdateStatusToMessageConverter}}" 
+                           FontSize="24" FontWeight="Medium"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 4 0 0">
+                    <TextBlock.IsVisible>
+                        <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <enums:UpdateStatus>UpToDate</enums:UpdateStatus>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </TextBlock.IsVisible>
+                    <Run Text="上次检查更新时间："/>
+                    <Run Text="{Binding ViewModel.SettingsService.Settings.LastCheckUpdateTime, Mode=OneWay}" />
+                </TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 4 0 0">
+                    <TextBlock.IsVisible>
+                        <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus" Converter="{x:Static ObjectConverters.NotEqual}">
+                            <Binding.ConverterParameter>
+                                <enums:UpdateStatus>UpToDate</enums:UpdateStatus>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </TextBlock.IsVisible>
+                    <Run Text="发现新版本："/>
+                    <Run Text="{Binding ViewModel.UpdateService.DistributionInfo.Version, Mode=OneWay}" />
+                </TextBlock>
+            </Grid>
+            <controls:InfoBar Severity="Error" Title="出错了" Message="更新时发生网络错误，请检查您的网络连接。"
+                              IsOpen="{Binding ViewModel.UpdateService.NetworkErrorException, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneWay}"/>
+            <WrapPanel Classes="animated-resize">
+                <WrapPanel.IsEnabled>
+                    <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
+                             Converter="{x:Static ObjectConverters.Equal}">
+                        <Binding.ConverterParameter>
+                            <enums:UpdateWorkingStatus>Idle</enums:UpdateWorkingStatus>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </WrapPanel.IsEnabled>
+                <Button Content="检查更新" Classes="accent"
+                        Click="ButtonCheckUpdate_OnClick"/>
+            </WrapPanel>
+            <Separator/>
+            
+            <TabControl Classes="compact"
+                        ClipToBounds="False"
+                        Padding="0" Margin="0">
+                <TabControl.IsEnabled>
+                    <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
+                             Converter="{x:Static ObjectConverters.Equal}">
+                        <Binding.ConverterParameter>
+                            <enums:UpdateWorkingStatus>Idle</enums:UpdateWorkingStatus>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </TabControl.IsEnabled>
+                <TabItem Header="更新日志"></TabItem>
+                <TabItem Header="更新设置">
+                    <StackPanel Margin="0" Classes="settings-container animated-intro">
+                        <!-- 更新模式 -->
+                        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe161;}"
+                                                   Header="更新模式"
+                                                   Description="设置应用的更新模式。">
+                            <controls:SettingsExpander.Footer>
+                                <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.UpdateMode}">
+                                    <ComboBoxItem>从不自动更新</ComboBoxItem>
+                                    <ComboBoxItem>自动检查更新并通知</ComboBoxItem>
+                                    <ComboBoxItem>自动检查更新并下载</ComboBoxItem>
+                                    <ComboBoxItem>自动检查更新并安装</ComboBoxItem>
+                                </ComboBox>
+                            </controls:SettingsExpander.Footer>
+                        </controls:SettingsExpander>
+                        
+                        <!-- 更新通道 -->
+                        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe3d2;}"
+                                                   Header="更新通道" IsExpanded="True"
+                                                   Description="控制应用的更新目标版本。版本的发行节奏和稳定程度因更新通道而异，部分通道可能包含不稳定的功能，请谨慎使用。">
+                            <controls:SettingsExpander.Footer>
+                                <ComboBox ItemsSource="{Binding ViewModel.UpdateService.DistributionMetadata.Channels}"
+                                          SelectedValueBinding="{Binding Key}"
+                                          SelectedValue="{Binding ViewModel.SettingsService.Settings.SelectedUpdateChannelV3}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Value.Name}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </controls:SettingsExpander.Footer>
+                            <controls:SettingsExpanderItem>
+                                <TextBlock Text="{Binding ViewModel.SelectedChannel.Description}" TextWrapping="Wrap"/>
+                            </controls:SettingsExpanderItem>
+                        </controls:SettingsExpander>
+                        
+                        <!-- 最新版本占位图标 -->
+                        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe9b0;}"
+                                                   Header="最新版本占位图标"
+                                                   Description="设置当应用处于最新版本时，在更新日志页面显示的占位图标的角色。">
+                            <controls:SettingsExpander.Footer>
+                                <ComboBox>
+                                    <ComboBoxItem>爱莉希雅</ComboBoxItem>
+                                    <ComboBoxItem>昔涟</ComboBoxItem>
+                                    <ComboBoxItem>白厄</ComboBoxItem>
+                                    <ComboBoxItem>白厄/卡厄斯兰那</ComboBoxItem>
+                                    <ComboBoxItem>帕姆</ComboBoxItem>
+                                </ComboBox>
+                            </controls:SettingsExpander.Footer>
+                        </controls:SettingsExpander>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Header="(debug)调试设置">
+                    <StackPanel Margin="0" Classes="settings-container animated-intro">
+                        <ci:Field Label="覆盖子频道">
+                            <TextBox Watermark="留空禁用" Text="{Binding ViewModel.SettingsService.Settings.DebugSubChannelOverride}"/>
+                        </ci:Field>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>
