@@ -241,7 +241,7 @@ public partial class App
         services.AddAction<RunAction, RunActionSettingsControl>();
         services.AddAction<NotificationAction, NotificationActionSettingsControl>();
         services.AddAction<SleepAction, SleepActionSettingsControl>();
-        services.AddAction<SettingsAction, SettingsActionSettingsControl>();
+        services.AddAction<ModifyAppSettingsAction, ModifyAppSettingsActionSettingsControl>();
         services.AddAction<WeatherNotificationAction, WeatherNotificationActionSettingControl>();
         services.AddAction<AppQuitAction>();
         services.AddAction<AppRestartAction, AppRestartActionSettingsControl>();

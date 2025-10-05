@@ -42,15 +42,6 @@ public partial class IconText : UserControl
         get => GetValue(SpacingProperty);
         set => SetValue(SpacingProperty, value);
     }
-
-    public static readonly StyledProperty<bool> UseFontIconProperty = AvaloniaProperty.Register<IconText, bool>(
-        nameof(UseFontIcon), true);
-
-    public bool UseFontIcon
-    {
-        get => GetValue(UseFontIconProperty);
-        set => SetValue(UseFontIconProperty, value);
-    }
     
     
     public IconText()

@@ -39,7 +39,7 @@
                     <Style Selector="TextBox[Tag=True]">
                         <Setter Property="Padding"
                                 Value="{Binding ElementName=FileSelectorButton, Path=Bounds.Width,
-                                Converter={x:Static local:RunActionSettingsControl.TextBlockPaddingFuncConverter}}"/>
+                                Converter={x:Static ci:AnimatedIconButton.TextBlockPaddingFuncConverter}}"/>
                     </Style>
                 </TextBox.Styles>
             </TextBox>

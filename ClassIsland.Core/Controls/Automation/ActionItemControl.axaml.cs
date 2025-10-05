@@ -152,5 +152,6 @@ public partial class ActionItemControl : UserControl
         set => SetValue(ActionItemProperty, value);
     }
 
-    public ActionSet ActionSet => this.FindAncestorOfType<ActionControl>()?.GetValue(ActionControl.ActionSetProperty);
+    ActionSet? _actionSet;
+    public ActionSet ActionSet => _actionSet ??= this.FindAncestorOfType<ActionControl>()?.GetValue(ActionControl.ActionSetProperty);
 }

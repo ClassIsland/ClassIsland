@@ -1,0 +1,123 @@
+<ci:ActionSettingsControlBase x:Name="This"
+                              x:Class="ClassIsland.Controls.ActionSettingsControls.ModifyAppSettingsActionSettingsControl"
+                              x:TypeArguments="actionSettings:ModifyAppSettingsActionSettings"
+                              d:DataContext="{d:DesignInstance Type=local:ModifyAppSettingsActionSettingsControl}"
+                              xmlns="https://github.com/avaloniaui"
+                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                              xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                              xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                              xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
+                              xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions">
+    <ci:ActionSettingsControlBase.Resources>
+        <Panel x:Key="ModifyAppSettingsActionSettingsDrawer"
+               d:DataContext="{d:DesignInstance local:ModifyAppSettingsActionSettingsControl}"
+               Width="400">
+            <Grid Classes="animated-intro"
+                  RowDefinitions="Auto Auto *">
+                <TextBlock Margin="0 0 0 8"
+                           Text="选择应用设置"
+                           Theme="{StaticResource SubtitleTextBlockStyle}" />
+                <TextBox x:Name="SearchSettingsTextBox"
+                         Grid.Row="1"
+                         TextChanged="SearchSettingsTextBox_OnTextChanged"
+                         Watermark="搜索应用设置…" />
+                <ListBox Grid.Row="2"
+                         Margin="0 8 0 0"
+                         AutoScrollToSelectedItem="True"
+                         ItemsSource="{Binding ViewModel.SettingsSearchResults}"
+                         SelectedValue="{Binding Settings.Name, Converter={StaticResource PreventNullConverter}}"
+                         SelectedValueBinding="{Binding PropertyName}"
+                         SelectionMode="Single">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Classes="animated-intro" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel LastChildFill="False">
+                                <RadioButton Content="{Binding Name}"
+                                             IsChecked="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}" />
+                                <TextBlock x:Name="ValueTextBlock"
+                                           Margin="4 0 0 0"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding FriendlyValue}"
+                                           DockPanel.Dock="Right"
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                           ToolTip.Tip="{Binding FriendlyValue}" />
+
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <!--  无结果  -->
+                <StackPanel Grid.Row="2"
+                            Margin="0 50"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            IsVisible="{Binding !!!ViewModel.SettingsSearchResults.Count}">
+                    <ci:Empty Text="找不到应用设置。" />
+                </StackPanel>
+            </Grid>
+        </Panel>
+
+        <ContentPresenter x:Key="ModifyAppSettingsActionControlTypeContentPresenter">
+            <ContentPresenter.ContentTemplate>
+                <local:ModifyAppSettingsActionKindTemplateSelector Kind="{Binding #This.ViewModel.ControlType}">
+                    <DataTemplate x:Key="int">
+                        <NumericUpDown Value="{Binding #This.ViewModel.InputValue}" />
+                    </DataTemplate>
+                    <DataTemplate x:Key="double">
+                        <NumericUpDown Value="{Binding #This.ViewModel.InputValue}" />
+                    </DataTemplate>
+                    <DataTemplate x:Key="bool">
+                        <ToggleSwitch Margin="5 -8 0 -5"
+                                      VerticalAlignment="Top"
+                                      IsChecked="{Binding #This.ViewModel.InputValue}" />
+                    </DataTemplate>
+                    <DataTemplate x:Key="color">
+                        <fa:ColorPickerButton VerticalAlignment="Center"
+                                              Color="{Binding #This.ViewModel.InputValue}" />
+                    </DataTemplate>
+                    <DataTemplate x:Key="enums">
+                        <ComboBox ItemsSource="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Enums}"
+                                  SelectedIndex="{Binding #This.ViewModel.InputValue, Converter={StaticResource PreventNullConverter}}" />
+                    </DataTemplate>
+                    <DataTemplate x:Key="normal">
+                        <TextBox VerticalAlignment="Center"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 Text="{Binding #This.ViewModel.InputValue}" />
+                    </DataTemplate>
+                </local:ModifyAppSettingsActionKindTemplateSelector>
+            </ContentPresenter.ContentTemplate>
+        </ContentPresenter>
+    </ci:ActionSettingsControlBase.Resources>
+
+    <StackPanel>
+        <DockPanel>
+            <Button VerticalAlignment="Center"
+                    Click="SelectorButton_OnClick"
+                    MinHeight="30.4">
+                <ci:IconText Glyph="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Glyph, FallbackValue=&#xE7C9;}"
+                             Text="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Name, FallbackValue=选择…}" />
+            </Button>
+
+            <ci:AnimatedIconButton x:Name="FillCurrentValueButton"
+                                   HorizontalAlignment="Right"
+                                   VerticalContentAlignment="Top"
+                                   Glyph="&#xE18B;"
+                                   Text="当前值"
+                                   Click="FillCurrentValueButton_OnClick"
+                                   Theme="{StaticResource TransparentButton}"
+                                   ToolTip.Tip="填入当前值" />
+        </DockPanel>
+        <DockPanel IsVisible="{Binding #This.ViewModel.ControlType, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <TextBlock Margin="0 0 5 0"
+                       VerticalAlignment="Center"
+                       Text="修改为" />
+            <ContentPresenter x:Name="InputerContentPresenter" />
+        </DockPanel>
+    </StackPanel>
+</ci:ActionSettingsControlBase>

@@ -245,7 +245,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("显示主界面", SettingsInfoCategory.MainWindow)]
+    [SettingsInfo("显示主界面")]
     public bool IsMainWindowVisible
     {
         get => _isMainWindowVisible;
@@ -457,7 +457,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-    
+
     [JsonPropertyName("HiedRules")]
     public Ruleset HideRules
     {
@@ -545,7 +545,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// </list>
     /// </value>
 
-    [SettingsInfo("点击托盘图标行为", enums:null)]
+    [SettingsInfo("点击托盘图标行为", "\uE5C1", enums: ["打开主菜单", "打开档案编辑窗口", "显示/隐藏主界面", "打开换课窗口"])]
     public int TaskBarIconClickBehavior
     {
         get => _taskBarIconClickBehavior;
@@ -859,7 +859,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Appearence
 
-    [SettingsInfo("应用主题", SettingsInfoCategory.MainWindow, enums:null)]
+    [SettingsInfo("应用主题", "\uE5CB", enums:["跟随系统", "明亮", "黑暗"])]
     public int Theme
     {
         get => _theme;
@@ -871,7 +871,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("应用主题色", SettingsInfoCategory.MainWindow)]
+    [SettingsInfo("应用主题色")]
     public Color PrimaryColor
     {
         get => _primaryColor;
@@ -917,8 +917,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     }
 
     [JsonIgnore]
-    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1 
-        ? Colors.DodgerBlue 
+    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1
+        ? Colors.DodgerBlue
         : WallpaperColorPlatte[SelectedPlatteIndex];
 
     public int SelectedPlatteIndex
@@ -1020,7 +1020,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("背景不透明度", SettingsInfoCategory.MainWindow, min:0, max:1)]
+    [SettingsInfo("背景不透明度")]
     public double Opacity
     {
         get => _opacity;
@@ -1032,7 +1032,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("界面缩放", SettingsInfoCategory.MainWindow, min: 0.1)]
+    [SettingsInfo("界面缩放")]
     public double Scale
     {
         get => _scale;
@@ -1066,7 +1066,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("圆角半径", SettingsInfoCategory.MainWindow, min:0, max:20)]
+    [SettingsInfo("圆角半径")]
     public double RadiusX
     {
         get => _radiusX;
@@ -1181,7 +1181,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Components
 
-    [SettingsInfo("组件配置方案")]
+    [SettingsInfo("组件配置方案", "\ue06f")]
     public string CurrentComponentConfig
     {
         get => _currentComponentConfig;
@@ -1552,7 +1552,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// <summary>
     /// 更新模式
     /// </summary>
-    /// 
     public int UpdateMode
     {
         get => _updateMode;
@@ -1693,7 +1692,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     /// <summary>
     /// 窗口停靠位置
-    /// 
+    ///
     /// </summary>
     /// <value>
     /// <code>
@@ -1704,7 +1703,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// #############
     /// </code>
     /// </value>
-    [SettingsInfo("窗口停靠位置", SettingsInfoCategory.MainWindow, enums:null)]
+    [SettingsInfo("窗口停靠位置", "\uf397", enums: ["左上角", "中上侧", "右上角", "左下角", "中下侧", "右下角"])]
     public int WindowDockingLocation
     {
         get => _windowDockingLocation;
@@ -1750,7 +1749,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("窗口向右偏移", SettingsInfoCategory.MainWindow)]
+    [SettingsInfo("窗口向右偏移", "\ue099")]
     public int WindowDockingOffsetX
     {
         get => _windowDockingOffsetX;
@@ -1762,7 +1761,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("窗口向下偏移", SettingsInfoCategory.MainWindow)]
+    [SettingsInfo("窗口向下偏移", "\ue094")]
     public int WindowDockingOffsetY
     {
         get => _windowDockingOffsetY;
@@ -1780,7 +1779,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _windowDockingMonitorIndex) return;
-            
+
 
             if (value < 0)
             {
@@ -1798,7 +1797,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// 0 - 置底<br/>
     /// 1 - 置顶
     /// </value>
-    [SettingsInfo("窗口层级", SettingsInfoCategory.MainWindow, enums:["置底", "置顶"])]
+    [SettingsInfo("窗口层级", "\uea2f", enums: ["置底", "置顶"])]
     public int WindowLayer
     {
         get => _windowLayer;
@@ -1930,7 +1929,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         get => _excludedWeatherAlerts;
         set
         {
-            if (Equals(value, _excludedWeatherAlerts)) return;
+            if (value == _excludedWeatherAlerts) return;
             _excludedWeatherAlerts = value;
             OnPropertyChanged();
         }
