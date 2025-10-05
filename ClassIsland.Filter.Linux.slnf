@@ -13,7 +13,8 @@
       "ClassIsland.Shared\\ClassIsland.Shared.csproj",
       "ClassIsland\\ClassIsland.csproj",
       "platforms\\ClassIsland.Platforms.Linux\\ClassIsland.Platforms.Linux.csproj",
-      "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj"
+      "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj",
+      "vendors\\PhainonDistributionCenter.Shared\\PhainonDistributionCenter.Shared.csproj"
     ]
   }
 }
