@@ -114,6 +114,7 @@ class Program
         var service = new WindowPlatformServices();
         PlatformServices.WindowPlatformService = service;
         PlatformServices.LocationService = new LocationService();
+        PlatformServices.DesktopToastService = new DesktopToastService();
         postInitCallback = () =>
         {
             service.PostInit();

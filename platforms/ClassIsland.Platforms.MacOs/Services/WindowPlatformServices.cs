@@ -14,7 +14,6 @@ namespace ClassIsland.Platforms.MacOs.Services;
 
 public class WindowPlatformServices : IWindowPlatformService, IDisposable
 {
-    private bool _isMacosFxxked = false;
     private List<EventHandler<ForegroundWindowChangedEventArgs>> _handlers = [];
     private NSObject? _observer;
 
@@ -161,12 +160,7 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
         }
         catch (Exception e)
         {
-            if (_isMacosFxxked)
-            {
-                return;
-            }
-            _isMacosFxxked = true;
-            _ = CommonTaskDialogs.ShowDialog("Fuck macOS Platform Error", e.ToString());
+            // ignored
         }
     }
 
