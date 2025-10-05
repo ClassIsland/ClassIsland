@@ -71,6 +71,18 @@
                         <Separator />
                         <TextBlock Text="Shimmer" />
                         <ci:Shimmer Width="64"/>
+                        <controls:ParallelogramControl SlantedHeight="40" Width="200" Height="40"
+                                                       Fill="#01fff0" StrokeThickness="0"
+                                                       x:Name="ParallelogramControl"/>
+                        <Slider Minimum="20" Maximum="400" Value="{Binding #ParallelogramControl.Width}"/>
+                        <Border Width="1000" Height="40">
+                            <controls:SlantedMaskControl x:Name="SlantedMaskControl" ClipToBounds="True"
+                                                         RegionDurationMs="300"
+                                                         StageStaggerMs="120"
+                                                         Fill="Aqua"/>
+                        </Border>
+                        <Button Click="ButtonSlantedMaskControlPlay_OnClick">Play</Button>
+                        <CheckBox IsChecked="{Binding #SlantedMaskControl.IsOpened}">IsOpened</CheckBox>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

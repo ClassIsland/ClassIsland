@@ -17,6 +17,7 @@
         <HotAvaloniaIncludeExtensions>True</HotAvaloniaIncludeExtensions>
         <OutputType>Library</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX'">
     </PropertyGroup>

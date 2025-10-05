@@ -114,4 +114,9 @@ public partial class DevPortalWindow : MyWindow
     {
         ViewModel.MarkdownText = MarkdownEditor.Text;
     }
+
+    private void ButtonSlantedMaskControlPlay_OnClick(object? sender, RoutedEventArgs e)
+    {
+        SlantedMaskControl.Open();
+    }
 }
