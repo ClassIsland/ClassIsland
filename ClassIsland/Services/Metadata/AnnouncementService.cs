@@ -65,7 +65,7 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
         {
             var time = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
             AnnouncementsInternal =
-                await WebRequestHelper.SaveJson<ObservableCollection<Announcement>>(new Uri($"https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/announcements.json?time={time}"), Path.Combine(CommonDirectories.AppCacheFolderPath,
+                await WebRequestHelper.Default.SaveJson<ObservableCollection<Announcement>>(new Uri($"https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/announcements.json?time={time}"), Path.Combine(CommonDirectories.AppCacheFolderPath,
                     "Announcements.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
         }
         catch (Exception e)

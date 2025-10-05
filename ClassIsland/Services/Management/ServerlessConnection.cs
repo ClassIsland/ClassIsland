@@ -43,14 +43,14 @@ public class ServerlessConnection : IManagementServerConnection
     {
         var decorateUrl = DecorateUrl(url);
         Logger.LogInformation("发起json请求：{}", decorateUrl);
-        return await WebRequestHelper.GetJson<T>(decorateUrl);
+        return await WebRequestHelper.Default.GetJson<T>(decorateUrl);
     }
 
     public async Task<T> SaveJsonAsync<T>(string url, string path)
     {
         var decorateUrl = DecorateUrl(url);
         Logger.LogInformation("保存json请求：{} {}", decorateUrl, path);
-        return await WebRequestHelper.SaveJson<T>(decorateUrl, path);
+        return await WebRequestHelper.Default.SaveJson<T>(decorateUrl, path);
     }
 
     public event EventHandler<ClientCommandEventArgs>? CommandReceived;

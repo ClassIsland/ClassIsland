@@ -12,20 +12,25 @@ using Sentry;
 
 namespace ClassIsland.Helpers;
 
-public class WebRequestHelper
+public class WebRequestHelper(Uri? baseUri = null)
 {
     private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-    private static HttpClient HttpClient { get; } = new(new SentryHttpMessageHandler());
+    private HttpClient HttpClient { get; } = new(new SentryHttpMessageHandler())
+    {
+        BaseAddress = baseUri
+    };
 
-    private static readonly int MaxRetries = 7;
+    private const int MaxRetries = 7;
 
-    public static async Task<T> GetJson<T>(Uri uri, int retries=3, CancellationToken? cancellationToken=null, bool verifySign=false, string? publicKey=null)
+    public static WebRequestHelper Default { get; } = new();
+
+    public async Task<T> GetJson<T>(Uri uri, int retries=3, CancellationToken? cancellationToken=null, bool verifySign=false, string? publicKey=null)
     {
         var logger = IAppHost.TryGetService<ILogger<WebRequestHelper>>();
-        cancellationToken = cancellationToken ?? CancellationToken.None;
+        cancellationToken ??= CancellationToken.None;
         if (retries > MaxRetries)
         {
-            throw new ArgumentException("重试次数超过规定最大重试次数。", nameof(retries));
+            throw new InvalidOperationException("重试次数超过规定最大重试次数。");
         }
         logger?.LogTrace("Json GET: {}", uri);
         var retryTime = TimeSpan.FromSeconds(1);
@@ -47,7 +52,7 @@ public class WebRequestHelper
                     }
                 }
                 var r = JsonSerializer.Deserialize<T>(data, JsonOptions);
-                return r == null ? throw new Exception("Json.Deserialize returned null value.") : r;
+                return r == null ? throw new InvalidOperationException("Json.Deserialize returned null value.") : r;
             }
             catch (Exception ex)
             {
@@ -64,10 +69,11 @@ public class WebRequestHelper
         throw new Exception($"在 {retries} 次重试后无法完成对 {uri} 的GET请求。", innerException);
     }
 
-    public static async Task<T> SaveJson<T>(Uri uri, string path, int retries = 3, CancellationToken? cancellationToken = null, bool verifySign = false, string? publicKey = null)
+    public async Task<T> SaveJson<T>(Uri uri, string path, int retries = 3, CancellationToken? cancellationToken = null, bool verifySign = false, string? publicKey = null)
     {
-        var j = await GetJson<T>(uri, retries, cancellationToken, verifySign, publicKey);
+        var j = await this.GetJson<T>(uri, retries, cancellationToken, verifySign, publicKey);
         ConfigureFileHelper.SaveConfig(path, j);
         return j;
     }
+    
 }

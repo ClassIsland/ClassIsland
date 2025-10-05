@@ -179,10 +179,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private async Task AppStartupBackground()
     {
-        if (Settings.IsAutoSelectUpgradeMirror && DateTime.Now - Settings.LastSpeedTest >= TimeSpan.FromDays(7))
-        {
-            await App.GetService<UpdateNodeSpeedTestingService>().RunSpeedTestAsync();
-        }
         await CheckUpdateAsync();
 
         if (Settings.UpdateMode < 2)
@@ -257,7 +253,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             var spanGetIndex = transaction.StartChild("getIndex");
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
-            Index = await WebRequestHelper.SaveJson<VersionsIndex>(new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "Index.json"), verifySign:true, publicKey:MetadataPublisherPublicKey);
+            Index = await WebRequestHelper.Default.SaveJson<VersionsIndex>(new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "Index.json"), verifySign:true, publicKey:MetadataPublisherPublicKey);
             SyncSpeedTestResults();
             var version = Index.Versions
                 .Where(x => Version.TryParse(x.Version, out _) && x.Channels.Contains(Settings.SelectedUpdateChannelV2))
@@ -272,7 +268,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             }
 
             var spanGetDetail = transaction.StartChild("getDetail");
-            SelectedVersionInfo = await WebRequestHelper.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
+            SelectedVersionInfo = await WebRequestHelper.Default.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             await PlatformServices.DesktopToastService.ShowToastAsync("发现新版本",
                 $"{Assembly.GetExecutingAssembly().GetName().Version} -> {version.Version}\n" +

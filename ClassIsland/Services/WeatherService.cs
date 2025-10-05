@@ -161,7 +161,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
                 _ => throw new ArgumentOutOfRangeException()
             };
             Logger.LogInformation("获取城市信息： {}", uri);
-            var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(new Uri(uri));
+            var cityInfoList = await WebRequestHelper.Default.GetJson<List<CityInfo>>(new Uri(uri));
             // 取第一个城市信息
             var cityInfo = cityInfoList.FirstOrDefault();
             if (cityInfo != null && (Settings.WeatherLocationSource != 0 || cityInfo.LocationKey == Settings.CityId)
@@ -190,7 +190,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
             var uri =
                 $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude={cityLatitude}&longitude={cityLongitude}&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
-            var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
+            var info = await WebRequestHelper.Default.GetJson<WeatherInfo>(new Uri(uri));
 
             // 排除天气预警
             var validExclusions = Settings.ExcludedWeatherAlerts
@@ -250,7 +250,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         {
             Logger.LogInformation("{}： {}", logText, uri);
 
-            var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(uri);
+            var cityInfoList = await WebRequestHelper.Default.GetJson<List<CityInfo>>(uri);
             
             var cities = cityInfoList?.Select(cityInfo => new City
             {

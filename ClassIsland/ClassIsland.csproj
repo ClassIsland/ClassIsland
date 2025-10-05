@@ -147,6 +147,7 @@
         <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
         <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
+        <ProjectReference Include="..\vendors\PhainonDistributionCenter.Shared\PhainonDistributionCenter.Shared.csproj" />
     </ItemGroup>
 	<ItemGroup>
 	</ItemGroup>

@@ -123,7 +123,7 @@ public partial class AboutSettingsPage : SettingsPageBase
         try
         {
             ViewModel.SettingsService.Settings.ContributorsCache =
-                await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
+                await WebRequestHelper.Default.GetJson<AllContributorsRc>(new Uri(
                     "https://ghfast.top/https://raw.githubusercontent.com/ClassIsland/ClassIsland/master/.all-contributorsrc"));
         }
         catch (Exception ex)

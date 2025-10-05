@@ -213,7 +213,7 @@ public class ManagementService : IManagementService
         switch (settings.ManagementServerKind)
         {
             case ManagementServerKind.Serverless:
-                mf = await WebRequestHelper.GetJson<ManagementManifest>(new Uri(settings.ManifestUrlTemplate));
+                mf = await WebRequestHelper.Default.GetJson<ManagementManifest>(new Uri(settings.ManifestUrlTemplate));
                 break;
             case ManagementServerKind.ManagementServer:
                 var connection = new ManagementServerConnection(settings, Persist.ClientUniqueId, true);

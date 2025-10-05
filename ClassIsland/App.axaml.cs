@@ -623,7 +623,6 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IHangService, HangService>();
                 services.AddSingleton<ConsoleService>();
                 //services.AddHostedService<BootService>();
-                services.AddSingleton<UpdateNodeSpeedTestingService>();
                 services.AddSingleton<DiagnosticService>();
                 services.AddSingleton<IManagementService, ManagementService>();
                 services.AddSingleton<AppLogService>();
