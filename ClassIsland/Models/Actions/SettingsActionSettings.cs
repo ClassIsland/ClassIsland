@@ -13,8 +13,9 @@ public class SettingsActionSettings : ObservableRecipient
         get => _name;
         set
         {
-            if (value == _name) return;
-            _name = value;
+            var v = value.Trim();
+            if (v == _name) return;
+            _name = v;
             OnPropertyChanged();
         }
     }

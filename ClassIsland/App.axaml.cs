@@ -789,6 +789,7 @@ public partial class App : AppBase, IAppHost
                 services.AddRule<RainTimeRuleSettings, RainTimeRuleSettingsControl>("classisland.weather.rainTime", "距离降水开始/结束还剩", "\uF43F");
                 // 行动提供方
                 services.AddAction<SignalTriggerSettings, BroadcastSignalActionSettingsControl>("classisland.broadcastSignal", "广播信号", "\uE561");
+                services.AddAction<SleepAction, SleepActionSettingsControl>();
                 services.AddAction<CurrentComponentConfigActionSettings, CurrentComponentConfigActionSettingsControl>("classisland.settings.currentComponentConfig", "组件配置方案", "\ue06f", "应用设置");
                 services.AddAction<ThemeActionSettings, ThemeActionSettingsControl>("classisland.settings.theme", "应用主题", "\uE5CB", "应用设置");
                 services.AddAction<WindowDockingLocationActionSettings, WindowDockingLocationActionSettingsControl>("classisland.settings.windowDockingLocation", "窗口停靠位置", "\uf397", "应用设置");
@@ -797,7 +798,6 @@ public partial class App : AppBase, IAppHost
                 services.AddAction<WindowDockingOffsetYActionSettings, WindowDockingOffsetYActionSettingsControl>("classisland.settings.windowDockingOffsetY", "窗口向下偏移", "\ue094", "应用设置");
                 services.AddAction<RunAction, RunActionSettingsControl>();
                 services.AddAction<NotificationAction, NotificationActionSettingsControl>();
-                services.AddAction<SleepAction, SleepActionSettingsControl>();
                 services.AddAction<SettingsAction, SettingsActionSettingsControl>();
                 services.AddAction<WeatherNotificationAction, WeatherNotificationActionSettingControl>();
                 services.AddAction<AppQuitAction>();

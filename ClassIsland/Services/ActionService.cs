@@ -166,11 +166,15 @@ public class ActionService : IActionService
         Logger = logger;
 
         ActionMenuTree.TryGetValue("应用设置", out var group);
-        ActionMenuTree.Remove(group);
         group.IconGlyph = "\uef27";
-        ActionMenuTree.Add(group);
+        (group as ActionMenuTreeGroup)?.Children.Insert(0,
+            new ActionMenuTreeItem<SettingsActionSettings>(
+                "classisland.settings",
+                "选择应用设置…",
+                "\uEEF7",
+                s => s.Name = ""));
 
-        ActionMenuTree.Add(new ActionMenuTreeGroup("运行", "\uec2e"));
+        ActionMenuTree.Add(new ActionMenuTreeGroup("运行", "\uEC2E"));
         ActionMenuTree["运行"].AddRange([
             new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "应用程序", "\uF4B1",
                 s => s.RunType = RunActionSettings.RunActionRunType.Application),

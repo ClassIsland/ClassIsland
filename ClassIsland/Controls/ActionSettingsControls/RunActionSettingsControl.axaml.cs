@@ -163,9 +163,6 @@ public partial class RunActionSettingsControl : ActionSettingsControlBase<RunAct
 
     List<FilePickerFileType>? FileTypes { get; set; } = [];
 
-    public static FuncValueConverter<double, Thickness> TextBlockPaddingFuncConverter { get; } =
-        new(s => new Thickness(10, 5, s,6));
-
 #region PropertyChanged
     public new event PropertyChangedEventHandler? PropertyChanged;
     void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>

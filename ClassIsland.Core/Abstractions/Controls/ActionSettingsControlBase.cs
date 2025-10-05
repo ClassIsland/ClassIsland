@@ -38,16 +38,19 @@ public abstract class ActionSettingsControlBase : UserControl
         ActionIconChanged?.Invoke(this, newIconGlyph);
 
     /// 调用此方法，以打开抽屉并显示控件。
-    /// <param name="control">要显示的 ContentControl 控件。注意：此控件需设定宽度。</param>
+    /// <param name="control">要显示的 ContentControl 或 Control 控件。注意：此控件需设定宽度。</param>
     /// <param name="isOpenInDialog">优先在 Dialog 中打开。默认为 false，即优先在应用设置抽屉中打开。</param>
-    protected async Task ShowDrawer(ContentControl control, bool isOpenInDialog = false)
+    protected async Task ShowDrawer(Control control, bool isOpenInDialog = false)
     {
         if (!isOpenInDialog &&
             this.GetVisualRoot() is Window window &&
             window.GetType().FullName == "ClassIsland.Views.SettingsWindowNew")
         {
             control.Classes.Add("in-drawer");
-            control.Padding = new(16);
+            if (control is ContentControl cc)
+                cc.Padding = new(16);
+            else
+                control.Margin = new(16);
             SettingsPageBase.OpenDrawerCommand.Execute(control);
         }
         else

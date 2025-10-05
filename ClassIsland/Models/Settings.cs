@@ -458,7 +458,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-    
+
     [JsonPropertyName("HiedRules")]
     public Ruleset HideRules
     {
@@ -546,7 +546,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// </list>
     /// </value>
 
-    [SettingsInfo("点击托盘图标行为", enums:null)]
+    [SettingsInfo("点击托盘图标行为", enums: ["打开主菜单", "打开档案编辑窗口", "显示/隐藏主界面", "打开换课窗口"])]
     public int TaskBarIconClickBehavior
     {
         get => _taskBarIconClickBehavior;
@@ -918,8 +918,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     }
 
     [JsonIgnore]
-    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1 
-        ? Colors.DodgerBlue 
+    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1
+        ? Colors.DodgerBlue
         : WallpaperColorPlatte[SelectedPlatteIndex];
 
     public int SelectedPlatteIndex
@@ -1553,7 +1553,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// <summary>
     /// 更新模式
     /// </summary>
-    /// 
     public int UpdateMode
     {
         get => _updateMode;
@@ -1672,7 +1671,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     /// <summary>
     /// 窗口停靠位置
-    /// 
+    ///
     /// </summary>
     /// <value>
     /// <code>
@@ -1757,7 +1756,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _windowDockingMonitorIndex) return;
-            
+
 
             if (value < 0)
             {
@@ -1775,7 +1774,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// 0 - 置底<br/>
     /// 1 - 置顶
     /// </value>
-    [SettingsInfo("窗口层级", SettingsInfoCategory.MainWindow, enums:["置底", "置顶"])]
+    [SettingsInfo("窗口层级", SettingsInfoCategory.MainWindow, enums: ["置底", "置顶"])]
     public int WindowLayer
     {
         get => _windowLayer;
@@ -1907,7 +1906,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         get => _excludedWeatherAlerts;
         set
         {
-            if (Equals(value, _excludedWeatherAlerts)) return;
+            if (value == _excludedWeatherAlerts) return;
             _excludedWeatherAlerts = value;
             OnPropertyChanged();
         }
