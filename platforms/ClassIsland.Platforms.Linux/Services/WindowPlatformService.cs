@@ -140,26 +140,17 @@ public class WindowPlatformService : IWindowPlatformService
         }
         if ((features & WindowFeatures.Bottommost) > 0)
         {
+            ChangeWMAtoms(handle, state, XInternAtom(_display, "_NET_WM_STATE_BELOW", true));
             XLowerWindow(_display, handle);
         }
         if ((features & WindowFeatures.Topmost) > 0)
         {
+            ChangeWMAtoms(handle, state, XInternAtom(_display, "_NET_WM_STATE_ABOVE", true));
             XRaiseWindow(_display, handle);
-            var netWmState = XInternAtom(_display, "_NET_WM_STATE", false);
-            var netWmStateAbove = XInternAtom(_display, "_NET_WM_STATE_ABOVE", false);
-            nint[] atoms = { netWmStateAbove };
-            XChangeProperty(
-                _display, handle,
-                netWmState,             // property
-                4,                // type
-                32,                     // format: 32-bit
-                0,        // 替换模式
-                atoms, atoms.Length
-            );
         }
         if ((features & WindowFeatures.Private) > 0)
         {
-            
+            // 这个 X11 暂时实现不了
         }
         if ((features & WindowFeatures.ToolWindow) > 0 && toplevel is Window window)
         {
@@ -302,5 +293,28 @@ public class WindowPlatformService : IWindowPlatformService
         }
 
         XClearWindow(_display, handle);
+    }
+    
+    private void ChangeWMAtoms(nint window, bool enable, params IntPtr[] atoms)
+    {
+        var wmState = X.XInternAtom(_display, "_NET_WM_STATE", true);
+
+        var xev = new XEvent
+        {
+            ClientMessageEvent =
+            {
+                type = XEventName.ClientMessage,
+                send_event = 1,
+                window = window,
+                message_type = wmState,
+                format = 32,
+                ptr1 = new IntPtr(enable ? 1 : 0),
+                ptr2 = atoms[0],
+                ptr3 = atoms.Length > 1 ? atoms[1] : IntPtr.Zero,
+                ptr4 = atoms.Length > 2 ? atoms[2] : IntPtr.Zero
+            }
+        };
+        XSendEvent(_display, _root, false,
+            new IntPtr((int)(XEventMask.SubstructureRedirectMask | XEventMask.SubstructureNotifyMask)), ref xev);
     }
 }

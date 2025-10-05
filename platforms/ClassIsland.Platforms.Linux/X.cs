@@ -115,6 +115,10 @@ public partial class X
 
     [DllImport(X11)]
     public static extern void XFlush(nint display);
+    
+    [DllImport(X11)]
+    public static extern int XSendEvent(IntPtr display, IntPtr window, bool propagate, IntPtr event_mask,
+	    ref XEvent send_event);
 
     [StructLayout(LayoutKind.Sequential)]
     public struct XClassHint
@@ -820,4 +824,6 @@ public partial class X
     public const int ShapeBounding = 0;
     public const int ShapeClip = 1;
     public const int ShapeInput = 2;
+    
+    
 }

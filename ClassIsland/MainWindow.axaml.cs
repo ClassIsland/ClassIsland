@@ -671,8 +671,9 @@ public partial class MainWindow : Window
         }
 
         // BUG: 这个不生效！！！！！！
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
-            ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, Topmost);
+        
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, Topmost);
     }
 
     private void ButtonSettings_OnClick(object sender, EventArgs e)
