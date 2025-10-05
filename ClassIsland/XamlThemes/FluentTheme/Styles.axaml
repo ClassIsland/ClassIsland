@@ -137,7 +137,7 @@
                     </Grid>
                     <!-- Mask -->
                     <Border x:Name="OverlayMask" Classes="docking"
-                            Width="{TemplateBinding BackgroundWidth}"
+                            MinWidth="{TemplateBinding BackgroundWidth}"
                             TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                             CornerRadius="{Binding ViewModel.Settings.RadiusX, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}"
                             HorizontalAlignment="Stretch"
