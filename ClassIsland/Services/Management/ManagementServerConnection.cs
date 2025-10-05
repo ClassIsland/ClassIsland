@@ -374,14 +374,14 @@ public class ManagementServerConnection : IManagementServerConnection
         return new Uri(uri);
     }
 
-    public async Task<T> GetJsonAsync<T>(string url)
+    public async Task<T> GetJsonAsync<T>(string url) where T : class
     {
         var decorateUrl = DecorateUrl(url);
         Logger.LogInformation("发起json请求：{}", decorateUrl);
         return await WebRequestHelper.Default.GetJson<T>(decorateUrl);
     }
 
-    public async Task<T> SaveJsonAsync<T>(string url, string path)
+    public async Task<T> SaveJsonAsync<T>(string url, string path) where T : class
     {
         var decorateUrl = DecorateUrl(url);
         Logger.LogInformation("保存json请求：{} {}", decorateUrl, path);

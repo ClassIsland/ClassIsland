@@ -1,4 +1,5 @@
 using PhainonDistributionCenter.Shared.Enums.Api;
+using PhainonDistributionCenter.Shared.Exceptions;
 
 namespace PhainonDistributionCenter.Shared.Models.Api.Responses;
 
@@ -34,6 +35,18 @@ public class Result
     /// </summary>
     public string Message { get; set; } = "";
 
+    /// <summary>
+    /// 核验请求是否成功。如果不成功，将抛出异常。
+    /// </summary>
+    public void VerifySuccess()
+    {
+        if (Code == StatusCodes.Success)
+        {
+            return;
+        }
+
+        throw new PhainonApiException(Code, $"{Message} ({Code}/{Code.GetHashCode()})");
+    }
 
 }
 

@@ -8,11 +8,12 @@ using ClassIsland.Shared.Helpers;
 
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Security;
+using PhainonDistributionCenter.Shared.Models.Api.Responses;
 using Sentry;
 
 namespace ClassIsland.Helpers;
 
-public class WebRequestHelper(Uri? baseUri = null)
+public class WebRequestHelper(Uri? baseUri = null, bool phainon = false)
 {
     private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
     private HttpClient HttpClient { get; } = new(new SentryHttpMessageHandler())
@@ -24,7 +25,8 @@ public class WebRequestHelper(Uri? baseUri = null)
 
     public static WebRequestHelper Default { get; } = new();
 
-    public async Task<T> GetJson<T>(Uri uri, int retries=3, CancellationToken? cancellationToken=null, bool verifySign=false, string? publicKey=null)
+    public async Task<T> GetJson<T>(Uri uri, int retries = 3, CancellationToken? cancellationToken = null,
+        bool verifySign = false, string? publicKey = null) where T : class
     {
         var logger = IAppHost.TryGetService<ILogger<WebRequestHelper>>();
         cancellationToken ??= CancellationToken.None;
@@ -51,8 +53,19 @@ public class WebRequestHelper(Uri? baseUri = null)
                         throw new GeneralSecurityException("数据签名校验失败。");
                     }
                 }
-                var r = JsonSerializer.Deserialize<T>(data, JsonOptions);
-                return r == null ? throw new InvalidOperationException("Json.Deserialize returned null value.") : r;
+
+                T? r;
+                if (phainon)
+                {
+                    var phainonResult = JsonSerializer.Deserialize<Result<T>>(data, JsonOptions);
+                    phainonResult?.VerifySuccess();
+                    r = phainonResult?.Content;
+                }
+                else
+                {
+                    r = JsonSerializer.Deserialize<T>(data, JsonOptions);
+                }
+                return r ?? throw new InvalidOperationException("Json.Deserialize returned null value.");
             }
             catch (Exception ex)
             {
@@ -69,7 +82,8 @@ public class WebRequestHelper(Uri? baseUri = null)
         throw new Exception($"在 {retries} 次重试后无法完成对 {uri} 的GET请求。", innerException);
     }
 
-    public async Task<T> SaveJson<T>(Uri uri, string path, int retries = 3, CancellationToken? cancellationToken = null, bool verifySign = false, string? publicKey = null)
+    public async Task<T> SaveJson<T>(Uri uri, string path, int retries = 3, CancellationToken? cancellationToken = null,
+        bool verifySign = false, string? publicKey = null) where T : class
     {
         var j = await this.GetJson<T>(uri, retries, cancellationToken, verifySign, publicKey);
         ConfigureFileHelper.SaveConfig(path, j);
