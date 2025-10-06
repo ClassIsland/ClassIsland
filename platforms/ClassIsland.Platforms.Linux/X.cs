@@ -28,6 +28,9 @@ public partial class X
 
     [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
     public static extern void XMapWindow(IntPtr display, IntPtr window);
+    
+    [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
+    public static extern int XUnmapWindow(IntPtr display, IntPtr window);
 
     [DllImport(X11, CallingConvention = CallingConvention.Cdecl)]
     public static extern void XRaiseWindow(IntPtr display, IntPtr window);
@@ -159,26 +162,27 @@ public partial class X
     [StructLayout(LayoutKind.Sequential)]
     public struct XWindowAttributes
     {
-        public int x;
-        public int y;
-        public int width;
-        public int height;
-        public int border_width;
-        public int depth;
-        public int visual;
-        public IntPtr colormap;
-        public int root;
-        public int class_window;
-        public int colormap_win;
-        public int map_state;
-        public int all_event_mask;
-        public int your_event_mask;
-        public int do_not_use;
-        public int resize_inc_x;
-        public int resize_inc_y;
-        public int border_pixel;
-        public int background_pixel;
-        public IntPtr background_pixmap;
+	    public int x, y;			/* location of window */
+	    public int width, height;		/* width and height of window */
+	    public int border_width;		/* border width of window */
+	    public int depth;			/* depth of window */
+	    public nint visual;			/* the associated visual structure */
+	    public nint root;			/* root of screen containing window */
+	    public int class_name;			/* InputOutput, InputOnly*/
+	    public int bit_gravity;		/* one of the bit gravity values */
+	    public int win_gravity;		/* one of the window gravity values */
+	    public int backing_store;		/* NotUseful, WhenMapped, Always */
+	    public ulong backing_planes;	/* planes to be preserved if possible */
+	    public ulong backing_pixel;	/* value to be used when restoring planes */
+	    public int save_under;		/* boolean, should bits under be saved? */
+	    public nint colormap;		/* color map to be associated with window */
+	    public int map_installed;		/* boolean, is color map currently installed*/
+	    public int map_state;			/* IsUnmapped, IsUnviewable, IsViewable */
+	    public long all_event_masks;		/* set of events all people have interest in*/
+	    public long your_event_mask;		/* my event mask */
+	    public long do_not_propagate_mask;	/* set of events that should not propagate */
+	    public int override_redirect;		/* boolean value for override-redirect */
+	    public nint screen;			/* back pointer to correct screen */
     }
     
     [Flags]

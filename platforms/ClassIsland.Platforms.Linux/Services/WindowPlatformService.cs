@@ -158,11 +158,23 @@ public class WindowPlatformService : IWindowPlatformService
         }
         if ((features & WindowFeatures.SkipManagement) > 0)
         {
-            var attributes = new XSetWindowAttributes();
-            attributes.override_redirect = state ? 1 : 0;
-            XChangeWindowAttributes(_display, handle, CWOverrideRedirect, ref attributes);
-            XMapWindow(_display, handle);
-            XFlush(_display);
+            var attributesOld = new XWindowAttributes();
+            XGetWindowAttributes(_display, handle, ref attributesOld);
+            var b = state ? 1 : 0;
+            if (attributesOld.override_redirect != b)
+            {
+                var attributes = new XSetWindowAttributes
+                {
+                    override_redirect = b
+                };
+                XUnmapWindow(_display, handle);
+                XChangeWindowAttributes(_display, handle, CWOverrideRedirect, ref attributes);
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    XMapWindow(_display, handle);
+                    XFlush(_display);
+                });
+            }
         }
         
     }

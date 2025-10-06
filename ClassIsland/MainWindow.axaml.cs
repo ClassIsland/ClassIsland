@@ -366,8 +366,6 @@ public partial class MainWindow : Window
     public override void Show()
     {
         IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
-            ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（2）");
         UpdateTheme();
         base.Show();
@@ -673,9 +671,7 @@ public partial class MainWindow : Window
                 break;
         }
 
-        // BUG: 这个不生效！！！！！！
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, Topmost);
-        
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, Topmost);
     }
 
@@ -769,14 +765,7 @@ public partial class MainWindow : Window
         var newPos = new PixelPoint((int)x, (int)y);
         if (Position != newPos)
         {
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, false);
             Position = newPos;
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                // PlatformServices.WindowPlatformService.ClearWindow(this);
-                PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement,
-                    ViewModel.Settings.WindowLayer == 1 || ViewModel.IsNotificationWindowExplicitShowed);
-            }, DispatcherPriority.ApplicationIdle);
         }
 
         if (updateEffectWindow)
