@@ -160,7 +160,7 @@ public partial class DebugPage : SettingsPageBase
             this.ShowWarningToast("没有明显释放内存。");
             return;
         }
-        this.ShowToast($"已释放 {NetworkSpeedFormater.FormatFileSize(before - after)} 内存。");
+        this.ShowToast($"已释放 {Helpers.StorageSizeHelper.FormatSize((ulong)(before - after))} 内存。");
     }
 
     private async void MenuItemOpenMdDocs_OnClick(object sender, RoutedEventArgs e)
