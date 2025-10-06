@@ -151,17 +151,34 @@
                                                          RegionDurationMs="360"
                                                          StageStaggerMs="120"
                                                          Fill="{DynamicResource AccentFillColorDefaultBrush}"/>
-                            <ContentPresenter x:Name="OverlayMaskContent"
-                                              Opacity="0"
-                                              Content="{Binding MaskContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
-                                              ContentTemplate="{Binding MaskContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}">
-                                <ContentPresenter.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform />
-                                    </TransformGroup>
-                                </ContentPresenter.RenderTransform>
-                            </ContentPresenter>
+                            <Border Width="{Binding #OverlayMaskContent.Bounds.Width}"/>
                         </Panel>
+                    </Border>
+                    <Border TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}">
+                        <Border.Clip>
+                            <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
+                                <Binding Path="#OverlayMask.Bounds.Width" Mode="OneWay" />
+                                <Binding Path="Bounds.Width" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                                <Binding Path="Bounds.Height" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                                <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"
+                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                                <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                                <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                            </MultiBinding>
+                        </Border.Clip>
+                        <ContentPresenter x:Name="OverlayMaskContent"
+                                          Opacity="0"
+                                          Classes="docking"
+                                          Content="{Binding MaskContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
+                                          ContentTemplate="{Binding MaskContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}">
+                            <ContentPresenter.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform />
+                                </TransformGroup>
+                            </ContentPresenter.RenderTransform>
+                        </ContentPresenter>
                     </Border>
                 </Grid>
             </ControlTemplate>
