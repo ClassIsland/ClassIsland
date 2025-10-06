@@ -46,7 +46,7 @@ public class SettingsInfo(
     /// <summary>
     /// 应用设置属性枚举项中文名称。
     /// </summary>
-    public string[]? Enums { get; } = enums;
+    public string[]? Enums { get; set; } = enums;
 
     /// <summary>
     /// 应用设置属性最小值。（预留）

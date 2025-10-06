@@ -56,10 +56,10 @@
                                 <TextBlock x:Name="ValueTextBlock"
                                            Margin="4 0 0 0"
                                            VerticalAlignment="Center"
-                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                           Text="{Binding Value}"
                                            DockPanel.Dock="Right"
-                                           ToolTip.Tip="{Binding Value}"
-                                           Text="{Binding Value}" />
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                           ToolTip.Tip="{Binding Value}" />
 
                             </DockPanel>
                         </DataTemplate>
@@ -105,38 +105,39 @@
         <Panel Grid.Column="2">
             <ci:Field Label="设置值">
                 <Grid ColumnDefinitions="* Auto">
-                    <NumericUpDown Grid.Column="0"
-                                   IsVisible="{Binding #This.ViewModel.Kind, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=int}"
-                                   FormatString="0"
-                                   Value="{Binding Settings.Value}"
-                                   Watermark="{Binding #This.ViewModel.Pack.Value, FallbackValue=（空）, StringFormat=当前值：{0}}" />
-
-                    <NumericUpDown Grid.Column="0"
-                                   IsVisible="{Binding #This.ViewModel.Kind, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=double}"
-                                   Value="{Binding Settings.Value}"
-                                   Watermark="{Binding #This.ViewModel.Pack.Value, FallbackValue=（空）, StringFormat=当前值：{0}}" />
-
-                    <ToggleSwitch Grid.Column="0"
-                                  IsVisible="{Binding #This.ViewModel.Kind, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=bool}"
-                                  IsChecked="{Binding !!Settings.Value}"
-                                  Margin="5 -6 0 0"
-                                  VerticalAlignment="Top"/>
-
-                    <fa:ColorPickerButton Grid.Column="0"
-                                          IsVisible="{Binding #This.ViewModel.Kind, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=color}"
-                                          VerticalAlignment="Center"
-                                          Color="{Binding Settings.Value, Mode=TwoWay, Converter={StaticResource ColorStringToAvaloniaColorConverter}}" />
-
-                    <ComboBox Grid.Column="0"
-                              IsVisible="{Binding #This.ViewModel.Kind, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=enums}"
-                              ItemsSource="{Binding #This.ViewModel.Pack.Info.Enums}"
-                              SelectedIndex="{Binding Settings.Value, Converter={StaticResource PreventNullConverter}}" />
-
-                    <TextBox Grid.Column="0"
-                             VerticalAlignment="Center"
-                             Text="{Binding Settings.Value}"
-                             IsVisible="{Binding #This.ViewModel.Kind, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=normal}"
-                             Watermark="{Binding #This.ViewModel.Pack.Value, FallbackValue=（空）, StringFormat=当前值：{0}}" />
+                    <ContentPresenter x:Name="SettingsActionKindContentPresenter">
+                        <ContentPresenter.ContentTemplate>
+                            <local:SettingsActionKindTemplateSelector Kind="{Binding #This.ViewModel.Kind}">
+                                <DataTemplate x:Key="int">
+                                    <NumericUpDown FormatString="0"
+                                                   Watermark="{Binding #This.ViewModel.Pack.Value, FallbackValue=（空）, StringFormat=当前值：{0}}"
+                                                   Value="{Binding Settings.Value}" />
+                                </DataTemplate>
+                                <DataTemplate x:Key="double">
+                                    <NumericUpDown Watermark="{Binding #This.ViewModel.Pack.Value, FallbackValue=（空）, StringFormat=当前值：{0}}"
+                                                   Value="{Binding Settings.Value}" />
+                                </DataTemplate>
+                                <DataTemplate x:Key="bool">
+                                    <ToggleSwitch Margin="5 -6 0 0"
+                                                  VerticalAlignment="Top"
+                                                  IsChecked="{Binding Settings.Value}" />
+                                </DataTemplate>
+                                <DataTemplate x:Key="color">
+                                    <fa:ColorPickerButton VerticalAlignment="Center"
+                                                          Color="{Binding Settings.Value, Mode=TwoWay, Converter={StaticResource ColorStringToAvaloniaColorConverter}}" />
+                                </DataTemplate>
+                                <DataTemplate x:Key="enums">
+                                    <ComboBox ItemsSource="{Binding #This.ViewModel.Pack.Info.Enums}"
+                                              SelectedIndex="{Binding Settings.Value, Converter={StaticResource PreventNullConverter}}" />
+                                </DataTemplate>
+                                <DataTemplate x:Key="normal">
+                                    <TextBox VerticalAlignment="Center"
+                                             Text="{Binding Settings.Value}"
+                                             Watermark="{Binding #This.ViewModel.Pack.Value, FallbackValue=（空）, StringFormat=当前值：{0}}" />
+                                </DataTemplate>
+                            </local:SettingsActionKindTemplateSelector>
+                        </ContentPresenter.ContentTemplate>
+                    </ContentPresenter>
 
                     <Panel Grid.Column="1">
                         <ci:AnimatedIconButton x:Name="FillCurrentValueButton"

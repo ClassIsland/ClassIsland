@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -18,7 +19,16 @@ namespace ClassIsland.Controls.ActionSettingsControls;
 
 public partial class SettingsActionSettingsControl : ActionSettingsControlBase<SettingsActionSettings>
 {
-    public SettingsActionSettingsControl() => InitializeComponent();
+    public SettingsActionSettingsControl()
+    {
+        InitializeComponent();
+        ViewModel.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(ViewModel.Kind))
+                NotifyKindChanged();
+        };
+    }
+
     SettingsService SettingsService { get; } = App.GetService<SettingsService>();
     public SettingsActionSettingsControlViewModel ViewModel { get; } = new();
     protected override void OnAdded() => OpenSelectorDialog();
@@ -26,7 +36,17 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
 
     void PropertyNameTextBox_OnTextChanged(object? sender, TextChangedEventArgs e) => UpdateSuggestions();
     void FileSelectorButton_OnClick(object? sender, RoutedEventArgs e) => OpenSelectorDialog();
-    void FillCurrentValueButton_OnClick(object? sender, RoutedEventArgs e) => Settings.Value = ViewModel.Pack.Value;
+    void FillCurrentValueButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var prop = SettingsService.GetPropertyInfoByName(Settings.Name);
+            Settings.Value = Serialize(prop.GetValue(SettingsService.Settings), prop.PropertyType);
+        }
+        catch
+        {
+        }
+    }
 
 
     void OpenSelectorDialog()
@@ -43,7 +63,7 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        // UpdateSuggestions();
+        UpdateSuggestions();
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
@@ -61,7 +81,8 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
     {
         try
         {
-            ViewModel.Pack = PackProperty(SettingsService.GetPropertyInfoByName(Settings.Name));
+            ViewModel.Pack = PackProperty(SettingsService.GetPropertyInfoByName(Settings.Name))
+                             ?? throw new KeyNotFoundException();
             var type = ViewModel.Pack.Type;
 
             try
@@ -73,8 +94,15 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
                 Settings.Value = ViewModel.Pack.Value;
             }
 
-            if (ViewModel.Pack?.Info?.Enums != null)
+            if (ViewModel.Pack.Info?.Enums != null)
+            {
                 ViewModel.Kind = "enums";
+            }
+            else if (type.IsEnum)
+            {
+                ViewModel.Kind = "enums";
+                ViewModel.Pack.Info.Enums = Enum.GetNames(type);
+            }
             else if (type == typeof(bool))
                 ViewModel.Kind = "bool";
             else if (type == typeof(int))
@@ -85,12 +113,22 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
                 ViewModel.Kind = "color";
             else
                 ViewModel.Kind = "normal";
+
+            return;
         }
         catch (KeyNotFoundException)
         {
-            ViewModel.Pack.Value = "";
-            ViewModel.Kind = "normal";
         }
+
+        ViewModel.Pack = new();
+        ViewModel.Kind = "normal";
+    }
+
+    void NotifyKindChanged()
+    {
+        var cur = SettingsActionKindContentPresenter.ContentTemplate;
+        SettingsActionKindContentPresenter.ContentTemplate = null;
+        SettingsActionKindContentPresenter.ContentTemplate = cur;
     }
 
 #endregion
@@ -103,7 +141,7 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
         UpdateSearchResults();
     }
 
-    TextBox GlobalSearchSettingsTextBox;
+    TextBox? GlobalSearchSettingsTextBox;
 
     List<SettingsPropertyDetail> _settingsProperties;
 
@@ -134,6 +172,8 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
     List<SettingsPropertyDetail> GetSettingsProperties() =>
         typeof(Settings)
             .GetProperties(SettingsService.SettingsPropertiesFlags)
+            .Where(prop => prop.Name != nameof(Models.Settings.SettingsOverlays) &&
+                           prop.GetCustomAttribute<ObsoleteAttribute>() == null)
             .Select(PackProperty)
             .OfType<SettingsPropertyDetail>()
             .OrderBy(item => item.Info?.Name != null ? 0 : 1)
@@ -142,18 +182,17 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
 
     SettingsPropertyDetail? PackProperty(PropertyInfo prop)
     {
-        object? value = null;
+        object? value;
         try
         {
             value = prop.GetValue(SettingsService.Settings);
         }
         catch
         {
+            return null;
         }
 
-        if (value == null) return null;
-
-        var currentValue = Serialize(value, prop.PropertyType);
+        var currentValue = ToFriendlyValue(value);
 
         // 获取 SettingsInfo 特性
         var settingsInfo = prop.GetCustomAttribute<SettingsInfo>();
@@ -167,6 +206,23 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
         };
     }
 
+    public static string ToFriendlyValue(object? value)
+    {
+        switch (value)
+        {
+            case bool b:
+                return b ? "✓" : "✗";
+            case Color c:
+                return c.ToString();
+            default:
+            {
+                if (value == null || EasyTypes.Contains(value.GetType()))
+                    return value?.ToString() ?? "???";
+                return JsonSerializer.Serialize(value, FriendlyJsonSerializerOptions);
+            }
+        }
+    }
+
     /// <summary>
     /// 存储Settings类中属性的详细信息
     /// </summary>
@@ -175,7 +231,7 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
         /// <summary>
         /// 属性名称
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// 属性类型（Type类型）
@@ -183,9 +239,9 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
         public Type Type { get; set; } = typeof(object);
 
         /// <summary>
-        /// 属性当前值（Json转换后）
+        /// 属性当前值（友好）
         /// </summary>
-        public string Value { get; set; } = string.Empty;
+        public string Value { get; set; } = "";
 
         /// <summary>
         /// 属性的SettingsInfo特性（可能为null）
@@ -197,8 +253,8 @@ public partial class SettingsActionSettingsControl : ActionSettingsControlBase<S
 
     public partial class SettingsActionSettingsControlViewModel : ObservableRecipient
     {
-        [ObservableProperty] List<SettingsPropertyDetail> _settingsSearchResults;
+        [ObservableProperty] List<SettingsPropertyDetail> _settingsSearchResults = null!;
         [ObservableProperty] SettingsPropertyDetail _pack = new();
-        [ObservableProperty] string _kind;
+        [ObservableProperty] string _kind = "normal";
     }
 }

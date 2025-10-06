@@ -54,14 +54,7 @@ public class SettingsAction : ActionBase<SettingsActionSettings>
     };
 
     public static readonly HashSet<Type> EasyTypes =
-        [typeof(string), typeof(int), typeof(double), typeof(bool), typeof(Color)];
-
-
-    public static string SerializeByName(string name, out PropertyInfo info)
-    {
-        info = SettingsService.GetPropertyInfoByName(name);
-        return Serialize(info.GetValue(SettingsService.Settings), info.PropertyType);
-    }
+        [typeof(string), typeof(int), typeof(double), typeof(bool)];
 
     public static object DeserializeByName(string value, string name, out PropertyInfo info)
     {
@@ -74,6 +67,6 @@ public class SettingsAction : ActionBase<SettingsActionSettings>
         : JsonSerializer.Serialize(value, FriendlyJsonSerializerOptions);
 
     public static object Deserialize(string value, Type type) => EasyTypes.Contains(type)
-        ? type == typeof(Color) ? Color.Parse(value) : Convert.ChangeType(value, type)
+        ? Convert.ChangeType(value, type)
         : JsonSerializer.Deserialize(value, type);
 }
