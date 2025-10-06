@@ -18,4 +18,10 @@ public interface IAudioService : IDisposable
     /// 当前的音频引擎。
     /// </summary>
     AudioEngine AudioEngine { get; }
+
+    /// <summary>
+    /// 尝试初始化默认的音频设备。如果初始化失败，则返回 null。
+    /// </summary>
+    /// <returns>初始化的音频设备。</returns>
+    AudioPlaybackDevice? TryInitializeDefaultPlaybackDevice();
 }

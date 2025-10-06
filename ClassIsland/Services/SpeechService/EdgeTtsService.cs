@@ -138,8 +138,8 @@ public class EdgeTtsService : ISpeechService
         if (IsPlaying)
             return;
         IsPlaying = true;
-        using var device = AudioService.AudioEngine.InitializePlaybackDevice(null, IAudioService.DefaultAudioFormat);
-        device.Start();
+        using var device = AudioService.TryInitializeDefaultPlaybackDevice();
+        device?.Start();
 
         while (PlayingQueue.Count > 0)
         {
@@ -163,7 +163,7 @@ public class EdgeTtsService : ISpeechService
                     Volume = (float)SettingsService.Settings.SpeechVolume
                 };
                 Logger.LogDebug("开始播放 {}", playInfo.FilePath);
-                device.MasterMixer.AddComponent(player);
+                device?.MasterMixer.AddComponent(player);
                 var tcs = new TaskCompletionSource<bool>();
                 player.PlaybackEnded += (sender, args) =>
                 {

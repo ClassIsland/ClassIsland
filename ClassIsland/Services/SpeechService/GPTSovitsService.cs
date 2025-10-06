@@ -217,8 +217,8 @@ public class GptSoVitsService : ISpeechService
 
             CurrentWavePlayer?.Stop();
             CurrentWavePlayer?.Dispose();
-            using var device = AudioService.AudioEngine.InitializePlaybackDevice(null, IAudioService.DefaultAudioFormat);
-            device.Start();
+            using var device = AudioService.TryInitializeDefaultPlaybackDevice();
+            device?.Start();
             try
             {
                 using var player = CurrentWavePlayer = new SoundPlayer(AudioService.AudioEngine, IAudioService.DefaultAudioFormat,
@@ -227,7 +227,7 @@ public class GptSoVitsService : ISpeechService
                     Volume = (float)SettingsService.Settings.SpeechVolume
                 };
                 Logger.LogDebug("开始播放 {FilePath}", playInfo.FilePath);
-                device.MasterMixer.AddComponent(player);
+                device?.MasterMixer.AddComponent(player);
 
                 var playbackTcs = new TaskCompletionSource<bool>();
                 void PlaybackStoppedHandler(object? sender, EventArgs args)

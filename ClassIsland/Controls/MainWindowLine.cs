@@ -595,8 +595,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         }
 
         SoundPlayer? player = null;
-        var device = AudioService.AudioEngine.InitializePlaybackDevice(null, IAudioService.DefaultAudioFormat);
-        device.Start();
+        var device = AudioService.TryInitializeDefaultPlaybackDevice();
+        device?.Start();
         while (_notificationQueue.Count > 0)
         {
             var request = _notificationQueue.Dequeue();
@@ -648,7 +648,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                         if (player != null)
                         {
                             player.Stop();
-                            device.MasterMixer.RemoveComponent(player);
+                            device?.MasterMixer.RemoveComponent(player);
                             player.Dispose();
                         }
                         var provider = new StreamDataProvider(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, 
@@ -657,7 +657,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                             : File.OpenRead(settings.NotificationSoundPath));
                         player = new SoundPlayer(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, provider);
                         player.Volume = (float)SettingsService.Settings.NotificationSoundVolume;
-                        device.MasterMixer.AddComponent(player);
+                        device?.MasterMixer.AddComponent(player);
                         player.Play();
                     }
                     catch (Exception e)
