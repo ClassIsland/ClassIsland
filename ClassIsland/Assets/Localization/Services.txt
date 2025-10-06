@@ -1,0 +1,338 @@
+.\ClassIsland\Services\ActionService.cs:触发行动组“{行动组}”。
+.\ClassIsland\Services\ActionService.cs:恢复行动组“{行动组}”。
+.\ClassIsland\Services\ActionService.cs:中断运行行动组“{行动组}”。
+.\ClassIsland\Services\ActionService.cs:中断运行行动组“{行动组}”时出现错误。
+.\ClassIsland\Services\ActionService.cs:行动组“{actionSet.Name}”中的{(actionItem.IsRevertActionItem ? 
+.\ClassIsland\Services\ActionService.cs:)}行动项“{actionInfo.Name}”
+.\ClassIsland\Services\ActionService.cs:触发{行动项}。
+.\ClassIsland\Services\ActionService.cs:触发{行动项}时出现错误。
+.\ClassIsland\Services\ActionService.cs:行动组“{actionSet.Name}”中的行动项“{actionInfo.Name}”
+.\ClassIsland\Services\ActionService.cs:恢复{行动项}。
+.\ClassIsland\Services\ActionService.cs:恢复{行动项}时出现错误。
+.\ClassIsland\Services\ActionService.cs:应用设置
+.\ClassIsland\Services\ActionService.cs:运行
+.\ClassIsland\Services\ActionService.cs:运行
+.\ClassIsland\Services\ActionService.cs:应用程序
+.\ClassIsland\Services\ActionService.cs:cmd 命令
+.\ClassIsland\Services\ActionService.cs:终端命令
+.\ClassIsland\Services\ActionService.cs:文件
+.\ClassIsland\Services\ActionService.cs:文件夹
+.\ClassIsland\Services\ActionService.cs:Url 链接
+.\ClassIsland\Services\ActionService.cs:提醒
+.\ClassIsland\Services\ActionService.cs:提醒
+.\ClassIsland\Services\ActionService.cs:显示提醒…
+.\ClassIsland\Services\ActionService.cs:显示提醒并等待…
+.\ClassIsland\Services\ActionService.cs:三天天气预报
+.\ClassIsland\Services\ActionService.cs:气象预警
+.\ClassIsland\Services\ActionService.cs:逐小时天气预报
+.\ClassIsland\Services\ActionService.cs:退出 ClassIsland
+.\ClassIsland\Services\ActionService.cs:重启 ClassIsland
+.\ClassIsland\Services\ActionService.cs:注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。
+.\ClassIsland\Services\ActionService.cs:注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。
+.\ClassIsland\Services\AuthorizeService.cs:创建认证信息时发生异常
+.\ClassIsland\Services\AuthorizeService.cs:创建认证信息失败
+.\ClassIsland\Services\AuthorizeService.cs:创建认证信息时发生异常：{e.Message}
+.\ClassIsland\Services\AuthorizeService.cs:传入了空的认证字符串，默认为认证通过。
+.\ClassIsland\Services\AuthorizeService.cs:认证时发生异常
+.\ClassIsland\Services\AuthorizeService.cs:认证失败
+.\ClassIsland\Services\AuthorizeService.cs:认证时发生异常：{e.Message}
+.\ClassIsland\Services\AutomationService.cs:切换自动化配置文件。
+.\ClassIsland\Services\AutomationService.cs:触发时间点行动：{}/[{}]
+.\ClassIsland\Services\AutomationService.cs:工作流 {} 由触发器 {} 触发
+.\ClassIsland\Services\AutomationService.cs:工作流 {} 由触发器 {} 触发恢复
+.\ClassIsland\Services\AutomationService.cs:新建自动化配置
+.\ClassIsland\Services\AutomationService.cs:写入自动化配置（{}.json）
+.\ClassIsland\Services\AutomationService.cs:写入自动化配置（{}.json）：{note}
+.\ClassIsland\Services\AutomationService.cs:行动组“{actionSet.Name}”的状态改变。
+.\ClassIsland\Services\AutomationService.cs:卸载工作流 {}
+.\ClassIsland\Services\AutomationService.cs:成功卸载工作流 {}
+.\ClassIsland\Services\AutomationService.cs:加载工作流 {}
+.\ClassIsland\Services\AutomationService.cs:成功加载工作流 {}
+.\ClassIsland\Services\AutomationService.cs:加载触发器 {}/{}
+.\ClassIsland\Services\AutomationService.cs:成功加载触发器 {}/{}
+.\ClassIsland\Services\AutomationService.cs:卸载触发器 {}/{}
+.\ClassIsland\Services\AutomationService.cs:成功卸载触发器 {}/{}
+.\ClassIsland\Services\ComponentsService.cs:无法从集控拉取组件配置
+.\ClassIsland\Services\ComponentsService.cs:迁移组件 {} -> {}
+.\ClassIsland\Services\ComponentsService.cs:组件 {}/{} ({}) 初始化消耗了太长时间，耗时为 {}ms
+.\ClassIsland\Services\ConsoleService.cs:「赐你，众星俱焚的曙光！」
+.\ClassIsland\Services\DiagnosticService.cs:启动共花费 {}ms, {}
+.\ClassIsland\Services\DiagnosticService.cs:无法导出诊断数据。
+.\ClassIsland\Services\DiagnosticService.cs:\n\n此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：\n
+                       很抱歉，ClassIsland 遇到了无法解决的问题，即将退出。堆栈跟踪信息已复制到剪贴板。点击【确定】将退出应用，点击【取消】将启动调试器。
+                       错误信息：{ex?.Message}{(plugins.Count > 0 ? pluginsWarning : 
+                       如果您要反馈这个问题或求助，请不要只上传本窗口的截图。请查阅事件查看器和日志获取完整的错误信息，并附加在求助信息中。
+.\ClassIsland\Services\ExactTimeService.cs:时间尚未同步。
+.\ClassIsland\Services\ExactTimeService.cs:初始化NtpClient失败。
+.\ClassIsland\Services\ExactTimeService.cs:系统时间修改，正在重新同步时间
+.\ClassIsland\Services\ExactTimeService.cs:初始化NtpClient失败。
+.\ClassIsland\Services\ExactTimeService.cs:正在从 {} 同步时间
+.\ClassIsland\Services\ExactTimeService.cs:正在同步时间……
+.\ClassIsland\Services\ExactTimeService.cs:成功地同步了时间，现在是 {}
+.\ClassIsland\Services\ExactTimeService.cs:成功地在{nowBase}同步了时间
+.\ClassIsland\Services\ExactTimeService.cs:同步时间失败。
+.\ClassIsland\Services\ExactTimeService.cs:同步时间失败：{ex.Message}
+.\ClassIsland\Services\ExactTimeService.cs:检测到系统时间突变，已暂停返回的时间并重新同步时间
+.\ClassIsland\Services\IpcService.cs:对等端 {} 已连接。
+.\ClassIsland\Services\IpcService.cs:对等端 {} 已断开。
+.\ClassIsland\Services\LessonsService.cs:发出时间状态改变事件。
+.\ClassIsland\Services\LessonsService.cs:发出上课事件。
+.\ClassIsland\Services\LessonsService.cs:发出下课事件。
+.\ClassIsland\Services\LessonsService.cs:发出放学事件。
+.\ClassIsland\Services\MemoryWatchDogService.cs:当前内存使用: {}
+.\ClassIsland\Services\MemoryWatchDogService.cs:达到内存使用上限！ {} / {}
+.\ClassIsland\Services\MiniInfoProviderHostService.cs:注册快速信息提供方：{}（{}）
+.\ClassIsland\Services\MiniInfoProviderHostService.cs:获取快速信息提供方设置：{}
+.\ClassIsland\Services\MiniInfoProviderHostService.cs:写入快速信息提供方设置：{}
+.\ClassIsland\Services\NotificationHostService.cs:注册提醒提供方：{}（{}）
+.\ClassIsland\Services\NotificationHostService.cs:提醒 #{} 已播放完成
+.\ClassIsland\Services\NotificationHostService.cs:注册提醒渠道：{}（{}）
+.\ClassIsland\Services\NotificationHostService.cs:获取提醒提供方设置：{}
+.\ClassIsland\Services\NotificationHostService.cs:写入提醒提供方设置：{}
+.\ClassIsland\Services\NotificationHostService.cs:开始推送提醒 ({})
+.\ClassIsland\Services\NotificationHostService.cs:将推送的提醒消费者：{}(#{})
+.\ClassIsland\Services\NotificationHostService.cs:找不到接受提醒的提醒消费者
+.\ClassIsland\Services\PluginMarketService.cs:正在刷新插件源……
+.\ClassIsland\Services\PluginMarketService.cs:正在刷新插件源：{}（{}）
+.\ClassIsland\Services\PluginMarketService.cs:无法加载插件源：{args.Error.Message}
+.\ClassIsland\Services\PluginMarketService.cs:无法加载插件源。
+.\ClassIsland\Services\PluginMarketService.cs:插件源刷新成功。
+.\ClassIsland\Services\PluginMarketService.cs:找不到符合id的插件：{}
+.\ClassIsland\Services\PluginMarketService.cs:{}已正在下载。
+.\ClassIsland\Services\PluginMarketService.cs:开始下载插件：{}
+.\ClassIsland\Services\PluginMarketService.cs:无法下载插件 {id}：{args.Error.Message}
+.\ClassIsland\Services\PluginMarketService.cs:插件 {} 下载完成。
+.\ClassIsland\Services\PluginMarketService.cs:无法从 {} 下载插件 {}
+.\ClassIsland\Services\PluginMarketService.cs:正在加载插件源
+.\ClassIsland\Services\PluginMarketService.cs:正在加载插件源：{}
+.\ClassIsland\Services\PluginMarketService.cs:插件源 {} 选择的镜像根：{}
+.\ClassIsland\Services\PluginService.cs:找不到插件 {id}。
+.\ClassIsland\Services\PluginService.cs:检测到循环依赖：{string.Join(
+.\ClassIsland\Services\PluginService.cs:插件 {node.Plugin.Manifest.Id} 依赖的必选插件 {i.Id} 不存在或处于无法加载状态。
+.\ClassIsland\Services\ProfileAnalyzeService.cs:分析结束，发现了{}个节点，耗时{}ms
+.\ClassIsland\Services\ProfileService.cs:正在拉取集控档案
+.\ClassIsland\Services\ProfileService.cs:拉取档案失败。
+.\ClassIsland\Services\ProfileService.cs:成功拉取集控档案！
+.\ClassIsland\Services\ProfileService.cs:加载档案中：{}
+.\ClassIsland\Services\ProfileService.cs:档案不存在：{}
+.\ClassIsland\Services\ProfileService.cs:自动信任来自 1.5.4.0 以前的当前档案。
+.\ClassIsland\Services\ProfileService.cs:成功加载档案！信任：{}
+.\ClassIsland\Services\ProfileService.cs:写入档案文件：{}
+.\ClassIsland\Services\ProfileService.cs:创建临时层：{}
+.\ClassIsland\Services\ProfileService.cs:（临时层）
+.\ClassIsland\Services\ProfileService.cs:清空今天的临时层：{}
+.\ClassIsland\Services\ProfileService.cs:清理过期的课表预定：{}
+.\ClassIsland\Services\ProfileService.cs:清理没有被引用的过期临时层课表：{}
+.\ClassIsland\Services\ProfileService.cs:将当前临时层课表转换为普通课表：{}
+.\ClassIsland\Services\ProfileService.cs:将临时层课表转换为普通课表：{}
+.\ClassIsland\Services\ProfileService.cs:已信任当前档案 {}
+.\ClassIsland\Services\RulesetService.cs:找不到规则 {} 的注册信息，已默认其结果为 false.
+.\ClassIsland\Services\RulesetService.cs:规则 {} 的处理程序在处理过程中发生异常，已默认其结果为 false.
+.\ClassIsland\Services\RulesetService.cs:规则 {} 的处理程序没有注册，已默认其结果为 false.
+.\ClassIsland\Services\RulesetService.cs:找不到规则 {id}。
+.\ClassIsland\Services\SettingsService.cs:拉取集控默认设置
+.\ClassIsland\Services\SettingsService.cs:拉取集控默认设置成功！
+.\ClassIsland\Services\SettingsService.cs:检测到应用以设计模式运行，跳过配置加载
+.\ClassIsland\Services\SettingsService.cs:配置文件不存在，跳过加载。
+.\ClassIsland\Services\SettingsService.cs:加载配置文件。
+.\ClassIsland\Services\SettingsService.cs:配置文件加载失败。
+.\ClassIsland\Services\SettingsService.cs:写入配置文件。
+.\ClassIsland\Services\SettingsService.cs:写入配置文件：{}
+.\ClassIsland\Services\SettingsService.cs:应用设置中找不到属性“{name}”。
+.\ClassIsland\Services\SplashService.cs:正在启动…
+.\ClassIsland\Services\SplashService.cs:正在启动…
+.\ClassIsland\Services\UriNavigationService.cs:找不到要导航的目标。
+.\ClassIsland\Services\UriNavigationService.cs:注册uri处理器：{}
+.\ClassIsland\Services\UriNavigationService.cs:给定的uri {uri} 已经被注册。
+.\ClassIsland\Services\UriNavigationService.cs:正在 Uri 导航：{}
+.\ClassIsland\Services\UriNavigationService.cs:无法导航到 {}
+.\ClassIsland\Services\UriNavigationService.cs:导航失败
+.\ClassIsland\Services\UriNavigationService.cs:无法导航到 {uri}：{ex.Message}
+.\ClassIsland\Services\WallpaperPickingService.cs:自动提取主题色Timer触发。
+.\ClassIsland\Services\WallpaperPickingService.cs:壁纸注册表项更新触发。
+.\ClassIsland\Services\WallpaperPickingService.cs:UserPreferenceChanged事件更新触发。
+.\ClassIsland\Services\WallpaperPickingService.cs:获取屏幕截图失败。
+.\ClassIsland\Services\WallpaperPickingService.cs:正在以兼容模式获取壁纸。
+.\ClassIsland\Services\WallpaperPickingService.cs:以兼容模式获取壁纸失败。
+.\ClassIsland\Services\WallpaperPickingService.cs:正在提取壁纸主题色。
+.\ClassIsland\Services\WallpaperPickingService.cs:获取壁纸失败。
+.\ClassIsland\Services\WallpaperPickingService.cs:无法提取壁纸主题色
+.\ClassIsland\Services\WallpaperPickingService.cs:提取到的主题色:{Color}
+.\ClassIsland\Services\WallpaperPickingService.cs:实验性取色算法:提取到的主题色:{Color}
+.\ClassIsland\Services\WeatherService.cs:未找到 ID 为 {} 的天气图标模板
+.\ClassIsland\Services\WeatherService.cs:无法获取当前位置
+.\ClassIsland\Services\WeatherService.cs:获取城市信息： {}
+.\ClassIsland\Services\WeatherService.cs:获取城市信息失败。
+.\ClassIsland\Services\WeatherService.cs:获取天气信息： {}
+.\ClassIsland\Services\WeatherService.cs:已丢弃旧预警：（{}，{}）{}
+.\ClassIsland\Services\WeatherService.cs:获取天气信息失败。
+.\ClassIsland\Services\WeatherService.cs:未知
+.\ClassIsland\Services\WeatherService.cs:获取热门城市信息
+.\ClassIsland\Services\WeatherService.cs:热门
+.\ClassIsland\Services\WeatherService.cs:{}失败。
+.\ClassIsland\Services\WindowRuleService.cs:无法获取 pid 为 {} 的进程信息
+.\ClassIsland\Services\XamlThemeService.cs:资源主题必须指定主题 Uri
+.\ClassIsland\Services\XamlThemeService.cs:正在从文件加载主题 {}
+.\ClassIsland\Services\XamlThemeService.cs:正在从资源加载主题 {}
+.\ClassIsland\Services\XamlThemeService.cs:正在加载主题源
+.\ClassIsland\Services\XamlThemeService.cs:正在加载主题源：{}
+.\ClassIsland\Services\XamlThemeService.cs:主题源 {} 选择的镜像根：{}
+.\ClassIsland\Services\XamlThemeService.cs:无法加载主题元数据 {}
+.\ClassIsland\Services\XamlThemeService.cs:找不到符合id的主题：{}
+.\ClassIsland\Services\XamlThemeService.cs:{}已正在下载。
+.\ClassIsland\Services\XamlThemeService.cs:开始下载主题：{}
+.\ClassIsland\Services\XamlThemeService.cs:无法下载主题 {id}：{args.Error.Message}
+.\ClassIsland\Services\XamlThemeService.cs:主题 {} 下载完成。
+.\ClassIsland\Services\XamlThemeService.cs:无法从 {} 下载主题 {}
+.\ClassIsland\Services\XamlThemeService.cs:无法安装主题 {}
+.\ClassIsland\Services\XamlThemeService.cs:无法卸载主题 {}
+.\ClassIsland\Services\XamlThemeService.cs:找不到主题 {id}。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:正在准备更新…
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:正在备份应用数据……
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:正在等待应用退出……
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:正在覆盖应用文件……
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:发现新版本
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:点击以查看详细信息。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:检查应用更新失败。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:移除下载临时文件失败。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:下载应用更新包：{}
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:更新下载失败。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:下载应用更新失败。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:应用更新下载停止。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:移除下载临时文件失败。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:正在展开应用更新包。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:未找到缓存的校验信息，跳过更新文件校验。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:更新文件哈希：{}
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:更新文件校验失败，可能下载已经损坏。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:正在重启至升级模式。
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:正在安装应用更新
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:这可能需要10-30秒的时间，请稍后……
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:无法安装更新
+.\ClassIsland\Services\AppUpdating\UpdateService.cs:安装更新失败
+.\ClassIsland\Services\Automation\Actions\AppQuitAction.cs:退出 ClassIsland
+.\ClassIsland\Services\Automation\Actions\AppRestartAction.cs:重启 ClassIsland
+.\ClassIsland\Services\Automation\Actions\NotificationAction.cs:显示提醒
+.\ClassIsland\Services\Automation\Actions\RunAction.cs:运行
+.\ClassIsland\Services\Automation\Actions\RunAction.cs:无法启动进程。
+.\ClassIsland\Services\Automation\Actions\RunAction.cs:命令执行中断。\n
+.\ClassIsland\Services\Automation\Actions\RunAction.cs:标准输出：{(stdoutBuilder.Length == 0 ? 
+.\ClassIsland\Services\Automation\Actions\RunAction.cs:错误输出：{(stderrBuilder.Length == 0 ? 
+.\ClassIsland\Services\Automation\Actions\RunAction.cs:命令执行失败 (退出代码: {process.ExitCode})。\n
+.\ClassIsland\Services\Automation\Actions\RunAction.cs:标准输出：{(stdoutBuilder.Length == 0 ? 
+.\ClassIsland\Services\Automation\Actions\RunAction.cs:错误输出：{(stderrBuilder.Length == 0 ? 
+.\ClassIsland\Services\Automation\Actions\RunAction.cs:…（已截断）
+.\ClassIsland\Services\Automation\Actions\SettingsAction.cs:应用设置
+.\ClassIsland\Services\Automation\Actions\SettingsAction.cs:应用设置中找不到属性“{Settings.Name}”。
+.\ClassIsland\Services\Automation\Actions\SleepAction.cs:等待时长
+.\ClassIsland\Services\Automation\Actions\WeatherNotificationAction.cs:显示天气提醒
+.\ClassIsland\Services\Automation\Triggers\AppStartupTrigger.cs:应用启动时
+.\ClassIsland\Services\Automation\Triggers\AppStoppingTrigger.cs:应用退出时
+.\ClassIsland\Services\Automation\Triggers\CurrentTimeStateChangedTrigger.cs:当前时间状态变化时
+.\ClassIsland\Services\Automation\Triggers\OnAfterSchoolTrigger.cs:放学时
+.\ClassIsland\Services\Automation\Triggers\OnBreakingTimeTrigger.cs:课间休息时
+.\ClassIsland\Services\Automation\Triggers\OnClassTrigger.cs:上课时
+.\ClassIsland\Services\Automation\Triggers\PreTimePointTrigger.cs:特定时间点前
+.\ClassIsland\Services\Automation\Triggers\RulesetChangedTrigger.cs:规则集更新时
+.\ClassIsland\Services\Automation\Triggers\SignalTrigger.cs:收到信号时
+.\ClassIsland\Services\Automation\Triggers\UriTrigger.cs:调用 Uri 时
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:当前未建立集控会话，且没有指定处于会话外连接，无法生成元数据。
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:初始化管理服务器连接。
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:集控请求上传配置：{} {}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:正在注册实例
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:无法注册实例：{r.Message}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:向命令流发送心跳包。
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:命令流与集控服务器断开。
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:尝试重新连接命令流
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:准备开始和 {} 握手
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:服务器 GPG 密钥信息无效。
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:BeginHandshake，挑战令牌：{}，Key ID：{}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:与 {} 握手失败（{}）：{}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:与 {ManagementSettings.ManagementServerGrpc} 握手失败（{beginRsp.Retcode}）：{beginRsp.Message}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:与 {} 握手失败：服务器密钥验证失败
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:与 {} 握手成功，SessionId：{}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:已连接到命令流，无需重复连接
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:正在连接到命令流
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:由于对方服务器不信任，不再尝试与服务器握手和进一步连接。
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:接受指令时未返回成功代码：{}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:接受指令：[{}] {}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:在处理事件时出现异常
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:无法连接到集控服务器命令流，将在30秒后重试。
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:无法上传审计日志 {}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:拼接url模板：{} -> {} 
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:发起json请求：{}
+.\ClassIsland\Services\Management\ManagementServerConnection.cs:保存json请求：{} {}
+.\ClassIsland\Services\Management\ManagementService.cs:集控已被命令行禁用。
+.\ClassIsland\Services\Management\ManagementService.cs:无效的集控服务器类型。
+.\ClassIsland\Services\Management\ManagementService.cs:连接集控服务器失败。
+.\ClassIsland\Services\Management\ManagementService.cs:正在初始化集控
+.\ClassIsland\Services\Management\ManagementService.cs:正在重载集控配置
+.\ClassIsland\Services\Management\ManagementService.cs:拉取集控清单与策略失败
+.\ClassIsland\Services\Management\ManagementService.cs:保存集控配置
+.\ClassIsland\Services\Management\ManagementService.cs:无法在已加入管理后再次加入管理。
+.\ClassIsland\Services\Management\ManagementService.cs:无效的服务器类型。
+.\ClassIsland\Services\Management\ManagementService.cs:加入集控
+.\ClassIsland\Services\Management\ManagementService.cs:确定要加入组织 {mf.OrganizationName} 的管理吗？
+.\ClassIsland\Services\Management\ManagementService.cs:加入
+.\ClassIsland\Services\Management\ManagementService.cs:已加入集控
+.\ClassIsland\Services\Management\ManagementService.cs:已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。
+.\ClassIsland\Services\Management\ManagementService.cs:无法在没有加入集控的情况下退出集控。
+.\ClassIsland\Services\Management\ManagementService.cs:认证失败。
+.\ClassIsland\Services\Management\ManagementService.cs:您的组织不允许您退出集控。
+.\ClassIsland\Services\Management\ManagementService.cs:退出集控
+.\ClassIsland\Services\Management\ManagementService.cs:确定要退出组织 {Manifest.OrganizationName} 的管理吗？
+.\ClassIsland\Services\Management\ManagementService.cs:退出
+.\ClassIsland\Services\Management\ManagementService.cs:已退出集控
+.\ClassIsland\Services\Management\ManagementService.cs:已退出组织 {Manifest.OrganizationName} 的管理。应用将重启以应用更改。
+.\ClassIsland\Services\Management\ServerlessConnection.cs:初始化无服务器连接。
+.\ClassIsland\Services\Management\ServerlessConnection.cs:拼接url模板：{} -> {} 
+.\ClassIsland\Services\Management\ServerlessConnection.cs:发起json请求：{}
+.\ClassIsland\Services\Management\ServerlessConnection.cs:保存json请求：{} {}
+.\ClassIsland\Services\Metadata\AnnouncementService.cs:刷新公告失败
+.\ClassIsland\Services\NotificationProviders\ActionNotificationProvider.cs:行动提醒
+.\ClassIsland\Services\NotificationProviders\ActionNotificationProvider.cs:显示由行动发出的提醒。
+.\ClassIsland\Services\NotificationProviders\AfterSchoolNotificationProvider.cs:放学提醒
+.\ClassIsland\Services\NotificationProviders\AfterSchoolNotificationProvider.cs:在当天的课程结束后发出提醒。
+.\ClassIsland\Services\NotificationProviders\AfterSchoolNotificationProvider.cs:放学
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:上下课提醒
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:准备上课提醒
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:在上课前指定时间发出提醒。
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:上课提醒
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:在上课时发出提醒。
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:下课提醒
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:在下课时发出提醒。
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:由{name}老师任教
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:{message} 下节课是：{LessonsService.NextClassSubject.Name}{(Settings.ShowTeacherName ? $
+.\ClassIsland\Services\NotificationProviders\ClassNotificationProvider.cs:本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name}{(Settings.ShowTeacherName ? $
+.\ClassIsland\Services\NotificationProviders\ManagementNotificationProvider.cs:集控提醒
+.\ClassIsland\Services\NotificationProviders\ManagementNotificationProvider.cs:来自集控服务器的提醒。
+.\ClassIsland\Services\NotificationProviders\ManagementNotificationProvider.cs:接受集控消息：{} {}
+.\ClassIsland\Services\NotificationProviders\WeatherNotificationProvider.cs:天气预警
+.\ClassIsland\Services\NotificationProviders\WeatherNotificationProvider.cs:当有降雨或者极端天气时发出提醒。
+.\ClassIsland\Services\NotificationProviders\WeatherNotificationProvider.cs:单次预警显示时长：{}
+.\ClassIsland\Services\SpeechService\EdgeTtsService.cs:初始化了EdgeTTS服务。
+.\ClassIsland\Services\SpeechService\EdgeTtsService.cs:以{}朗读文本：{}
+.\ClassIsland\Services\SpeechService\EdgeTtsService.cs:语音缓存：{}
+.\ClassIsland\Services\SpeechService\EdgeTtsService.cs:等待下载完成
+.\ClassIsland\Services\SpeechService\EdgeTtsService.cs:等待下载完成结束
+.\ClassIsland\Services\SpeechService\EdgeTtsService.cs:开始播放 {}
+.\ClassIsland\Services\SpeechService\EdgeTtsService.cs:结束播放 {}
+.\ClassIsland\Services\SpeechService\EdgeTtsService.cs:无法播放语音。
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:初始化了 GPTSoVITS 服务。
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:以 {VoiceName} 朗读文本：{Text}
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:语音缓存路径：{CachePath}
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:发送 TTS 请求到：{RequestUri}
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:语音生成并保存到：{FilePath}
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:TTS 请求失败，状态码：{StatusCode}, 内容：{ErrorContent}
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:发送 TTS 请求时发生异常。
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:等待语音生成完成...
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:语音 {} 生成失败。
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:语音生成完成。
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:语音文件不存在：{FilePath}
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:开始播放 {FilePath}
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:结束播放 {FilePath}
+.\ClassIsland\Services\SpeechService\GPTSovitsService.cs:无法播放语音。
+.\ClassIsland\Services\SpeechService\SystemSpeechService.cs:系统 TTS
+.\ClassIsland\Services\SpeechService\SystemSpeechService.cs:初始化了系统TTS服务。
+.\ClassIsland\Services\SpeechService\SystemSpeechService.cs:朗读文本：{}

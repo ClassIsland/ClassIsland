@@ -1,0 +1,78 @@
+.\ClassIsland\Models\GptSoVitsSpeechSettings.cs:新预设
+.\ClassIsland\Models\GptSoVitsSpeechSettings.cs:我是「罗浮」云骑将军景元。不必拘谨，「将军」只是一时的身份，你称呼我景元便可
+.\ClassIsland\Models\ScheduleClassPosition.cs:{Date:yy/MM/dd ddd} 第{Index + 1}节课
+.\ClassIsland\Models\Settings.cs:北京 (北京, 中国)
+.\ClassIsland\Models\Settings.cs:计算中...
+.\ClassIsland\Models\Settings.cs:显示主界面
+.\ClassIsland\Models\Settings.cs:无法设置 Sentry 启用状态。
+.\ClassIsland\Models\Settings.cs:点击托盘图标行为
+.\ClassIsland\Models\Settings.cs:时间偏移
+.\ClassIsland\Models\Settings.cs:应用主题
+.\ClassIsland\Models\Settings.cs:应用主题色
+.\ClassIsland\Models\Settings.cs:背景不透明度
+.\ClassIsland\Models\Settings.cs:界面缩放
+.\ClassIsland\Models\Settings.cs:圆角半径
+.\ClassIsland\Models\Settings.cs:组件配置方案
+.\ClassIsland\Models\Settings.cs:窗口停靠位置
+.\ClassIsland\Models\Settings.cs:窗口向右偏移
+.\ClassIsland\Models\Settings.cs:窗口向下偏移
+.\ClassIsland\Models\Settings.cs:选择不能为空。
+.\ClassIsland\Models\Settings.cs:窗口层级
+.\ClassIsland\Models\Settings.cs:置底
+.\ClassIsland\Models\Settings.cs:置顶
+.\ClassIsland\Models\Settings.cs:无法设置 ShowSellingAnnouncement 启用状态。
+.\ClassIsland\Models\Actions\RunActionSettings.cs:运行
+.\ClassIsland\Models\Actions\RunActionSettings.cs:运行
+.\ClassIsland\Models\Actions\SettingsActionSettings.cs:应用设置
+.\ClassIsland\Models\Actions\SettingsActionSettings.cs:应用设置
+.\ClassIsland\Models\AllContributors\Contributor.cs:音频
+.\ClassIsland\Models\AllContributors\Contributor.cs:无障碍
+.\ClassIsland\Models\AllContributors\Contributor.cs:Bug 反馈
+.\ClassIsland\Models\AllContributors\Contributor.cs:博文
+.\ClassIsland\Models\AllContributors\Contributor.cs:业务发展
+.\ClassIsland\Models\AllContributors\Contributor.cs:代码
+.\ClassIsland\Models\AllContributors\Contributor.cs:内容
+.\ClassIsland\Models\AllContributors\Contributor.cs:数据
+.\ClassIsland\Models\AllContributors\Contributor.cs:文档
+.\ClassIsland\Models\AllContributors\Contributor.cs:设计
+.\ClassIsland\Models\AllContributors\Contributor.cs:范例
+.\ClassIsland\Models\AllContributors\Contributor.cs:活动组织者
+.\ClassIsland\Models\AllContributors\Contributor.cs:资金支持
+.\ClassIsland\Models\AllContributors\Contributor.cs:资金/拨款发现者
+.\ClassIsland\Models\AllContributors\Contributor.cs:创意 & 策划
+.\ClassIsland\Models\AllContributors\Contributor.cs:基础设施
+.\ClassIsland\Models\AllContributors\Contributor.cs:维护
+.\ClassIsland\Models\AllContributors\Contributor.cs:辅导
+.\ClassIsland\Models\AllContributors\Contributor.cs:打包
+.\ClassIsland\Models\AllContributors\Contributor.cs:插件/实用程序库
+.\ClassIsland\Models\AllContributors\Contributor.cs:项目管理
+.\ClassIsland\Models\AllContributors\Contributor.cs:推广
+.\ClassIsland\Models\AllContributors\Contributor.cs:回答问题
+.\ClassIsland\Models\AllContributors\Contributor.cs:研究
+.\ClassIsland\Models\AllContributors\Contributor.cs:检查 Pull Request
+.\ClassIsland\Models\AllContributors\Contributor.cs:安全
+.\ClassIsland\Models\AllContributors\Contributor.cs:工具
+.\ClassIsland\Models\AllContributors\Contributor.cs:翻译
+.\ClassIsland\Models\AllContributors\Contributor.cs:测试
+.\ClassIsland\Models\AllContributors\Contributor.cs:教程
+.\ClassIsland\Models\AllContributors\Contributor.cs:交流
+.\ClassIsland\Models\AllContributors\Contributor.cs:用户测试
+.\ClassIsland\Models\AllContributors\Contributor.cs:视频
+.\ClassIsland\Models\AttachedSettings\AfterSchoolNotificationAttachedSettings.cs:今天的课程已结束，请同学们有序离开。
+.\ClassIsland\Models\AttachedSettings\ClassNotificationAttachedSettings.cs:准备上课，请回到座位并保持安静，做好上课准备。
+.\ClassIsland\Models\AttachedSettings\ClassNotificationAttachedSettings.cs:下节课程为户外课程，请合理规划时间，做好上课准备。
+.\ClassIsland\Models\AttachedSettings\ClassNotificationAttachedSettings.cs:即将上课
+.\ClassIsland\Models\AttachedSettings\ClassNotificationAttachedSettings.cs:即将上课
+.\ClassIsland\Models\AttachedSettings\ClassNotificationAttachedSettings.cs:上课
+.\ClassIsland\Models\AttachedSettings\ClassNotificationAttachedSettings.cs:课间休息
+.\ClassIsland\Models\ComponentSettings\CountDownComponentSettings.cs:倒计时
+.\ClassIsland\Models\ComponentSettings\CountDownComponentSettings.cs:还有
+.\ClassIsland\Models\ComponentSettings\LessonControlSettings.cs:今天没有课程。
+.\ClassIsland\Models\ComponentSettings\LessonControlSettings.cs:今日课程已全部结束。
+.\ClassIsland\Models\NotificationProviderSettings\AfterSchoolNotificationProviderSettings.cs:今天的课程已结束，请同学们有序离开。
+.\ClassIsland\Models\NotificationProviderSettings\ClassNotificationSettings.cs:准备上课，请回到座位并保持安静，做好上课准备。
+.\ClassIsland\Models\NotificationProviderSettings\ClassNotificationSettings.cs:下节课程为户外课程，请合理规划时间，做好上课准备。
+.\ClassIsland\Models\NotificationProviderSettings\ClassNotificationSettings.cs:即将上课
+.\ClassIsland\Models\NotificationProviderSettings\ClassNotificationSettings.cs:即将上课
+.\ClassIsland\Models\NotificationProviderSettings\ClassNotificationSettings.cs:上课
+.\ClassIsland\Models\NotificationProviderSettings\ClassNotificationSettings.cs:课间休息

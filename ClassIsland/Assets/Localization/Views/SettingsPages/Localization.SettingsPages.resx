@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="General_string" xml:space="preserve">
+    <value>基本</value>
+    <comment>设置"基本"</comment>
+  </data>
+  <data name="Components_string" xml:space="preserve">
+    <value>组件</value>
+    <comment>设置"组件"</comment>
+  </data>
+  <data name="Appearance_string" xml:space="preserve">
+    <value>外观</value>
+    <comment>设置“外观”</comment>
+  </data>
+  <data name="Notification_string" xml:space="preserve">
+    <value>通知</value>
+    <comment>设置“通知”</comment>
+  </data>
+  <data name="Window_string" xml:space="preserve">
+    <value>窗口</value>
+    <comment>设置“窗口”</comment>
+  </data>
+  <data name="Weather_string" xml:space="preserve">
+    <value>天气</value>
+    <comment>设置“天气”</comment>
+  </data>
+  <data name="Update_string" xml:space="preserve">
+    <value>更新</value>
+    <comment>设置“更新”</comment>
+  </data>
+  <data name="Automation_string" xml:space="preserve">
+    <value>自动化</value>
+    <comment>设置“自动化”</comment>
+  </data>
+  <data name="Storage_string" xml:space="preserve">
+    <value>存储</value>
+    <comment>设置“存储”</comment>
+  </data>
+  <data name="Privacy_string" xml:space="preserve">
+    <value>隐私</value>
+    <comment>设置“隐私”</comment>
+  </data>
+  <data name="Plugins_string" xml:space="preserve">
+    <value>插件</value>
+    <comment>设置“插件”</comment>
+  </data>
+  <data name="About_string" xml:space="preserve">
+    <value>关于 ClassIsland</value>
+    <comment>设置“关于ClassIsland”</comment>
+  </data>
+  <data name="Theme_string" xml:space="preserve">
+    <value>主题</value>
+    <comment>设置"主题"</comment>
+  </data>
+  <data name="Behavior_string" xml:space="preserve">
+    <value>行为</value>
+    <comment>设置-基本-"行为"</comment>
+  </data>
+  <data name="OpenSourceStatement" xml:space="preserve">
+    <value>ClassIsland 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在{sourcecodeurl}。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。</value>
+    <comment>开源反诈声明</comment>
+  </data>
+  <data name="ExperimentalFeature_string" xml:space="preserve">
+    <value>实验性功能</value>
+    <comment>设置-菜单-"实验性功能"</comment>
+  </data>
+  <data name="DebuggingWindowRules_string" xml:space="preserve">
+    <value>调试窗口规则</value>
+    <comment>设置-菜单-"调试窗口规则"</comment>
+  </data>
+  <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
+    <value>创建快捷换课图标</value>
+    <comment>设置-菜单-”创建快捷换课图标“</comment>
+  </data>
+  <data name="ManagementOptions_string" xml:space="preserve">
+    <value>集控选项</value>
+    <comment>设置-菜单-"集控选项"</comment>
+  </data>
+  <data name="JoinManagement_string" xml:space="preserve">
+    <value>加入管理...</value>
+    <comment>设置-菜单-"加入管理"</comment>
+  </data>
+  <data name="ViewAppLog_string" xml:space="preserve">
+    <value>日志...</value>
+    <comment>设置-菜单-"日志..."</comment>
+  </data>
+  <data name="ExportDiagData_string" xml:space="preserve">
+    <value>导出诊断数据</value>
+    <comment>设置-菜单-"导出诊断数据"</comment>
+  </data>
+  <data name="RestartToRecoveryMode_string" xml:space="preserve">
+    <value>重启至恢复模式</value>
+    <comment>设置-菜单-"重启到恢复模式"</comment>
+  </data>
+  <data name="OpenLogDir_string" xml:space="preserve">
+    <value>打开日志目录...</value>
+    <comment>设置-菜单-“打开日志目录...”</comment>
+  </data>
+  <data name="OpenDataDir_string" xml:space="preserve">
+    <value>打开数据目录...</value>
+    <comment>设置-菜单-“打开数据目录...”</comment>
+  </data>
+  <data name="OpenAppDir_string" xml:space="preserve">
+    <value>打开应用目录...</value>
+    <comment>设置-菜单-"打开应用目录"</comment>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>应用设置</value>
+    <comment>设置-“应用设置”</comment>
+  </data>
+</root>
