@@ -79,6 +79,7 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用分发频道
     /// </summary>
+    // TODO: 适配新的 BuildType
     public string AppSubChannel => $"{OperatingSystem}_{Platform}_{(IsAssetsTrimmed() ? "trimmed" : "full")}_{PackagingType}";
 
     internal AppBase()

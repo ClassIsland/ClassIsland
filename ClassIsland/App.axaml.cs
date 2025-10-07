@@ -95,6 +95,8 @@ using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
 using ReactiveUI;
 using Empty = Google.Protobuf.WellKnownTypes.Empty;
+using UpdateSettingsPage = ClassIsland.Views.SettingPages.UpdateSettingsPage;
+
 namespace ClassIsland;
 /// <summary>
 /// Interaction logic for App.xaml

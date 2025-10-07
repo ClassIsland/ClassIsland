@@ -1,20 +1,16 @@
 using System;
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Enums.AppUpdating;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using ClassIsland.ViewModels.SettingsPages;
-using DynamicData.Kernel;
-using PhainonDistributionCenter.Shared.Models.Client;
 using ReactiveUI;
 
-namespace ClassIsland.Views;
+namespace ClassIsland.Views.SettingPages;
 
 [SettingsPageInfo("update", "更新", "\ue161", "\ue160", SettingsPageCategory.Internal)]
 public partial class UpdateSettingsPage : SettingsPageBase
@@ -42,6 +38,16 @@ public partial class UpdateSettingsPage : SettingsPageBase
             UpdateStatus.UpdateDeployed => "更新已就绪。",
             _ => ""
         });
+
+    public static readonly FuncValueConverter<DownloadState, string> DownloadStateToMessageConverter =
+        new(x => x switch
+        {
+            DownloadState.Pending => "等待下载",
+            DownloadState.Downloading => "正在下载",
+            DownloadState.Completed => "完成",
+            DownloadState.Error => "错误",
+            _ => "???"
+        });
     
     public UpdateSettingsPage()
     {
@@ -52,6 +58,11 @@ public partial class UpdateSettingsPage : SettingsPageBase
     private async void ButtonCheckUpdate_OnClick(object sender, RoutedEventArgs e)
     {
         await ViewModel.UpdateService.CheckUpdateAsync();
+    }
+
+    private async void ButtonDownloadUpdate_OnClick(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.UpdateService.DownloadUpdateAsync();
     }
 
     private void UpdateChannelInfo()
@@ -76,5 +87,10 @@ public partial class UpdateSettingsPage : SettingsPageBase
     {
         _updateSettingsObserver?.Dispose();
         _updateSettingsObserver = null;
+    }
+
+    private void ButtonOpenDownloadTasks_OnClick(object? sender, RoutedEventArgs e)
+    {
+        OpenDrawer("DownloadInfoDrawer");
     }
 }

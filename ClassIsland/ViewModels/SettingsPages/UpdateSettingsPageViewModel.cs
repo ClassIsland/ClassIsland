@@ -4,6 +4,7 @@ using ClassIsland.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 using PhainonDistributionCenter.Shared.Models.Client;
+using UpdateSettingsPage = ClassIsland.Views.SettingPages.UpdateSettingsPage;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 

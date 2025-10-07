@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -20,14 +21,17 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Updating;
+using ClassIsland.Enums.AppUpdating;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
+using ClassIsland.Models.AppUpdating;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Views;
 using Downloader;
+using DynamicData;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PhainonDistributionCenter.Shared.Models.Api.Responses.Distribution;
@@ -43,9 +47,6 @@ namespace ClassIsland.Services.AppUpdating;
 public class UpdateService : IHostedService, INotifyPropertyChanged
 {
     private UpdateWorkingStatus _currentWorkingStatus = UpdateWorkingStatus.Idle;
-    private long _downloadedSize = 0;
-    private long _totalSize = 0;
-    private double _downloadSpeed = 0;
     public IDownload? Downloader;
     private bool _isCanceled = false;
     private Exception? _networkErrorException;
@@ -53,14 +54,22 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private DistributionInfoClient _distributionInfo;
     private string _currentWorkingMessage = "";
 
-    public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
-
     internal static string UpdateCachePath { get; } = Path.Combine(CommonDirectories.AppCacheFolderPath, "Update");
 
     public static string UpdateTempPath => Path.Combine(CommonDirectories.AppTempFolderPath, "Updating");
 
-    private static string UpdateDistributionInfoPath = Path.Combine(UpdateCachePath, "DistributionInfo.json");
-    private static string UpdateDistributionMetadataPath = Path.Combine(UpdateCachePath, "DistributionMetadata.json");
+    private static string UpdateDistributionInfoPath { get; } = Path.Combine(UpdateCachePath, "DistributionInfo.json");
+    private static string UpdateDistributionMetadataPath { get; } = Path.Combine(UpdateCachePath, "DistributionMetadata.json");
+    
+    private const string AppComponentName = "app";
+    
+    private const string LauncherComponentName = "launcher";
+
+    private static readonly string[] Components = [AppComponentName, LauncherComponentName];
+
+    private CancellationTokenSource? _downloadCancellationTokenSource;
+
+    public ObservableCollection<DownloadTaskInfo> DownloadTasks { get; } = [];
 
     public DistributionInfoClient DistributionInfo
     {
@@ -73,8 +82,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         get;
         set;
     }
-
-    public Stopwatch DownloadStatusUpdateStopwatch { get; } = new();
 
     public UpdateWorkingStatus CurrentWorkingStatus
     {
@@ -132,47 +139,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         set => SetField(ref _isCanceled, value);
     }
 
-    public long DownloadedSize
-    {
-        get => _downloadedSize;
-        set => SetField(ref _downloadedSize, value);
-    }
-
-    public long TotalSize
-    {
-        get => _totalSize;
-        set => SetField(ref _totalSize, value);
-    }
-
-    public double DownloadSpeed
-    {
-        get => _downloadSpeed;
-        set => SetField(ref _downloadSpeed, value);
-    }
-
     public Exception? NetworkErrorException
     {
         get => _networkErrorException;
         set => SetField(ref _networkErrorException, value);
     }
 
-    public TimeSpan DownloadEtcSeconds
-    {
-        get => _downloadEtcSeconds;
-        set => SetField(ref _downloadEtcSeconds, value);
-    }
-
     public async Task<bool> AppStartup()
     {
-        if (Settings.AutoInstallUpdateNextStartup 
-            && Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded
-            && File.Exists(Path.Combine(UpdateTempPath, "update.zip")))
-        {
-            SplashService.SplashStatus = "正在准备更新…";
-            App.GetService<ISplashService>().CurrentProgress = 90;
-            return await RestartAppToUpdateAsync();
-        }
-
         if (Settings.UpdateMode < 1)
         {
             return false;
@@ -317,7 +291,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task DownloadUpdateAsync()
     {
-        return;
         if (Design.IsDesignMode)
         {
             return;
@@ -339,31 +312,136 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
 
         var spanDownload = transaction.StartChild("download");
+        if (_downloadCancellationTokenSource != null)
+        {
+            await _downloadCancellationTokenSource.CancelAsync();
+        }
         try
         {
+            var publicKey =
+                AppBase.Current.IsDevelopmentBuild && !string.IsNullOrWhiteSpace(Settings.DebugPublicKeyOverride)
+                    ? Settings.DebugPublicKeyOverride
+                    : MetadataPublisherPublicKey;
             var valid = DetachedSignatureProcessor.VerifyDetachedSignature(DistributionInfo.FileMapJson,
-                Encoding.UTF8.GetBytes(DistributionInfo.FileMapSignature), MetadataPublisherPublicKey);
+                Encoding.UTF8.GetBytes(DistributionInfo.FileMapSignature), publicKey);
             if (!valid)
             {
                 throw new InvalidOperationException("文件图签名校验不通过");
             }
 
             var fileMap = JsonSerializer.Deserialize<FileMap>(DistributionInfo.FileMapJson);
+            if (fileMap == null)
+            {
+                throw new InvalidOperationException("文件图解析失败");
+            }
             
-            TotalSize = 0;
-            DownloadedSize = 0;
-            DownloadSpeed = 0;
-            DownloadStatusUpdateStopwatch.Start();
             CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
+            var cts = _downloadCancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = cts.Token;
 
             var options = new DownloadConfiguration()
             {
                 ChunkCount = 32,
-                ParallelCount = 8,
+                ParallelCount = 12,
                 ParallelDownload = true
             };
+            // key 是 hash（HEX）
+            Dictionary<string, (string Name, FileMapFile FileInfo)> filesHashed = [];
             
+            Logger.LogTrace("正在计算要下载的文件");
+            foreach (var (id, component) in fileMap.Components)
+            {
+                if (!Components.Contains(id))
+                {
+                    continue;
+                }
+                
+                
+                foreach (var (path, file) in component.Files)
+                {
+                    // TODO: 存在文件检测
+                    filesHashed.TryAdd(Convert.ToHexString(file.FileSha512), (Path.GetFileName(path), file));
+                }
+            }
+
+            var dlRoot = UpdateTempPath;
+            if (!Directory.Exists(dlRoot))
+            {
+                Directory.CreateDirectory(dlRoot);
+            }
+            var parallelOptions = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = 6,
+                CancellationToken = cancellationToken
+            };
+            Logger.LogInformation("开始下载更新，要下载 {} 个文件", filesHashed.Count);
+            var downloadTasksMap = new Dictionary<string, DownloadTaskInfo>();
+            DownloadTasks.Clear();
+            DownloadTasks.AddRange(filesHashed.Select(x => new DownloadTaskInfo()
+            {
+                FileName = x.Value.Name,
+                Key = x.Key
+            }));
+            foreach (var info in DownloadTasks)
+            {
+                downloadTasksMap[info.Key] = info;
+            }
             
+            await Parallel.ForEachAsync(filesHashed,  parallelOptions, async (pair, token) =>
+            {
+                var (hashHex, (fileName, file)) = pair;
+                var updateStopwatch = Stopwatch.StartNew();
+                Logger.LogInformation("开始下载 {}({})", fileName, file.ArchiveDownloadUrl);
+                var info = downloadTasksMap.GetValueOrDefault(hashHex) ?? DownloadTaskInfo.CreateEmpty();
+                info.State = DownloadState.Downloading;
+                var downloader = DownloadBuilder.New()
+                    .WithConfiguration(options)
+                    .WithUrl(file.ArchiveDownloadUrl)
+                    .WithFileLocation(Path.Combine(dlRoot, hashHex[..2], hashHex))
+                    .Build();
+                var taskCompletionSource = new TaskCompletionSource();
+                downloader.DownloadFileCompleted += (_, args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        taskCompletionSource.SetException(args.Error);
+                        return;
+                    }
+                    taskCompletionSource.SetResult();
+                };
+                downloader.DownloadProgressChanged += (_, e) =>
+                {
+                    if (updateStopwatch.ElapsedMilliseconds < 250)
+                        return;
+                    updateStopwatch.Restart();
+                    var totalSize = e.TotalBytesToReceive;
+                    var downloadedSize = e.ReceivedBytesSize; 
+                    var downloadSpeed = e.BytesPerSecondSpeed;
+
+                    var eta = TimeSpanHelper.FromSecondsSafe(downloadSpeed == 0
+                        ? 0
+                        : (long)((totalSize - downloadedSize) / downloadSpeed));
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        info.FileSize = totalSize;
+                        info.DownloadedSize = downloadedSize;
+                        info.DownloadSpeed = downloadSpeed;
+                        info.TimeToComplete = eta;
+                    });
+                };
+                token.Register(() =>
+                {
+                    taskCompletionSource.SetCanceled(token);
+                });
+                await downloader.StartAsync(token);
+                await taskCompletionSource.Task;
+                info.State = DownloadState.Completed;
+                Logger.LogInformation("下载完成 {}({})", fileName, file.ArchiveDownloadUrl);
+                DownloadTasks.Remove(info);
+            });
+
+            Logger.LogInformation("全部下载完成！");
+            Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
         }
         catch (Exception ex)
         {
@@ -375,6 +453,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         finally
         {
             CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+            _downloadCancellationTokenSource = null;
         }
     }
 
@@ -408,15 +487,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private void DownloaderOnDownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
     {
-        if (DownloadStatusUpdateStopwatch.ElapsedMilliseconds < 250)
-            return;
-        DownloadStatusUpdateStopwatch.Restart();
-        TotalSize = e.TotalBytesToReceive;
-        DownloadedSize = e.ReceivedBytesSize;
-        DownloadSpeed = e.BytesPerSecondSpeed;
         
-        DownloadEtcSeconds = TimeSpanHelper.FromSecondsSafe(DownloadSpeed == 0 ? 0 : (long)((TotalSize - DownloadedSize) / DownloadSpeed));
-        Logger.LogInformation("Download progress changed: {}/{} ({}B/s)", TotalSize, DownloadedSize, DownloadSpeed);
     }
 
     public async Task ExtractUpdateAsync()

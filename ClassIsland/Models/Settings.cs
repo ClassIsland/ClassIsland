@@ -1666,6 +1666,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public string DebugPublicKeyOverride
+    {
+        get => _debugPublicKeyOverride;
+        set
+        {
+            if (value == _debugPublicKeyOverride) return;
+            _debugPublicKeyOverride = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Window
@@ -1715,6 +1726,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _reduceProgressAccuracy = true;
     private Guid _selectedUpdateChannelV3 = Guid.Empty;
     private string _debugSubChannelOverride = "";
+    private string _debugPublicKeyOverride = "";
 
     public bool IsIgnoreWorkAreaEnabled
     {
