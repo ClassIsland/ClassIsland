@@ -13,8 +13,9 @@
         <StackPanel Orientation="Horizontal"
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     IsVisible="{Binding IsOverlay}">
-            <ci:FluentIcon Glyph="&#xe9e4;" VerticalAlignment="Center"
-                                     Height="20" Width="20" FontSize="20"/>
+            <ci:LucideIcon Glyph="&#xe0ff;" VerticalAlignment="Center"
+                           FontSize="20" FontWeight="Medium"
+                           Height="20" Width="20"/>
             <TextBlock Text="天气预报" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
             <controls:WeatherPackIconControl Code="{Binding Info.ForecastDaily.Weather.Value[0].To}" VerticalAlignment="Center"
                                              Height="22" AllowColor="False" />

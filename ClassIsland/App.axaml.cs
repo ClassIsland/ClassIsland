@@ -76,6 +76,7 @@ using ClassIsland.Controls.RuleSettingsControls;
 using ClassIsland.Controls.SpeechProviderSettingsControls;
 using ClassIsland.Controls.TriggerSettingsControls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Enums;
 using ClassIsland.Helpers;
@@ -276,6 +277,13 @@ public partial class App : AppBase, IAppHost
         {
             DesktopLifetime.ShutdownMode = ShutdownMode.OnExplicitShutdown;
         }
+        IconExpressionHelper.RegisterHandler("fluent", args => new FluentIconSource(args[0]));
+        IconExpressionHelper.RegisterHandler("lucide", args => new LucideIconSource(args[0]));
+        IconExpressionHelper.RegisterHandler("bitmap", args => new BitmapIconSource
+        {
+            UriSource = new Uri(args[0]),
+            ShowAsMonochrome = args.Length >= 2  && bool.TryParse(args[2], out var r1) && r1
+        });
         base.Initialize();
     }
 

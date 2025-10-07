@@ -52,7 +52,10 @@
                                 <Setter Property="Icon">
                                     <Template>
                                         <Border>
-                                            <ci:FluentIcon Glyph="{Binding IconGlyph}"/>
+                                            <controls:IconSourceElement IconSource="{Binding IconSource}"
+                                                                        Height="14" Width="14"
+                                                                        TextElement.FontSize="14"
+                                                                        Classes="repair-fontsize"/>
                                         </Border>
                                     </Template>
                                 </Setter>
@@ -72,8 +75,11 @@
                 <DataTemplate DataType="{x:Type components:ComponentSettings}">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                         <ci:TouchDragThumb Margin="-4 0 -2 0" IsCompact="True"/>
-                        <ci:FluentIcon Glyph="{Binding AssociatedComponentInfo.IconGlyph}"
-                                       VerticalAlignment="Center" />
+                        <controls:IconSourceElement IconSource="{Binding AssociatedComponentInfo.IconSource}"
+                                                    VerticalAlignment="Center" Height="14" Width="14"
+                                                    ClipToBounds="False"
+                                                    TextElement.FontSize="14"
+                                                    Classes="repair-fontsize"/>
                         <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
                                    VerticalAlignment="Center" />
                         <Button Content="{ci:FluentIcon &#xebac;}"
@@ -338,13 +344,15 @@
                             <DataTemplate>
                                 <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
                                       Margin="0 8" Height="50">
-                                    <ci:FluentIcon Grid.Column="1" Grid.Row="0"
-                                                   Grid.RowSpan="2"
-                                                   Width="32" Height="32"
-                                                   FontSize="32"
-                                                   VerticalAlignment="Center"
-                                                   Margin="0 -4 4 0"
-                                                   Glyph="{Binding IconGlyph}"/>
+                                    <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
+                                                                Grid.RowSpan="2"
+                                                                Width="32" Height="32"
+                                                                VerticalAlignment="Center"
+                                                                ClipToBounds="False"
+                                                                TextElement.FontSize="32"
+                                                                Classes="repair-fontsize"
+                                                                Margin="0 -4 4 0"
+                                                                IconSource="{Binding IconSource}"/>
                                     <TextBlock Grid.Row="0" Grid.Column="2"
                                                Text="{Binding Name}"
                                                HorizontalAlignment="Left"
