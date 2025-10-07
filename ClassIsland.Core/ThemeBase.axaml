@@ -38,6 +38,8 @@
     <system:Boolean x:Key="TrueValue">True</system:Boolean>
     <system:Boolean x:Key="FalseValue">False</system:Boolean>
     
+    <system:Double x:Key="NavigationViewItemOnLeftIconBoxHeight">18</system:Double>
+    
     <!-- IconFonts -->
     <FontFamily x:Key="FluentIcons">avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable</FontFamily>
     <FontFamily x:Key="LucideIcons">avares://ClassIsland.Core/Assets/Fonts/#lucide</FontFamily>
