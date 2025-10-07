@@ -827,7 +827,9 @@ public partial class App : AppBase, IAppHost
                 // };
                 // services.AddWeatherIconTemplate("classisland.weatherIcons.materialDesign", "Material Design（默认）",
                 //     (DataTemplate)materialDesignWeatherIconTemplateDictionary["MaterialDesignWeatherIconTemplate"]!);
-                services.AddWeatherIconTemplate("classisland.weatherIcons.fluentDesign", "Fluent Design（默认）",
+                services.AddWeatherIconTemplate("classisland.weatherIcons.lucide", "Lucide（默认）",
+                    (this.FindResource("LucideWeatherIconTemplate") as IDataTemplate)!);
+                services.AddWeatherIconTemplate("classisland.weatherIcons.fluentDesign", "Fluent Design",
                     (this.FindResource("FluentDesignWeatherIconTemplate") as IDataTemplate)!);
                 services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本",
                     (this.FindResource("SimpleTextWeatherIconTemplate") as IDataTemplate)!);

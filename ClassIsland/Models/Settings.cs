@@ -1719,7 +1719,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
     private string _selectedSpeechProvider = "classisland.speech.edgeTts";
     private bool _isThemeWarningVisible = true;
-    private string _weatherIconId = "classisland.weatherIcons.fluentDesign";
+    private string _weatherIconId = "classisland.weatherIcons.lucide";
     private bool _isRollingComponentWarningVisible = true;
     private int _animationLevel = 1;
     private bool _isIslandSeperated = false;
