@@ -123,7 +123,7 @@ public partial class MainWindow : Window
 
     private Stopwatch RawInputUpdateStopWatch { get; } = new();
 
-    // public ClassChangingWindow? ClassChangingWindow { get; set; }
+    private ClassChangingWindow? ClassChangingWindow { get; set; }
     
     private IUriNavigationService UriNavigationService { get; }
     public IRulesetService RulesetService { get; }
@@ -889,14 +889,21 @@ public partial class MainWindow : Window
             OpenProfileSettingsWindow();
             return;
         }
+
+        if (ClassChangingWindow != null)
+        {
+            return;
+        }
         
-        ViewModel.IsBusy = true;
-        var ccw = new ClassChangingWindow()
+        // ViewModel.IsBusy = true;
+        ClassChangingWindow = new ClassChangingWindow()
         {
             ClassPlan = LessonsService.CurrentClassPlan
         };
-        await ccw.ShowDialog(this);
-        ViewModel.IsBusy = false;
+        await ClassChangingWindow.ShowDialog(this);
+        ClassChangingWindow.DataContext = null;
+        ClassChangingWindow = null;
+        // ViewModel.IsBusy = false;
     }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
