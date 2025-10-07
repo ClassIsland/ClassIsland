@@ -557,17 +557,25 @@ public partial class App : AppBase, IAppHost
             : 1;
         if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
-            // TODO: 自动恢复
-            // var enterRecovery = await new CommonDialogBuilder()
-            //     .SetIconKind(CommonDialogIconKind.Hint)
-            //     .SetContent("ClassIsland 多次启动失败，您需要进入恢复模式以尝试修复 ClassIsland 吗？")
-            //     .AddCancelAction()
-            //     .AddAction("进入恢复模式", MaterialIconKind.WrenchCheckOutline, true)
-            //     .ShowDialog();
-            // if (enterRecovery == 1)
-            // {
-            //     ApplicationCommand.Recovery = true;
-            // }
+            var dialog = new TaskDialog()
+            {
+                Title = "进入恢复模式",
+                Content = "ClassIsland 多次启动失败，您需要进入恢复模式以尝试修复 ClassIsland 吗？",
+                XamlRoot = GetRootWindow(),
+                Buttons =
+                [
+                    new TaskDialogButton("取消", false),
+                    new TaskDialogButton("进入恢复模式", true)
+                    {
+                        IsDefault = true
+                    }
+                ],
+            };
+            var r = await dialog.ShowAsync();
+            if (Equals(r, true))
+            {
+                ApplicationCommand.Recovery = true;
+            }
         }
         if (ApplicationCommand.Recovery)
         {
@@ -575,10 +583,9 @@ public partial class App : AppBase, IAppHost
             {
                 File.Delete(startupCountFilePath);
             }
-
-            // TODO: 恢复窗口
-            // var recoveryWindow = new RecoveryWindow();
-            // recoveryWindow.Show();
+            
+            var recoveryWindow = new RecoveryWindow();
+            recoveryWindow.Show();
             transaction.Finish();
             return;
         }

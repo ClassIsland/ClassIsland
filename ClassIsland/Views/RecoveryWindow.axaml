@@ -1,0 +1,22 @@
+﻿<ci:MyWindow x:Class="ClassIsland.Views.RecoveryWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        mc:Ignorable="d"
+        Loaded="RecoveryWindow_OnLoaded"
+        Closed="RecoveryWindow_OnClosed"
+        Title="恢复" Height="600" Width="450"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance local:RecoveryWindow}"
+        Icon="/Assets/AppLogo.png">
+    <Grid RowDefinitions="Auto,*">
+        <controls1:Frame Grid.Row="1" x:Name="MainFrame" 
+                         CacheSize="0"/>
+    </Grid>
+</ci:MyWindow>
