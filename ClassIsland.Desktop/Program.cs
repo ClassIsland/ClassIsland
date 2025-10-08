@@ -24,7 +24,7 @@ namespace ClassIsland.Desktop;
 class Program
 {
     [STAThread]
-    static int Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
         var stopTokenSource = new CancellationTokenSource();
         ActivatePlatforms(out var postInit, stopTokenSource.Token);
@@ -90,6 +90,7 @@ class Program
         PlatformServices.DesktopService = new DesktopService();
         PlatformServices.SystemEventsService = new SystemEventsService();
         PlatformServices.DesktopToastService = new DesktopToastService();
+        PlatformServices.FilePickerService = new PlatformFilePickerService();
         postInitCallback = () =>
         {
             AppBase.Current.AppStarted += (sender, args) =>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -10,6 +11,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Models.Actions;
+using ClassIsland.Platforms.Abstraction;
 using static ClassIsland.Models.Actions.RunActionSettings.RunActionRunType;
 namespace ClassIsland.Controls.ActionSettingsControls;
 
@@ -83,32 +85,32 @@ public partial class RunActionSettingsControl : ActionSettingsControlBase<RunAct
         if (!IsFolder)
         {
             PopupHelper.DisableAllPopups();
-            var files = await storageProvider.OpenFilePickerAsync(new()
+            var files = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new()
             {
                 SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(Settings.Value),
                 FileTypeFilter = FileTypes,
                 SuggestedFileName = Settings.Value,
-            });
+            }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
             PopupHelper.RestoreAllPopups();
 
             if (files.Count > 0)
             {
-                Settings.Value = files[0].TryGetLocalPath() ?? Settings.Value;
+                Settings.Value = files[0];
             }
         }
         else
         {
             PopupHelper.DisableAllPopups();
-            var folders = await storageProvider.OpenFolderPickerAsync(new()
+            var folders = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new()
             {
                 SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(Settings.Value),
                 SuggestedFileName = Settings.Value
-            });
+            }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
             PopupHelper.RestoreAllPopups();
 
             if (folders.Count > 0)
             {
-                Settings.Value = folders[0].TryGetLocalPath() ?? Settings.Value;
+                Settings.Value = folders[0];
             }
         }
     }

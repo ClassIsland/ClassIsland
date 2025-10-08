@@ -15,6 +15,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
@@ -24,6 +25,7 @@ using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
@@ -147,24 +149,24 @@ public partial class PluginsSettingsPage : SettingsPageBase
         if (ViewModel.SelectedPluginInfo == null || StorageProvider == null)
             return;
         PopupHelper.DisableAllPopups();
-        var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
+        var file = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions()
         {
             Title = "打包插件",
             FileTypeChoices = [
                 IPluginService.PluginPackageFileType
             ],
             SuggestedFileName = ViewModel.SelectedPluginInfo.Manifest.Id + IPluginService.PluginPackageExtension
-        });
+        }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
         PopupHelper.RestoreAllPopups();
         
         if (file == null)
             return;
         try
         {
-            await Services.PluginService.PackagePluginAsync(ViewModel.SelectedPluginInfo.Manifest.Id, file.TryGetLocalPath() ?? "");
+            await Services.PluginService.PackagePluginAsync(ViewModel.SelectedPluginInfo.Manifest.Id, file);
             Process.Start(new ProcessStartInfo()
             {
-                FileName = Path.GetDirectoryName(file.TryGetLocalPath() ?? "") ?? "",
+                FileName = Path.GetDirectoryName(file) ?? "",
                 UseShellExecute = true
             });
         }
@@ -193,19 +195,16 @@ public partial class PluginsSettingsPage : SettingsPageBase
         }
         ViewModel.IsPluginMarketOperationsPopupOpened = false;
         PopupHelper.DisableAllPopups();
-        var file = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
+        var file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
         {
             Title = "从本地安装插件",
             FileTypeFilter = [IPluginService.PluginPackageFileType]
-        });
+        }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
         PopupHelper.RestoreAllPopups();
         if (file.Count <= 0)
             return;
-        var path = file[0].TryGetLocalPath();
-        if (path == null)
-        {
-            return;
-        }
+        var path = file[0];
+        
         try
         {
             File.Copy(path, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(path)), true);

@@ -1,0 +1,15 @@
+IFileOpenDialog
+IFileSaveDialog
+IFileDialog
+IShellItem
+IShellItemArray
+IModalWindow
+COMDLG_FILTERSPEC
+FILEOPENDIALOGOPTIONS
+SIGDN
+HRESULT
+CoCreateInstance
+CoInitializeEx
+CoUninitialize
+SHCreateItemFromParsingName
+SetCurrentProcessExplicitAppUserModelID
