@@ -20,6 +20,7 @@ using CommunityToolkit.Mvvm.Input;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Data;
@@ -133,7 +134,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
             return;
         }
         PopupHelper.DisableAllPopups();
-        var file = await topLevel.StorageProvider
+        var file = await PlatformServices.FilePickerService
             .SaveFilePickerAsync(new FilePickerSaveOptions()
             {
                 SuggestedFileName = info.Manifest.Id + ".zip",
@@ -144,17 +145,16 @@ public partial class ThemesSettingsPage : SettingsPageBase
                         Patterns = ["*.zip"]
                     }
                 ]
-            });
+            }, topLevel);
         PopupHelper.RestoreAllPopups();
-        var path = file?.TryGetLocalPath();
-        if (path == null)
+        if (file == null)
             return;
         try
         {
-            await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, path);
+            await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, file);
             Process.Start(new ProcessStartInfo()
             {
-                FileName = Path.GetDirectoryName(path) ?? "",
+                FileName = Path.GetDirectoryName(file) ?? "",
                 UseShellExecute = true
             });
         }

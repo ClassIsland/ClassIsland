@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Attributes;
 
@@ -21,7 +23,7 @@ public class ComponentInfo : Attribute
     /// <summary>
     /// 组件图标
     /// </summary>
-    public string IconGlyph { get; } = "\ue06f";
+    public IconSource? IconSource { get; }
 
     /// <summary>
     /// 组件位图图标uri
@@ -36,7 +38,7 @@ public class ComponentInfo : Attribute
     /// <summary>
     /// 组件描述
     /// </summary>
-    public string Description { get; } = "";
+    public string Description { get; }
 
     /// <summary>
     /// 设置界面类型
@@ -61,10 +63,10 @@ public class ComponentInfo : Attribute
     internal List<string> MigrateSources { get; } = new();
 
     /// <inheritdoc />
-    public ComponentInfo(string guid, string name, string iconGlyph, string description = "") : this(guid, name,
+    public ComponentInfo(string guid, string name, string iconSource, string description = "") : this(guid, name,
         description)
     {
-        IconGlyph = iconGlyph;
+        IconSource = IconExpressionHelper.TryParseOrNull(iconSource);
     }
 
     /// <inheritdoc />

@@ -133,6 +133,10 @@
 	<ItemGroup>
 	  <Compile Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.Designer.cs" />
 	  <Compile Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.Designer.cs" />
+	  <Compile Update="Views\SettingPages\UpdateSettingsPage.axaml.cs">
+	    <DependentUpon>UpdateSettingsPage.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.en.resx" />

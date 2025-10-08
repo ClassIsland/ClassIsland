@@ -76,6 +76,7 @@ using ClassIsland.Controls.RuleSettingsControls;
 using ClassIsland.Controls.SpeechProviderSettingsControls;
 using ClassIsland.Controls.TriggerSettingsControls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Enums;
 using ClassIsland.Helpers;
@@ -95,6 +96,8 @@ using Google.Protobuf.WellKnownTypes;
 using HotAvalonia;
 using ReactiveUI;
 using Empty = Google.Protobuf.WellKnownTypes.Empty;
+using UpdateSettingsPage = ClassIsland.Views.SettingPages.UpdateSettingsPage;
+
 namespace ClassIsland;
 /// <summary>
 /// Interaction logic for App.xaml
@@ -274,6 +277,13 @@ public partial class App : AppBase, IAppHost
         {
             DesktopLifetime.ShutdownMode = ShutdownMode.OnExplicitShutdown;
         }
+        IconExpressionHelper.RegisterHandler("fluent", args => new FluentIconSource(args[0]));
+        IconExpressionHelper.RegisterHandler("lucide", args => new LucideIconSource(args[0]));
+        IconExpressionHelper.RegisterHandler("bitmap", args => new BitmapIconSource
+        {
+            UriSource = new Uri(args[0]),
+            ShowAsMonochrome = args.Length >= 2  && bool.TryParse(args[2], out var r1) && r1
+        });
         base.Initialize();
     }
 
@@ -547,17 +557,25 @@ public partial class App : AppBase, IAppHost
             : 1;
         if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
-            // TODO: 自动恢复
-            // var enterRecovery = await new CommonDialogBuilder()
-            //     .SetIconKind(CommonDialogIconKind.Hint)
-            //     .SetContent("ClassIsland 多次启动失败，您需要进入恢复模式以尝试修复 ClassIsland 吗？")
-            //     .AddCancelAction()
-            //     .AddAction("进入恢复模式", MaterialIconKind.WrenchCheckOutline, true)
-            //     .ShowDialog();
-            // if (enterRecovery == 1)
-            // {
-            //     ApplicationCommand.Recovery = true;
-            // }
+            var dialog = new TaskDialog()
+            {
+                Title = "进入恢复模式",
+                Content = "ClassIsland 多次启动失败，您需要进入恢复模式以尝试修复 ClassIsland 吗？",
+                XamlRoot = GetRootWindow(),
+                Buttons =
+                [
+                    new TaskDialogButton("取消", false),
+                    new TaskDialogButton("进入恢复模式", true)
+                    {
+                        IsDefault = true
+                    }
+                ],
+            };
+            var r = await dialog.ShowAsync();
+            if (Equals(r, true))
+            {
+                ApplicationCommand.Recovery = true;
+            }
         }
         if (ApplicationCommand.Recovery)
         {
@@ -565,10 +583,9 @@ public partial class App : AppBase, IAppHost
             {
                 File.Delete(startupCountFilePath);
             }
-
-            // TODO: 恢复窗口
-            // var recoveryWindow = new RecoveryWindow();
-            // recoveryWindow.Show();
+            
+            var recoveryWindow = new RecoveryWindow();
+            recoveryWindow.Show();
             transaction.Finish();
             return;
         }
@@ -817,7 +834,9 @@ public partial class App : AppBase, IAppHost
                 // };
                 // services.AddWeatherIconTemplate("classisland.weatherIcons.materialDesign", "Material Design（默认）",
                 //     (DataTemplate)materialDesignWeatherIconTemplateDictionary["MaterialDesignWeatherIconTemplate"]!);
-                services.AddWeatherIconTemplate("classisland.weatherIcons.fluentDesign", "Fluent Design（默认）",
+                services.AddWeatherIconTemplate("classisland.weatherIcons.lucide", "Lucide（默认）",
+                    (this.FindResource("LucideWeatherIconTemplate") as IDataTemplate)!);
+                services.AddWeatherIconTemplate("classisland.weatherIcons.fluentDesign", "Fluent Design",
                     (this.FindResource("FluentDesignWeatherIconTemplate") as IDataTemplate)!);
                 services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本",
                     (this.FindResource("SimpleTextWeatherIconTemplate") as IDataTemplate)!);

@@ -84,7 +84,7 @@ public partial class DataTransferPage : UserControl
         }
 
         PopupHelper.DisableAllPopups();
-        var file = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
+        var file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
         {
             Title = "选择先前版本的 ClassIsland 实例",
             FileTypeFilter =
@@ -94,14 +94,14 @@ public partial class DataTransferPage : UserControl
                     Patterns = ["ClassIsland.exe"]
                 }
             ]
-        });
+        }, topLevel);
         PopupHelper.RestoreAllPopups();
         if (file.Count <= 0)
         {
             return;
         }
 
-        ViewModel.ImportSourcePath = Path.GetDirectoryName(file[0].TryGetLocalPath()) ?? "";
+        ViewModel.ImportSourcePath = Path.GetDirectoryName(file[0]) ?? "";
     }
 
     private async Task BeginPerformClassIslandImport()
@@ -300,17 +300,17 @@ public partial class DataTransferPage : UserControl
         }
 
         PopupHelper.DisableAllPopups();
-        var file = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
+        var file = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(new FolderPickerOpenOptions()
         {
             Title = "浏览 Class Widgets 数据目录"
-        });
+        }, topLevel);
         PopupHelper.RestoreAllPopups();
         if (file.Count <= 0)
         {
             return;
         }
         
-        ViewModel.ImportSourcePath = file[0].TryGetLocalPath() ?? "";
+        ViewModel.ImportSourcePath = file[0];
     }
 
     private void ImportClassWidgetsProfile(string root, IniData ini)

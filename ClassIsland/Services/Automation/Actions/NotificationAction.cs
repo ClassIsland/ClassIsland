@@ -75,32 +75,35 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
 
     async Task ShowNotificationAsync(NotificationActionSettings settings)
     {
-        var request = new NotificationRequest
+        await Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            MaskContent = NotificationContent.CreateTwoIconsMask(settings.Mask, hasRightIcon:false, factory: x =>
+            var request = new NotificationRequest
             {
-                x.Duration = TimeSpanHelper.FromSecondsSafe(settings.MaskDurationSeconds);
-                x.IsSpeechEnabled = settings.IsMaskSpeechEnabled;
-            }),
-            OverlayContent = string.IsNullOrEmpty(settings.Content) || settings.ContentDurationSeconds <= 0
-                ? null
-                : NotificationContent.CreateSimpleTextContent(settings.Content, factory: x =>
+                MaskContent = NotificationContent.CreateTwoIconsMask(settings.Mask, hasRightIcon: false, factory: x =>
                 {
-                    x.IsSpeechEnabled = settings.IsContentSpeechEnabled;
-                    x.Duration = TimeSpanHelper.FromSecondsSafe(settings.ContentDurationSeconds);
+                    x.Duration = TimeSpanHelper.FromSecondsSafe(settings.MaskDurationSeconds);
+                    x.IsSpeechEnabled = settings.IsMaskSpeechEnabled;
                 }),
-            RequestNotificationSettings =
-            {
-                IsSettingsEnabled = settings.IsAdvancedSettingsEnabled,
-                IsNotificationEffectEnabled = settings.IsEffectEnabled,
-                IsNotificationSoundEnabled = settings.IsSoundEffectEnabled,
-                IsNotificationTopmostEnabled = settings.IsTopmostEnabled,
-                NotificationSoundPath = settings.CustomSoundEffectPath,
-                IsSpeechEnabled = true
-            }
-        };
-        _cancellationTokenSource = request.CancellationTokenSource;
-        _completedTokenSource = request.CompletedTokenSource;
-        await ActionNotificationProvider.ShowNotificationAsync(request);
+                OverlayContent = string.IsNullOrEmpty(settings.Content) || settings.ContentDurationSeconds <= 0
+                    ? null
+                    : NotificationContent.CreateSimpleTextContent(settings.Content, factory: x =>
+                    {
+                        x.IsSpeechEnabled = settings.IsContentSpeechEnabled;
+                        x.Duration = TimeSpanHelper.FromSecondsSafe(settings.ContentDurationSeconds);
+                    }),
+                RequestNotificationSettings =
+                {
+                    IsSettingsEnabled = settings.IsAdvancedSettingsEnabled,
+                    IsNotificationEffectEnabled = settings.IsEffectEnabled,
+                    IsNotificationSoundEnabled = settings.IsSoundEffectEnabled,
+                    IsNotificationTopmostEnabled = settings.IsTopmostEnabled,
+                    NotificationSoundPath = settings.CustomSoundEffectPath,
+                    IsSpeechEnabled = true
+                }
+            };
+            _cancellationTokenSource = request.CancellationTokenSource;
+            _completedTokenSource = request.CompletedTokenSource;
+            await ActionNotificationProvider.ShowNotificationAsync(request);
+        });
     }
 }

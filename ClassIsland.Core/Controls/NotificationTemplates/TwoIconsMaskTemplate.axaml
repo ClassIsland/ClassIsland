@@ -6,17 +6,18 @@
                   DataType="{x:Type templates:TwoIconsMaskTemplateData}">
         <StackPanel Orientation="Horizontal" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
-            <controls:FontIcon Glyph="{Binding LeftIconGlyph}" VerticalAlignment="Center"
-                               FontFamily="{StaticResource FluentIcons}"
-                               FontSize="20"
-                               Height="20" Width="20"/>
+            <controls:IconSourceElement IconSource="{Binding LeftIconSource}" 
+                                        VerticalAlignment="Center"
+                                        Classes="repair-fontsize"
+                                        TextElement.FontSize="20"
+                                        Height="20" Width="20"/>
             <TextBlock Text="{Binding Text}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" 
                        Margin="8 0" FontWeight="Bold"/>
-            <controls:FontIcon Glyph="{Binding RightIconGlyph}"
-                               VerticalAlignment="Center"
-                               FontFamily="{StaticResource FluentIcons}"
-                               FontSize="20"
-                               Height="20" Width="20" IsVisible="{Binding HasRightIcon}"/>
+            <controls:IconSourceElement IconSource="{Binding RightIconSource}" 
+                                        VerticalAlignment="Center"
+                                        Classes="repair-fontsize"
+                                        TextElement.FontSize="20"
+                                        Height="20" Width="20"/>
         </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

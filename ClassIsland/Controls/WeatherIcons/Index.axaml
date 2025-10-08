@@ -4,5 +4,6 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="FluentDesignWeatherIconTemplate.axaml"/>
         <ResourceInclude Source="SimpleTextWeatherIconTemplate.axaml"/>
+        <ResourceInclude Source="LucideWeatherIconTemplate.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

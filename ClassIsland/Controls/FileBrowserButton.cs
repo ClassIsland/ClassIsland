@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Platforms.Abstraction;
 using Microsoft.Win32;
 
 namespace ClassIsland.Controls;
@@ -66,34 +67,34 @@ public class FileBrowserButton : Button
         if (!IsFolder)
         {
             PopupHelper.DisableAllPopups();
-            var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            var files = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions
             {
                 SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(StartFolder),
                 FileTypeFilter = FileTypes.AsReadOnly(),
                 AllowMultiple = false,
                 SuggestedFileName = CurrentPath
-            });
+            }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
             PopupHelper.RestoreAllPopups();
 
             if (files.Count > 0)
             {
-                CurrentPath = files[0].TryGetLocalPath() ?? "";
+                CurrentPath = files[0];
             }
         }
         else
         {
             PopupHelper.DisableAllPopups();
-            var folders = await storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
+            var folders = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(new FolderPickerOpenOptions()
             {
                 SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(StartFolder),
                 AllowMultiple = false,
                 SuggestedFileName = CurrentPath
-            });
+            }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
             PopupHelper.RestoreAllPopups();
 
             if (folders.Count > 0)
             {
-                CurrentPath = folders[0].TryGetLocalPath() ?? "";
+                CurrentPath = folders[0];
             }
         }
         FileSelected?.Invoke(this, EventArgs.Empty);

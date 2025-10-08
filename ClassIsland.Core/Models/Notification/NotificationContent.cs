@@ -2,6 +2,7 @@
 using System.Windows;
 using Avalonia.Markup.Xaml.Templates;
 using ClassIsland.Core.Controls.NotificationTemplates;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification.Templates;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Google.Protobuf.WellKnownTypes;
@@ -125,15 +126,15 @@ public class NotificationContent : ObservableRecipient
     /// <param name="factory">提醒内容处理工厂</param>
     /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
     public static NotificationContent CreateTwoIconsMask(string text,
-        string leftIcon = "\ue809", string rightIcon = "\ue02a", bool hasRightIcon=true,
+        string leftIcon = "lucide(\ue0ff)", string rightIcon = "lucide(\ue224)", bool hasRightIcon=true,
         Action<NotificationContent>? factory = null)
     {
         var content = new NotificationContent
         {
             Content = new TwoIconsMaskTemplateData()
             {
-                LeftIconGlyph = leftIcon,
-                RightIconGlyph = rightIcon,
+                LeftIconSource = IconExpressionHelper.TryParseOrNull(leftIcon),
+                RightIconSource = IconExpressionHelper.TryParseOrNull(rightIcon),
                 HasRightIcon = hasRightIcon,
                 Text = text
             },

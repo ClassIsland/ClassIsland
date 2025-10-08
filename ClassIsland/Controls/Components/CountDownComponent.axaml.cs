@@ -189,7 +189,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
     private (DateTime start, DateTime end) GetTimeRangeForToday(DateTime now)
     {
         var today = now.Date;
-        var tl = LessonsService.CurrentClassPlan?.TimeLayout;
+        var tl = LessonsService.CurrentClassPlan?.ValidTimeLayoutItems;
         if (Settings.NatureTimeUseMode == 1)
         {
             return (today, today.AddDays(1));
@@ -197,8 +197,8 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
 
         var fallbackStart = Settings.NatureTimeUseMode == 2 ? DateTime.MinValue : today;
         var fallbackEnd = Settings.NatureTimeUseMode == 2 ? DateTime.MinValue : today.AddDays(1);
-        var start = today + tl?.Layouts.FirstOrDefault(x => x.TimeType is 0 or 1)?.StartTime ?? fallbackStart;
-        var end = today + tl?.Layouts.LastOrDefault(x => x.TimeType is 0 or 1)?.EndTime ?? fallbackEnd;
+        var start = today + tl?.FirstOrDefault(x => x.TimeType is 0 or 1)?.StartTime ?? fallbackStart;
+        var end = today + tl?.LastOrDefault(x => x.TimeType is 0 or 1)?.EndTime ?? fallbackEnd;
         return (start, end);
     }
     
@@ -234,8 +234,8 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
             }
         }
 
-        var firstTl = firstCp?.TimeLayout?.Layouts.FirstOrDefault(x => x.TimeType is 0 or 1);
-        var lastTl = lastCp?.TimeLayout?.Layouts.LastOrDefault(x => x.TimeType is 0 or 1);
+        var firstTl = firstCp?.ValidTimeLayoutItems.FirstOrDefault(x => x.TimeType is 0 or 1);
+        var lastTl = lastCp?.ValidTimeLayoutItems.LastOrDefault(x => x.TimeType is 0 or 1);
         if (firstTl == null || lastTl == null)
         {
             return Settings.NatureTimeUseMode == 2

@@ -548,7 +548,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
             this.ShowToast(message);
             PopupHelper.DisableAllPopups();
-            var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
+            var file = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions()
             {
                 Title = "导出诊断数据",
                 SuggestedStartLocation =
@@ -561,15 +561,15 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                         Patterns = ["*.zip"]
                     }
                 ]
-            });
+            }, this);
             PopupHelper.RestoreAllPopups();
             if (file == null)
             {
                 return;
             }
 
-            await DiagnosticService.ExportDiagnosticData(file.Path.LocalPath);
-            this.ShowSuccessToast($"已导出诊断信息到 {file.Path.LocalPath}。");
+            await DiagnosticService.ExportDiagnosticData(file);
+            this.ShowSuccessToast($"已导出诊断信息到 {file}。");
         }
         catch (Exception exception)
         {
@@ -665,7 +665,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             PlatformServices.DesktopService.IsUrlSchemeRegistered = true;
         }
         PopupHelper.DisableAllPopups();
-        var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
+        var file = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions()
         {
             SuggestedFileName = "快捷换课.url",
             SuggestedStartLocation =
@@ -677,7 +677,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                     Patterns = ["*.url"]
                 }
             ]
-        });
+        }, this);
         PopupHelper.RestoreAllPopups();
         if (file == null)
         {
@@ -686,8 +686,8 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
         try
         {
-            await ShortcutHelpers.CreateClassSwapShortcutAsync(file.Path.LocalPath);
-            this.ShowSuccessToast($"已创建快捷换课图标到 {file.Path.LocalPath}。");
+            await ShortcutHelpers.CreateClassSwapShortcutAsync(file);
+            this.ShowSuccessToast($"已创建快捷换课图标到 {file}。");
         }
         catch (Exception exception)
         {

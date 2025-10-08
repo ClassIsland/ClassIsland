@@ -37,4 +37,9 @@ public static class PlatformServices
     /// 桌面通知服务
     /// </summary>
     public static IDesktopToastService DesktopToastService { get; internal set; } = new DesktopToastServiceStub();
+    
+    /// <summary>
+    /// 平台文件选取服务
+    /// </summary>
+    public static IPlatformFilePickerService FilePickerService { get; internal set; } = new AvaloniaDefaultPlatformFilePickerService();
 }

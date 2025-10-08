@@ -1,17 +1,18 @@
-#if false
 using System;
-using System.Windows;
-using System.Windows.Navigation;
+using System.Windows; 
+using Avalonia.Interactivity;
 using ClassIsland.Core;
+using ClassIsland.Core.Controls;
 using ClassIsland.ViewModels;
 using ClassIsland.Views.RecoveryPages;
+using FluentAvalonia.UI.Navigation;
 
 namespace ClassIsland.Views;
 
 /// <summary>
 /// RecoveryWindow.xaml 的交互逻辑
 /// </summary>
-public partial class RecoveryWindow
+public partial class RecoveryWindow : MyWindow
 {
     public static RecoveryWindow? Instance { get; private set; }
 
@@ -38,9 +39,12 @@ public partial class RecoveryWindow
 
     private void RecoveryWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        MainFrame.NavigationService.Navigated += NavigationServiceOnNavigated;
+        MainFrame.Navigated += NavigationServiceOnNavigated;
 
-        var home = new HomePage();
+        var home = new HomePage()
+        {
+            MainFrame = MainFrame
+        };
         home.Loaded += (o, args) => CompleteInitialized?.Invoke(this, EventArgs.Empty);
         MainFrame.Content = home;
     }
@@ -50,4 +54,3 @@ public partial class RecoveryWindow
         ViewModel.CanGoBack = MainFrame.CanGoBack;
     }
 }
-#endif

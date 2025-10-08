@@ -13,18 +13,6 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <!-- 准备上课 遮罩 -->
-        <StackPanel Orientation="Horizontal" x:Key="ClassPrepareNotifyMask" 
-                    TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
-                    VerticalAlignment="Center" HorizontalAlignment="Center">
-            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center"
-                           FontSize="20"
-                           Height="20" Width="20"/>
-            <TextBlock Text="{Binding MaskMessage}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
-            <ci:FluentIcon Glyph="&#xE479;" VerticalAlignment="Center"
-                           FontSize="20"
-                           Height="20" Width="20"/>
-        </StackPanel>
         <converters1:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
 
         <!-- 准备上课 -->
@@ -55,25 +43,17 @@
             </StackPanel>
         </Grid>
 
-        <!-- 上课遮罩 -->
-        <StackPanel Orientation="Horizontal" x:Key="ClassOnNotification" 
-                    TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
-                    VerticalAlignment="Center" HorizontalAlignment="Center">
-            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center" FontSize="20"
-                           Height="20" Width="20"/>
-            <TextBlock Text="{Binding MaskMessage}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
-            <ci:FluentIcon Glyph="&#xE479;" VerticalAlignment="Center" FontSize="20"
-                           Height="20" Width="20"/>
-        </StackPanel>
 
         <!-- 下课遮罩 -->
         <StackPanel Orientation="Horizontal" x:Key="ClassOffNotification" 
                     TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                     VerticalAlignment="Center" HorizontalAlignment="Center">
-            <ci:FluentIcon Glyph="&#xE809;" VerticalAlignment="Center" FontSize="20"
+            <ci:LucideIcon Glyph="&#xe0ff;" VerticalAlignment="Center"
+                           FontSize="20" FontWeight="Medium"
                            Height="20" Width="20"/>
             <TextBlock Text="{Binding LessonsService.CurrentTimeLayoutItem.BreakNameText}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
-            <ci:FluentIcon Glyph="&#xE4C3;" VerticalAlignment="Center" FontSize="20"
+            <ci:LucideIcon Glyph="&#xe250;" VerticalAlignment="Center"
+                           FontSize="20" FontWeight="Medium"
                            Height="20" Width="20"/>
         </StackPanel>
 
