@@ -53,10 +53,11 @@ class Program
 
                 var results = FileDialogService.ShowOpenFilesDialog(
                     title: options1.Title ?? "选择要打开的文件",
-                    initialDirectory: options1.SuggestedStartLocation?.ToString() ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    initialDirectory: options1.SuggestedStartLocation?.TryGetLocalPath() ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
                     filters: filters.ToArray(),
                     multiple: options1.AllowMultiple,
-                    folder: false
+                    folder: false,
+                    root: pickerArgs.ParentHWnd
                 );
                 resultString = JsonSerializer.Serialize(results ?? []);
                 break;
@@ -74,9 +75,10 @@ class Program
                 }
                 var folders = FileDialogService.ShowOpenFilesDialog(
                     title: folderOptions.Title ?? "选择文件夹",
-                    initialDirectory: folderOptions.SuggestedStartLocation?.ToString() ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    initialDirectory: folderOptions.SuggestedStartLocation?.TryGetLocalPath() ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
                     multiple: options.AllowMultiple,
-                    folder: true
+                    folder: true,
+                    root: pickerArgs.ParentHWnd
                 );
                 resultString = JsonSerializer.Serialize(folders ?? []);
                 break;
@@ -88,9 +90,10 @@ class Program
                 }
                 var saveResult = FileDialogService.ShowSaveFileDialog(
                     title: saveOptions.Title ?? "保存文件",
-                    initialDirectory: saveOptions.SuggestedStartLocation?.ToString() ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    initialDirectory: saveOptions.SuggestedStartLocation?.TryGetLocalPath() ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
                     defaultFileName: saveOptions.SuggestedFileName,
-                    filters: (saveOptions.FileTypeChoices ?? new List<FilePickerFileType>()).SelectMany(f => new[] { f.Name, string.Join(";", f.Patterns ?? Array.Empty<string>()) }).ToArray()
+                    filters: (saveOptions.FileTypeChoices ?? new List<FilePickerFileType>()).SelectMany(f => new[] { f.Name, string.Join(";", f.Patterns ?? []) }).ToArray(),
+                    root: pickerArgs.ParentHWnd
                 );
                 resultString = JsonSerializer.Serialize(saveResult ?? "");
                 break;

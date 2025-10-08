@@ -6,6 +6,8 @@ public class FilePickerHostArguments
     
     public object? Options { get; set; }
     
+    public int ParentHWnd { get; set; }
+    
     public enum FilePickerMode
     {
         None,

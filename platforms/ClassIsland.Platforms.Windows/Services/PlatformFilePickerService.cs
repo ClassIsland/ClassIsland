@@ -51,7 +51,8 @@ public class PlatformFilePickerService : IPlatformFilePickerService
         var args = new FilePickerHostArguments
         {
             Mode = FilePickerHostArguments.FilePickerMode.OpenFile,
-            Options = serializableOptions
+            Options = serializableOptions,
+            ParentHWnd = (int)(root.TryGetPlatformHandle()?.Handle ?? nint.Zero)
         };
         var result = await StartFilePickerHost(args);
         if (string.IsNullOrEmpty(result))
@@ -80,7 +81,8 @@ public class PlatformFilePickerService : IPlatformFilePickerService
         var args = new FilePickerHostArguments
         {
             Mode = FilePickerHostArguments.FilePickerMode.SaveFile,
-            Options = serializableOptions
+            Options = serializableOptions,
+            ParentHWnd = (int)(root.TryGetPlatformHandle()?.Handle ?? nint.Zero)
         };
         var result = await StartFilePickerHost(args);
         if (string.IsNullOrEmpty(result))
@@ -108,7 +110,8 @@ public class PlatformFilePickerService : IPlatformFilePickerService
         var args = new FilePickerHostArguments
         {
             Mode = FilePickerHostArguments.FilePickerMode.OpenFolder,
-            Options = serializableOptions
+            Options = serializableOptions,
+            ParentHWnd = (int)(root.TryGetPlatformHandle()?.Handle ?? nint.Zero)
         };
         var result = await StartFilePickerHost(args);
         if (string.IsNullOrEmpty(result))

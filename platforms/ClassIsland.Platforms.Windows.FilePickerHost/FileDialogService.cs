@@ -19,7 +19,8 @@ public class FileDialogService
         string? initialDirectory = null,
         string[]? filters = null,
         bool multiple = false,
-        bool folder = false)
+        bool folder = false,
+        nint root = 0)
     {
         var hr = PInvoke.CoInitializeEx(null, COINIT.COINIT_APARTMENTTHREADED | COINIT.COINIT_DISABLE_OLE1DDE);
         if (hr.Failed)
@@ -105,7 +106,11 @@ public class FileDialogService
         return null;
     }
 
-    public static unsafe string? ShowSaveFileDialog(string? title = null, string? initialDirectory = null, string? defaultFileName = null, string[]? filters = null)
+    public static unsafe string? ShowSaveFileDialog(string? title = null,
+        string? initialDirectory = null,
+        string? defaultFileName = null,
+        string[]? filters = null,
+        nint root = 0)
     {
         var hr = PInvoke.CoInitializeEx(null, COINIT.COINIT_APARTMENTTHREADED | COINIT.COINIT_DISABLE_OLE1DDE);
         if (hr.Failed)
@@ -154,7 +159,7 @@ public class FileDialogService
                 dialog.SetFileTypes(filterSpecs);
             }
 
-            dialog.Show(HWND.Null);
+            dialog.Show((HWND)root);
             dialog.GetResult(out var resultItem);
             if (resultItem != null)
             {
