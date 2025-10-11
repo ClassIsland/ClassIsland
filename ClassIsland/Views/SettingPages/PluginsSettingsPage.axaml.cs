@@ -263,8 +263,8 @@ public partial class PluginsSettingsPage : SettingsPageBase
             var result = await new ContentDialog()
             {
                 Title = "缺少依赖项",
-                Content = "此插件的部分必选依赖项未安装且无法从市场获取。如果继续安装此插件，此插件将可能无法工作。您要继续安装此插件吗？\n\n" +
-                          "未找到的必选依赖项：\n" + string.Join('\n', missingPlugins),
+                Content = "此插件的部分必选依赖项未安装且无法从市场获取。如果继续安装此插件，此插件将可能无法工作。您要继续安装此插件吗？" +Environment.NewLine +Environment.NewLine +
+                          "未找到的必选依赖项："+Environment.NewLine + string.Join(Environment.NewLine, missingPlugins),
                 SecondaryButtonText = "取消",
                 PrimaryButtonText = "继续",
                 DefaultButton = ContentDialogButton.Secondary
