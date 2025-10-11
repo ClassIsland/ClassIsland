@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
@@ -7,6 +8,7 @@ using Windows.Win32.UI.Shell.Common;
 
 namespace ClassIsland.Platforms.Windows.FilePickerHost;
 
+[SupportedOSPlatform("windows")]
 public class FileDialogService
 {
     private const FILEOPENDIALOGOPTIONS DefaultDialogOptions =
