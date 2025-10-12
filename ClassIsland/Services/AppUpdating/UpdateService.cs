@@ -32,8 +32,10 @@ using ClassIsland.Shared.Helpers;
 using ClassIsland.Views;
 using Downloader;
 using DynamicData;
+using ICSharpCode.SharpZipLib.GZip;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PhainonDistributionCenter.Shared.Helpers;
 using PhainonDistributionCenter.Shared.Models.Api.Responses.Distribution;
 using PhainonDistributionCenter.Shared.Models.Client;
 using PhainonDistributionCenter.Shared.Models.FileMap;
@@ -68,6 +70,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private static readonly string[] Components = [AppComponentName, LauncherComponentName];
 
     private CancellationTokenSource? _downloadCancellationTokenSource;
+    private int _downloadedCount = 0;
+    private int _downloadingCountTotal = 0;
 
     public ObservableCollection<DownloadTaskInfo> DownloadTasks { get; } = [];
 
@@ -116,6 +120,28 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     public event EventHandler? UpdateInfoUpdated;
     
     private WebRequestHelper RequestHelper { get; }
+
+    public int DownloadingCountTotal
+    {
+        get => _downloadingCountTotal;
+        set
+        {
+            if (value == _downloadingCountTotal) return;
+            _downloadingCountTotal = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int DownloadedCount
+    {
+        get => _downloadedCount;
+        set
+        {
+            if (value == _downloadedCount) return;
+            _downloadedCount = value;
+            OnPropertyChanged();
+        }
+    }
 
     public UpdateService(SettingsService settingsService, ITaskBarIconService taskBarIconService, IHostApplicationLifetime lifetime,
         ISplashService splashService, ILogger<UpdateService> logger)
@@ -341,9 +367,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
             var options = new DownloadConfiguration()
             {
-                ChunkCount = 32,
-                ParallelCount = 12,
-                ParallelDownload = true
+                ChunkCount = 4,
+                ParallelCount = 4,
+                ParallelDownload = true,
+                Timeout = 60
             };
             // key 是 hash（HEX）
             Dictionary<string, (string Name, FileMapFile FileInfo)> filesHashed = [];
@@ -371,9 +398,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             }
             var parallelOptions = new ParallelOptions
             {
-                MaxDegreeOfParallelism = 6,
+                MaxDegreeOfParallelism = 8,
                 CancellationToken = cancellationToken
             };
+            DownloadedCount = 0;
+            DownloadingCountTotal = filesHashed.Count;
             Logger.LogInformation("开始下载更新，要下载 {} 个文件", filesHashed.Count);
             var downloadTasksMap = new Dictionary<string, DownloadTaskInfo>();
             DownloadTasks.Clear();
@@ -394,7 +423,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 Logger.LogInformation("开始下载 {}({})", fileName, file.ArchiveDownloadUrl);
                 var info = downloadTasksMap.GetValueOrDefault(hashHex) ?? DownloadTaskInfo.CreateEmpty();
                 info.State = DownloadState.Downloading;
-                var downloader = DownloadBuilder.New()
+                await using var downloader = DownloadBuilder.New()
                     .WithConfiguration(options)
                     .WithUrl(file.ArchiveDownloadUrl)
                     .WithFileLocation(Path.Combine(dlRoot, hashHex[..2], hashHex))
@@ -407,6 +436,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                         taskCompletionSource.SetException(args.Error);
                         return;
                     }
+
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        DownloadedCount++;
+                    });
                     taskCompletionSource.SetResult();
                 };
                 downloader.DownloadProgressChanged += (_, e) =>
@@ -436,10 +470,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 await downloader.StartAsync(token);
                 await taskCompletionSource.Task;
                 info.State = DownloadState.Completed;
+                // DownloadTasks.Remove(info);
                 Logger.LogInformation("下载完成 {}({})", fileName, file.ArchiveDownloadUrl);
-                DownloadTasks.Remove(info);
             });
 
+            await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json"), DistributionInfo.FileMapJson, cancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json.sig"), DistributionInfo.FileMapSignature, cancellationToken);
             Logger.LogInformation("全部下载完成！");
             Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
         }
@@ -457,17 +493,23 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     }
 
-    public async void StopDownloading()
+    public async Task StopDownloading()
     {
-        if (Downloader == null)
-        {
-            return;
-        }
-
         Logger.LogInformation("应用更新下载停止。");
         IsCanceled = true;
-        Downloader.Pause();
-        Downloader.Dispose();
+        if (_downloadCancellationTokenSource != null)
+        {
+            try
+            {
+                await _downloadCancellationTokenSource.CancelAsync();
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+        }
+
+        _downloadCancellationTokenSource = null;
         CurrentWorkingStatus = UpdateWorkingStatus.Idle;
         await RemoveDownloadedFiles();
     }
@@ -484,19 +526,107 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
         await CheckUpdateAsync(isCancel:true);
     }
-
-    private void DownloaderOnDownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
-    {
-        
-    }
+    
 
     public async Task ExtractUpdateAsync()
     {
-        Logger.LogInformation("正在展开应用更新包。");
-        await Task.Run(() =>
+        CurrentWorkingStatus = UpdateWorkingStatus.ExtractingUpdates;
+        try
         {
-            ZipFile.ExtractToDirectory(Path.Combine(UpdateTempPath, @"./update.zip"), Path.Combine(UpdateTempPath, @"./extracted"), true);
-        });
+            Logger.LogInformation("正在部署应用更新");
+            var fileMapJson = await File.ReadAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json"));
+            var fileMapSig = await File.ReadAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json.sig"));
+            var publicKey =
+                AppBase.Current.IsDevelopmentBuild && !string.IsNullOrWhiteSpace(Settings.DebugPublicKeyOverride)
+                    ? Settings.DebugPublicKeyOverride
+                    : MetadataPublisherPublicKey;
+            var valid = DetachedSignatureProcessor.VerifyDetachedSignature(fileMapJson,
+                Encoding.UTF8.GetBytes(fileMapSig), publicKey);
+            if (!valid)
+            {
+                throw new InvalidOperationException("文件图签名校验不通过");
+            }
+
+            var fileMap = JsonSerializer.Deserialize<FileMap>(fileMapJson);
+            if (fileMap == null)
+            {
+                throw new InvalidOperationException("文件图解析失败");
+            }
+
+            Logger.LogInformation("正在解压并检验文件完整性");
+            
+            var root = CommonDirectories.AppPackageRoot;
+            
+            Logger.LogTrace("DeployRoot = {}", root);
+            var extractedPath = Path.Combine(UpdateTempPath, "extracted");
+            if (!Directory.Exists(extractedPath))
+            {
+                Directory.CreateDirectory(extractedPath);
+            }
+            
+            foreach (var (id, component) in fileMap.Components)
+            {
+                if (!Components.Contains(id))
+                {
+                    continue;
+                }
+
+                foreach (var (path, fileInfo) in component.Files)
+                {
+                    var hashHex = Convert.ToHexString(fileInfo.FileSha512);
+                    var fullPath = Path.Combine(extractedPath, hashHex[..2], hashHex);
+                    if (!Directory.Exists(Path.GetDirectoryName(fullPath)))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(fullPath) ?? throw new InvalidOperationException("Path is null"));
+                    }
+
+                    Logger.LogTrace("正在解压：{}({})", path, fullPath);
+                    await using (var file = File.OpenWrite(fullPath))
+                    {
+                        await using var archive = File.OpenRead(Path.Combine(UpdateTempPath, hashHex[..2], hashHex));
+                        archive.Position = 0;
+                        await using var gZipStream = new GZipInputStream(archive);
+                        await gZipStream.CopyToAsync(file);
+                    }
+
+                    await using (var file = File.OpenRead(fullPath))
+                    {
+                        var hash = await SHA512.HashDataAsync(file);
+                        if (!hash.SequenceEqual(fileInfo.FileSha512))
+                        {
+                            throw new InvalidOperationException($"文件 {path} 的 SHA512 校验失败 ");
+                        }
+                    }
+                }
+            }
+            
+            foreach (var (id, component) in fileMap.Components)
+            {
+                if (!Components.Contains(id))
+                {
+                    continue;
+                }
+                
+                var compRoot = Path.Combine(root,
+                    VariableStringHelpers.ExpandString(component.Root, fileMap.Variables));
+
+                foreach (var (path, fileInfo) in component.Files)
+                {
+                    
+                }
+            }
+
+            
+            Logger.LogInformation("正在准备部署");
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "无法部署应用更新");
+        }
+        finally
+        {
+            CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+        }
     }
 
     private async Task ValidateUpdateAsync()

@@ -5,6 +5,7 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Enums.AppUpdating;
+using ClassIsland.Services.AppUpdating;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using ClassIsland.ViewModels.SettingsPages;
@@ -37,6 +38,16 @@ public partial class UpdateSettingsPage : SettingsPageBase
             UpdateStatus.UpdateDownloaded => "已准备好安装更新。",
             UpdateStatus.UpdateDeployed => "更新已就绪。",
             _ => ""
+        });
+    
+    public static readonly FuncValueConverter<UpdateWorkingStatus, string> UpdateWorkingStatusToMessageConverter =
+        new(x => x switch
+        {
+            UpdateWorkingStatus.Idle => "就绪",
+            UpdateWorkingStatus.CheckingUpdates => "正在检查更新…",
+            UpdateWorkingStatus.DownloadingUpdates => "正在下载更新…",
+            UpdateWorkingStatus.ExtractingUpdates => "正在部署更新…",
+            _ => "???"
         });
 
     public static readonly FuncValueConverter<DownloadState, string> DownloadStateToMessageConverter =
@@ -92,5 +103,15 @@ public partial class UpdateSettingsPage : SettingsPageBase
     private void ButtonOpenDownloadTasks_OnClick(object? sender, RoutedEventArgs e)
     {
         OpenDrawer("DownloadInfoDrawer");
+    }
+
+    private async void ButtonCancelDownload_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await ViewModel.UpdateService.StopDownloading();
+    }
+
+    private async void ButtonDeployUpdate_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await ViewModel.UpdateService.ExtractUpdateAsync();
     }
 }
