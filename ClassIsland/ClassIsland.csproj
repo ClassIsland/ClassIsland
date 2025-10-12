@@ -138,6 +138,9 @@
 	    <DependentUpon>UpdateSettingsPage.axaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
+	  <Compile Update="App.Services.xaml.cs">
+	    <DependentUpon>App.axaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.en.resx" />
