@@ -58,6 +58,8 @@ CloseDesktop
 SetWindowDisplayAffinity
 SetLayeredWindowAttributes
 SetCurrentProcessExplicitAppUserModelID
+ExitWindowsEx
+SetSuspendState
 
 EVENT_SYSTEM_FOREGROUND
 WINEVENT_OUTOFCONTEXT
