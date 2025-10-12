@@ -1780,7 +1780,7 @@
                                                ToolTip.Tip="导入外部的课程信息，或导出当前的档案信息。"/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xee2f;}"
                                                Label="帮助"
-                                               Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                               Click="ButtonHelp_OnClick"
                                                CommandParameter="https://docs.classisland.tech/app/profile/"
                                                ToolTip.Tip="查看档案编辑器帮助"/>
                 </controls:CommandBar.PrimaryCommands>

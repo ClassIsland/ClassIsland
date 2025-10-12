@@ -20,6 +20,7 @@ using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Commands;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.Profile;
 using ClassIsland.Core.Helpers.UI;
@@ -127,6 +128,11 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             RefreshWeekScheduleRows();
         }
+    }
+    
+    private void ButtonHelp_OnClick(object? sender, RoutedEventArgs e)
+    {
+        UriNavigationCommands.UriNavigationCommand.Execute("https://docs.classisland.tech/app/profile/");
     }
 
     #endregion
@@ -1320,9 +1326,6 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.IsProfileTransferInvoked = false;
     }
 
-    #endregion
-
-
     private async void ButtonInvokeTransfer_OnClick(object? sender, RoutedEventArgs e)
     {
         if (ViewModel.TransferProviderContent == null || ViewModel.SelectedTransferInfo == null)
@@ -1363,4 +1366,6 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.IsTransferring = false;
         }
     }
+    
+    #endregion
 }
