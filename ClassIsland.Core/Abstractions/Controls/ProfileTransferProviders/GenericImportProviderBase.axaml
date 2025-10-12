@@ -7,7 +7,8 @@
              xmlns:profileTransferProviders="clr-namespace:ClassIsland.Core.Abstractions.Controls.ProfileTransferProviders"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Core.Abstractions.Controls.ProfileTransferProviders.GenericImportProviderBase"
-             d:DataContext="{d:DesignInstance profileTransferProviders:GenericImportProviderBase}">
+             d:DataContext="{d:DesignInstance profileTransferProviders:GenericImportProviderBase}"
+             Loaded="Control_OnLoaded">
     <ci:ProfileTransferProviderControlBase.Resources>
         <ci:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
     </ci:ProfileTransferProviderControlBase.Resources>
@@ -27,7 +28,7 @@
                 </controls:SettingsExpander.Footer>
             </controls:SettingsExpander>
             <controls:SettingsExpander Header="导入目标" IsExpanded="True">
-                <controls:SettingsExpanderItem >
+                <controls:SettingsExpanderItem IsEnabled="{Binding AllowMergeToCurrentProfile}">
                     <RadioButton IsChecked="{Binding ImportType, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}">合并到当前档案</RadioButton>
                 </controls:SettingsExpanderItem>
                 <controls:SettingsExpanderItem>
@@ -40,7 +41,7 @@
                                     </Binding.ConverterParameter>
                                 </Binding>
                             </ci:Field.IsVisible>
-                            <TextBox Watermark="新档案名称" />
+                            <TextBox Watermark="新档案名称" Text="{Binding NewProfileName}"/>
                         </ci:Field>
                     </controls:SettingsExpanderItem.Footer>
                     <RadioButton IsChecked="{Binding ImportType, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}">导入到新的档案</RadioButton>

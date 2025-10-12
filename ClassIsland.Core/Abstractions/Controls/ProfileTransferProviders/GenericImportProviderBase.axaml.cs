@@ -54,6 +54,15 @@ public abstract partial class GenericImportProviderBase : ProfileTransferProvide
         set => SetValue(ImportFileHeaderProperty, value);
     }
 
+    public static readonly StyledProperty<bool> AllowMergeToCurrentProfileProperty = AvaloniaProperty.Register<GenericImportProviderBase, bool>(
+        nameof(AllowMergeToCurrentProfile), true);
+
+    public bool AllowMergeToCurrentProfile
+    {
+        get => GetValue(AllowMergeToCurrentProfileProperty);
+        set => SetValue(AllowMergeToCurrentProfileProperty, value);
+    }
+
     public List<FilePickerFileType> FileTypes { get; init; } = [];
 
     private IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
@@ -78,6 +87,14 @@ public abstract partial class GenericImportProviderBase : ProfileTransferProvide
         if (files.Count > 0)
         {
             SourceFilePath = files[0];
+        }
+    }
+
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (!AllowMergeToCurrentProfile)
+        {
+            ImportType = 1;
         }
     }
 }
