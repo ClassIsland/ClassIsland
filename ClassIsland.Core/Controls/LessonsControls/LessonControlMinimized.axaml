@@ -13,20 +13,19 @@
                    Classes.ChangedClass="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource Self}}"
                    Classes.HighlightChangedClass="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}">
     <local:LessonControlBase.Styles>
-        <Style Selector="local|LessonControlBase.ChangedClass.HighlightChangedClass TextBlock#Text">
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="3"
-                                      OffsetX="0" OffsetY="0"
-                                      Color="#FF0" />
-                </Setter.Value>
-            </Setter>
+        <Style Selector="Border#TextHighlightBorder">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="#LessonControlMinimizedRoot.ChangedClass.HighlightChangedClass Border#TextHighlightBorder">
+            <Setter Property="IsVisible" Value="True" />
         </Style>
     </local:LessonControlBase.Styles>
+    
     <local:LessonControlBase.Resources>
         <converters:CustomKeyDictionaryValueConverter 
             x:TypeArguments="system:Guid, profile:Subject" x:Key="SubjectIdToSubjectConverter" />
     </local:LessonControlBase.Resources>
+    
     <StackPanel DataContext="{Binding $parent[local:LessonControlMinimized]}"
                 Orientation="Horizontal">
         
@@ -37,7 +36,7 @@
             <Border Width="10"/>
         </LayoutTransformControl>
 
-        <Grid>
+        <Grid VerticalAlignment="Center">
             <Grid.DataContext>
                 <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}"
                               FallbackValue="{x:Static profile:Subject.Fallback}">
@@ -45,8 +44,15 @@
                     <Binding Path="#LessonControlMinimizedRoot.ClassInfo.SubjectId"/>
                 </MultiBinding>
             </Grid.DataContext>
-            <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" x:Name="Text"
-                   Text="{Binding Initial}"/>
+            
+            <Border x:Name="TextHighlightBorder"
+                    Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0.4"
+                    Height="12" VerticalAlignment="Center"
+                    Margin="-2 8 -2 0" CornerRadius="2"/>
+            
+            <TextBlock x:Name="Text" VerticalAlignment="Center"
+                       FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                       Text="{Binding Initial}" />
         </Grid>
 
         <LayoutTransformControl>

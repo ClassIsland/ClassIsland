@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.ComponentModels;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -39,6 +41,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public IObservableList<KeyValuePair<Guid, ClassPlan>> TempClassPlanList { get; }
 
 
+    [ObservableProperty] private ObservableCollection<object> _transferNavigationViewItems = [];
     [ObservableProperty] private object _drawerContent = new();
     [ObservableProperty] private bool _isClassPlansEditing = false;
     [ObservableProperty] private ObservableCollection<string> _profiles = new();
@@ -83,6 +86,10 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private ToastMessage? _currentClassPlanEditDoneToast = null;
     [ObservableProperty] private KeyValuePair<Guid, TimeLayout>? _classPlanInfoSelectedTimeLayoutKvp;
     [ObservableProperty] private HashSet<string> _currentProfileBreakNames = [];
+    [ObservableProperty] private ProfileTransferProviderControlBase? _transferProviderContent;
+    [ObservableProperty] private bool _isProfileTransferInvoked;
+    [ObservableProperty] private ProfileTransferProviderInfo? _selectedTransferInfo;
+    [ObservableProperty] private bool _isTransferring;
 
 /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,

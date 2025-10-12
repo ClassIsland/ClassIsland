@@ -18,7 +18,12 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
     {
         Logger = logger;
         
-        
+        AppBase.Current.AppStopping += CurrentOnAppStopping;
+    }
+
+    private void CurrentOnAppStopping(object? sender, EventArgs e)
+    {
+        MainTaskBarIcon.IsVisible = false;
     }
 
     public ILogger<TaskBarIconService> Logger { get; }

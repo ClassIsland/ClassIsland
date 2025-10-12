@@ -103,7 +103,7 @@
                         </Binding.ConverterParameter>
                     </Binding>
                 </WrapPanel.IsEnabled>
-                <Button Content="检查更新" Classes="accent"
+                <Button Content="检查更新" Classes="accent" Margin="4"
                         Click="ButtonCheckUpdate_OnClick">
                     <Button.IsVisible>
                         <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
@@ -114,7 +114,7 @@
                         </Binding>
                     </Button.IsVisible>
                 </Button>
-                <Button Content="下载更新" Classes="accent"
+                <Button Content="下载更新" Classes="accent" Margin="4"
                         Click="ButtonDownloadUpdate_OnClick">
                     <Button.IsVisible>
                         <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
@@ -125,8 +125,19 @@
                         </Binding>
                     </Button.IsVisible>
                 </Button>
+                <Button Content="安装更新" Classes="accent" Margin="4"
+                        Click="ButtonDeployUpdate_OnClick"> 
+                    <Button.IsVisible>
+                        <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
+                                 Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <enums:UpdateStatus>UpdateDownloaded</enums:UpdateStatus>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Button.IsVisible>
+                </Button>
                 
-                <Button Content="检查更新"
+                <Button Content="检查更新" Margin="4"
                         Click="ButtonCheckUpdate_OnClick">
                     <Button.IsVisible>
                         <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
@@ -139,8 +150,32 @@
                 </Button>
             </WrapPanel>
             
-            <StackPanel>
-                <Button Content="查看下载状态"
+            <StackPanel Spacing="4">
+                <StackPanel.IsVisible>
+                    <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
+                             Converter="{x:Static ObjectConverters.NotEqual}">
+                        <Binding.ConverterParameter>
+                            <enums:UpdateWorkingStatus>Idle</enums:UpdateWorkingStatus>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </StackPanel.IsVisible>
+                <ProgressBar Maximum="{Binding ViewModel.UpdateService.DownloadingCountTotal}"
+                             Value="{Binding ViewModel.UpdateService.DownloadedCount}">
+                    <ProgressBar.IsIndeterminate>
+                        <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
+                                 Converter="{x:Static ObjectConverters.NotEqual}">
+                            <Binding.ConverterParameter>
+                                <enums:UpdateWorkingStatus>DownloadingUpdates</enums:UpdateWorkingStatus>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </ProgressBar.IsIndeterminate>
+                </ProgressBar>
+                <TextBlock Text="{Binding ViewModel.UpdateService.CurrentWorkingStatus, Converter={x:Static settingPages:UpdateSettingsPage.UpdateWorkingStatusToMessageConverter}}"/>
+            </StackPanel>
+            
+
+            <WrapPanel Classes="animated-resize" >
+                <Button Content="查看下载状态" Margin="4"
                         Click="ButtonOpenDownloadTasks_OnClick">
                     <Button.IsVisible>
                         <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
@@ -151,7 +186,18 @@
                         </Binding>
                     </Button.IsVisible>
                 </Button>
-            </StackPanel>
+                <Button Content="取消" Margin="4"
+                        Click="ButtonCancelDownload_OnClick">
+                    <Button.IsVisible>
+                        <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
+                                 Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <enums:UpdateWorkingStatus>DownloadingUpdates</enums:UpdateWorkingStatus>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Button.IsVisible>
+                </Button>
+            </WrapPanel>
             <Separator/>
             
             <TabControl Classes="compact"
