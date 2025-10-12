@@ -16,6 +16,7 @@
         xmlns:scheduleDataGridCell="clr-namespace:ClassIsland.Controls.ScheduleDataGridCell"
         xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
         xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
+        xmlns:profile1="clr-namespace:ClassIsland.Core.Enums.Profile;assembly=ClassIsland.Core"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
@@ -24,7 +25,8 @@
         Icon="/Assets/AppLogo.ico"
         MinWidth="750"
         Width="1100" Height="600"
-        Closing="Window_OnClosing">
+        Closing="Window_OnClosing"
+        Loaded="Control_OnLoaded">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
                               Executed="CommandBindingRemoveTimePoint_OnExecuted"/>
@@ -1686,6 +1688,62 @@
                         </TabControl>
                     </Grid>
                 </TabItem>
+                <TabItem Header="导入/导出" IsVisible="False">
+                    <controls:NavigationView MenuItems="{Binding ViewModel.TransferNavigationViewItems, Mode=OneWay}"
+                                             PaneDisplayMode="Left" 
+                                             IsSettingsVisible="False"
+                                             OpenPaneLength="280"
+                                             x:Name="TransferNavigationView"
+                                             ItemInvoked="TransferNavigationView_OnItemInvoked"
+                                             IsEnabled="{Binding !ViewModel.IsTransferring}">
+                        <controls:NavigationView.Resources>
+                            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+                            <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent"/>
+                        </controls:NavigationView.Resources>
+                        <ci:Emptiable IsDirectContentMode="True"
+                                      Data="{Binding ViewModel.SelectedTransferInfo}">
+                            <Grid RowDefinitions="Auto, *, Auto, Auto">
+                                <Grid Grid.Row="0" Margin="12 16 18 0" 
+                                      IsVisible="{Binding !ViewModel.SelectedTransferInfo.HidePageTitle}"
+                                      Classes.FullWidth="{Binding ViewModel.SelectedTransferInfo.UseFullWidth, TargetNullValue={x:False}, FallbackValue={x:False}}"
+                                      x:Name="TitleContainer">
+                                    <Grid.Styles>
+                                        <Style Selector="Grid#TitleContainer:not(.FullWidth)">
+                                            <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}"/>
+                                        </Style>
+                                    </Grid.Styles>
+                                    <TextBlock FontWeight="Normal"
+                                               Text="{Binding ViewModel.SelectedTransferInfo.Name, FallbackValue=''}"
+                                               Theme="{StaticResource TitleTextBlockStyle}"/>
+                                </Grid>
+                                <ContentPresenter Grid.Row="1" 
+                                                  Content="{Binding ViewModel.TransferProviderContent}"/>
+                                <Separator Grid.Row="2"/>
+                                <Border Grid.Row="3" Padding="12">
+                                    <Grid>
+                                        <controls:ProgressRing Width="32" Height="32"
+                                                               IsActive="{Binding ViewModel.IsTransferring}"
+                                                               IsIndeterminate="True"
+                                                               IsVisible="{Binding ViewModel.IsTransferring}"/>  
+                                        <Button Classes="accent"
+                                                Click="ButtonInvokeTransfer_OnClick"
+                                                HorizontalAlignment="Right"
+                                                Padding="32 6" >
+                                            <Button.Content>
+                                                <Binding Path="ViewModel.SelectedTransferInfo.Type"
+                                                         Converter="{x:Static views:ProfileSettingsWindow.ProfileTransferProviderTypeToImportButtonTextConverter}">
+                                                    <Binding.FallbackValue>
+                                                        <profile1:ProfileTransferProviderType>None</profile1:ProfileTransferProviderType>
+                                                    </Binding.FallbackValue>
+                                                </Binding>
+                                            </Button.Content>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </ci:Emptiable>
+                    </controls:NavigationView>
+                </TabItem>
             </TabControl>
 
             <!-- 信息栏 -->
@@ -1716,6 +1774,10 @@
                                                Label="保存"
                                                Click="ButtonSaveProfile_OnClick"
                                                ToolTip.Tip="保存当前档案文件。"/>
+                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe68f;}"
+                                               Label="导入/导出"
+                                               Click="ButtonOpenProfileImportPage_OnClick"
+                                               ToolTip.Tip="导入外部的课程信息，或导出当前的档案信息。"/>
                     <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xee2f;}"
                                                Label="帮助"
                                                Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"

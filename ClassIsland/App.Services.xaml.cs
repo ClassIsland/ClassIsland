@@ -6,6 +6,7 @@ using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Controls.Components;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Controls.ProfileTransferProviders;
 using ClassIsland.Controls.RuleSettingsControls;
 using ClassIsland.Controls.SpeechProviderSettingsControls;
 using ClassIsland.Controls.TriggerSettingsControls;
@@ -14,6 +15,7 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Controls.Ruleset;
+using ClassIsland.Core.Enums.Profile;
 using ClassIsland.Core.Extensions.Registry;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Logging;
@@ -252,6 +254,11 @@ public partial class App
         services.AddWeatherIconTemplate("classisland.weatherIcons.lucide", "Lucide（默认）", (this.FindResource("LucideWeatherIconTemplate") as IDataTemplate)!);
         services.AddWeatherIconTemplate("classisland.weatherIcons.fluentDesign", "Fluent Design", (this.FindResource("FluentDesignWeatherIconTemplate") as IDataTemplate)!);
         services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本", (this.FindResource("SimpleTextWeatherIconTemplate") as IDataTemplate)!);
+        // 档案迁移提供方
+        services.AddProfileTransferProvider<CsesImportProvider>("classisland.profileTransfer.import.cses", "从 CSES 导入", ProfileTransferProviderType.Import, "\ue6cb");
+        services.AddProfileTransferProvider("classisland.profileTransfer.import.legacyV1", "从 ClassIsland 1.x 导入", ProfileTransferProviderType.Import, (_) => {}, "bitmap(avares://ClassIsland/Assets/AppLogo.png)");
+        services.AddProfileTransferProvider("classisland.profileTransfer.import.classWidgets", "从 Class Widgets 1.x 导入", ProfileTransferProviderType.Import, (_) => {});
+        services.AddProfileTransferProvider("classisland.profileTransfer.export.cses", "导出到 CSES", ProfileTransferProviderType.Export, (_) => {}, "\ue6cb");
         // Themes
         services.AddXamlTheme(new Uri("avares://ClassIsland/XamlThemes/ClassicTheme/Styles.axaml"), new ThemeManifest()
         {

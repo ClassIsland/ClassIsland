@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
@@ -17,9 +18,12 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.VisualTree;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Enums.Profile;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -29,7 +33,9 @@ using ClassIsland.Shared.Models.Automation;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData;
 using FluentAvalonia.UI.Controls;
+using HotAvalonia;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using Sentry;
@@ -39,6 +45,14 @@ namespace ClassIsland.Views;
 public partial class ProfileSettingsWindow : MyWindow
 {
     private bool _isOpen = false;
+
+    public static readonly FuncValueConverter<ProfileTransferProviderType, string>
+        ProfileTransferProviderTypeToImportButtonTextConverter = new(x => x switch
+        {
+            ProfileTransferProviderType.Import => "导入",
+            ProfileTransferProviderType.Export => "导出",
+            _ => "执行"
+        });
 
     public ProfileSettingsViewModel ViewModel { get; } = IAppHost.GetService<ProfileSettingsViewModel>();
 
@@ -53,6 +67,11 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.MasterPageTabSelectIndex = 3;
         }
         InitializeComponent();
+    }
+    
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        BuildTransferNavigationItems();
     }
 
     #region Misc
@@ -340,6 +359,11 @@ public partial class ProfileSettingsWindow : MyWindow
             AutoClose = false,
             ActionContent = action
         });
+    }
+    
+    private void ButtonOpenProfileImportPage_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.MasterPageTabSelectIndex = 5;
     }
 
     #endregion
@@ -1228,5 +1252,115 @@ public partial class ProfileSettingsWindow : MyWindow
     }
 
     #endregion
+
+    #region ProfileTransfer
+
+    [AvaloniaHotReload]
+    private void BuildTransferNavigationItems()
+    {
+        TransferNavigationView.MenuItems.Clear();
+        var infos = IProfileTransferService.Providers
+            .OrderBy(x => x.Type)
+            .GroupBy(x => x.Type)
+            .ToList();
+        foreach (var info in infos)
+        {
+            if (info != infos.FirstOrDefault())
+            {
+                TransferNavigationView.MenuItems.Add(new NavigationViewItemSeparator());
+            }
+            if (info.Key != ProfileTransferProviderType.None)
+            {
+                TransferNavigationView.MenuItems.Add(new NavigationViewItemHeader()
+                {
+                    Content = info.Key switch
+                    {
+                        ProfileTransferProviderType.Import => "导入",
+                        ProfileTransferProviderType.Export => "导出",
+                        _ => "？？？"
+                    }
+                });    
+            }
+            
+            TransferNavigationView.MenuItems.AddRange(info.Select(x => new NavigationViewItem()
+            {
+                IconSource = x.Icon,
+                Content = x.Name,
+                Tag = x
+            }));
+            
+        }
+    }
     
+    private void TransferNavigationView_OnItemInvoked(object? sender, NavigationViewItemInvokedEventArgs e)
+    {
+        if (e.InvokedItemContainer is not NavigationViewItem { Tag: ProfileTransferProviderInfo info })
+        {
+            return;
+        }
+
+        if (info.FunctionHandler != null)
+        {
+            info.FunctionHandler(this);
+            return;
+        }
+
+        if (info.HandlerControlType == null)
+        {
+            return;
+        }
+
+        if (Activator.CreateInstance(info.HandlerControlType) is not ProfileTransferProviderControlBase control)
+        {
+            return;
+        }
+
+        ViewModel.TransferProviderContent = control;
+        ViewModel.SelectedTransferInfo = info;
+        ViewModel.IsProfileTransferInvoked = false;
+    }
+
+    #endregion
+
+
+    private async void ButtonInvokeTransfer_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel.TransferProviderContent == null || ViewModel.SelectedTransferInfo == null)
+        {
+            return;
+        }
+
+        var operationText = ViewModel.SelectedTransferInfo.Type switch
+        {
+            ProfileTransferProviderType.Import => "导入",
+            ProfileTransferProviderType.Export => "导出",
+            _ => "迁移"
+        };
+
+        if (ViewModel.SelectedTransferInfo.Type == ProfileTransferProviderType.Import && ViewModel.IsProfileTransferInvoked)
+        {
+            var t = await ContentDialogHelper.ShowConfirmationDialog($"要继续{operationText}吗",
+                $"您先前已经成功地{operationText}了档案，您还要继续{operationText}吗？", positiveText: "继续");
+            if (!t)
+            {
+                return;
+            }
+        }
+
+        ViewModel.IsTransferring = true;
+        try
+        {
+            var result = await ViewModel.TransferProviderContent.InvokeTransfer();
+            if (!result)
+            {
+                return;
+            }
+
+            ViewModel.IsProfileTransferInvoked = true;
+        }
+        finally
+        {
+            ViewModel.IsTransferring = false;
+        }
+    }
 }
