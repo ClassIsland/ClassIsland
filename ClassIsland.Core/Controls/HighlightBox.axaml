@@ -1,0 +1,27 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls">
+    <Design.PreviewWith>
+        <controls:HighlightBox>
+            <TextBlock Text="为了没有眼泪的明天" />
+        </controls:HighlightBox>
+    </Design.PreviewWith>
+
+    <Style Selector="controls|HighlightBox">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Margin="2 0 2 0">
+                    <Border x:Name="TextHighlightBorder" IsVisible="{TemplateBinding IsHighlight, Mode=OneWay}"
+                            Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0.4"
+                            Height="12" VerticalAlignment="Center"
+                            Margin="-2 8 -2 0" CornerRadius="2"/>
+                    
+                    <ContentPresenter x:Name="ContentPresenter"
+                                      Content="{TemplateBinding Content, Mode=OneWay}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate, Mode=OneWay}">
+                    </ContentPresenter>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>
