@@ -41,12 +41,12 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ### 课表信息显示
 
 - [x] 显示当天的课表、当前进行课程的信息
-- [x] 在上下课等重要时间点发出 [提醒](https://docs.classisland.tech/app/notifications)，自选搭配音效、强调特效、语音和置顶效果的 [强调提醒](https://docs.classisland.tech/app/notifications#强调提醒)
+- [x] 在上下课等重要时间点发出 [提醒](https://docs.classisland.tech/app/notifications.html)，自选搭配音效、强调特效、语音和置顶效果的 [强调提醒](https://docs.classisland.tech/app/notifications.html#强调提醒)
 - [x] 自选课表隐藏条件、临时隐藏与鼠标穿透，不影响授课
 
 ### 课表编辑与管理
 
-- [x] 简洁直观的 [课表编辑工具](https://docs.classisland.tech/app/classplan)
+- [x] 简洁直观的 [课表编辑工具](https://docs.classisland.tech/app/profile/classplan.html)
 - [x] 从 Excel 表格、[CSES](https://github.com/SmartTeachCN/CSES) 或其他软件 [导入课表](https://docs.classisland.tech/app/profile/#%E4%BB%8E%E8%A1%A8%E6%A0%BC%E5%AF%BC%E5%85%A5)
 - [x] 将课表信息导出到 Excel 表格
 - [x] 多周轮换、快速录入时间表、自定义设置
@@ -55,14 +55,14 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 ### 自定义
 
-- [x] 通过 [组件](https://docs.classisland.tech/app/basic#组件)（日期、时间、天气简报、倒计日等）自定义显示的内容。支持多行显示组件、组件轮播和组件滚动
-- [x] 通过 [插件](https://docs.classisland.tech/app/basic#组件) 扩展应用功能，高度自定义你的 ClassIsland
+- [x] 通过 [组件](https://docs.classisland.tech/app/basic.html#组件)（日期、时间、天气简报、倒计日等）自定义显示的内容。支持多行显示组件、组件轮播和组件滚动
+- [x] 通过 [插件](https://docs.classisland.tech/app/basic.html#组件) 扩展应用功能，高度自定义你的 ClassIsland
 - [x] 通过主题系统高度定制应用主界面外观
 
 ### 其它功能
 
 - [x] 通过[自动化](https://docs.classisland.tech/app/automation.html)在特定事件发生时/特定时间自动执行某些操作（如显示提醒、打开应用/文件/网页等），提高教学效率
-- [x] 显示当前的[天气](https://docs.classisland.tech/app/advanced#天气)信息、降水提示、6 小时/3 天天气预报和极端天气预警等信息，支持根据定位获取天气信息
+- [x] 显示当前的[天气](https://docs.classisland.tech/app/advanced.html#天气)信息、降水提示、6 小时/3 天天气预报和极端天气预警等信息，支持根据定位获取天气信息
 - [x] 自动同步软件时间、手动对齐铃声
 - [x] 使用密码等认证方式保护应用设置和课表配置
 - [x] 丝滑、流畅的过渡动画
@@ -130,9 +130,9 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类修改窗口材质的工具）**不兼容**，与这些工具同时使用 ClassIsland 时请将 ClassIsland 添加到这些工具的排除列表中。
 
 > [!IMPORTANT]
-> **详细安装说明请参阅 [ClassIsland 文档](https://docs.classisland.tech/app/setup)。**
+> **详细安装说明请参阅 [ClassIsland 文档](https://docs.classisland.tech/app/setup.html)。**
 >
-> 不建议在 Windows 10 以下的系统运行本应用。在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅 [在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/app/setup#检查系统需求)。
+> 不建议在 Windows 10 以下的系统运行本应用。在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅 [在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/app/setup.html#检查系统需求)。
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
