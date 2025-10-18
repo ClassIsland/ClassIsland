@@ -60,7 +60,7 @@ public class CsesExportHelper
                 }
             ]
         }, root);
-        if (filePath == null)
+        if (string.IsNullOrEmpty(filePath))
         {
             return;
         }
