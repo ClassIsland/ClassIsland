@@ -1,6 +1,7 @@
 using System;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
@@ -9,6 +10,7 @@ using ClassIsland.Services.AppUpdating;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using ClassIsland.ViewModels.SettingsPages;
+using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 
 namespace ClassIsland.Views.SettingPages;
@@ -113,5 +115,15 @@ public partial class UpdateSettingsPage : SettingsPageBase
     private async void ButtonDeployUpdate_OnClick(object? sender, RoutedEventArgs e)
     {
         await ViewModel.UpdateService.ExtractUpdateAsync();
+    }
+
+    private void InfoBarError_OnCloseButtonClick(InfoBar sender, EventArgs args)
+    {
+        ViewModel.UpdateService.NetworkErrorException = null;
+    }
+
+    private void ButtonRestart_OnClick(object? sender, RoutedEventArgs e)
+    {
+        AppBase.Current.Restart();
     }
 }

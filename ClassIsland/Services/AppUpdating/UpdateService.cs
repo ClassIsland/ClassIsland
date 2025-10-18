@@ -184,6 +184,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private async Task AppStartupBackground()
     {
+        CleanupPrevDeployments();
         await CheckUpdateAsync();
 
         if (Settings.UpdateMode < 2)
@@ -208,30 +209,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     }
 
-
-    public static async Task ReplaceApplicationFile(string target)
-    {
-        // TODO: 实现新版应用更新流程
-        // var progressWindow = new UpdateProgressWindow();
-        // progressWindow.Show();
-        // if (!File.Exists(target))
-        // {
-        //     return;
-        // }
-        // var s = Environment.ProcessPath!;
-        // var t = target;
-        // Console.WriteLine(Path.GetFullPath(t));
-        // Console.WriteLine(Path.GetDirectoryName(Path.GetFullPath(t)));
-        // progressWindow.ProgressText = "正在备份应用数据……";
-        // await FileFolderService.CreateBackupAsync(filename: $"Update_Backup_{App.AppVersion}_{DateTime.Now:yy-MMM-dd_HH-mm-ss}", rootPath: Path.GetDirectoryName(Path.GetFullPath(t)) ?? ".");
-        // progressWindow.ProgressText = "正在等待应用退出……";
-        // await Task.Run(() => NativeWindowHelper.WaitForFile(t));
-        // progressWindow.ProgressText = "正在覆盖应用文件……";
-        // await Task.Run(() => File.Copy(s, t, true));
-        // progressWindow.CanClose = true;
-        // progressWindow.Close();
-    }
-
     public static void RemoveUpdateTemporary(string target)
     {
         if (File.Exists(target))
@@ -254,6 +231,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)
     {
         var transaction = SentrySdk.StartTransaction("Get Update Info", "appUpdating.getMetadata");
+        NetworkErrorException = null;
         try
         {
             var spanGetIndex = transaction.StartChild("getIndex");
@@ -370,7 +348,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 ChunkCount = 4,
                 ParallelCount = 4,
                 ParallelDownload = true,
-                Timeout = 60
+                Timeout = 60_000
             };
             // key 是 hash（HEX）
             Dictionary<string, (string Name, FileMapFile FileInfo)> filesHashed = [];
@@ -484,7 +462,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             NetworkErrorException = ex;
             transaction.Finish(ex, SpanStatus.InternalError);
             Logger.LogError(ex, "下载应用更新失败。");
-            await RemoveDownloadedFiles();
+            await RemoveDownloadedFiles(true);
         }
         finally
         {
@@ -511,10 +489,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
         _downloadCancellationTokenSource = null;
         CurrentWorkingStatus = UpdateWorkingStatus.Idle;
-        await RemoveDownloadedFiles();
+        await RemoveDownloadedFiles(true);
     }
 
-    public async Task RemoveDownloadedFiles()
+    public async Task RemoveDownloadedFiles(bool isCancel)
     {
         try
         {
@@ -523,6 +501,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         catch (Exception ex)
         {
             Logger.LogError(ex, "移除下载临时文件失败。");
+        }
+
+        if (!isCancel)
+        {
+            return;
         }
         await CheckUpdateAsync(isCancel:true);
     }
@@ -585,7 +568,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     {
                         await using var archive = File.OpenRead(Path.Combine(UpdateTempPath, hashHex[..2], hashHex));
                         archive.Position = 0;
-                        await using var gZipStream = new GZipInputStream(archive);
+                        await using var gZipStream = new GZipStream(archive, CompressionMode.Decompress);
                         await gZipStream.CopyToAsync(file);
                     }
 
@@ -600,6 +583,48 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 }
             }
             
+            Logger.LogTrace("正在检查文件目录");
+
+            var num = 0;
+            fileMap.Variables["number"] = num.ToString();
+            while (num <= 255 && Directory.Exists(Path.Combine(root,
+                       VariableStringHelpers.ExpandString(fileMap.Components["app"].Root, fileMap.Variables))))
+            {
+                num++;
+                fileMap.Variables["number"] = num.ToString();
+            }
+            
+            foreach (var (id, component) in fileMap.Components)
+            {
+                if (!Components.Contains(id))
+                {
+                    continue;
+                }
+                
+                var compRoot = Path.Combine(root,
+                    VariableStringHelpers.ExpandString(component.Root, fileMap.Variables));
+
+                if (component.Files.Any(x =>
+                        Path.GetRelativePath(root, Path.Combine(compRoot, x.Key)).StartsWith("..") &&
+                        !Path.IsPathRooted(Path.Combine(compRoot, x.Key))
+                    ))
+                {
+                    throw new InvalidOperationException("文件图发现非法文件路径");
+                }
+            }
+
+            Logger.LogInformation("正在准备部署");
+            
+            Logger.LogInformation("Variables: {}", JsonSerializer.Serialize(fileMap.Variables));
+
+            var appPath = Path.Combine(root,
+                VariableStringHelpers.ExpandString(fileMap.Components["app"].Root, fileMap.Variables));
+            if (!Directory.Exists(appPath))
+            {
+                Directory.CreateDirectory(appPath);
+                await File.WriteAllTextAsync(Path.Combine(appPath, ".partial"), "");
+            }
+            
             foreach (var (id, component) in fileMap.Components)
             {
                 if (!Components.Contains(id))
@@ -612,16 +637,40 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
                 foreach (var (path, fileInfo) in component.Files)
                 {
-                    
+                    var hashHex = Convert.ToHexString(fileInfo.FileSha512);
+                    var fullPath = Path.Combine(extractedPath, hashHex[..2], hashHex);
+                    var targetPath = Path.Combine(compRoot, path);
+                    var dir = Path.GetDirectoryName(targetPath);
+                    if (dir != null && !Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+                    Logger.LogTrace("Deploy Copy {} -> {}", fullPath, targetPath);
+                    File.Copy(fullPath, targetPath, true);
                 }
             }
-
             
-            Logger.LogInformation("正在准备部署");
+            Logger.LogInformation("正在激活新的部署");
+            
+            await File.WriteAllTextAsync(Path.Combine(appPath, ".current"), "");
+            await File.WriteAllTextAsync(Path.Combine(Environment.CurrentDirectory, ".destroy"), "");
+            File.Delete(Path.Combine(appPath, ".partial"));
+            foreach (var deployment in Directory.GetDirectories(root)
+                         .Where(x => Path.GetFileName(x).StartsWith("app") 
+                                     && Path.GetFullPath(Path.Combine(root, x)) != Path.GetFullPath(Environment.CurrentDirectory)
+                                     && File.Exists(Path.Combine(x, ".current"))))
+            {
+                File.Delete(Path.Combine(deployment, ".current"));
+            }
+
+            Settings.LastUpdateStatus = UpdateStatus.UpdateDeployed;
+            Logger.LogInformation("部署成功");
+            await RemoveDownloadedFiles(false);
         }
         catch (Exception e)
         {
             Logger.LogError(e, "无法部署应用更新");
+            await RemoveDownloadedFiles(true);
         }
         finally
         {
@@ -629,68 +678,24 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     }
 
-    private async Task ValidateUpdateAsync()
+    public void CleanupPrevDeployments()
     {
-        if (string.IsNullOrWhiteSpace(Settings.UpdateArtifactHash))
+        var root = CommonDirectories.AppPackageRoot;
+        foreach (var deployment in Directory.GetDirectories(root)
+                     .Where(x => Path.GetFileName(x).StartsWith("app") 
+                                 && Path.GetFullPath(Path.Combine(root, x)) != Path.GetFullPath(Environment.CurrentDirectory)
+                                 && File.Exists(Path.Combine(x, ".destroy"))))
         {
-            Logger.LogWarning("未找到缓存的校验信息，跳过更新文件校验。");
-            return;
-        }
-
-        await using var stream = File.OpenRead(Path.Combine(UpdateTempPath, @"./update.zip"));
-        var sha256 = await SHA256.HashDataAsync(stream);
-        var str = BitConverter.ToString(sha256);
-        str = str.Replace("-", "");
-        Logger.LogDebug("更新文件哈希：{}", str);
-        if (!string.Equals(str, Settings.UpdateArtifactHash, StringComparison.CurrentCultureIgnoreCase))
-        {
-            throw new Exception("更新文件校验失败，可能下载已经损坏。");
-        }
-    }
-
-    public async Task<bool> RestartAppToUpdateAsync()
-    {
-        var success = true;
-        var transaction = SentrySdk.StartTransaction("Reboot to Update Mode", "appUpdating.rebootToUpdate");
-        Logger.LogInformation("正在重启至升级模式。");
-        await PlatformServices.DesktopToastService.ShowToastAsync("正在安装应用更新", "这可能需要10-30秒的时间，请稍后……");
-        CurrentWorkingStatus = UpdateWorkingStatus.ExtractingUpdates;
-        try
-        {
-            var spanValidate = transaction.StartChild("validate");
-            await ValidateUpdateAsync();
-            spanValidate.Finish(SpanStatus.Ok);
-
-            var spanExtract = transaction.StartChild("extract");
-            await ExtractUpdateAsync();
-            spanExtract.Finish(SpanStatus.Ok);
-
-            var spanReboot = transaction.StartChild("reboot");
-            Process.Start(new ProcessStartInfo()
+            Logger.LogInformation("正在清理先前的部署：{}", deployment);
+            try
             {
-                FileName = Path.Combine(UpdateTempPath, @"extracted/ClassIsland.exe"),
-                ArgumentList =
-                {
-                    "-urt", Environment.ProcessPath!,
-                    "-m", "true"
-                }
-            });
-            AppBase.Current.Stop();
-            spanReboot.Finish(SpanStatus.Ok);
-            transaction.Finish(SpanStatus.Ok);
+                Directory.Delete(Path.Combine(root, deployment), true);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "无法清理部署 {}", deployment);
+            }
         }
-        catch (Exception ex)
-        {
-            success = false;
-            transaction.GetLastActiveSpan()?.Finish(ex, SpanStatus.InternalError);
-            transaction.Finish(ex, SpanStatus.InternalError);
-            Logger.LogError(ex, "无法安装更新");
-            await PlatformServices.DesktopToastService.ShowToastAsync("安装更新失败", ex.Message, UpdateNotificationClickedCallback);
-            CurrentWorkingStatus = UpdateWorkingStatus.Idle;
-            await RemoveDownloadedFiles();
-        }
-
-        return success;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)

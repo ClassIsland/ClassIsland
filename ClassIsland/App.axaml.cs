@@ -549,19 +549,7 @@ public partial class App : AppBase, IAppHost
         AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
 
         var spanProcessUpdate = spanPreInit.StartChild("startup-process-update");
-
-        if (ApplicationCommand.UpdateReplaceTarget != null)
-        {
-            //MessageBox.Show($"Update replace {ApplicationCommand.UpdateReplaceTarget}");
-            await UpdateService.ReplaceApplicationFile(ApplicationCommand.UpdateReplaceTarget);
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = ApplicationCommand.UpdateReplaceTarget,
-                ArgumentList = { "-udt", Environment.ProcessPath!, "-m", "true" }
-            });
-            Stop();
-            return;
-        }
+        
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
             //MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
