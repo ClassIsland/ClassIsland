@@ -29,6 +29,7 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.SettingsWindow;
 using ClassIsland.Helpers;
 using System.Transactions;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Data.Core;
@@ -46,6 +47,7 @@ using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Data;
 using FluentAvalonia.UI.Navigation;
 using FluentAvalonia.UI.Windowing;
+using Markdown.Avalonia.Full;
 using ReactiveUI;
 using WindowsShortcutFactory;
 using Control = Avalonia.Controls.Control;
@@ -291,7 +293,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             return;
         }
         Logger.LogTrace("开始导航");
-        NavigationFrame.Content = null;
+        ViewModel.FrameContent = null;
         ViewModel.IsPopupOpen = false;
         ViewModel.IsNavigating = true;
         try
