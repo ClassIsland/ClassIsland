@@ -71,7 +71,7 @@ jobs:
       
       - name: Install Macos workload
         if: ${{ matrix.os == 'macos' }}
-        run: dotnet workload install macos
+        run: dotnet workload install macos --version 8.0
         
       - name: Add GitHub Package Registry
         run: dotnet nuget add source --username ClassIsland --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
