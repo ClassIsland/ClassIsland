@@ -121,7 +121,7 @@ public class Subject : AttachableSettingsObject
         else
         {
             // 英文姓名，假设姓氏为最后一个单词
-            var nameParts = TeacherName.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+            var nameParts = TeacherName.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             return nameParts.Length > 1 ? nameParts[nameParts.Length - 1] : TeacherName; // 处理只有一个单词的情况
         }
 
