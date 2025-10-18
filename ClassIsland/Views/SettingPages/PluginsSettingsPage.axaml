@@ -201,19 +201,15 @@
                             </Binding>
                         </Border.IsVisible>
                         <Grid>
-                            <LayoutTransformControl>
-                                <LayoutTransformControl.LayoutTransform>
-                                    <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
-                                </LayoutTransformControl.LayoutTransform>
-                                <mdxaml:MarkdownScrollViewer
-                                    Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
-                                    Margin="6 4 0 0"
-                                    Markdown="{Binding ViewModel.ReadmeDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}}">
-                                    <mdxaml:MarkdownScrollViewer.Styles>
-                                        <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml"/>
+                            <mdxaml:MarkdownScrollViewer
+                                Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
+                                Margin="6 4 0 0"
+                                Markdown="{Binding ViewModel.ReadmeDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}}">
+                                <mdxaml:MarkdownScrollViewer.Styles>
+                                    <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml"/>
                                         
-                                    </mdxaml:MarkdownScrollViewer.Styles>
-                                </mdxaml:MarkdownScrollViewer></LayoutTransformControl>
+                                </mdxaml:MarkdownScrollViewer.Styles>
+                            </mdxaml:MarkdownScrollViewer>
                             <ProgressBar IsVisible="{Binding ViewModel.IsLoadingDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}}"
                                          VerticalAlignment="Top"
                                          Height="3"
