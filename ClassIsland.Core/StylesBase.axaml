@@ -135,10 +135,11 @@
 
     <Style Selector="TextBlock :is(HyperlinkButton)">
         <Setter Property="Padding" Value="0"/>
+        <Setter Property="Margin" Value="0 0 0 -4"/>
         <Setter Property="TextBlock.LineHeight" Value="NaN"/>
         <Style Selector="^ TextBlock">
             <!-- 修复字体飞上去的问题 -->
-            <Setter Property="Margin" Value="0 0 0 -1"/>
+            <Setter Property="Margin" Value="0 0 0 -2"/>
         </Style>
     </Style>
 
