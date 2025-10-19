@@ -172,7 +172,7 @@ jobs:
   sign_1:
     name: Sign_1
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' }}
+    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' && !github.event.inputs.is_test_mode }}
     needs: [ build_app, build_launcher ]
     steps:
       - name: Checkout
@@ -338,7 +338,7 @@ jobs:
     concurrency:
       group: "publish-public"
     environment:
-      name: public
+      name: ${{ github.event.inputs.is_test_mode && 'staging' || 'public' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -357,8 +357,8 @@ jobs:
         with:
           key: ${{ secrets.METADATA_DEPLOY_KEY }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-
-      - name: Upload APP
+      
+      - name: Upload APP GitHub
         env:
           GHAPP_PRIVATE_KEY: ${{ secrets.GHAPP_PRIVATE_KEY }}
           GHAPP_ID: 998668
@@ -370,6 +370,23 @@ jobs:
         run: |
           pwsh -ep Bypass -c ./tools/release-gen/login-github.ps1
           pwsh -ep Bypass -c ./tools/release-gen/upload.ps1
+          
+      - name: Publish App
+        env:
+          S3_Bucket: ${{ vars.S3_BUCKET }}
+          S3_ENDPOINT: ${{ vars.S3_ENDPOINT }}
+          S3_REGION: ${{ vars.S3_REGION }}
+          PDC_ENDPOINT: ${{ vars.PDC_ENDPOINT }}
+          PDC_SigningKey: ${{ secrets.PDC_SigningKey }}
+          PDC_SigningKeyPs: ""
+          PDC_TOKEN: ${{ secrets.PDC_TOKEN }}
+          S3_ACCESSKEY: ${{ secrets.S3_ACCESSKEY }}
+          S3_SECRETKEY: ${{ secrets.S3_SECRETKEY }}
+          PDCC_version: ${{ github.event.inputs.release_tag }}
+          PDCC_primaryVersion: ${{ github.event.inputs.primary_version }}
+        run: |
+          pwsh -ep Bypass -c ./tools/release-gen/install-pdcc.ps1 win
+          ./pdcc/PhainonDistributionCenter.Client.exe ./phainon.yml Publish ${{ github.event.inputs.primary_version }} ${{ github.event.inputs.release_tag }} ./out
           
       # - name: Sentry Release
       #   uses: getsentry/action-release@v1.7.0

@@ -1,5 +1,7 @@
-$downloadUrl = "https://github.com/ClassIsland/PhainonDistributionCenter/releases/download/${env:PDC_CLIENT_VERSION}/out_app_linux_x64.zip"
-$zipPath = "./out_app_linux_x64.zip"
+param($platform)
+
+$downloadUrl = "https://github.com/ClassIsland/PhainonDistributionCenter/releases/download/${env:PDC_CLIENT_VERSION}/out_app_${platform}_x64.zip"
+$zipPath = "./out_app_${platform}_x64.zip"
 $extractPath = "./pdcc"
 
 if (!(Test-Path $extractPath)) {
@@ -9,4 +11,7 @@ if (!(Test-Path $extractPath)) {
 Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
 Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
 
-chmod +x "$extractPath/PhainonDistributionCenter.Client"
+if ($platform -eq "linux")
+{
+    chmod +x "$extractPath/PhainonDistributionCenter.Client"
+}
