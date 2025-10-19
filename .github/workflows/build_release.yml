@@ -233,7 +233,7 @@ jobs:
       artifact_name: out_app_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
       arch: ${{ matrix.arch }}
-      PDCC_VERSION: 1.0.0.0
+      PDC_CLIENT_VERSION: 1.0.0.0
     strategy:
       matrix:
         build_type: ['full', 'selfContained']

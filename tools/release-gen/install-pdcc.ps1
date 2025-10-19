@@ -1,4 +1,4 @@
-$downloadUrl = "https://github.com/ClassIsland/PhainonDistributionCenter/releases/download/${env:PDCC_VERSION}/out_app_linux_x64.zip"
+$downloadUrl = "https://github.com/ClassIsland/PhainonDistributionCenter/releases/download/${env:PDC_CLIENT_VERSION}/out_app_linux_x64.zip"
 $zipPath = "./out_app_linux_x64.zip"
 $extractPath = "./pdcc"
 
