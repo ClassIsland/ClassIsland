@@ -1,0 +1,22 @@
+# Phainon Distribution Center Client Configuration
+# 刻法勒永志不忘。
+name: "ClassIsland"
+components:
+  app:
+    allowDiffUpdate: true
+    root: "app-$(version)-$(number)/"
+    includes:
+      - "**"
+  launcher:
+    root: ""
+    includes:
+      - "**"
+    excludes:
+      - "app*/**"
+      - "files.json"
+variables:
+  number: 0
+fileRepoRoot: "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/distribution-v2-dev/repo/"
+archiveRoot: "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/distribution-v2-dev/$(primaryVersion)/$(version)/"
+bucketKeyRoot: "classisland/distribution-v2-dev/repo/"
+archiveBucketKeyRoot: "classisland/distribution-v2-dev/$(primaryVersion)/$(version)/"

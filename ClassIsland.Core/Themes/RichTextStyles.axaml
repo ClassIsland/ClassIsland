@@ -6,13 +6,10 @@
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:avalonia="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
                     xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia">
-
-    <Styles.Resources>
-        <system:Double x:Key="MarkdownImageMaxWidth">700</system:Double>
-    </Styles.Resources>
+    
     <Style Selector="avalonia|CTextBlock">
-        <Setter Property="TextElement.FontWeight" Value="Regular"/>
-        <Setter Property="TextElement.FontSize" Value="16"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="FontSize" Value="16"/>
         <Setter Property="TextAlignment" Value="Left"/>
         <Setter Property="Margin" Value="0 0 0 16"/>
     </Style>
@@ -74,16 +71,38 @@
     </Style>
 
     <Style Selector="Border.OddTableRow">
-        <Setter Property="BorderThickness" Value="0.5"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-        <Setter Property="Padding" Value="8"/>
-        
+        <Setter Property="BorderThickness" Value="0.5 0.5 0 0"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+        <Setter Property="Padding" Value="6"/>
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
     <Style Selector="Border.EvenTableRow">
-        <Setter Property="BorderThickness" Value="0.5"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-        <Setter Property="Padding" Value="8"/>
-        <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0.5 0.5 0 0"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+        <Setter Property="Padding" Value="6"/>
+        <Setter Property="Background" Value="Transparent"/>
+        
+    </Style>
+    <Style Selector="Border.Blockquote">
+        <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+        <Setter Property="Margin" Value="0 0 0 16"/>
+        <Setter Property="Padding" Value="8 0 0 0"/>
+        <Setter Property="BorderThickness" Value="4 0 0 0"/>
+    </Style>
+    <Style Selector="Grid.List">
+        <Setter Property="Margin" Value="16 0 0 0"/>
+    </Style>
+    
+    <Style Selector="Border.TableHeader">
+        <Setter Property="Padding" Value="6"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0.5 0.5 0 0"/>
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}"/>
+    </Style>
+    
+    <Style Selector="Border.Table">
+        <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+        <Setter Property="BorderThickness" Value="0 0 0.5 0.5"/>
     </Style>
 
     <Style Selector="avalonia|CHyperlink">
@@ -92,18 +111,27 @@
     </Style>
     
     <Style Selector="TextBlock.CodeBlock">
-        <Style.Setters>
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-        </Style.Setters>
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="TextElement.FontFamily" Value="Consolas, Hack, monospace" />
+    </Style>
+    <Style Selector="Border.CodeBlock">
+        <Setter Property="Margin" Value="0 0 0 16" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="TextElement.FontFamily" Value="Consolas, Hack, monospace" />
+        
     </Style>
     <Style Selector="avalonia|CCode">
-        <Style.Setters>
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-        </Style.Setters>
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
     </Style>
     <Style Selector="avalonia|CHyperlink:pointerover">
         <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorSecondaryBrush}"/>
         <!-- <Setter Property="Command" Value="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"/> -->
     </Style>
     
+    <Style Selector="mdxaml|MarkdownScrollViewer /template/ ScrollViewer">
+        <Setter Property="Padding" Value="8"/>
+    </Style>
 </Styles>
