@@ -1,7 +1,7 @@
 name: Build
 
 on:
-  push:
+#  push:
   workflow_dispatch:
     inputs:
       release_tag:
@@ -333,7 +333,7 @@ jobs:
     runs-on: windows-2022
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == true }}
-    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' }}
+    if: ${{ always() && success('pack_app') && success('build_nupkg') && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
     needs: [ pack_app, build_nupkg ]
     concurrency:
       group: "publish-public"
