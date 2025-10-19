@@ -58,11 +58,12 @@ namespace ClassIsland;
 /// </summary>
 public partial class App : AppBase, IAppHost
 {
-    public static bool IsAssetsTrimmedInternal { get; } =
-#if TrimAssets
-        true;
+
+    private const string BuildTypeInternal =
+#if SelfContained
+        "selfContained";
 #else
-        false;
+        "full";
 #endif
 
     private CrashWindow? CrashWindow;
@@ -116,6 +117,8 @@ public partial class App : AppBase, IAppHost
     ;
 
     public override string OperatingSystem { get; internal set; } = "unknown";
+    
+    public override string BuildType { get; } = BuildTypeInternal;
 
     public override string PackagingType { get; internal set; } = "folderClassic";
 
@@ -955,7 +958,8 @@ public partial class App : AppBase, IAppHost
         });
     }
 
-    public override bool IsAssetsTrimmed() => IsAssetsTrimmedInternal;
+    // 2.0 不再发布资源裁剪版本，此方法恒返回 false
+    public override bool IsAssetsTrimmed() => false;
     public override event EventHandler? AppStarted;
     public override event EventHandler? AppStopping;
 

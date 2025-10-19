@@ -119,8 +119,8 @@
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
 	</ItemGroup>
-    <PropertyGroup Condition="'$(TrimAssets)'=='true'">
-        <DefineConstants>$(DefineConstants);TrimAssets</DefineConstants>
+    <PropertyGroup Condition="'$(SelfContained)'=='true'">
+        <DefineConstants>$(DefineConstants);SelfContained</DefineConstants>
     </PropertyGroup>
 	<PropertyGroup Condition="'$(PublishBuilding)' != 'true' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX')">
 		<DefineConstants>$(DefineConstants);DevelopmentBuild</DefineConstants>
