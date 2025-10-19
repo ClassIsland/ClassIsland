@@ -124,9 +124,7 @@
         
     </Style>
     <Style Selector="avalonia|CCode">
-        <Style.Setters>
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-        </Style.Setters>
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
     </Style>
     <Style Selector="avalonia|CHyperlink:pointerover">
         <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorSecondaryBrush}"/>
