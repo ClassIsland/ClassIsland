@@ -13,7 +13,8 @@ using Mono.Unix;
 
 var root = Path.GetFullPath(Path.GetDirectoryName(Environment.ProcessPath) ?? "");
 var installation = Directory.GetDirectories(root)
-    .Where(x => Path.GetFileName(x).StartsWith("app") && !File.Exists(Path.Combine(x, ".destroy")))
+    .Where(x => Path.GetFileName(x).StartsWith("app") &&
+                !(File.Exists(Path.Combine(x, ".destroy")) || File.Exists(Path.Combine(x, ".partial"))))
     .OrderBy(x => File.Exists(Path.Combine(x, ".current")) ? 1 : 0)
     .ThenBy(x =>
     {

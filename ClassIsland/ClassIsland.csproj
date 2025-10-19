@@ -59,7 +59,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-        <PackageReference Include="Downloader" Version="3.3.4" />
+        <PackageReference Include="Downloader" Version="4.0.3" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
         <PackageReference Include="Grpc.Tools" Version="2.62.0">
             <PrivateAssets>all</PrivateAssets>

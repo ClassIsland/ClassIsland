@@ -21,7 +21,12 @@ partial class Build
         .DependsOn(GenerateMetadata)
         .Executes(() =>
         {
-            DotNetClean(s => s.SetProject(DesktopAppEntryProject));
+            DotNetClean(s => s
+                .SetProject(DesktopAppEntryProject)
+                .SetProperty("PublishBuilding", true)
+                .SetProperty("PublishPlatform", OsName)
+                .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
+                .SetProperty("ClassIsland_PlatformTarget", Arch));
             if (Directory.Exists(AppOutputPath))
             {
                 Directory.Delete(AppOutputPath, true);

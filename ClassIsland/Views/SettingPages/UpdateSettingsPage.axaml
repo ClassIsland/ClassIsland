@@ -93,7 +93,18 @@
                 </TextBlock>
             </Grid>
             <controls:InfoBar Severity="Error" Title="出错了" Message="更新时发生网络错误，请检查您的网络连接。"
-                              IsOpen="{Binding ViewModel.UpdateService.NetworkErrorException, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneWay}"/>
+                              IsOpen="{Binding ViewModel.UpdateService.NetworkErrorException, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneWay}"
+                              CloseButtonClick="InfoBarError_OnCloseButtonClick"/>
+            <controls:InfoBar Severity="Informational" Title="更新将在重启后应用" Message="已成功部署更新，下次启动应用时将启动新版本。您也可以现在重启以立即使用新版本的 ClassIsland。">
+                <controls:InfoBar.IsOpen>
+                    <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
+                             Converter="{x:Static ObjectConverters.Equal}">
+                        <Binding.ConverterParameter>
+                            <enums:UpdateStatus>UpdateDeployed</enums:UpdateStatus>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </controls:InfoBar.IsOpen>
+            </controls:InfoBar>
             <WrapPanel Classes="animated-resize">
                 <WrapPanel.IsEnabled>
                     <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
@@ -132,6 +143,17 @@
                                  Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <enums:UpdateStatus>UpdateDownloaded</enums:UpdateStatus>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Button.IsVisible>
+                </Button>
+                <Button Content="重启并应用更新" Classes="accent" Margin="4"
+                        Click="ButtonRestart_OnClick"> 
+                    <Button.IsVisible>
+                        <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
+                                 Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <enums:UpdateStatus>UpdateDeployed</enums:UpdateStatus>
                             </Binding.ConverterParameter>
                         </Binding>
                     </Button.IsVisible>

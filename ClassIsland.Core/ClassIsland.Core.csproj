@@ -28,8 +28,9 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
-    <PackageReference Include="Markdown.Avalonia" Version="11.0.2" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
+    <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.1.0" />
+    <PackageReference Include="ClassIsland.Markdown.Avalonia" Version="11.0.3.*" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
