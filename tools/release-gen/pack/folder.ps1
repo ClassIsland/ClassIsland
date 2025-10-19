@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
-$appPath = ./out_pack/pack/app-${env:version}-0/
-$rootPath = ./out_pack/pack/
+$appPath = "./out_pack/pack/app-${env:version}-0/"
+$rootPath = "./out_pack/pack/"
 
 if ($(Test-Path ./out_pack/) -eq $false) {
     mkdir -p $appPath
