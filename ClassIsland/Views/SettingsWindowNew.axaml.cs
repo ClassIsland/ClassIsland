@@ -203,15 +203,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/Tellings.txt"));
 
             var sayings = await new StreamReader(stream).ReadToEndAsync();
-            if (sayings.Contains("\r\n"))
-            {
-                ViewModel.EchoCaveTextsAll = [..sayings.Split("\r\n")];
-            }
-            else
-            {
-                ViewModel.EchoCaveTextsAll = [..sayings.Split("\n")];
-            }
-            
+            ViewModel.EchoCaveTextsAll=[..sayings.Split(Environment.NewLine)];
         }
         if (ViewModel.EchoCaveTexts.Count <= 0)
         {

@@ -35,39 +35,19 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     private long GetMemoryUsage()
     {
         if (OperatingSystem.IsMacOS())
-            {
-                // 在macOS平台上，不可使用PrivateMemorySize64字段，详见https://github.com/dotnet/runtime/issues/105665
-                // 使用WorkingSet64字段，**结果可能略大**
-                return Process.GetCurrentProcess().WorkingSet64;
-            }
-            else
-            {
-                return Process.GetCurrentProcess().PrivateMemorySize64;
-            }
+        {
+            // 在macOS平台上，不可使用PrivateMemorySize64字段，详见https://github.com/dotnet/runtime/issues/105665
+            // 使用WorkingSet64字段，**结果可能略大**
+            return Process.GetCurrentProcess().WorkingSet64;
+        }
+        else
+        {
+            return Process.GetCurrentProcess().PrivateMemorySize64;
+        }
 
-            return 0;
+        return 0;
     }
-
-    private const int TaskFlavorBasicInfo = 20;
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct TaskBasicInfo
-    {
-        public int VirtualSize;
-        public int ResidentSize;
-        public int ResidentSizeMax;
-        public int UserTime;
-        public int SystemTime;
-        public int Policy;
-        public int SuspendCount;
-    }
-
-    [DllImport("libc")]
-    private static extern int task_info(IntPtr task, int flavor, ref TaskBasicInfo info, ref int size);
-
-    [DllImport("libc")]
-    private static extern IntPtr mach_task_self();
-
+    
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
         var size = GetMemoryUsage();
@@ -83,7 +63,7 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
             {
                 ArgumentList =
                 {
-                    "-q", "-m", "-psmk"
+                    "-q", "-m", "-psmk" // 静默启动，等待上一个实例退出，上一个实例因内存不足退出
                 }
             };
             Process.Start(startInfo);

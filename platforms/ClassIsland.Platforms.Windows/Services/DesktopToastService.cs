@@ -1,5 +1,6 @@
 using System.Buffers.Text;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
@@ -16,6 +17,7 @@ using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 
 namespace ClassIsland.Platform.Windows.Services;
 
+[SupportedOSPlatform("windows")]
 public class DesktopToastService : IDesktopToastService
 {
     private string AumId { get; }

@@ -10,11 +10,11 @@ public class SizeLongToStringConverter : IValueConverter
     {
         if (value is double d)
         {
-            return NetworkSpeedFormater.FormatFileSize((long)d);
+            return Helpers.StorageSizeHelper.FormatSize((ulong)d);
         }
         else
         {
-            return NetworkSpeedFormater.FormatFileSize((long)value);
+            return Helpers.StorageSizeHelper.FormatSize((ulong)value);
         }
     }
 

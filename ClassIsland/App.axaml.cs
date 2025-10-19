@@ -188,7 +188,7 @@ public partial class App : AppBase, IAppHost
 
     private void ActivateAppDirectories()
     {
-        PackagingType = PackagingType.Replace("\n", "").Replace("\r", "");
+        PackagingType = PackagingType.Replace(Environment.NewLine, "");
 
         ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
         CommonDirectories.AppRootFolderPath = PackagingType switch
@@ -346,12 +346,12 @@ public partial class App : AppBase, IAppHost
             var crashInfo = e.ToString();
             if (plugins.Count > 0)
             {
-                var pluginsWarning = "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：\n"
-                                     + string.Join("\n", plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"))
+                var pluginsWarning = "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题："+Environment.NewLine
+                                     + string.Join(Environment.NewLine, plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"))
                                      + (disabled
-                                         ? "\n以上异常插件已自动禁用，重启应用后生效。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。"
+                                         ? Environment.NewLine+"以上异常插件已自动禁用，重启应用后生效。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。"
                                          : "")
-                    + "\n================================\n";
+                    + Environment.NewLine+"================================"+Environment.NewLine;
                 crashInfo = pluginsWarning + crashInfo;
             }
             if (traceId != null)
@@ -500,7 +500,7 @@ public partial class App : AppBase, IAppHost
         }
         catch (Exception ex)
         {
-            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入当前目录：{ex.Message}\n\n请将本软件解压到一个合适的位置后再运行。");
+            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入当前目录：{ex.Message}"+Environment.NewLine+Environment.NewLine+"请将本软件解压到一个合适的位置后再运行。");
             Environment.Exit(0);
             return;
         }
@@ -866,7 +866,7 @@ public partial class App : AppBase, IAppHost
         var dialog = new TaskDialog()
         {
             Title = "ClassIsland 已在运行",
-            Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行设置等操作。\n\n" +
+            Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行设置等操作。" +Environment.NewLine+Environment.NewLine+
                       "如果您无法看到主界面，可能是因为您在托盘图标菜单中选择了【隐藏主界面】，或者有隐藏主界面的规则或行动正在生效。",
             XamlRoot = GetRootWindow(),
             Buttons =
@@ -908,7 +908,7 @@ public partial class App : AppBase, IAppHost
         }
         catch (Exception e)
         {
-            await CommonTaskDialogs.ShowDialog("重启失败", $"无法重新启动应用，可能当前运行的实例正在以管理员身份运行。请使用任务管理器终止正在运行的实例，然后再试一次。\n\n{e.Message}");
+            await CommonTaskDialogs.ShowDialog("重启失败", "无法重新启动应用，可能当前运行的实例正在以管理员身份运行。请使用任务管理器终止正在运行的实例，然后再试一次。"+Environment.NewLine+Environment.NewLine+$"{e.Message}");
         }
     }
 
