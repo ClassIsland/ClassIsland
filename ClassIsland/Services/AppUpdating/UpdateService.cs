@@ -339,6 +339,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             await _downloadCancellationTokenSource.CancelAsync();
         }
+
         try
         {
             var publicKey =
@@ -357,7 +358,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             {
                 throw new InvalidOperationException("文件图解析失败");
             }
-            
+
             CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
             var cts = _downloadCancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = cts.Token;
@@ -376,7 +377,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 SubChannel = GetCurrentSubChannel(),
                 FileMapSha512 = SHA512.HashData(Encoding.UTF8.GetBytes(DistributionInfo.FileMapJson))
             };
-            
+
             Logger.LogTrace("正在计算要下载的文件");
             var prevFileMapPath = Path.Combine(Environment.CurrentDirectory, "files.json");
             var prevFileMap = new FileMap();
@@ -391,6 +392,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     Logger.LogWarning(e, "无法加载当前版本的文件图 {}", prevFileMapPath);
                 }
             }
+
             foreach (var (id, component) in fileMap.Components)
             {
                 if (!Components.Contains(id))
@@ -401,7 +403,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 var prevComp = prevFileMap.Components.GetValueOrDefault(id);
                 var existedFiles = new List<string>();
                 deploymentLock.ExistedFiles[id] = existedFiles;
-                
+
                 foreach (var (path, file) in component.Files)
                 {
                     if (component.AllowDiffUpdate &&
@@ -411,6 +413,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                         Logger.LogTrace("SKIP {}/{}", id, path);
                         continue;
                     }
+
                     Logger.LogTrace("ADD {}/{}", id, path);
                     filesHashed.TryAdd(Convert.ToHexString(file.FileSha512), (Path.GetFileName(path), file));
                 }
@@ -421,6 +424,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             {
                 Directory.CreateDirectory(dlRoot);
             }
+
             var parallelOptions = new ParallelOptions
             {
                 MaxDegreeOfParallelism = 8,
@@ -440,8 +444,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             {
                 downloadTasksMap[info.Key] = info;
             }
-            
-            await Parallel.ForEachAsync(filesHashed,  parallelOptions, async (pair, token) =>
+
+            await Parallel.ForEachAsync(filesHashed, parallelOptions, async (pair, token) =>
             {
                 var (hashHex, (fileName, file)) = pair;
                 var updateStopwatch = Stopwatch.StartNew();
@@ -462,10 +466,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                         return;
                     }
 
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        DownloadedCount++;
-                    });
+                    Dispatcher.UIThread.InvokeAsync(() => { DownloadedCount++; });
                     taskCompletionSource.SetResult();
                 };
                 downloader.DownloadProgressChanged += (_, e) =>
@@ -474,7 +475,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                         return;
                     updateStopwatch.Restart();
                     var totalSize = e.TotalBytesToReceive;
-                    var downloadedSize = e.ReceivedBytesSize; 
+                    var downloadedSize = e.ReceivedBytesSize;
                     var downloadSpeed = e.BytesPerSecondSpeed;
 
                     var eta = TimeSpanHelper.FromSecondsSafe(downloadSpeed == 0
@@ -488,10 +489,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                         info.TimeToComplete = eta;
                     });
                 };
-                token.Register(() =>
-                {
-                    taskCompletionSource.SetCanceled(token);
-                });
+                token.Register(() => { taskCompletionSource.SetCanceled(token); });
                 await downloader.StartAsync(token);
                 await taskCompletionSource.Task;
                 info.State = DownloadState.Completed;
@@ -499,17 +497,25 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 Logger.LogInformation("下载完成 {}({})", fileName, file.ArchiveDownloadUrl);
             });
 
-            await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json"), DistributionInfo.FileMapJson, cancellationToken);
-            await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json.sig"), DistributionInfo.FileMapSignature, cancellationToken);
-            await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "Deployment.lock"), JsonSerializer.Serialize(deploymentLock), cancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json"), DistributionInfo.FileMapJson,
+                cancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json.sig"),
+                DistributionInfo.FileMapSignature, cancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "Deployment.lock"),
+                JsonSerializer.Serialize(deploymentLock), cancellationToken);
             Logger.LogInformation("全部下载完成！");
             Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
+        }
+        catch (TaskCanceledException)
+        {
+            transaction.Finish(SpanStatus.Cancelled);
+            Logger.LogInformation("已取消下载更新");
         }
         catch (Exception ex)
         {
             NetworkErrorException = ex;
             transaction.Finish(ex, SpanStatus.InternalError);
-            Logger.LogError(ex, "下载应用更新失败。");
+            Logger.LogError(ex, "下载应用更新失败");
             await RemoveDownloadedFiles(true);
         }
         finally
