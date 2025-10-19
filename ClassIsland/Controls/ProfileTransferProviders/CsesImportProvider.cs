@@ -50,7 +50,7 @@ public partial class CsesImportProvider : GenericImportProviderBase
             var profile = csesProfile.ToClassIslandObject(ImportType == 0 ? ProfileService.Profile : templateProfile);
             if (ImportType == 1)
             {
-                var path = System.IO.Path.Combine("./Profiles", NewProfileName + ".json");
+                var path = System.IO.Path.Combine(Services.ProfileService.ProfilePath, NewProfileName + ".json");
                 if (File.Exists(path))
                 {
                     throw new InvalidOperationException($"无法导入课表：{path} 已存在。");

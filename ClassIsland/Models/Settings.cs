@@ -1677,6 +1677,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public string DebugPhainonRootUrlOverride
+    {
+        get => _debugPhainonRootUrlOverride;
+        set
+        {
+            if (value == _debugPhainonRootUrlOverride) return;
+            _debugPhainonRootUrlOverride = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Window
@@ -1727,6 +1738,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Guid _selectedUpdateChannelV3 = Guid.Empty;
     private string _debugSubChannelOverride = "";
     private string _debugPublicKeyOverride = "";
+    private string _debugPhainonRootUrlOverride = "";
 
     public bool IsIgnoreWorkAreaEnabled
     {
