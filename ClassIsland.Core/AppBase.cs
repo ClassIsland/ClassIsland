@@ -39,6 +39,7 @@ public abstract class AppBase : Application, IAppHost
     /// 获取应用是否已裁剪资源。
     /// </summary>
     /// <returns></returns>
+    [Obsolete("2.0 已弃用资源裁剪发布，此方法将恒返回 false.")]
     public abstract bool IsAssetsTrimmed();
 
     /// <summary>
@@ -75,12 +76,16 @@ public abstract class AppBase : Application, IAppHost
     /// 应用二进制文件面向的操作系统
     /// </summary>
     public abstract string OperatingSystem { get; internal set; }
+    
+    /// <summary>
+    /// 应用二进制文件的构建类型
+    /// </summary>
+    public abstract string BuildType { get; }
 
     /// <summary>
     /// 应用分发频道
     /// </summary>
-    // TODO: 适配新的 BuildType
-    public string AppSubChannel => $"{OperatingSystem}_{Platform}_{(IsAssetsTrimmed() ? "trimmed" : "full")}_{PackagingType}";
+    public string AppSubChannel => $"{OperatingSystem}_{Platform}_{BuildType}_{PackagingType}";
 
     internal AppBase()
     {

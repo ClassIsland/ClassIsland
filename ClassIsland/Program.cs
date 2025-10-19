@@ -95,10 +95,6 @@ public static class Program
         if (sentryEnabled )
         {
             SentrySdk.Init(ConfigureSentry);
-            SentrySdk.ConfigureScope(s =>
-            {
-                s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
-            });
         }
         try {
             if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is { } priorityStr && uint.TryParse(priorityStr, out uint priority))
