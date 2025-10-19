@@ -56,6 +56,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private DistributionInfoClient _distributionInfo;
     private string _currentWorkingMessage = "";
 
+    private const string PhainonRootUrl = "https://distribution.classisland.tech";
+
     internal static string UpdateCachePath { get; } = Path.Combine(CommonDirectories.AppCacheFolderPath, "Update");
 
     public static string UpdateTempPath => Path.Combine(CommonDirectories.AppTempFolderPath, "Updating");
@@ -68,6 +70,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private const string LauncherComponentName = "launcher";
 
     private static readonly string[] Components = [AppComponentName, LauncherComponentName];
+    public static readonly string[] AllowedPackageTypes = ["folder", "folderClassic", "installer"];
 
     private CancellationTokenSource? _downloadCancellationTokenSource;
     private int _downloadedCount = 0;
@@ -154,7 +157,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         var keyStream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute));
         MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
 
-        RequestHelper = new WebRequestHelper(new Uri("http://localhost:5205"), true);
+        RequestHelper = new WebRequestHelper(AppBase.Current.IsDevelopmentBuild 
+                                             && !string.IsNullOrWhiteSpace(Settings.DebugPhainonRootUrlOverride) 
+                                             && Uri.TryCreate(Settings.DebugPhainonRootUrlOverride, UriKind.Absolute, out var u1)
+            ? u1
+            : new Uri(PhainonRootUrl), true);
         _distributionInfo = ConfigureFileHelper.LoadConfig<DistributionInfoClient>(UpdateDistributionInfoPath);
         DistributionMetadata = ConfigureFileHelper.LoadConfig<DistributionMetadata>(UpdateDistributionMetadataPath);
     }
@@ -230,15 +237,16 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)
     {
+        if (!AllowedPackageTypes.Contains(AppBase.Current.PackagingType))
+        {
+            return;
+        }
         var transaction = SentrySdk.StartTransaction("Get Update Info", "appUpdating.getMetadata");
         NetworkErrorException = null;
         try
         {
             var spanGetIndex = transaction.StartChild("getIndex");
-            var subChannel =
-                AppBase.Current.IsDevelopmentBuild && !string.IsNullOrWhiteSpace(Settings.DebugSubChannelOverride)
-                    ? Settings.DebugSubChannelOverride
-                    : AppBase.Current.AppSubChannel;
+            var subChannel = GetCurrentSubChannel();
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
             DistributionMetadata = await RequestHelper.SaveJson<DistributionMetadata>(
                 new Uri("api/v1/public/distributions/metadata", UriKind.Relative), UpdateDistributionMetadataPath);
@@ -281,6 +289,13 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     }
 
+    private string GetCurrentSubChannel()
+    {
+        return AppBase.Current.IsDevelopmentBuild && !string.IsNullOrWhiteSpace(Settings.DebugSubChannelOverride)
+            ? Settings.DebugSubChannelOverride
+            : AppBase.Current.AppSubChannel;
+    }
+
     private void UpdateNotificationClickedCallback()
     {
         IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/update"));
@@ -295,6 +310,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task DownloadUpdateAsync()
     {
+        if (!AllowedPackageTypes.Contains(AppBase.Current.PackagingType))
+        {
+            return;
+        }
         if (Design.IsDesignMode)
         {
             return;
@@ -352,19 +371,47 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             };
             // key 是 hash（HEX）
             Dictionary<string, (string Name, FileMapFile FileInfo)> filesHashed = [];
+            var deploymentLock = new DeploymentLock()
+            {
+                SubChannel = GetCurrentSubChannel(),
+                FileMapSha512 = SHA512.HashData(Encoding.UTF8.GetBytes(DistributionInfo.FileMapJson))
+            };
             
             Logger.LogTrace("正在计算要下载的文件");
+            var prevFileMapPath = Path.Combine(Environment.CurrentDirectory, "files.json");
+            var prevFileMap = new FileMap();
+            if (File.Exists(prevFileMapPath))
+            {
+                try
+                {
+                    prevFileMap = ConfigureFileHelper.LoadConfigUnWrapped<FileMap>(prevFileMapPath, false);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogWarning(e, "无法加载当前版本的文件图 {}", prevFileMapPath);
+                }
+            }
             foreach (var (id, component) in fileMap.Components)
             {
                 if (!Components.Contains(id))
                 {
                     continue;
                 }
-                
+
+                var prevComp = prevFileMap.Components.GetValueOrDefault(id);
+                var existedFiles = new List<string>();
+                deploymentLock.ExistedFiles[id] = existedFiles;
                 
                 foreach (var (path, file) in component.Files)
                 {
-                    // TODO: 存在文件检测
+                    if (component.AllowDiffUpdate &&
+                        prevComp?.Files.GetValueOrDefault(path)?.FileSha512.SequenceEqual(file.FileSha512) == true)
+                    {
+                        existedFiles.Add(path);
+                        Logger.LogTrace("SKIP {}/{}", id, path);
+                        continue;
+                    }
+                    Logger.LogTrace("ADD {}/{}", id, path);
                     filesHashed.TryAdd(Convert.ToHexString(file.FileSha512), (Path.GetFileName(path), file));
                 }
             }
@@ -454,6 +501,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
             await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json"), DistributionInfo.FileMapJson, cancellationToken);
             await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json.sig"), DistributionInfo.FileMapSignature, cancellationToken);
+            await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "Deployment.lock"), JsonSerializer.Serialize(deploymentLock), cancellationToken);
             Logger.LogInformation("全部下载完成！");
             Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
         }
@@ -513,12 +561,25 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task ExtractUpdateAsync()
     {
+        if (!AllowedPackageTypes.Contains(AppBase.Current.PackagingType))
+        {
+            return;
+        }
         CurrentWorkingStatus = UpdateWorkingStatus.ExtractingUpdates;
         try
         {
             Logger.LogInformation("正在部署应用更新");
             var fileMapJson = await File.ReadAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json"));
             var fileMapSig = await File.ReadAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json.sig"));
+            var deploymentLock = ConfigureFileHelper.LoadConfigUnWrapped<DeploymentLock>(Path.Combine(UpdateTempPath, "FileMap.json.sig"), false);
+            if (!deploymentLock.FileMapSha512.SequenceEqual(SHA512.HashData(Encoding.UTF8.GetBytes(fileMapJson))))
+            {
+                throw new InvalidOperationException("文件图哈希与下载时不符合，可能已经损坏");
+            }
+            if (deploymentLock.SubChannel != GetCurrentSubChannel())
+            {
+                throw new InvalidOperationException("下载的更新不适用于当前子频道的 ClassIsland");
+            }
             var publicKey =
                 AppBase.Current.IsDevelopmentBuild && !string.IsNullOrWhiteSpace(Settings.DebugPublicKeyOverride)
                     ? Settings.DebugPublicKeyOverride
@@ -554,7 +615,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     continue;
                 }
 
-                foreach (var (path, fileInfo) in component.Files)
+                var existedFiles = deploymentLock.ExistedFiles.GetValueOrDefault(id, []);
+
+                foreach (var (path, fileInfo) in component.Files.Where(x =>
+                             !component.AllowDiffUpdate || !existedFiles.Contains(x.Key)))
                 {
                     var hashHex = Convert.ToHexString(fileInfo.FileSha512);
                     var fullPath = Path.Combine(extractedPath, hashHex[..2], hashHex);
@@ -632,23 +696,38 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     continue;
                 }
                 
+                var existedFiles = deploymentLock.ExistedFiles.GetValueOrDefault(id, []);
                 var compRoot = Path.Combine(root,
                     VariableStringHelpers.ExpandString(component.Root, fileMap.Variables));
 
                 foreach (var (path, fileInfo) in component.Files)
                 {
-                    var hashHex = Convert.ToHexString(fileInfo.FileSha512);
-                    var fullPath = Path.Combine(extractedPath, hashHex[..2], hashHex);
                     var targetPath = Path.Combine(compRoot, path);
                     var dir = Path.GetDirectoryName(targetPath);
                     if (dir != null && !Directory.Exists(dir))
                     {
                         Directory.CreateDirectory(dir);
                     }
+                    
+                    if (component.AllowDiffUpdate && existedFiles.Contains(path) && id is "app")
+                    {
+                        var existedFileRoot = id switch
+                        {
+                            "app" => Environment.CurrentDirectory,
+                            _ => throw new ArgumentOutOfRangeException()
+                        };
+                        var existedPath = Path.Combine(existedFileRoot, path);
+                        
+                        Logger.LogTrace("Deploy Copy EXISTED {} -> {}", existedPath, targetPath);
+                    }
+                    
+                    var hashHex = Convert.ToHexString(fileInfo.FileSha512);
+                    var fullPath = Path.Combine(extractedPath, hashHex[..2], hashHex);
                     Logger.LogTrace("Deploy Copy {} -> {}", fullPath, targetPath);
                     File.Copy(fullPath, targetPath, true);
                 }
             }
+            File.Copy(Path.Combine(UpdateTempPath, "FileMap.json"), Path.Combine(appPath, "files.json"));
             
             Logger.LogInformation("正在激活新的部署");
             

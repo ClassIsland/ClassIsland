@@ -10,6 +10,7 @@
              xmlns:appUpdating="clr-namespace:ClassIsland.Enums.AppUpdating"
              xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
              xmlns:helpers="clr-namespace:ClassIsland.Core.Helpers;assembly=ClassIsland.Core"
+             xmlns:classIsland="clr-namespace:ClassIsland"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.SettingPages.UpdateSettingsPage"
              d:DataContext="{d:DesignInstance settingPages:UpdateSettingsPage}"
@@ -344,8 +345,11 @@
                         
                     </StackPanel>
                 </TabItem>
-                <TabItem Header="(debug)调试设置">
+                <TabItem Header="(debug)调试设置" IsVisible="{Binding IsDevelopmentBuild, Source={x:Static ci:AppBase.Current}}">
                     <StackPanel Margin="0" Classes="settings-container animated-intro">
+                        <ci:Field Label="覆盖 PDC 根 Url">
+                            <TextBox Watermark="留空禁用" Text="{Binding ViewModel.SettingsService.Settings.DebugPhainonRootUrlOverride}"/>
+                        </ci:Field>
                         <ci:Field Label="覆盖子频道">
                             <TextBox Watermark="留空禁用" Text="{Binding ViewModel.SettingsService.Settings.DebugSubChannelOverride}"/>
                         </ci:Field>
