@@ -408,7 +408,7 @@ jobs:
           tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
           
       - name: Upload Nuget packages to NuGet Gallery
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' && !github.event.inputs.is_test_mode }}
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}
         run: |
