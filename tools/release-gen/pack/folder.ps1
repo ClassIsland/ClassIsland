@@ -8,8 +8,7 @@ Get-ChildItem -Path ./out
 
 # Install PDCC
 
-./tools/release-gen/pack/install-pdcc.ps1
-
+./tools/release-gen/install-pdcc.ps1
 
 $appBaseName = "out_appBase_${env:osName}_${env:arch}_${env:buildType}_folder"
 $launcherName = "out_launcher_${env:osName}_${env:arch}_aot_singleFile"
