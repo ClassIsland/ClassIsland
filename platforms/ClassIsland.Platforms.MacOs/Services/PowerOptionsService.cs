@@ -17,11 +17,7 @@ public class PowerOptionsService:IPowerOptionsService
     {
         Process.Start("osascript","-e 'tell app \"System Events\" to restart'");
     }
-
-    public void Logout()
-    {
-        Process.Start("osascript","-e 'tell application \"System Events\" to log out'");
-    }
+    
     public void Hibernate()
     {
         Process.Start("osascript","-e 'tell application \"System Events\" to sleep'");

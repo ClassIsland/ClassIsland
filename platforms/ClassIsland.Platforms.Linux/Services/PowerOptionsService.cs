@@ -17,11 +17,7 @@ public class PowerOptionsService:IPowerOptionsService
     {
         Process.Start("systemctl", "reboot");
     }
-
-    public void Logout()
-    {
-        throw new PlatformNotSupportedException();
-    }
+    
     public void Hibernate()
     {
         Process.Start("systemctl", "hibernate");

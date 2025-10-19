@@ -16,8 +16,6 @@ public class PowerOptionsService:IPowerOptionsService
 
     public void Reboot()=>ExitWindowsEx(EXIT_WINDOWS_FLAGS.EWX_REBOOT,SHUTDOWN_REASON.SHTDN_REASON_FLAG_PLANNED);
 
-    public void Logout()=>ExitWindowsEx(EXIT_WINDOWS_FLAGS.EWX_LOGOFF,SHUTDOWN_REASON.SHTDN_REASON_FLAG_PLANNED);
-
     public void Hibernate()=>SetSuspendState(true,false,false);
 
     public void Sleep()=>SetSuspendState(false, false, false);
