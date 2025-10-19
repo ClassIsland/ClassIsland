@@ -126,4 +126,9 @@ public partial class UpdateSettingsPage : SettingsPageBase
     {
         AppBase.Current.Restart();
     }
+
+    private async void SettingsExpanderItemCheckUpdateForce_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await ViewModel.UpdateService.CheckUpdateAsync(true);
+    }
 }

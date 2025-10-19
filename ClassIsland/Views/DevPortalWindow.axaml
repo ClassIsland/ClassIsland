@@ -8,6 +8,7 @@
         xmlns:controls="clr-namespace:ClassIsland.Controls"
         xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
         xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
+        xmlns:helpers="clr-namespace:ClassIsland.Core.Helpers;assembly=ClassIsland.Core"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.DevPortalWindow"
         Title="DevPortal"
@@ -133,6 +134,7 @@
                                              x:Name="MarkdownEditor">
                     </avaloniaEdit:TextEditor>
                     <mdxaml:MarkdownScrollViewer Grid.Column="1"
+                                                 Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
                                                  Markdown="{Binding ViewModel.MarkdownText}">
                         <mdxaml:MarkdownScrollViewer.Styles>
                             <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml"/>

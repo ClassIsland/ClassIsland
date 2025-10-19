@@ -8,6 +8,8 @@
              xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
              xmlns:appUpdating="clr-namespace:ClassIsland.Enums.AppUpdating"
+             xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
+             xmlns:helpers="clr-namespace:ClassIsland.Core.Helpers;assembly=ClassIsland.Core"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.SettingPages.UpdateSettingsPage"
              d:DataContext="{d:DesignInstance settingPages:UpdateSettingsPage}"
@@ -66,7 +68,34 @@
                                Grid.RowSpan="2" Grid.Row="0"
                                Margin="0 0 4 0"
                                VerticalAlignment="Center"
-                               Glyph="{Binding ViewModel.SettingsService.Settings.LastUpdateStatus, Converter={x:Static settingPages:UpdateSettingsPage.UpdateStatusToIconGlyphConverter}}"/>
+                               RenderTransformOrigin="50%, 46%"
+                               Glyph="{Binding ViewModel.SettingsService.Settings.LastUpdateStatus, Converter={x:Static settingPages:UpdateSettingsPage.UpdateStatusToIconGlyphConverter}}">
+                    <ci:FluentIcon.RenderTransform>
+                        <RotateTransform/>
+                    </ci:FluentIcon.RenderTransform>
+                    <ci:FluentIcon.Styles>
+                        <Style Selector="ci|FluentIcon.Spinning">
+                            <Style.Animations>
+                                <Animation Duration="0:0:1" IterationCount="Infinite" Easing="0.50, 0.25, 0.50, 0.75">
+                                    <KeyFrame Cue="0%">
+                                        <Setter Property="RotateTransform.Angle" Value="0"/>
+                                    </KeyFrame>
+                                    <KeyFrame Cue="100%">
+                                        <Setter Property="RotateTransform.Angle" Value="360"/>
+                                    </KeyFrame>
+                                </Animation>
+                            </Style.Animations>
+                        </Style>
+                    </ci:FluentIcon.Styles>
+                    <Classes.Spinning>
+                        <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
+                                 Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <enums:UpdateWorkingStatus>DownloadingUpdates</enums:UpdateWorkingStatus>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Classes.Spinning>
+                </ci:FluentIcon>
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ViewModel.SettingsService.Settings.LastUpdateStatus, Converter={x:Static settingPages:UpdateSettingsPage.UpdateStatusToMessageConverter}}" 
                            FontSize="24" FontWeight="Medium"/>
                 <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 4 0 0">
@@ -233,7 +262,44 @@
                         </Binding.ConverterParameter>
                     </Binding>
                 </TabControl.IsEnabled>
-                <TabItem Header="更新日志"></TabItem>
+                <TabItem Header="更新日志">
+                    <Grid >
+                        <mdxaml:MarkdownScrollViewer
+                            Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
+                            Markdown="{Binding ViewModel.UpdateService.DistributionInfo.ChangeLog}">
+                            <mdxaml:MarkdownScrollViewer.IsVisible>
+                                <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
+                                         Converter="{x:Static ObjectConverters.NotEqual}">
+                                    <Binding.ConverterParameter>
+                                        <enums:UpdateStatus>UpToDate</enums:UpdateStatus>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </mdxaml:MarkdownScrollViewer.IsVisible>
+                            <mdxaml:MarkdownScrollViewer.Styles>
+                                <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml" />
+                            </mdxaml:MarkdownScrollViewer.Styles>
+                        </mdxaml:MarkdownScrollViewer>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    Margin="0 50">
+                            <StackPanel.IsVisible>
+                                <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
+                                         Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <enums:UpdateStatus>UpToDate</enums:UpdateStatus>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </StackPanel.IsVisible>
+                            <Image Source="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="81"
+                                   Height="81"
+                                   ToolTip.Tip="光辉矢愿_遨游"/>
+
+                            <TextBlock TextWrapping="Wrap"
+                                       HorizontalAlignment="Center"
+                                       Margin="0 8 0 0"  Text="已经是最新版啦，真棒，夸夸你哦♪">
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
                 <TabItem Header="更新设置">
                     <StackPanel Margin="0" Classes="settings-container animated-intro">
                         <!-- 更新模式 -->
@@ -268,22 +334,14 @@
                             <controls:SettingsExpanderItem>
                                 <TextBlock Text="{Binding ViewModel.SelectedChannel.Description}" TextWrapping="Wrap"/>
                             </controls:SettingsExpanderItem>
+                            <controls:SettingsExpanderItem Content="强制检查更新"
+                                                           IsClickEnabled="True"
+                                                           Click="SettingsExpanderItemCheckUpdateForce_OnClick"
+                                                           Description="强制将应用更新到当前通道上的最新版本，即使此版本比应用当前版本更旧。"
+                                                           ActionIconSource="{ci:FluentIconSource &#xe44e;}">
+                            </controls:SettingsExpanderItem>
                         </controls:SettingsExpander>
                         
-                        <!-- 最新版本占位图标 -->
-                        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe9b0;}"
-                                                   Header="最新版本占位图标"
-                                                   Description="设置当应用处于最新版本时，在更新日志页面显示的占位图标的角色。">
-                            <controls:SettingsExpander.Footer>
-                                <ComboBox>
-                                    <ComboBoxItem>爱莉希雅</ComboBoxItem>
-                                    <ComboBoxItem>昔涟</ComboBoxItem>
-                                    <ComboBoxItem>白厄</ComboBoxItem>
-                                    <ComboBoxItem>白厄/卡厄斯兰那</ComboBoxItem>
-                                    <ComboBoxItem>帕姆</ComboBoxItem>
-                                </ComboBox>
-                            </controls:SettingsExpander.Footer>
-                        </controls:SettingsExpander>
                     </StackPanel>
                 </TabItem>
                 <TabItem Header="(debug)调试设置">
