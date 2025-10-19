@@ -6,6 +6,7 @@ using ClassIsland.Core.Abstractions.Controls.ProfileTransferProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Helpers.ProfileTransferHelpers;
+using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ public class ClassWidgets1ImportProvider : GenericImportProviderBase
             var profile = ClassWidgetsProfileTransferHelper.ConvertClassWidgets1ProfileToClassIslandProfile(SourceFilePath, ImportType == 0 ? ProfileService.Profile : null);
             if (ImportType == 1)
             {
-                var path = Path.Combine("./Profiles", NewProfileName + ".json");
+                var path = Path.Combine(Services.ProfileService.ProfilePath, NewProfileName + ".json");
                 if (File.Exists(path))
                 {
                     throw new InvalidOperationException($"无法导入课表：{path} 已存在。");
