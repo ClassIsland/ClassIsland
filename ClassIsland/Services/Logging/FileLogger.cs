@@ -23,7 +23,7 @@ public class FileLogger(FileLoggerProvider provider, string categoryName) : ILog
         {
             scopes.AddRange(ScopeStack.Value.Select(scope => (scope.ToString() ?? "") + "=>"));
         }
-        var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? "\n" + exception : "");
+        var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? Environment.NewLine + exception : "");
         message = LogMaskingHelper.MaskLog(message);
         Provider.WriteLog($"{DateTime.Now}|{logLevel}|{CategoryName}|{message}");
     }
