@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 
-namespace ClassIsland;
+namespace ClassIsland.Helpers;
 
 public class AttachedSettingsControlHelper<T> : INotifyPropertyChanged, IAttachedSettingsHelper
 {
