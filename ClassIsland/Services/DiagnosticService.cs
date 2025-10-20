@@ -8,6 +8,7 @@ using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia.Threading;
@@ -130,6 +131,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         }
     }
 
+    [SupportedOSPlatform("windows")]
     public static void GetDeviceInfo(out string name, out string vendor)
     {
         name = "???";
