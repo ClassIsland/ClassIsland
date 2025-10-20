@@ -48,26 +48,6 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
             return 0;
     }
 
-    private const int TaskFlavorBasicInfo = 20;
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct TaskBasicInfo
-    {
-        public int VirtualSize;
-        public int ResidentSize;
-        public int ResidentSizeMax;
-        public int UserTime;
-        public int SystemTime;
-        public int Policy;
-        public int SuspendCount;
-    }
-
-    [DllImport("libc")]
-    private static extern int task_info(IntPtr task, int flavor, ref TaskBasicInfo info, ref int size);
-
-    [DllImport("libc")]
-    private static extern IntPtr mach_task_self();
-
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
         var size = GetMemoryUsage();
