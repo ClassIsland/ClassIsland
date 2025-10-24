@@ -1,7 +1,7 @@
 name: Build
 
 on:
-#  push:
+  push:
   workflow_dispatch:
     inputs:
       release_tag:
