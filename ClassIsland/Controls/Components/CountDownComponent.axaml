@@ -87,8 +87,7 @@
             <TextBlock Text="{Binding Settings.CountDownName}"
                        Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                        FontSize="{Binding Settings.FontSize}"
-                       VerticalAlignment="Center" 
-                       FontWeight="Medium" />
+                       VerticalAlignment="Center" />
             <TextBlock Text="{Binding Settings.CountDownConnector}"
                        VerticalAlignment="Center"
                        Classes="connector"
@@ -97,8 +96,7 @@
             <TextBlock Text="{Binding DaysLeft, Mode=OneWay}" 
                        Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                        FontSize="{Binding Settings.FontSize}"
-                       VerticalAlignment="Center"
-                       FontWeight="Medium"/>
+                       VerticalAlignment="Center"/>
         </StackPanel>
         <ProgressBar VerticalAlignment="Bottom"
                      Maximum="100" Minimum="0"
