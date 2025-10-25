@@ -3,6 +3,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using ClassIsland.Controls;
+using ClassIsland.Core;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.ViewModels;
@@ -21,6 +23,11 @@ public partial class WelcomePage : UserControl, IWelcomePage
 
     private void ButtonNext_OnClick(object? sender, RoutedEventArgs e)
     {
+        NavigateNext();
+    }
+
+    private void NavigateNext()
+    {
         this.ShowToast(new ToastMessage()
         {
             Title = "欢迎使用 ClassIsland",
@@ -34,5 +41,30 @@ public partial class WelcomePage : UserControl, IWelcomePage
     private void Intro_OnAnimationEnd(object? sender, EventArgs e)
     {
         ContentRoot.Classes.Add("anim");
+    }
+
+    private void ButtonDataMigration_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var welcomeWindow = TopLevel.GetTopLevel(this) as WelcomeWindow;
+        if (welcomeWindow == null)
+        {
+            return;
+        }
+
+        welcomeWindow.Pages.Clear();
+        welcomeWindow.Pages.AddRange([typeof(WelcomePage), typeof(LicensePage), typeof(DataTransferPage)]);
+        
+        NavigateNext();
+    }
+
+    private void ButtonEnterRecovery_OnClick(object? sender, RoutedEventArgs e)
+    {
+        AppBase.Current.Restart(["-m", "-r"]);
+    }
+
+    private void ButtonJoinManagement_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var dialog = new JoinManagementDialog();
+        dialog.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
     }
 }

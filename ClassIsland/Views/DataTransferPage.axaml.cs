@@ -390,6 +390,8 @@ public partial class DataTransferPage : UserControl
         SetNotificationChannelSound(ClassNotificationProvider.PrepareOnClassChannelId,
             TryGetStringFromSection(audio, "prepare_class", "prepare_class.wav"));
 
+        settings.IsWelcomeWindowShowed = true;
+
         return;
         
         void SetNotificationChannelSound(string channelId, string cwPath)

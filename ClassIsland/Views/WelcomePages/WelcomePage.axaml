@@ -24,7 +24,7 @@
         </Style>
     </UserControl.Styles>
     <Grid >
-        <Grid x:Name="ContentRoot" Opacity="0.0" d:Opacity="1.0"
+        <Grid x:Name="ContentRoot" Opacity="0.0"
               RowDefinitions="*, Auto, *">
             <Image Grid.Row="0" VerticalAlignment="Bottom"
                    HorizontalAlignment="Center"
@@ -67,10 +67,36 @@
                         Click="ButtonNext_OnClick"
                         Margin="0 8 0 0" />
             </StackPanel>
+            
+            <StackPanel Grid.Row="2"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        Margin="8"
+                        Spacing="2">
+                <TextBlock Text="{x:Static ci:AppBase.AppVersion}" HorizontalAlignment="Center"
+                           Opacity="0.75"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="2">
+                    <StackPanel.Styles>
+                        <Style Selector="HyperlinkButton">
+                            <Setter Property="Padding" Value="4"/>
+                        </Style>
+                    </StackPanel.Styles>
+                    <HyperlinkButton Click="ButtonDataMigration_OnClick">
+                        <TextBlock>数据迁移</TextBlock>
+                    </HyperlinkButton>
+                    <HyperlinkButton Click="ButtonEnterRecovery_OnClick">
+                        <TextBlock>故障排除/恢复备份</TextBlock>
+                    </HyperlinkButton>
+                    <HyperlinkButton Click="ButtonJoinManagement_OnClick">
+                        <TextBlock>加入管理</TextBlock>
+                    </HyperlinkButton> 
+                </StackPanel>
+            </StackPanel>
         </Grid>
         
         <!-- Intro -->
         <controls1:OobeIntroAnimationControl x:Name="Intro"
                                              AnimationEnd="Intro_OnAnimationEnd"/>
+        
+        
     </Grid>
 </UserControl>
