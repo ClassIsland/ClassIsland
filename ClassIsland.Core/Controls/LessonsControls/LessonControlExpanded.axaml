@@ -6,10 +6,12 @@
              xmlns:local="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
              xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
              xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="LessonControlExpandedRoot"
              Classes.ChangedClass="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource Self}}"
              Classes.HighlightChangedClass="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}"
              Classes.ExtraInfo4ShowSeconds="{Binding ExtraInfo4ShowSeconds, RelativeSource={RelativeSource Self}}">
@@ -20,14 +22,12 @@
         </DataTriggerBehavior>
     </Interaction.Behaviors>
     <local:LessonControlBase.Styles>
-        <Style Selector="local|LessonControlBase.ChangedClass.HighlightChangedClass TextBlock#Text">
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="3"
-                                      OffsetX="0" OffsetY="0"
-                                      Color="#FF0" />
-                </Setter.Value>
-            </Setter>
+        <Style Selector="#LessonControlExpandedRoot controls|HighlightBox#TextHighlightBox">
+            <Setter Property="IsHighlight" Value="False" />
+        </Style>
+        
+        <Style Selector="#LessonControlExpandedRoot.ChangedClass.HighlightChangedClass controls|HighlightBox#TextHighlightBox">
+            <Setter Property="IsHighlight" Value="True" />
         </Style>
         
         <Style Selector="TabItem">
@@ -61,8 +61,10 @@
                 <!--         <Binding Path="ClassInfo.SubjectId" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}"/> -->
                 <!--     </MultiBinding> -->
                 <!-- </Grid.DataContext> -->
-                <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
-                           FontWeight="Bold" x:Name="Text" Text="{Binding DisplayingSubject.Name, Mode=OneWay}"/>
+                <controls:HighlightBox x:Name="TextHighlightBox">
+                    <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                               FontWeight="Bold" Text="{Binding DisplayingSubject.Name, Mode=OneWay}"/>
+                </controls:HighlightBox>
             </Grid>
             
             <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">

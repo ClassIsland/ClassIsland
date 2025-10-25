@@ -7,17 +7,18 @@
                    xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                   xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    x:Name="LessonControlMinimizedRoot"
                    Classes.ChangedClass="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource Self}}"
                    Classes.HighlightChangedClass="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}">
     <local:LessonControlBase.Styles>
-        <Style Selector="Border#TextHighlightBorder">
-            <Setter Property="IsVisible" Value="False" />
+        <Style Selector="controls|HighlightBox#TextHighlightBox">
+            <Setter Property="IsHighlight" Value="False" />
         </Style>
-        <Style Selector="#LessonControlMinimizedRoot.ChangedClass.HighlightChangedClass Border#TextHighlightBorder">
-            <Setter Property="IsVisible" Value="True" />
+        <Style Selector="#LessonControlMinimizedRoot.ChangedClass.HighlightChangedClass controls|HighlightBox#TextHighlightBox">
+            <Setter Property="IsHighlight" Value="True" />
         </Style>
     </local:LessonControlBase.Styles>
     
@@ -45,14 +46,11 @@
                 </MultiBinding>
             </Grid.DataContext>
             
-            <Border x:Name="TextHighlightBorder"
-                    Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0.4"
-                    Height="12" VerticalAlignment="Center"
-                    Margin="-2 8 -2 0" CornerRadius="2"/>
-            
-            <TextBlock x:Name="Text" VerticalAlignment="Center"
-                       FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
-                       Text="{Binding Initial}" />
+            <controls:HighlightBox x:Name="TextHighlightBox">
+                <TextBlock VerticalAlignment="Center"
+                           FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                           Text="{Binding Initial}" />
+            </controls:HighlightBox>
         </Grid>
 
         <LayoutTransformControl>
