@@ -118,7 +118,7 @@
                                 <DataTemplate>
                                     <Grid Margin="3 0"
                                           Background="Transparent"
-                                          ColumnDefinitions="Auto * 8 Auto"
+                                          ColumnDefinitions="Auto 5* 2* Auto"
                                           Height="42">
                                         <ci:TouchDragThumb Grid.Column="0" Margin="-12 0 0 0"
                                                            Width="20"/>
@@ -136,8 +136,12 @@
                                         <!--                  IsVisible="{Binding ActionSet.IsWorking}" -->
                                         <!--                  Background="Transparent" -->
                                         <!--                  ToolTip.Tip="该自动化正在运行。"/> -->
+                                        <controls:WorkflowProgressIndicatorControl Grid.Column="2"
+                                            VerticalAlignment="Center" Margin="0 0 4 0"
+                                            IsVisible="{Binding ActionSet.IsWorking}"
+                                            Workflow="{Binding}"/>
 
-                                        <ToggleSwitch Grid.Column="3"
+                                        <ToggleSwitch Grid.Column="3" VerticalAlignment="Center"
                                                       IsChecked="{Binding ActionSet.IsEnabled}" />
                                     </Grid>
                                 </DataTemplate>

@@ -24,6 +24,10 @@ public partial class ActionSet : ObservableRecipient
         InterruptCts = new();
         RunningTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         Status = isInvoke ? ActionSetStatus.Invoking : ActionSetStatus.Reverting;
+        foreach (var a in ActionItems)
+        {
+            a.IsCompleted = false;
+        }
     }
 
     /// <summary>

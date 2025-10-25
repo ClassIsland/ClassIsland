@@ -17,6 +17,7 @@ public partial class ActionItem : ObservableRecipient
     {
         Exception = null;
         IsWorking = true;
+        IsCompleted = false;
         Progress = null;
     }
 
@@ -28,9 +29,13 @@ public partial class ActionItem : ObservableRecipient
     {
         IsWorking = false;
         Progress = null;
+        IsCompleted = true;
     }
 
-
+    /// <summary>
+    /// 行动已执行完成
+    /// </summary>
+    [ObservableProperty] private bool _isCompleted = false;
 
     /// <summary>
     /// 行动项 ID。
