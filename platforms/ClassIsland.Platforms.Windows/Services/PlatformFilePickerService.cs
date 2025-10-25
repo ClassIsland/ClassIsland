@@ -91,7 +91,7 @@ public class PlatformFilePickerService : IPlatformFilePickerService
         }
         try
         {
-            var path = JsonSerializer.Deserialize<string>(result);
+            var path = JsonSerializer.Deserialize<string?>(result);
             return path;
         }
         catch

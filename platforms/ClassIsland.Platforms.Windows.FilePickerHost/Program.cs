@@ -95,7 +95,7 @@ class Program
                     filters: (saveOptions.FileTypeChoices ?? new List<FilePickerFileType>()).SelectMany(f => new[] { f.Name, string.Join(";", f.Patterns ?? []) }).ToArray(),
                     root: pickerArgs.ParentHWnd
                 );
-                resultString = JsonSerializer.Serialize(saveResult ?? "");
+                resultString = JsonSerializer.Serialize(saveResult);
                 break;
             case FilePickerHostArguments.FilePickerMode.None:
             default:
