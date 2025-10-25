@@ -11,8 +11,12 @@
                 Classes="settings-container animated-intro"
                 DataContext="{Binding RelativeSource={RelativeSource AncestorType=welcomePages:FinishPage}}"
                 MaxWidth="600">
-        <Image Height="85" Width="85" Source="/Assets/HoYoStickers/白厄_再见.png"
-               Margin="0 0 0 4"/>
+        
+        <ci:StickerControl Height="85" Width="85"
+                           Margin="0 0 0 4" 
+                           StickerSource="/Assets/HoYoStickers/白厄_再见.png"
+                           StickerToolTip="白厄_再见"
+                           FallbackIcon="{ci:FluentIconSource &#xE31A;, FontSize=85}"/>
         <TextBlock Text="完成" HorizontalAlignment="Center"
                    Margin="0 0 0 4"
                    Theme="{StaticResource SubtitleTextBlockStyle}"/>

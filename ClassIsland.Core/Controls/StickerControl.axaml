@@ -1,0 +1,29 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls"
+        xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <controls:StickerControl />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|StickerControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Image Source="{TemplateBinding StickerSource}"
+                       Stretch="UniformToFill"
+                       StretchDirection="Both"
+                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                       ToolTip.Tip="{TemplateBinding StickerToolTip}"/>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    
+    <Style Selector=":no-easter-eggs controls|StickerControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <controls1:IconSourceElement IconSource="{TemplateBinding FallbackIcon}"
+                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

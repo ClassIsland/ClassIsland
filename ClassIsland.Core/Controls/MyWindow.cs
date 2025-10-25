@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Windows.Win32;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -12,6 +13,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Commands;
 using ClassIsland.Core.Helpers.UI;
@@ -23,6 +25,7 @@ namespace ClassIsland.Core.Controls;
 /// <summary>
 /// 通用窗口基类
 /// </summary>
+[PseudoClasses(":no-easter-eggs")]
 public class MyWindow : AppWindow
 {
     private bool _isAdornerAdded;
@@ -87,6 +90,11 @@ public class MyWindow : AppWindow
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
         KeyDown += OnKeyDown;
         PointerPressed += OnPointerUpdated;
+        var managementService = IAppHost.Host?.Services.GetService(typeof(IManagementService)) as IManagementService;
+        if (managementService?.Policy.DisableEasterEggs == true)
+        {
+            PseudoClasses.Add(":no-easter-eggs");
+        }
         // PointerMoved += OnPointerUpdated;
     }
     

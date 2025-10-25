@@ -16,18 +16,28 @@
                    EnableMicaWindow="True">
     <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
         <!-- Header -->
-        <Image Grid.Row="0" Grid.Column="0"
-               Source="/Assets/HoYoStickers/光辉矢愿_不可以看.png"
-               Width="48" Height="48"
-               Margin="0 -8 0 0"
-               VerticalAlignment="Top"/>
-        <TextBlock Text="ClassIsland 发生错误 ヽ(*。>Д&lt;)o゜"
-                   Grid.Row="0" Grid.Column="1"
+        <controls1:StickerControl Grid.Row="0" Grid.Column="0"
+                                  Width="48" Height="48"
+                                  Margin="0 -8 0 0" 
+                                  VerticalAlignment="Top"
+                                  StickerSource="/Assets/HoYoStickers/光辉矢愿_不可以看.png"
+                                  StickerToolTip="光辉矢愿_不可以看"
+                                  FallbackIcon="{controls1:FluentIconSource &#xE809;, FontSize=48}"/>
+        <TextBlock Grid.Row="0" Grid.Column="1"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Center"
                    Theme="{StaticResource TitleTextBlockStyle}"
-                   Margin="8 0 16 16"/>
-        
+                   Margin="8 0 16 16">
+            <TextBlock.Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="Text" Value="ClassIsland 发生错误 ヽ(*。>Д&lt;)o゜"/>
+                </Style>  
+                <Style Selector=":no-easter-eggs TextBlock">
+                    <Setter Property="Text" Value="ClassIsland 发生错误"/>
+                </Style>
+            </TextBlock.Styles>
+        </TextBlock>
+
         <!-- Content -->
         <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" TextWrapping="Wrap" FontSize="14"
                    Margin="0 0 0 6">

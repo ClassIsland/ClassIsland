@@ -40,6 +40,7 @@
     <StyleInclude Source="/Controls/DrawerHost.axaml"/>
     <StyleInclude Source="/Controls/TouchDragThumb.axaml"/>
     <StyleInclude Source="/Controls/HighlightBox.axaml"/>
+    <StyleInclude Source="/Controls/StickerControl.axaml"/>
 
     <!-- Add Styles Here -->
 

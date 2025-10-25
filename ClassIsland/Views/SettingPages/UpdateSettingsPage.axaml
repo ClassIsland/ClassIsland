@@ -290,13 +290,22 @@
                                     </Binding.ConverterParameter>
                                 </Binding>
                             </StackPanel.IsVisible>
-                            <Image Source="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="81"
-                                   Height="81"
-                                   ToolTip.Tip="光辉矢愿_遨游"/>
+                            <ci:StickerControl Height="81" Width="81"
+                                               Margin="0 0 0 8" 
+                                               StickerSource="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_遨游.png"
+                                               StickerToolTip="光辉矢愿_遨游"
+                                               FallbackIcon="{ci:FluentIconSource &#xE262;, FontSize=81}"/>
 
                             <TextBlock TextWrapping="Wrap"
-                                       HorizontalAlignment="Center"
-                                       Margin="0 8 0 0"  Text="已经是最新版啦，真棒，夸夸你哦♪">
+                                       HorizontalAlignment="Center">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Text" Value="已经是最新版啦，真棒，夸夸你哦♪"/>
+                                    </Style>  
+                                    <Style Selector=":no-easter-eggs TextBlock">
+                                        <Setter Property="Text" Value="真棒，您已更新到最新版本！"/>
+                                    </Style>
+                                </TextBlock.Styles>
                             </TextBlock>
                         </StackPanel>
                     </Grid>

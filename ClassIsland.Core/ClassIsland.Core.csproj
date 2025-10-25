@@ -79,7 +79,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controls\StickerControl\" />
     <Folder Include="Enums\Updating\" />
     <Folder Include="Properties\" />
     <Folder Include="Commands\" />

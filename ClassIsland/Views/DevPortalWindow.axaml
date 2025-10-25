@@ -84,6 +84,11 @@
                         </Border>
                         <Button Click="ButtonSlantedMaskControlPlay_OnClick">Play</Button>
                         <CheckBox IsChecked="{Binding #SlantedMaskControl.IsOpened}">IsOpened</CheckBox>
+                        <Separator/>
+                        <ci:StickerControl Height="81" Width="81"
+                                           StickerSource="/Assets/HoYoStickers/昔涟_收到.png"
+                                           StickerToolTip="昔涟_收到"
+                                           FallbackIcon="{ci:LucideIconSource &#xE1E7;, FontSize=81}"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
