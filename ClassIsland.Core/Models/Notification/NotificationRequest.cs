@@ -135,6 +135,8 @@ public class NotificationRequest : ObservableRecipient
 
     internal CancellationTokenSource? RootCancellationTokenSource { get; set; }
     internal CancellationTokenSource? RootCompletedTokenSource { get; set; }
+    
+    internal bool NotificationSetupCompleted { get; set; }
 
     /// <summary>
     /// 取消当前提醒。

@@ -604,7 +604,12 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         {
             var request = _notificationQueue.Dequeue();
             INotificationSettings settings = SettingsService.Settings;
-            foreach (var i in new List<NotificationSettings?>([request.ChannelSettings, request.ProviderSettings, request.RequestNotificationSettings]).OfType<NotificationSettings>().Where(i => i.IsSettingsEnabled))
+            foreach (var i in new List<NotificationSettings?>([
+                             request.ChannelSettings,
+                             request.ProviderSettings,
+                             request.RequestNotificationSettings
+                         ]).OfType<NotificationSettings>()
+                         .Where(i => i.IsSettingsEnabled))
             {
                 settings = i;
                 break;
@@ -654,6 +659,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                             device?.MasterMixer.RemoveComponent(player);
                             player.Dispose();
                         }
+                        Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
                         var provider = new StreamDataProvider(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, 
                             string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
                             ? AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)

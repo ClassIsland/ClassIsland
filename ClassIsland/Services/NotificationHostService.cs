@@ -111,9 +111,13 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         PlayingNotifications.Remove(request);
         UpdateNotificationPlayingState();
     }
-
-    public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications)
+    
+    private void SetupNotificationRequest(NotificationRequest request, Guid providerGuid, Guid channelGuid)
     {
+        if (request.NotificationSetupCompleted)
+        {
+            return;
+        }
         request.NotificationSourceGuid = providerGuid;
         request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
             .FirstOrDefault();
@@ -133,6 +137,12 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         var channel =
             request.NotificationSource?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid == channelGuid);
         request.ChannelSettings = channel?.ProviderSettings;
+        request.NotificationSetupCompleted = true;
+    }
+
+    public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications)
+    {
+        SetupNotificationRequest(request, providerGuid, channelGuid);
         UpdateNotificationPlayingState();
         request.CompletedToken.Register(() => FinishNotificationPlaying(request));
         if (pushNotifications && PushNotificationRequests([request]))
@@ -141,7 +151,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
         // 如果没有消费者接收推送的提醒，则会加入提醒队列。
         RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
-
     }
 
     public async Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid)
@@ -181,6 +190,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             {
                 prevRequest.ChainedNextRequest = request;
             }
+            SetupNotificationRequest(request, providerGuid, channelGuid);
             prevRequest = request;
             request.CompletedToken.Register(() => FinishNotificationPlaying(request));
         }
