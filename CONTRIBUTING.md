@@ -71,7 +71,7 @@ ClassIsland 代码仓库目前具有以下分支：
 - [`dev`](https://github.com/HelloWRC/ClassIsland/tree/dev)：开发下一个版本的ClassIsland。
 - [`master`](https://github.com/HelloWRC/ClassIsland/tree/master)：对目前最新发布的稳定版本进行维护。
 
-在开发下一个版本的 ClassIsland 过程中，也会在`master`分支上并行维护当前稳定版本的功能，如以下示意图所示：
+在开发下一个版本的 ClassIsland 过程中，也会在 `master` 分支上并行维护当前稳定版本的功能，如以下示意图所示：
 
 > [!note]
 > 以下图表的提交id和标签名称仅供示意。
@@ -100,13 +100,13 @@ gitGraph
 
 由于不同开发分支上的代码接口可能存在差异。因此，**根据您做出的贡献类型，您需要选择不同的基础分支。**
 
-**以下类型的贡献建议以`master`为基础分支：**
+**以下类型的贡献建议以 `master` 为基础分支：**
 
 - 修复稳定版中的 Bug
 - 对稳定版中的功能进行小幅度的优化
 - 修改README等文档
 
-**以下类型的贡献建议以`dev`为基础分支：**
+**以下类型的贡献建议以 `dev` 为基础分支：**
 
 - 添加新的功能
 - 对代码进行重构

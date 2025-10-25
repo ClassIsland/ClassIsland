@@ -19,6 +19,8 @@
 ![GitHub Repo size](https://img.shields.io/github/repo-size/ClassIsland/ClassIsland?style=flat-square&color=3cb371)
 [![GitHub Repo Languages](https://img.shields.io/github/languages/top/ClassIsland/ClassIsland?style=flat-square)](https://github.com/ClassIsland/ClassIsland/search?l=c%23)
 
+<a href="https://hellogithub.com/repository/ClassIsland/ClassIsland" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=fb844b7286244bf8a1d67bfd228a95c7&claim_uid=kZp2qRKGVYrXoTS" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具，可以在 Windows 屏幕上显示各种信息。<br/>
 本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
@@ -45,7 +47,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ### 课表编辑与管理
 
 - [x] 简洁直观的 [课表编辑工具](https://docs.classisland.tech/app/classplan)
-- [x] 从 Excel 表格、[CSES](https://github.com/cses-org/cses) 或其他软件 [导入课表](https://docs.classisland.tech/app/profile/#%E4%BB%8E%E8%A1%A8%E6%A0%BC%E5%AF%BC%E5%85%A5)
+- [x] 从 Excel 表格、[CSES](https://github.com/SmartTeachCN/CSES) 或其他软件 [导入课表](https://docs.classisland.tech/app/profile/#%E4%BB%8E%E8%A1%A8%E6%A0%BC%E5%AF%BC%E5%85%A5)
 - [x] 将课表信息导出到 Excel 表格
 - [x] 多周轮换、快速录入时间表、自定义设置
 - [x] 单日/跨天临时换课
@@ -255,6 +257,14 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
     </td>
     <td>
     Free code signing on Windows provided by <a href="https://signpath.io">SignPath.io</a>, certficate by <a href="https://signpath.org/">SignPath Foundation</a>
+    </td>
+  </tr> 
+  <tr>
+    <td>
+      <img alt="苏州晔淞信息科技有限公司" src="https://res.classisland.tech/sponsors/ystron.png" width="50" height="50"/>
+    </td>
+    <td>
+    由<a href="https://www.yesongit.com">苏州晔淞信息科技有限公司</a>提供云计算支持。苏州晔淞信息科技有限公司以自主创新、灵活开放的理念，以行业领先的云计算平台助力云上业务创新。
     </td>
   </tr> 
 </table>
