@@ -23,7 +23,7 @@
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal" 
         TextOptions.TextRenderingMode="Auto"        
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
@@ -125,7 +125,7 @@
             </TabItem>
             <TabItem Header="ActionControl">
                 <Grid Background="#99000000">
-                    <actionControls:ActionControl Background="{DynamicResource MaterialDesignPaper}"
+                    <actionControls:ActionControl Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                           HorizontalAlignment="Right">
                         <actionControls:ActionControl.ActionSet>
                             <action1:ActionSet />
@@ -146,7 +146,7 @@
             </TabItem>
             <TabItem Header="RulesetControl">
                 <Grid Background="#99000000">
-                    <ci:RulesetControl Background="{DynamicResource MaterialDesignPaper}"
+                    <ci:RulesetControl Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                        HorizontalAlignment="Right">
                         <ci:RulesetControl.Ruleset>
                             <ruleset:Ruleset>
@@ -171,7 +171,7 @@
                     <ci:StickerControl PackIconKind="Github"
                                     FallbackPackIconKind="QuestionMarkCircleOutline"
                                     Width="64" Height="64"
-                                    StickerToolTip="帕姆_点赞"
+                                    StickerToolTip.Tip="帕姆_点赞"
                                     ImageSource="/Assets/HoYoStickers/帕姆_点赞.png"/>
                     <controls:WeatherRangePackIconControl>
                         <controls:WeatherRangePackIconControl.Value>

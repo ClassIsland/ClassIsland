@@ -1,0 +1,199 @@
+﻿<ci:MyWindow x:Class="ClassIsland.Views.ClassPlanDetailsWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+        xmlns:models="clr-namespace:ClassIsland.Models"
+        xmlns:enums="clr-namespace:ClassIsland.Core.Enums;assembly=ClassIsland.Core"
+        mc:Ignorable="d"
+        Title="课表详细信息"
+        d:DataContext="{d:DesignInstance local:ClassPlanDetailsWindow}"
+        EnableMicaWindow="True"
+        Height="500" Width="800">
+    <Grid RowDefinitions="Auto,*">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Background -->
+        <Border Grid.Column="0" Grid.ColumnSpan="3" 
+                Grid.Row="1" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch" />
+
+        <!-- 时间点选择 -->
+        <DataGrid Grid.Row="1" Grid.Column="0"
+                  ItemsSource="{Binding ViewModel.Classes}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  GridLinesVisibility="Horizontal"
+                  SelectedItem="{Binding ViewModel.SelectedLesson}">
+
+            <DataGrid.Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="FontSize" Value="14"/>
+                </Style>
+            </DataGrid.Styles>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="时间">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock VerticalAlignment="Center" Margin="4">
+                                <Run
+                                    Text="{Binding TimeLayoutItem.StartTime}" />
+                                <Run Text="-" />
+                                <Run
+                                    Text="{Binding TimeLayoutItem.EndTime}" />
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="科目" Binding="{Binding Subject.Name}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Splitter -->
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                      ResizeDirection="Columns"
+                      Grid.Row="1"/>
+
+        <!-- Details -->
+        <ci:Emptiable Grid.Column="2"
+                      Grid.Row="1" IsDirectContentMode="True"
+                      Data="{Binding ViewModel.SelectedLesson}">
+            <TabControl HorizontalContentAlignment="Stretch"
+                        Classes="compact">
+                <TabItem Header="附加设置结果">
+                    <Grid RowDefinitions="Auto,Auto,*" HorizontalAlignment="Stretch">
+                        <WrapPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <ci:Field Label="要查看的附加设置">
+                                <ComboBox SelectedItem="{Binding ViewModel.SelectedControlInfo}"
+                                          ItemsSource="{x:Static services:IAttachedSettingsHostService.RegisteredControls}"
+                                          MinWidth="150"
+                                          VerticalAlignment="Center">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <ci:IconText Glyph="{Binding IconGlyph}" Text="{Binding Name}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </ci:Field>
+                            <Button ToolTip.Tip="刷新"
+                                    Margin="8 0 0 0"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    Click="ButtonRefresh2_OnClick"
+                                    Theme="{StaticResource TransparentButton}"
+                                    Content="{ci:FluentIcon &#xE0B5;}" />
+                        </WrapPanel>
+                        <TextBlock Grid.Row="1" TextWrapping="Wrap"
+                                   Margin="4">
+                            <Run Text="以下的附加设置将按从上到下的顺序使用。" /><LineBreak />
+                            <Run Text="{Binding ViewModel.Summary}" />
+                        </TextBlock>
+                        <ListBox Grid.Row="2"
+                                 ItemsSource="{Binding ViewModel.Nodes}">
+                            <ListBox.ItemContainerTheme>
+                                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <Grid ColumnDefinitions="4,*"
+                                                      d:DataContext="{d:DesignInstance models:AttachedSettingsNodeWithState}">
+                                                    <Border Grid.Column="0"
+                                                            Grid.ColumnSpan="2"
+                                                            HorizontalAlignment="Stretch"
+                                                            VerticalAlignment="Top"
+                                                            Height="36"
+                                                            CornerRadius="4"
+                                                            Opacity="0.25"
+                                                            Background="{DynamicResource AccentFillColorDefaultBrush}">
+                                                        <Border.IsVisible>
+                                                            <Binding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                                                <Binding.ConverterParameter>
+                                                                    <enums:AttachedSettingsControlState>Enabled</enums:AttachedSettingsControlState>
+                                                                </Binding.ConverterParameter>
+                                                            </Binding>
+                                                        </Border.IsVisible>
+                                                    </Border>
+                                                    <Border Grid.Column="0"
+                                                          HorizontalAlignment="Stretch"
+                                                          VerticalAlignment="Top"
+                                                          Height="36"
+                                                          CornerRadius="4"
+                                                          Classes="settings-node-state-indicator">
+                                                        <Classes.Enabled>
+                                                            <Binding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                                                <Binding.ConverterParameter>
+                                                                    <enums:AttachedSettingsControlState>Enabled</enums:AttachedSettingsControlState>
+                                                                </Binding.ConverterParameter>
+                                                            </Binding>
+                                                        </Classes.Enabled>
+                                                        <Classes.Override>
+                                                            <Binding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                                                <Binding.ConverterParameter>
+                                                                    <enums:AttachedSettingsControlState>Override</enums:AttachedSettingsControlState>
+                                                                </Binding.ConverterParameter>
+                                                            </Binding>
+                                                        </Classes.Override>
+                                                        <Border.Styles>
+                                                            <Style Selector="Border.settings-node-state-indicator">
+                                                                <Style Selector="^.Enabled">
+                                                                    <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                                                </Style>
+                                                                <Style Selector="^.Override">
+                                                                    <Setter Property="Background" Value="{DynamicResource SystemFillColorCautionBrush}"/>
+                                                                </Style>
+                                                            </Style>
+                                                        </Border.Styles>
+                                                    </Border>
+                                                    <ci:AttachedSettingsControlPresenter
+                                                        Grid.Column="1"
+                                                        Margin="4 0 0 0"
+                                                        ContentId="{Binding Address.Guid, Mode=OneWay}"
+                                                        ContentIndex="{Binding Address.Index, Mode=OneWay}"
+                                                        TargetObject="{Binding Node.Object, Mode=OneWay}"
+                                                        ControlInfo="{Binding ViewModel.DisplayControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassPlanDetailsWindow}, Mode=OneWay}"
+                                                        IsDependencyMode="True"
+                                                        State="{Binding State, Mode=OneWay}">
+                                                    </ci:AttachedSettingsControlPresenter>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </ControlTheme>
+                            </ListBox.ItemContainerTheme>
+                        </ListBox>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </ci:Emptiable>
+
+        <!-- AppBar -->
+        <Border Grid.Column="0" Grid.ColumnSpan="3"
+                Grid.Row="0" >
+            <Grid>
+                <StackPanel Orientation="Horizontal" Margin="8">
+                    <TextBlock Text="课表详细信息" Theme="{StaticResource TitleTextBlockStyle}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="24"
+                               FontWeight="Medium"/>
+                </StackPanel>
+                <Button ToolTip.Tip="刷新"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Theme="{StaticResource TransparentButton}"
+                        Click="ButtonBase_OnClick"
+                        Content="{ci:FluentIcon &#xE0B5;}" />
+            </Grid>
+        </Border>
+    </Grid>
+</ci:MyWindow>

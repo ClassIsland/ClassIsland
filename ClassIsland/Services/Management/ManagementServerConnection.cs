@@ -1,10 +1,17 @@
 using System;
+using System.Buffers.Text;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
@@ -23,16 +30,25 @@ using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
 
-using MahApps.Metro.Controls;
-
 using Microsoft.Extensions.Logging;
-
+using Org.BouncyCastle.Bcpg.OpenPgp;
+using PgpCore;
 using Timer = System.Timers.Timer;
 
 namespace ClassIsland.Services.Management;
 
 public class ManagementServerConnection : IManagementServerConnection
 {
+    // Cyrene_MSP, aka. "CMSP" or "Cyrene Management Server Protocol" 
+    private const string ProtocolName = "Cyrene_MSP";
+    
+    private const string ProtocolVersion = "2.0.0.0";
+
+    private static string ServerPublicKeyPath =>
+        Path.Combine(ManagementService.ManagementConfigureFolderPath, "ServerKey.asc");
+
+    private string? CurrentSessionId { get; set; }
+    
     private ILogger<ManagementServerConnection> Logger { get; } = App.GetService<ILogger<ManagementServerConnection>>();
 
     private Guid ClientGuid { get; }
@@ -42,8 +58,8 @@ public class ManagementServerConnection : IManagementServerConnection
     private string ManifestUrl { get; }
     
     private string Host { get; }
-    
-    internal GrpcChannel Channel { get; }
+
+    private GrpcChannel? Channel { get; set; }
 
     private DispatcherTimer CommandConnectionAliveTimer { get; } = new()
     {
@@ -58,6 +74,34 @@ public class ManagementServerConnection : IManagementServerConnection
     
     private ManagementSettings ManagementSettings { get; }
     
+    private string GetNetworkInterfaceMac() => NetworkInterface 
+            .GetAllNetworkInterfaces() 
+            .First(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback &&      // 非回环 
+                        n.OperationalStatus == OperationalStatus.Up &&                  // 活动中 
+                        n.GetIPProperties().UnicastAddresses.Any(ip => 
+                            ip.Address.AddressFamily == AddressFamily.InterNetwork))
+            .GetPhysicalAddress()
+            .ToString()
+            .ToUpper();
+    
+
+    private Grpc.Core.Metadata GetMetadata(bool outOfSession = false)
+    {
+        if (!outOfSession && CurrentSessionId == null)
+        {
+            throw new InvalidOperationException("当前未建立集控会话，且没有指定处于会话外连接，无法生成元数据。");
+        }
+
+        return new Grpc.Core.Metadata()
+        {
+            { "cuid", ClientGuid.ToString() },
+            { "protocol_name", ProtocolName },
+            { "protocol_version", ProtocolVersion },
+            { "session", CurrentSessionId ?? "" }
+        };
+    }
+
+    
     public ManagementServerConnection(ManagementSettings settings, Guid clientUid, bool lightConnect)
     {
         ClientGuid = clientUid;
@@ -67,11 +111,12 @@ public class ManagementServerConnection : IManagementServerConnection
         ManifestUrl = $"{Host}/api/v1/client/{clientUid}/manifest";
         CommandConnectionAliveTimer.Tick += CommandConnectionAliveTimerOnTick;
         
-        Channel = GrpcChannel.ForAddress(settings.ManagementServerGrpc);
-        
         Logger.LogInformation("初始化管理服务器连接。");
-        if (lightConnect) 
+        if (lightConnect)
+        {
+            Channel = GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc);
             return;
+        }
         AppBase.Current.AppStarted += (sender, args) => InstallAuditHooks();
         // 接受命令
         CommandReceived += OnCommandReceived;
@@ -122,11 +167,13 @@ public class ManagementServerConnection : IManagementServerConnection
         var r = await client.RegisterAsync(new ClientRegisterCsReq()
         {
             ClientUid = ClientGuid.ToString(),
-            ClientId = Id
-        });
+            ClientId = Id,
+            ClientMac = GetNetworkInterfaceMac()
+        }, GetMetadata(true));
         Logger.LogTrace("ClientRegisterClient.RegisterAsync: {} {}", r.Retcode, r.Message);
         if (r.Retcode != Retcode.Registered && r.Retcode != Retcode.Success)
             throw new Exception($"无法注册实例：{r.Message}");
+        await File.WriteAllTextAsync(ServerPublicKeyPath, r.ServerPublicKey);
         return await GetManifest();
     }
 
@@ -156,6 +203,59 @@ public class ManagementServerConnection : IManagementServerConnection
             _ = Task.Run(ListenCommands);
         }
     }
+
+    private async Task<bool> BeginHandshake(CancellationToken cancellationToken)
+    {
+        Logger.LogInformation("准备开始和 {} 握手", ManagementSettings.ManagementServerGrpc);
+        var header = GetMetadata(true);
+        var mac = GetNetworkInterfaceMac();
+        var handShakeClient = new Handshake.HandshakeClient(Channel);
+        
+        await using var publicKeyStream = File.OpenRead(ServerPublicKeyPath);
+        await using var decodeStream = PgpUtilities.GetDecoderStream(publicKeyStream);
+        var pgpPub = new PgpPublicKeyRing(decodeStream);
+        var key = pgpPub.GetPublicKey();
+        if (key == null)
+        {
+            throw new InvalidOperationException("服务器 GPG 密钥信息无效。");
+        }
+        var keyId = key.KeyId;
+        var challengeToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        publicKeyStream.Position = 0;
+        var pgp = new PGP(new EncryptionKeys(publicKeyStream));
+        var encryptedChallengeToken = await pgp.EncryptAsync(challengeToken);
+        Logger.LogTrace("BeginHandshake，挑战令牌：{}，Key ID：{}", challengeToken, keyId);
+        var beginRsp = await handShakeClient.BeginHandshakeAsync(new HandshakeScBeginHandShakeReq()
+        {
+            ChallengeTokenEncrypted = encryptedChallengeToken,
+            ClientMac = mac,
+            ClientUid = ClientGuid.ToString(),
+            RequestedServerKeyId = keyId
+        }, header, cancellationToken: cancellationToken);
+
+        Logger.LogTrace("BeginHandshake RESPOND!，Code：{}", beginRsp.Retcode);
+        if (beginRsp.Retcode != Retcode.Success)
+        {
+            Logger.LogWarning("与 {} 握手失败（{}）：{}", ManagementSettings.ManagementServerGrpc, beginRsp.Retcode,
+                beginRsp.Message);
+            // 服务器其他异常应直接抛出
+            throw new InvalidOperationException($"与 {ManagementSettings.ManagementServerGrpc} 握手失败（{beginRsp.Retcode}）：{beginRsp.Message}");
+        }
+        var acceptedServer = beginRsp.ChallengeTokenDecrypted == challengeToken;
+        var completeRsp = await handShakeClient.CompleteHandshakeAsync(new HandshakeScCompleteHandshakeReq()
+        {
+            Accepted = acceptedServer
+        }, header, cancellationToken: cancellationToken);
+        if (!acceptedServer)
+        {
+            Logger.LogWarning("与 {} 握手失败：服务器密钥验证失败", ManagementSettings.ManagementServerGrpc);
+            // 不信任的服务器，不再尝试握手。
+            return false;
+        }
+        CurrentSessionId = completeRsp.SessionId;
+        Logger.LogInformation("与 {} 握手成功，SessionId：{}", ManagementSettings.ManagementServerGrpc, completeRsp.SessionId);
+        return true;
+    }
     
     private async Task ListenCommands()
     {
@@ -167,11 +267,17 @@ public class ManagementServerConnection : IManagementServerConnection
         try
         {
             Logger.LogInformation("正在连接到命令流");
-            var client = new ClientCommandDeliver.ClientCommandDeliverClient(GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc));
-            var call = client.ListenCommand(new Grpc.Core.Metadata()
+            Channel = GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc);
+            var handshakeState = await BeginHandshake(CommandListeningCallCancellationTokenSource.Token);
+            if (!handshakeState)
             {
-                { "cuid", ClientGuid.ToString() }
-            });
+                Channel = null;
+                Logger.LogInformation("由于对方服务器不信任，不再尝试与服务器握手和进一步连接。");
+                return;
+            }
+            
+            var client = new ClientCommandDeliver.ClientCommandDeliverClient(Channel);
+            var call = client.ListenCommand(GetMetadata());
             CommandListeningCallCancellationTokenSource = new CancellationTokenSource();
             CommandListeningCall = call;
             // await call.RequestStream.WriteAsync(new ClientCommandDeliverScReq());
@@ -195,7 +301,7 @@ public class ManagementServerConnection : IManagementServerConnection
                 Logger.LogInformation("接受指令：[{}] {}", r.Type, r.Payload);
                 try
                 {
-                    Application.Current.Invoke(() =>
+                    Dispatcher.UIThread.Invoke(() =>
                     {
                         CommandReceived?.Invoke(this, new ClientCommandEventArgs()
                         {
@@ -214,6 +320,8 @@ public class ManagementServerConnection : IManagementServerConnection
         {
             if (ex is OperationCanceledException)
                 return;
+            Channel = null;
+            CurrentSessionId = null;
             Logger.LogError(ex, "无法连接到集控服务器命令流，将在30秒后重试。");
             CommandConnectionAliveTimer.Stop();
             CommandListeningCall = null;
@@ -243,7 +351,7 @@ public class ManagementServerConnection : IManagementServerConnection
                     Event = eventType,
                     Payload = payload.ToByteString(),
                     TimestampUtc = (long)(DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds
-                });
+                }, GetMetadata());
             }
             catch (Exception ex)
             {
@@ -254,7 +362,7 @@ public class ManagementServerConnection : IManagementServerConnection
     
     public async Task<ManagementManifest> GetManifest()
     {
-        return await WebRequestHelper.GetJson<ManagementManifest>(new Uri(ManifestUrl));
+        return await WebRequestHelper.Default.GetJson<ManagementManifest>(new Uri(ManifestUrl));
     }
 
     private Uri DecorateUrl(string url)
@@ -266,18 +374,18 @@ public class ManagementServerConnection : IManagementServerConnection
         return new Uri(uri);
     }
 
-    public async Task<T> GetJsonAsync<T>(string url)
+    public async Task<T> GetJsonAsync<T>(string url) where T : class
     {
         var decorateUrl = DecorateUrl(url);
         Logger.LogInformation("发起json请求：{}", decorateUrl);
-        return await WebRequestHelper.GetJson<T>(decorateUrl);
+        return await WebRequestHelper.Default.GetJson<T>(decorateUrl);
     }
 
-    public async Task<T> SaveJsonAsync<T>(string url, string path)
+    public async Task<T> SaveJsonAsync<T>(string url, string path) where T : class
     {
         var decorateUrl = DecorateUrl(url);
         Logger.LogInformation("保存json请求：{} {}", decorateUrl, path);
-        return await WebRequestHelper.SaveJson<T>(decorateUrl, path);
+        return await WebRequestHelper.Default.SaveJson<T>(decorateUrl, path);
     }
 
     public event EventHandler<ClientCommandEventArgs>? CommandReceived;

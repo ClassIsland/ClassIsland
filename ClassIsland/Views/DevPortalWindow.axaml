@@ -1,0 +1,150 @@
+<ci:MyWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:views="clr-namespace:ClassIsland.Views"
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+        xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
+        xmlns:helpers="clr-namespace:ClassIsland.Core.Helpers;assembly=ClassIsland.Core"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ClassIsland.Views.DevPortalWindow"
+        Title="DevPortal"
+        Height="700" Width="1200"
+        EnableMicaWindow="True"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance views:DevPortalWindow}">
+    <Grid RowDefinitions="48, *">
+        <!-- Background Layer -->
+        <Border Grid.Row="1" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"/>
+        
+        <TabControl Grid.Row="0" Grid.RowSpan="2" Classes="navigation">
+            <TabItem Header="首页">
+                <StackPanel Spacing="6">
+                    <ci:Field Label="调试时间偏移">
+                        <StackPanel Orientation="Horizontal" Spacing="4" Loaded="TargetTime_OnLoaded">
+                            <CalendarDatePicker SelectedDate="{Binding ViewModel.TargetDate}"
+                                        SelectedDateChanged="DatePicker_OnSelectedDateChanged"
+                                        Loaded="TargetDate_OnLoaded"/>
+                            <TimePicker SelectedTime="{Binding ViewModel.TargetTime}"
+                                        SelectedTimeChanged="TimePicker_OnSelectedTimeChanged"
+                                        Loaded="TargetTime_OnLoaded"
+                                        UseSeconds="True"/>
+                            <Button Content="重置" Click="ButtonReset_OnClick"/>
+                        </StackPanel>
+                    </ci:Field>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="控件">
+                <ScrollViewer>
+                    <StackPanel Spacing="6">
+                        <ci:Field Label="ChipListBoxTheme">
+                            <ListBox Theme="{StaticResource ChipListBoxTheme}">
+                                <ListBoxItem>大地</ListBoxItem>
+                                <ListBoxItem>海洋</ListBoxItem>
+                                <ListBoxItem>天空</ListBoxItem>
+                                <ListBoxItem IsSelected="True">负世</ListBoxItem>
+                                <ListBoxItem>理性</ListBoxItem>
+                                <ListBoxItem>浪漫</ListBoxItem>
+                                <ListBoxItem>纷争</ListBoxItem>
+                                <ListBoxItem>死亡</ListBoxItem>
+                                <ListBoxItem>诡计</ListBoxItem>
+                                <ListBoxItem>门径</ListBoxItem>
+                                <ListBoxItem>律法</ListBoxItem>
+                                <ListBoxItem>岁月</ListBoxItem>
+                                <ListBoxItem>■■</ListBoxItem>
+                            </ListBox>
+                        </ci:Field>
+                        <Separator />
+                        <ci:Field Label="消息标题">
+                            <TextBox Text="{Binding ViewModel.ToastTitle}" />
+                        </ci:Field>
+                        <ci:Field Label="消息标题">
+                            <TextBox Text="{Binding ViewModel.ToastMessage}" />
+                        </ci:Field>
+                        <CheckBox Content="用户可以关闭消息" IsChecked="{Binding ViewModel.ToastCanUserClose}" />
+                        <CheckBox Content="消息有内容" IsChecked="{Binding ViewModel.ToastHaveActions}" />
+                        <Button Content="发送！" Classes="accnet" Click="ButtonSendToast_OnClick" />
+                        <Separator />
+                        <TextBlock Text="Shimmer" />
+                        <ci:Shimmer Width="64"/>
+                        <controls:ParallelogramControl SlantedHeight="40" Width="200" Height="40"
+                                                       Fill="#01fff0" StrokeThickness="0"
+                                                       x:Name="ParallelogramControl"/>
+                        <Slider Minimum="20" Maximum="400" Value="{Binding #ParallelogramControl.Width}"/>
+                        <Border Width="1000" Height="40">
+                            <controls:SlantedMaskControl x:Name="SlantedMaskControl" ClipToBounds="True"
+                                                         RegionDurationMs="300"
+                                                         StageStaggerMs="120"
+                                                         Fill="Aqua"/>
+                        </Border>
+                        <Button Click="ButtonSlantedMaskControlPlay_OnClick">Play</Button>
+                        <CheckBox IsChecked="{Binding #SlantedMaskControl.IsOpened}">IsOpened</CheckBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="提醒">
+                <StackPanel Spacing="6" Width="400" HorizontalAlignment="Left">
+                    <ci:Field Label="提醒标题">
+                        <TextBox Text="{Binding ViewModel.NotificationMaskText}"/>
+                    </ci:Field>
+                    <ci:Field Label="提醒正文">
+                        <TextBox Text="{Binding ViewModel.NotificationOverlayText}"/>
+                    </ci:Field>
+                    <Button Content="发送！" Classes="accent"
+                            Click="ButtonSendNotification_OnClick"/>
+                    <Button Content="Run chain" Classes=""
+                            Click="ButtonRunChain_OnClick"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="LDV">
+                <controls:ListDetailView>
+                    <controls:ListDetailView.TitleElement>
+                        <TextBlock Text="Title" Classes="Heading1"/>
+                    </controls:ListDetailView.TitleElement>
+                    <controls:ListDetailView.LeftContent>
+                        <TextBlock Text="Left!"/>
+                    </controls:ListDetailView.LeftContent>
+                    <controls:ListDetailView.RightContent>
+                        <StackPanel>
+                            <TextBlock Text="Right!"/>
+                            <Image Source="/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="72" Height="72"/>
+                        </StackPanel>
+                    </controls:ListDetailView.RightContent>
+                </controls:ListDetailView>
+            </TabItem>
+            <TabItem Header="OOBE_Intro">
+                <StackPanel>
+                    <ContentPresenter HorizontalAlignment="Stretch"
+                                      Height="400" 
+                                      Content="{Binding ViewModel.OobeIntroControlContent, Mode=OneWay, TargetNullValue='awa'}"/>
+                    <Button Classes="accentt" Click="ButtonPlayOobeAnimation_OnClick">Play</Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Markdown">
+                <Grid ColumnDefinitions="*, *">
+                    <avaloniaEdit:TextEditor Grid.Column="0" 
+                                             TextChanged="MarkdownEditor_OnTextChanged"
+                                             ShowLineNumbers="True"
+                                             FontFamily="JetBrains Mono, Cascadia Code,Consolas,Menlo,Monospace"
+                                             x:Name="MarkdownEditor">
+                    </avaloniaEdit:TextEditor>
+                    <mdxaml:MarkdownScrollViewer Grid.Column="1"
+                                                 Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
+                                                 Markdown="{Binding ViewModel.MarkdownText}">
+                        <mdxaml:MarkdownScrollViewer.Styles>
+                            <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml"/>
+                        </mdxaml:MarkdownScrollViewer.Styles>
+                    </mdxaml:MarkdownScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem Header="调课日历">
+                <controls:ScheduleCalendarControl/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ci:MyWindow>

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿#if false
+using System.Collections.ObjectModel;
 using ClassIsland.Core.Models;
 
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -56,3 +57,4 @@ public class WindowsPickerViewModel : ObservableRecipient
         }
     }
 }
+#endif

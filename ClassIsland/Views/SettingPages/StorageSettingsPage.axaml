@@ -1,0 +1,111 @@
+﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.StorageSettingsPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:helpers="clr-namespace:ClassIsland.Shared.Helpers;assembly=ClassIsland.Shared"
+      xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance local:StorageSettingsPage}">
+
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro">
+            <controls:InfoBar Severity="Warning"
+                              Message="ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。"
+                              IsVisible="{Binding !!Count, Source={x:Static helpers:ConfigureFileHelper.Errors}}">
+                <controls:InfoBar.ActionButton>
+                    <Button Theme="{StaticResource TransparentButton}" HorizontalAlignment="Left"
+                            Margin="24 6 0 0" Foreground="{DynamicResource MaterialDesignBody}"
+                            Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                            CommandParameter="classisland://app/config-errors">
+                        <ci:IconText Glyph="&#xEC2E;" Text="详细信息…"/>
+                    </Button>
+                </controls:InfoBar.ActionButton>
+            </controls:InfoBar>
+
+            <!--<Separator Margin="0 16 0 8" />
+            <ci:IconText Kind="DatabaseOutline" Text="存储空间" Margin="0 0 0 8" />
+            <TextBlock Text="以下是 应用内 产生的各个类型文件的空间占用情况，您可以在此处清理部分临时和缓存文件。" 
+                       FontWeight="Light"
+                       TextWrapping="Wrap"/>
+
+            <Separator Margin="0 16 0 8" />-->
+            <ci:IconText Glyph="&#xE081;" Text="备份" Margin="0 0 0 4" />
+            <!-- 启用自动备份 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFFF;}"
+                                       Header="启用自动备份"
+                                       Description="启用后，ClassIsland 将每隔一段时间自动备份当前的档案和配置文件。"
+                                       IsExpanded="{Binding ViewModel.SettingsService.Settings.IsAutoBackupEnabled, Mode=OneWay}">
+                <controls:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsAutoBackupEnabled, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+                <controls:SettingsExpanderItem Content="自动备份间隔"
+                                               IconSource="{ci:FluentIconSource &#xE4D2;}"
+                                               Description="自动备份时的间隔天数。">
+                    <controls:SettingsExpanderItem.Footer>
+                        <ci:Field Suffix="天">
+                            <controls:NumberBox 
+                                Minimum="0"
+                                 Width="150"
+                                SpinButtonPlacementMode="Inline"
+                                 Value="{Binding ViewModel.SettingsService.Settings.AutoBackupIntervalDays}"/>
+                        </ci:Field>
+                    </controls:SettingsExpanderItem.Footer>
+                </controls:SettingsExpanderItem>
+                <controls:SettingsExpanderItem Content="自动备份上限"
+                                               IconSource="{ci:FluentIconSource &#xE07F;}"
+                                               Description="最多允许存在的自动备份上限。当自动备份数量达到上限时，将覆盖最旧的备份。设置为 0 则为无上限。">
+                    <controls:SettingsExpanderItem.Footer>
+                        <ci:Field Suffix="个">
+                            <controls:NumberBox 
+                                Minimum="0"
+                                Width="150"
+                                SpinButtonPlacementMode="Inline"
+                                Value="{Binding ViewModel.SettingsService.Settings.AutoBackupLimit}"/>
+                        </ci:Field>
+                    </controls:SettingsExpanderItem.Footer>
+                </controls:SettingsExpanderItem>
+                <controls:SettingsExpanderItem Content="上次成功自动备份"
+                                               Footer="{Binding ViewModel.SettingsService.Settings.LastAutoBackupTime}"/>
+            </controls:SettingsExpander>
+            
+            <!-- 备份 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE07D;}"
+                                       Header="手动备份"
+                                       Description="进行手动备份。备份的内容包括 Config/ 文件夹内的配置文件、 Profiles/ 文件夹内的档案文件和 Settings.json 设置文件。手动备份产生的备份文件不会被自动清除。"
+                                       IsExpanded="True">
+                <controls:SettingsExpander.Footer>
+                    <Panel>
+                        <controls:ProgressRing IsIndeterminate="True" IsVisible="{Binding ViewModel.IsBackingUp}"
+                                               Width="20" Height="20"/>
+                        <ci:FluentIcon Glyph="&#xE423;"
+                                         VerticalAlignment="Stretch"
+                                         ToolTip.Tip="备份成功。"
+                                         IsVisible="{Binding ViewModel.IsBackupFinished}"/>
+                    </Panel>
+                </controls:SettingsExpander.Footer>
+                
+                <controls:SettingsExpanderItem Content="立即备份"
+                                               Click="ButtonCreateBackup_OnClick"
+                                               IsClickEnabled="True"
+                                               IsEnabled="{Binding !ViewModel.IsBackingUp}"/>
+                <controls:SettingsExpanderItem Content="查看备份文件…"
+                                               Click="ButtonViewBackupFiles_OnClick"
+                                               IsClickEnabled="True" ActionIconSource="{ci:FluentIconSource &#xEC2D;}"
+                                               IsEnabled="{Binding !ViewModel.IsBackingUp}"/>
+                <controls:SettingsExpanderItem Content="恢复备份…"
+                                               Click="ButtonRecoverBackup_OnClick"
+                                               Description="重启到恢复模式并恢复到指定的备份。"
+                                               IsClickEnabled="True" ActionIconSource="{ci:FluentIconSource &#xEC2D;}"
+                                               IsEnabled="{Binding !ViewModel.IsBackingUp}"/>
+                <controls:SettingsExpanderItem Content="备份文件占用大小"
+                                               Footer="{Binding ViewModel.SettingsService.Settings.BackupFilesSize}"/>
+            </controls:SettingsExpander>
+            
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

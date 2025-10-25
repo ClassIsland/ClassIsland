@@ -1,0 +1,115 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
+        <BaseFramework>net8.0</BaseFramework>
+        <ApplicationId>cn.classisland.app</ApplicationId>
+        <Company>ClassIsland</Company>
+        <Product>ClassIsland</Product>
+        <SatelliteResourceLanguages>en;zh-cn</SatelliteResourceLanguages>
+        <Title>ClassIsland</Title>
+        <AssemblyTitle>ClassIsland</AssemblyTitle>
+    </PropertyGroup>
+    
+    <!-- UOS DEB Packaging Properties -->
+    <PropertyGroup>
+        <AppId>cn.classisland.app</AppId>
+        <AppName>ClassIsland</AppName>
+        <DebControlDescription>功能强大、可定制、跨平台的大屏课表显示工具。</DebControlDescription>
+        <DesktopComment>功能强大、可定制、跨平台的大屏课表显示工具。</DesktopComment>
+        <DebControlHomepage>https://classisland.tech</DebControlHomepage>
+        <DebControlSection>utils</DebControlSection>
+        <DebControlMaintainer>ClassIsland</DebControlMaintainer>
+        <Png32x32IconFile>Assets\AppLogo@32w.png</Png32x32IconFile>
+        <SvgIconFile>Assets\AppLogo.svg</SvgIconFile>
+<!--        <DesktopMimeType>x-scheme-handler/classisland</DesktopMimeType>-->
+        <DesktopCategories>Education;Office</DesktopCategories>
+        <InfoPermissions>autostart;notification;trayicon;clipboard</InfoPermissions>
+        <DesktopExec>/opt/apps/$(AppId)/files/bin/$(AssemblyName)</DesktopExec>
+        <DebControlDepends>libx11-6, libice6, libsm6, libfontconfig1, ca-certificates, tzdata, libc6, libgcc1 | libgcc-s1, libgssapi-krb5-2, libstdc++6, zlib1g, libssl1.0.0 | libssl1.0.2 | libssl1.1 | libssl3, libicu | libicu74 | libicu72 | libicu71 | libicu70 | libicu69 | libicu68 | libicu67 | libicu66 | libicu65 | libicu63 | libicu60 | libicu57 | libicu55 | libicu52</DebControlDepends>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
+      <ProjectReference Include="..\ClassIsland\ClassIsland.csproj" />
+    </ItemGroup>
+    
+    
+    <ItemGroup Condition="'$(Platforms_Windows)'=='true'">
+        <ProjectReference Include="..\platforms\ClassIsland.Platforms.Windows\ClassIsland.Platforms.Windows.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Platforms_Linux)'=='true'">
+        <ProjectReference Include="..\platforms\ClassIsland.Platforms.Linux\ClassIsland.Platforms.Linux.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Platforms_MacOs)'=='true'">
+        <ProjectReference Include="..\platforms\ClassIsland.Platforms.MacOs\ClassIsland.Platforms.MacOs.csproj" />
+        <!-- Add Liquid Glass icon for macOS Tahoe and above -->
+        <BundleResource Include="Assets\AppIcon.icon\**" />
+        <!-- Keep xcassets for fallback in older macOS versions -->
+        <BundleResource Include="Assets\AppLogo.xcassets\**" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Platforms_Linux)'=='true' and '$(PublishBuilding)'=='true'">
+        <PackageReference Include="Packaging.DebUOS" Version="3.17.6"/>
+    </ItemGroup>
+    <ItemGroup>
+      <AvaloniaResource Include="Assets\AppLogo.ico">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </AvaloniaResource>
+      <None Include="Assets/**" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always"
+            PublishFolderType="Resource"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@384w.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 2.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 3.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 1.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 4.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@384w 1.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w 2.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w 1.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo_16x16.png" />
+    </ItemGroup>
+    
+    <!-- Drop Code analysis dep -->
+    <ItemGroup>
+        <Reference Update="Microsoft.CodeAnalysis.CSharp">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </Reference>
+        <Reference Update="Microsoft.CodeAnalysis.VisualBasic">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </Reference>
+        <Reference Update="Microsoft.CodeAnalysis">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </Reference>
+    </ItemGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
+        <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Platforms_MacOs)'=='true'">
+<!--        <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>-->
+    </PropertyGroup>
+
+    <Target Name="_CreatePackageTypeForDeb" BeforeTargets="CreateDebUOS" DependsOnTargets="Publish">
+        <PropertyGroup>
+            <PackageTypeFilePath>$([System.IO.Path]::Combine($(PublishDir), "PackageType"))</PackageTypeFilePath>
+        </PropertyGroup>
+        <ItemGroup>
+            <PackageTypeFilePathWriteArgLine Include="deb" />
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(PackageTypeFilePath)" Lines="@(PackageTypeFilePathWriteArgLine)" Overwrite="true"/>
+    </Target>
+    
+    <Import Project="../Global.props"/>
+    <Import Project="../AvaloniaShared.props"/>
+    <Import Project="../CrossPlatformProps.props"/>
+</Project>

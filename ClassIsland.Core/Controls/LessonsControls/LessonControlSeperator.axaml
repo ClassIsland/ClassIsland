@@ -1,0 +1,27 @@
+<ci:LessonControlBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Core.Controls.LessonsControls.LessonControlSeparator">
+    <StackPanel Orientation="Horizontal" DataContext="{Binding $parent[ci:LessonControlSeparator]}">
+        <LayoutTransformControl>
+            <LayoutTransformControl.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+            </LayoutTransformControl.LayoutTransform>
+            <Border Width="10"/>
+        </LayoutTransformControl>
+
+        <Line VerticalAlignment="Center" Stroke="{DynamicResource TextFillColorSecondaryBrush}" StrokeThickness="2"
+              HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" Opacity="0.8">
+        </Line>
+
+        <LayoutTransformControl>
+            <LayoutTransformControl.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+            </LayoutTransformControl.LayoutTransform>
+            <Border Width="10"/>
+        </LayoutTransformControl>
+    </StackPanel>
+</ci:LessonControlBase>

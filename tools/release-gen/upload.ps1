@@ -4,7 +4,7 @@ Import-Module ./tools/release-gen/alist-utils.psm1
 
 # Generate metadata & upload artifacts
 Write-Output "Generating metadata & uploading artifacts"
-Copy-Item ./out_signed/* -Destination ./out/ -Recurse -Force
+#Copy-Item ./out_signed/* -Destination ./out/ -Recurse -Force
 
 $version = $(git describe --abbrev=0 --tags)
 $gitCommitId = $(git rev-parse HEAD)
@@ -22,6 +22,19 @@ $versionInfo = @{
 $versionInfo.Channels = $tagInfo.Channels
 
 Write-Host "Version: $version"
+
+if ($(Test-Path ./out) -eq $false) {
+    mkdir out
+}
+
+$artifacts = Get-ChildItem -Path ./out_artifacts -Directory
+
+foreach ($artifact in $artifacts) {
+    if ($artifact.Name.Contains("out_app_") -ne $true) {
+        continue
+    }
+    Copy-Item ./out_artifacts/$($artifact.Name)/* -Destination ./out/ -Recurse -Force
+}
 
 foreach ($artifact in $(Get-ChildItem ./out)) {
     Move-Item $artifact.FullName -Destination $artifact.FullName.Replace("out_app_", "ClassIsland_app_") -Force
@@ -75,31 +88,20 @@ foreach ($artifact in $artifacts){
     $versionInfo.DownloadInfos[$artifactId] = $downloadInfo
     $hashSummary +=  "| $($artifact.Name) | ``$($downloadInfo.ArchiveSHA256)`` |`n"
     $legaceyMD5Hashes.Add($artifact.Name, (Get-FileHash $artifact -Algorithm MD5).Hash)
-    $uploadJobs += Start-ThreadJob -Name $artifact.FullName -StreamingHost $Host -ScriptBlock {
-        $inputs = $using:taskInput
-        Import-Module ./tools/release-gen/alist-utils.psm1
-        Write-Host "Uploading artifact $($inputs.artifactId)"
-        UploadFile $inputs.artifact.FullName "ClassIsland-Ningbo-S3/classisland/disturb/$($inputs.version)/"
-        Write-Host "Uploading artifact $($inputs.artifactId) COMPLETED"
-    }
+#    $uploadJobs += Start-ThreadJob -Name $artifact.FullName -StreamingHost $Host -ScriptBlock {
+#        $inputs = $using:taskInput
+#        Import-Module ./tools/release-gen/alist-utils.psm1
+#        Write-Host "Uploading artifact $($inputs.artifactId)"
+#        UploadFile $inputs.artifact.FullName "ClassIsland-Ningbo-S3/classisland/disturb/$($inputs.version)/"
+#        Write-Host "Uploading artifact $($inputs.artifactId) COMPLETED"
+#    }
 }
 
-Wait-Job -Job $uploadJobs
+#Wait-Job -Job $uploadJobs
 
-foreach ($job in $uploadJobs) {
-    Receive-Job -Job $job
-}
-
-# 兼容旧版更新系统 （<1.5.3）
-Copy-Item ./out/ClassIsland_app_windows_x64_full_singleFile.zip -Destination ./out/ClassIsland.zip -Force
-Copy-Item ./out/ClassIsland_app_windows_x64_trimmed_singleFile.zip -Destination ./out/ClassIsland_AssetsTrimmed.zip -Force
-$legaceyMD5Hashes."ClassIsland.zip" = (Get-FileHash ./out/ClassIsland.zip -Algorithm MD5).Hash
-$legaceyMD5Hashes."ClassIsland_AssetsTrimmed.zip" = (Get-FileHash ./out/ClassIsland_AssetsTrimmed.zip -Algorithm MD5).Hash
-# 兼容旧版更新系统 (<1.5.3.1)
-$versionInfo.DownloadInfos["windows;x86_64;singleFile;full"] = $versionInfo.DownloadInfos["windows_x64_full_singleFile"]
-$versionInfo.DownloadInfos["windows;x86_64;singleFile;trimmed"] = $versionInfo.DownloadInfos["windows_x64_trimmed_singleFile"]
-# 兼容 1.6.0.2
-$versionInfo.DownloadInfos["windows_unknown_full_singleFile"] = $versionInfo.DownloadInfos["windows_x64_full_singleFile"]
+#foreach ($job in $uploadJobs) {
+#    Receive-Job -Job $job
+#}
 
 Copy-Item ./doc/ChangeLogs/$($tagInfo.PrimaryVersion)/$version/App.md -Destination ./out/ChangeLogs.md -Force
 
@@ -109,27 +111,27 @@ $hashSummary | Add-Content ./out/ChangeLogs.md
 ConvertTo-Json $versionInfo -Depth 99 | Out-File ./out/index.json
 
 # Upload metadata
-Write-Output "Uploading metadata"
-git config --global user.name 'classisland-bot'
-git config --global user.email 'elf-elysia.noreply@classisland.tech'
-git clone git@github.com:ClassIsland/metadata.git
-cd metadata
-
-git checkout -b metadata/disturb/$version
-if ($(Test-Path ./metadata/disturb/$version) -eq $false) {
-    mkdir ./metadata/disturb/$version
-}
-Copy-Item ../out/index.json -Destination ./metadata/disturb/$version/index.json -Force
-$globalIndex = ConvertFrom-Json (Get-Content ./metadata/disturb/index.json -Raw)
-$globalIndex.Versions = [System.Collections.ArrayList]@($globalIndex.Versions)
-$globalIndex.Versions.Add(@{
-    Version = $version
-    Title = $version
-    Channels = $tagInfo.Channels
-    VersionInfoUrl = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/disturb/${version}/index.json"
-})
-ConvertTo-Json $globalIndex -Depth 99 | Out-File ./metadata/disturb/index.json
-git add .
-git commit -m "metadata(disturb): release $version at https://github.com/ClassIsland/ClassIsland/commit/$gitCommitId"
-git push origin metadata/disturb/$version
-gh pr create -R ClassIsland/metadata -t "Add metadata for $version" -b "Add metadata for $version at https://github.com/ClassIsland/ClassIsland/commit/$gitCommitId" -B main -a HelloWRC
+#Write-Output "Uploading metadata"
+#git config --global user.name 'classisland-bot'
+#git config --global user.email 'elf-elysia.noreply@classisland.tech'
+#git clone git@github.com:ClassIsland/metadata.git
+#cd metadata
+#
+#git checkout -b metadata/disturb/$version
+#if ($(Test-Path ./metadata/disturb/$version) -eq $false) {
+#    mkdir ./metadata/disturb/$version
+#}
+#Copy-Item ../out/index.json -Destination ./metadata/disturb/$version/index.json -Force
+#$globalIndex = ConvertFrom-Json (Get-Content ./metadata/disturb/index.json -Raw)
+#$globalIndex.Versions = [System.Collections.ArrayList]@($globalIndex.Versions)
+#$globalIndex.Versions.Add(@{
+#    Version = $version
+#    Title = $version
+#    Channels = $tagInfo.Channels
+#    VersionInfoUrl = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/disturb/${version}/index.json"
+#})
+#ConvertTo-Json $globalIndex -Depth 99 | Out-File ./metadata/disturb/index.json
+#git add .
+#git commit -m "metadata(disturb): release $version at https://github.com/ClassIsland/ClassIsland/commit/$gitCommitId"
+#git push origin metadata/disturb/$version
+#gh pr create -R ClassIsland/metadata -t "Add metadata for $version" -b "Add metadata for $version at https://github.com/ClassIsland/ClassIsland/commit/$gitCommitId" -B main -a HelloWRC

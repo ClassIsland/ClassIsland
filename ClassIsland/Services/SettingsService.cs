@@ -16,7 +16,9 @@ using ClassIsland.Models.ComponentSettings;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
@@ -61,9 +63,15 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
 
     public async Task LoadSettingsAsync()
     {
+        if (Design.IsDesignMode)
+        {
+            // 设计时不加载设置
+            Logger.LogInformation("检测到应用以设计模式运行，跳过配置加载");
+            return;
+        }
         try
         {
-            if (!File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json")))
+            if (!File.Exists(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json")))
             {
                 SkipMigration = true; // 如果是新的配置文件，那么就需要跳过迁移。
                 Logger.LogInformation("配置文件不存在，跳过加载。");
@@ -71,7 +79,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             else
             {
                 Logger.LogInformation("加载配置文件。");
-                var r = ConfigureFileHelper.LoadConfig<Settings>(Path.Combine(App.AppRootFolderPath, "Settings.json"));
+                var r = ConfigureFileHelper.LoadConfig<Settings>(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"));
                 Settings = r;
                 Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName!);
             }
@@ -131,172 +139,116 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         {
             return;
         }
-        if (Settings.LastAppVersion < Version.Parse("1.4.1.0"))  // 从 1.4.1.0 以前的版本升级
-        {
-            var componentsService = App.GetService<IComponentsService>();
-            componentsService.CurrentComponents.Clear();
-            var island = componentsService.CurrentComponents;
-            var miniInfo = Settings.SelectedMiniInfoProvider?.ToUpper() switch
-            {
-                // 日期
-                "D9FC55D6-8061-4C21-B521-6B0532FF735F" => new ComponentSettings
-                    { Id = "DF3F8295-21F6-482E-BADA-FA0E5F14BB66" },
-                // 天气简报 
-                "EA336289-5A60-49EF-AD36-858109F37644" => new ComponentSettings
-                {
-                    Id = "CA495086-E297-4BEB-9603-C5C1C1A8551E",
-                    Settings = new WeatherComponentSettings()
-                    {
-                        ShowAlerts = TryGetDictionaryValue(Settings.MiniInfoProviderSettings,
-                                "EA336289-5A60-49EF-AD36-858109F37644", new WeatherMiniInfoProviderSettings())
-                            .IsAlertEnabled
-                    }
-                },
-                // 倒计时日 
-                "DE09B49D-FE61-11EE-9DF4-43208C458CC8" => new ComponentSettings
-                {
-                    Id = "7C645D35-8151-48BA-B4AC-15017460D994",
-                    Settings = new CountDownComponentSettings()
-                    {
-                        CountDownName =
-                            TryGetDictionaryValue<CountDownMiniInfoProviderSettings>(Settings.MiniInfoProviderSettings,
-                                "DE09B49D-FE61-11EE-9DF4-43208C458CC8").countDownName,
-                        FontColor = TryGetDictionaryValue<CountDownMiniInfoProviderSettings>(
-                            Settings.MiniInfoProviderSettings, "DE09B49D-FE61-11EE-9DF4-43208C458CC8").fontColor,
-                        FontSize = TryGetDictionaryValue<CountDownMiniInfoProviderSettings>(
-                            Settings.MiniInfoProviderSettings, "DE09B49D-FE61-11EE-9DF4-43208C458CC8").fontSize,
-                        OverTime = TryGetDictionaryValue<CountDownMiniInfoProviderSettings>(
-                            Settings.MiniInfoProviderSettings, "DE09B49D-FE61-11EE-9DF4-43208C458CC8").overTime
-                    }
-                },
-                _ => new ComponentSettings { Id = "DF3F8295-21F6-482E-BADA-FA0E5F14BB66" }
-            };
-            if (Settings.ShowDate)
-            {
-                island.Add(miniInfo);
-            }
-
-            island.Add(new ComponentSettings()
-            {
-                Id = "1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8",
-                Settings = new LessonControlSettings()
-                {
-                    CountdownSeconds = Settings.CountdownSeconds,
-                    ExtraInfoType = Settings.ExtraInfoType,
-                    IsCountdownEnabled = Settings.IsCountdownEnabled,
-                    ShowExtraInfoOnTimePoint = Settings.ShowExtraInfoOnTimePoint
-                }
-            });
-            Settings.ShowComponentsMigrateTip = true;
-            Settings.IsMigratedFromv1_4 = true;
-            Logger.LogInformation("成功迁移了 1.4.1.0 以前的设置。");
-        }
-
-        if (Settings.LastAppVersion < Version.Parse("1.4.3.0"))
-        {
-            Settings.IsSentryEnabled = Settings.IsReportingEnabled;
-            requiresRestarting = true;
-            Logger.LogInformation("成功迁移了 1.4.3.0 以前的设置。");
-        }
-
-        // 旧城市Id 迁移到 新城市Id
-        if (int.TryParse(Settings.CityId, out var oldCityId))
-        {
-            Settings.CityId = $"weathercn:{oldCityId}";
-            Logger.LogInformation("新格式城市Id转换完成！");
-        }
         
-        if (Settings.LastAppVersion < Version.Parse("1.5.3.0"))
-        {
-            Settings.SelectedUpdateChannelV2 = Settings.SelectedChannel switch
-            {
-                "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public" =>
-                    "stable",
-                "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta" => "beta",
-                _ => "stable"
-            };
-            Logger.LogInformation("成功迁移了 1.5.3.0 以前的设置。");
-        }
-        if (Settings.LastAppVersion < Version.Parse("1.5.4.0"))
-        {
-            WillMigrateProfileTrustedState = true;
-            Logger.LogInformation("成功迁移了 1.5.4.0 以前的设置。");
-        }
-        if (Settings.LastAppVersion < Version.Parse("1.6.3.0"))
-        {
-            Settings.SelectedSpeechProvider = Settings.SpeechSource switch
-            {
-                0 => "classisland.speech.system",
-                1 => "classisland.speech.edgeTts",
-                2 => "classisland.speech.gpt-sovits",
-                _ => Settings.SelectedSpeechProvider
-            };
-            Logger.LogInformation("成功迁移了 1.6.3.0 以前的设置。");
-        }
     }
 #pragma warning restore CS0612 // 类型或成员已过时
 
     public void SaveSettings(string note = "")
     {
-        Logger.LogInformation(note == "" ? "写入配置文件。" : $"写入配置文件：{note}");
-        ConfigureFileHelper.SaveConfig(Path.Combine(App.AppRootFolderPath, "Settings.json"), Settings);
+        if (Design.IsDesignMode)
+        {
+            return;
+        }
+        Logger.LogInformation(note == "" ? "写入配置文件。" : "写入配置文件：{}", note);
+        ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Settings);
     }
 
-    /// <summary>
-    /// 添加设置叠层。
-    /// </summary>
-    /// <param name="guid">叠层Guid</param>
-    /// <param name="binding">设置变量名</param>
-    public void AddSettingsOverlay(string guid, string binding, dynamic? value)
-    {
-        var property = typeof(Settings).GetProperty(binding);
-        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
 
-        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic?>? overlay))
+    public const BindingFlags SettingsPropertiesFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+
+    public static readonly JsonSerializerOptions AllowReadingFromString = new()
+    {
+        NumberHandling = JsonNumberHandling.AllowReadingFromString
+    };
+
+    /// <summary>
+    /// 添加应用设置叠层。
+    /// </summary>
+    /// <param name="guid">设置叠层 Guid。</param>
+    /// <param name="name">设置属性名称。</param>
+    /// <param name="value">要设置的值。</param>
+    /// <returns>是否成功。失败会抛出。</returns>
+    public bool AddSettingsOverlay(Guid guid, string name, object value)
+    {
+        var key = guid.ToString();
+        var isPropertyOverlayNotNull = Settings.SettingsOverlays.TryGetValue(name, out var propertyOverlay);
+        if (isPropertyOverlayNotNull)
+            propertyOverlay.Remove(key);
+
+        var info = typeof(Settings).GetProperty(name, SettingsPropertiesFlags);
+        if (info == null)
         {
-            overlay = [];
-            var original = property.GetValue(Settings);
-            if (value.ToString() == original.ToString()) return;
-            overlay["@"] = original;
+            throw new KeyNotFoundException($"应用设置中找不到属性“{name}”。");
+            return false;
         }
 
-        property.SetValue(Settings, value);
-        overlay[guid] = value;
-        Settings.SettingsOverlay[binding] = overlay;
+        var type = info.PropertyType;
+        value = Convert.ChangeType(value, type);
+
+        if (!isPropertyOverlayNotNull)
+        {
+            propertyOverlay = [];
+            var sourceValue = info.GetValue(Settings);
+            if (value == sourceValue)
+                return true;
+            propertyOverlay["@"] = sourceValue;
+        }
+
+        info.SetValue(Settings, value);
+        propertyOverlay[key] = value;
+        Settings.SettingsOverlays[name] = propertyOverlay;
+        return true;
     }
 
     /// <summary>
-    /// 删除设置叠层。
+    /// 删除应用设置叠层。
     /// </summary>
-    /// <param name="guid">叠层Guid</param>
-    /// <param name="binding">设置变量名</param>
-    public void RemoveSettingsOverlay(string guid, string binding)
+    /// <param name="guid">设置叠层 Guid。</param>
+    /// <param name="name">设置属性名。</param>
+    /// <returns>是否进行了删除。删除出错会抛出。</returns>
+    public bool RemoveSettingsOverlay(Guid guid, string name)
     {
-        var property = typeof(Settings).GetProperty(binding);
-        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
-        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic?>? overlay)) return;
+        var key = guid.ToString();
+        if (!Settings.SettingsOverlays.TryGetValue(name, out var propertyOverlay))
+            return false;
 
-        overlay.Remove(guid);
-        var last = overlay.Last().Value;
+        var lengthBefore = propertyOverlay.Count;
+        propertyOverlay.Remove(key);
+        var length = propertyOverlay.Count;
+        if (length == lengthBefore)
+            return false;
+
+        var info = typeof(Settings).GetProperty(name, SettingsPropertiesFlags);
+        if (info == null)
+            return false;
+
+        var type = info.PropertyType;
+        var last = propertyOverlay[length - 1]; // propertyOverlay 至少存在一项。
         if (last is JsonElement json)
-            last = json.Deserialize(property.GetValue(Settings).GetType());
-
-        property.SetValue(Settings, last);
-
-        if (overlay.Count > 1)
-            Settings.SettingsOverlay[binding] = overlay;
+            last = JsonSerializer.Deserialize(json.GetRawText(), type, AllowReadingFromString);
         else
-            Settings.SettingsOverlay.Remove(binding);
+            last = Convert.ChangeType(last, type);
+
+        info.SetValue(Settings, last);
+
+        if (length > 1)
+            Settings.SettingsOverlays[name] = propertyOverlay;
+        else
+            Settings.SettingsOverlays.Remove(name);
+        return true;
     }
 
-    private void SettingsChanged(string propertyName)
+    void SettingsChanged(string propertyName)
     {
-        if (propertyName != nameof(Settings.SettingsOverlay))
-            Settings.SettingsOverlay.Remove(propertyName);
+        if (propertyName != nameof(Settings.SettingsOverlays))
+        {
+            Settings.SettingsOverlays.Remove(propertyName);
+        }
 
-        if (typeof(Settings).GetProperty(propertyName)
+        if (typeof(Settings).GetProperty(propertyName, SettingsPropertiesFlags)?
                             .GetCustomAttribute<JsonIgnoreAttribute>() != null)
             return;
+
         SaveSettings(propertyName);
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
         {

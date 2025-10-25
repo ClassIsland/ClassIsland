@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
-using System.Windows.Data;
+using Avalonia.Data.Converters;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Converters;

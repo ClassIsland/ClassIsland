@@ -1,4 +1,5 @@
-﻿using System.Speech.Synthesis;
+﻿using System.Runtime.Versioning;
+using System.Speech.Synthesis;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace ClassIsland.Services.SpeechService;
 
 [SpeechProviderInfo("classisland.speech.system", "系统 TTS")]
+[SupportedOSPlatform("windows")]
 public class SystemSpeechService : ISpeechService
 {
     private ILogger<SystemSpeechService> Logger { get; } = App.GetService<ILogger<SystemSpeechService>>();

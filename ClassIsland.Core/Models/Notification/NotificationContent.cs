@@ -1,10 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows;
+using Avalonia.Markup.Xaml.Templates;
 using ClassIsland.Core.Controls.NotificationTemplates;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification.Templates;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Google.Protobuf.WellKnownTypes;
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Models.Notification;
 
@@ -40,6 +41,19 @@ public class NotificationContent : ObservableRecipient
     {
         get => _contentTemplate;
         set => SetProperty(ref _contentTemplate, value);
+    }
+
+    /// <summary>
+    /// 提醒内容模板资源键，可选。如果此值不为 null，将在呈现提醒内容 <see cref="Content"/> 时使用。
+    /// </summary>
+    /// <remarks>
+    /// 即使不设置此属性，ContentPresenter 也会根据设置的数据类型选择资源中对应的数据模板进行呈现。设置此属性后，将覆盖在
+    /// <see cref="ContentTemplate"/> 上设置的值。
+    /// </remarks>
+    public object? ContentTemplateResourceKey
+    {
+        get => _contentTemplateResourceKey;
+        set => SetProperty(ref _contentTemplateResourceKey, value);
     }
 
     /// <summary>
@@ -112,19 +126,20 @@ public class NotificationContent : ObservableRecipient
     /// <param name="factory">提醒内容处理工厂</param>
     /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
     public static NotificationContent CreateTwoIconsMask(string text,
-        PackIconKind leftIcon = PackIconKind.AlertCircleOutline, PackIconKind rightIcon = PackIconKind.BellRing, bool hasRightIcon=true,
+        string leftIcon = "lucide(\ue0ff)", string rightIcon = "lucide(\ue224)", bool hasRightIcon=true,
         Action<NotificationContent>? factory = null)
     {
         var content = new NotificationContent
         {
             Content = new TwoIconsMaskTemplateData()
             {
-                LeftIconKind = leftIcon,
-                RightIconKind = rightIcon,
+                LeftIconSource = IconExpressionHelper.TryParseOrNull(leftIcon),
+                RightIconSource = IconExpressionHelper.TryParseOrNull(rightIcon),
                 HasRightIcon = hasRightIcon,
                 Text = text
             },
             SpeechContent = text,
+            ContentTemplateResourceKey = TwoIconsMaskTemplateData.TemplateResourceKey
         };
         factory?.Invoke(content);
         return content;
@@ -146,6 +161,7 @@ public class NotificationContent : ObservableRecipient
                 Text = text
             },
             SpeechContent = text,
+            ContentTemplateResourceKey = SimpleTextTemplateData.TemplateResourceKey
         };
         factory?.Invoke(content);
         return content;

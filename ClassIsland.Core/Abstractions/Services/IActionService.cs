@@ -1,42 +1,67 @@
-﻿using ClassIsland.Shared;
-using ClassIsland.Core.Models.Action;
-using ClassIsland.Shared.Models.Action;
-using Action = ClassIsland.Shared.Models.Action.Action;
-
+﻿using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Models.Automation;
+using ClassIsland.Shared.Models.Automation;
 namespace ClassIsland.Core.Abstractions.Services;
 
 /// <summary>
-/// 行动服务。
+/// 行动服务。负责管理行动提供方、提供行动的运行方法。
 /// </summary>
 public interface IActionService
 {
     /// <summary>
-    /// 已注册的行动。
+    /// 「添加行动」层叠菜单。
+    /// 键为菜单元素中文名，值为菜单元素。
     /// </summary>
-    static ObservableDictionary<string, ActionRegistryInfo> Actions { get; } = [];
+    static readonly ActionMenuTreeNodeCollection ActionMenuTree = [];
 
     /// <summary>
-    /// 注册指定行动的处理方法。
+    /// 列表类型的只读「添加行动」层叠菜单。
     /// </summary>
-    void RegisterActionHandler(string id, ActionRegistryInfo.HandleDelegate handler);
+    static IReadOnlyList<ActionMenuTreeNode> IListActionMenuTree => ActionMenuTree.ToList();
 
     /// <summary>
-    /// 注册指定行动的恢复方法。
+    /// 所有行动提供方信息。
+    /// 键为行动提供方 ID，值为行动提供方信息。
     /// </summary>
-    void RegisterRevertHandler(string id, ActionRegistryInfo.HandleDelegate handler);
+    static readonly Dictionary<string, ActionInfo> ActionInfos = [];
 
     /// <summary>
-    /// 触发行动组。
+    /// 触发行动组。行动错误已被捕获。
     /// </summary>
-    void Invoke(ActionSet actionSet);
+    /// <param name="isRevertable">行动是否将会被恢复。默认为 true。</param>
+    Task InvokeActionSetAsync(ActionSet actionSet, bool isRevertable = true);
 
     /// <summary>
-    /// 恢复行动组。
+    /// 恢复行动组。行动错误已被捕获。
     /// </summary>
-    void Revert(ActionSet actionSet);
+    Task RevertActionSetAsync(ActionSet actionSet);
 
     /// <summary>
-    /// 行动是否有内建的恢复。
+    /// 中断行动组运行。此方法会等待行动组运行生命周期结束。
     /// </summary>
-    bool ExistRevertHandler(Action action);
+    Task InterruptActionSetAsync(ActionSet actionSet);
+
+
+
+    /// <summary>
+    /// 触发行动项。行动错误已被捕获。已中断运行的行动项会在此处拦截。
+    /// </summary>
+    /// <param name="isRevertable">行动是否将会被恢复。默认为 true。</param>
+    private protected Task InvokeActionItemAsync(ActionItem actionItem, ActionSet actionSet, bool isRevertable = true);
+
+    /// <summary>
+    /// 恢复行动项。行动错误已被捕获。设置为不能恢复的行动项会被忽略。
+    /// </summary>
+    private protected Task RevertActionItemAsync(ActionItem actionItem, ActionSet actionSet);
+
+
+
+    [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]
+    static readonly Dictionary<string, (Type, Action<object, string>?, Action<object, string>?)> ObsoleteActionHandlers = [];
+
+    [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]
+    public void RegisterActionHandler(string id, Action<object, string> i2);
+
+    [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]
+    public void RegisterRevertHandler(string id, Action<object, string> i3);
 }

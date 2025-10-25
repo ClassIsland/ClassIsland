@@ -1,31 +1,55 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using ClassIsland.Core;
-using Microsoft.Xaml.Behaviors;
+﻿using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
+using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Xaml.Interactivity;
+using ClassIsland.Controls.TimeLine;
 
 namespace ClassIsland.Behaviors;
 
-public class TimeLineListItemBehavior : Behavior<ListBoxItem>
+public class TimeLineListItemBehavior : Behavior<Control>
 {
-    public static readonly DependencyProperty ThumbTemplateProperty = DependencyProperty.Register(
-        nameof(ThumbTemplate), typeof(ControlTemplate), typeof(TimeLineListItemBehavior), new PropertyMetadata(default(ControlTemplate)));
 
-    public ControlTemplate ThumbTemplate
+    public static readonly StyledProperty<IControlTemplate> ThumbTemplateProperty = AvaloniaProperty.Register<TimeLineListItemBehavior, IControlTemplate>(
+        nameof(ThumbTemplate));
+
+    public IControlTemplate ThumbTemplate
     {
-        get { return (ControlTemplate)GetValue(ThumbTemplateProperty); }
-        set { SetValue(ThumbTemplateProperty, value); }
+        get => GetValue(ThumbTemplateProperty);
+        set => SetValue(ThumbTemplateProperty, value);
     }
 
-    private Adorner? _adorner;
+    public static readonly StyledProperty<TimeLineListControl> ParentListBoxProperty = AvaloniaProperty.Register<TimeLineListItemBehavior, TimeLineListControl>(
+        nameof(ParentListBox));
+
+    public TimeLineListControl ParentListBox
+    {
+        get => GetValue(ParentListBoxProperty);
+        set => SetValue(ParentListBoxProperty, value);
+    }
+
+    private ListBoxItem? _listBoxItem;
+
+    public static readonly DirectProperty<TimeLineListItemBehavior, ListBoxItem?> ListBoxItemProperty = AvaloniaProperty.RegisterDirect<TimeLineListItemBehavior, ListBoxItem?>(
+        nameof(ListBoxItem), o => o.ListBoxItem, (o, v) => o.ListBoxItem = v);
+
+    public ListBoxItem? ListBoxItem
+    {
+        get => _listBoxItem;
+        set => SetAndRaise(ListBoxItemProperty, ref _listBoxItem, value);
+    }
+
+    private Control? _adorner;
+    private AdornerLayer? _layer;
 
     protected override void OnAttached()
     {
         if (AssociatedObject != null)
         {
-            AssociatedObject.Selected += AssociatedObjectOnSelected;
-            AssociatedObject.Unselected += AssociatedObjectOnUnselected;
-            if (AssociatedObject.IsSelected) AttachAdorner();
+            this.GetObservable(ListBoxItemProperty).Subscribe(_ => UpdateListBoxItemObserver());
         }
         base.OnAttached();
     }
@@ -36,26 +60,59 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
         base.OnDetaching();
     }
 
+    private void UpdateListBoxItemObserver()
+    {
+        if (ListBoxItem == null)
+        {
+            return;
+        }
+        RemoveAdorner();
+        ListBoxItem.Unloaded += (_, _) => RemoveAdorner();
+        ListBoxItem.GetObservable(ListBoxItem.IsSelectedProperty).Subscribe(v =>
+        {
+            CheckAdorner(v);
+        });
+        if (AssociatedObject != null)
+        {
+            AssociatedObject.AttachedToVisualTree += (sender, args) => CheckAdorner(ListBoxItem.IsSelected);
+            AssociatedObject.DetachedFromVisualTree += (o, _) => RemoveAdorner(o);
+        }
+        if (ListBoxItem.IsSelected) AttachAdorner();
+    }
+
+    private void CheckAdorner(bool v)
+    {
+        if (v)
+        {
+            AttachAdorner();
+        }
+        else
+        {
+            RemoveAdorner();
+        }
+    }
+
     private void AssociatedObjectOnUnselected(object sender, RoutedEventArgs e)
     {
         RemoveAdorner();
     }
 
-    private void RemoveAdorner()
+    private void RemoveAdorner(object? o=null)
     {
-        if (AssociatedObject == null)
+        var owner = AssociatedObject ?? o as Visual;
+        if (owner == null )
         {
             return;
         }
         if (_adorner != null)
         {
-            var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-            layer?.Remove(_adorner);
+            _layer?.Children.Remove(_adorner);
+            AdornerLayer.SetAdornedElement(_adorner, null);
             _adorner = null;
         }
     }
 
-    private void AssociatedObjectOnSelected(object sender, RoutedEventArgs e)
+    private void AssociatedObjectOnSelected(bool v)
     {
         AttachAdorner();
     }
@@ -66,12 +123,20 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
         {
             return;
         }
-        var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-        if (_adorner != null)
+        var layer = _layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
+        if (layer == null || _adorner != null)
         {
             return;
         }
-        _adorner = new TimeLineListItemAdorner(AssociatedObject, ThumbTemplate);
-        layer?.Add(_adorner);
+        
+        _adorner = new TemplatedControl()
+        {
+            Template = ThumbTemplate,
+            ClipToBounds = false,
+            DataContext = ParentListBox
+        };
+        AdornerLayer.SetIsClipEnabled(_adorner, true);
+        layer?.Children.Add(_adorner);
+        AdornerLayer.SetAdornedElement(_adorner, AssociatedObject);
     }
 }

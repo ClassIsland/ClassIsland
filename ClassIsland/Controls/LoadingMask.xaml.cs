@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -116,3 +117,4 @@ public partial class LoadingMask : UserControl
         UpdateForeground();
     }
 }
+#endif

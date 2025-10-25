@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using Avalonia.Platform;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Services.Management;
@@ -32,7 +34,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     public string CurrentProfilePath { 
         get; 
         set;
-    } = Path.Combine(App.AppRootFolderPath, @"Default.json");
+    } = "Default.json";
 
     public static readonly string ManagementClassPlanPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
@@ -43,7 +45,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     public static readonly string ManagementSubjectsPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
 
-    public static readonly string ProfilePath = Path.Combine(App.AppRootFolderPath, "Profiles");
+    public static readonly string ProfilePath = Path.Combine(CommonDirectories.AppRootFolderPath, "Profiles");
 
     public Profile Profile {
         get;
@@ -148,7 +150,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Logger.LogInformation("档案不存在：{}", path);
             if (!ManagementService.IsManagementEnabled)  // 在集控模式下不需要默认科目
             {
-                var subject = new StreamReader(Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative))!.Stream).ReadToEnd();
+                var subject = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json"))).ReadToEnd();
                 Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
             }
             SaveProfile(filename);
@@ -202,9 +204,9 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
                 },
                 ItemId = args.NewItems?[0] switch
                 {
-                    KeyValuePair<string, ClassPlan> cp => cp.Key,
-                    KeyValuePair<string, TimeLayout> tl => tl.Key,
-                    KeyValuePair<string, Subject> s => s.Key,
+                    KeyValuePair<Guid, ClassPlan> cp => cp.Key.ToString(),
+                    KeyValuePair<Guid, TimeLayout> tl => tl.Key.ToString(),
+                    KeyValuePair<Guid, Subject> s => s.Key.ToString(),
                     _ => throw new ArgumentOutOfRangeException()
                 },
             });
@@ -217,14 +219,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         {
             return;
         }
-        if (CurrentProfilePath.Contains(".\\Profiles\\"))
-        {
-            var splittedFileName = CurrentProfilePath.Split("\\");
-            var fileName = splittedFileName[splittedFileName.Length - 1];
-            SaveProfile(fileName);
-            return;
-        }
-        SaveProfile(CurrentProfilePath);
+        SaveProfile(Path.GetFileName(CurrentProfilePath));
     }
 
     public void SaveProfile(string filename)
@@ -239,7 +234,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         return JsonSerializer.Deserialize<T>(json)!;
     }
 
-    public string? CreateTempClassPlan(string id, string? timeLayoutId=null, DateTime? enableDateTime = null)
+    public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId=null, DateTime? enableDateTime = null)
     {
         Logger.LogInformation("创建临时层：{}", id);
         var date = enableDateTime ?? IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
@@ -254,12 +249,12 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         var newCp = DuplicateJson(cp);
 
         newCp.IsOverlay = true;
-        newCp.TimeLayoutId = timeLayoutId;
+        newCp.TimeLayoutId = timeLayoutId.Value;
         newCp.OverlaySourceId = id;
         newCp.Name += "（临时层）";
         newCp.OverlaySetupTime = date;
         Profile.IsOverlayClassPlanEnabled = true;
-        var newId = Guid.NewGuid().ToString();
+        var newId = Guid.NewGuid();
         Profile.OverlayClassPlanId = newId;
         Profile.ClassPlans.Add(newId, newCp);
         Profile.OrderedSchedules[date] = new OrderedSchedule()
@@ -271,7 +266,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public void ClearTempClassPlan()
     {
-        if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
+        if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId ?? Guid.Empty))
         {
             return;
         }
@@ -314,11 +309,11 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         Logger.LogInformation("将当前临时层课表转换为普通课表：{}", Profile.OverlayClassPlanId);
         if (Profile.OverlayClassPlanId != null)
         {
-            ConvertToStdClassPlan(Profile.OverlayClassPlanId);
+            ConvertToStdClassPlan(Profile.OverlayClassPlanId ?? Guid.Empty);
         }
     }
 
-    public void ConvertToStdClassPlan(string id)
+    public void ConvertToStdClassPlan(Guid id)
     {
         Logger.LogInformation("将临时层课表转换为普通课表：{}", id);
         var today = IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
@@ -329,7 +324,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         classPlan.IsOverlay = false;
     }
 
-    public void SetupTempClassPlanGroup(string key, DateTime? expireTime = null)
+    public void SetupTempClassPlanGroup(Guid key, DateTime? expireTime = null)
     {
         var classPlans = Profile.ClassPlans
             .Where(x => x.Value.AssociatedGroup == key)

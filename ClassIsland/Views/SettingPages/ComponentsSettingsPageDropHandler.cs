@@ -1,79 +1,121 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.VisualTree;
+using Avalonia.Xaml.Interactions.DragAndDrop;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;
-using GongSolutions.Wpf.DragDrop;
+using ClassIsland.ViewModels.SettingsPages;
+using FluentAvalonia.Core;
+using Visual = Avalonia.Visual;
 
 namespace ClassIsland.Views.SettingPages;
 
-public class ComponentsSettingsPageDropHandler : DependencyObject, IDropTarget
+public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewModel) : DropHandlerBase, IDragHandler
 {
-    public static readonly DependencyProperty ComponentsProperty = DependencyProperty.Register(
-        nameof(Components), typeof(ObservableCollection<ComponentSettings>), typeof(ComponentsSettingsPageDropHandler), new PropertyMetadata(default(ObservableCollection<ComponentSettings>)));
+    public ComponentsSettingsViewModel ViewModel { get; } = viewModel;
 
-    public ObservableCollection<ComponentSettings> Components
+    private ObservableCollection<ComponentSettings>? _sourceCollection;
+
+    private ListBox? _sourceListBox;
+
+    private ListBoxItem? _sourceListBoxItem;
+    
+    public override void Enter(object? sender, DragEventArgs e, object? sourceContext, object? targetContext)
     {
-        get { return (ObservableCollection<ComponentSettings>)GetValue(ComponentsProperty); }
-        set { SetValue(ComponentsProperty, value); }
-    }
-
-    public static readonly DependencyProperty CurrentSelectedContainerComponentSettingsProperty = DependencyProperty.Register(
-        nameof(CurrentSelectedContainerComponentSettings), typeof(ComponentSettings), typeof(ComponentsSettingsPageDropHandler), new PropertyMetadata(default(ComponentSettings)));
-
-    public ComponentSettings? CurrentSelectedContainerComponentSettings
-    {
-        get { return (ComponentSettings?)GetValue(CurrentSelectedContainerComponentSettingsProperty); }
-        set { SetValue(CurrentSelectedContainerComponentSettingsProperty, value); }
-    }
-
-    //private IComponentsService ComponentsService { get; } = App.GetService<IComponentsService>();
-
-
-    public void DragOver(IDropInfo dropInfo)
-    {
-        // TODO: 如果拖入的组件是当前组件的父组件，要拒绝拖入到子容器中。
-        if (dropInfo.Data is not ComponentInfo && dropInfo.Data is not ComponentSettings) 
-            return;
-        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-        dropInfo.Effects = dropInfo.Data switch
+        e.DragEffects = sourceContext switch
         {
-            ComponentInfo info => DragDropEffects.Copy,
-            ComponentSettings settings => DragDropEffects.Move,
+            ComponentInfo => DragDropEffects.Copy,
+            ComponentSettings => DragDropEffects.Move,
             _ => DragDropEffects.None
         };
     }
+    
 
-    public void Drop(IDropInfo dropInfo)
+    public override void Drop(object? sender, DragEventArgs e, object? sourceContext, object? targetContext)
     {
-        var components = Components;
-        switch (dropInfo.Data)
+        if (targetContext is not ObservableCollection<ComponentSettings> components)
+        {
+            return;
+        }
+        switch (sourceContext)
         {
             case ComponentInfo info:
                 var componentSettings = new ComponentSettings()
                 {
                     Id = info.Guid.ToString()
                 };
-                components.Insert(dropInfo.InsertIndex, componentSettings);
+                components.Add(componentSettings);
                 ComponentsService.LoadComponentSettings(componentSettings,
                     componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!);
                 break;
             case ComponentSettings settings:
                 var oldIndex = components.IndexOf(settings);
-                var newIndex = oldIndex < dropInfo.UnfilteredInsertIndex ? dropInfo.UnfilteredInsertIndex - 1 : dropInfo.UnfilteredInsertIndex;
-                var finalIndex = newIndex >= components.Count ? components.Count - 1 : newIndex;
+                if (settings == ViewModel.SelectedRootComponent && components == ViewModel.SelectedComponentContainerChildren)
+                {
+                    return;
+                }
                 if (!components.Contains(settings))
                 {
-                    var source = dropInfo.DragInfo.SourceCollection as ObservableCollection<ComponentSettings>;
-                    source?.Remove(settings);
-                    components.Insert(newIndex + 1, settings);
+                    _sourceCollection?.Remove(settings);
+                    components.Add(settings);
                     break;
                 }
-                if (oldIndex != finalIndex)
-                {
-                    components.Move(oldIndex, finalIndex);
-                }
+                // 我们不处理列表内更换位置的拖动操作
                 break;
         }
+
+    }
+    
+    public override bool Validate(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
+    {
+        if (sourceContext is not ComponentInfo && sourceContext is not ComponentSettings)
+            return false;
+        if (sourceContext is ComponentSettings settings1 && targetContext is ObservableCollection<ComponentSettings> components
+                                                        && settings1 == ViewModel.SelectedRootComponent 
+                                                        && Equals(components, ViewModel.SelectedComponentContainerChildren))
+        {
+            return false;
+        }
+        return sourceContext is not ComponentSettings settings || settings != ViewModel.SelectedRootComponent
+                                                               || !Equals(targetContext, ViewModel.SelectedComponentContainerChildren);
+    }
+
+    public void BeforeDragDrop(object? sender, PointerEventArgs e, object? context)
+    {
+        if (sender is not ListBoxItem item)
+        {
+            return;
+        }
+
+        _sourceListBoxItem = item;
+        var listBox = _sourceListBox = item.FindAncestorOfType<ListBox>();
+        if (listBox?.ItemsSource is ObservableCollection<ComponentSettings> collection)
+        {
+            _sourceCollection = collection;
+        }
+    }
+
+    public void AfterDragDrop(object? sender, PointerEventArgs e, object? context)
+    {
+        ClearTransform(_sourceListBoxItem);
+        foreach (var control in _sourceListBox?.Items
+                     .OfType<object>()
+                     .Select(x => _sourceListBox.ContainerFromItem(x)) ?? [])
+        {
+            ClearTransform(control);
+        }
+
+        _sourceCollection = null;
+        _sourceListBoxItem = null;
+        _sourceListBox = null;
+    }
+
+    private void ClearTransform(Control? control)
+    {
+        control?.SetValue(Visual.RenderTransformProperty, new TransformGroup());
     }
 }

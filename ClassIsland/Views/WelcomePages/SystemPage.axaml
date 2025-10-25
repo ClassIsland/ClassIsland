@@ -1,0 +1,101 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:welcomePages="clr-namespace:ClassIsland.Views.WelcomePages"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Views.WelcomePages.SystemPage">
+    <UserControl.Styles>
+        <Style Selector="CheckBox">
+            <Setter Property="Padding" Value="8 0"/>
+        </Style>
+    </UserControl.Styles>
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                Classes="settings-container animated-intro"
+                DataContext="{Binding RelativeSource={RelativeSource AncestorType=welcomePages:SystemPage}}"
+                MaxWidth="600">
+        <TextBlock Text="系统" HorizontalAlignment="Center"
+                   Margin="0 0 0 4"
+                   Theme="{StaticResource SubtitleTextBlockStyle}"/>
+        <TextBlock Text="设置ClassIsland的系统集成功能，这些功能可以优化您使用本软件的体验。" HorizontalAlignment="Center"
+                   Margin="0 0 0 8"/>
+        
+        <CheckBox IsChecked="{Binding ViewModel.CreateStartupShortcut}">
+            <CheckBox.IsVisible>
+                <OnPlatform Default="True">
+                    <On Options="macOS" Content="False"/>
+                </OnPlatform>
+            </CheckBox.IsVisible>
+            <ci:Thing IconSource="{ci:FluentIconSource &#xE342;}" Header="开机自启"
+                      Description="在系统启动时自动运行本应用。" />
+        </CheckBox>
+        <!--<CheckBox>
+            <controls:SettingsControl HasSwitcher="False"
+                                      IconGlyph="Link" Header="文件关联"
+                                      Description="注册*.cip文件格式关联，便于导入档案文件。" />
+        </CheckBox>-->
+        <CheckBox IsChecked="{Binding ViewModel.CreateDesktopShortcut}">
+            <CheckBox.IsVisible>
+                <OnPlatform Default="True">
+                    <On Options="macOS" Content="False"/>
+                </OnPlatform>
+            </CheckBox.IsVisible>
+            <ci:Thing IconSource="{ci:FluentIconSource &#xE62F;}" Header="创建桌面快捷方式"
+                      Description="在桌面上添加软件快捷方式。" />
+        </CheckBox>
+        <CheckBox IsChecked="{Binding ViewModel.CreateStartMenuShortcut}">
+            <CheckBox.IsVisible>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Converter="{x:Static ObjectConverters.NotEqual}" Source="{x:Static ci:AppBase.Current}"
+                             Path="PackagingType" ConverterParameter="deb"/>
+                    <Binding Converter="{x:Static ObjectConverters.NotEqual}" Source="{x:Static ci:AppBase.Current}"
+                             Path="OperatingSystem" ConverterParameter="macos"/>
+                </MultiBinding>
+            </CheckBox.IsVisible>
+            <ci:Thing IconSource="{ci:FluentIconSource &#xE064;}"
+                      Header="创建开始菜单快捷方式"
+                      Description="在开始菜单上添加软件快捷方式。" />
+        </CheckBox>
+        <CheckBox IsChecked="{Binding ViewModel.RegisterUrlScheme}">
+            <CheckBox.IsVisible>
+                <OnPlatform Default="False">
+                    <On Options="Windows" Content="True"/>
+                </OnPlatform>
+            </CheckBox.IsVisible>
+            <ci:Thing IconSource="{ci:FluentIconSource &#xEAB0;}"
+                      Header="注册 Url 协议"
+                      Description="允许第三方应用或网页通过 Url 协议 classisland:// 调用本应用的部分功能，详见帮助文档。" />
+        </CheckBox>
+        <CheckBox Margin="22 0 0 0"
+                  IsChecked="{Binding ViewModel.CreateClassSwapShortcut}"
+                  IsEnabled="{Binding ViewModel.RegisterUrlScheme}">
+            <CheckBox.IsVisible>
+                <OnPlatform Default="False">
+                    <On Options="Windows" Content="True"/>
+                </OnPlatform>
+            </CheckBox.IsVisible>
+            <ci:Thing IconSource="{ci:FluentIconSource &#xE15F;}"
+                      Header="在桌面创建换课快捷方式"
+                      Description="打开此快捷方式可以一键开始换课。" />
+        </CheckBox>
+        
+        <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+            <Button Command="{x:Static views:WelcomeWindow.WelcomeNavigateBackCommand}"
+                    ToolTip.Tip="上一步"
+                    Content="{ci:FluentIcon &#xE108;, FontSize=18}"
+                    Width="48" Height="48"
+                    CornerRadius="24"
+                    Margin="0 8 0 0"/>
+            <Button Command="{x:Static views:WelcomeWindow.WelcomeNavigateForwardCommand}"
+                    ToolTip.Tip="下一步"
+                    Content="{ci:FluentIcon &#xE130;, FontSize=18}"
+                    Width="48" Height="48"
+                    CornerRadius="24"
+                    Classes="accent" 
+                    Margin="0 8 0 0"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

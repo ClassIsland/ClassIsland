@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.ProfileAnalyzing;

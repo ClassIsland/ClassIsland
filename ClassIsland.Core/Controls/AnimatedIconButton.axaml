@@ -1,0 +1,32 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:controls="http://classisland.tech/schemas/xaml/core"
+        x:CompileBindings="True">
+    <Style Selector="controls|AnimatedIconButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Button Name="PART_Button"
+                            HorizontalAlignment="Left"
+                            HorizontalContentAlignment="Left"
+
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Command="{TemplateBinding Command}"
+                            CommandParameter="{TemplateBinding CommandParameter}"
+                            IsEnabled="{TemplateBinding IsEnabled}"
+                            Theme="{TemplateBinding Theme}"
+                            Flyout="{TemplateBinding Flyout}">
+                        <ci:IconText Name="PART_IconText"
+                                     Glyph="{TemplateBinding Glyph}"
+                                     Foreground="{TemplateBinding Foreground}"
+                                     Background="{TemplateBinding Background}"
+                                     FontSize="{TemplateBinding FontSize}"
+                                     FontWeight="{TemplateBinding FontWeight}" />
+                    </Button>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</Styles>

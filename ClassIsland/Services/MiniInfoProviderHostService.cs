@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models;
-
+using ClassIsland.Shared.ComponentModels;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

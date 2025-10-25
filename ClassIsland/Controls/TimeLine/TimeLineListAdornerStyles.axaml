@@ -1,0 +1,17 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="Ellipse.thumb-content">
+        <Setter Property="StrokeThickness" Value="2"/>
+        <Setter Property="Fill" Value="White"/>
+    </Style>
+    <Style Selector="Thumb:pressed /template/ Ellipse.thumb-content">
+        <Setter Property="Fill" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+        <Setter Property="StrokeThickness" Value="0"/>
+    </Style>
+</Styles>

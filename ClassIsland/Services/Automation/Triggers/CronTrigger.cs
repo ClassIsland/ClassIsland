@@ -2,16 +2,15 @@ using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using ClassIsland.Core;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Automation.Triggers;
-using MaterialDesignThemes.Wpf;
 using TimeCrontab;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
-[TriggerInfo("classisland.cron", "cron", PackIconKind.Repeat)]
+[TriggerInfo("classisland.cron", "cron", "\ue125")]
 public class CronTrigger : TriggerBase<CronTriggerSettings>
 {
     private Crontab? _crontab;
@@ -40,7 +39,7 @@ public class CronTrigger : TriggerBase<CronTriggerSettings>
                 break;
             }
 
-            AppBase.Current.Dispatcher.Invoke(Trigger);
+            Dispatcher.UIThread.Invoke(Trigger);
         }
     }
 

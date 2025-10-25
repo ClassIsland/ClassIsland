@@ -1,0 +1,28 @@
+<ci:TriggerSettingsControlBase x:TypeArguments="triggers:PreTimePointTriggerSettings"
+                               x:Class="ClassIsland.Controls.TriggerSettingsControls.PreTimePointTriggerSettingsControl"
+                               xmlns="https://github.com/avaloniaui"
+                               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                               xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                               xmlns:local="clr-namespace:ClassIsland.Controls.TriggerSettingsControls"
+
+                               xmlns:triggers="clr-namespace:ClassIsland.Models.Automation.Triggers">
+    <StackPanel DataContext="{Binding $parent[local:PreTimePointTriggerSettingsControl]}"
+                Spacing="4"
+                Orientation="Horizontal">
+        <ComboBox VerticalAlignment="Center" x:Name="StateComboBox" SelectionChanged="StateComboBox_SelectionChanged">
+            <ComboBoxItem>
+                上课
+            </ComboBoxItem>
+            <ComboBoxItem>
+                课间休息
+            </ComboBoxItem>
+            <ComboBoxItem>
+                放学
+            </ComboBoxItem>
+        </ComboBox>
+        <ci:Field Prefix="之前" Suffix="秒">
+            <NumericUpDown Value="{Binding $parent[local:PreTimePointTriggerSettingsControl].Settings.TimeSeconds}" />
+        </ci:Field>
+    </StackPanel>
+</ci:TriggerSettingsControlBase>

@@ -1,4 +1,4 @@
-﻿param($is_trim, $arch)
+﻿param($is_trim, $arch, $os)
 
 $ErrorActionPreference = "Stop"
 
@@ -13,9 +13,17 @@ if ($(Test-Path ./out) -eq $false) {
 
 ./tools/release-gen/generate-secrets.ps1
 
-Write-Host "Publish parameters: TrimAssets=$is_trim, Platform=$arch" 
 
-dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded -p:TrimAssets=$is_trim -p:ClassIsland_PlatformTarget=$arch -p:RuntimeIdentifier="win-${arch}" -p:PublishBuilding=true
+$os_rid = ''
+if ($os -eq 'windows') {
+    $os_rid = 'win'
+}
+if ($os -eq 'linux') {
+    $os_rid = 'linux'
+}
+
+Write-Host "Publish parameters: TrimAssets=$is_trim, Platform=$arch, OS=$os, OS_RID=$os_rid" 
+dotnet publish .\ClassIsland.Desktop\ClassIsland.Desktop.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -p:TrimAssets=$is_trim -p:ClassIsland_PlatformTarget=$arch -p:RuntimeIdentifier="${os_rid}-${arch}" -p:PublishBuilding=true -p:PublishPlatform=$os
 
 Write-Host "Packaging..." -ForegroundColor Cyan
 

@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Windows.Controls;
 
@@ -28,3 +29,4 @@ public partial class TestAttachedSettingsControl : UserControl, IAttachedSetting
         (TestAttachedSettings?)((AttachedSettingsControlHelper<TestAttachedSettings>)AttachedSettingsControlHelper)
         .AttachedSettings;
 }
+#endif

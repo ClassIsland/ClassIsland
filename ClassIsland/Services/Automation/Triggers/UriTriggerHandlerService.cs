@@ -1,6 +1,6 @@
-﻿using ClassIsland.Core.Abstractions.Services;
+﻿using System;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models.EventArgs;
-using System;
 
 namespace ClassIsland.Services.Automation.Triggers;
 

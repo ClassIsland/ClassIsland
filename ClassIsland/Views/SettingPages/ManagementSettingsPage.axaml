@@ -1,0 +1,117 @@
+﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.ManagementSettingsPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:classIsland="clr-namespace:ClassIsland"
+      xmlns:controls="clr-namespace:ClassIsland.Controls"
+      xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      mc:Ignorable="d" 
+      d:DataContext="{d:DesignInstance local:ManagementSettingsPage}"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Loaded="ManagementSettingsPage_OnLoaded">
+
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro">
+            <StackPanel Classes="cardContainer">
+                <controls1:SettingsExpanderItem>
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="集控" FontWeight="Bold"/>
+
+                        <StackPanel>
+                            <TextBlock  TextWrapping="Wrap">
+                                <Run>学校/组织的 IT 可以通过集控功能向学校内的 ClassIsland 实例统一分发课表、时间表和科目等信息，并且可以集中调整软件设置和限制部分功能的使用，提高管理的便利性。</Run>
+                            </TextBlock>
+                            <TextBlock  TextWrapping="Wrap" Margin="0 6 0 0" IsVisible="{Binding ManagementService.IsManagementEnabled}">
+                                <Run>您目前正在受</Run>
+                                <Run Text="{Binding ManagementService.Manifest.OrganizationName}"/>
+                                <Run>的管理。</Run>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem Click="ButtonJoinManagement_OnClick" 
+                                                IsClickEnabled="True"
+                                                IsVisible="{Binding !ManagementService.IsManagementEnabled}">
+                    <Grid>
+                        <TextBlock Text="加入管理" />
+                    </Grid>
+                </controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                                IsClickEnabled="True"
+                                                ActionIconSource="{ci:FluentIconSource &#xEC2E;}"
+                                                CommandParameter="https://docs.classisland.tech/management/">
+                    <Grid>
+                        <TextBlock Text="了解更多" />
+                    </Grid>
+                </controls1:SettingsExpanderItem>
+            </StackPanel>
+
+            <StackPanel Classes="cardContainer"
+                        IsVisible="{Binding !ManagementService.IsManagementEnabled}">
+                <controls1:SettingsExpanderItem>
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="管理" FontWeight="Bold"/>
+
+                        <StackPanel>
+                            <TextBlock  TextWrapping="Wrap">
+                                <Run>您可以在不启用云端集控的情况下调整应用的一些策略。</Run>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                                IsClickEnabled="True"
+                                                CommandParameter="classisland://app/settings/management.credentials?ci_keepHistory=true">
+                    <Grid>
+                        <TextBlock Text="密码保护设置…" />
+                    </Grid>
+                </controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                                IsClickEnabled="True"
+                                                CommandParameter="classisland://app/settings/management.policy?ci_keepHistory=true">
+                    <Grid>
+                        <TextBlock Text="限制策略…" />
+                    </Grid>
+                </controls1:SettingsExpanderItem>
+            </StackPanel>
+
+            <StackPanel Classes="cardContainer">
+                <controls1:SettingsExpanderItem>
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="客户端信息" FontWeight="Bold"/>
+                    </StackPanel>
+                </controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem>
+                    <TextBlock TextWrapping="Wrap">
+                        <Run>CUID：</Run><Run Text="{Binding ManagementService.Persist.ClientUniqueId}" />
+                    </TextBlock>
+                </controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem
+                    IsVisible="{Binding ManagementService.IsManagementEnabled}">
+                    <TextBlock TextWrapping="Wrap">
+                        <Run>ID：</Run><Run Text="{Binding ManagementService.Settings.ClassIdentity}" />
+                    </TextBlock>
+                </controls1:SettingsExpanderItem>
+            </StackPanel>
+
+            <StackPanel Classes="cardContainer"
+                        IsVisible="{Binding ManagementService.IsManagementEnabled}">
+                <controls1:SettingsExpanderItem>
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="服务端信息" FontWeight="Bold"/>
+                    </StackPanel>
+                </controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem>
+                    <TextBlock TextWrapping="Wrap">
+                        <Run>服务端类型：</Run><Run Text="{Binding ManagementService.Manifest.ServerKind}"/>
+                    </TextBlock>
+                </controls1:SettingsExpanderItem>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

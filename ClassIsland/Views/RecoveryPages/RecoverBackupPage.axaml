@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="ClassIsland.Views.RecoveryPages.RecoverBackupPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.RecoveryPages"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      mc:Ignorable="d" 
+      Loaded="RecoverBackupPage_OnLoaded"
+      d:DataContext="{d:DesignInstance local:RecoverBackupPage}">
+    <Control.Resources>
+        <ci:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
+    </Control.Resources>
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8">
+            <Button ToolTip.Tip="返回"
+                    IsEnabled="{Binding !ViewModel.IsWorking}"
+                    Margin="0 0 16 0"
+                    VerticalAlignment="Center"
+                    Click="ButtonGoBack_OnClick"
+                    Theme="{StaticResource TransparentButton}"
+                    Content="{ci:FluentIcon &#xe109;}" />
+            <TextBlock Text="选择要恢复的备份" VerticalAlignment="Center" 
+                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
+        </StackPanel>
+
+        <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.Backups}"
+                 IsEnabled="{Binding !ViewModel.IsWorking}"
+                 SelectedItem="{Binding ViewModel.SelectedBackupName}"/>
+        <ProgressBar Grid.Row="1" VerticalAlignment="Top" IsIndeterminate="True"
+                     IsVisible="{Binding ViewModel.IsWorking}"/>
+            
+        <StackPanel Grid.Row="2" Margin="8"
+                    IsEnabled="{Binding !ViewModel.IsWorking}">
+            <RadioButton Content="增量恢复：替换备份中已有的文件，保留新添加的文件" IsChecked="{Binding ViewModel.RecoverMode, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}"/>
+            <RadioButton Content="完整恢复：完整恢复到选定备份，不保留新添加的文件" Margin="0 2 0 0" IsChecked="{Binding ViewModel.RecoverMode, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}"/>
+            <Button HorizontalAlignment="Right" Margin="0 8 0 0" Click="ButtonRecover_OnClick"
+                    Classes="accent"
+                    IsEnabled="{Binding ViewModel.SelectedBackupName, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <ci:IconText Glyph="&#xe195;" Text="恢复到选定备份"/>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

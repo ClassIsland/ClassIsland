@@ -1,12 +1,13 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.Rules;
 
 public class CurrentSubjectRuleSettings : ObservableRecipient
 {
-    private string _subjectId = "";
+    private Guid _subjectId = Guid.Empty;
 
-    public string SubjectId
+    public Guid SubjectId
     {
         get => _subjectId;
         set

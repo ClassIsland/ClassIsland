@@ -1,45 +1,46 @@
 using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
+using Avalonia;
+using Avalonia.Data.Converters;
+using Avalonia.Markup.Xaml.Templates;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
 
-internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMultiValueConverter
+internal class LessonsListBoxItemTemplateMultiConverter : AvaloniaObject, IMultiValueConverter
 {
-    public static readonly DependencyProperty MinimizedDataTemplateProperty = DependencyProperty.Register(
-        nameof(MinimizedDataTemplate), typeof(DataTemplate), typeof(LessonsListBoxItemTemplateMultiConverter), new PropertyMetadata(default(DataTemplate)));
-
+    public static readonly StyledProperty<DataTemplate> MinimizedDataTemplateProperty = AvaloniaProperty.Register<LessonsListBoxItemTemplateMultiConverter, DataTemplate>(
+        nameof(MinimizedDataTemplate));
     public DataTemplate MinimizedDataTemplate
     {
-        get { return (DataTemplate)GetValue(MinimizedDataTemplateProperty); }
-        set { SetValue(MinimizedDataTemplateProperty, value); }
+        get => GetValue(MinimizedDataTemplateProperty);
+        set => SetValue(MinimizedDataTemplateProperty, value);
+    
     }
 
-    public static readonly DependencyProperty ExpandedDataTemplateProperty = DependencyProperty.Register(
-        nameof(ExpandedDataTemplate), typeof(DataTemplate), typeof(LessonsListBoxItemTemplateMultiConverter), new PropertyMetadata(default(DataTemplate)));
-
+    public static readonly StyledProperty<DataTemplate> ExpandedDataTemplateProperty = AvaloniaProperty.Register<LessonsListBoxItemTemplateMultiConverter, DataTemplate>(
+        nameof(ExpandedDataTemplate));
     public DataTemplate ExpandedDataTemplate
     {
-        get { return (DataTemplate)GetValue(ExpandedDataTemplateProperty); }
-        set { SetValue(ExpandedDataTemplateProperty, value); }
+        get => GetValue(ExpandedDataTemplateProperty);
+        set => SetValue(ExpandedDataTemplateProperty, value);
+    
     }
 
-    public static readonly DependencyProperty SeparatorDataTemplateProperty = DependencyProperty.Register(
-        nameof(SeparatorDataTemplate), typeof(DataTemplate), typeof(LessonsListBoxItemTemplateMultiConverter), new PropertyMetadata(default(DataTemplate)));
-
+    public static readonly StyledProperty<DataTemplate> SeparatorDataTemplateProperty = AvaloniaProperty.Register<LessonsListBoxItemTemplateMultiConverter, DataTemplate>(
+        nameof(SeparatorDataTemplate));
     public DataTemplate SeparatorDataTemplate
     {
-        get { return (DataTemplate)GetValue(SeparatorDataTemplateProperty); }
-        set { SetValue(SeparatorDataTemplateProperty, value); }
+        get => GetValue(SeparatorDataTemplateProperty);
+        set => SetValue(SeparatorDataTemplateProperty, value);
+    
     }
 
     public DataTemplate BlankDataTemplate { get; } = new();
 
 
-    public object? Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
         // 传入参数：
         // [0]: int              TimeType
@@ -51,7 +52,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         // [6]: bool             HideFinishedClass
         // [7]: ICollection<...> ValidTimePoints
         // [8]: bool             IsLiveUpdatingEnabled
-        if (values.Length < 8)
+        if (values.Count < 8)
             return BlankDataTemplate;
         if (values[0] is not int timeType ||
             values[1] is not bool isHideDefault ||
@@ -78,9 +79,9 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
             return BlankDataTemplate;
         }
 
-        var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartSecond : currentItem?.EndSecond;
-        if ((itemDateTime?.TimeOfDay < selectedItem?.StartSecond.TimeOfDay 
-             || itemDateTime.HasValue && itemDateTime.Value.TimeOfDay <
+        var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartTime : currentItem?.EndTime;
+        if ((itemDateTime < selectedItem?.StartTime 
+             || itemDateTime.HasValue && itemDateTime.Value <
                 IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().TimeOfDay) && hideFinishedClass)
         {
             return BlankDataTemplate;
@@ -98,10 +99,5 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         }
 
         return selectedItem == currentItem ? ExpandedDataTemplate : MinimizedDataTemplate;
-    }
-
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    {
-        return Array.Empty<object>();
     }
 }

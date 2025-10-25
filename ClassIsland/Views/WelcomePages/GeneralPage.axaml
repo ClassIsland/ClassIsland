@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             xmlns:welcomePages="clr-namespace:ClassIsland.Views.WelcomePages"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Views.WelcomePages.GeneralPage">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                Classes="settings-container animated-intro"
+                DataContext="{Binding RelativeSource={RelativeSource AncestorType=welcomePages:GeneralPage}}"
+                MaxWidth="600">
+        <TextBlock Text="基本" HorizontalAlignment="Center"
+                   Margin="0 0 0 4"
+                   Theme="{StaticResource SubtitleTextBlockStyle}"/>
+        <TextBlock Text="配置 ClassIsland 的基本设置。" HorizontalAlignment="Center"
+                   Margin="0 0 0 8"/>
+        
+        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE304;}"
+                                        Header="学期开始时间"
+                                        Description="设置学期首日，该日期将作为多周轮换课表的计算起点和每周的第一天。">
+            <controls:SettingsExpander.Footer>
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <CalendarDatePicker SelectedDate="{Binding ViewModel.SettingsService.Settings.SingleWeekStartTime}"
+                                Width="120"/>
+                </StackPanel>
+            </controls:SettingsExpander.Footer>
+        </controls:SettingsExpander>
+        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE4E8;}"
+                                   Header="匿名使用情况分析"
+                                   Description="本应用将通过 SentrySDK 来收集本应用中的使用情况与错误信息，以改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。">
+            <controls:SettingsExpander.Footer>
+                <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsSentryEnabled}"/>
+            </controls:SettingsExpander.Footer>
+        </controls:SettingsExpander>
+        
+        <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+            <Button Command="{x:Static views:WelcomeWindow.WelcomeNavigateBackCommand}"
+                    ToolTip.Tip="上一步"
+                    Content="{ci:FluentIcon &#xE108;, FontSize=18}"
+                    Width="48" Height="48"
+                    CornerRadius="24"
+                    Margin="0 8 0 0"/>
+            <Button Command="{x:Static views:WelcomeWindow.WelcomeNavigateForwardCommand}"
+                    ToolTip.Tip="下一步"
+                    Content="{ci:FluentIcon &#xE130;, FontSize=18}"
+                    Width="48" Height="48"
+                    CornerRadius="24"
+                    Classes="accent" 
+                    Margin="0 8 0 0"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,178 @@
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.AppLogsWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:classIsland="clr-namespace:ClassIsland"
+        xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+        xmlns:logging="clr-namespace:Microsoft.Extensions.Logging;assembly=Microsoft.Extensions.Logging.Abstractions"
+        mc:Ignorable="d"
+        Title="日志" Height="600" Width="1200"
+        EnableMicaWindow="True"
+        d:DataContext="{d:DesignInstance local:AppLogsWindow}"
+        Closing="AppLogsWindow_OnClosing">
+    <Grid RowDefinitions="Auto,*,Auto">
+        <Grid Grid.Row="0">
+            <ListBox HorizontalAlignment="Left"
+                     SelectionMode="Multiple,Toggle"
+                     SelectionChanged="Selector_OnSelectionChanged"
+                     Theme="{StaticResource ChipListBoxTheme}"
+            >
+                <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredCritical}">
+                    <controls1:IconText Glyph="&#xE84E;" Text="灾难"/>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredError}">
+                    <controls1:IconText Glyph="&#xE808;" Text="错误"/>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredWarning}">
+                    <controls1:IconText Glyph="&#xF430;" Text="警告"/>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredInfo}">
+                    <controls1:IconText Glyph="&#xE9E4;" Text="信息"/>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredDebug}">
+                    <controls1:IconText Glyph="&#xE2C7;" Text="调试"/>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredTrace}">
+                    <controls1:IconText Glyph="&#xE50F;" Text="追踪"/>
+                </ListBoxItem>
+            </ListBox>
+            
+            <TextBox Watermark="筛选日志…"
+                     HorizontalAlignment="Right"
+                     VerticalAlignment="Center"
+                     MinWidth="200"
+                     TextChanged="TextBoxBase_OnTextChanged"
+                     Text="{Binding ViewModel.FilterText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+        </Grid>
+        
+        <DataGrid Grid.Row="1" ItemsSource="{Binding ViewModel.Logs}" 
+                  AutoGenerateColumns="False"
+                  x:Name="DataGridMain"
+                  GridLinesVisibility="Horizontal"
+                  Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}">
+            <DataGrid.Styles>
+                <Style Selector="TextBlock, SelectableTextBlock">
+                    <Setter Property="FontSize" Value="13"/>
+                </Style>
+            </DataGrid.Styles>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="时间" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Time}" VerticalAlignment="Top"
+                                       Margin="2 9 2 0"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="等级" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <Border.Styles>
+                                    <Style Selector="Border.Critical">
+                                        <Setter Property="TextElement.FontWeight" Value="Medium"/>
+                                        <Setter Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}"/>
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}"/>
+                                    </Style>
+                                    <Style Selector="Border.Error">
+                                        <Setter Property="TextElement.FontWeight" Value="Medium"/>
+                                        <Setter Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}"/>
+                                    </Style>
+                                    <Style Selector="Border.Warning">
+                                        <Setter Property="TextElement.FontWeight" Value="Medium"/>
+                                        <Setter Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}"/>
+                                    </Style>
+                                    <Style Selector="Border.Debug, Border.Trace">
+                                        <Setter Property="Opacity" Value="0.75"/>
+                                    </Style>
+                                </Border.Styles>
+                                <Classes.Critical>
+                                    <Binding Path="LogLevel" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <logging:LogLevel>Critical</logging:LogLevel>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </Classes.Critical>
+                                <Classes.Error>
+                                    <Binding Path="LogLevel" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <logging:LogLevel>Error</logging:LogLevel>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </Classes.Error>
+                                <Classes.Warning>
+                                    <Binding Path="LogLevel" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <logging:LogLevel>Warning</logging:LogLevel>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </Classes.Warning>
+                                <Classes.Debug>
+                                    <Binding Path="LogLevel" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <logging:LogLevel>Debug</logging:LogLevel>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </Classes.Debug>
+                                <Classes.Trace>
+                                    <Binding Path="LogLevel" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <logging:LogLevel>Trace</logging:LogLevel>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </Classes.Trace>
+                                <controls1:IconText Glyph="{Binding LogLevel, Converter={x:Static local:AppLogsWindow.LogLevelToIconGlyphConverter}}"
+                                                    Text="{Binding LogLevel, Converter={x:Static local:AppLogsWindow.LogLevelToNameConverter}}"
+                                                    VerticalAlignment="Top"
+                                                    HorizontalAlignment="Center"
+                                                    Margin="2 7 2 0"/>
+                            </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="区域" Width="Auto" MaxWidth="250">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <SelectableTextBlock Text="{Binding CategoryName}"
+                                                 VerticalAlignment="Center"
+                                                 Margin="2"
+                                                 TextWrapping="Wrap"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="内容" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <SelectableTextBlock Text="{Binding Message}"
+                                                 Margin="2"
+                                                 VerticalAlignment="Center"
+                                                 TextWrapping="Wrap"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        
+
+        <WrapPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Theme="{StaticResource TransparentButton}"
+                    Click="ButtonClearLogs_OnClick">
+                <controls1:IconText Glyph="&#xE61D;" Text="清空日志"/>
+            </Button>
+            <!--<Button Style="{StaticResource TransparentButton}"
+                    Click="ButtonScrollToBottom_OnClick">
+                <controls:IconText Kind="ArrowBottom" Text="滚动到最底"/>
+            </Button>-->
+            <Button Theme="{StaticResource TransparentButton}"
+                    Click="ButtonCopySelectedLogs_OnClick">
+                <controls1:IconText Glyph="&#xE58B;" Text="复制选中"/>
+            </Button>
+        </WrapPanel>
+    </Grid>
+</controls1:MyWindow>

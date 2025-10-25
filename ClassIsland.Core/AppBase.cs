@@ -1,5 +1,8 @@
 using System.Reflection;
-using System.Windows;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
 
@@ -36,6 +39,7 @@ public abstract class AppBase : Application, IAppHost
     /// 获取应用是否已裁剪资源。
     /// </summary>
     /// <returns></returns>
+    [Obsolete("2.0 已弃用资源裁剪发布，此方法将恒返回 false.")]
     public abstract bool IsAssetsTrimmed();
 
     /// <summary>
@@ -61,7 +65,7 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用打包类型
     /// </summary>
-    public string PackagingType => IsMsix ? "msix" : "singleFile";
+    public abstract string PackagingType { get; internal set; }
 
     /// <summary>
     /// 应用二进制文件的平台架构
@@ -71,12 +75,17 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用二进制文件面向的操作系统
     /// </summary>
-    public abstract string OperatingSystem { get; }
+    public abstract string OperatingSystem { get; internal set; }
+    
+    /// <summary>
+    /// 应用二进制文件的构建类型
+    /// </summary>
+    public abstract string BuildType { get; }
 
     /// <summary>
     /// 应用分发频道
     /// </summary>
-    public string AppSubChannel => $"{OperatingSystem}_{Platform}_{(IsAssetsTrimmed() ? "trimmed" : "full")}_{PackagingType}";
+    public string AppSubChannel => $"{OperatingSystem}_{Platform}_{BuildType}_{PackagingType}";
 
     internal AppBase()
     {
@@ -91,17 +100,67 @@ public abstract class AppBase : Application, IAppHost
     /// 应用版本代号
     /// </summary>
     // ReSharper disable StringLiteralTypo
-    public static string AppCodeName => "RyouYamada";
+    public static string AppCodeName => "Khaslana";
     // ReSharper restore StringLiteralTypo
 
     /// <summary>
     /// 应用长版本号
     /// </summary>
     public static string AppVersionLong =>
+        #if NIX
+        $"{AppVersion}-{AppCodeName}-NIXBUILD_COMMIT(NIXBUILD_BRANCH) (Core {IAppHost.CoreVersion})";
+        #else
         $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
+        #endif
     
     /// <summary>
     /// 应用当前生命周期状态
     /// </summary>
-    public static ApplicationLifetime CurrentLifetime { get; internal set; } = ApplicationLifetime.None;
+    public static ApplicationLifetime CurrentLifetime { get; internal set; } = Enums.ApplicationLifetime.None;
+    
+    /// <summary>
+    /// 应用当前的主窗口
+    /// </summary>
+    public Window? MainWindow { get; internal set; }
+
+    /// <summary>
+    /// 桌面生命周期对象
+    /// </summary>
+    public IClassicDesktopStyleApplicationLifetime? DesktopLifetime =>
+        (ApplicationLifetime as IClassicDesktopStyleApplicationLifetime);
+
+    /// <summary>
+    /// Fluent Icons 字体
+    /// </summary>
+    public static FontFamily FluentIconsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable");
+
+    /// <summary>
+    /// Lucide Icons 字体
+    /// </summary>
+    public static FontFamily LucideIconsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#lucide");
+    
+    /// <summary>
+    /// 虚根窗口
+    /// </summary>
+    public Window PhonyRootWindow = null!;
+
+    /// <summary>
+    /// 获得一个根窗口。
+    /// </summary>
+    /// <returns>优先返回当前激活的窗口。如果没有激活的窗口，则返回虚窗口。</returns>
+    public Window GetRootWindow()
+    {
+        return Current.DesktopLifetime?.Windows.FirstOrDefault(x => x is { IsActive: true, IsVisible: true }) ??
+               Current.PhonyRootWindow;
+    }
+
+    /// <summary>
+    /// 应用入口二进制文件路径。
+    /// </summary>
+    public static string ExecutingEntrance { get; internal set; } = "";
+
+    /// <summary>
+    /// 当前平台可执行文件后缀
+    /// </summary>
+    public static string PlatformExecutableExtension => System.OperatingSystem.IsWindows() ? ".exe" : "";
 }

@@ -1,0 +1,67 @@
+﻿<controls:ComponentBase x:TypeArguments="componentSettings:WeatherComponentSettings"
+                        x:Class="ClassIsland.Controls.Components.WeatherComponentSettingsControl"
+                        xmlns="https://github.com/avaloniaui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                        xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                        xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+                        xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                        xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                        mc:Ignorable="d" 
+                        d:DesignHeight="450" d:DesignWidth="800">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
+        <ScrollViewer>
+            <StackPanel Classes="settings-container animated-intro" Margin="0">
+                <controls1:InfoBar Message="本页面仅包含组件设置，要调整显示天气的城市，请转到【天气】选项卡"
+                                   IsOpen="True" IsClosable="False"/>
+                
+                <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xEFD7;}"
+                                            Header="显示天气信息"
+                                            Description="显示当前天气信息摘要。">
+                    <controls1:SettingsExpander.Footer>
+                        <ComboBox SelectedIndex="{Binding Settings.MainWeatherInfoKind}"
+                                  MinWidth="110">
+                            <ComboBoxItem>天气类型/气温</ComboBoxItem>
+                            <ComboBoxItem>湿度</ComboBoxItem>
+                            <ComboBoxItem>风力</ComboBoxItem>
+                            <ComboBoxItem>AQI</ComboBoxItem>
+                            <ComboBoxItem>气压</ComboBoxItem>
+                            <ComboBoxItem>体感温度</ComboBoxItem>
+                        </ComboBox>
+                    </controls1:SettingsExpander.Footer>
+                </controls1:SettingsExpander>
+                
+                <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF431;}"
+                                            Header="显示预警信号"
+                                            Description="启用后，预警将以图标形式显示在天气组件上。"
+                                            IsExpanded="{Binding Settings.ShowAlerts, Mode=OneWay}">
+                    <controls1:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.ShowAlerts, Mode=TwoWay}"/>
+                    </controls1:SettingsExpander.Footer>
+                    <controls1:SettingsExpanderItem Content="显示预警类型"
+                                                    IconSource="{ci:FluentIconSource &#xF21A;}"
+                                                    Description="设置何种情况下显示预警类型。">
+                        <controls1:SettingsExpanderItem.Footer>
+                            <ComboBox SelectedIndex="{Binding Settings.AlertsTitleShowMode}">
+                                <ComboBoxItem>不显示</ComboBoxItem>
+                                <ComboBoxItem>仅当没有对应图标时</ComboBoxItem>
+                                <ComboBoxItem>总是显示</ComboBoxItem>
+                            </ComboBox>
+                        </controls1:SettingsExpanderItem.Footer>
+                    </controls1:SettingsExpanderItem>
+                </controls1:SettingsExpander>
+               
+                <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF453;}"
+                                            Header="显示降水提示"
+                                            Description="启用后，将显示降水即将到来的时间和降水剩余时间。正数代表降水即将到来的时间，负数代表剩余时间。">
+                    <controls1:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.ShowRainTime, Mode=TwoWay}"/>
+                    </controls1:SettingsExpander.Footer>
+                </controls1:SettingsExpander>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</controls:ComponentBase>

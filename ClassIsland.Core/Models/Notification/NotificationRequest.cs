@@ -74,7 +74,7 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
-    
+
 
     /// <summary>
     /// 针对此次提醒的特殊设置。如果要使此设置生效，还要将<see cref="NotificationSettings.IsSettingsEnabled"/>设置为true。
@@ -119,6 +119,8 @@ public class NotificationRequest : ObservableRecipient
     /// </summary>
     public Guid ChannelId { get; set; }
 
+    internal NotificationRequest? ChainedNextRequest { get; set; }
+
     internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;
 
     internal Guid NotificationSourceGuid { get; set; } = Guid.Empty;
@@ -133,6 +135,8 @@ public class NotificationRequest : ObservableRecipient
 
     internal CancellationTokenSource? RootCancellationTokenSource { get; set; }
     internal CancellationTokenSource? RootCompletedTokenSource { get; set; }
+    
+    internal bool NotificationSetupCompleted { get; set; }
 
     /// <summary>
     /// 取消当前提醒。
@@ -152,34 +156,4 @@ public class NotificationRequest : ObservableRecipient
     /// </summary>
     public event EventHandler? Completed;
 
-
-#pragma warning disable CS0618 // 类型或成员已过时
-    internal static NotificationRequest ConvertFromOldNotificationRequest(ClassIsland.Shared.Models.Notification.NotificationRequest oldRequest)
-    {
-        var newRequest = new NotificationRequest()
-        {
-            MaskContent = new NotificationContent()
-            {
-                Content = oldRequest.MaskContent,
-                SpeechContent = oldRequest.MaskSpeechContent,
-                Duration = oldRequest.MaskDuration,
-                EndTime = oldRequest.TargetMaskEndTime,
-                IsSpeechEnabled = oldRequest.IsSpeechEnabled
-            },
-            OverlayContent = oldRequest.OverlayContent != null ? new NotificationContent()
-            {
-                Content = oldRequest.OverlayContent,
-                SpeechContent = oldRequest.OverlaySpeechContent,
-                Duration = oldRequest.OverlayDuration,
-                EndTime = oldRequest.TargetOverlayEndTime,
-                IsSpeechEnabled = oldRequest.IsSpeechEnabled
-            } : null,
-            IsPriorityOverride = oldRequest.IsPriorityOverride,
-            RequestNotificationSettings = oldRequest.RequestNotificationSettings,
-            CancellationTokenSource = oldRequest.CancellationTokenSource,
-            CompletedTokenSource = oldRequest.CompletedTokenSource
-        };
-        return newRequest;
-    }
-#pragma warning restore CS0618 // 类型或成员已过时
 }

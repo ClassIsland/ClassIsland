@@ -1,4 +1,4 @@
-﻿using System.Windows.Media;
+﻿using Avalonia;
 using ClassIsland.Core.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
 

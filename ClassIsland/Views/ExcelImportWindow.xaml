@@ -18,7 +18,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:ExcelImportWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -96,7 +96,7 @@
                 <Run Text="{Binding ViewModel.OpenException.Message, Mode=OneWay}"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
@@ -121,7 +121,7 @@
                 <Run Text="{Binding ViewModel.OpenException.Message, Mode=OneWay}"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
@@ -146,14 +146,14 @@
                 <Run Text="{Binding ViewModel.OpenException.Message, Mode=OneWay}"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             False
                         </system:Boolean>
                     </Button.CommandParameter>
                 </Button>
-                <Button Content="在兼容模式中继续" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                <Button Content="在兼容模式中继续" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
@@ -260,11 +260,11 @@
                                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                    HorizontalAlignment="Left"
                                    FontFamily="Consolas"
-                                   ToolTip="当前选区"
+                                   ToolTip.Tip="当前选区"
                                    Margin="0 0 8 0"
                                    VerticalAlignment="Center"/>
                         <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
-                                ToolTip="确定"
+                                ToolTip.Tip="确定"
                                 Content="{materialDesign:PackIcon Check}"
                                 Click="ButtonExitSelectingMode_OnClick"/>
                     </StackPanel>
@@ -348,7 +348,7 @@
                             <TextBlock Text="或者" HorizontalAlignment="Center"
                                        Margin="0 2 0 0"
                                        FontSize="14"/>
-                            <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 6 0 0"
+                            <Button Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}" Margin="0 6 0 0"
                                     HorizontalAlignment="Center"
                                     Click="ButtonBrowseExcelFile_OnClick">
                                 <controls1:IconText Kind="FolderOutline" Text="浏览文件…"/>
@@ -361,7 +361,7 @@
                                     HorizontalAlignment="Center">
                             <stickerControl:StickerControl ImageSource="/Assets/HoYoStickers/帕姆_点赞.png" 
                                    Width="81" Height="81"
-                                   StickerToolTip="帕姆_点赞"
+                                   StickerToolTip.Tip="帕姆_点赞"
                                    PackIconKind="FileExcelOutline"
                                    Margin="0 0 0 24"/>
 
@@ -413,7 +413,7 @@
                                                      InvokeCommandParameter="TimeLayoutSource"/>
                             </controls1:WizardOptionsListBox>
                             <Button HorizontalAlignment="Left" Margin="0 8 0 0"
-                                    Style="{StaticResource MaterialDesignPaperButton}"
+                                    Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                                     Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
                                 <controls1:IconText Kind="ArrowLeft" Text="上一步"/>
                             </Button>
@@ -445,7 +445,7 @@
                                                      InvokeCommandParameter="CreateTimeLayoutManually" />
                             </controls1:WizardOptionsListBox>
                             <Button Grid.Row="2" HorizontalAlignment="Left" Margin="0 8 0 0"
-                                    Style="{StaticResource MaterialDesignPaperButton}"
+                                    Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                                     Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
                                 <controls1:IconText Kind="ArrowLeft" Text="上一步" />
                             </Button>
@@ -507,7 +507,7 @@
                             </ComboBox>
                             <Button HorizontalAlignment="Left"
                                     Margin="0 8 0 0"
-                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Style="{StaticResource TransparentButton}"
                                     Click="ButtonOpenProfileSettingsWindow_OnClick">
                                 <controls1:IconText Kind="FileDocumentEditOutline" Text="打开档案编辑窗口"/>
                             </Button>
@@ -552,11 +552,11 @@
                                          Margin="0 4 0 0"
                                          materialDesign:HintAssist.Hint="时间表名称" />
                                 <WrapPanel Margin="0 4 0 0">
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    <Button Style="{StaticResource TransparentButton}"
                                             Content="刷新"
                                             HorizontalAlignment="Left"
                                             Click="ButtonRefreshTimeLayout_OnClick" />
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    <Button Style="{StaticResource TransparentButton}"
                                             Content="编辑"
                                             HorizontalAlignment="Left"
                                             Visibility="{Binding ImportTimeLayoutOnly, Converter={StaticResource InverseBoolToVisConverter}}"
@@ -582,7 +582,7 @@
                             <controls:NavigationButtonsControl Grid.Row="2" NavigationNextCommandParameter="SelectSubjectsPosition" />
                             <Button Grid.Row="2" HorizontalAlignment="Right"
                                     Click="ButtonSkipImport_OnClick"
-                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Style="{StaticResource TransparentButton}"
                                     Content="跳过课表导入"
                                     Visibility="{Binding ImportTimeLayoutOnly, Converter={StaticResource InverseBoolToVisConverter}}"
                                     VerticalAlignment="Bottom"/>
@@ -655,7 +655,7 @@
                                                      InvokeCommandParameter="RowClassesTimeRelationshipImportMan"/>
                             </controls1:WizardOptionsListBox>
                             <!--<Button HorizontalAlignment="Left" Margin="0 8 0 0"
-                                    Style="{StaticResource MaterialDesignPaperButton}"
+                                    Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                                     Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
                                 <controls:IconText Kind="ArrowLeft" Text="上一步"/>
                             </Button>-->
@@ -688,7 +688,7 @@
                                              ItemsSource="{Binding ViewModel.ClassRecognitionRange}">
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem"
-                                                   BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                   >
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                         </Style>
                                     </ListBox.ItemContainerStyle>
@@ -710,7 +710,7 @@
                                              ItemsSource="{Binding ViewModel.ClassRecognitionTimePoints}">
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem"
-                                                   BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                   >
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                         </Style>
                                     </ListBox.ItemContainerStyle>
@@ -868,7 +868,7 @@
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Value.Name}"
-                                                       ToolTip="{Binding Key}" />
+                                                       ToolTip.Tip="{Binding Key}" />
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
@@ -936,7 +936,7 @@
                             <TextBlock Text="完成" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                        Margin="0 0 0 12"/>
                             <stickerControl:StickerControl ImageSource="/Assets/HoYoStickers/光辉矢愿_回眸.png"
-                                   StickerToolTip="光辉矢愿_回眸"
+                                   StickerToolTip.Tip="光辉矢愿_回眸"
                                    Focusable="True"
                                    Width="63"
                                    PackIconKind="CheckCircleOutline"
@@ -956,7 +956,7 @@
 
             <!-- Debug slider --><!--
             <Slider Grid.Column="2" Grid.Row="1" AutoToolTipPlacement="TopLeft"
-                    ToolTip="debug purpose only."
+                    ToolTip.Tip="debug purpose only."
                     VerticalAlignment="Bottom"
                     HorizontalAlignment="Right"
                     Width="150"
@@ -972,7 +972,7 @@
             <Grid Grid.Row="0" Grid.Column="0"
                   Grid.RowSpan="2" Grid.ColumnSpan="3"
                   Visibility="{Binding ViewModel.IsDragEntering, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Border Background="{DynamicResource MaterialDesignBackground}"
+                <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                         Opacity="0.8"/>
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                     <materialDesign:PackIcon Kind="FileImport"

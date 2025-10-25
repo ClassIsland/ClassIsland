@@ -1,4 +1,5 @@
-﻿using System;
+#if false
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -94,3 +95,4 @@ public partial class SplashControl : UserControl
         base.OnInitialized(e);
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Windows;
 using System.Windows.Interop;
@@ -46,3 +47,4 @@ public partial class SplashWindow : SplashWindowBase
         _isInit2 = true;
     }
 }
+#endif

@@ -49,7 +49,7 @@ public partial class MainWindow : Window
 
         var sb = new StringBuilder();
         sb.AppendLine($"当前科目： {lessonSc.CurrentSubject?.Name}");
-        sb.AppendLine($"当前时间点： {lessonSc.CurrentTimeLayoutItem.StartSecond} - {lessonSc.CurrentTimeLayoutItem.EndSecond}");
+        sb.AppendLine($"当前时间点： {lessonSc.CurrentTimeLayoutItem.StartTime} - {lessonSc.CurrentTimeLayoutItem.EndTime}");
 
         ViewModel.LessonInfos = sb.ToString();
     }

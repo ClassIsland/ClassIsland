@@ -37,7 +37,7 @@ public interface IPublicProfileService
     /// <param name="timeLayoutId">要使用的时间表ID,留null将使用源课表的时间表</param>
     /// <param name="enableDateTime">临时层的预定启用时间</param>
     /// <returns>如果创建成功，则返回临时层课表的ID，否则返回null。</returns>
-    string? CreateTempClassPlan(string id, string? timeLayoutId = null, DateTime? enableDateTime = null);
+    Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId = null, DateTime? enableDateTime = null);
 
     /// <summary>
     /// 清空临时层课表
@@ -53,14 +53,14 @@ public interface IPublicProfileService
     /// 将指定临时层课表转换为普通课表。
     /// </summary>
     /// <param name="id">要转换的课表 GUID</param>
-    void ConvertToStdClassPlan(string id);
+    void ConvertToStdClassPlan(Guid id);
 
     /// <summary>
     /// 设置临时课表组。
     /// </summary>
     /// <param name="key">要设置的临时课表组ID</param>
     /// <param name="expireTime">临时课表组过期时间，默认为完成一个周期后。</param>
-    void SetupTempClassPlanGroup(string key, DateTime? expireTime = null);
+    void SetupTempClassPlanGroup(Guid key, DateTime? expireTime = null);
 
     /// <summary>
     /// 清除当前的临时课表组。

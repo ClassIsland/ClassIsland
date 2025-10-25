@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Models.Logging;
+using DynamicData;
 
 namespace ClassIsland.Core.Abstractions.Services.Logging;
 
@@ -11,6 +12,6 @@ public interface IAppLogService
     /// <summary>
     /// 已记录的日志
     /// </summary>
-    ObservableCollection<LogEntry> Logs { get; }
+    SourceList<LogEntry> Logs { get; }
     internal void AddLog(LogEntry log);
 }

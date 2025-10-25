@@ -1,0 +1,357 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.GeneralSettingsPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:controls2="clr-namespace:ClassIsland.Controls"
+      xmlns:interfaces="clr-namespace:ClassIsland.Shared.Interfaces;assembly=ClassIsland.Shared"
+      xmlns:views="clr-namespace:ClassIsland.Views"
+      xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+      xmlns:commands="clr-namespace:ClassIsland.Core.Commands;assembly=ClassIsland.Core"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      xmlns:abstraction="clr-namespace:ClassIsland.Platforms.Abstraction;assembly=ClassIsland.Platforms.Abstractions"
+      mc:Ignorable="d" 
+      Design.Width="960" Design.Height="500"
+      d:DataContext="{d:DesignInstance local:GeneralSettingsPage}"
+      Loaded="GeneralSettingsPage_OnLoaded"
+      Unloaded="GeneralSettingsPage_OnUnloaded">
+    <controls:SettingsPageBase.Resources>
+        <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
+
+        <ci:RulesetControl x:Key="RulesetControl"
+                           Classes="in-drawer"
+                           Ruleset="{Binding ViewModel.SettingsService.Settings.HideRules, Mode=TwoWay}"/>
+    </controls:SettingsPageBase.Resources>
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro">
+            <controls3:InfoBar IsOpen="{Binding ViewModel.SettingsService.Settings.ShowSellingAnnouncement, Mode=TwoWay}"
+                               IsVisible="{Binding ViewModel.SettingsService.Settings.ShowSellingAnnouncement}"
+                               Severity="Warning"
+                               Message="ClassIsland 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在 https://github.com/ClassIsland/ClassIsland/。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。"
+                               />
+
+            <!-- Announcements -->
+            <ItemsControl ItemsSource="{Binding ViewModel.AnnouncementService.Announcements, Mode=OneWay}"
+                          Margin="0 0 0 8">
+                <ItemsControl.Styles>
+                    <Style Selector="ItemsControl:empty">
+                        <Setter Property="IsVisible" Value="False"/>
+                    </Style>
+                </ItemsControl.Styles>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ci:AnnouncementControl Announcement="{Binding}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <controls1:IconText Glyph="&#xE84F;" Text="行为" Margin="0 0 0 4" />
+            <!-- 开机自启 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE342;}" 
+                                        Header="开机自启"
+                                        Description="在您的系统启动时自动运行本应用。"
+                                        >
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding IsAutoStartEnabled, Source={x:Static abstraction:PlatformServices.DesktopService}, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <!-- 注册 Url 协议 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEAB0;}" 
+                                        Header="注册 Url 协议"
+                                        Description="允许第三方应用或网页通过 Url 协议 classisland:// 调用本应用的部分功能，详见帮助文档。">
+                <controls3:SettingsExpander.IsVisible>
+                    <OnPlatform Default="False">
+                        <On Options="Windows" Content="True"/>
+                    </OnPlatform>
+                </controls3:SettingsExpander.IsVisible>
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding IsUrlSchemeRegistered, Source={x:Static abstraction:PlatformServices.DesktopService}, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <!--  学期开始时间  -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE304;}"
+                                        Header="学期开始时间"
+                                        Description="设置学期首日，该日期将作为多周轮换课表的计算起点和每周的第一天。">
+                <controls3:SettingsExpander.Footer>
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <CalendarDatePicker SelectedDate="{Binding ViewModel.SettingsService.Settings.SingleWeekStartTime}"
+                                            Width="120"/>
+                        <Button Theme="{StaticResource TransparentButton}"
+                                Classes="accent"
+                                Content="{ci:FluentIcon &#xE324;}"
+                                Click="ButtonWeekOffsetSettingsOpen_OnClick"
+                                ToolTip.Tip="调整多周轮换偏移…"
+                                VerticalAlignment="Stretch"
+                                x:Name="WeekOffsetSettingsControlButton">
+                            <Button.Flyout>
+                                <Flyout>
+                                    <Border>
+                                        <controls2:WeekOffsetSettingsControl
+                                            x:Name="WeekOffsetSettingsControl"/>
+                                    </Border>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
+                </controls3:SettingsExpander.Footer>
+                <!--  最大多周轮换周数  -->
+                <controls3:SettingsExpanderItem Content="最大多周轮换周数">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ci:Field VerticalAlignment="Center"
+                                  Suffix="周">
+                            <NumericUpDown MinWidth="120"
+                                           Maximum="9"
+                                           Minimum="2"
+                                           Value="{Binding ViewModel.SettingsService.Settings.MultiWeekRotationMaxCycle}"
+                                           FormatString="0" />
+                        </ci:Field>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+            </controls3:SettingsExpander>
+            
+            <!-- 点击托盘图标行为 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C1;}" 
+                                        Header="点击托盘图标行为"
+                                        Description="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。">
+                <controls3:SettingsExpander.IsVisible>
+                    <OnPlatform Default="True">
+                        <On Options="macOS" Content="False"/>
+                    </OnPlatform>
+                </controls3:SettingsExpander.IsVisible>
+                <controls3:SettingsExpander.Footer>
+                    <Grid>
+                        <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.TaskBarIconClickBehavior}"
+                                  HorizontalContentAlignment="Left">
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                <ComboBoxItem.IsEnabled>
+                                    <OnPlatform Default="False">
+                                        <On Options="Windows" Content="True"/>
+                                    </OnPlatform>
+                                </ComboBoxItem.IsEnabled>
+                                <controls1:IconText Glyph="&#xE075;" Text="打开主菜单" />
+                            </ComboBoxItem>
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                <controls1:IconText Glyph="&#xE6BB;" Text="打开档案编辑窗口" />
+                            </ComboBoxItem>
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                <controls1:IconText Glyph="&#xEFBF;" Text="显示/隐藏主界面" />
+                            </ComboBoxItem>
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                <controls1:IconText Glyph="&#xE15F;" Text="打开换课窗口" />
+                            </ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <!-- 教学安全模式 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE809;}" 
+                                        Header="教学安全模式"
+                                        Description="启用后，如果 ClassIsland 发生意外崩溃，将自动按照右侧选择的方法处理崩溃，以确保教学不受到影响。如果发生的是不可忽略的异常，应用将自动退出。您可以在日志记录中查看崩溃详情。">
+                <controls3:SettingsExpander.Footer>
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <ComboBox Width="135"
+                                  VerticalAlignment="Center"
+                                  IsVisible="{Binding !ViewModel.SettingsService.Settings.IsCriticalSafeMode}"
+                                  IsEnabled="False"
+                                  SelectedIndex="0">
+                            <ComboBoxItem>显示崩溃报告</ComboBoxItem>
+                        </ComboBox>
+                        <ComboBox Width="135"
+                                  VerticalAlignment="Center"
+                                  IsVisible="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}"
+                                  SelectedIndex="{Binding ViewModel.SettingsService.Settings.CriticalSafeModeMethod}">
+                            <ComboBoxItem>退出应用</ComboBoxItem>
+                            <ComboBoxItem>静默重启应用</ComboBoxItem>
+                            <ComboBoxItem>显示通知</ComboBoxItem>
+                            <ComboBoxItem>忽略（不推荐）</ComboBoxItem>
+                        </ComboBox>
+                        <ToggleSwitch VerticalAlignment="Center"
+                                      Margin="8 0 0 0"
+                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}" />
+                    </StackPanel>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <Separator Margin="0 12 0 4" />
+            <controls1:IconText Glyph="&#xf485;" Text="界面" Margin="0 0 0 4" />
+            
+            <!-- 隐藏窗口 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}" 
+                                        Header="隐藏窗口"
+                                        Description="将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。">
+                <controls3:SettingsExpanderItem>
+                    <TabControl HorizontalContentAlignment="Left"
+                                SelectedIndex="{Binding ViewModel.SettingsService.Settings.HideMode}"
+                                Classes="compact">
+                        <TabItem Header="基础模式">
+                            <StackPanel Margin="6 6 0 0" Spacing="2">
+                                <CheckBox Content="上课时"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnClass}"/>
+                                <CheckBox Content="前台是最大化窗口时"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnMaxWindow}" />
+                                <CheckBox Content="前台是全屏窗口时"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.HideOnFullscreen}" />
+                            </StackPanel>
+                        </TabItem>
+                        <TabItem Header="高级模式">
+                            <StackPanel>
+                                <Button HorizontalAlignment="Left" Theme="{StaticResource TransparentButton}"
+                                        Classes="accent"
+                                        Command="{x:Static ci:SettingsPageBase.OpenDrawerCommand}"
+                                        CommandParameter="{StaticResource RulesetControl}">
+                                    <controls1:IconText Glyph="&#xF17E;" Text="编辑规则集…"/>
+                                </Button>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
+                </controls3:SettingsExpanderItem>
+            </controls3:SettingsExpander>
+            
+            <!-- 动画级别 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEDC1;}" 
+                                        Header="动画级别"
+                                        Description="控制应用界面的动画级别，禁用动画选项不适用于应用主界面和部分控件。">
+                <controls3:SettingsExpander.Footer>
+                    <ComboBox Width="120"
+                              VerticalAlignment="Center"
+                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.AnimationLevel}">
+                        <ComboBoxItem>禁用</ComboBoxItem>
+                        <ComboBoxItem>标准</ComboBoxItem>
+                        <ComboBoxItem>华丽</ComboBoxItem>
+                    </ComboBox>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <!-- 降低主界面进度条精度 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xe5e3;}" 
+                                        Header="降低主界面进度条精度"
+                                        Description="启用后将降低主界面精度条精度，降低主界面更新频率，以减少应用的性能占用。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.ReduceProgressAccuracy}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+
+            <Separator Margin="0 12 0 4" />
+            <controls1:IconText Glyph="&#xE4C4;" Text="时钟" Margin="0 0 0 4" />
+            <!-- 使用精确时间 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE4C8;}" 
+                                        Header="使用精确时间"
+                                        Description="启用后，应用将使用从指定服务器同步的精确时间，而不是使用系统时间。"
+                                        IsExpanded="{Binding $parent[local:GeneralSettingsPage].ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=OneWay}">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding $parent[local:GeneralSettingsPage].ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+                <controls3:SettingsExpanderItem Content="时间服务器">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <TextBox VerticalAlignment="Stretch"
+                              Text="{Binding ViewModel.SettingsService.Settings.ExactTimeServer}"
+                              HorizontalContentAlignment="Left"
+                              
+                              Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                        </TextBox>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem>
+                    <controls3:SettingsExpanderItem.Footer>
+                        <Button Margin="0 6 0 0" 
+                                Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                                HorizontalAlignment="Left"
+                                Click="ButtonSyncTimeNow_OnClick">
+                            <controls1:IconText Glyph="&#xE0B5;" Text="立即同步"/>
+                        </Button>
+                    </controls3:SettingsExpanderItem.Footer>
+                    <TextBlock Margin="0 6 0 0" Text="{Binding ViewModel.ExactTimeService.SyncStatusMessage}"
+                               TextWrapping="Wrap"/>
+                </controls3:SettingsExpanderItem>
+            </controls3:SettingsExpander>
+            
+            <!-- 时间偏移 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE4C4;}" 
+                                        Header="时间偏移"
+                                        Description="设定课程时间与实际时间的偏移值。增大偏移以抵消铃声提前，减小偏移以抵消铃声滞后。"
+                                        IsExpanded="True">
+                <controls3:SettingsExpander.Footer>
+                    <ci:Field Suffix="秒">
+                        <controls3:NumberBox VerticalAlignment="Center"
+                                             MinWidth="147"
+                                             SpinButtonPlacementMode="Inline"
+                                             Value="{Binding ViewModel.SettingsService.Settings.TimeOffsetSeconds}" />
+                    </ci:Field>
+                </controls3:SettingsExpander.Footer>
+                <controls3:SettingsExpanderItem Content="自动时间偏移"
+                                                Description="若启用，每天自动以设定的增量值调整时间偏移量。"
+                                                IconSource="{ci:FluentIconSource &#xE4D2;}">
+
+                    <controls3:SettingsExpanderItem.Footer>
+                        <DockPanel>
+                            <ToggleSwitch DockPanel.Dock="Right"
+                                          Margin="8 -8 0 0"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"/>
+                            <ci:Field Suffix="秒" VerticalAlignment="Center">
+                                <controls3:NumberBox
+                                    MinWidth="147"
+                                    SpinButtonPlacementMode="Inline"
+                                    IsEnabled="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"
+                                    Value="{Binding ViewModel.SettingsService.Settings.TimeAutoAdjustSeconds}"/>
+                            </ci:Field>
+                        </DockPanel>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="对齐铃声"
+                                                IsClickEnabled="True"
+                                                Click="ButtonAdjustTime_OnClick"/>
+            </controls3:SettingsExpander>
+            
+            <Separator Margin="0 12 0 4" />
+            <controls1:IconText Glyph="&#xEF2B;" Text="高级" Margin="0 0 0 4" />
+            <!-- 自动禁用异常插件 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE072;}" 
+                                        Header="自动禁用异常插件"
+                                        Description="启用后，ClassIsland 将自动禁用导致应用崩溃的插件，以避免异常插件进一步影响后续使用。"
+                                        >
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AutoDisableCorruptPlugins, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <!-- 禁用动画等待 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xF365;}" 
+                                        Header="禁用动画等待"
+                                        Description="默认情况下 ClassIsland 在进行阻塞 UI 线程的操作时，会确保动画播放完成。启用此选项后将不会等待动画播放完成，可以一定程度上地提升加载速度。"
+                                        >
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsWaitForTransientDisabled, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <!-- 渲染模式 -->
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE62F;}" 
+                                        Header="渲染模式"
+                                        Description="渲染 UI 时将优先使用此处指定的渲染模式渲染。如果您遇到渲染问题，可尝试更改此选项，否则不要动这个选项。此选项仅在此设备生效。"
+            >
+                <controls3:SettingsExpander.IsVisible>
+                    <OnPlatform Default="False">
+                        <On Options="Windows" Content="True"/>
+                    </OnPlatform>
+                </controls3:SettingsExpander.IsVisible>
+                <controls3:SettingsExpander.Footer>
+                    <ComboBox SelectedIndex="{Binding ViewModel.RenderingModeSelectedIndex}">
+                        <ComboBoxItem>默认</ComboBoxItem>
+                        <ComboBoxItem>软件（不推荐）</ComboBoxItem>
+                        <ComboBoxItem>AngleEgl</ComboBoxItem>
+                        <ComboBoxItem>Wgl</ComboBoxItem>
+                        <ComboBoxItem>Vulkan</ComboBoxItem>
+                    </ComboBox>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

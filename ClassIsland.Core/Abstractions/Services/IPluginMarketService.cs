@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization;
 
@@ -17,7 +18,7 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// <summary>
     /// 已将插件仓库与本地插件合并的全部插件
     /// </summary>
-    public ObservableDictionary<string, PluginInfo> MergedPlugins { get; set; }
+    public ObservableDictionary<string, PluginInfo> MergedPlugins { get; }
 
     /// <summary>
     /// 是否正在加载插件源

@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="ClassIsland.Controls.Demo.ThemeDemo"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ClassIsland.Controls.Demo"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DesignHeight="75" d:DesignWidth="300"
+             >
+    <Grid>
+        <Grid Height="75" Background="{DynamicResource AccentFillColorSecondaryBrush}">
+            <Grid.Styles>
+                <Style Selector="Rectangle">
+                    <Setter Property="Fill"
+                            Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <Setter Property="Margin" Value="2 0" />
+                    <Setter Property="Height" Value="4" />
+                    <Setter Property="Opacity" Value="0.8" />
+                </Style>
+            </Grid.Styles>
+            <Border HorizontalAlignment="Center" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    VerticalAlignment="Top">
+                <StackPanel Orientation="Horizontal"
+                            Margin="2">
+
+                    <Rectangle Width="12" />
+                    <Rectangle Width="4" />
+                    <Rectangle Width="4" />
+                    <Rectangle Width="12" Fill="{DynamicResource PrimaryHueMidBrush}" />
+                    <Rectangle Width="4" />
+                    <Rectangle Width="4" />
+                    <Rectangle Width="4" />
+                    <Rectangle Width="4" />
+                </StackPanel>
+            </Border>
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom" 
+                    Width="100"
+                    Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    Height="50">
+                <StackPanel>
+                    <StackPanel Height="6" HorizontalAlignment="Right" Orientation="Horizontal">
+                        <Rectangle Width="4" Opacity="0.5" />
+                        <Rectangle Width="4" Opacity="0.5" />
+                        <Rectangle Width="4" Opacity="0.5" />
+                    </StackPanel>
+                    <Border Background="{DynamicResource PrimaryHueMidBrush}"
+                            Height="12" />
+                    <Rectangle Width="55" Opacity="0.75" HorizontalAlignment="Left"
+                               Margin="4 4 0 0" />
+                    <Rectangle Width="75" Opacity="0.75" HorizontalAlignment="Left"
+                               Margin="4 4 0 0" />
+                    <Rectangle Width="60" Opacity="0.75" HorizontalAlignment="Left"
+                               Margin="4 4 0 0" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

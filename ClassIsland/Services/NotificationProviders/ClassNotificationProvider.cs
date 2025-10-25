@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
-using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
@@ -17,21 +15,19 @@ using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Shared.Models.Profile;
-using MaterialDesignThemes.Wpf;
-
 using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "上下课提醒", PackIconKind.Notifications, "在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。")]
-[NotificationChannelInfo(PrepareOnClassChannelId, "准备上课提醒", PackIconKind.Class, description:"在上课前指定时间发出提醒。")]
-[NotificationChannelInfo(OnClassChannelId, "上课提醒", PackIconKind.Class, description: "在上课时发出提醒。")]
-[NotificationChannelInfo(OnBreakingChannelId, "下课提醒", PackIconKind.ClockOutline, description: "在下课时发出提醒。")]
+[NotificationProviderInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "上下课提醒", "\uE958", "在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。")]
+[NotificationChannelInfo(PrepareOnClassChannelId, "准备上课提醒", "\ue21a", description:"在上课前指定时间发出提醒。")]
+[NotificationChannelInfo(OnClassChannelId, "上课提醒", "\uE479", description: "在上课时发出提醒。")]
+[NotificationChannelInfo(OnBreakingChannelId, "下课提醒", "\ue4c3", description: "在下课时发出提醒。")]
 public class ClassNotificationProvider : NotificationProviderBase<ClassNotificationSettings>
 {
-    private const string PrepareOnClassChannelId = "CDDFE7FF-B904-4C73-B458-82793B2F66E9";
-    private const string OnClassChannelId = "AFF5B9A4-037C-4A71-8563-C9EA87DDA75C";
-    private const string OnBreakingChannelId = "77C9F3FB-0A2A-4B22-BDDF-3C333462B2F9";
+    public const string PrepareOnClassChannelId = "CDDFE7FF-B904-4C73-B458-82793B2F66E9";
+    public const string OnClassChannelId = "AFF5B9A4-037C-4A71-8563-C9EA87DDA75C";
+    public const string OnBreakingChannelId = "77C9F3FB-0A2A-4B22-BDDF-3C333462B2F9";
 
     private bool IsClassPreparingNotified { get; set; } = false;
 
@@ -138,7 +134,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
         var prepareOnClassNotificationRequest = new NotificationRequest
         {
-            MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnPreparingMaskText, rightIcon: PackIconKind.Class, factory:
+            MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnPreparingMaskText, rightIcon: "lucide(\ue54f)", factory:
                 x =>
                 {
                     x.SpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。";
@@ -152,7 +148,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             })
             {
                 SpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name}{(Settings.ShowTeacherName ? $"，{FormatTeacher(LessonsService.NextClassSubject)}" : "")}。",
-                EndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
+                EndTime = new DateTime(DateOnly.FromDateTime(ExactTimeService.GetCurrentLocalDateTime()), TimeOnly.FromTimeSpan(LessonsService.NextClassTimeLayoutItem.StartTime)),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             },
             ChannelId = Guid.Parse(PrepareOnClassChannelId)
@@ -196,12 +192,12 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
         if (!settingsIsClassOffNotificationEnabled ||
             LessonsService.CurrentTimeLayoutItem == TimeLayoutItem.Empty ||
-            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartTime > TimeSpan.FromSeconds(5))
             return;
         var overlayText = settings?.ClassOffOverlayText ?? Settings.ClassOffOverlayText;
         var showOverlayText = !string.IsNullOrWhiteSpace(overlayText);
 
-        var isNextClassEmpty = LessonsService.NextClassSubject == Subject.Empty;
+        var isNextClassEmpty = LessonsService.NextClassSubject == Subject.Fallback;
         Channel(OnBreakingChannelId).ShowNotification(new NotificationRequest()
         {
             MaskContent = new NotificationContent(new ClassNotificationProviderControl("ClassOffNotification")
@@ -248,7 +244,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         if (!settingsIsClassOnNotificationEnabled ||
             IsClassOnNotified ||
             LessonsService.CurrentTimeLayoutItem == TimeLayoutItem.Empty ||
-            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartTime > TimeSpan.FromSeconds(5))
             return;
 
         Channel(OnClassChannelId).ShowNotification(BuildOnClassNotificationRequest(settingsSource));
@@ -263,7 +259,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         var onClassNotificationRequest = new NotificationRequest()
         {
             MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnMaskText,
-                rightIcon: PackIconKind.Class, factory:
+                rightIcon: "lucide(\ue54f)", factory:
                 x =>
                 {
                     x.IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn;

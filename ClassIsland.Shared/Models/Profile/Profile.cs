@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -13,21 +14,21 @@ namespace ClassIsland.Shared.Models.Profile;
 public class Profile : ObservableRecipient
 {
     private string _name = "";
-    private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
-    private ObservableDictionary<string, ClassPlan> _classPlans = new();
-    private ObservableDictionary<string, Subject> _subjects = new();
+    private ObservableDictionary<Guid, TimeLayout> _timeLayouts = new();
+    private ObservableDictionary<Guid, ClassPlan> _classPlans = new();
+    private ObservableDictionary<Guid, Subject> _subjects = new();
     private bool _isOverlayClassPlanEnabled = false;
-    private string? _overlayClassPlanId = null;
+    private Guid? _overlayClassPlanId = null;
     private ObservableCollection<Subject> _editingSubjects = new();
-    private string? _tempClassPlanId;
+    private Guid? _tempClassPlanId;
     private DateTime _tempClassPlanSetupTime = DateTime.Now;
-    private ObservableDictionary<string, ClassPlanGroup> _classPlanGroups = new();
-    private string _selectedClassPlanGroupId = ClassPlanGroup.DefaultGroupGuid.ToString();
-    private string? _tempClassPlanGroupId;
+    private ObservableDictionary<Guid, ClassPlanGroup> _classPlanGroups = new();
+    private Guid _selectedClassPlanGroupId = ClassPlanGroup.DefaultGroupGuid;
+    private Guid? _tempClassPlanGroupId;
     private DateTime _tempClassPlanGroupExpireTime = DateTime.Now;
     private bool _isTempClassPlanGroupEnabled = false;
     private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
-    private string _id = Guid.NewGuid().ToString();
+    private Guid _id = Guid.NewGuid();
     private ObservableDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
 
     /// <summary>
@@ -41,16 +42,16 @@ public class Profile : ObservableRecipient
         UpdateEditingSubjects();
 
         // 初始化课表群
-        if (!ClassPlanGroups.ContainsKey(ClassPlanGroup.DefaultGroupGuid.ToString()))
+        if (!ClassPlanGroups.ContainsKey(ClassPlanGroup.DefaultGroupGuid))
         {
-            ClassPlanGroups.Add(ClassPlanGroup.DefaultGroupGuid.ToString(), new()
+            ClassPlanGroups.Add(ClassPlanGroup.DefaultGroupGuid, new()
             {
                 Name = "默认"
             });
         }
-        if (!ClassPlanGroups.ContainsKey(ClassPlanGroup.GlobalGroupGuid.ToString()))
+        if (!ClassPlanGroups.ContainsKey(ClassPlanGroup.GlobalGroupGuid))
         {
-            ClassPlanGroups.Add(ClassPlanGroup.GlobalGroupGuid.ToString(), new()
+            ClassPlanGroups.Add(ClassPlanGroup.GlobalGroupGuid, new()
             {
                 Name = "全局课表群",
                 IsGlobal = true
@@ -81,7 +82,7 @@ public class Profile : ObservableRecipient
     /// <param name="timeLayoutId">指定的时间表ID</param>
     /// <param name="timePoint">要覆写的课程对应的时间点</param>
     /// <param name="subjectId">要覆写成的科目ID</param>
-    public void OverwriteAllClassPlanSubject(string timeLayoutId, TimeLayoutItem timePoint, string subjectId)
+    public void OverwriteAllClassPlanSubject(Guid timeLayoutId, TimeLayoutItem timePoint, Guid subjectId)
     {
         foreach (var classPlan in from i in ClassPlans where i.Value.TimeLayoutId == timeLayoutId select i.Value)
         {
@@ -100,9 +101,9 @@ public class Profile : ObservableRecipient
     /// <exception cref="ArgumentException">
     /// 当尝试解散全局课表群和默认课表群时抛出此异常。
     /// </exception>
-    public void DisbandClassPlanGroup(string id)
+    public void DisbandClassPlanGroup(Guid id)
     {
-        if (id == ClassPlanGroup.GlobalGroupGuid.ToString() || id == ClassPlanGroup.DefaultGroupGuid.ToString())
+        if (id == ClassPlanGroup.GlobalGroupGuid || id == ClassPlanGroup.DefaultGroupGuid)
         {
             throw new ArgumentException("不能解散默认课表群和全局课表群。", nameof(id));
         }
@@ -110,7 +111,7 @@ public class Profile : ObservableRecipient
         foreach (var i in ClassPlans   
                      .Where(x => x.Value.AssociatedGroup == id))
         {
-            i.Value.AssociatedGroup = ClassPlanGroup.DefaultGroupGuid.ToString();
+            i.Value.AssociatedGroup = ClassPlanGroup.DefaultGroupGuid;
         }
 
         ClassPlanGroups.Remove(id);
@@ -120,9 +121,9 @@ public class Profile : ObservableRecipient
     /// 删除课表群。删除后课表群内的课表也会被一并删除。
     /// </summary>
     /// <param name="id">要删除的课表群GUID</param>
-    public void DeleteClassPlanGroup(string id)
+    public void DeleteClassPlanGroup(Guid id)
     {
-        if (id == ClassPlanGroup.GlobalGroupGuid.ToString() || id == ClassPlanGroup.DefaultGroupGuid.ToString())
+        if (id == ClassPlanGroup.GlobalGroupGuid || id == ClassPlanGroup.DefaultGroupGuid)
         {
             throw new ArgumentException("不能解散删除课表群和全局课表群。", nameof(id));
         }
@@ -175,7 +176,7 @@ public class Profile : ObservableRecipient
                 }
                 foreach (var i in e.NewItems)
                 {
-                    Subjects[Guid.NewGuid().ToString()] = (Subject)i;
+                    Subjects[Guid.NewGuid()] = (Subject)i;
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
@@ -237,7 +238,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 存储的时间表字典，键为GUID
     /// </summary>
-    public ObservableDictionary<string, TimeLayout> TimeLayouts
+    public ObservableDictionary<Guid, TimeLayout> TimeLayouts
     {
         get => _timeLayouts;
         set
@@ -251,7 +252,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 存储的课表字典，键为GUID
     /// </summary>
-    public ObservableDictionary<string, ClassPlan> ClassPlans
+    public ObservableDictionary<Guid, ClassPlan> ClassPlans
     {
         get => _classPlans;
         set
@@ -280,7 +281,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 存储的科目字典，键为GUID
     /// </summary>
-    public ObservableDictionary<string, Subject> Subjects
+    public ObservableDictionary<Guid, Subject> Subjects
     {
         get => _subjects;
         set
@@ -323,7 +324,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 临时层课表ID
     /// </summary>
-    public string? OverlayClassPlanId
+    public Guid? OverlayClassPlanId
     {
         get => _overlayClassPlanId;
         set
@@ -338,7 +339,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 临时课表ID
     /// </summary>
-    public string? TempClassPlanId
+    public Guid? TempClassPlanId
     {
         get => _tempClassPlanId;
         set
@@ -366,7 +367,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 该档案包含的课表群。
     /// </summary>
-    public ObservableDictionary<string, ClassPlanGroup> ClassPlanGroups
+    public ObservableDictionary<Guid, ClassPlanGroup> ClassPlanGroups
     {
         get => _classPlanGroups;
         set
@@ -380,7 +381,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 当前选中的课表群GUID。
     /// </summary>
-    public string SelectedClassPlanGroupId
+    public Guid SelectedClassPlanGroupId
     {
         get => _selectedClassPlanGroupId;
         set
@@ -394,7 +395,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 当前选中的临时课表群ID。
     /// </summary>
-    public string? TempClassPlanGroupId
+    public Guid? TempClassPlanGroupId
     {
         get => _tempClassPlanGroupId;
         set
@@ -450,7 +451,7 @@ public class Profile : ObservableRecipient
     /// <summary>
     /// 档案 ID
     /// </summary>
-    public string Id
+    public Guid Id
     {
         get => _id;
         set

@@ -1,11 +1,13 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows.Forms;
+using Avalonia.Platform;
+using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class WindowSettingsViewModel : ObservableRecipient
+public class WindowSettingsViewModel(SettingsService settingsService) : ObservableRecipient
 {
+    public SettingsService SettingsService { get; } = settingsService;
     private ObservableCollection<Screen> _screens = new();
 
     public ObservableCollection<Screen> Screens

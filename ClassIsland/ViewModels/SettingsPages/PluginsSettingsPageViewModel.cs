@@ -1,154 +1,90 @@
-﻿using System.Windows.Documents;
+﻿using System;
+using System.Collections.Generic;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.ComponentModels;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Services;
+using ClassIsland.Views.SettingPages;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
+using DynamicData;
+using DynamicData.Binding;
+using Microsoft.Extensions.Logging;
+using ReactiveUI;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public class PluginsSettingsPageViewModel : ObservableRecipient
+public partial class PluginsSettingsPageViewModel : ObservableRecipient
 {
-    private PluginInfo? _selectedPluginInfo;
-    private FlowDocument _readmeDocument = new();
-    private bool _isPluginOperationsPopupOpened = false;
-    private bool _isPluginMarketOperationsPopupOpened = false;
-    private PluginIndexInfo? _selectedPluginIndexInfo;
-    private int _pluginCategoryIndex = 1;
-    private string _pluginFilterText = "";
-    private bool _isLoadingDocument = false;
-    private bool _isDetailsShown = false;
-    private SnackbarMessageQueue _messageQueue = new();
-    private bool _isDragEntering = false;
-    private bool _pluginListBoxHasItems = false;
+    public IPluginService PluginService { get; }
+    public IPluginMarketService PluginMarketService { get; }
+    public SettingsService SettingsService { get; }
+    public ILogger<PluginsSettingsPage> Logger { get; }
+    
+    [ObservableProperty] private PluginInfo? _selectedPluginInfo;
+    [ObservableProperty] private string _readmeDocument = "";
+    [ObservableProperty] private bool _isPluginOperationsPopupOpened = false;
+    [ObservableProperty] private bool _isPluginMarketOperationsPopupOpened = false;
+    [ObservableProperty] private PluginIndexInfo? _selectedPluginIndexInfo;
+    [ObservableProperty] private int _pluginCategoryIndex = 1;
+    [ObservableProperty] private string _pluginFilterText = "";
+    [ObservableProperty] private bool _isLoadingDocument = false;
+    [ObservableProperty] private bool _isDetailsShown = false;
+    [ObservableProperty] private bool _isDragEntering = false;
+    [ObservableProperty] private bool _pluginListBoxHasItems = false;
+    [ObservableProperty] private IObservableList<KeyValuePair<string, PluginInfo>> _mergedPluginsFiltered = null!;
+    [ObservableProperty] private SyncDictionaryList<string, string> _officialPluginMirrors = null!;
 
-    public PluginInfo? SelectedPluginInfo
+    public SyncDictionaryList<string, PluginInfo> MergedPlugins { get; }
+
+
+    /// <inheritdoc/>
+    public PluginsSettingsPageViewModel(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService, ILogger<PluginsSettingsPage> logger)
     {
-        get => _selectedPluginInfo;
-        set
-        {
-            if (Equals(value, _selectedPluginInfo)) return;
-            _selectedPluginInfo = value;
-            OnPropertyChanged();
-        }
+        PluginService = pluginService;
+        PluginMarketService = pluginMarketService;
+        SettingsService = settingsService;
+        Logger = logger;
+
+        MergedPlugins = new SyncDictionaryList<string, PluginInfo>(PluginMarketService.MergedPlugins, () => "");
+        SettingsService.Settings
+            .ObservableForProperty(x => x.OfficialIndexMirrors)
+            .Subscribe(_ => UpdateOfficialPluginSources());
+        
+        UpdateMergedPlugins();
+        UpdateOfficialPluginSources();
     }
 
-    public FlowDocument ReadmeDocument
+    public void UpdateMergedPlugins()
     {
-        get => _readmeDocument;
-        set
-        {
-            if (Equals(value, _readmeDocument)) return;
-            _readmeDocument = value;
-            OnPropertyChanged();
-        }
+        MergedPluginsFiltered = MergedPlugins.List
+            .ToObservableChangeSet()
+            .Filter(PluginSourceFilter)
+            .AsObservableList();
     }
 
-    public bool IsPluginOperationsPopupOpened
+    private void UpdateOfficialPluginSources()
     {
-        get => _isPluginOperationsPopupOpened;
-        set
-        {
-            if (value == _isPluginOperationsPopupOpened) return;
-            _isPluginOperationsPopupOpened = value;
-            OnPropertyChanged();
-        }
+        OfficialPluginMirrors =
+            new SyncDictionaryList<string, string>(SettingsService.Settings.OfficialIndexMirrors, () => "");
     }
-
-    public bool IsPluginMarketOperationsPopupOpened
+    
+    private bool PluginSourceFilter(KeyValuePair<string, PluginInfo> kvp)
     {
-        get => _isPluginMarketOperationsPopupOpened;
-        set
+        var info = kvp.Value;
+        if (!info.IsLocal && PluginCategoryIndex == 1)
         {
-            if (value == _isPluginMarketOperationsPopupOpened) return;
-            _isPluginMarketOperationsPopupOpened = value;
-            OnPropertyChanged();
+            return false;
         }
-    }
-
-    public PluginIndexInfo? SelectedPluginIndexInfo
-    {
-        get => _selectedPluginIndexInfo;
-        set
+        if (!info.IsAvailableOnMarket && PluginCategoryIndex == 0)
         {
-            if (Equals(value, _selectedPluginIndexInfo)) return;
-            _selectedPluginIndexInfo = value;
-            OnPropertyChanged();
+            return false;
         }
-    }
-
-    public int PluginCategoryIndex
-    {
-        get => _pluginCategoryIndex;
-        set
-        {
-            if (value == _pluginCategoryIndex) return;
-            _pluginCategoryIndex = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string PluginFilterText
-    {
-        get => _pluginFilterText;
-        set
-        {
-            if (value == _pluginFilterText) return;
-            _pluginFilterText = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsLoadingDocument
-    {
-        get => _isLoadingDocument;
-        set
-        {
-            if (value == _isLoadingDocument) return;
-            _isLoadingDocument = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsDetailsShown
-    {
-        get => _isDetailsShown;
-        set
-        {
-            if (value == _isDetailsShown) return;
-            _isDetailsShown = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public SnackbarMessageQueue MessageQueue
-    {
-        get => _messageQueue;
-        set
-        {
-            if (value == _messageQueue) return;
-            _messageQueue = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsDragEntering
-    {
-        get => _isDragEntering;
-        set
-        {
-            if (value == _isDragEntering) return;
-            _isDragEntering = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool PluginListBoxHasItems
-    {
-        get => _pluginListBoxHasItems;
-        set
-        {
-            if (value == _pluginListBoxHasItems) return;
-            _pluginListBoxHasItems = value;
-            OnPropertyChanged();
-        }
+        
+        var filter = PluginFilterText;
+        if (string.IsNullOrWhiteSpace(filter))
+            return true;
+        return info.Manifest.Id.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+               info.Manifest.Name.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+               info.Manifest.Description.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
 }

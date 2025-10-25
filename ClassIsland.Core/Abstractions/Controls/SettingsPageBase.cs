@@ -1,14 +1,14 @@
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using MaterialDesignThemes.Wpf;
+using Avalonia.Controls;
+using Avalonia.Labs.Input;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
 /// 设置页面基类
 /// </summary>
-public abstract class SettingsPageBase : Page
+public abstract class SettingsPageBase : UserControl
 {
     /// <summary>
     /// 设置窗口的<see cref="DialogHost"/>的标识符。
@@ -18,17 +18,17 @@ public abstract class SettingsPageBase : Page
     /// <summary>
     /// 打开设置窗口抽屉命令
     /// </summary>
-    public static readonly ICommand OpenDrawerCommand = new RoutedCommand();
+    public static readonly ICommand OpenDrawerCommand = new RoutedCommand(nameof(OpenDrawerCommand));
 
     /// <summary>
     /// 关闭设置窗口抽屉命令
     /// </summary>
-    public static readonly ICommand CloseDrawerCommand = new RoutedCommand();
+    public static readonly ICommand CloseDrawerCommand = new RoutedCommand(nameof(CloseDrawerCommand));
 
     /// <summary>
     /// 请求重启应用命令
     /// </summary>
-    public static readonly ICommand RequestRestartCommand = new RoutedCommand();
+    public static readonly ICommand RequestRestartCommand = new RoutedCommand(nameof(RequestRestartCommand));
 
     /// <summary>
     /// 在设置窗口打开指定的抽屉。
@@ -38,7 +38,7 @@ public abstract class SettingsPageBase : Page
     /// <param name="dataContext">抽屉元素的数据上下文</param>
     protected void OpenDrawer(string key, bool useGlobalDataContext=false, object? dataContext=null)
     {
-        OpenDrawer(FindResource(key), useGlobalDataContext,  dataContext);
+        OpenDrawer(this.FindResource(key)!, useGlobalDataContext,  dataContext);
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public abstract class SettingsPageBase : Page
     /// <param name="dataContext">抽屉元素的数据上下文</param>
     protected void OpenDrawer(object o, bool useGlobalDataContext=false, object? dataContext=null)
     {
-        if (o is FrameworkElement e && !useGlobalDataContext)
+        if (o is Control e && !useGlobalDataContext)
         {
             e.DataContext = dataContext ?? this;
         }
@@ -71,4 +71,9 @@ public abstract class SettingsPageBase : Page
     {
         RequestRestartCommand.Execute(null);
     }
+    
+    /// <summary>
+    /// 导航到本设置页面时使用的 Uri（如有）
+    /// </summary>
+    public Uri? NavigationUri { get; internal set; }
 }

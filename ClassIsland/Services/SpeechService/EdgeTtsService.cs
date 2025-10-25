@@ -6,6 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
@@ -15,19 +17,23 @@ using Edge_tts_sharp.Model;
 
 using Microsoft.Extensions.Logging;
 
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
+using SoundFlow.Backends.MiniAudio;
+using SoundFlow.Components;
+using SoundFlow.Enums;
+using SoundFlow.Providers;
+using SoundFlow.Structs;
 
 namespace ClassIsland.Services.SpeechService;
 
 [SpeechProviderInfo("classisland.speech.edgeTts", "EdgeTTS")]
 public class EdgeTtsService : ISpeechService
 {
-    public static readonly string EdgeTtsCacheFolderPath = Path.Combine(App.AppCacheFolderPath, "EdgeTTS");
+    public static readonly string EdgeTtsCacheFolderPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "EdgeTTS");
 
-    private ILogger<EdgeTtsService> Logger { get; } = App.GetService<ILogger<EdgeTtsService>>();
+    public IAudioService AudioService { get; }
+    private ILogger<EdgeTtsService> Logger { get; }
 
-    private SettingsService SettingsService { get; } = App.GetService<SettingsService>();
+    private SettingsService SettingsService { get; }
 
     private List<eVoice> Voices { get; } = EdgeTts.GetVoice();
 
@@ -39,11 +45,17 @@ public class EdgeTtsService : ISpeechService
 
     private CancellationTokenSource? requestingCancellationTokenSource;
 
-    private IWavePlayer? CurrentWavePlayer { get; set; }
+    private EdgeTtsPlayInfo? _currentPlayInfo;
+
+    private SoundPlayer? CurrentWavePlayer { get; set; }
 
 
-    public EdgeTtsService()
+    public EdgeTtsService(IAudioService audioService, ILogger<EdgeTtsService> logger, SettingsService settingsService)
     {
+        AudioService = audioService;
+        Logger = logger;
+        SettingsService = settingsService;
+        
         Logger.LogInformation("初始化了EdgeTTS服务。");
     }
 
@@ -113,6 +125,7 @@ public class EdgeTtsService : ISpeechService
         CurrentWavePlayer?.Stop();
         CurrentWavePlayer?.Dispose();
         CurrentWavePlayer = null;
+        _currentPlayInfo?.CancellationTokenSource.Cancel();
         foreach (var pair in PlayingQueue)
         {
             pair.CancellationTokenSource.Cancel();
@@ -125,9 +138,12 @@ public class EdgeTtsService : ISpeechService
         if (IsPlaying)
             return;
         IsPlaying = true;
+        using var device = AudioService.TryInitializeDefaultPlaybackDevice();
+        device?.Start();
+
         while (PlayingQueue.Count > 0)
         {
-            var playInfo = PlayingQueue.Dequeue();
+            var playInfo = _currentPlayInfo = PlayingQueue.Dequeue();
             if (playInfo.CancellationTokenSource.IsCancellationRequested)
                 continue;
             if (playInfo.DownloadTask != null)
@@ -137,27 +153,29 @@ public class EdgeTtsService : ISpeechService
                 Logger.LogDebug("等待下载完成结束");
             }
 
+            CurrentWavePlayer?.Stop();
             CurrentWavePlayer?.Dispose();
-            var player = CurrentWavePlayer = new DirectSoundOut();
             try
             {
-                await using var audio = new AudioFileReader(playInfo.FilePath);
-                var volume = new VolumeSampleProvider(audio)
+                var player = CurrentWavePlayer = new SoundPlayer(AudioService.AudioEngine, IAudioService.DefaultAudioFormat,
+                    new StreamDataProvider(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, File.OpenRead(playInfo.FilePath)))
                 {
                     Volume = (float)SettingsService.Settings.SpeechVolume
                 };
-                player.Init(volume);
                 Logger.LogDebug("开始播放 {}", playInfo.FilePath);
-                player.Play();
-                player.PlaybackStopped += (sender, args) => playInfo.IsPlayingCompleted = true;
-
-                await Task.Run(() =>
+                device?.MasterMixer.AddComponent(player);
+                var tcs = new TaskCompletionSource<bool>();
+                player.PlaybackEnded += (sender, args) =>
                 {
-                    while (player.PlaybackState == PlaybackState.Playing &&
-                           !playInfo.CancellationTokenSource.IsCancellationRequested)
-                    {
-                    }
+                    playInfo.IsPlayingCompleted = true;
+                    tcs.SetResult(true);
+                };
+                playInfo.CancellationTokenSource.Token.Register(() =>
+                {
+                    tcs.SetResult(false);
                 });
+                player.Play();
+                await tcs.Task;
                 Logger.LogDebug("结束播放 {}", playInfo.FilePath);
             }
             catch (Exception ex)
@@ -165,9 +183,10 @@ public class EdgeTtsService : ISpeechService
                 Logger.LogError(ex, "无法播放语音。");
             }
         }
-
+        
         CurrentWavePlayer?.Dispose();
         CurrentWavePlayer = null;
+        _currentPlayInfo = null;
         IsPlaying = false;
     }
 }

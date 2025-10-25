@@ -14,7 +14,7 @@
         Title="导出到 Excel 表格" Height="700" Width="1400"
         WindowState="Maximized"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -80,18 +80,18 @@
         <ToolBar Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"
                  ToolBarTray.IsLocked="True"
                  Visibility="{Binding ViewModel.IsSelectingMode, Converter={StaticResource InverseBoolToVisConverter}}">
-            <Button Content="{materialDesign:PackIcon ContentSaveOutline}" ToolTip="保存…" Click="ButtonSaveToFile_OnClick"/>
-            <Button Content="{materialDesign:PackIcon MicrosoftExcel}" ToolTip="保存并在默认 Excel 文件编辑器中打开…"
+            <Button Content="{materialDesign:PackIcon ContentSaveOutline}" ToolTip.Tip="保存…" Click="ButtonSaveToFile_OnClick"/>
+            <Button Content="{materialDesign:PackIcon MicrosoftExcel}" ToolTip.Tip="保存并在默认 Excel 文件编辑器中打开…"
                     Click="ButtonSaveAndOpenInExcel_OnClick"/>
             <Separator/>
-            <Button Content="{materialDesign:PackIcon Undo}" ToolTip="撤销" Click="ButtonUndo_OnClick"
+            <Button Content="{materialDesign:PackIcon Undo}" ToolTip.Tip="撤销" Click="ButtonUndo_OnClick"
                     IsEnabled="{Binding ViewModel.CanUndo}"/>
-            <Button Content="{materialDesign:PackIcon Redo}" ToolTip="重做" Click="ButtonRedo_OnClick"
+            <Button Content="{materialDesign:PackIcon Redo}" ToolTip.Tip="重做" Click="ButtonRedo_OnClick"
                     IsEnabled="{Binding ViewModel.CanRedo}"/>
             <Separator/>
             <ComboBox materialDesign:TextFieldAssist.HasLeadingIcon="True"
                       materialDesign:TextFieldAssist.LeadingIcon="FormatFont"
-                      ToolTip="字体"
+                      ToolTip.Tip="字体"
                       ItemsSource="{Binding ViewModel.FontFamilies}"
                       Width="150"
                       Text="{Binding ViewModel.SelectedRange.Style.FontName}"
@@ -99,40 +99,40 @@
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding }"
-                                   ToolTip="{Binding }"
+                                   ToolTip.Tip="{Binding }"
                                    FontFamily="{Binding}"/>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBox materialDesign:TextFieldAssist.HasLeadingIcon="True"
-                     materialDesign:TextFieldAssist.LeadingIcon="FontSize"
-                     materialDesign:TextFieldAssist.SuffixText="px"
-                     Text="{Binding ViewModel.SelectedRange.Style.FontSize, Converter={StaticResource IntToStringConverter}}"
-                     ToolTip="字号"
-                     Width="75"/>
-            <Button Content="{materialDesign:PackIcon FormatFontSizeDecrease}" ToolTip="减小字号"
+            <NumericUpDown materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                           materialDesign:TextFieldAssist.LeadingIcon="FontSize"
+                           materialDesign:TextFieldAssist.SuffixText="px"
+                           Value="{Binding ViewModel.SelectedRange.Style.FontSize}"
+                           ToolTip.Tip="字号"
+                           Width="75"/>
+            <Button Content="{materialDesign:PackIcon FormatFontSizeDecrease}" ToolTip.Tip="减小字号"
                     Click="ButtonBaseFontSizeDecrease_OnClick"/>
-            <Button Content="{materialDesign:PackIcon FormatFontSizeIncrease}" ToolTip="增大字号"
+            <Button Content="{materialDesign:PackIcon FormatFontSizeIncrease}" ToolTip.Tip="增大字号"
                     Click="ButtonBaseFontSizeIncrease_OnClick"/>
             <ListBox SelectionMode="Multiple" SelectionChanged="SelectorFontFormat_OnSelectionChanged">
-                <ListBoxItem Content="{materialDesign:PackIcon FormatBold}" ToolTip="加粗"
+                <ListBoxItem Content="{materialDesign:PackIcon FormatBold}" ToolTip.Tip="加粗"
                              IsSelected="{Binding ViewModel.SelectedRange.Style.Bold}"/>
-                <ListBoxItem Content="{materialDesign:PackIcon FormatItalic}" ToolTip="斜体"
+                <ListBoxItem Content="{materialDesign:PackIcon FormatItalic}" ToolTip.Tip="斜体"
                              IsSelected="{Binding ViewModel.SelectedRange.Style.Italic}"/>
-                <ListBoxItem Content="{materialDesign:PackIcon FormatUnderline}" ToolTip="下划线"
+                <ListBoxItem Content="{materialDesign:PackIcon FormatUnderline}" ToolTip.Tip="下划线"
                              IsSelected="{Binding ViewModel.SelectedRange.Style.Underline}"/>
             </ListBox>
             <Separator/>
             <ListBox SelectionMode="Single" SelectedIndex="{Binding ViewModel.SelectedRange.Style.HorizontalAlign, Converter={StaticResource ReoHorAlignmentToIntConverter}}">
-                <ListBoxItem Content="{materialDesign:PackIcon Cancel}" ToolTip="无对齐" Visibility="Collapsed"/>
-                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalLeft}" ToolTip="左对齐"/>
-                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalCenter}" ToolTip="居中"/>
-                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalRight}" ToolTip="右对齐"/>
-                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalDistribute}" ToolTip="两端对齐"/>
+                <ListBoxItem Content="{materialDesign:PackIcon Cancel}" ToolTip.Tip="无对齐" Visibility="Collapsed"/>
+                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalLeft}" ToolTip.Tip="左对齐"/>
+                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalCenter}" ToolTip.Tip="居中"/>
+                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalRight}" ToolTip.Tip="右对齐"/>
+                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalDistribute}" ToolTip.Tip="两端对齐"/>
             </ListBox>
             <Separator/>
-            <Button Content="{materialDesign:PackIcon TableMergeCells}" ToolTip="合并单元格" Click="ButtonMergeCells_OnClick"/>
-            <Button Content="{materialDesign:PackIcon TableSplitCell}" ToolTip="取消单元格合并" Click="ButtonUnMergeCells_OnClick"/>
+            <Button Content="{materialDesign:PackIcon TableMergeCells}" ToolTip.Tip="合并单元格" Click="ButtonMergeCells_OnClick"/>
+            <Button Content="{materialDesign:PackIcon TableSplitCell}" ToolTip.Tip="取消单元格合并" Click="ButtonUnMergeCells_OnClick"/>
 
         </ToolBar>
 
@@ -162,7 +162,7 @@
             <TabItem Header="{materialDesign:PackIcon FileChartOutline, Size=18}" Padding="4" 
                      MinWidth="42" Height="42">
                 
-                <Grid Margin="12" ToolTip="{x:Null}">
+                <Grid Margin="12" ToolTip.Tip="{x:Null}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition/>
@@ -182,7 +182,7 @@
                              SelectionMode="Multiple">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem"
-                                   BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                   >
                                 <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
                                     <Setter.Value>
                                         <materialDesign:BehaviorCollection>
@@ -251,16 +251,16 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" 
-                                     materialDesign:HintAssist.Hint="行高"
-                                     Text="{Binding ViewModel.RowHeight, Converter={StaticResource IntToStringConverter}}"
-                                     materialDesign:TextFieldAssist.SuffixText="px"
-                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-                            <TextBox Grid.Column="1" 
-                                     materialDesign:HintAssist.Hint="列宽"
-                                     Text="{Binding ViewModel.ColWidth, Converter={StaticResource IntToStringConverter}}"
-                                     materialDesign:TextFieldAssist.SuffixText="px"
-                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                            <NumericUpDown Grid.Column="0"
+                                           materialDesign:HintAssist.Hint="行高"
+                                           Value="{Binding ViewModel.RowHeight}"
+                                           materialDesign:TextFieldAssist.SuffixText="px"
+                                           Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                            <NumericUpDown Grid.Column="1"
+                                           materialDesign:HintAssist.Hint="列宽"
+                                           Value="{Binding ViewModel.ColWidth}"
+                                           materialDesign:TextFieldAssist.SuffixText="px"
+                                           Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
                         </Grid>
 
                         <Button Margin="0 12 0 0" HorizontalAlignment="Left"
@@ -284,7 +284,7 @@
                                    TextWrapping="Wrap"/>
 
                         <Button Margin="0 12 0 0" HorizontalAlignment="Left"
-                                Style="{StaticResource MaterialDesignPaperButton}"
+                                Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}"
                                 Click="ButtonSaveAndOpenInExcel_OnClick">
                             <ci:IconText Kind="MicrosoftExcel" Text="保存并在默认 Excel 文件编辑器中打开"/>
                         </Button>

@@ -1,0 +1,65 @@
+<local:LessonControlBase x:Class="ClassIsland.Core.Controls.LessonsControls.LessonControlMinimized"
+                   xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                   xmlns:local="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
+                   xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+                   xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+                   xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                   xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+                   mc:Ignorable="d" 
+                   d:DesignHeight="450" d:DesignWidth="800"
+                   x:Name="LessonControlMinimizedRoot"
+                   Classes.ChangedClass="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource Self}}"
+                   Classes.HighlightChangedClass="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}">
+    <local:LessonControlBase.Styles>
+        <Style Selector="controls|HighlightBox#TextHighlightBox">
+            <Setter Property="IsHighlight" Value="False" />
+        </Style>
+        <Style Selector="#LessonControlMinimizedRoot.ChangedClass.HighlightChangedClass controls|HighlightBox#TextHighlightBox">
+            <Setter Property="IsHighlight" Value="True" />
+        </Style>
+    </local:LessonControlBase.Styles>
+    
+    <local:LessonControlBase.Resources>
+        <converters:CustomKeyDictionaryValueConverter 
+            x:TypeArguments="system:Guid, profile:Subject" x:Key="SubjectIdToSubjectConverter" />
+    </local:LessonControlBase.Resources>
+    
+    <StackPanel DataContext="{Binding $parent[local:LessonControlMinimized]}"
+                Orientation="Horizontal">
+        
+        <LayoutTransformControl>
+            <LayoutTransformControl.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+            </LayoutTransformControl.LayoutTransform>
+            <Border Width="10"/>
+        </LayoutTransformControl>
+
+        <Grid VerticalAlignment="Center">
+            <Grid.DataContext>
+                <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}"
+                              FallbackValue="{x:Static profile:Subject.Fallback}">
+                    <Binding Path="#LessonControlMinimizedRoot.Subjects"/>
+                    <Binding Path="#LessonControlMinimizedRoot.ClassInfo.SubjectId"/>
+                </MultiBinding>
+            </Grid.DataContext>
+            
+            <controls:HighlightBox x:Name="TextHighlightBox">
+                <TextBlock VerticalAlignment="Center"
+                           FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                           Text="{Binding Initial}" />
+            </controls:HighlightBox>
+        </Grid>
+
+        <LayoutTransformControl>
+            <LayoutTransformControl.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+            </LayoutTransformControl.LayoutTransform>
+            <Border Width="10"/>
+        </LayoutTransformControl>
+        
+    </StackPanel>
+</local:LessonControlBase>
+

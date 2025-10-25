@@ -6,15 +6,15 @@ namespace ClassIsland.Core.Models.ProfileAnalyzing;
 /// <summary>
 /// <see cref="AttachableSettingsObject"/>的位置。
 /// </summary>
-public class AttachableObjectAddress(string guid, int index = -1)
+public class AttachableObjectAddress(Guid guid, int index = -1)
 {
-    public AttachableObjectAddress() : this("", -1)
+    public AttachableObjectAddress() : this(System.Guid.Empty, -1)
     {
     }
 
-    public string Guid { get; set; } = guid;
+    public Guid Guid { get; } = guid;
 
-    public int Index { get; set; } = index;
+    public int Index { get; } = index;
 
 
     /// <inheritdoc />

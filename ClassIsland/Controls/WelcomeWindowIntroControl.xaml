@@ -156,7 +156,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid x:Name="GridWelcomeOverlay" Grid.Row="0"
-                          Background="{DynamicResource MaterialDesignPaper}"
+                          Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                           Margin="-16">
             <TextBlock x:Name="TextWelcomeOverlayCaption" Text="让我们从以下几个步骤来完成ClassIsland的设置。"
                                    VerticalAlignment="Center"

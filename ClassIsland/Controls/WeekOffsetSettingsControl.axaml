@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="ClassIsland.Controls.WeekOffsetSettingsControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             Loaded="Control_OnLoaded">
+    <StackPanel Spacing="0" Margin="0">
+        <TextBlock Text="调整本周的多周轮换位置。"
+                   FontSize="16"
+                   Margin="0 6 0 8"/>
+        
+        <ScrollViewer MaxHeight="305" x:Name="ContentScrollViewer" Padding="0 0 14 0 ">
+            <StackPanel x:Name="ContentPanel" Margin="0 -4 0 0" MaxWidth="350" HorizontalAlignment="Left"/>
+        </ScrollViewer>
+
+        <WrapPanel Margin="0 12 0 0">
+            <Button HorizontalAlignment="Left" Click="ButtonFinish_OnClick" Classes="accent">
+                <ci:IconText Glyph="&#xE424;" Text="应用" />
+            </Button>
+            <Button Click="ButtonClear_OnClick" Margin="6 0 0 0 "
+                    ToolTip.Tip="将多周轮换偏移重置为学期开始时间。">
+                <ci:IconText Glyph="&#xE0BE;" Text="重置"/>
+            </Button>
+        </WrapPanel>
+    </StackPanel>
+</UserControl>

@@ -18,9 +18,13 @@ public enum ApplicationLifetime
     /// </summary>
     Initializing,
     /// <summary>
-    /// 启动中
+    /// 启动中，但设置未加载
     /// </summary>
-    Starting,
+    StartingOffline,
+    /// <summary>
+    /// 启动中，且设置已加载
+    /// </summary>
+    StartingOnline,
     /// <summary>
     /// 正常工作中
     /// </summary>

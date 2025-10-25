@@ -1,0 +1,66 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:ClassIsland.Controls"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                    xmlns:classIsland="using:ClassIsland"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:notification="clr-namespace:ClassIsland.Core.Models.Notification;assembly=ClassIsland.Core">
+    <Styles.Resources>
+        <ci:IntToStringConverter x:Key="IntToStringConverter" />
+        <ci:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
+    
+        <!--#endregion 1-->
+        <ci:WidthDoubleToRectConverter x:Key="WidthDoubleToRectConverter" />
+        <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
+        <system:Double x:Key="IslandContainerHeight">40</system:Double>
+        <ci:DoubleToThicknessMultiConverter x:Key="DoubleToThicknessMultiConverter" />
+        <ci:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
+    </Styles.Resources>
+    <Design.PreviewWith>
+        <controls:MainWindowLine WindowDockingLocation="1"
+                                 LineNumber="0"
+                                 IsMainLine="True">
+            <TextBlock Text="123"/>
+        </controls:MainWindowLine>
+    </Design.PreviewWith>
+    <!--#region StoryBoards-->
+
+    <Style Selector="controls|MainWindowLine">
+        <Setter Property="IsVisible">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
+                    <Binding Path="IsAllComponentsHid" RelativeSource="{RelativeSource Self}" 
+                             Converter="{StaticResource InvertBooleanConverter}"/>
+                    <Binding Path="IsOverlayOpen" RelativeSource="{RelativeSource Self}"/>
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ClipToBounds" Value="False"/>
+        <Setter Property="Opacity" Value="{Binding $self.Settings.Opacity}"/>
+        
+        <Style Selector="^:dock-top" >
+            <Setter Property="Margin" Value="{Binding ViewModel.Settings.MainWindowLineVerticalMargin, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={x:Static controls:MainWindowLine.DoubleToThicknessBottomConverter}}"/>
+        </Style>
+        <Style Selector="^:dock-bottom">
+            <Setter Property="Margin" Value="{Binding ViewModel.Settings.MainWindowLineVerticalMargin, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}, Converter={x:Static controls:MainWindowLine.DoubleToThicknessTopConverter}}"/>
+        </Style>
+        
+        <Style Selector="^:dock-left /template/:is(Control).docking">
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style Selector="^:dock-center /template/ :is(Control).docking">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="^:dock-right /template/ :is(Control).docking">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+        
+        <Style Selector="^:pointerover">
+            <Setter Property="PointerOver" Value="True"/>
+        </Style>
+        <Style Selector="^[IsLineFaded=True]">
+            <Setter Property="Opacity" Value="0.05"/>
+        </Style>
+    </Style>
+</Styles>

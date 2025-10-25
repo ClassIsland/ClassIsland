@@ -1,0 +1,9 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Add Resources Here -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="FluentDesignWeatherIconTemplate.axaml"/>
+        <ResourceInclude Source="SimpleTextWeatherIconTemplate.axaml"/>
+        <ResourceInclude Source="LucideWeatherIconTemplate.axaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

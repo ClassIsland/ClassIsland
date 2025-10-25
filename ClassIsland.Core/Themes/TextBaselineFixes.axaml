@@ -1,0 +1,49 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <Styles.Resources>
+        <Thickness x:Key="AppBarButtonTextLabelOnRightMargin">8 18 12 10</Thickness>
+        <Thickness x:Key="AppBarButtonContentViewboxMargin">10,11.5,0,8.5</Thickness>
+    </Styles.Resources>
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+            <StackPanel Spacing="6">
+                <CheckBox>我是，终将升起的烈阳！</CheckBox>
+                <ComboBox SelectedIndex="0">
+                    <ComboBoxItem>测试1</ComboBoxItem>
+                    <ComboBoxItem>测试2</ComboBoxItem>
+                    <ComboBoxItem>测试3</ComboBoxItem>
+                </ComboBox>
+                <Button>测试文本</Button>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="controls|NavigationViewItem TextBlock,
+                     ToggleSwitch TextBlock,
+                     CheckBox TextBlock,
+                     ListBoxItem TextBlock,
+                     Control.textFix TextBlock">
+        <Setter Property="Margin" Value="0 0 0 -3"/>
+    </Style>
+    <Style Selector="CheckBox /template/ ContentPresenter#ContentPresenter TextBlock">
+        <Setter Property="Margin" Value="0 3 0 0"/>
+    </Style>
+    <Style Selector="ComboBox TextBlock,
+                     Button AccessText">
+        <Setter Property="Margin" Value="0 1.5 0 -1.5"/>
+    </Style>
+    
+    <Style Selector="controls|IconSourceElement.repair-fontsize :is(controls|FontIcon)">
+        <Setter Property="ci:IconSourceElementFontIconAssist.IsFontSizeRepaired" Value="True"/>
+        <Setter Property="FontSize" Value="{Binding $parent[controls:IconSourceElement].(TextElement.FontSize)}"/>
+    </Style>
+    
+    <Style Selector="controls|IconSourceElement :is(controls|FontIcon)">
+        <Setter Property="Margin" Value="0 -1.5 0 -1.5"/>
+    </Style>
+    
+</Styles>

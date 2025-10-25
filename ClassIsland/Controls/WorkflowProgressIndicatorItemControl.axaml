@@ -1,0 +1,96 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Controls">
+    <Design.PreviewWith>
+        <controls:WorkflowProgressIndicatorItemControl />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|WorkflowProgressIndicatorItemControl">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Classes.inProgress="{Binding Action.IsWorking, RelativeSource={RelativeSource TemplatedParent}}"
+                       Classes.isCompleted="{Binding Action.IsCompleted, RelativeSource={RelativeSource TemplatedParent}}"
+                       Classes.isProgressDetermined="{Binding Action.Progress, Converter={x:Static ObjectConverters.IsNotNull}, RelativeSource={RelativeSource TemplatedParent}}">
+                    <Border Height="4"
+                            CornerRadius="2">
+                        <Border.Transitions>
+                            <Transitions>
+                                <BrushTransition Property="Background"
+                                                 Easing="SineEaseInOut"
+                                                 Duration="0:0:0.5" />
+                            </Transitions>
+                        </Border.Transitions>
+                        <Border.Styles>
+                            <Style Selector="Border">
+                                <Setter Property="Background"
+                                        Value="{DynamicResource ControlStrongFillColorDefaultBrush}" />
+                            </Style>
+                            <Style Selector=".inProgress:not(.isProgressDetermined) Border">
+                                <Style.Animations>
+                                    <Animation Duration="0:0:0.75"
+                                               PlaybackDirection="Alternate"
+                                               Easing="SineEaseInOut"
+                                               IterationCount="Infinite">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="Opacity" Value="0.85" />
+                                        </KeyFrame>
+                                        <KeyFrame Cue="100%">
+                                            <Setter Property="Opacity" Value="0.4" />
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                                <Setter Property="Background"
+                                        Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                            </Style>
+                            <Style Selector=".inProgress.isProgressDetermined Border">
+                                <Setter Property="IsVisible" Value="False" />
+                                <Setter Property="Background"
+                                        Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                            </Style>
+                            <Style Selector=".isCompleted Border">
+                                <Setter Property="Background"
+                                        Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                            </Style>
+                        </Border.Styles>
+                    </Border>
+                    <Border ClipToBounds="True" CornerRadius="2">
+                        <ProgressBar x:Name="ProgressBar">
+                            <ProgressBar.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Easing="SineEaseInOut"
+                                                      Property="Value"
+                                                      Duration="0:0:0.18" />
+                                    <DoubleTransition Easing="SineEaseOut"
+                                                      Property="Opacity"
+                                                      Duration="0:0:0.3" />
+                                </Transitions>
+                            </ProgressBar.Transitions>
+                            <ProgressBar.Resources>
+                                <x:Double x:Key="ProgressBarTrackHeight">4</x:Double>
+                            </ProgressBar.Resources>
+                            <ProgressBar.Styles>
+                                <Style Selector="ProgressBar">
+                                    <Setter Property="IsVisible" Value="False" />
+                                    <Setter Property="MinWidth" Value="0" />
+                                </Style>
+                                <Style Selector=".inProgress.isProgressDetermined ProgressBar">
+                                    <Setter Property="IsVisible" Value="True" />
+                                    <Setter Property="Value"
+                                            Value="{Binding Action.Progress, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    <Setter Property="Maximum" Value="100" />
+                                    <Setter Property="Minimum" Value="0" />
+                                </Style>
+                            </ProgressBar.Styles>
+                        </ProgressBar></Border>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^ /template/ ProgressBar#ProgressBar:horizontal">
+            <Setter Property="Height" Value="4"/>
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="CornerRadius" Value="2"/>
+        </Style>
+    </Style>
+</Styles>

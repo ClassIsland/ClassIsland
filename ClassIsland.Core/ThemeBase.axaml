@@ -1,0 +1,55 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+                    xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:lessonsControls="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    mc:Ignorable="d">
+    <ResourceDictionary.MergedDictionaries>
+        <!--<ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>-->
+        <ResourceInclude Source="avares://ClassIsland.Core/Themes/Generic.axaml"/>
+        <ResourceInclude Source="avares://ClassIsland.Core/Controls/NotificationTemplates/Templates.axaml"/>
+        <ResourceInclude Source="avares://ClassIsland.Core/Controls/LessonsControls/LessonsListBox.axaml"/>
+        <ResourceInclude Source="avares://ClassIsland.Core/Themes/ChipListBox.axaml"/>
+        <!-- <ResourceInclude Source="avares://ClassIsland.Core/Controls/MyWindow.axaml"/> -->
+    </ResourceDictionary.MergedDictionaries>
+    <system:String x:Key="TestStringLong">
+        某一日，祂从天坠落。人们抬头仰望，于是看见了星空。星月送来神的女儿，她愿成为人的伴侣。长风化作她的轺车，四海落成她的园圃。鸟雀衔来善的种子，百花编织爱的颂歌。她便是这样降生于世，行于大地，与人类一同长大，与世界一起发芽。而今，终焉之时将至。而今，归去之时已至。就此告别吧，美丽的世界。此后，将有群星闪耀，因为我如今来过。此后，将有百花绽放，因为我从未离去。请将我的箭、我的花、与我的爱，织成新生的种子，带向那枯萎的大地。然后，便让它开出永恒而无瑕的…人性之华吧。我名为爱莉希雅……最初的律者，人之律者。
+    </system:String>
+
+    <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
+    <converters:BooleanToBooleanReConverter x:Key="InvertBooleanConverter" />
+    <converters:IntToFontWeightConverter x:Key="IntToFontWeightConverter" />
+    <converters:BooleanAndExpressionMultiConverter x:Key="BooleanAndExpressionMultiConverter" />
+    <converters:IntToStringConverter x:Key="IntToStringConverter" />
+    <converters:WeekIndexToWeekStringConverter x:Key="WeekIndexToWeekStringConverter" />
+    
+    <!-- FontSizes -->
+    <system:Double x:Key="MainWindowSecondaryFontSize">14</system:Double>
+    <system:Double x:Key="MainWindowBodyFontSize">16</system:Double>
+    <system:Double x:Key="MainWindowEmphasizedFontSize">18</system:Double>
+    <system:Double x:Key="MainWindowLargeFontSize">20</system:Double>
+    
+    <system:Double x:Key="SettingsContainerWidth">960</system:Double>
+    
+    <system:Boolean x:Key="TrueValue">True</system:Boolean>
+    <system:Boolean x:Key="FalseValue">False</system:Boolean>
+    
+    <system:Double x:Key="NavigationViewItemOnLeftIconBoxHeight">18</system:Double>
+    
+    <!-- IconFonts -->
+    <FontFamily x:Key="FluentIcons">avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable</FontFamily>
+    <FontFamily x:Key="LucideIcons">avares://ClassIsland.Core/Assets/Fonts/#lucide</FontFamily>
+    
+    <!-- DataTemplates -->
+    <DataTemplate DataType="system:Boolean" x:Key="SwitcherTemplate">
+        <ToggleSwitch IsChecked="{Binding Mode=TwoWay}"
+                      OnContent="开"
+                      OffContent="关"/>
+    </DataTemplate>
+    
+    
+</ResourceDictionary>

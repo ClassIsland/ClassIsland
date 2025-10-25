@@ -1,0 +1,102 @@
+﻿<UserControl x:Class="ClassIsland.Controls.ScheduleDayControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Unloaded="ScheduleDayControl_OnUnloaded">
+    <UserControl.Resources>
+        <ci:PreventNullConverter x:Key="PreventNullConverter" />
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ScheduleDayControl}}"
+          Background="Transparent" ColumnDefinitions="*,36" RowDefinitions="Auto,*,Auto">
+        <TextBlock 
+            Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+            IsHitTestVisible="False"
+            Margin="4"
+            TextTrimming="CharacterEllipsis"
+            Text="{Binding CurrentClassPlan.Name, FallbackValue=''}"/>
+
+        <StackPanel 
+            Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
+            Orientation="Horizontal"
+            Margin="2">
+            <Panel Margin="0 0 4 0 " VerticalAlignment="Bottom">
+                <Button Content="{ci:FluentIcon &#xE6A1;}"
+                        Theme="{StaticResource TransparentButton}"
+                        ToolTip.Tip="预定临时课表"
+                        Margin="0 -4 -4 0"
+                        Background="Transparent"
+                        ClickMode="Press"
+                        Click="ButtonOrderSchedule_OnClick">
+                    <Button.Flyout>
+                        <Flyout>
+                            <Grid MaxHeight="360" Width="300" RowDefinitions="Auto,*,Auto">
+                                <Button Theme="{StaticResource TransparentButton}"
+                                        Content="{ci:FluentIcon &#xE671;}"
+                                        HorizontalAlignment="Right"
+                                        ToolTip.Tip="关闭" ClickMode="Press"
+                                        Margin="0 -4"
+                                        Click="ButtonCloseSchedulePopup_OnClick" />
+                                <TextBlock Text="选择要临时启用的课表"
+                                           Grid.Row="0"
+                                           FontSize="14"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Bold" />
+                                <ListBox Grid.Row="1" ItemsSource="{Binding ClassPlanList.List}"
+                                         Margin="0 12 0 0"
+                                         SelectionMode="Single"
+                                         SelectedValue="{Binding SelectedClassPlanId, Mode=TwoWay, Converter={StaticResource PreventNullConverter}}"
+                                         SelectedValueBinding="{Binding Key}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox
+                                                IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Mode=OneWay}"
+                                                IsHitTestVisible="False"
+                                                Focusable="False"
+                                                HorizontalAlignment="Stretch">
+                                                <CheckBox.Content>
+                                                    <TextBlock Text="{Binding Value.Name}"
+                                                               VerticalAlignment="Center"/>
+                                                </CheckBox.Content>
+                                            </CheckBox>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <StackPanel Orientation="Horizontal" Grid.Row="2">
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Click="ButtonConfirmTempClassPlan_OnClick" ClickMode="Press">
+                                        <ci:IconText Glyph="&#xE424;" Text="确定" />
+                                    </Button>
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Click="ButtonClearTempClassPlan_OnClick" ClickMode="Press">
+                                        <ci:IconText Glyph="&#xE1BD;" Text="清除" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+                <controls:InfoBadge IsHitTestVisible="False"
+                                    IsVisible="{Binding HasOrderedSchedule}"
+                                    Margin="-6" VerticalAlignment="Top"
+                                    HorizontalAlignment="Right"/>
+            </Panel>
+            <Button Content="{ci:FluentIcon &#xE1BD;}"
+                    Theme="{StaticResource TransparentButton}"
+                    ToolTip.Tip="清除临时课表"
+                    VerticalAlignment="Bottom"
+                    Margin="0 0 4 0 "
+                    Background="Transparent"
+                    ClickMode="Press"
+                    IsVisible="{Binding HasOrderedSchedule}"
+                    Click="ButtonClearTempClassPlan_OnClick" />
+        </StackPanel>
+    </Grid>
+</UserControl>

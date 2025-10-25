@@ -17,13 +17,10 @@ using ClassIsland.Models.Authorize;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Client;
 using ClassIsland.Shared.Protobuf.Service;
-using MaterialDesignThemes.Wpf;
-
+using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
-
-using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 
 namespace ClassIsland.Services.Management;
 
@@ -39,11 +36,11 @@ public class ManagementService : IManagementService
 
     public static ManagementService? Instance { get; private set; }
 
-    public static readonly string ManagementPresetPath = Path.Combine(App.AppRootFolderPath, "./ManagementPreset.json");
+    public static readonly string ManagementPresetPath = Path.Combine(CommonDirectories.AppRootFolderPath, "./ManagementPreset.json");
     public static readonly string ManagementConfigureFolderPath =
-        Path.Combine(App.AppDataFolderPath, "Management");
+        Path.Combine(CommonDirectories.AppDataFolderPath, "Management");
     public static readonly string LocalManagementConfigureFolderPath =
-        Path.Combine(App.AppConfigPath, "Management");
+        Path.Combine(CommonDirectories.AppConfigPath, "Management");
 
     public static readonly string ManagementPersistConfigPath =
         Path.Combine(ManagementConfigureFolderPath, "Persist.json");
@@ -216,7 +213,7 @@ public class ManagementService : IManagementService
         switch (settings.ManagementServerKind)
         {
             case ManagementServerKind.Serverless:
-                mf = await WebRequestHelper.GetJson<ManagementManifest>(new Uri(settings.ManifestUrlTemplate));
+                mf = await WebRequestHelper.Default.GetJson<ManagementManifest>(new Uri(settings.ManifestUrlTemplate));
                 break;
             case ManagementServerKind.ManagementServer:
                 var connection = new ManagementServerConnection(settings, Persist.ClientUniqueId, true);
@@ -226,20 +223,30 @@ public class ManagementService : IManagementService
                 throw new ArgumentOutOfRangeException(nameof(settings.ManagementServerKind), "无效的服务器类型。");
         }
 
-        var dialogBuilder = new CommonDialogBuilder()
-            .SetContent($"确定要加入组织 {mf.OrganizationName} 的管理吗？")
-            .SetIconKind(CommonDialogIconKind.Hint)
-            .AddCancelAction()
-            .AddAction("加入", PackIconKind.Check, true);
+        var dialog = new TaskDialog
+        {
+            Title = "ClassIsland",
+            SubHeader = "加入集控",
+            Content = $"确定要加入组织 {mf.OrganizationName} 的管理吗？",
+            Buttons =
+            {
+                TaskDialogButton.CancelButton,
+                new TaskDialogButton("加入", true)
+                {
+                    IsDefault = true
+                }
+            },
+            XamlRoot = AppBase.Current.GetRootWindow(),
+        };
 
-        var result = dialogBuilder.ShowDialog();
-        if (result != 1)
+        var result = await dialog.ShowAsync();
+        if (result?.Equals(true) != true)
             return;
 
         var w = CopyObject(settings);
         w.IsManagementEnabled = true;
         // 清空旧的配置
-        foreach (var i in new List<string>([ManagementManifestPath, ManagementPolicyPath, ManagementVersionsPath, ProfileService.ManagementClassPlanPath, ProfileService.ManagementSubjectsPath, ProfileService.ManagementTimeLayoutPath, Path.Combine(App.AppRootFolderPath, "./Profiles/_management-profile.json"), ManagementCredentialsPath]).Where(File.Exists))
+        foreach (var i in new List<string>([ManagementManifestPath, ManagementPolicyPath, ManagementVersionsPath, ProfileService.ManagementClassPlanPath, ProfileService.ManagementSubjectsPath, ProfileService.ManagementTimeLayoutPath, Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles/_management-profile.json"), ManagementCredentialsPath]).Where(File.Exists))
         {
             File.Delete(i);
             if (File.Exists(i + ".bak"))
@@ -248,7 +255,7 @@ public class ManagementService : IManagementService
             }
         }
         SaveConfig(ManagementSettingsPath, w);
-        CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
+        await CommonTaskDialogs.ShowDialog("已加入集控", $"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
         await SetupManagement();
 
         AppBase.Current.Restart();
@@ -265,20 +272,30 @@ public class ManagementService : IManagementService
         }
         if (!Policy.AllowExitManagement)
             throw new Exception("您的组织不允许您退出集控。");
+        
+        var dialog = new TaskDialog
+        {
+            Title = "ClassIsland",
+            SubHeader = "退出集控",
+            Content = $"确定要退出组织 {Manifest.OrganizationName} 的管理吗？",
+            Buttons =
+            {
+                TaskDialogButton.CancelButton,
+                new TaskDialogButton("退出", true)
+                {
+                    IsDefault = true
+                }
+            },
+            XamlRoot = AppBase.Current.GetRootWindow(),
+        };
 
-        var dialogBuilder = new CommonDialogBuilder()
-            .SetContent($"确定要退出组织 {Manifest.OrganizationName} 的管理吗？")
-            .SetIconKind(CommonDialogIconKind.Hint)
-            .AddCancelAction()
-            .AddAction("退出", PackIconKind.ExitRun, true);
-
-        var result = dialogBuilder.ShowDialog();
-        if (result != 1)
+        var result = await dialog.ShowAsync();
+        if (result?.Equals(true) != true)
             return;
         Settings.IsManagementEnabled = false;
         SaveConfig(ManagementSettingsPath, Settings);
 
-        CommonDialog.ShowInfo($"已退出组织 {Manifest.OrganizationName} 的管理。应用将重启以应用更改。");
+        await CommonTaskDialogs.ShowDialog("已退出集控", $"已退出组织 {Manifest.OrganizationName} 的管理。应用将重启以应用更改。");
 
         AppBase.Current.Restart();
     }

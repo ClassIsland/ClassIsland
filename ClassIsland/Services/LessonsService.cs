@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Threading;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
 using ClassIsland.Shared.Enums;
@@ -21,7 +22,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
 {
     private ClassPlan? _currentClassPlan;
     private int _currentSelectedIndex = -1;
-    private Subject _nextSubject = Subject.Empty;
+    private Subject _nextSubject = Subject.Fallback;
     private TimeLayoutItem _nextBreakingLayoutItem = TimeLayoutItem.Empty;
     private TimeSpan _onClassLeftTime = TimeSpan.Zero;
     private TimeState _currentStatus = TimeState.None;
@@ -34,9 +35,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private bool _isLessonConfirmed = false;
     private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
     private TimeLayoutItem _nextClassTimeLayoutItem = TimeLayoutItem.Empty;
-    private ObservableCollection<int> _multiWeekRotation = [0, 0, 1, 1, 1];
-
-    private static readonly ObservableCollection<int> DefaultMultiWeekRotation = [0, 0, 1, 1, 1];
 
     private DispatcherTimer MainTimer
     {
@@ -139,15 +137,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         get => _onBreakingTimeLeftTime;
         set => SetProperty(ref _onBreakingTimeLeftTime, value);
     }
-    public ObservableCollection<int> MultiWeekRotation
-    {
-        get => _multiWeekRotation;
-        set => SetProperty(ref _multiWeekRotation, value);
-    }
 
     public ClassPlan? GetClassPlanByDate(DateTime date) => GetClassPlanByDate(date, out _);
 
-    public ClassPlan? GetClassPlanByDate(DateTime date, out string? guid)
+    public ClassPlan? GetClassPlanByDate(DateTime date, out Guid? guid)
     {
         guid = null;
         // 加载临时层（弃用）
@@ -168,7 +161,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
         // 加载临时课表
         if (Profile.TempClassPlanId != null &&
-            Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId, out var tempClassPlan) &&
+            Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId ?? Guid.Empty, out var tempClassPlan) &&
             Profile.TempClassPlanSetupTime.Date >= date.Date)
         {
             guid = Profile.TempClassPlanId;
@@ -179,7 +172,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             .Where(x =>
             {
                 var group = x.Value.AssociatedGroup;
-                var matchGlobal = new Guid(group) == ClassPlanGroup.GlobalGroupGuid;
+                var matchGlobal = group == ClassPlanGroup.GlobalGroupGuid;
                 var matchDefault = group == Profile.SelectedClassPlanGroupId;
                 if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null } 
                     || Profile.TempClassPlanGroupExpireTime.Date < date.Date)
@@ -197,7 +190,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 var group = x.Value.AssociatedGroup;
                 if (group == Profile.TempClassPlanGroupId) return 3;
                 if (group == Profile.SelectedClassPlanGroupId) return 2;
-                if (group == ClassPlanGroup.GlobalGroupGuid.ToString()) return 1;
+                if (group == ClassPlanGroup.GlobalGroupGuid) return 1;
                 return 0;
             })
             .Where(p => CheckClassPlan(p.Value, date))
@@ -336,7 +329,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             .Reverse()
             .FirstOrDefault(i =>
                 i.TimeType == 0 &&
-                i.EndSecond.TimeOfDay < now);
+                i.EndTime < now);
         if (prevClassTimeItem == null)
         {
             return false;
@@ -430,7 +423,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         isClassPlanLoaded = true;
         // Activate selected item
         CurrentClassPlan!.IsActivated = true;
-        CurrentClassPlan.TimeLayout.IsActivated = true;
+        if (CurrentClassPlan.TimeLayout != null)
+        {
+            CurrentClassPlan.TimeLayout.IsActivated = true;
+        }
 
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         var validTimeLayoutItems = CurrentClassPlan.ValidTimeLayoutItems;
@@ -438,8 +434,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         // 获取当前时间点信息
         currentTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType is 0 or 1 &&
-            i.StartSecond.TimeOfDay <= now &&
-            i.EndSecond.TimeOfDay >= now);
+            i.StartTime <= now &&
+            i.EndTime >= now);
         if (currentTimeLayoutItem != null)
         {
             currentSelectedIndex = layout.IndexOf(currentTimeLayoutItem);
@@ -466,7 +462,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         // 获取下节时间点信息
         nextClassTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 0 &&
-            i.EndSecond.TimeOfDay >= now);
+            i.EndTime >= now);
         if (nextClassTimeLayoutItem != null)
         {
             var i0 = GetClassIndex(layout.IndexOf(nextClassTimeLayoutItem));
@@ -476,13 +472,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
         nextBreakingTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 1 &&
-            i.EndSecond.TimeOfDay >= now);
+            i.EndTime >= now);
 
         // 获取剩余时间信息
         if (currentState == TimeState.OnClass)
-            onBreakingTimeLeftTime = nextBreakingTimeLayoutItem?.StartSecond.TimeOfDay - now;
+            onBreakingTimeLeftTime = nextBreakingTimeLayoutItem?.StartTime - now;
         else
-            onClassLeftTime = nextClassTimeLayoutItem?.StartSecond.TimeOfDay - now;
+            onClassLeftTime = nextClassTimeLayoutItem?.StartTime - now;
 
         if (nextClassTimeLayoutItem == null &&
             nextBreakingTimeLayoutItem == null)
@@ -493,8 +489,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         // 统一更新信息
         CurrentSelectedIndex = currentSelectedIndex ?? -1;
         CurrentState = currentState ?? TimeState.None;
-        CurrentSubject = currentSubject ?? Subject.Empty;
-        NextClassSubject = nextClassSubject ?? Subject.Empty;
+        CurrentSubject = currentSubject ?? Subject.Fallback;
+        NextClassSubject = nextClassSubject ?? Subject.Fallback;
         CurrentTimeLayoutItem = currentTimeLayoutItem ?? TimeLayoutItem.Empty;
         NextClassTimeLayoutItem = nextClassTimeLayoutItem ?? TimeLayoutItem.Empty;
         NextBreakingTimeLayoutItem = nextBreakingTimeLayoutItem ?? TimeLayoutItem.Empty;
@@ -534,12 +530,12 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private int GetClassIndex(int index)
     {
-        if (index < 0 || index >= CurrentClassPlan?.TimeLayout.Layouts.Count )
+        if (index < 0 || index >= CurrentClassPlan?.TimeLayout?.Layouts.Count )
         {
             return -1;
         }
-        var k = CurrentClassPlan?.TimeLayout.Layouts[index];
-        var l = (from t in CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
+        var k = CurrentClassPlan?.TimeLayout?.Layouts[index];
+        var l = (from t in CurrentClassPlan?.TimeLayout?.Layouts where t.TimeType == 0 select t).ToList();
         var i = l.IndexOf(k);
         return i;
     }
@@ -553,7 +549,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private void LoadCurrentClassPlan()
     {
         ProfileService.Profile.RefreshTimeLayouts();
-        RefreshMultiWeekRotation();
         var currentTime = ExactTimeService.GetCurrentLocalDateTime();
         if (Profile.TempClassPlanSetupTime.Date < currentTime.Date)  // 清除过期临时课表
         {
@@ -572,12 +567,11 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
 
         CurrentClassPlan = GetClassPlanByDate(currentTime);
-        var orderedClassPlanId = Profile.OrderedSchedules[currentTime.Date]?.ClassPlanId;
-        if (orderedClassPlanId != null 
-            && Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan)
+        if (Profile.OrderedSchedules.TryGetValue(currentTime.Date, out var orderedSchedule) 
+            && Profile.ClassPlans.TryGetValue(orderedSchedule.ClassPlanId, out var classPlan)
             && classPlan.IsOverlay)
         {
-            Profile.OverlayClassPlanId = orderedClassPlanId;
+            Profile.OverlayClassPlanId = orderedSchedule.ClassPlanId;
         }
         else
         {
@@ -595,42 +589,49 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
-        if (plan.AssociatedGroup != ClassPlanGroup.GlobalGroupGuid.ToString() &&
+        if (plan.AssociatedGroup != ClassPlanGroup.GlobalGroupGuid &&
             plan.AssociatedGroup != Profile.SelectedClassPlanGroupId &&
             plan.AssociatedGroup != Profile.TempClassPlanGroupId)
         {
             return false;
         }
 
+        if (plan.TimeRule.WeekCountDivTotal > SettingsService.Settings.MultiWeekRotationMaxCycle)
+            return false;
+
         if (plan.TimeRule.WeekCountDiv == 0)
             return true;
 
-        // RefreshMultiWeekRotation();
-        var rotation = GetMultiWeekRotationByTime(time);
+        var rotation = GetCyclePositionsByDate(time);
         return plan.TimeRule.WeekCountDiv == rotation[plan.TimeRule.WeekCountDivTotal];
     }
 
-    public void RefreshMultiWeekRotation()
+    /// <summary>
+    /// 计算从指定时间起，在多个周期（2周 ~ 最大周期）中的循环位置。
+    /// </summary>
+    /// <param name="referenceTime">基准时间点。默认为当前时间。</param>
+    /// <returns>
+    /// 2-first, 1-based
+    /// </returns>
+    /// <remarks>
+    /// 对称逻辑：WeekOffsetSettingsControl.SetMultiWeekRotationOffset()
+    /// </remarks>
+    public ObservableCollection<int> GetCyclePositionsByDate(DateTime? referenceTime = null)
     {
-        MultiWeekRotation = GetMultiWeekRotationByTime(ExactTimeService.GetCurrentLocalDateTime());
-    }
+        referenceTime ??= ExactTimeService.GetCurrentLocalDateTime();
+        var cyclePositions = new ObservableCollection<int>([-1, -1]);
+        var totalElapsedWeeks = (int)Math.Floor((referenceTime.Value.Date - Settings.SingleWeekStartTime.Date).TotalDays / 7);
 
-    private ObservableCollection<int> GetMultiWeekRotationByTime(DateTime time)
-    {
-        var rotation = new ObservableCollection<int>(DefaultMultiWeekRotation);
-        var deltaDays = (time.Date - Settings.SingleWeekStartTime.Date).TotalDays;
-        var deltaWeeks = (int)Math.Floor(deltaDays / 7);
-        for (var i = 2; i <= 4; i++)
+        for (int cycleLength = 2; cycleLength <= Settings.MultiWeekRotationMaxCycle; cycleLength++)
         {
-            var w = (deltaWeeks - Settings.MultiWeekRotationOffset[i] + i) % i;
-            if (w < 0)
-            {
-                w += i;
-            }
-            rotation[i] = w + 1;
+            int cycleOffset = Settings.MultiWeekRotationOffset.GetValueOrDefault(cycleLength);
+            int positionInCycle = (totalElapsedWeeks + cycleOffset) % cycleLength;
+            // 在 C# 中，负数取模为负。
+            if (positionInCycle < 0)
+                positionInCycle += cycleLength;
+            cyclePositions.Add(positionInCycle + 1);
         }
-
-        return rotation;
+        return cyclePositions;
     }
 
     public void StartMainTimer()

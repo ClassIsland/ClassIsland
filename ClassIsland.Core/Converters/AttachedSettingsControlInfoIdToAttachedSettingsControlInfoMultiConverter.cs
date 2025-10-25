@@ -1,15 +1,15 @@
 using System.Globalization;
-using System.Windows.Data;
+
+using Avalonia.Data.Converters;
 using ClassIsland.Core.Attributes;
 
 namespace ClassIsland.Core.Converters;
 
-public class
-    AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter : IMultiValueConverter
+public class AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter : IMultiValueConverter
 {
-    public object? Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length < 2)
+        if (values.Count < 2)
         {
             return null;
         }

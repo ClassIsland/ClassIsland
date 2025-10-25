@@ -1,0 +1,89 @@
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.CrashWindow"
+                   xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                   xmlns:views="clr-namespace:ClassIsland.Views"
+                   xmlns:controls="clr-namespace:ClassIsland.Controls"
+                   xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+                   xmlns:controls2="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                   d:DataContext="{d:DesignInstance views:CrashWindow}"
+                   mc:Ignorable="d"
+                   WindowStartupLocation="CenterScreen"
+                   Icon="/Assets/AppLogo.ico"
+                   Title="ClassIsland 崩溃报告" Height="450" Width="800"
+                   EnableMicaWindow="True">
+    <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+        <!-- Header -->
+        <Image Grid.Row="0" Grid.Column="0"
+               Source="/Assets/HoYoStickers/光辉矢愿_不可以看.png"
+               Width="48" Height="48"
+               Margin="0 -8 0 0"
+               VerticalAlignment="Top"/>
+        <TextBlock Text="ClassIsland 发生错误 ヽ(*。>Д&lt;)o゜"
+                   Grid.Row="0" Grid.Column="1"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Theme="{StaticResource TitleTextBlockStyle}"
+                   Margin="8 0 16 16"/>
+        
+        <!-- Content -->
+        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" TextWrapping="Wrap" FontSize="14"
+                   Margin="0 0 0 6">
+            <Run Text="ClassIsland 碰到了严重错误而无法正常运行。您可以保存下方的错误信息并向他人寻求帮助。如果您认为这是由软件本身的错误所致，请点击下方“反馈问题”按钮。"/>
+        </TextBlock>
+        <TextBox Grid.Column="0" Grid.ColumnSpan="2"
+                 x:Name="TextBoxCrashInfo" Grid.Row="2" 
+                 FontSize="13"
+                 BorderThickness="0"
+                 Padding="0"
+                 Margin="0 6 0 0" AcceptsReturn="True"
+                 VerticalContentAlignment="Top"
+                 IsReadOnly="True" Text="{Binding CrashInfo, Mode=OneWay}"
+                 TextAlignment="Left" TextWrapping="Wrap"
+                 d:Text="123"/>
+
+        <controls2:InfoBar Grid.Row="3"
+                           Grid.Column="0" Grid.ColumnSpan="2"
+                           IsOpen="{Binding IsCritical}"
+                           Severity="Error" IsClosable="False"
+                           Margin="0 6 0 0"
+                           Message="这个异常无法被忽略，您需要重启或退出应用。很抱歉对您的使用造成不便。"/>
+        
+        <Separator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="-12 8 -12 0"/>
+        
+        <!-- Bottom -->
+        <Grid Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"
+              ColumnDefinitions="Auto, *, Auto" Margin="-12 0 -12 -12"
+              Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}">
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal" Margin="12">
+                <Button Margin="0 0 6 0"
+                                IsVisible="{Binding IsCritical, Mode=OneTime}"
+                                Click="ButtonDebug_OnClick">
+                    <controls1:IconText Glyph="&#xE2C8;" Text="调试" Spacing="3"/>
+                </Button>
+                <Button Margin="0 0 6 0"
+                        IsVisible="{Binding AllowIgnore, Mode=OneTime}"
+                        Click="ButtonIgnore_OnClick">
+                    <controls1:IconText Glyph="&#xE671;" Text="忽略" Spacing="3"/>
+                </Button>
+                <Button Margin="0 0 6 0" Click="ButtonExit_OnClick">
+                    <controls1:IconText Glyph="&#xE0DF;" Text="退出应用" Spacing="3"/>
+                </Button>
+                <Button Click="ButtonRestart_OnClick" Classes="accent">
+                    <controls1:IconText Glyph="&#xE0BD;" Text="重启应用" Spacing="3"/>
+                </Button>
+            </StackPanel>
+            
+            <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal" Margin="12">
+                <Button Click="ButtonCopy_OnClick" Margin="0 0 6 0">
+                    <controls1:IconText Glyph="&#xE58B;" Text="复制" Spacing="3"/>
+                </Button>
+                <Button Click="ButtonFeedback_OnClick">
+                    <controls1:IconText Glyph="&#xED11;" Text="反馈问题" Spacing="3"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</controls1:MyWindow>

@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:welcomePages="clr-namespace:ClassIsland.Views.WelcomePages"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Views.WelcomePages.FinishPage">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                Classes="settings-container animated-intro"
+                DataContext="{Binding RelativeSource={RelativeSource AncestorType=welcomePages:FinishPage}}"
+                MaxWidth="600">
+        <Image Height="85" Width="85" Source="/Assets/HoYoStickers/白厄_再见.png"
+               Margin="0 0 0 4"/>
+        <TextBlock Text="完成" HorizontalAlignment="Center"
+                   Margin="0 0 0 4"
+                   Theme="{StaticResource SubtitleTextBlockStyle}"/>
+        <TextBlock Text="恭喜！应用的基本设置已完成，感谢您选用 ClassIsland。点击【&#xE423;】以结束设置向导。" HorizontalAlignment="Center"
+                   Margin="0 0 0 8"/>
+        
+        <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+            <Button Command="{x:Static views:WelcomeWindow.WelcomeNavigateBackCommand}"
+                    ToolTip.Tip="上一步"
+                    Content="{ci:FluentIcon &#xE108;, FontSize=18}"
+                    Width="48" Height="48"
+                    CornerRadius="24"
+                    Margin="0 8 0 0"/>
+            <Button Command="{x:Static views:WelcomeWindow.FinishWelcomeWizardCommand}"
+                    ToolTip.Tip="完成"
+                    Content="{ci:FluentIcon &#xE423;, FontSize=18}"
+                    Width="48" Height="48"
+                    CornerRadius="24"
+                    Classes="accent" 
+                    Margin="0 8 0 0"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

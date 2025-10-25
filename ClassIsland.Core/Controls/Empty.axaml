@@ -1,0 +1,24 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls"
+        xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <controls:Empty/>
+    </Design.PreviewWith>
+
+    <Style Selector="controls|Empty">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Spacing="8" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <controls1:IconSourceElement IconSource="{TemplateBinding Icon}" 
+                                                 Height="{TemplateBinding IconHeight}"
+                                                 Width="{TemplateBinding IconWidth}"
+                                                 HorizontalAlignment="Center"/>
+                    <TextBlock Text="{TemplateBinding Text}" HorizontalAlignment="Center"
+                               TextAlignment="Center" TextWrapping="Wrap"/>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

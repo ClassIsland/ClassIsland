@@ -1,8 +1,9 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Data.Converters;
+using Avalonia.Media;
 
 namespace ClassIsland.Core.Converters;
 
@@ -19,7 +20,7 @@ public class WidthDoubleToRectConverter : IMultiValueConverter
         return null;
     }
 
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(IList<object?> values, Type targetType, object parameter, CultureInfo culture)
     {
         var w = Math.Max(0, values[0] as double? ?? 0);
         var gw = Math.Max(0, values[1] as double? ?? 0);

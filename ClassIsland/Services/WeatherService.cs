@@ -8,13 +8,17 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
+using Avalonia.Controls.Templates;
+using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Platform;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
+using ClassIsland.Platforms.Abstraction.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,7 +27,7 @@ namespace ClassIsland.Services;
 
 public class WeatherService : ObservableRecipient, IHostedService, IWeatherService
 {
-    private DataTemplate? _selectedWeatherIconTemplate;
+    private IDataTemplate? _selectedWeatherIconTemplate;
     private SettingsService SettingsService { get; }
 
     private Settings Settings => SettingsService.Settings;
@@ -120,10 +124,9 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
     private async void LoadData()
     {
-        var w = Application.GetResourceStream(new Uri("/Assets/XiaomiWeather/xiaomi_weather_status.json",
-            UriKind.Relative));
-        if (w == null) return;
-        var codes = await JsonSerializer.DeserializeAsync<XiaomiWeatherStatusCodes>(w.Stream);
+        var w = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/XiaomiWeather/xiaomi_weather_status.json",
+            UriKind.Absolute));
+        var codes = await JsonSerializer.DeserializeAsync<XiaomiWeatherStatusCodes>(w);
         WeatherStatusList = codes!.WeatherInfo;
     }
 
@@ -158,7 +161,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
                 _ => throw new ArgumentOutOfRangeException()
             };
             Logger.LogInformation("获取城市信息： {}", uri);
-            var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(new Uri(uri));
+            var cityInfoList = await WebRequestHelper.Default.GetJson<List<CityInfo>>(new Uri(uri));
             // 取第一个城市信息
             var cityInfo = cityInfoList.FirstOrDefault();
             if (cityInfo != null && (Settings.WeatherLocationSource != 0 || cityInfo.LocationKey == Settings.CityId)
@@ -187,9 +190,30 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
             var uri =
                 $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude={cityLatitude}&longitude={cityLongitude}&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
-            var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
-            info.Alerts.RemoveAll(i => Settings.ExcludedWeatherAlerts.FirstOrDefault(x =>
-                (!string.IsNullOrWhiteSpace(x)) && i.Title.Contains(x)) != null);
+            var info = await WebRequestHelper.Default.GetJson<WeatherInfo>(new Uri(uri));
+
+            // 排除天气预警
+            var validExclusions = Settings.ExcludedWeatherAlerts
+                .Where(x => !string.IsNullOrWhiteSpace(x));
+
+            info.Alerts.RemoveAll(alert =>
+                validExclusions
+                    .Any(exclusion =>
+                        alert.Title.Contains(exclusion) || alert.Detail.Contains(exclusion)
+                )
+            );
+
+            // 去重天气预警
+            var latest = info.Alerts
+                .GroupBy(a => a.Type)
+                .ToDictionary(g => g.Key, g => g.MaxBy(a => a.PubTime)!);
+            foreach (var a in info.Alerts)
+            {
+                if (latest[a.Type].AlertId != a.AlertId)
+                    Logger.LogInformation("已丢弃旧预警：（{}，{}）{}", a.Title, a.PubTime, a.Detail);
+            }
+            info.Alerts = latest.Values.ToList();
+
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
         }
@@ -226,7 +250,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         {
             Logger.LogInformation("{}： {}", logText, uri);
 
-            var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(uri);
+            var cityInfoList = await WebRequestHelper.Default.GetJson<List<CityInfo>>(uri);
             
             var cities = cityInfoList?.Select(cityInfo => new City
             {
@@ -243,7 +267,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         }
     }
 
-    public DataTemplate? SelectedWeatherIconTemplate
+    public IDataTemplate? SelectedWeatherIconTemplate
     {
         get => _selectedWeatherIconTemplate;
         private set => SetProperty(ref _selectedWeatherIconTemplate, value);

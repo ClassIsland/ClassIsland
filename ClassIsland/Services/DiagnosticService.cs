@@ -8,8 +8,10 @@ using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows;
+using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Plugin;
@@ -17,7 +19,6 @@ using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
-using Clipboard = System.Windows.Forms.Clipboard;
 
 namespace ClassIsland.Services;
 
@@ -41,14 +42,16 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     public string GetDiagnosticInfo()
     {
         var settings = SettingsService.Settings;
-        DwmIsCompositionEnabled(out BOOL isCompositionEnabled);
         GetDeviceInfo(out var name, out var vendor);
         var list = new Dictionary<string, string>
         {
             {"SystemOsVersion",  RuntimeInformation.OSDescription},
-            {"SystemIsCompositionEnabled", isCompositionEnabled.ToString()},
+            {"SystemOsArch",  RuntimeInformation.OSArchitecture.ToString()},
             {"SystemDeviceName", name},
             {"SystemDeviceVendor", vendor},
+            {"AppPackageRoot", CommonDirectories.AppPackageRoot},
+            {"AppRoot", CommonDirectories.AppRootFolderPath},
+            {"AppCurrentDirectory", Environment.CurrentDirectory},
             {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},
             {"AppStartupDurationMs", StartupDurationMs.ToString()},
             {"AppVersion", App.AppVersionLong},
@@ -67,7 +70,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {nameof(settings.DiagnosticMemoryKillFreqDay), settings.DiagnosticMemoryKillFreqDay.ToString("F3")}
         };
 
-        return string.Join('\n', from i in list select $"{i.Key}: {i.Value}");
+        return string.Join(Environment.NewLine, from i in list select $"{i.Key}: {i.Value}");
     }
 
     public static void BeginStartup()
@@ -92,10 +95,10 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         try
         {
             var temp = Directory.CreateTempSubdirectory("ClassIslandDiagnosticExport").FullName;
-            var logs = string.Join('\n', AppLogService.Logs);
+            var logs = string.Join(Environment.NewLine, AppLogService.Logs);
             //await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
             await File.WriteAllTextAsync(Path.Combine(temp, "DiagnosticInfo.txt"), GetDiagnosticInfo());
-            File.Copy(Path.Combine(App.AppRootFolderPath, "Settings.json"), Path.Combine(temp, "Settings.json"));
+            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Path.Combine(temp, "Settings.json"));
             var profile = App.GetService<IProfileService>().CurrentProfilePath;
             Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
             Directory.CreateDirectory(Path.Combine(temp, "Management/"));
@@ -105,9 +108,9 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {
                 File.Copy(file, Path.Combine(temp, "Management/", Path.GetFileName(file)));
             }
-            File.Copy(Path.Combine(App.AppRootFolderPath, "./Profiles", profile), Path.Combine(temp, "Profiles/",  profile));
-            FileFolderService.CopyFolder(Path.Combine(App.AppConfigPath), Path.Combine(temp, "Config/"));
-            FileFolderService.CopyFolder(Path.Combine(App.AppLogFolderPath), Path.Combine(temp, "Logs/"));
+            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles", profile), Path.Combine(temp, "Profiles/",  profile));
+            FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppConfigPath), Path.Combine(temp, "Config/"));
+            FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppLogFolderPath), Path.Combine(temp, "Logs/"));
 
             File.Delete(path);
             await Task.Run(() =>
@@ -127,18 +130,33 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             throw;
         }
     }
-
+    
     public static void GetDeviceInfo(out string name, out string vendor)
     {
         name = "???";
         vendor = "???";
         try
         {
-            var moc = new ManagementClass("Win32_ComputerSystemProduct").GetInstances();
-            foreach (var mo in moc)
+            if (OperatingSystem.IsWindows())
             {
-                name = mo.GetPropertyValue("Name") as string ?? "???";
-                vendor = mo.GetPropertyValue("Vendor") as string ?? "???";
+                using var moc = new ManagementClass("Win32_ComputerSystemProduct").GetInstances();
+                foreach (var mo in moc)
+                {
+                    name = mo.GetPropertyValue("Name") as string ?? "???";
+                    vendor = mo.GetPropertyValue("Vendor") as string ?? "???";
+                }
+            }
+
+            if (OperatingSystem.IsLinux())
+            {
+                if(File.Exists("/sys/devices/virtual/dmi/id/product_name")) name=File.ReadAllText("/sys/devices/virtual/dmi/id/product_name").Trim();
+                if (File.Exists("/sys/devices/virtual/dmi/id/sys_vendor")) vendor = File.ReadAllText("/sys/devices/virtual/dmi/id/sys_vendor").Trim();
+            }
+
+            if (OperatingSystem.IsMacOS())
+            {
+                vendor = "Apple Inc.";
+                name = "Macintosh";
             }
         }
         catch
@@ -158,7 +176,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         try
         {
             var app = (App)AppBase.Current;
-            app.Dispatcher.Invoke(() =>
+            Dispatcher.UIThread.Invoke(() =>
             {
                 if (eventArgs.ExceptionObject is Exception exception)
                 {
@@ -183,7 +201,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             return;
         }
 
-        CopyException();
+        // CopyException();
         List<PluginInfo> plugins = [];
         if (ex != null)
         {
@@ -191,8 +209,10 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         }
 
         DisableCorruptPlugins(plugins);
-        var pluginsWarning = "\n\n此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：\n"
-                             + string.Join("\n", plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"));
+        var pluginsWarning = Environment.NewLine + Environment.NewLine +
+                             "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：" + Environment.NewLine
+                             + string.Join(Environment.NewLine,
+                                 plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"));
         var message = $"""
                        很抱歉，ClassIsland 遇到了无法解决的问题，即将退出。堆栈跟踪信息已复制到剪贴板。点击【确定】将退出应用，点击【取消】将启动调试器。
 
@@ -202,25 +222,26 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                        """;
         
         
-            
-        var r = System.Windows.MessageBox.Show(message, "ClassIsland", MessageBoxButton.OKCancel, MessageBoxImage.Error);
-        if (r == MessageBoxResult.Cancel)
-        {
-            Debugger.Launch();
-        }
-        return;
-
-        void CopyException()
-        {
-            try
-            {
-                Clipboard.SetDataObject(ex?.ToString() ?? "");
-            }
-            catch (Exception e)
-            {
-                // ignored
-            }
-        }
+        
+        // TODO: 实现对话框
+        // var r = MessageBox.Show(message, "ClassIsland", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+        // if (r == DialogResult.Cancel)
+        // {
+        //     Debugger.Launch();
+        // }
+        // return;
+        //
+        // void CopyException()
+        // {
+        //     try
+        //     {
+        //         Clipboard.SetDataObject(ex?.ToString() ?? "");
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         // ignored
+        //     }
+        // }
     }
 
     public static List<PluginInfo> GetPluginsByStacktrace(Exception exception)

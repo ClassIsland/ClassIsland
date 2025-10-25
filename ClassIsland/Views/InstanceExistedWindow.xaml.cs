@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Controls;
+#if false
+using ClassIsland.Core.Controls;
 using System.Windows;
 
 namespace ClassIsland.Views
@@ -26,3 +27,5 @@ namespace ClassIsland.Views
         }
     }
 }
+
+#endif

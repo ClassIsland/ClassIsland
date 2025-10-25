@@ -27,16 +27,16 @@ namespace ClassIsland.Services;
 
 public class PluginService : IPluginService
 {
-    public static readonly string PluginsRootPath = Path.Combine(App.AppRootFolderPath, @"Plugins\");
+    public static readonly string PluginsRootPath = Path.Combine(CommonDirectories.AppRootFolderPath, "Plugins");
 
-    public static readonly string PluginsIndexPath = Path.Combine(App.AppConfigPath, "PluginsIndex");
+    public static readonly string PluginsIndexPath = Path.Combine(CommonDirectories.AppConfigPath, "PluginsIndex");
 
-    public static readonly string PluginsPkgRootPath = Path.Combine(App.AppCacheFolderPath, "PluginPackages");
+    public static readonly string PluginsPkgRootPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "PluginPackages");
 
 
     public static readonly string PluginManifestFileName = "manifest.yml";
 
-    public static readonly string PluginConfigsFolderPath = Path.Combine(App.AppConfigPath, "Plugins");
+    public static readonly string PluginConfigsFolderPath = Path.Combine(CommonDirectories.AppConfigPath, "Plugins");
 
     internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
 

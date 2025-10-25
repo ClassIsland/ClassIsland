@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Avalonia.Platform;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Core.Enums.Metadata.Announcement;
 using ClassIsland.Core.Models.Metadata.Announcement;
@@ -25,13 +27,12 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
     {
         Logger = logger;
 
-        var keyStream = Application
-            .GetResourceStream(new Uri("/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute))!.Stream;
+        var keyStream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute));
         MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
 
         UpdateReadAnnouncements();
         AnnouncementsInternal =
-            ConfigureFileHelper.LoadConfig<ObservableCollection<Announcement>>(Path.Combine(App.AppCacheFolderPath,
+            ConfigureFileHelper.LoadConfig<ObservableCollection<Announcement>>(Path.Combine(CommonDirectories.AppCacheFolderPath,
                 "Announcements.json"));
         _ = RefreshAnnouncements();
     }
@@ -64,7 +65,7 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
         {
             var time = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
             AnnouncementsInternal =
-                await WebRequestHelper.SaveJson<ObservableCollection<Announcement>>(new Uri($"https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/announcements.json?time={time}"), Path.Combine(App.AppCacheFolderPath,
+                await WebRequestHelper.Default.SaveJson<ObservableCollection<Announcement>>(new Uri($"https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/announcements.json?time={time}"), Path.Combine(CommonDirectories.AppCacheFolderPath,
                     "Announcements.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
         }
         catch (Exception e)
@@ -102,10 +103,10 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
         ReadAnnouncementsMachine.CollectionChanged -= ReadAnnouncementsOnCollectionChanged;
 
         ReadAnnouncementsLocal = ConfigureFileHelper.LoadConfig<ObservableCollection<Guid>>(Path.Combine(
-            App.AppConfigPath,
+            CommonDirectories.AppConfigPath,
             "ReadAnnouncements.json"));
         ReadAnnouncementsMachine = ConfigureFileHelper.LoadConfig<ObservableCollection<Guid>>(Path.Combine(
-            App.AppDataFolderPath,
+            CommonDirectories.AppDataFolderPath,
             "ReadAnnouncements.json"));
 
         ReadAnnouncementsLocal.CollectionChanged += ReadAnnouncementsOnCollectionChanged;
@@ -115,10 +116,10 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
     private void SaveReadAnnouncements()
     {
         ConfigureFileHelper.SaveConfig(Path.Combine(
-            App.AppConfigPath,
+            CommonDirectories.AppConfigPath,
             "ReadAnnouncements.json"), ReadAnnouncementsLocal);
         ConfigureFileHelper.SaveConfig(Path.Combine(
-            App.AppDataFolderPath,
+            CommonDirectories.AppDataFolderPath,
             "ReadAnnouncements.json"), ReadAnnouncementsMachine);
     }
 

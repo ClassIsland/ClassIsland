@@ -1,16 +1,19 @@
 $ErrorActionPreference = "Stop"
 $artifacts = Get-ChildItem -Path ./out_artifacts -Directory
 
-mkdir ./ci_tmp/sign_bundle
+mkdir -p ./ci_tmp/sign_bundle
 if ($(Test-Path ./out) -eq $false) {
     mkdir out
 }
 
 foreach ($artifact in $artifacts) {
-    if ($artifact -eq "out_nupkg.zip") {
+    if ($artifact -eq "out_nupkg") {
         continue
     }
     Copy-Item ./out_artifacts/$($artifact.Name)/* -Destination ./out/ -Recurse -Force
+    if ($artifact.Name.Contains('windows') -eq $false) {
+        continue
+    }
     Copy-Item ./out_artifacts/$($artifact.Name)/* -Destination ./ci_tmp/sign_bundle/ -Recurse -Force
 }
 

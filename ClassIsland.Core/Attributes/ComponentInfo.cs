@@ -1,5 +1,6 @@
-﻿using MaterialDesignThemes.Wpf;
-using System.Drawing;
+﻿using System.Drawing;
+using ClassIsland.Core.Helpers.UI;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Attributes;
 
@@ -22,7 +23,7 @@ public class ComponentInfo : Attribute
     /// <summary>
     /// 组件图标
     /// </summary>
-    public PackIconKind PackIcon { get; } = PackIconKind.WidgetsOutline;
+    public IconSource? IconSource { get; }
 
     /// <summary>
     /// 组件位图图标uri
@@ -37,7 +38,7 @@ public class ComponentInfo : Attribute
     /// <summary>
     /// 组件描述
     /// </summary>
-    public string Description { get; } = "";
+    public string Description { get; }
 
     /// <summary>
     /// 设置界面类型
@@ -62,18 +63,10 @@ public class ComponentInfo : Attribute
     internal List<string> MigrateSources { get; } = new();
 
     /// <inheritdoc />
-    public ComponentInfo(string guid, string name, PackIconKind icon, string description = "") : this(guid, name,
+    public ComponentInfo(string guid, string name, string iconSource, string description = "") : this(guid, name,
         description)
     {
-        PackIcon = icon;
-    }
-
-    /// <inheritdoc />
-    public ComponentInfo(string guid, string name, string bitmapIconUri, string description = "") : this(guid, name,
-        description)
-    {
-        BitmapIconUri = bitmapIconUri;
-        UseBitmapIcon = true;
+        IconSource = IconExpressionHelper.TryParseOrNull(iconSource);
     }
 
     /// <inheritdoc />

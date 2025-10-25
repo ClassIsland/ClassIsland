@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
 using Pastel;
-using static System.Windows.Forms.AxHost;
 
 namespace ClassIsland.Services.Logging;
 
@@ -16,7 +15,7 @@ public class ClassIslandConsoleFormatter() : ConsoleFormatter("classisland")
         var separator = " | ".Pastel(ConsoleColor.Gray);
         var scopeSeparator = " => ".Pastel(ConsoleColor.Gray);
         var now = DateTimeOffset.Now.ToString("yyyy/MM/dd HH:mm:ss").Pastel(ConsoleColor.DarkGray);
-        var message = logEntry.Formatter(logEntry.State, logEntry.Exception) + (logEntry.Exception != null ? "\n" + logEntry.Exception.ToString().Pastel("#cccccc") : "");
+        var message = logEntry.Formatter(logEntry.State, logEntry.Exception) + (logEntry.Exception != null ? Environment.NewLine+ logEntry.Exception.ToString().Pastel("#cccccc") : "");
         message = LogMaskingHelper.MaskLog(message, "***".Pastel(ConsoleColor.DarkGray).PastelBg(ConsoleColor.Gray));
         textWriter.Write(now);
         textWriter.Write(separator);

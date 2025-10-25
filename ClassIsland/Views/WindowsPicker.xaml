@@ -12,7 +12,7 @@
                    d:DataContext="{d:DesignInstance local:WindowsPicker}"
                    Height="600" Width="1300"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                   Background="{DynamicResource MaterialDesignPaper}"
+                   Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                    TextElement.FontWeight="Regular"
                    TextElement.FontSize="14"
                    FontFamily="{StaticResource HarmonyOsSans}"
@@ -92,7 +92,7 @@
                      Text="{Binding ViewModel.SelectedClassName}"
                      materialDesign:HintAssist.Hint="窗口类名"/>
             <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
+                <Button Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}" Margin="0 0 6 0"
                         Click="ButtonCancel_OnClick">
                     <controls1:IconText Kind="Cancel" Text="取消"/>
                 </Button>
@@ -117,13 +117,13 @@
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center">
-                    <Button ToolTip="刷新"
+                    <Button ToolTip.Tip="刷新"
                             Padding="0"
                             Style="{StaticResource MaterialDesignToolForegroundButton}"
                             Content="{materialDesign:PackIcon Refresh, Size=24}"
                             Click="ButtonRefresh_OnClick"
                             Margin="0 0 16 0"/>
-                    <materialDesign:PopupBox ToolTip="更多选项…"
+                    <materialDesign:PopupBox ToolTip.Tip="更多选项…"
                                              Margin="0 0 0 0">
                         <StackPanel Margin="16">
                             <CheckBox IsChecked="{Binding ViewModel.IsFilteredFullscreen}"
@@ -140,7 +140,7 @@
               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               Visibility="{Binding ViewModel.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                    Background="{DynamicResource MaterialDesignPaper}"
+                    Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                     Opacity="0.8"/>
             <controls1:StarRailLoadingControl VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>

@@ -7,4 +7,6 @@ import "Protobuf/Enum/Retcode.proto";
 message ClientRegisterScRsp {
     Enum.Retcode Retcode = 1;
     string Message = 2;
+    
+    string ServerPublicKey = 3;
 }

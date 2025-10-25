@@ -1,0 +1,21 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Server;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Server";
+
+import "Protobuf/Enum/Retcode.proto";
+
+message HandshakeScBeginHandShakeRsp {
+  Enum.Retcode Retcode = 1;
+  string Message = 2;
+  
+  string ChallengeTokenDecrypted = 3;
+  string ServerPublicKey = 4;
+  
+}
+
+message HandshakeScCompleteHandshakeRsp {
+  Enum.Retcode Retcode = 1;
+  string Message = 2;
+
+  string SessionId = 3;
+}

@@ -1,0 +1,102 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:controls1="clr-namespace:ClassIsland.Controls"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Views.WelcomePages.WelcomePage">
+    <UserControl.Styles>
+        <Style Selector="Grid#ContentRoot.anim">
+            <Style.Animations>
+                <Animation Duration="0:0:0.2"
+                           FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1.0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+    <Grid >
+        <Grid x:Name="ContentRoot" Opacity="0.0"
+              RowDefinitions="*, Auto, *">
+            <Image Grid.Row="0" VerticalAlignment="Bottom"
+                   HorizontalAlignment="Center"
+                   Margin="0 0 0 8"
+                   Source="/Assets/AppLogo.png"
+                   Height="80" Width="80"/>
+            <StackPanel Grid.Row="1" Orientation="Horizontal"
+                        x:Name="TextsMain"
+                        Opacity="0"
+                        VerticalAlignment="Center" HorizontalAlignment="Center"
+                        TextElement.FontSize="32">
+                <StackPanel.Styles>
+                    <Style Selector="StackPanel" >
+                        <Style Selector="^ TextBlock">
+                            <Setter Property="FontWeight" Value="Medium"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </Style>
+                </StackPanel.Styles>
+                <TextBlock Text="C" />
+                <TextBlock Text="l" />
+                <TextBlock Text="a" />
+                <TextBlock Text="s" />
+                <TextBlock Text="s" />
+                <TextBlock Text="I" />
+                <TextBlock Text="s" />
+                <TextBlock Text="l" />
+                <TextBlock Text="a" />
+                <TextBlock Text="n" />
+                <TextBlock Text="d" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="2" Spacing="4" VerticalAlignment="Top" HorizontalAlignment="Center">
+                <Button HorizontalAlignment="Center"
+                        Content="{ci:FluentIcon &#xE130;, FontSize=18}"
+                        Width="48" Height="48"
+                        CornerRadius="24"
+                        Classes="accent"
+                        ToolTip.Tip="下一步" IsEnabled="True"
+                        Click="ButtonNext_OnClick"
+                        Margin="0 8 0 0" />
+            </StackPanel>
+            
+            <StackPanel Grid.Row="2"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        Margin="8"
+                        Spacing="2">
+                <TextBlock Text="{x:Static ci:AppBase.AppVersion}" HorizontalAlignment="Center"
+                           Opacity="0.75"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="2">
+                    <StackPanel.Styles>
+                        <Style Selector="HyperlinkButton">
+                            <Setter Property="Padding" Value="4"/>
+                        </Style>
+                    </StackPanel.Styles>
+                    <HyperlinkButton Click="ButtonDataMigration_OnClick">
+                        <TextBlock>数据迁移</TextBlock>
+                    </HyperlinkButton>
+                    <HyperlinkButton Click="ButtonEnterRecovery_OnClick">
+                        <TextBlock>故障排除/恢复备份</TextBlock>
+                    </HyperlinkButton>
+                    <HyperlinkButton Click="ButtonJoinManagement_OnClick">
+                        <TextBlock>加入管理</TextBlock>
+                    </HyperlinkButton> 
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        
+        <!-- Intro -->
+        <controls1:OobeIntroAnimationControl x:Name="Intro"
+                                             AnimationEnd="Intro_OnAnimationEnd"/>
+        
+        
+    </Grid>
+</UserControl>

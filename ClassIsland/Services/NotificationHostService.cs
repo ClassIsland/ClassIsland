@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
+using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Services.Registry;
@@ -15,6 +17,7 @@ using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
+using ClassIsland.Models.Notification;
 using ClassIsland.Shared.Models.Notification;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -35,24 +38,13 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     public PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; } = new();
 
     private int _queueIndex = 0;
+    private bool _isNotificationsPlaying = false;
 
     public ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; } = new();
 
-    #region Events
+    private List<NotificationConsumerRegisterInfo> RegisteredConsumers { get; } = [];
 
-    public event EventHandler? UpdateTimerTick;
-    public void OnUpdateTimerTick(object sender, EventArgs args) => UpdateTimerTick?.Invoke(sender, args);
-    
-    public event EventHandler? OnClass;
-    public void OnOnClass(object sender, EventArgs args) => OnClass?.Invoke(sender, args);
-
-    public event EventHandler? OnBreakingTime;
-    public void OnOnBreakingTime(object sender, EventArgs args) => OnBreakingTime?.Invoke(sender, args);
-
-    public event EventHandler? CurrentStateChanged;
-    public void OnCurrentStateChanged(object sender, EventArgs args) => CurrentStateChanged?.Invoke(sender, args);
-
-    #endregion
+    private List<NotificationRequest> PlayingNotifications { get; } = [];
 
     public NotificationRequest? CurrentRequest { get; set; }
 
@@ -108,31 +100,24 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
     }
 
-    [Obsolete]
-    public void ShowNotification(Shared.Models.Notification.NotificationRequest request)
+    private void UpdateNotificationPlayingState()
     {
-        var trace = new StackTrace();
-        Logger.LogDebug("准备显示提醒\n{}", trace);
-        foreach (var i in trace.GetFrames())
-        {
-            var type = i.GetMethod()?.DeclaringType;
-            if (type?.IsAssignableTo(typeof(INotificationProvider)) != true)
-                continue;
-            var provider = (from p in NotificationProviders where p.ProviderInstance.GetType() == type select p).FirstOrDefault();
-            if (provider == null)
-                continue;
-            Logger.LogInformation("请求来源：{}", provider.ProviderGuid);
-            var newRequest = NotificationRequest.ConvertFromOldNotificationRequest(request);
-            Logger.LogWarning("提醒提供方 {} 当前调用的提醒 API 已弃用，请使用 v2 提醒 API", provider.ProviderGuid);
-            ShowNotification(newRequest, provider.ProviderGuid, Guid.Empty);
-            return;
-        }
-
-        throw new ArgumentException("此方法只能由 INotificationProvider 调用。");
+        IsNotificationsPlaying = PlayingNotifications.Count > 0;
     }
 
-    public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid)
+    private void FinishNotificationPlaying(NotificationRequest request)
     {
+        Logger.LogTrace("提醒 #{} 已播放完成", request.GetHashCode());
+        PlayingNotifications.Remove(request);
+        UpdateNotificationPlayingState();
+    }
+    
+    private void SetupNotificationRequest(NotificationRequest request, Guid providerGuid, Guid channelGuid)
+    {
+        if (request.NotificationSetupCompleted)
+        {
+            return;
+        }
         request.NotificationSourceGuid = providerGuid;
         request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
             .FirstOrDefault();
@@ -152,22 +137,28 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         var channel =
             request.NotificationSource?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid == channelGuid);
         request.ChannelSettings = channel?.ProviderSettings;
-        RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
+        request.NotificationSetupCompleted = true;
     }
 
-    [Obsolete]
-    public async Task ShowNotificationAsync(Shared.Models.Notification.NotificationRequest request)
+    public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications)
     {
-        ShowNotification(request);
-        await Task.Run(() =>
+        SetupNotificationRequest(request, providerGuid, channelGuid);
+        UpdateNotificationPlayingState();
+        request.CompletedToken.Register(() => FinishNotificationPlaying(request));
+        if (pushNotifications && PushNotificationRequests([request]))
         {
-            request.CompletedTokenSource.Token.WaitHandle.WaitOne();
-        });
+            return;
+        }
+        // 如果没有消费者接收推送的提醒，则会加入提醒队列。
+        RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
     }
 
     public async Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid)
     {
-        ShowNotification(request, providerGuid, channelGuid);
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            ShowNotification(request, providerGuid, channelGuid, true);
+        });
         await Task.Run(() =>
         {
             request.CompletedTokenSource.Token.WaitHandle.WaitOne();
@@ -190,12 +181,28 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 request.CancellationTokenSource.Cancel();
             }
         });
+        NotificationRequest? prevRequest = null;
         foreach (var request in requests)
         {
             request.RootCancellationTokenSource = rootCancellationTokenSource;
             request.RootCompletedTokenSource = rootCompletedTokenSource;
-            
-            ShowNotification(request, providerGuid, channelGuid);
+            if (prevRequest != null)
+            {
+                prevRequest.ChainedNextRequest = request;
+            }
+            SetupNotificationRequest(request, providerGuid, channelGuid);
+            prevRequest = request;
+            request.CompletedToken.Register(() => FinishNotificationPlaying(request));
+        }
+
+        if (PushNotificationRequests(requests.ToList()))
+        {
+            return;
+        }
+        // 如果没有消费者接收推送的提醒，则会加入提醒队列。
+        foreach (var request in requests)
+        {
+            ShowNotification(request, providerGuid, channelGuid, false);
         }
     }
 
@@ -205,7 +212,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             return;
         }
-        ShowChainedNotifications(requests, providerGuid, channelGuid);
+
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            ShowChainedNotifications(requests, providerGuid, channelGuid);
+        });
         await Task.Run(() =>
         {
             requests.Last().CompletedTokenSource.Token.WaitHandle.WaitOne();
@@ -263,11 +274,111 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     public void CancelAllNotifications()
     {
-        CurrentRequest?.CancellationTokenSource.Cancel();
         while (RequestQueue.Count > 0)
         {
             var r = RequestQueue.Dequeue();
             r.CompletedTokenSource.Cancel();
+        }
+        foreach (var request in PlayingNotifications.ToList())
+        {
+            // PlayingNotifications.Remove(request);
+            request.CancellationTokenSource.Cancel();
+            request.CompletedTokenSource.Cancel();
+        }
+    }
+
+    private bool PushNotificationRequests(List<NotificationRequest> requests)
+    {
+        Logger.LogTrace("开始推送提醒 ({})", requests.Count);
+
+        var consumer = RegisteredConsumers
+            .FirstOrDefault(x => x.Consumer.AcceptsNotificationRequests && x.Consumer.QueuedNotificationCount <= 0);
+        if (consumer != null)
+        {
+            Logger.LogTrace("将推送的提醒消费者：{}(#{})", consumer.Consumer, consumer.Consumer.GetHashCode());
+            foreach (var request in requests)
+            {
+                PlayingNotifications.Add(request);
+            }
+            UpdateNotificationPlayingState();
+            consumer.Consumer.ReceiveNotifications(requests);
+            return true;
+        }
+
+        Logger.LogTrace("找不到接受提醒的提醒消费者");
+        return false;
+    }
+
+    private List<NotificationRequest> PopRequests()
+    {
+        if (RequestQueue.Count <= 0)
+        {
+            return [];
+        }
+        
+        var head = RequestQueue.Dequeue();
+        List<NotificationRequest> requests = [];
+
+        while (head != null)
+        {
+            requests.Add(head);
+            PlayingNotifications.Add(head);
+            head = head.ChainedNextRequest;
+        }
+        
+        UpdateNotificationPlayingState();
+        return requests;
+    }
+
+    private void PopRequestsToConsumers()
+    {
+        PushNotificationRequests(PopRequests());
+    }
+
+    public void RegisterNotificationConsumer(INotificationConsumer consumer, int priority)
+    {
+        var registerInfo = new NotificationConsumerRegisterInfo(consumer, priority);
+
+        for (var i = 0; i < RegisteredConsumers.Count; i++)
+        {
+            if (RegisteredConsumers[i].Priority <= registerInfo.Priority) 
+                continue;
+            RegisteredConsumers.Insert(i, registerInfo);
+            PopRequestsToConsumers();
+            return;
+        }
+        
+        RegisteredConsumers.Add(registerInfo);  // 当列表中什么都没有或者插入项的优先级比列表里所有元素都大时，插入到最后一项。
+        if (consumer.AcceptsNotificationRequests && consumer.QueuedNotificationCount <= 0)
+        {
+            consumer.ReceiveNotifications(PopRequests());
+        }
+    }
+
+    public void UnregisterNotificationConsumer(INotificationConsumer consumer)
+    {
+        var registerInfo = RegisteredConsumers.FirstOrDefault(x => x.Consumer == consumer);
+        if (registerInfo == null)
+        {
+            return;
+        }
+
+        RegisteredConsumers.Remove(registerInfo);
+    }
+
+    public IList<NotificationRequest> PullNotificationRequests()
+    {
+        return PopRequests();
+    }
+
+    public bool IsNotificationsPlaying
+    {
+        get => _isNotificationsPlaying;
+        set
+        {
+            if (value == _isNotificationsPlaying) return;
+            _isNotificationsPlaying = value;
+            OnPropertyChanged();
         }
     }
 

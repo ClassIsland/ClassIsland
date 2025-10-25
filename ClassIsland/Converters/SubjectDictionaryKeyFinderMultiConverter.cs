@@ -2,32 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Data;
+using Avalonia.Data.Converters;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Converters;
 
-public class SubjectDictionaryKeyFinderMultiConverter : IMultiValueConverter
+public class DictionaryKeyFinderMultiConverter<TValue> : IMultiValueConverter
 {
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
-        // values[0]: Subject                       subject
-        // values[1]: IDictionary<string, Subject>  dict
-        if (values.Length < 2)
+        // values[0]: TValue                        value
+        // values[1]: IDictionary<Guid, Subject>    dict
+        if (values.Count < 2)
         {
-            return "";
+            return Guid.Empty;
         }
 
-        if (values[0] is not Subject subject || values[1] is not IDictionary<string, Subject> dict)
+        if (values[0] is not TValue value || values[1] is not IDictionary<Guid, TValue> dict)
         {
-            return "";
+            return Guid.Empty;
         }
 
-        return dict.FirstOrDefault(x => x.Value == subject).Key ?? "";
-    }
-
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    {
-        return Array.Empty<object>();
+        return dict.FirstOrDefault(x => Equals(x.Value, value)).Key;
     }
 }

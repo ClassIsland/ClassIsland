@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -24,20 +25,29 @@ using ComponentSettingsList = ObservableCollection<ComponentSettings>;
 
 public class ComponentsService : ObservableRecipient, IComponentsService
 {
-    public static readonly string ComponentSettingsPath = Path.Combine(App.AppConfigPath, "Islands/");
+    public static readonly string ComponentSettingsPath = Path.Combine(CommonDirectories.AppConfigPath, "ComponentLayouts/");
 
-    private ComponentSettingsList _currentComponents = new();
+    private ComponentProfile _currentComponents = new();
     private IReadOnlyList<string> _componentConfigs = new List<string>();
 
-    public static ComponentSettingsList DefaultComponents { get; } = new()
+    public static ComponentProfile DefaultComponentProfile { get; } = new()
     {
-        new ComponentSettings
+        Lines =
         {
-            Id = "DF3F8295-21F6-482E-BADA-FA0E5F14BB66"
-        },
-        new ComponentSettings
-        {
-            Id = "1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8"
+            new MainWindowLineSettings()
+            {
+                Children =
+                {
+                    new ComponentSettings
+                    {
+                        Id = "DF3F8295-21F6-482E-BADA-FA0E5F14BB66"
+                    },
+                    new ComponentSettings
+                    {
+                        Id = "1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8"
+                    }
+                }
+            }
         }
     };
 
@@ -94,7 +104,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                 return;
             }
             CurrentComponents = await ManagementService.Connection
-                .SaveJsonAsync<ComponentSettingsList>(ManagementService.Manifest.ComponentsSource.Value!,
+                .SaveJsonAsync<ComponentProfile>(ManagementService.Manifest.ComponentsSource.Value!,
                     Management.ManagementService.ManagementComponentsPath);
             ManagementService.Versions.ComponentsVersion = ManagementService.Manifest.ComponentsSource.Version;
         }
@@ -102,7 +112,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         {
             Logger.LogError(e, "无法从集控拉取组件配置");
             CurrentComponents =
-                ConfigureFileHelper.LoadConfig<ComponentSettingsList>(Management.ManagementService
+                ConfigureFileHelper.LoadConfig<ComponentProfile>(Management.ManagementService
                     .ManagementComponentsPath);
         }
         LoadConfig();
@@ -115,20 +125,20 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         {
             if (!File.Exists(SelectedConfigFullPath))
             {
-                CurrentComponents = ConfigureFileHelper.CopyObject(DefaultComponents);
+                CurrentComponents = ConfigureFileHelper.CopyObject(DefaultComponentProfile);
                 SaveConfig();
             }
             else
             {
-                CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
+                CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentProfile>(SelectedConfigFullPath);
             }
         }
         
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
-        CurrentComponents.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
+        CurrentComponents.Lines.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
 
         var migrated = false;
-        foreach (var i in CurrentComponents)
+        foreach (var i in CurrentComponents.Lines.SelectMany(x => x.Children))
         {
             if (!ComponentRegistryService.MigrationPairs.TryGetValue(new Guid(i.Id), out var targetGuid))
             {
@@ -174,7 +184,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
     public bool IsManagementMode { get; set; } = false;
 
 
-    public ComponentSettingsList CurrentComponents
+    public ComponentProfile CurrentComponents
     {
         get => _currentComponents;
         set

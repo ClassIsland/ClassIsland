@@ -1,0 +1,81 @@
+﻿<ci:AttachedSettingsControlBase x:TypeArguments="attachedSettings:LessonControlAttachedSettings"
+                                x:Class="ClassIsland.Controls.AttachedSettingsControls.LessonControlAttachedSettingsControl"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                                xmlns:local="clr-namespace:ClassIsland.Controls.AttachedSettingsControls"
+                                xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                                xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                                xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+                                xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                                xmlns:attachedSettings="clr-namespace:ClassIsland.Core.Models.AttachedSettings;assembly=ClassIsland.Core"
+                                xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                                mc:Ignorable="d" 
+                                d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters1:IntToStringConverter x:Key="IntToStringConverter" />
+    </UserControl.Resources>
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlAttachedSettingsControl}}"
+                Spacing="4">
+        <WrapPanel Classes="animated-resize">
+            <!-- 显示时间点附加信息 -->
+            <CheckBox IsChecked="{Binding Settings.ShowExtraInfoOnTimePoint}"
+                      Content="显示时间点附加信息"/>
+            <!-- 要显示的附加信息 -->
+            <controls1:Field Label="要显示的附加信息"
+                             IsVisible="{Binding Settings.ShowExtraInfoOnTimePoint}">
+                <ComboBox SelectedIndex="{Binding Settings.ExtraInfoType}">
+                    <ComboBoxItem HorizontalContentAlignment="Left">
+                        <TextBlock Text="时间点持续时间" />
+                    </ComboBoxItem>
+                    <ComboBoxItem HorizontalContentAlignment="Left">
+                        <TextBlock Text="已过时间/持续时间" />
+                    </ComboBoxItem>
+                    <ComboBoxItem HorizontalContentAlignment="Left">
+                        <TextBlock Text="剩余时间/持续时间" />
+                    </ComboBoxItem>
+                    <ComboBoxItem HorizontalContentAlignment="Left">
+                        <TextBlock Text="已过时间百分比" />
+                    </ComboBoxItem>
+                    <ComboBoxItem HorizontalContentAlignment="Left">
+                        <TextBlock Text="剩余时间" />
+                    </ComboBoxItem>
+                    <ComboBoxItem HorizontalContentAlignment="Left">
+                        <TextBlock Text="倒计时" />
+                    </ComboBoxItem>
+                </ComboBox>
+            </controls1:Field>
+        </WrapPanel>
+        <!-- 显示精确倒计时时长 -->
+        <controls1:Field Label="显示精确倒计时时长"
+                         Prefix="剩余" Suffix="秒时">
+            <controls:NumberBox 
+                MinWidth="100" Minimum="0"
+                SpinButtonPlacementMode="Compact"
+                Value="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Mode=TwoWay}" />
+        </controls1:Field>
+        
+        <WrapPanel Classes="animated-resize">
+            <!-- 时间点结束倒计时 -->
+            <CheckBox IsChecked="{Binding Settings.IsCountdownEnabled}"
+                      Content="时间点结束倒计时"
+                      Margin="0 0 0 6" />
+            <!-- 时间点结束倒计时时长 -->
+            <controls1:Field Label="显示精确倒计时时长"
+                             Suffix="秒"
+                             IsVisible="{Binding Settings.IsCountdownEnabled}">
+                <controls:NumberBox 
+                    Maximum="36000" Minimum="0"
+                    MinWidth="100"
+                    SpinButtonPlacementMode="Compact"
+                    Value="{Binding Settings.CountdownSeconds, Mode=TwoWay}" />
+            </controls1:Field>
+        </WrapPanel>
+        <CheckBox Content="使用模糊倒计时"
+                  IsChecked="{Binding Settings.IsNonExactCountdownEnabled}"/>
+        <CheckBox Content="上课时仅显示当前课程"
+                  IsChecked="{Binding Settings.ShowCurrentLessonOnlyOnClass}"/>
+    </StackPanel>
+
+</ci:AttachedSettingsControlBase>

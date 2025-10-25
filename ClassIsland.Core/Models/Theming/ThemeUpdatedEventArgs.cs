@@ -1,4 +1,4 @@
-using System.Windows.Media;
+using Avalonia.Media;
 
 namespace ClassIsland.Core.Models.Theming;
 

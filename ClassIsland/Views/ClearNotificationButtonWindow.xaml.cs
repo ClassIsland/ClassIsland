@@ -1,4 +1,5 @@
-﻿using System.Windows;
+#if false
+using System.Windows;
 
 namespace ClassIsland.Views
 {
@@ -13,3 +14,5 @@ namespace ClassIsland.Views
         }
     }
 }
+
+#endif

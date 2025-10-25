@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -61,8 +62,8 @@ public class HangService : ObservableRecipient, IHangService
 
     private async Task CheckDispatcherHangAsync()
     {
-        var dispatcher = Application.Current?.Dispatcher;
-        if (dispatcher == null || IsChecking)
+        var dispatcher = Dispatcher.UIThread;
+        if (IsChecking)
         {
             return;
         }

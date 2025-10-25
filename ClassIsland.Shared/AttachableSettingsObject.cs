@@ -12,7 +12,7 @@ public class AttachableSettingsObject : ObservableRecipient
     /// <summary>
     /// 已附加的设置。键是GUID。
     /// </summary>
-    public Dictionary<string, object?> AttachedObjects { get; set; } = new();
+    public Dictionary<Guid, object?> AttachedObjects { get; set; } = new();
 
     /// <summary>
     /// 获取指定的附加设置项。
@@ -22,8 +22,8 @@ public class AttachableSettingsObject : ObservableRecipient
     /// <returns>获取到的附加设置。如果没有找到附加设置，则返回null。</returns>
     public T? GetAttachedObject<T>(Guid id)
     {
-        var key = id.ToString();
-        var o = AttachedObjects.ContainsKey(key) ? AttachedObjects[key] : null;
+        var key = id;
+        AttachedObjects.TryGetValue(key, out var o);
         if (o is JsonElement o1)
         {
             return o1.Deserialize<T>();
@@ -38,7 +38,7 @@ public class AttachableSettingsObject : ObservableRecipient
     /// <param name="o">要写入的附加设置对象</param>
     public void WriteAttachedObject<T>(Guid id, T o)
     {
-        AttachedObjects[id.ToString()] = o;
+        AttachedObjects[id] = o;
     }
 
     /// <summary>

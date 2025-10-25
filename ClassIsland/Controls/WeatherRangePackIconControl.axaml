@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="ClassIsland.Controls.WeatherRangePackIconControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450">
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherRangePackIconControl}}">
+        <local:WeatherPackIconControl Code="{Binding Value.From}"
+                                      Tag="From"/>
+        <local:WeatherPackIconControl Code="{Binding Value.To}" 
+                                      Tag="To"
+                                      IsVisible="{Binding HasSecondIcon}"/>
+    </StackPanel>
+</UserControl>

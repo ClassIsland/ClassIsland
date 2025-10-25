@@ -1,0 +1,36 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:core="clr-namespace:ClassIsland.Core"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <ControlTemplate x:Key="DevelopmentBuildAdornerControlTemplate"
+                     TargetType="ci:DevelopmentBuildAdorner">
+        <Grid VerticalAlignment="Stretch"
+              IsHitTestVisible="False"
+              HorizontalAlignment="Stretch">
+            <!--<TextBlock VerticalAlignment="Bottom"
+                       HorizontalAlignment="Right"
+                       FontWeight="Bold">Development Build</TextBlock>-->
+            <TextBlock VerticalAlignment="Bottom"
+                       HorizontalAlignment="Left"
+                       FontSize="12"
+                       Opacity="0.8"
+                       IsVisible="{Binding IsDevelopmentBuild, RelativeSource={RelativeSource TemplatedParent}}">
+                <Run Text="开发中画面，不代表最终品质。"/><LineBreak/>
+                <Run Text="{x:Static core:AppBase.AppVersionLong}"/>
+            </TextBlock>
+            <TextBlock VerticalAlignment="Bottom"
+                       HorizontalAlignment="Right"
+                       TextAlignment="Right"
+                       FontSize="12"
+                       FontFamily="JetBrains Mono, Consolas,  黑体"
+                       IsVisible="{Binding ShowOssWatermark, RelativeSource={RelativeSource TemplatedParent}}">
+                <Run Text="https://www.classisland.tech"/>
+            </TextBlock>
+        </Grid>
+    </ControlTemplate>
+    
+    <ControlTheme TargetType="ci:DevelopmentBuildAdorner"
+                  x:Key="{x:Type ci:DevelopmentBuildAdorner}">
+        <Setter Property="Template" Value="{StaticResource DevelopmentBuildAdornerControlTemplate}"/>
+    </ControlTheme>
+</ResourceDictionary>

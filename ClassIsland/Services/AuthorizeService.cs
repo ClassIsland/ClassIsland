@@ -2,8 +2,10 @@
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Controls.CommonDialog;
+using ClassIsland.Core.Controls;
 using ClassIsland.Models.Authorize;
 using ClassIsland.Views;
 using Microsoft.Extensions.Logging;
@@ -24,24 +26,24 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
     }
 
-    public async Task<string?> SetupCredentialStringAsync(string? credentialString = null)
+    public async Task<string?> SetupCredentialStringAsync(string? credentialString = null, Window? parent = null)
     {
         try
         {
             var credential = credentialString != null ? ConvertCredentialStringToModel(credentialString) : new Credential();
             var window = new AuthorizeWindow(credential, true);
-            var result = window.ShowDialog();
-            return result != true ? credentialString : ConvertCredentialModelToString(credential);
+            await window.ShowDialog(parent ?? AppBase.Current.PhonyRootWindow);
+            return window.DialogResult != true ? credentialString : ConvertCredentialModelToString(credential);
         }
         catch (Exception e)
         {
             logger.LogError(e, "创建认证信息时发生异常");
-            CommonDialog.ShowError($"创建认证信息时发生异常：{e.Message}");
+            await CommonTaskDialogs.ShowDialog("创建认证信息失败", $"创建认证信息时发生异常：{e.Message}", parent);
             return credentialString;
         }
     }
 
-    public async Task<bool> AuthenticateAsync(string credentialString)
+    public async Task<bool> AuthenticateAsync(string credentialString, Window? parent = null)
     {
         if (string.IsNullOrWhiteSpace(credentialString))
         {
@@ -52,15 +54,14 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
         {
             var credential = ConvertCredentialStringToModel(credentialString);
             var window = new AuthorizeWindow(credential, false);
-            var result = window.ShowDialog();
-            return result == true;
+            await window.ShowDialog(parent ?? AppBase.Current.PhonyRootWindow);
+            return window.DialogResult;
         }
         catch (Exception e)
         {
             logger.LogError(e, "认证时发生异常");
-            CommonDialog.ShowError($"认证时发生异常：{e.Message}");
+            await CommonTaskDialogs.ShowDialog("认证失败", $"认证时发生异常：{e.Message}", parent);
             return false;
         }
-        return false;
     }
 }

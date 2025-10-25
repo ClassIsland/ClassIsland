@@ -10,7 +10,7 @@
         xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
         xmlns:demo="clr-namespace:ClassIsland.Controls.Demo"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
         FontFamily="{StaticResource HarmonyOsSans}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="14"
@@ -45,7 +45,7 @@
                     Margin="0 0 6 0">
                 <controls1:IconText Kind="Restart" Text="重启应用" IconMargin="3 0 0 0"/>
             </Button>
-            <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
+            <Button Style="{StaticResource SolidBackgroundFillColorBaseBrushButton}" Margin="0 0 6 0"
                     Click="ButtonExit_OnClick">
                 <controls1:IconText Kind="Close" Text="我知道了" IconMargin="3 0 0 0"/>
             </Button>

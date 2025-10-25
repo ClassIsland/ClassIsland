@@ -27,7 +27,7 @@ public interface IPublicLessonsService
     int CurrentSelectedIndex { get; set; }
 
     /// <summary>
-    /// 当前或下一节课（下一个上课类型的时间点<see cref="TimeLayoutItem"/>）的科目。如无，则为 <see cref="Subject.Empty"/>。
+    /// 当前或下一节课（下一个上课类型的时间点<see cref="TimeLayoutItem"/>）的科目。如无，则为 <see cref="Subject.Fallback"/>。
     /// </summary>
     Subject NextClassSubject { get; set; }
 
@@ -64,7 +64,7 @@ public interface IPublicLessonsService
     /// <summary>
     /// 当前所处时间点<see cref="TimeLayoutItem"/>的科目。<br/><br/>
     /// 如果当前是课间休息，则其中 <see cref="Subject.Name"/>(科目名) 为课间名称。<br/>
-    /// 如果当前课程未定义，则为 <see cref="Subject.Empty"/>。<br/>
+    /// 如果当前课程未定义，则为 <see cref="Subject.Fallback"/>。<br/>
     /// 如果当前没有时间点，或没有加载课表，则为 null。<br/>
     /// </summary>
     Subject? CurrentSubject { get; set; }
@@ -83,18 +83,6 @@ public interface IPublicLessonsService
     /// 是否已确定当前时间点。
     /// </summary>
     bool IsLessonConfirmed { get; set; }
-
-    /// <summary>
-    /// 本周多周轮换周数。
-    /// </summary>
-    /// <value>
-    /// 第 x 位数字是 y（MultiWeekRotation[x]=y）— 本周是 x 周轮换中的第 y 周。<br/>
-    /// <br/>
-    /// 例：<br/>
-    /// 第 2 位数字是 1（MultiWeekRotation[2]=1）— 本周是 2 周轮换中的第 1 周。<br/>
-    /// 第 4 位数字是 3（MultiWeekRotation[4]=3）— 本周是 4 周轮换中的第 3 周。<br/>
-    /// </value>
-    ObservableCollection<int> MultiWeekRotation { get; set; }
 
     /// <summary>
     /// 根据日期获取当天的课表<see cref="ClassPlan"/>。如果那天没有课表安排，则返回 null

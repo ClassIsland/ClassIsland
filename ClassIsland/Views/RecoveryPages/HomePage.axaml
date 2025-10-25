@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="ClassIsland.Views.RecoveryPages.HomePage"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Margin="8">
+    
+    <ScrollViewer>
+        <ScrollViewer.Styles>
+            <Style Selector="controls|SettingsExpanderItem">
+                <Setter Property="IsClickEnabled" Value="True"/>
+            </Style>
+        </ScrollViewer.Styles>
+        <StackPanel Classes="animated-intro" Spacing="6">
+            
+            <TextBlock Text="选择一个选项" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+            <TextBlock Text="选择一个操作以继续。" Margin="0 2 0 10"/>
+            
+            <StackPanel Classes="cardContainer">
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe131;}"
+                                               Content="继续使用 ClassIsland"
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"
+                                               Click="ButtonContinue_OnClick"/>
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe131;}"
+                                               Content="以安全模式继续使用 ClassIsland"
+                                               Description="禁用所有插件和自动化功能。"
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"
+                                               Click="ButtonContinueSafe_OnClick"/>
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe131;}"
+                                               Content="以诊断模式继续使用 ClassIsland"
+                                               Description="在日志中记录详细的信息，并启用控制台输出。"
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"
+                                               Click="ButtonContinue_OnClick"/>
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe889;}"
+                                               Content="打开日志目录"
+                                               ActionIconSource="{ci:FluentIconSource &#xec2e;}"
+                                               Click="ButtonOpenLogFolder_OnClick"/>
+            </StackPanel>
+            
+
+            <StackPanel Classes="cardContainer">
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe195;}"
+                                               Content="恢复备份"
+                                               Description="从先前的备份恢复处于正确状态的配置文件。"
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"
+                                               Click="ButtonRecoverBackup_OnClick"/>
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe135;}"
+                                               Content="回滚"
+                                               Description="回滚到之前的 ClassIsland 版本"
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"/>
+            </StackPanel>
+            
+            <StackPanel Classes="cardContainer">
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe623;}"
+                                               Content="清除临时文件"
+                                               Description="删除所有缓存和临时文件。"
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"
+                                               Click="ButtonCleanTempFiles_OnClick"/>
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe0bd;}"
+                                               Content="重置应用设置"
+                                               Description="重置应用的设置信息，不影响档案、组件、自动化、插件等的配置。"
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"
+                                               Click="ButtonResetSettings_OnClick"/>
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe6b9;}"
+                                               Content="重置全部配置"
+                                               Description="重置应用的所有配置，包括应用设置、组件配置、自动化配置、插件设置等，不影响档案配置。"
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"
+                                               Click="ButtonResetConfigs_OnClick"/>
+                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe12f;}"
+                                               Content="重置全部信息"
+                                               Description="重置应用的所有信息，恢复到安装前的状态。"
+                                               Click="ButtonResetAll_OnClick"
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"/>
+            </StackPanel>
+            
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

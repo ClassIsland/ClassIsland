@@ -2,6 +2,7 @@
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -14,6 +15,11 @@ namespace ClassIsland.Core.Abstractions.Services;
 public interface IXamlThemeService
 {
     /// <summary>
+    /// 内置主题
+    /// </summary>
+    public static ObservableCollection<ThemeInfo> IntegratedThemes { get; } = [];
+    
+    /// <summary>
     /// 已加载的主题列表
     /// </summary>
     public ObservableCollection<ThemeInfo> Themes { get; }
@@ -22,12 +28,6 @@ public interface IXamlThemeService
     /// 重载全部主题
     /// </summary>
     void LoadAllThemes();
-
-    /// <summary>
-    /// 加载指定主题
-    /// </summary>
-    /// <param name="themePath">主题路径</param>
-    void LoadTheme(string themePath);
 
     /// <summary>
     /// 已将主题仓库与本地主题合并的全部主题
@@ -58,4 +58,9 @@ public interface IXamlThemeService
     /// <param name="outputPath">输出路径</param>
     /// <returns></returns>
     Task PackageThemeAsync(string id, string outputPath);
+    
+    /// <summary>
+    /// 已启用的主题。主题将按照此列表的顺序加载，靠后的主题会覆盖前面的主题样式。
+    /// </summary>
+    ObservableCollection<string> EnabledThemes { get; }
 }

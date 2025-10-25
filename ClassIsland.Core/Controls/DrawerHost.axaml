@@ -1,0 +1,87 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls">
+    <Design.PreviewWith>
+        <controls:DrawerHost />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|DrawerHost">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel ClipToBounds="True">
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Focusable="{Binding !IsDrawerOpen, RelativeSource={RelativeSource TemplatedParent}}"/>
+                    <Border x:Name="PART_IgnoreLayer"
+                            Opacity="0"
+                            Focusable="False"
+                            IsHitTestVisible="{TemplateBinding IsDrawerOpen}"
+                            Background="{DynamicResource SmokeFillColorDefaultBrush}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"/>
+                    <Canvas x:Name="DrawerCanvas" Width="{TemplateBinding ActualDrawerWidth}"
+                            VerticalAlignment="Stretch"
+                            ClipToBounds="False"
+                            IsHitTestVisible="{TemplateBinding IsDrawerOpen}">
+                        <Border Focusable="{Binding IsDrawerOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                IsEnabled="{Binding IsDrawerOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                                Height="{Binding Bounds.Height, RelativeSource={RelativeSource TemplatedParent}}"
+                                x:Name="PART_DrawerContentBorder"
+                                Opacity="0"
+                                BoxShadow="0 0 8 #33000000">
+                            <ContentPresenter Content="{TemplateBinding DrawerContent}"
+                                              ContentTemplate="{TemplateBinding DrawerContentTemplate}"/>
+                        </Border>    
+                    </Canvas>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^:animated">
+            <Style Selector="^ /template/ Border#PART_DrawerContentBorder">
+                <Setter Property="Transitions">
+                    <Transitions>
+                        <DoubleTransition Property="Canvas.Left" Duration="0:0:0.25" Easing="0,0 0,1"/>
+                        <DoubleTransition Property="Canvas.Right" Duration="0:0:0.25" Easing="0,0 0,1"/>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.25" Easing="0,0 0,1"/>
+                    </Transitions>
+                </Setter>
+            </Style>
+            <Style Selector="^ /template/ Border#PART_IgnoreLayer">
+                <Setter Property="Transitions">
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.25" Easing="0,0 0,1"/>
+                    </Transitions>
+                </Setter>
+            </Style>
+        </Style>
+        
+        <Style Selector="^:drawer-left /template/ Canvas#DrawerCanvas">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style Selector="^:drawer-right /template/ Canvas#DrawerCanvas">
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+        </Style>
+        
+        <Style Selector="^[IsDrawerOpen=True] /template/ Border#PART_IgnoreLayer">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+        <Style Selector="^[IsDrawerOpen=True] /template/ Border#PART_DrawerContentBorder">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+        <Style Selector="^:drawer-left[IsDrawerOpen=False] /template/ Border#PART_DrawerContentBorder">
+            <Setter Property="Canvas.Left" Value="{Binding ActualDrawerWidth, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:DrawerHost.NegativeDoubleConverter}}"/>
+        </Style>
+        <Style Selector="^:drawer-left[IsDrawerOpen=True] /template/ Border#PART_DrawerContentBorder">
+            <Setter Property="Canvas.Left" Value="0"/>
+        </Style>
+        <Style Selector="^:drawer-right[IsDrawerOpen=False] /template/ Border#PART_DrawerContentBorder">
+            <Setter Property="Canvas.Right" Value="{Binding ActualDrawerWidth, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:DrawerHost.NegativeDoubleConverter}}"/>
+        </Style>
+        <Style Selector="^:drawer-right[IsDrawerOpen=True] /template/ Border#PART_DrawerContentBorder">
+            <Setter Property="Canvas.Right" Value="0"/>
+        </Style>
+    </Style>
+</Styles>

@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="ClassIsland.Controls.WeatherPackIconControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Styles>
+        <Style Selector="local|WeatherPackIconControl:rainy ContentPresenter#MainContentPresenter">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource RainyColorBrush}"/>
+        </Style>
+    </UserControl.Styles>
+    <Grid>
+        <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          ContentTemplate="{Binding WeatherService.SelectedWeatherIconTemplate, RelativeSource={RelativeSource AncestorType=local:WeatherPackIconControl}}"
+                          Content="{Binding Code, RelativeSource={RelativeSource AncestorType=local:WeatherPackIconControl}}"
+                          Width="{Binding Width, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                          Height="{Binding Height, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                          ToolTip.Tip="{Binding WeatherName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                          Tag="{Binding Tag, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                          x:Name="MainContentPresenter">
+        </ContentPresenter>
+    </Grid>
+</UserControl>

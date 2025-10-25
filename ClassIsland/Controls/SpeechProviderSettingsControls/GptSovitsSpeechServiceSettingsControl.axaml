@@ -1,0 +1,187 @@
+﻿<ci:SpeechProviderControlBase x:Class="ClassIsland.Controls.SpeechProviderSettingsControls.GptSovitsSpeechServiceSettingsControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls.SpeechProviderSettingsControls"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ci:SpeechProviderControlBase.Resources>
+        <ci:BindingProxy x:Key="BindingProxy" Data="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:GptSovitsSpeechServiceSettingsControl}}"
+                         x:TypeArguments="local:GptSovitsSpeechServiceSettingsControl"/>
+        <Grid Width="300" Margin="16" x:Key="SpeechPresets" 
+              DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:GptSovitsSpeechServiceSettingsControl}}"
+              RowDefinitions="Auto,*">
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="语音预设" Theme="{StaticResource SubtitleTextBlockStyle}"
+                           Margin="0 0 0 8" />
+                <TextBlock Text="管理 GPT-SoVITS 语音预设。" TextWrapping="Wrap"
+                           Margin="0 0 0 4" />
+                <WrapPanel>
+                    <Button Theme="{StaticResource TransparentButton}"
+                            HorizontalAlignment="Left"
+                            Click="ButtonSaveGptSovitsPreset_OnClick">
+                        <ci:IconText Glyph="&#xeeb4;" Text="保存预设"/>
+                    </Button>
+                </WrapPanel>
+            </StackPanel>
+
+            <DataGrid Grid.Row="1"
+                      ItemsSource="{Binding GptSoVitsSpeechSettingsPresets}"
+                      AutoGenerateColumns="False"
+                      BeginningEdit="DataGridPresets_OnBeginningEdit"
+                      SelectedItem="{Binding SelectedGptSoVitsSpeechPreset}">
+                <DataGrid.Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="FontSize" Value="14"/>
+                    </Style>
+                </DataGrid.Styles>
+                <DataGrid.Resources>
+                    <ci:BindingProxy x:Key="BindingProxy" Data="{Binding}"
+                                     x:TypeArguments="local:GptSovitsSpeechServiceSettingsControl"/>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding PresetName}"
+                                        Header="名称"
+                                        Width="*"/>
+                    <DataGridTemplateColumn Header="操作"
+                                            Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" >
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xe0d3;}"
+                                            Margin="0 -8"
+                                            ToolTip.Tip="加载"
+                                            Command="{Binding Data.LoadGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
+                                            CommandParameter="{Binding}"/>
+
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xe1a1;}"
+                                            Margin="0 -8"
+                                            ToolTip.Tip="覆盖"
+                                            IsVisible="{Binding !IsInternal}"
+                                            Command="{Binding Data.OverwriteGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
+                                            CommandParameter="{Binding}"/>
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xe58b;}"
+                                            Margin="0 -8"
+                                            ToolTip.Tip="创建副本"
+                                            Command="{Binding Data.DuplicateGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
+                                            CommandParameter="{Binding}"/>
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Content="{ci:FluentIcon &#xe61d;}"
+                                            Margin="0 -8"
+                                            ToolTip.Tip="移除"
+                                            IsVisible="{Binding !IsInternal}"
+                                            Foreground="IndianRed"
+                                            Command="{Binding Data.RemoveGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
+                                            CommandParameter="{Binding}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </Grid>
+    </ci:SpeechProviderControlBase.Resources>
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:GptSovitsSpeechServiceSettingsControl}}" 
+                Spacing="1">
+
+        <controls:SettingsExpanderItem>
+            <WrapPanel>
+                <Button HorizontalAlignment="Left"
+                        Margin="0 0 2 0"
+                        Click="ButtonOpenGptSovitsPresetsDrawer_OnClick"
+                        Content="语音预设…">
+                </Button>
+                <Button HorizontalAlignment="Left"
+                        Click="ButtonSaveGptSovitsPreset2_OnClick"
+                        Content="保存预设">
+                </Button>
+            </WrapPanel>
+        </controls:SettingsExpanderItem>
+
+        <!-- 服务器 IP -->
+        <controls:SettingsExpanderItem Content="服务器 IP">
+            <controls:SettingsExpanderItem.Footer>
+                <TextBox Width="150" 
+                         Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </controls:SettingsExpanderItem.Footer>
+        </controls:SettingsExpanderItem>
+
+        <!-- 服务器端口 -->
+        <controls:SettingsExpanderItem Content="服务器端口">
+            <controls:SettingsExpanderItem.Footer >
+                <TextBox Width="150"
+                         Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </controls:SettingsExpanderItem.Footer>
+        </controls:SettingsExpanderItem>
+
+        <!-- 语音名称 -->
+        <controls:SettingsExpanderItem Content="语音名称" Description="用于在本地区分不同语音的音频缓存。">
+            <controls:SettingsExpanderItem.Footer >
+                <TextBox Width="150"
+                         Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsVoiceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </controls:SettingsExpanderItem.Footer>
+        </controls:SettingsExpanderItem>
+
+        <!-- 文本语言 -->
+        <controls:SettingsExpanderItem Content="文本语言"> 
+            <controls:SettingsExpanderItem.Footer>
+                <TextBox Width="150"
+                         Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsTextLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </controls:SettingsExpanderItem.Footer>
+        </controls:SettingsExpanderItem>
+
+        <!-- 参考音频路径 -->
+        <controls:SettingsExpanderItem Description="服务器上相对服务器工作路径的参考音频路径。">
+            <ci:Field Label="参考音频路径">
+                <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsRefAudioPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </ci:Field>
+        </controls:SettingsExpanderItem>
+
+        <!-- 参考音频语言 -->
+        <controls:SettingsExpanderItem>
+            <ci:Field Label="参考音频语言">
+                <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsPromptLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </ci:Field>
+        </controls:SettingsExpanderItem>
+
+        <!-- 参考音频文本 -->
+        <controls:SettingsExpanderItem>
+            <ci:Field Label="参考音频文本">
+                <TextBox TextWrapping="Wrap"
+                         Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsPromptText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </ci:Field>
+        </controls:SettingsExpanderItem>
+
+        <controls:SettingsExpander Header="高级选项"
+                                   Description="如果您不清楚这些设置的作用，请不要修改这些设置。"
+                                   Classes="no-radius">
+            <controls:SettingsExpander.Styles>
+                <Style Selector="controls|SettingsExpander /template/ Expander#Expander">
+                    <Setter Property="Padding" Value="-1"/>
+                </Style>
+            </controls:SettingsExpander.Styles>
+            <controls:SettingsExpanderItem Content="文本分割方法"> 
+                <!-- 文本分割方法 -->
+                <controls:SettingsExpanderItem.Footer >
+                    <TextBox Width="150"
+                             Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsTextSplitMethod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </controls:SettingsExpanderItem.Footer>
+            </controls:SettingsExpanderItem>
+            <controls:SettingsExpanderItem Classes="no-radius" Content="并发数">
+                <controls:SettingsExpanderItem.Footer>
+                    <TextBox Width="150"
+                             Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsBatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </controls:SettingsExpanderItem.Footer>
+            </controls:SettingsExpanderItem>
+        </controls:SettingsExpander>
+    </StackPanel>
+    <!--State:G6MAAJzJ4+5T0YTJW4I5XDeVesEtfWC7sW8kSuamXGagGQfs3WNggQ04xwmOxjhgZ+Hpkt/U6PcNtL+7eR1Ax+dDz0Kg9H+YfTFe+eIEaINW1LeeAx0NyfIBagOQZS/sAdCI/D//wikKxZ2cUGOoJtR8FpL0b8wxvCRLcbZAtBPikQ==-->
+</ci:SpeechProviderControlBase>

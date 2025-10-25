@@ -4,9 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Styling;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
@@ -14,6 +18,7 @@ using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Downloader;
@@ -26,14 +31,21 @@ namespace ClassIsland.Services;
 
 public class XamlThemeService : ObservableRecipient, IXamlThemeService
 {
+    private static readonly FieldInfo? s_stylesAppliedField = typeof(StyledElement).GetField("_stylesApplied", BindingFlags.Instance | BindingFlags.NonPublic);
+    
     public ILogger<XamlThemeService> Logger { get; }
     public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
-    private ResourceDictionary RootResourceDictionary { get; } = new();
+    private IComponentsService ComponentsService { get; }
+    private Styles RootStyles { get; set; } = [];
 
     private Window MainWindow { get; } = AppBase.Current.MainWindow!;
+    
+    private Border? ResourceLoaderBorder { get; }
 
-    public static readonly string ThemesPath = Path.Combine(App.AppConfigPath, "Themes");
+    public static readonly string ThemesPath = Path.Combine(CommonDirectories.AppConfigPath, "Themes");
+    public static readonly string EnabledThemesPath = Path.Combine(CommonDirectories.AppConfigPath, "EnabledThemes.json");
+    public static readonly string ThemesPkgRootPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "ThemePackages");
 
     public ObservableCollection<ThemeInfo> Themes { get; } = [];
 
@@ -47,23 +59,34 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     public ObservableDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
 
-    public static readonly string ThemesPkgRootPath = Path.Combine(App.AppCacheFolderPath, "ThemePackages");
+    public ObservableCollection<string> EnabledThemes { get; }
+
+    
     private ObservableDictionary<string, ThemeInfo> _mergedThemes = [];
 
     public event EventHandler? RestartRequested;
 
 
-    public XamlThemeService(ILogger<XamlThemeService> logger, IPluginMarketService pluginMarketService, SettingsService settingsService)
+    public XamlThemeService(ILogger<XamlThemeService> logger, IPluginMarketService pluginMarketService,
+        SettingsService settingsService, IComponentsService componentsService)
     {
         Logger = logger;
         PluginMarketService = pluginMarketService;
         SettingsService = settingsService;
+        ComponentsService = componentsService;
+        EnabledThemes = ConfigureFileHelper.LoadConfig<ObservableCollection<string>>(EnabledThemesPath);
+        if (EnabledThemes.Count == 0)
+        {
+            EnabledThemes.Add("classisland.fluent");
+        }
+        EnabledThemes.CollectionChanged +=
+            (_, _) => ConfigureFileHelper.SaveConfig(EnabledThemesPath, EnabledThemes);
         if (App.ApplicationCommand.Safe)
         {
             return;
         }
-        var resourceBoarder = VisualTreeUtils.FindChildVisualByName<Border>(MainWindow, "ResourceLoaderBorder");
-        resourceBoarder?.Resources.MergedDictionaries.Add(RootResourceDictionary);
+
+        ResourceLoaderBorder = MainWindow.FindControl<Border>("ResourceLoaderBorder");
 
         ProcessThemeInstall();
         LoadAllThemes();
@@ -78,25 +101,50 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         {
             return;
         }
-        RootResourceDictionary.MergedDictionaries.Clear();
-        foreach (var themeInfo in Themes)
+        RootStyles.Clear();
+        ResourceLoaderBorder?.Styles.Remove(RootStyles);
+        s_stylesAppliedField?.SetValue(ResourceLoaderBorder, false); 
+        RootStyles = [];
+        ResourceLoaderBorder?.Styles.Add(RootStyles);
+        foreach (var themeInfo in EnabledThemes.Select(x => Themes.FirstOrDefault(y => y.Manifest.Id == x))
+                     .OfType<ThemeInfo>())
         {
-            if (themeInfo.IsEnabled)
+            try
             {
-                LoadTheme(Path.Combine(themeInfo.Path, "Theme.xaml"));
+                if (themeInfo.IsExternal)
+                {
+                    LoadThemeFromFile(Path.Combine(themeInfo.Path, "Styles.axaml"));
+                }
+                else
+                {
+                    LoadThemeFromResource(themeInfo.ThemeUri ?? throw new InvalidOperationException("资源主题必须指定主题 Uri"));
+                }
                 themeInfo.IsLoaded = true;
+            }
+            catch (Exception e)
+            {
+                themeInfo.IsError = true;
+                themeInfo.Error = e;
             }
         }
     }
 
-    public void LoadTheme(string themePath)
+    private void LoadThemeFromFile(string themePath)
     {
-        Logger.LogInformation("正在加载主题 {}", themePath);
-        var themeResourceDictionary = new ResourceDictionary
+        Logger.LogInformation("正在从文件加载主题 {}", themePath);
+        var uri = new Uri(Path.GetFullPath(themePath));
+        if (AvaloniaRuntimeXamlLoader.Load(File.ReadAllText(themePath), Assembly.GetExecutingAssembly(), uri: uri) is
+            not Styles styles)
         {
-            Source = new Uri(Path.GetFullPath(themePath))
-        };
-        RootResourceDictionary.MergedDictionaries.Add(themeResourceDictionary);
+            return;
+        }
+        RootStyles.Add(styles);
+    }
+    
+    private void LoadThemeFromResource(Uri uri)
+    {
+        Logger.LogInformation("正在从资源加载主题 {}", uri);
+        RootStyles.Add((IStyle)AvaloniaXamlLoader.Load(uri));
     }
 
     public void LoadThemeSource()
@@ -106,12 +154,13 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         PluginMarketService.LoadPluginSource();
         var merged = new ObservableDictionary<string, ThemeInfo>();
         Indexes.Clear();
-
-        foreach (var pluginLocal in Themes)
+        
+        foreach (var themeLocal in Themes)
         {
-            var id = pluginLocal.Manifest.Id;
-            merged[id] = pluginLocal;
+            var id = themeLocal.Manifest.Id;
+            merged[id] = themeLocal;
         }
+
 
         var indexInfos = PluginMarketService.GetIndexInfos().ToList();
         foreach (var i in indexInfos)
@@ -180,6 +229,10 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
     private void LoadLocalThemes()
     {
         Themes.Clear();
+        foreach (var integratedTheme in IXamlThemeService.IntegratedThemes)
+        {
+            Themes.Add(integratedTheme);
+        }
         var deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .IgnoreUnmatchedProperties()
@@ -297,7 +350,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
             BindDownloadTasks();
             stopwatch.Start();
             await download.StartAsync(task.CancellationToken);
-            if (!Themes.Any(x => x.Manifest.Id == id && x.IsEnabled))
+            if (!Themes.Any(x => x.Manifest.Id == id && EnabledThemes.Contains(id)))
             {
                 InstallTheme(destFileName);
                 LoadThemeSource();

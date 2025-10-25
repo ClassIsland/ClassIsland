@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Data;
+using Avalonia.Data.Converters;
 using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Converters;

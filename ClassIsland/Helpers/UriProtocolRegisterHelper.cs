@@ -1,10 +1,12 @@
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Versioning;
 using ClassIsland.Core.Abstractions.Services;
 using Microsoft.Win32;
 
 namespace ClassIsland.Helpers;
 
+[SupportedOSPlatform("windows")]
 public static class UriProtocolRegisterHelper
 {
     public static void Register()
@@ -25,6 +27,6 @@ public static class UriProtocolRegisterHelper
 
     public static bool IsRegistered()
     {
-        return Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Classes")?.GetSubKeyNames().Count(x => x == IUriNavigationService.UriScheme) > 0;
+        return Microsoft.Win32.Registry.CurrentUser?.OpenSubKey("Software\\Classes")?.GetSubKeyNames().Count(x => x == IUriNavigationService.UriScheme) > 0;
     }
 }

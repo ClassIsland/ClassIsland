@@ -1,6 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
-
-namespace ClassIsland.Core.Attributes;
+﻿namespace ClassIsland.Core.Attributes;
 
 
 /// <summary>
@@ -8,9 +6,9 @@ namespace ClassIsland.Core.Attributes;
 /// </summary>
 /// <param name="id">此认证提供方的 ID</param>
 /// <param name="name">此认证提供方的名称</param>
-/// <param name="iconKind">此认证提供方的图标</param>
+/// <param name="iconGlyph">此认证提供方的图标</param>
 [AttributeUsage(AttributeTargets.Class)]
-public class AuthorizeProviderInfo(string id, string name, PackIconKind iconKind) : Attribute
+public class AuthorizeProviderInfo(string id, string name, string iconGlyph) : Attribute
 {
     /// <summary>
     /// 此认证提供方的 ID
@@ -25,7 +23,7 @@ public class AuthorizeProviderInfo(string id, string name, PackIconKind iconKind
     /// <summary>
     /// 此认证提供方的图标
     /// </summary>
-    public PackIconKind IconKind { get; } = iconKind;
+    public string IconGlyph { get; } = iconGlyph;
 
     /// <summary>
     /// 认证提供方类型

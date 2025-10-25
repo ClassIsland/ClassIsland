@@ -1,0 +1,19 @@
+<Project>
+    <PropertyGroup>
+        <AvaloniaVersion>11.3.7</AvaloniaVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <AvaloniaResource Remove="**\*.xaml"/>
+        <AvaloniaXaml Remove="*.xaml"/>
+        <None Include="*.xaml"/>
+    </ItemGroup>
+
+    <!-- HOT RELOAD -->
+    <PropertyGroup>
+        <HotAvaloniaAutoEnable>False</HotAvaloniaAutoEnable>
+        <HotAvalonia Condition="'$(Configuration)' == 'Debug'">True</HotAvalonia>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="HotAvalonia" Version="3.0.0" PrivateAssets="All" Publish="True"/>
+    </ItemGroup>
+</Project>

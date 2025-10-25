@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="ClassIsland.Controls.ClassPlanGroupItemControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <StackPanel x:Key="DisbandConfirmDialog" VerticalAlignment="Stretch">
+            <TextBlock TextWrapping="Wrap" >
+                <Run Text="你确定要解散这个课表群吗？解散后，课表群内的课表将被移动到默认课表群中。"/>
+            </TextBlock>
+        </StackPanel>
+
+        <StackPanel x:Key="DeleteConfirmDialog" VerticalAlignment="Stretch" Spacing="4">
+            <TextBlock TextWrapping="Wrap" >
+                <Run Text="你确定要删除这个课表群吗？删除后，此课表群内的课表也将全部删除。这个操作无法撤销！"/>
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                <Run Text="如果您只是想移除课表群而保留课表，请解散课表群。"/>
+            </TextBlock>
+        </StackPanel>
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassPlanGroupItemControl}}"
+          ColumnDefinitions="Auto,*"
+          Background="Transparent">
+        <Grid.ContextFlyout>
+            <MenuFlyout>
+                <MenuItem Icon="{ci:FluentIcon &#xE6A1;}" Header="临时启用"
+                          Click="MenuItemTemp_OnClick" />
+                <Separator />
+                <MenuItem Icon="{ci:FluentIcon &#xEE7D;}" Header="重命名" Click="MenuItemRename_OnClick"
+                          IsEnabled="{Binding IsProtected, Converter={StaticResource InvertBooleanConverter}}" />
+                <!--<MenuItem Icon="{materialDesign:PackIcon FileExportOutline}" Header="导出"/>-->
+                <MenuItem Icon="{ci:FluentIcon &#xE931;}" Header="解散" Click="MenuItemDisband_OnClick"
+                          IsEnabled="{Binding IsProtected, Converter={StaticResource InvertBooleanConverter}}" />
+                <MenuItem Icon="{ci:FluentIcon &#xE61D;}" Header="删除" Click="MenuItemDelete_OnClick"
+                          IsEnabled="{Binding IsProtected, Converter={StaticResource InvertBooleanConverter}}" />
+            </MenuFlyout>
+        </Grid.ContextFlyout>
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal" HorizontalAlignment="Stretch" Background="Transparent">
+            <StackPanel.Resources>
+                <ci:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+            </StackPanel.Resources>
+            <RadioButton GroupName="ProfileSelection" VerticalAlignment="Center"
+                         Click="ToggleButton_OnIsCheckedChanged">
+                <RadioButton.IsChecked>
+                    <MultiBinding Converter="{StaticResource StringToRadioButtonSelectionConverter}"
+                                  Mode="OneWay">
+                        <Binding Path="ViewModel.ProfileService.Profile.SelectedClassPlanGroupId" 
+                                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}"/>
+                        <Binding Path="Key" Mode="OneWay"/>
+                    </MultiBinding>
+                </RadioButton.IsChecked>
+            </RadioButton>
+        </StackPanel>
+        <Panel Grid.Column="1">
+            <TextBox Text="{Binding Item.Name}" 
+                     x:Name="MainTextBox"
+                     IsReadOnly="{Binding IsRenaming, Converter={StaticResource InvertBooleanConverter}}"
+                     VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                     LostFocus="TextBox_OnLostFocus"
+                     Margin="-8 0 0 0"
+                     IsVisible="{Binding IsRenaming}"
+                     Focusable="{Binding IsRenaming}"
+                     IsHitTestVisible="{Binding IsRenaming}"
+                     KeyDown="TextBox_OnKeyDown"/>
+            <TextBlock Text="{Binding Item.Name}" 
+                     IsVisible="{Binding !IsRenaming}"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Left"
+                     LostFocus="TextBox_OnLostFocus"
+                     Margin="-8 0 0 0"
+                     Focusable="{Binding IsRenaming}"
+                     IsHitTestVisible="{Binding IsRenaming}"
+                     KeyDown="TextBox_OnKeyDown"/>
+        </Panel>
+    </Grid>
+</UserControl>

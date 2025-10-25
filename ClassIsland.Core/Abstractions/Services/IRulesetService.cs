@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -22,7 +23,7 @@ public interface IRulesetService
     /// <summary>
     /// 已经注册的规则列表。
     /// </summary>
-    public static ObservableDictionary<string, RuleRegistryInfo> Rules { get; } = new();
+    public static Dictionary<string, RuleRegistryInfo> Rules { get; } = new();
 
     /// <summary>
     /// 判断指定的规则集<see cref="Ruleset"/>是否成立。

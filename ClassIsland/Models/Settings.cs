@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows;
-using System.Windows.Media;
+using Avalonia.Media;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
@@ -26,6 +27,10 @@ using WindowsShortcutFactory;
 using File = System.IO.File;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Abstractions.Models.Speech;
+using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Services;
+using ClassIsland.Shared.ComponentModels;
+using static ClassIsland.Core.Attributes.SettingsInfo;
 
 namespace ClassIsland.Models;
 
@@ -36,7 +41,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Color _backgroundColor = Colors.Black;
     private Color _primaryColor = Colors.DeepSkyBlue;
     private Color _secondaryColor = Colors.Aquamarine;
-    private DateTime _singleWeekStartTime = DateTime.Now;
+    private DateTime _singleWeekStartTime =
+        DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek); // 取周日
+    //  DateTime.Today.AddDays(-(DateTime.Today.DayOfWeek switch { // 取周一
+    //         DayOfWeek.Sunday => 6,
+    //         _ => (int)DateTime.Today.DayOfWeek - 1
+    //     }));
     private int _classPrepareNotifySeconds = 60;
     private bool _showDate = true;
     private bool _hideOnClass = false;
@@ -55,6 +65,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         "explorer"
     };
     private ObservableCollection<int> _multiWeekRotationOffset = [-1, -1, 0, 0, 0];
+    private int _multiWeekRotationMaxCycle = 4;
 
     private bool _hideOnMaxWindow = false;
     private double _opacity = 0.5;
@@ -76,7 +87,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Color _selectedPlatte = Colors.DodgerBlue;
     private int _selectedPlatteIndex = 0;
     private ObservableCollection<Color> _wallpaperColorPlatte = new(Enumerable.Repeat(Colors.DodgerBlue, 5));
-    private int _colorSource = 1;
+    private int _colorSource = 2;
     private string _wallpaperClassName = "";
     private double _targetLightValue = 0.6;
     private double _scale = 1.0;
@@ -88,13 +99,13 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isWallpaperAutoUpdateEnabled = false;
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
     private bool _isFallbackModeEnabled = true;
-    private string _mainWindowFont = App.IsAssetsTrimmedInternal ? "Microsoft YaHei UI" : "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
+    private string _mainWindowFont = MainWindow.DefaultFontFamilyKey;
     private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
     private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";
     private WeatherInfo _lastWeatherInfo = new();
     private string _cityId = "weathercn:101010100";
     private string _cityName = "北京 (北京, 中国)";
-    private int _mainWindowFontWeight2 = FontWeights.Medium.ToOpenTypeWeight();
+    private int _mainWindowFontWeight2 = (int)FontWeight.Medium;
     private int _taskBarIconClickBehavior = 0;
     private bool _showExtraInfoOnTimePoint = true;
     private int _extraInfoType = 0;
@@ -175,10 +186,10 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private DateTime _lastRefreshPluginSourceTime = DateTime.MinValue;
     private bool _isProfileEditorClassInfoSubjectAutoMoveNextEnabled = true;
     private double _notificationSoundVolume = 1.0;
-    private double _radiusX = 0.0;
-    private double _radiusY = 0.0;
+    private double _radiusX = 8.0;
+    private double _radiusY = 8.0;
     private int _hideMode = 0;
-    private Ruleset _hiedRules = new();
+    private Ruleset _hideRules = new();
     private bool _isAutoBackupEnabled = true;
     private DateTime _lastAutoBackupTime = DateTime.Now;
     private string _backupFilesSize = "计算中...";
@@ -203,7 +214,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isSwapMode = true;
-    private Dictionary<string, Dictionary<string, dynamic?>> _settingsOverlay = [];
+    private Dictionary<string, OrderedDictionary> _settingsOverlays = [];
     private bool _showEchoCaveWhenSettingsPageLoading = false;
     private int _settingsPagesCachePolicy = 0;
     private string _notificationSpeechCustomSmgTokenSource = "";
@@ -212,7 +223,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _selectedUpdateChannelV2 = "stable";
     private GptSoVitsSpeechSettings _gptSoVitsSpeechSettings = new();
     private double _mainWindowLineVerticalMargin = 5;
-    private ObservableCollection<string> _trustedProfileIds = [];
+    private ObservableCollection<Guid> _trustedProfileIds = [];
     private bool _isNonExactCountdownEnabled = false;
     private bool _showDetailedStatusOnSplash = false;
 
@@ -233,6 +244,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("显示主界面", SettingsInfoCategory.MainWindow)]
     public bool IsMainWindowVisible
     {
         get => _isMainWindowVisible;
@@ -255,13 +267,14 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public Dictionary<string, Dictionary<string, dynamic?>> SettingsOverlay
+    [JsonPropertyName("SettingsOverlay")] // ClassIsland 1.x 名称
+    public Dictionary<string, OrderedDictionary> SettingsOverlays
     {
-        get => _settingsOverlay;
+        get => _settingsOverlays;
         set
         {
-            if (value == _settingsOverlay) return;
-            _settingsOverlay = value;
+            if (value == _settingsOverlays) return;
+            _settingsOverlays = value;
             OnPropertyChanged();
         }
     }
@@ -330,6 +343,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_multiWeekRotationOffset)) return;
             _multiWeekRotationOffset = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int MultiWeekRotationMaxCycle
+    {
+        get => _multiWeekRotationMaxCycle;
+        set
+        {
+            if (value == _multiWeekRotationMaxCycle) return;
+            _multiWeekRotationMaxCycle = value;
             OnPropertyChanged();
         }
     }
@@ -432,14 +456,15 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-
-    public Ruleset HiedRules
+    
+    [JsonPropertyName("HiedRules")]
+    public Ruleset HideRules
     {
-        get => _hiedRules;
+        get => _hideRules;
         set
         {
-            if (Equals(value, _hiedRules)) return;
-            _hiedRules = value;
+            if (Equals(value, _hideRules)) return;
+            _hideRules = value;
             OnPropertyChanged();
         }
     }
@@ -477,38 +502,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [JsonIgnore]
-    public bool IsAutoStartEnabled
-    {
-        get => File.Exists(
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk"));
-        set
-        {
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
-            try
-            {
-                if (value)
-                {
-                    using var shortcut = new WindowsShortcut
-                    {
-                        Path = Environment.ProcessPath,
-                        WorkingDirectory = Environment.CurrentDirectory
-                    };
-                    shortcut.Save(path);
-                }
-                else
-                {
-                    File.Delete(path);
-                }
-                OnPropertyChanged();
-            }
-            catch (Exception ex)
-            {
-                App.GetService<ILogger<Settings>>().LogError(ex, "无法创建开机自启动快捷方式。");
-            }
-        }
-    }
-
     public bool IsReportingEnabled
     {
         get => _isReportingEnabled;
@@ -523,39 +516,18 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     [JsonIgnore]
     public bool IsSentryEnabled
     {
-        get => Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null;
+        get => GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
         set
         {
             try
             {
                 var envVar = value ? "1" : "0";
-                Environment.SetEnvironmentVariable("ClassIsland_IsSentryEnabled", envVar);
-                // 因为 Environment.SetEnvironmentVariable 有时会执行很长时间，所以这里要直接修改注册表。
-                using var reg = Registry.CurrentUser.OpenSubKey(
-                    @"Environment", true);
-                reg?.SetValue("ClassIsland_IsSentryEnabled", envVar, RegistryValueKind.String);
+                GlobalStorageService.SetValue("IsSentryEnabled", envVar);
                 OnPropertyChanged();
             }
             catch (Exception ex)
             {
                 IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 Sentry 启用状态。");
-            }
-        }
-    }
-
-    [JsonIgnore]
-    public bool IsUrlProtocolRegistered
-    {
-        get => UriProtocolRegisterHelper.IsRegistered();
-        set
-        {
-            if (value)
-            {
-                UriProtocolRegisterHelper.Register();
-            }
-            else
-            {
-                UriProtocolRegisterHelper.UnRegister();
             }
         }
     }
@@ -571,6 +543,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     ///     <item>3 - 打开换课窗口</item>
     /// </list>
     /// </value>
+
+    [SettingsInfo("点击托盘图标行为", enums:null)]
     public int TaskBarIconClickBehavior
     {
         get => _taskBarIconClickBehavior;
@@ -747,6 +721,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("时间偏移")]
     public double TimeOffsetSeconds
     {
         get => _timeOffsetSeconds;
@@ -791,17 +766,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public bool IsTransientDisabled
-    {
-        get => _isTransientDisabled;
-        set
-        {
-            if (value == _isTransientDisabled) return;
-            _isTransientDisabled = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool IsWaitForTransientDisabled
     {
         get => _isWaitForTransientDisabled;
@@ -809,6 +773,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isWaitForTransientDisabled) return;
             _isWaitForTransientDisabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int AnimationLevel
+    {
+        get => _animationLevel;
+        set
+        {
+            if (value == _animationLevel) return;
+            _animationLevel = value;
             OnPropertyChanged();
         }
     }
@@ -868,10 +843,22 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool ReduceProgressAccuracy
+    {
+        get => _reduceProgressAccuracy;
+        set
+        {
+            if (value == _reduceProgressAccuracy) return;
+            _reduceProgressAccuracy = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Appearence
 
+    [SettingsInfo("应用主题", SettingsInfoCategory.MainWindow, enums:null)]
     public int Theme
     {
         get => _theme;
@@ -883,6 +870,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("应用主题色", SettingsInfoCategory.MainWindow)]
     public Color PrimaryColor
     {
         get => _primaryColor;
@@ -1031,6 +1019,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("背景不透明度", SettingsInfoCategory.MainWindow, min:0, max:1)]
     public double Opacity
     {
         get => _opacity;
@@ -1042,6 +1031,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("界面缩放", SettingsInfoCategory.MainWindow, min: 0.1)]
     public double Scale
     {
         get => _scale;
@@ -1075,6 +1065,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("圆角半径", SettingsInfoCategory.MainWindow, min:0, max:20)]
     public double RadiusX
     {
         get => _radiusX;
@@ -1174,10 +1165,22 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool IsIslandSeperated
+    {
+        get => _isIslandSeperated;
+        set
+        {
+            if (value == _isIslandSeperated) return;
+            _isIslandSeperated = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Components
 
+    [SettingsInfo("组件配置方案")]
     public string CurrentComponentConfig
     {
         get => _currentComponentConfig;
@@ -1524,6 +1527,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _currentAutomationConfig) return;
+            OnPropertyChanging();
             _currentAutomationConfig = value;
             OnPropertyChanged();
         }
@@ -1605,74 +1609,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public Dictionary<string, SpeedTestResult> SpeedTestResults
-    {
-        get => _speedTestResults;
-        set
-        {
-            if (Equals(value, _speedTestResults)) return;
-            _speedTestResults = value;
-            OnPropertyChanged();
-        }
-    }
-
-
-    public bool IsAutoSelectUpgradeMirror
-    {
-        get => _isAutoSelectUpgradeMirror;
-        set
-        {
-            if (value == _isAutoSelectUpgradeMirror) return;
-            _isAutoSelectUpgradeMirror = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime LastSpeedTest
-    {
-        get => _lastSpeedTest;
-        set
-        {
-            if (value.Equals(_lastSpeedTest)) return;
-            _lastSpeedTest = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string UpdateReleaseInfo
-    {
-        get => _updateReleaseInfo;
-        set
-        {
-            if (value == _updateReleaseInfo) return;
-            _updateReleaseInfo = value;
-            OnPropertyChanged();
-        }
-    }
-
-
-    public string UpdateDownloadUrl
-    {
-        get => _updateDownloadUrl;
-        set
-        {
-            if (value == _updateDownloadUrl) return;
-            _updateDownloadUrl = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public Version UpdateVersion
-    {
-        get => _updateVersion;
-        set
-        {
-            if (Equals(value, _updateVersion)) return;
-            _updateVersion = value;
-            OnPropertyChanged();
-        }
-    }
-
     public string UpdateArtifactHash
     {
         get => _updateArtifactHash;
@@ -1706,6 +1642,50 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public Guid SelectedUpdateChannelV3
+    {
+        get => _selectedUpdateChannelV3;
+        set
+        {
+            if (value == _selectedUpdateChannelV3) return;
+            _selectedUpdateChannelV3 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DebugSubChannelOverride
+    {
+        get => _debugSubChannelOverride;
+        set
+        {
+            if (value == _debugSubChannelOverride) return;
+            _debugSubChannelOverride = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DebugPublicKeyOverride
+    {
+        get => _debugPublicKeyOverride;
+        set
+        {
+            if (value == _debugPublicKeyOverride) return;
+            _debugPublicKeyOverride = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DebugPhainonRootUrlOverride
+    {
+        get => _debugPhainonRootUrlOverride;
+        set
+        {
+            if (value == _debugPhainonRootUrlOverride) return;
+            _debugPhainonRootUrlOverride = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Window
@@ -1723,6 +1703,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// #############
     /// </code>
     /// </value>
+    [SettingsInfo("窗口停靠位置", SettingsInfoCategory.MainWindow, enums:null)]
     public int WindowDockingLocation
     {
         get => _windowDockingLocation;
@@ -1747,8 +1728,15 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
     private string _selectedSpeechProvider = "classisland.speech.edgeTts";
     private bool _isThemeWarningVisible = true;
-    private string _weatherIconId = "classisland.weatherIcons.materialDesign";
+    private string _weatherIconId = "classisland.weatherIcons.lucide";
     private bool _isRollingComponentWarningVisible = true;
+    private int _animationLevel = 1;
+    private bool _isIslandSeperated = false;
+    private bool _reduceProgressAccuracy = true;
+    private Guid _selectedUpdateChannelV3 = Guid.Empty;
+    private string _debugSubChannelOverride = "";
+    private string _debugPublicKeyOverride = "";
+    private string _debugPhainonRootUrlOverride = "";
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -1760,7 +1748,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-    
+
+    [SettingsInfo("窗口向右偏移", SettingsInfoCategory.MainWindow)]
     public int WindowDockingOffsetX
     {
         get => _windowDockingOffsetX;
@@ -1772,6 +1761,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("窗口向下偏移", SettingsInfoCategory.MainWindow)]
     public int WindowDockingOffsetY
     {
         get => _windowDockingOffsetY;
@@ -1789,6 +1779,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _windowDockingMonitorIndex) return;
+            
+
+            if (value < 0)
+            {
+                throw new ArgumentException("选择不能为空。");
+            }
             _windowDockingMonitorIndex = value;
             OnPropertyChanged();
         }
@@ -1801,6 +1797,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// 0 - 置底<br/>
     /// 1 - 置顶
     /// </value>
+    [SettingsInfo("窗口层级", SettingsInfoCategory.MainWindow, enums:["置底", "置顶"])]
     public int WindowLayer
     {
         get => _windowLayer;
@@ -2390,7 +2387,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public ObservableCollection<string> TrustedProfileIds
+    public ObservableCollection<Guid> TrustedProfileIds
     {
         get => _trustedProfileIds;
         set
@@ -2404,17 +2401,13 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     [JsonIgnore]
     public bool ShowSellingAnnouncement
     {
-        get => Environment.GetEnvironmentVariable("ClassIsland_ShowSellingAnnouncement") is "1" or null;
+        get => GlobalStorageService.GetValue("ShowSellingAnnouncement") is "1" or null;
         set
         {
             try
             {
                 var envVar = value ? "1" : "0";
-                Environment.SetEnvironmentVariable("ClassIsland_ShowSellingAnnouncement", envVar);
-                // 因为 Environment.SetEnvironmentVariable 有时会执行很长时间，所以这里要直接修改注册表。
-                using var reg = Registry.CurrentUser.OpenSubKey(
-                    @"Environment", true);
-                reg?.SetValue("ClassIsland_ShowSellingAnnouncement", envVar, RegistryValueKind.String);
+                GlobalStorageService.SetValue("ShowSellingAnnouncement", envVar);
                 OnPropertyChanged();
             }
             catch (Exception ex)

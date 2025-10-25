@@ -39,18 +39,18 @@ public class ServerlessConnection : IManagementServerConnection
         return await GetJsonAsync<ManagementManifest>(ManifestUrl);
     }
 
-    public async Task<T> GetJsonAsync<T>(string url)
+    public async Task<T> GetJsonAsync<T>(string url) where T : class
     {
         var decorateUrl = DecorateUrl(url);
         Logger.LogInformation("发起json请求：{}", decorateUrl);
-        return await WebRequestHelper.GetJson<T>(decorateUrl);
+        return await WebRequestHelper.Default.GetJson<T>(decorateUrl);
     }
 
-    public async Task<T> SaveJsonAsync<T>(string url, string path)
+    public async Task<T> SaveJsonAsync<T>(string url, string path) where T : class
     {
         var decorateUrl = DecorateUrl(url);
         Logger.LogInformation("保存json请求：{} {}", decorateUrl, path);
-        return await WebRequestHelper.SaveJson<T>(decorateUrl, path);
+        return await WebRequestHelper.Default.SaveJson<T>(decorateUrl, path);
     }
 
     public event EventHandler<ClientCommandEventArgs>? CommandReceived;

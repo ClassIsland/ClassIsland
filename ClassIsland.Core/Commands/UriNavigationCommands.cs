@@ -1,4 +1,6 @@
 ﻿using System.Windows.Input;
+using Avalonia.Labs.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ClassIsland.Core.Commands;
 
@@ -11,5 +13,5 @@ public class UriNavigationCommands
     /// <summary>
     /// Uri 导航命令。
     /// </summary>
-    public static readonly ICommand UriNavigationCommand = new RoutedUICommand();
+    public static readonly ICommand UriNavigationCommand = new RoutedCommand(nameof(UriNavigationCommand));
 }

@@ -1,0 +1,220 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WindowSettingsPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+      xmlns:system="clr-namespace:System;assembly=System.Runtime"
+      xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance local:WindowSettingsPage}"
+      Loaded="OnLoaded"
+      Unloaded="Control_OnUnloaded">
+
+    <controls:SettingsPageBase.Resources>
+        <converters:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
+    </controls:SettingsPageBase.Resources>
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro">
+            <!-- 窗口停靠位置 -->
+            <ci:IconText Glyph="&#xE62F;" Text="窗口停靠位置" />
+            <Grid Margin="0 8 0 0" ColumnDefinitions="*,*">
+
+                <StackPanel Grid.Column="0" Margin="0 0 8 0">
+                    <Border
+                        BorderBrush="{DynamicResource TextFillColorPrimaryBrush}"
+                        BorderThickness="8" CornerRadius="4"
+                        VerticalAlignment="Center"
+                        Height="220">
+                        <Grid RowDefinitions="*,Auto">
+                            <Grid Grid.Row="0" Margin="8">
+                                <RadioButton VerticalAlignment="Top" HorizontalAlignment="Left"
+                                             IsChecked="{Binding ViewModel.SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}" />
+                                <RadioButton VerticalAlignment="Top"
+                                             HorizontalAlignment="Center"
+                                             IsChecked="{Binding ViewModel.SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}" />
+                                <RadioButton VerticalAlignment="Top"
+                                             HorizontalAlignment="Right"
+                                             IsChecked="{Binding ViewModel.SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=2}" />
+
+                                <RadioButton VerticalAlignment="Bottom"
+                                             HorizontalAlignment="Left"
+                                             IsChecked="{Binding ViewModel.SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=3}" />
+                                <RadioButton VerticalAlignment="Bottom"
+                                             HorizontalAlignment="Center"
+                                             IsChecked="{Binding ViewModel.SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=4}" />
+                                <RadioButton VerticalAlignment="Bottom"
+                                             HorizontalAlignment="Right"
+                                             IsChecked="{Binding ViewModel.SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=5}" />
+                            </Grid>
+                            <Border  Grid.Row="1" Height="16"
+                                     TextElement.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                      Background="#99000000"
+                                      BorderThickness="0">
+                                <Grid>
+                                    <ci:FluentIcon Glyph="&#xE064;"
+                                                   FontSize="10"
+                                                   ToolTip.Tip="总之这是开始按钮，或类似开始的按钮"
+                                                     Height="10" Width="10" VerticalAlignment="Center"
+                                                     HorizontalAlignment="Left" Margin="3" />
+                                    <TextBlock x:Name="TaskbarTime"
+                                               FontSize="8" FontWeight="Light"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Margin="3"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" HorizontalAlignment="Stretch"
+                            Margin="8 0 0 0">
+                    <Grid ColumnDefinitions="*,*">
+                        <!-- 向右偏移 -->
+                        <ci:Field Label="向右偏移" Grid.Column="0">
+                            <controls1:NumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetX}"
+                                                 SpinButtonPlacementMode="Inline"/>
+                        </ci:Field>
+                        <!-- 向下偏移 -->
+                        <ci:Field Label="向下偏移" Grid.Column="1">
+                            <controls1:NumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetY}"
+                                                 SpinButtonPlacementMode="Inline"/>
+                        </ci:Field>
+                    </Grid>
+                    <!-- 显示器 -->
+                    <ci:Field Label="显示器" Margin="0 16 0 0">
+                        <ComboBox ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
+                            <ComboBox.SelectedIndex>
+                                <Binding Path="ViewModel.SettingsService.Settings.WindowDockingMonitorIndex"/>
+                            </ComboBox.SelectedIndex>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <ci:FluentIcon Glyph="&#xE62F;"
+                                                       VerticalAlignment="Center" />
+                                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                                            <Run Text="{Binding DisplayName, Mode=OneWay}" />
+                                            <Run Text="(">
+                                            </Run>
+                                            <Run Text="{Binding Bounds.Width, Mode=OneWay}">
+                                            </Run>
+                                            <Run Text="x">
+                                            </Run>
+                                            <Run Text="{Binding Bounds.Height, Mode=OneWay}">
+                                            </Run>
+                                            <Run Text=")" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox></ci:Field>
+
+                    <Button Margin="0 8 0 0" Theme="{StaticResource TransparentButton}"
+                            HorizontalAlignment="Left" Click="ButtonRefreshMonitors_OnClick">
+                        <ci:IconText Glyph="&#xE0B5;" Text="刷新显示器列表" />
+                    </Button>
+
+                    <TextBlock Margin="0 16 0 0" TextWrapping="Wrap"
+                               Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。" />
+                    <!--<TextBlock Text="{Binding ViewModel.SettingsService.Settings.WindowDockingLocation, Mode=OneWay}"/>-->
+                </StackPanel>
+            </Grid>
+            <Separator Margin="0 12" />
+            
+            <controls1:InfoBar Message="初始化 RawInput 失败，将使用兼容模式判断光标位置。详细请查看日志。"
+                               IsClosable="False"
+                               IsOpen="True"
+                               Severity="Warning"
+                               IsVisible="{Binding ViewModel.SettingsService.Settings.IsErrorLoadingRawInput}"/>
+            <controls1:InfoBar Message="使用原始输入判断鼠标位置时，如果前台窗口的进程以管理员身份运行，可能会出现无法判定鼠标位置的情况。以管理员身份运行 ClassIsland 可以解决此问题。"
+                               IsClosable="False"
+                               IsOpen="True"
+                               IsVisible="{Binding ViewModel.SettingsService.Settings.UseRawInput}"/>
+
+            <!-- 窗口层级 -->
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xEA2F;}"
+                                        Header="窗口层级"
+                                        Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。">
+                <controls1:SettingsExpander.Footer>
+                    <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.WindowLayer, Mode=TwoWay}"
+                              Foreground="{DynamicResource MaterialDesignBody}">
+                        <ComboBoxItem>
+                            <ci:IconText Glyph="&#xE0CB;" Text="置底" />
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <ci:IconText Glyph="&#xE197;" Text="置顶" />
+                        </ComboBoxItem>
+                    </ComboBox>
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
+
+            <!-- 指针移入淡化 -->
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C3;}"
+                                        Header="指针移入淡化"
+                                        Description="启用后，在鼠标移入或触屏点击主界面区域时，将淡化主界面。"
+                                        IsExpanded="{Binding ViewModel.SettingsService.Settings.IsMouseInFadingEnabled, Mode=OneWay}">
+                <controls1:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsMouseInFadingEnabled, Mode=TwoWay}"/>
+                </controls1:SettingsExpander.Footer>
+                <!-- 使用原始输入 -->
+                <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xEFDB;}"
+                                                Content="使用原始输入"
+                                                Description="启用后，ClassIsland 将使用 RawInput 接收鼠标/触屏事件，而不是轮询获取光标位置。这允许应用辨别鼠标和触摸事件，并分别做出更适宜的响应。如果出现不兼容的问题，请尝试禁用此选项。">
+                    <controls1:SettingsExpanderItem.IsVisible>
+                        <OnPlatform Default="False">
+                            <On Options="Windows" Content="True"/>
+                        </OnPlatform>
+                    </controls1:SettingsExpanderItem.IsVisible>
+                    <controls1:SettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.UseRawInput, Mode=TwoWay}"/>
+                    </controls1:SettingsExpanderItem.Footer>
+                </controls1:SettingsExpanderItem>
+                <!-- 触屏点击后自动恢复 -->
+                <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xE460;}"
+                                                Content="触屏点击后自动恢复时间"
+                                                IsVisible="{Binding ViewModel.SettingsService.Settings.UseRawInput}"
+                                                Description="启用后，触屏点击主界面区域后将在一定时间后自动恢复主界面显示。设置为0为禁用。">
+                    <controls1:SettingsExpanderItem.Footer>
+                        <ci:Field Suffix="ms">
+                            <controls1:NumberBox Width="150"
+                                                 Value="{Binding ViewModel.SettingsService.Settings.TouchInFadingDurationMs}"
+                                                 SpinButtonPlacementMode="Inline"
+                                                 Minimum="0"
+                                                 Foreground="{DynamicResource MaterialDesignBody}"/>
+                        </ci:Field>
+                    </controls1:SettingsExpanderItem.Footer>
+                </controls1:SettingsExpanderItem>
+                
+
+                <!-- 反转指针移入淡化 -->
+                <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xE5C5;}"
+                                                Content="反转指针移入淡化"
+                                                Description="启用后，将默认淡化主界面，使主界面仅在鼠标移入时显示。此开关不影响隐藏主界面。">
+                    <controls1:SettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsMouseInFadingReversed, Mode=TwoWay}"/>
+                    </controls1:SettingsExpanderItem.Footer>
+                </controls1:SettingsExpanderItem>
+            </controls1:SettingsExpander>
+            
+            <!-- 使用原始屏幕尺寸 -->
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xE67F;}"
+                                        Header="使用原始屏幕尺寸"
+                                        Description="若启用，主界面调整位置时将忽略系统工作区设置（通常包括任务栏和部分顶栏应用）。">
+                <controls1:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsIgnoreWorkAreaEnabled, Mode=TwoWay}"/>
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
+
+            <!-- 指针穿透 --><!--
+            <ci:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
+                                   Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"
+                                   IsOn="{Binding ViewModel.SettingsService.Settings.IsMouseClickingEnabled, Mode=TwoWay}" />-->
+
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

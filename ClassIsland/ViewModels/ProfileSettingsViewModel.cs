@@ -1,463 +1,121 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reactive.Linq;
+using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.ComponentModels;
+using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
+using ClassIsland.Services;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
-
+using ClassIsland.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DynamicData;
+using DynamicData.Binding;
+using Microsoft.Extensions.Logging;
 
-using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.ViewModels;
 
-public class ProfileSettingsViewModel : ObservableRecipient
+public partial class ProfileSettingsViewModel : ObservableRecipient
 {
-    private object _drawerContent = new();
-    private bool _isClassPlansEditing = false;
-    private SnackbarMessageQueue _messageQueue = new();
-    private ObservableCollection<string> _profiles = new();
-    private bool _isRestartSnackbarActive = false;
-    private string _renameProfileName = "";
-    private string _createProfileName = "";
-    private string _selectedProfile = "";
-    private string _deleteConfirmField = "";
-    private bool _isOfflineEditor = false;
-    private TimeLayoutItem? _selectedTimePoint;
-    private double _timeLineScale = 3.0;
-    private Subject? _selectedSubject;
-    private bool _isPanningModeEnabled = false;
-    private bool _isDragEntering = false;
-    private string _tempOverlayClassPlanTimeLayoutId = "";
-    private ClassInfo?  _selectedClassInfo;
-    private int _selectedClassIndex = -1;
-    private ClassPlan _selectedClassPlan = new();
-    private bool _isUpdatingClassInfoIndexInBackend = false;
-    private bool _isClassPlanEditComplete = false;
-    private bool _isWeekOffsetSettingsOpen = false;
-    private TimeLayoutItem? _previousTrackedTimeLayoutItem;
-    private DateTime _scheduleCalendarSelectedDate = DateTime.Today;
-    private DateTime _overlayEnableDateTime = DateTime.Today;
-    private ObservableCollection<WeekClassPlanRow> _weekClassPlanRows = [];
-    private bool _isProfileImportMenuOpened = false;
-    private bool _isInScheduleSwappingMode = false;
-    private WeekClassPlanRow? _selectedWeekClassPlanRow;
-    private ScheduleClassPosition _classSwapEndPosition = ScheduleClassPosition.Zero;
-    private ScheduleClassPosition _classSwapStartPosition = ScheduleClassPosition.Zero;
-    private DateTime _scheduleWeekViewBaseDate = DateTime.Now;
-    private bool _isTempSwapMode = true;
-    private int _dataGridWeekRowsWeekIndex = 0;
-    private bool _isClassPlanTempEditPopupOpen = false;
-    private string _targetSubjectIndex = "";
-    private bool _isTimeLineSticky = true;
+    public IProfileService ProfileService { get; }
+    public IManagementService ManagementService { get; }
+    public SettingsService SettingsService { get; }
+    public ILessonsService LessonsService { get; }
+    public IExactTimeService ExactTimeService { get; }
+    public IActionService ActionService { get; }
+    public ILogger<ProfileSettingsWindow> Logger { get; }
 
-    public object DrawerContent
-    {
-        get => _drawerContent;
-        set
-        {
-            if (Equals(value, _drawerContent)) return;
-            _drawerContent = value;
-            OnPropertyChanged();
-        }
-    }
+    public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
+    public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
+    public SyncDictionaryList<Guid, Subject> Subjects { get; }
 
-    public bool IsClassPlansEditing
-    {
-        get => _isClassPlansEditing;
-        set
-        {
-            if (value == _isClassPlansEditing) return;
-            _isClassPlansEditing = value;
-            OnPropertyChanged();
-        }
-    }
+    public SyncDictionaryList<Guid, ClassPlanGroup> ClassPlanGroups { get; }
+    public SyncDictionaryList<DateTime, OrderedSchedule> OrderedSchedules { get; }
 
-    public SnackbarMessageQueue MessageQueue
-    {
-        get => _messageQueue;
-        set
-        {
-            if (Equals(value, _messageQueue)) return;
-            _messageQueue = value;
-            OnPropertyChanged();
-        }
-    }
+    public IObservableList<KeyValuePair<Guid, ClassPlan>> TempClassPlanList { get; }
 
-    public ObservableCollection<string> Profiles
-    {
-        get => _profiles;
-        set
-        {
-            if (Equals(value, _profiles)) return;
-            _profiles = value;
-            OnPropertyChanged();
-        }
-    }
 
-    public bool IsRestartSnackbarActive
-    {
-        get => _isRestartSnackbarActive;
-        set
-        {
-            if (value == _isRestartSnackbarActive) return;
-            _isRestartSnackbarActive = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty] private ObservableCollection<object> _transferNavigationViewItems = [];
+    [ObservableProperty] private object _drawerContent = new();
+    [ObservableProperty] private bool _isClassPlansEditing = false;
+    [ObservableProperty] private ObservableCollection<string> _profiles = new();
+    [ObservableProperty] private bool _isRestartSnackbarActive = false;
+    [ObservableProperty] private string _renameProfileName = "";
+    [ObservableProperty] private string _createProfileName = "";
+    [ObservableProperty] private string _selectedProfile = "";
+    [ObservableProperty] private string _deleteConfirmField = "";
+    [ObservableProperty] private bool _isOfflineEditor = false;
+    [ObservableProperty] private TimeLayoutItem? _selectedTimePoint;
+    [ObservableProperty] private double _timeLineScale = 3.0;
+    [ObservableProperty] private Subject? _selectedSubject;
+    [ObservableProperty] private bool _isPanningModeEnabled = false;
+    [ObservableProperty] private bool _isDragEntering = false;
+    [ObservableProperty] private Guid _tempOverlayClassPlanTimeLayoutId = Guid.Empty;
+    [ObservableProperty] private ClassInfo? _selectedClassInfo;
+    [ObservableProperty] private int _selectedClassIndex = -1;
+    [ObservableProperty] private ClassPlan? _selectedClassPlan = null;
+    [ObservableProperty] private bool _isUpdatingClassInfoIndexInBackend = false;
+    [ObservableProperty] private bool _isClassPlanEditComplete = false;
+    [ObservableProperty] private bool _isWeekOffsetSettingsOpen = false;
+    [ObservableProperty] private TimeLayoutItem? _previousTrackedTimeLayoutItem;
+    [ObservableProperty] private DateTime _scheduleCalendarSelectedDate = DateTime.Today;
+    [ObservableProperty] private DateTime _overlayEnableDateTime = DateTime.Today;
+    [ObservableProperty] private ObservableCollection<WeekClassPlanRow> _weekClassPlanRows = [];
+    [ObservableProperty] private bool _isProfileImportMenuOpened = false;
+    [ObservableProperty] private bool _isInScheduleSwappingMode = false;
+    [ObservableProperty] private WeekClassPlanRow? _selectedWeekClassPlanRow;
+    [ObservableProperty] private ScheduleClassPosition _classSwapEndPosition = ScheduleClassPosition.Zero;
+    [ObservableProperty] private ScheduleClassPosition _classSwapStartPosition = ScheduleClassPosition.Zero;
+    [ObservableProperty] private DateTime _scheduleWeekViewBaseDate = DateTime.Now;
+    [ObservableProperty] private bool _isTempSwapMode = true;
+    [ObservableProperty] private int _dataGridWeekRowsWeekIndex = 0;
+    [ObservableProperty] private bool _isClassPlanTempEditPopupOpen = false;
+    [ObservableProperty] private Guid _targetSubjectIndex = Guid.Empty;
+    [ObservableProperty] private bool _isTimeLineSticky = true;
+    [ObservableProperty] private bool _isDrawerOpen = false;
+    [ObservableProperty] private int _masterPageTabSelectIndex = 0;
+    [ObservableProperty] private TimeLayout? _selectedTimeLayout;
+    [ObservableProperty] private int _selectedTimePointIndex = -1;
+    [ObservableProperty] private ToastMessage? _currentTimePointDeleteRevertToast;
+    [ObservableProperty] private ToastMessage? _currentClassPlanEditDoneToast = null;
+    [ObservableProperty] private KeyValuePair<Guid, TimeLayout>? _classPlanInfoSelectedTimeLayoutKvp;
+    [ObservableProperty] private HashSet<string> _currentProfileBreakNames = [];
+    [ObservableProperty] private ProfileTransferProviderControlBase? _transferProviderContent;
+    [ObservableProperty] private bool _isProfileTransferInvoked;
+    [ObservableProperty] private ProfileTransferProviderInfo? _selectedTransferInfo;
+    [ObservableProperty] private bool _isTransferring;
 
-    public string CreateProfileName
+/// <inheritdoc/>
+    public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
+        SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
+        IActionService actionService,
+        ILogger<ProfileSettingsWindow> logger)
     {
-        get => _createProfileName;
-        set
-        {
-            if (value == _createProfileName) return;
-            _createProfileName = value;
-            OnPropertyChanged();
-        }
-    }
+        ProfileService = profileService;
+        ManagementService = managementService;
+        SettingsService = settingsService;
+        LessonsService = lessonsService;
+        ExactTimeService = exactTimeService;
+        ActionService = actionService;
+        Logger = logger;
 
-    public string RenameProfileName
-    {
-        get => _renameProfileName;
-        set
-        {
-            if (value == _renameProfileName) return;
-            _renameProfileName = value;
-            OnPropertyChanged();
-        }
-    }
+        ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
+        TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);
+        Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);
+        ClassPlanGroups =
+            new SyncDictionaryList<Guid, ClassPlanGroup>(ProfileService.Profile.ClassPlanGroups, Guid.NewGuid);
+        OrderedSchedules =
+            new SyncDictionaryList<DateTime, OrderedSchedule>(ProfileService.Profile.OrderedSchedules, () => DateTime.MinValue);
 
-    public string SelectedProfile
-    {
-        get => _selectedProfile;
-        set
-        {
-            if (value == _selectedProfile) return;
-            _selectedProfile = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string DeleteConfirmField
-    {
-        get => _deleteConfirmField;
-        set
-        {
-            if (value == _deleteConfirmField) return;
-            _deleteConfirmField = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsOfflineEditor
-    {
-        get => _isOfflineEditor;
-        set
-        {
-            if (value == _isOfflineEditor) return;
-            _isOfflineEditor = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public Guid DialogHostId
-    {
-        get;
-    } = Guid.NewGuid();
-
-    public TimeLayoutItem? SelectedTimePoint
-    {
-        get => _selectedTimePoint;
-        set
-        {
-            if (Equals(value, _selectedTimePoint)) return;
-            _selectedTimePoint = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public double TimeLineScale
-    {
-        get => _timeLineScale;
-        set
-        {
-            if (value.Equals(_timeLineScale)) return;
-            _timeLineScale = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public Subject? SelectedSubject
-    {
-        get => _selectedSubject;
-        set
-        {
-            if (Equals(value, _selectedSubject)) return;
-            _selectedSubject = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsPanningModeEnabled
-    {
-        get => _isPanningModeEnabled;
-        set
-        {
-            if (value == _isPanningModeEnabled) return;
-            _isPanningModeEnabled = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsDragEntering
-    {
-        get => _isDragEntering;
-        set
-        {
-            if (value == _isDragEntering) return;
-            _isDragEntering = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string TempOverlayClassPlanTimeLayoutId
-    {
-        get => _tempOverlayClassPlanTimeLayoutId;
-        set
-        {
-            if (value == _tempOverlayClassPlanTimeLayoutId) return;
-            _tempOverlayClassPlanTimeLayoutId = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ClassInfo? SelectedClassInfo
-    {
-        get => _selectedClassInfo;
-        set
-        {
-            if (Equals(value,  _selectedClassInfo)) return;
-             _selectedClassInfo = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int SelectedClassIndex
-    {
-        get => _selectedClassIndex;
-        set
-        {
-            if (value == _selectedClassIndex) return;
-            _selectedClassIndex = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ClassPlan SelectedClassPlan
-    {
-        get => _selectedClassPlan;
-        set
-        {
-            if (Equals(value, _selectedClassPlan)) return;
-            _selectedClassPlan = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsUpdatingClassInfoIndexInBackend
-    {
-        get => _isUpdatingClassInfoIndexInBackend;
-        set
-        {
-            if (value == _isUpdatingClassInfoIndexInBackend) return;
-            _isUpdatingClassInfoIndexInBackend = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsClassPlanEditComplete
-    {
-        get => _isClassPlanEditComplete;
-        set
-        {
-            if (value == _isClassPlanEditComplete) return;
-            _isClassPlanEditComplete = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsWeekOffsetSettingsOpen
-    {
-        get => _isWeekOffsetSettingsOpen;
-        set
-        {
-            if (value == _isWeekOffsetSettingsOpen) return;
-            _isWeekOffsetSettingsOpen = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public TimeLayoutItem? PreviousTrackedTimeLayoutItem
-    {
-        get => _previousTrackedTimeLayoutItem;
-        set
-        {
-            if (Equals(value, _previousTrackedTimeLayoutItem)) return;
-            _previousTrackedTimeLayoutItem = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime ScheduleCalendarSelectedDate
-    {
-        get => _scheduleCalendarSelectedDate;
-        set
-        {
-            if (value.Equals(_scheduleCalendarSelectedDate)) return;
-            _scheduleCalendarSelectedDate = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime OverlayEnableDateTime
-    {
-        get => _overlayEnableDateTime;
-        set
-        {
-            if (value.Equals(_overlayEnableDateTime)) return;
-            _overlayEnableDateTime = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ObservableCollection<WeekClassPlanRow> WeekClassPlanRows
-    {
-        get => _weekClassPlanRows;
-        set
-        {
-            if (Equals(value, _weekClassPlanRows)) return;
-            _weekClassPlanRows = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsProfileImportMenuOpened
-    {
-        get => _isProfileImportMenuOpened;
-        set
-        {
-            if (value == _isProfileImportMenuOpened) return;
-            _isProfileImportMenuOpened = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsInScheduleSwappingMode
-    {
-        get => _isInScheduleSwappingMode;
-        set
-        {
-            if (value == _isInScheduleSwappingMode) return;
-            _isInScheduleSwappingMode = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public WeekClassPlanRow? SelectedWeekClassPlanRow
-    {
-        get => _selectedWeekClassPlanRow;
-        set
-        {
-            if (Equals(value, _selectedWeekClassPlanRow)) return;
-            _selectedWeekClassPlanRow = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ScheduleClassPosition ClassSwapStartPosition
-    {
-        get => _classSwapStartPosition;
-        set
-        {
-            if (Equals(value, _classSwapStartPosition)) return;
-            _classSwapStartPosition = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ScheduleClassPosition ClassSwapEndPosition
-    {
-        get => _classSwapEndPosition;
-        set
-        {
-            if (Equals(value, _classSwapEndPosition)) return;
-            _classSwapEndPosition = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime ScheduleWeekViewBaseDate
-    {
-        get => _scheduleWeekViewBaseDate;
-        set
-        {
-            if (value.Equals(_scheduleWeekViewBaseDate)) return;
-            _scheduleWeekViewBaseDate = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsTempSwapMode
-    {
-        get => _isTempSwapMode;
-        set
-        {
-            if (value == _isTempSwapMode) return;
-            _isTempSwapMode = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int DataGridWeekRowsWeekIndex
-    {
-        get => _dataGridWeekRowsWeekIndex;
-        set
-        {
-            if (value == _dataGridWeekRowsWeekIndex) return;
-            _dataGridWeekRowsWeekIndex = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsClassPlanTempEditPopupOpen
-    {
-        get => _isClassPlanTempEditPopupOpen;
-        set
-        {
-            if (value == _isClassPlanTempEditPopupOpen) return;
-            _isClassPlanTempEditPopupOpen = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string TargetSubjectIndex
-    {
-        get => _targetSubjectIndex;
-        set
-        {
-            if (value == _targetSubjectIndex) return;
-            _targetSubjectIndex = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsTimeLineSticky
-    {
-        get => _isTimeLineSticky;
-        set
-        {
-            if (value == _isTimeLineSticky) return;
-            _isTimeLineSticky = value;
-            OnPropertyChanged();
-        }
+        TempClassPlanList = ClassPlans.List
+            .ToObservableChangeSet()
+            .Filter(x => !x.Value.IsOverlay)
+            .AsObservableList();
     }
 }

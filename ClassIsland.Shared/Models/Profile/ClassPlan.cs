@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
+using ClassIsland.Shared.ComponentModels;
+using ClassIsland.Shared.JsonConverters;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -10,19 +12,19 @@ namespace ClassIsland.Shared.Models.Profile;
 /// </summary>
 public class ClassPlan : AttachableSettingsObject
 {
-    private string _timeLayoutId = "";
+    private Guid _timeLayoutId = Guid.Empty;
     private ObservableCollection<ClassInfo> _classes = new();
     private string _name = "新课表";
-    private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
-    private ObservableDictionary<string, ClassPlan> _classPlans = new();
+    private ObservableDictionary<Guid, TimeLayout> _timeLayouts = new();
+    private ObservableDictionary<Guid, ClassPlan> _classPlans = new();
     private TimeRule _timeRule = new();
     private bool _isActivated = false;
     private bool _isOverlay = false;
-    private string? _overlaySourceId;
+    private Guid? _overlaySourceId;
     private bool _isEnabled = true;
     private DateTime _overlaySetupTime = DateTime.Now;
     private int _lastTimeLayoutCount = -1;
-    private string _associatedGroup = ClassPlanGroup.DefaultGroupGuid.ToString();
+    private Guid _associatedGroup = ClassPlanGroup.DefaultGroupGuid;
 
     private bool _isValidTimeLayoutItemsDirty = true;
     private ObservableCollection<TimeLayoutItem> _validTimeLayoutItems = [];
@@ -35,7 +37,7 @@ public class ClassPlan : AttachableSettingsObject
     {
         get
         {
-            if (!_isValidTimeLayoutItemsDirty) 
+            if (!_isValidTimeLayoutItemsDirty)
                 return _validTimeLayoutItems;
             _validTimeLayoutItems = GetValidTimeLayoutItems();
             _isValidTimeLayoutItemsDirty = false;
@@ -124,7 +126,8 @@ public class ClassPlan : AttachableSettingsObject
     public ClassPlan()
     {
         PropertyChanged += OnPropertyChanged;
-        if (TimeLayouts.ContainsKey(TimeLayoutId))
+        PropertyChanging += OnPropertyChanging;
+        if (TimeLayouts.ContainsKey(TimeLayoutId) && TimeLayout != null)
         {
             TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
             TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
@@ -132,6 +135,35 @@ public class ClassPlan : AttachableSettingsObject
         }
         Classes.CollectionChanged += ClassesOnCollectionChanged;
         ClassesChanged += (sender, args) => MakeValidTimeLayoutItemsDirty();
+    }
+
+    private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(TimeLayout):
+            {
+                if (TimeLayout != null)
+                {
+                    TimeLayout.LayoutObjectChanged -= TimeLayoutOnLayoutObjectChanged;
+                    TimeLayout.LayoutItemChanged -= TimeLayoutOnLayoutItemChanged;
+                    TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
+                }
+
+                NotifyClassesChanged();
+                break;
+            }
+            case nameof(Classes):
+            {
+                Classes.CollectionChanged -= ClassesOnCollectionChanged;
+                foreach (var i in Classes)
+                {
+                    i.PropertyChanged -= ClassInfoOnPropertyChanged;
+                }
+
+                break;
+            }
+        }
     }
 
     private void ClassesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -177,14 +209,17 @@ public class ClassPlan : AttachableSettingsObject
 
         if (!IsActivated) return;
 
-        // TODO: 支持预定临时层后，移除 IsActivated 判断。
-        if (e.PropertyName is not "IsChangedClass")
+        // 支持预定临时层后，移除 IsActivated 判断。
+        if (e.PropertyName != nameof(ClassInfo.IsChangedClass))
             RefreshIsChangedClass();
     }
 
     private void TimeLayoutOnLayoutObjectChanged(object? sender, EventArgs e)
     {
-        TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+        if (TimeLayout != null)
+        {
+            TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+        }
         RefreshClassesList(true);
         NotifyClassesChanged();
     }
@@ -194,11 +229,14 @@ public class ClassPlan : AttachableSettingsObject
         switch (e.PropertyName)
         {
             case nameof(TimeLayout):
-            case nameof(TimeLayoutId):
+            // case nameof(TimeLayoutId):
             {
-                if (TimeLayouts.ContainsKey(TimeLayoutId))
+                if (TimeLayout != null)
                 {
                     RefreshClassesList();
+                    TimeLayout.LayoutObjectChanged -= TimeLayoutOnLayoutObjectChanged;
+                    TimeLayout.LayoutItemChanged -= TimeLayoutOnLayoutItemChanged;
+                    TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
                     TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
                     TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
                     TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
@@ -209,6 +247,11 @@ public class ClassPlan : AttachableSettingsObject
             }
             case nameof(Classes):
             {
+                Classes.CollectionChanged -= ClassesOnCollectionChanged;
+                foreach (var i in Classes)
+                {
+                    i.PropertyChanged -= ClassInfoOnPropertyChanged;
+                }
                 Classes.CollectionChanged += ClassesOnCollectionChanged;
                 foreach (var i in Classes)
                 {
@@ -229,7 +272,13 @@ public class ClassPlan : AttachableSettingsObject
                     break;
                 foreach (var i in e.AddedItems)
                 {
-                    Classes.Insert(e.AddIndexClasses, new ClassInfo());
+                    var classInfo = new ClassInfo();
+                    if (TimeLayout != null)
+                    {
+                        classInfo.CurrentTimeLayout = TimeLayout;
+                        classInfo.Index = e.AddIndexClasses;
+                    }
+                    Classes.Insert(e.AddIndexClasses, classInfo);
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
@@ -288,7 +337,7 @@ public class ClassPlan : AttachableSettingsObject
     }
 
     [JsonIgnore]
-    internal ObservableDictionary<string, ClassPlan> ClassPlans
+    internal ObservableDictionary<Guid, ClassPlan> ClassPlans
     {
         get => _classPlans;
         set
@@ -300,7 +349,7 @@ public class ClassPlan : AttachableSettingsObject
     }
 
     [JsonIgnore]
-    internal ObservableDictionary<string, TimeLayout> TimeLayouts
+    internal ObservableDictionary<Guid, TimeLayout> TimeLayouts
     {
         get => _timeLayouts;
         set
@@ -315,12 +364,19 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 当前课表的时间表
     /// </summary>
-    [JsonIgnore] public TimeLayout TimeLayout => TimeLayouts[TimeLayoutId];
+    [JsonIgnore]
+    public TimeLayout? TimeLayout =>
+#if NETCOREAPP
+        TimeLayouts.GetValueOrDefault(TimeLayoutId);
+#else
+        TimeLayouts.TryGetValue(TimeLayoutId, out var value) ? value : null;
+#endif
 
     /// <summary>
     /// 当前课表的时间表ID
     /// </summary>
-    public string TimeLayoutId
+    [JsonConverter(typeof(GuidEmptyFallbackConverter))]
+    public Guid TimeLayoutId
     {
         get => _timeLayoutId;
         set
@@ -378,11 +434,11 @@ public class ClassPlan : AttachableSettingsObject
     {
         //App.GetService<ILogger<ClassPlan>>().LogTrace("Calling Refresh ClassesList: \n{}", new StackTrace());
         // 对齐长度
-        if (TimeLayoutId == null || !TimeLayouts.ContainsKey(TimeLayoutId))
+        if (TimeLayout == null)
         {
             return;
         }
-        
+
         var c = (from i in TimeLayout.Layouts where i.TimeType == 0 select i).ToList();
         var l = c.Count;
         //Debug.WriteLine(l);
@@ -394,7 +450,7 @@ public class ClassPlan : AttachableSettingsObject
                 Classes.Add(new ClassInfo());
             }
         }
-        else if (Classes.Count > l) 
+        else if (Classes.Count > l)
         {
             var d = Classes.Count - l;
             for (var i = 0; i < d; i++)
@@ -407,7 +463,7 @@ public class ClassPlan : AttachableSettingsObject
         {
             Classes[i].Index = i;
             Classes[i].CurrentTimeLayout = TimeLayout;
-            if (Classes[i].SubjectId == "" && Classes[i].CurrentTimeLayoutItem.DefaultClassId != "")
+            if (Classes[i].SubjectId == Guid.Empty && Classes[i].CurrentTimeLayoutItem.DefaultClassId != Guid.Empty)
             {
                 Classes[i].SubjectId = Classes[i].CurrentTimeLayoutItem.DefaultClassId;
             }
@@ -422,7 +478,7 @@ public class ClassPlan : AttachableSettingsObject
     internal void RefreshIsChangedClass()
     {
         if (OverlaySourceId == null ||
-            !ClassPlans.TryGetValue(OverlaySourceId, out var overlaySource) ||
+            !ClassPlans.TryGetValue(OverlaySourceId ?? Guid.Empty, out var overlaySource) ||
             Classes.Count != overlaySource.Classes.Count)
         {
             foreach (var classInfo in Classes)
@@ -479,7 +535,7 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 临时层课表对应的源课表ID
     /// </summary>
-    public string? OverlaySourceId
+    public Guid? OverlaySourceId
     {
         get => _overlaySourceId;
         set
@@ -521,7 +577,7 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 该课表关联的课表群。
     /// </summary>
-    public string AssociatedGroup
+    public Guid AssociatedGroup
     {
         get => _associatedGroup;
         set

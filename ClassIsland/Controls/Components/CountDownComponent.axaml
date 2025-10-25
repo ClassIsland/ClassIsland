@@ -1,0 +1,108 @@
+﻿<controls:ComponentBase x:TypeArguments="componentSettings:CountDownComponentSettings" 
+                        x:Class="ClassIsland.Controls.Components.CountDownComponent"
+                        xmlns="https://github.com/avaloniaui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                        xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                        xmlns:classIsland="using:ClassIsland"
+                        xmlns:converters="using:ClassIsland.Converters"
+                        xmlns:converters1="using:ClassIsland.Core.Converters"
+                        xmlns:controls="using:ClassIsland.Core.Abstractions.Controls"
+                        xmlns:models="using:ClassIsland.Models"
+                        xmlns:componentSettings="using:ClassIsland.Models.ComponentSettings"
+                        xmlns:controls1="using:FluentAvalonia.UI.Controls"
+                        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                        mc:Ignorable="d" 
+                        d:DesignHeight="450" d:DesignWidth="800"
+                        d:DataContext="{d:DesignInstance classIsland:MainWindow}">
+    <controls:ComponentBase.Styles>
+        <Style Selector="local|CountDownComponent:connector-colored TextBlock.connector">
+            <Setter Property="Foreground" Value="{Binding $parent[local:CountDownComponent].Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+        </Style>
+        <Style Selector="Path#ProgressAccent">
+            <Setter Property="Stroke" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+        </Style>
+        <Style Selector="local|CountDownComponent:progress-colored Path#ProgressAccent">
+            <Setter Property="Stroke" Value="{Binding $parent[local:CountDownComponent].Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+        </Style>
+        
+        <Style Selector="local|CountDownComponent:progress-colored ProgressBar#ProgressBar">
+            <Setter Property="Foreground" Value="{Binding $parent[local:CountDownComponent].Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+        </Style>
+        
+        <Style Selector="local|CountDownComponent Panel#CircleProgressRoot">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="local|CountDownComponent ProgressBar#ProgressBar">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="local|CountDownComponent:progress-visible Panel#CircleProgressRoot">
+            <Setter Property="IsVisible">
+                <Binding Path="$parent[local:CountDownComponent].Settings.ProgressBarMode"
+                         Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <system:Int32>0</system:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </Setter>
+        </Style>
+        <Style Selector="local|CountDownComponent:progress-visible ProgressBar#ProgressBar">
+            <Setter Property="IsVisible">
+                <Binding Path="$parent[local:CountDownComponent].Settings.ProgressBarMode"
+                         Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <system:Int32>1</system:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </Setter>
+        </Style>
+    </controls:ComponentBase.Styles>
+    <controls:ComponentBase.Resources>
+        <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
+    </controls:ComponentBase.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CountDownComponent}}"
+          VerticalAlignment="Stretch" TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
+        <StackPanel Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+            <Panel VerticalAlignment="Center" Margin="0 0 4 0"
+                   x:Name="CircleProgressRoot">
+                <Ellipse Width="21.4" Height="21.4" Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}" 
+                         StrokeThickness="2.6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Path Width="22" Height="22" 
+                         x:Name="ProgressAccent"
+                         VerticalAlignment="Center" HorizontalAlignment="Center"
+                         StrokeLineCap="Round" 
+                         StrokeThickness="3.1">
+                    <Path.Data>
+                        <Binding Path="Percent"
+                                 Converter="{x:Static local:CountDownComponent.PercentToPathGeometryConverter}" />
+                    </Path.Data>
+                </Path>
+            </Panel>
+            <TextBlock Text="距离"
+                       x:Name="TextBlockTo"
+                       Classes="connector"
+                       IsVisible="{Binding !Settings.IsCompactModeEnabled}"
+                       VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Settings.CountDownName}"
+                       Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
+                       FontSize="{Binding Settings.FontSize}"
+                       VerticalAlignment="Center" 
+                       FontWeight="Medium" />
+            <TextBlock Text="{Binding Settings.CountDownConnector}"
+                       VerticalAlignment="Center"
+                       Classes="connector"
+                       x:Name="TextBlockConnector"
+                       IsVisible="{Binding !Settings.IsCompactModeEnabled}"/>
+            <TextBlock Text="{Binding DaysLeft, Mode=OneWay}" 
+                       Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
+                       FontSize="{Binding Settings.FontSize}"
+                       VerticalAlignment="Center"
+                       FontWeight="Medium"/>
+        </StackPanel>
+        <ProgressBar VerticalAlignment="Bottom"
+                     Maximum="100" Minimum="0"
+                     x:Name="ProgressBar" MinWidth="0"
+                     Value="{Binding Percent}"/>
+    </Grid>
+</controls:ComponentBase>

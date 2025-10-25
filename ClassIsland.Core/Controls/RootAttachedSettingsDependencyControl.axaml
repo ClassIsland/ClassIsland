@@ -1,0 +1,56 @@
+<UserControl x:Class="ClassIsland.Core.Controls.RootAttachedSettingsDependencyControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:materialDesign="https://github.com/AvaloniaCommunity/Material.Avalonia"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Width="332">
+    <Grid Width="300" Margin="16" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RootAttachedSettingsDependencyControl}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="附加设置依赖" Theme="{StaticResource SubtitleTextBlockStyle}"
+                           Margin="0 0 0 8" />
+            <TextBlock Text="以下附加设置节点可能会覆盖此处的设置。" />
+            <Button Theme="{StaticResource TransparentButton}"
+                    Margin="0 4 0 8"
+                    HorizontalAlignment="Left"
+                    Click="ButtonRefresh_OnClick">
+                <Button.Content>
+                    <local:IconText UseFontIcon="False" Symbol="Refresh" Text="刷新"/>
+                </Button.Content>
+            </Button>
+        </StackPanel>
+        <!-- Main list box -->
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding Nodes}">
+            <ListBox.ItemContainerTheme>
+                <ControlTheme TargetType="ListBoxItem"
+                       >
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <local:AttachedSettingsControlPresenter
+                                    TargetObject="{Binding Object, Mode=OneWay}"
+                                    ContentId="{Binding Address.Guid, Mode=OneWay}"
+                                    ContentIndex="{Binding Address.Index, Mode=OneWay}"
+                                    IsDependencyMode="True"
+                                    ControlInfo="{Binding $parent[local:RootAttachedSettingsDependencyControl].ControlInfo, Mode=OneWay}" />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </ControlTheme>
+            </ListBox.ItemContainerTheme>
+        </ListBox>
+
+        <!-- 无结果 -->
+        
+    </Grid>
+</UserControl>
+

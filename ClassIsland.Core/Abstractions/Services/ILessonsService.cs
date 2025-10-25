@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.IPC.Abstractions.Services;
@@ -32,11 +33,6 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
     /// 停止主计时器。
     /// </summary>
     public void StopMainTimer();
-
-    /// <summary>
-    /// 刷新多周轮换周数。
-    /// </summary>
-    public void RefreshMultiWeekRotation();
 
     #endregion
 
@@ -82,5 +78,12 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
     /// <param name="date">要获取课表的日期</param>
     /// <param name="guid">获取到的课表的 GUID</param>
     /// <returns>获取到的课表</returns>
-    ClassPlan? GetClassPlanByDate(DateTime date, out string? guid);
+    ClassPlan? GetClassPlanByDate(DateTime date, out Guid? guid);
+
+    /// <summary>
+    /// 计算指定日期所在周在多周轮换（2周 ~ 最大周期）中的位置。
+    /// </summary>
+    /// <param name="referenceTime">指定日期。默认为当前日期。</param>
+    /// <remarks> 2-first, 1-based </remarks>
+    ObservableCollection<int> GetCyclePositionsByDate(DateTime? referenceTime = null);
 }

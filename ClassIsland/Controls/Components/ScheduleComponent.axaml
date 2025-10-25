@@ -1,0 +1,116 @@
+﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.ScheduleComponent"
+                  x:TypeArguments="componentSettings:LessonControlSettings"
+                  xmlns="https://github.com/avaloniaui"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                  xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                  xmlns:models="clr-namespace:ClassIsland.Models"
+                  xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                  xmlns:converters="clr-namespace:ClassIsland.Converters"
+                  mc:Ignorable="d"
+                  d:DesignHeight="450" d:DesignWidth="800"
+                  x:Name="ScheduleComponentRoot"
+                  Classes.AfterSchool="{Binding $self.IsAfterSchool}"
+                  Classes.TomorrowScheduleEmpty="{Binding $self.TomorrowClassPlan, Converter={x:Static ObjectConverters.IsNull}}"
+                  Classes.TodayScheduleEmpty="{Binding $self.LessonsService.CurrentClassPlan, Converter={x:Static ObjectConverters.IsNull}}">
+    <ci:ComponentBase.Resources>
+        <converters:ObjectIsNullConverter x:Key="ObjectIsNullConverter" />
+    </ci:ComponentBase.Resources>
+    <ci:ComponentBase.Styles>
+        <Style Selector="Border#Tomorrow">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="TextBlock#EmptyPlaceholder">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        <Style Selector="ci|LessonsListBox#MainLessonsListBox">
+            <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"/>
+        </Style>
+        <Style Selector="ci|LessonsListBox#TomorrowLessonsListBox">
+            <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="ClassPlan" Value="{x:Null}"/>
+        </Style>
+        <Style Selector="local|ScheduleComponent">
+            <Setter Property="LessonsListBoxSelectedIndex" Value="{Binding $self.LessonsService.CurrentSelectedIndex, Mode=TwoWay}"/>
+            <Style Selector="^[HideFinishedClass=True].AfterSchool">
+                <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+                <Style Selector="^ TextBlock#EmptyPlaceholder">
+                    <Setter Property="IsVisible" Value="{Binding $parent[local:ScheduleComponent].ShowEmptyPlaceholder}"/>
+                    <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"/>
+                </Style>
+                <Setter Property="LessonsListBoxSelectedIndex" Value="-1"/>
+            </Style>
+        </Style>
+        <Style Selector="local|ScheduleComponent.TodayScheduleEmpty, local|ScheduleComponent:show-tomorrow-schedule:show-tomorrow-schedule-always.TomorrowScheduleEmpty">
+            <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
+                <Setter Property="IsVisible" Value="False"/>
+            </Style>
+            <Style Selector="^ TextBlock#EmptyPlaceholder">
+                <Setter Property="IsVisible" Value="{Binding $parent[local:ScheduleComponent].ShowEmptyPlaceholder}"/>
+                <Setter Property="Text" Value="{Binding Settings.PlaceholderTextNoClass, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"/>
+            </Style>
+        </Style>
+        
+        <Style Selector="local|ScheduleComponent:show-tomorrow-schedule:not(.TomorrowScheduleEmpty)">
+            <Style Selector="^:show-tomorrow-schedule-after-school.AfterSchool, ^:show-tomorrow-schedule-always">
+                <Style Selector="^ Border#Tomorrow">
+                    <Setter Property="IsVisible" Value="True"/>
+                </Style>
+                <Style Selector="^ ci|LessonsListBox#MainLessonsListBox">
+                    <Setter Property="IsVisible" Value="False"/>
+                    <Setter Property="ClassPlan" Value="{x:Null}"/>
+                </Style>
+                <Style Selector="^ ci|LessonsListBox#TomorrowLessonsListBox">
+                    <Setter Property="IsVisible" Value="True"/>
+                    <Setter Property="ClassPlan" Value="{Binding TomorrowClassPlan, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"/>
+                </Style>
+                <Style Selector="^ TextBlock#EmptyPlaceholder">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+            </Style>
+        </Style>
+    </ci:ComponentBase.Styles>
+    <Grid ColumnDefinitions="Auto,*" DataContext="{Binding RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}">
+        <Border 
+            Grid.Column="0"
+            Margin="0 0 2 0"
+            VerticalAlignment="Center"
+            Background="{DynamicResource AccentFillColorDefaultBrush}"
+            Padding="8 2"
+            CornerRadius="16"
+            x:Name="Tomorrow">
+            <TextBlock Text="明天" Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                       Margin="0,1,0,-1"/>
+        </Border>
+        <ci:LessonsListBox Grid.Column="1" 
+                           Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
+                           LessonControlSettings="{Binding Settings, Mode=OneWay}"
+                           ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}"
+                           HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}"
+                           HideFinishedClass="{Binding Settings.HideFinishedClass, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"
+                           x:Name="MainLessonsListBox"
+                           IsLiveUpdatingEnabled="True"/>
+        <ci:LessonsListBox Grid.Column="1" 
+                           Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
+                           LessonControlSettings="{Binding Settings, Mode=OneWay}"
+                           IsLiveUpdatingEnabled="False"
+                           HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}"
+                           x:Name="TomorrowLessonsListBox"/>
+        <Grid Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBlock VerticalAlignment="Center" x:Name="EmptyPlaceholder"/>
+        </Grid>
+        <!-- <StackPanel Grid.Column="1"> -->
+        <!--     <TextBlock Text="{Binding $parent[local:ScheduleComponent].LessonsListBoxSelectedIndex, Mode=OneWay}" -->
+        <!--                Foreground="Aqua"/> -->
+        <!--     <TextBlock> -->
+        <!--         <Run Text="{Binding LessonsService.CurrentSelectedIndex, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}, Mode=TwoWay}" -->
+        <!--              Foreground="Aqua"/> -->
+        <!--     </TextBlock> -->
+        <!-- </StackPanel> -->
+    </Grid>
+</ci:ComponentBase>

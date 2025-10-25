@@ -1,34 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Nullable>enable</Nullable>
-        <UseWPF>true</UseWPF>
-        <UseWindowsForms>True</UseWindowsForms>
+        <UseWPF>false</UseWPF>
+        <UseWindowsForms>false</UseWindowsForms>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
 <!--        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>-->
         <UserSecretsId>0702af86-626c-4e4a-94e4-f506e4e2beb7</UserSecretsId>
         <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-        <StartupObject></StartupObject>
         <AssemblyName>ClassIsland</AssemblyName>
         <RootNamespace>ClassIsland</RootNamespace>
 		<IsMsix>$(IsMsix)</IsMsix>
 		<Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <HotAvaloniaIncludeExtensions>True</HotAvaloniaIncludeExtensions>
+        <OutputType>Library</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX'">
-        <OutputType>WinExe</OutputType>
-        <DebugType>embedded</DebugType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
-	    <OutputType>Exe</OutputType>
 	    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug_MSIX' Or '$(Configuration)'=='Release_MSIX'">
       <IsMsix>true</IsMsix>
     </PropertyGroup>
     <PropertyGroup Condition="'$(IsMsix)'=='true'">
-        <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
         <!-- <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
         <EnableMsixTooling>true</EnableMsixTooling>
         <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>
@@ -43,7 +42,6 @@
         </AppxManifest>
     </ItemGroup>
     <PropertyGroup Condition="'$(IsMsix)'!='true'">
-        <TargetFramework>net8.0-windows</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
         <None Remove="assets\documents\ChangeLog.md" />
@@ -61,27 +59,25 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-        <PackageReference Include="Downloader" Version="3.3.4" />
-        <PackageReference Include="EPPlus" Version="7.0.8" />
+        <PackageReference Include="Downloader" Version="4.0.3" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
-        <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
         <PackageReference Include="Grpc.Tools" Version="2.62.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="GuerrillaNtp" Version="3.1.0" />
-        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
+        <PackageReference Include="ini-parser-netcore" Version="3.0.0" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="NAudio" Version="2.2.1" />
         <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.6" />
-        <PackageReference Include="Octokit" Version="9.1.0" />
         <PackageReference Include="Pastel" Version="4.2.0" />
         <PackageReference Include="PgpCore" Version="6.5.1" />
         <PackageReference Include="RawInput.Sharp" Version="0.1.3" />
         <PackageReference Include="Sentry" Version="4.9.0" />
         <PackageReference Include="Sentry.Extensions.Logging" Version="4.9.0" />
+        <PackageReference Include="SharpZipLib" Version="1.4.2" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
         <PackageReference Include="System.Management" Version="8.0.0" />
@@ -89,6 +85,7 @@
         <PackageReference Include="TimeCrontab" Version="3.5.1" />
         <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
         <PackageReference Include="ColorHelper" Version="1.8.1" />
+        <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
 	</ItemGroup>
     <ItemGroup>
         <Folder Include="Assets\Localization\SettingsPage\Component\" />
@@ -104,7 +101,6 @@
         <Folder Include="Models\Logging\" />
         <Folder Include="Models\Native\" />
         <Folder Include="Models\TimeRules\" />
-        <Folder Include="Enums\" />
         <Folder Include="Models\Ipc\" />
         <Folder Include="Models\AuthorizeProviderSettings\" />
         <Folder Include="Models\Logging\" />
@@ -114,13 +110,17 @@
         <None Include="..\..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
     <ItemGroup>
-        <Resource Include="Assets\**" />
+        <AvaloniaResource Include="Assets\**" />
+        <None Include="Assets\AppLogo.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="Assets\AppLogo_Monochrome.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
 	</ItemGroup>
-    <PropertyGroup Condition="'$(TrimAssets)'=='true'">
-        <DefineConstants>$(DefineConstants);TrimAssets</DefineConstants>
+    <PropertyGroup Condition="'$(SelfContained)'=='true'">
+        <DefineConstants>$(DefineConstants);SelfContained</DefineConstants>
     </PropertyGroup>
 	<PropertyGroup Condition="'$(PublishBuilding)' != 'true' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX')">
 		<DefineConstants>$(DefineConstants);DevelopmentBuild</DefineConstants>
@@ -134,6 +134,13 @@
 	<ItemGroup>
 	  <Compile Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.Designer.cs" />
 	  <Compile Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.Designer.cs" />
+	  <Compile Update="Views\SettingPages\UpdateSettingsPage.axaml.cs">
+	    <DependentUpon>UpdateSettingsPage.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="App.Services.xaml.cs">
+	    <DependentUpon>App.axaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.en.resx" />
@@ -149,19 +156,23 @@
         <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
         <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
-        <ProjectReference Include="..\vendors\System.Device.Location\System.Device.Location.csproj" />
+        <ProjectReference Include="..\vendors\PhainonDistributionCenter.Shared\PhainonDistributionCenter.Shared.csproj" />
     </ItemGroup>
 	<ItemGroup>
-		<Page Update="Themes\LightTheme.xaml">
-			<Generator>MSBuild:Compile</Generator>
-			<XamlRuntime>Wpf</XamlRuntime>
-			<SubType>Designer</SubType>
-		</Page>
-		<Page Update="Themes\DarkTheme.xaml">
-			<Generator>MSBuild:Compile</Generator>
-			<XamlRuntime>Wpf</XamlRuntime>
-			<SubType>Designer</SubType>
-		</Page>
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Controls\TimeLine\TimeLineListItemControl.axaml.cs">
+	    <DependentUpon>TimeLineListItemControl.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Controls\TimeLine\TimeLineListItemExpandingAdornerControl.axaml.cs">
+	    <DependentUpon>TimeLineListItemExpandingAdornerControl.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Controls\TimeLine\TimeLineListItemSeparatorAdornerControl.axaml.cs">
+	    <DependentUpon>TimeLineListItemSeparatorAdornerControl.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 
     <Target Name="PrintConstants" AfterTargets="Build">
@@ -171,4 +182,5 @@
     </Target>
 
 	<Import Project="..\Global.props" />
+    <Import Project="..\AvaloniaShared.props" />
 </Project>

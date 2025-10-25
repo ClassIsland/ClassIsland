@@ -1,15 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
-
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;
 
 public class TopmostEffectWindowViewModel : ObservableRecipient
 {
-    private ObservableCollection<FrameworkElement> _effectControls = [];
+    private ObservableCollection<Control> _effectControls = [];
 
-    public ObservableCollection<FrameworkElement> EffectControls
+    public ObservableCollection<Control> EffectControls
     {
         get => _effectControls;
         set

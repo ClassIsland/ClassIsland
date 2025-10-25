@@ -1,4 +1,5 @@
 using System.Web;
+using ClassIsland.Core.Attributes;
 
 namespace ClassIsland.Core.Models.SettingsWindow;
 
@@ -7,7 +8,7 @@ namespace ClassIsland.Core.Models.SettingsWindow;
 /// </summary>
 public class SettingsWindowNavigationData
 {
-    internal SettingsWindowNavigationData(bool isNavigateFromSettingsWindow, bool isNavigateFromUri, Uri? navigateUri, bool keepHistory, object? transaction, object? span)
+    internal SettingsWindowNavigationData(bool isNavigateFromSettingsWindow, bool isNavigateFromUri, Uri? navigateUri, bool keepHistory, object? transaction, object? span, SettingsPageInfo info)
     {
         IsNavigateFromSettingsWindow = isNavigateFromSettingsWindow;
         IsNavigateFromUri = isNavigateFromUri;
@@ -15,6 +16,7 @@ public class SettingsWindowNavigationData
         KeepHistory = keepHistory;
         Transaction = transaction;
         Span = span;
+        Info = info;
     }
 
     /// <summary>
@@ -45,4 +47,5 @@ public class SettingsWindowNavigationData
 
     public object? Transaction { get; }
     public object? Span { get; }
+    public SettingsPageInfo Info { get; }
 }

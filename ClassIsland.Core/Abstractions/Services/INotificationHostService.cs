@@ -33,25 +33,7 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     /// </example>
     void RegisterNotificationProvider(INotificationProvider provider);
 
-    /// <summary>
-    /// 显示提醒。
-    /// </summary>
-    /// <param name="request">提醒请求</param>
-    /// <remarks>注意：此方法必须由提醒主机调用。</remarks>
-    [Obsolete("请使用 v2 提醒 API。")]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    void ShowNotification(ClassIsland.Shared.Models.Notification.NotificationRequest request);
-
-    /// <summary>
-    /// 显示提醒，并等待提醒显示完成。
-    /// </summary>
-    /// <param name="request">提醒请求</param>
-    /// <remarks>注意：此方法必须由提醒主机调用。</remarks>
-    [Obsolete("请使用 v2 提醒 API。")]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    Task ShowNotificationAsync(ClassIsland.Shared.Models.Notification.NotificationRequest request);
-
-    internal void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid);
+    internal void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications);
 
     internal Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid);
 
@@ -78,4 +60,31 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     void WriteNotificationProviderSettings<T>(Guid id, T settings);
 
     internal void CancelAllNotifications();
+
+    /// <summary>
+    /// 注册提醒消费者。
+    /// </summary>
+    /// <param name="consumer">要注册的提醒消费者</param>
+    /// <param name="priority">提醒消费者优先级</param>
+    public void RegisterNotificationConsumer(INotificationConsumer consumer, int priority);
+
+    /// <summary>
+    /// 取消注册提醒消费者。
+    /// </summary>
+    /// <param name="consumer">要注销的提醒消费者</param>
+    public void UnregisterNotificationConsumer(INotificationConsumer consumer);
+
+    /// <summary>
+    /// 拉取要播放的提醒。
+    /// </summary>
+    /// <remarks>
+    /// 此方法一般情况下只会返回一个要显示的提醒。如果有成链的提醒，会将这些提醒一并返回。请在显示完上次显示的提醒后再调用此方法。
+    /// </remarks>
+    /// <returns>获得的提醒</returns>
+    public IList<NotificationRequest> PullNotificationRequests();
+    
+    /// <summary>
+    /// 当前是否正在播放提醒
+    /// </summary>
+    public bool IsNotificationsPlaying { get; }
 }

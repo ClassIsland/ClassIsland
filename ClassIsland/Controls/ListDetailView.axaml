@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="ClassIsland.Controls.ListDetailView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Styles>
+        <Style Selector="local|ListDetailView">
+            <Style Selector="^ Grid#RightContentPresenterHost">
+                <Setter Property="IsVisible" Value="True"/>
+                <Setter Property="Grid.Column" Value="1"/>
+                <Setter Property="Margin" Value="4 0 0 0"/>
+            </Style>
+            <Style Selector="^[IsCompressedMode=True]">
+                <Style Selector="^ ContentPresenter#LeftContentPresenter">
+                    <Setter Property="Grid.ColumnSpan" Value="2" />
+                    <Setter Property="Margin" Value="0"/>
+                </Style>
+                <Style Selector="^ Grid#RightContentPresenterHost">
+                    <Setter Property="Grid.Column" Value="0"/>
+                    <Setter Property="Grid.ColumnSpan" Value="2"/>
+                    <Setter Property="Margin" Value="0"/>
+                </Style>
+            </Style>
+            
+            <Style Selector="^[IsCompressedMode=True][IsPanelOpened=True]">
+                <Style Selector="^ ContentPresenter#LeftContentPresenter">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+            </Style>
+            <Style Selector="^[IsCompressedMode=True][IsPanelOpened=False]">
+                <Style Selector="^ Grid#RightContentPresenterHost">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+            </Style>
+            <Style Selector="^[IsCompressedMode=False][ShowTitleWhenNotCompressed=False] DockPanel#LeftContentPresenterTitle">
+                <Setter Property="IsVisible" Value="False"></Setter>
+                
+            </Style>
+        </Style>
+    </UserControl.Styles>
+    <Grid SizeChanged="GridRoot_OnSizeChanged" ColumnDefinitions="*,*">
+        <!-- Left -->
+        <ContentPresenter Grid.Column="0"
+                          x:Name="LeftContentPresenter"
+                          Content="{Binding LeftContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ListDetailView}}"/>
+        <!-- Right -->
+        <Grid 
+              x:Name="RightContentPresenterHost"
+              RowDefinitions="Auto,*">
+            <!-- Title -->
+            <DockPanel Grid.Row="0" Margin="0 0 0 0" MinHeight="36"
+                       x:Name="LeftContentPresenterTitle">
+                <Button Content="{ci:FluentIcon &#xE108;}" Theme="{StaticResource TransparentButton}"
+                        Click="ButtonBack_OnClick"
+                        ToolTip.Tip="返回"
+                        Margin="0 0 6 0"
+                        IsVisible="{Binding IsCompressedMode, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ListDetailView}}"/>
+                <ContentPresenter Content="{Binding TitleElement, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ListDetailView}}" />
+            </DockPanel>
+            <!-- Right Content -->
+            <ContentPresenter Grid.Row="1" 
+                              Content="{Binding RightContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ListDetailView}}">
+
+            </ContentPresenter>
+        </Grid>
+    </Grid>
+</UserControl>

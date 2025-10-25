@@ -2,7 +2,7 @@
 
 namespace ClassIsland.Models.Actions;
 
-public class NotificationActionSettings : ObservableRecipient
+public partial class NotificationActionSettings : ObservableRecipient
 {
     private string _content = "";
     private string _mask = "";
@@ -15,6 +15,7 @@ public class NotificationActionSettings : ObservableRecipient
     private double _contentDurationSeconds = 10.0;
     private bool _isEffectEnabled = true;
     private bool _isAdvancedSettingsEnabled = false;
+    [ObservableProperty] bool _isWaitForCompleteEnabled = false;
 
     public string Content
     {

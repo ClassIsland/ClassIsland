@@ -1,5 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using MaterialDesignThemes.Wpf;
+﻿using ClassIsland.Core.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Models.Notification.Templates;
 
@@ -11,12 +12,12 @@ public partial class TwoIconsMaskTemplateData : ObservableObject
     /// <summary>
     /// 左侧图标类型
     /// </summary>
-    [ObservableProperty] private PackIconKind _leftIconKind = PackIconKind.AlertCircleOutline;
+    [ObservableProperty] private IconSource? _leftIconSource = new LucideIconSource("\ue0ff");
 
     /// <summary>
     /// 右侧图标类型
     /// </summary>
-    [ObservableProperty] private PackIconKind _rightIconKind = PackIconKind.BellRing;
+    [ObservableProperty] private IconSource? _rightIconSource = new LucideIconSource("\ue224");
 
     /// <summary>
     /// 是否拥有右侧图标

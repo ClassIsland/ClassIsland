@@ -1,105 +1,74 @@
-﻿using System.Collections.ObjectModel;
-
+﻿using System;
+using System.Collections.ObjectModel;
+using ClassIsland.Core.Models.Logging;
+using ClassIsland.Services.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DynamicData;
+using DynamicData.Binding;
+using Microsoft.Extensions.Logging;
+using ReactiveUI;
 
 namespace ClassIsland.ViewModels;
 
-public class AppLogsViewModel : ObservableRecipient
+public partial class AppLogsViewModel : ObservableRecipient
 {
-    private string _filterText = "";
-    private ObservableCollection<int> _filterTypes = new();
-    private bool _isFilteredCritical = true;
-    private bool _isFilteredError = true;
-    private bool _isFilteredWarning = true;
-    private bool _isFilteredInfo = false;
-    private bool _isFilteredDebug = false;
-    private bool _isFilteredTrace = false;
+    private ReadOnlyObservableCollection<LogEntry> _logs = null!;
+    public ReadOnlyObservableCollection<LogEntry> Logs => _logs;
+    public AppLogService AppLogService { get; }
 
-    public string FilterText
+    private IDisposable? _prevSubscription;
+
+    [ObservableProperty] private string _filterText = "";
+    [ObservableProperty] private ObservableCollection<int> _filterTypes = [];
+    [ObservableProperty] private bool _isFilteredCritical = true;
+    [ObservableProperty] private bool _isFilteredError = true;
+    [ObservableProperty] private bool _isFilteredWarning = true;
+    [ObservableProperty] private bool _isFilteredInfo = false;
+    [ObservableProperty] private bool _isFilteredDebug = false;
+    [ObservableProperty] private bool _isFilteredTrace = false;
+
+    /// <inheritdoc/>
+    public AppLogsViewModel(AppLogService appLogService)
     {
-        get => _filterText;
-        set
-        {
-            if (value == _filterText) return;
-            _filterText = value;
-            OnPropertyChanged();
-        }
+        AppLogService = appLogService;
+
+        RefreshSource();
+
+        this.ObservableForProperty(x => x.IsFilteredCritical).Subscribe(_ => RefreshSource());
+        this.ObservableForProperty(x => x.IsFilteredDebug).Subscribe(_ => RefreshSource());
+        this.ObservableForProperty(x => x.IsFilteredError).Subscribe(_ => RefreshSource());
+        this.ObservableForProperty(x => x.IsFilteredInfo).Subscribe(_ => RefreshSource());
+        this.ObservableForProperty(x => x.IsFilteredTrace).Subscribe(_ => RefreshSource());
+        this.ObservableForProperty(x => x.IsFilteredWarning).Subscribe(_ => RefreshSource());
+        this.ObservableForProperty(x => x.FilterText).Subscribe(_ => RefreshSource());
+
     }
 
-    public ObservableCollection<int> FilterTypes
+    private void RefreshSource()
     {
-        get => _filterTypes;
-        set
-        {
-            if (Equals(value, _filterTypes)) return;
-            _filterTypes = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsFilteredCritical
-    {
-        get => _isFilteredCritical;
-        set
-        {
-            if (value == _isFilteredCritical) return;
-            _isFilteredCritical = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsFilteredError
-    {
-        get => _isFilteredError;
-        set
-        {
-            if (value == _isFilteredError) return;
-            _isFilteredError = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsFilteredWarning
-    {
-        get => _isFilteredWarning;
-        set
-        {
-            if (value == _isFilteredWarning) return;
-            _isFilteredWarning = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsFilteredInfo
-    {
-        get => _isFilteredInfo;
-        set
-        {
-            if (value == _isFilteredInfo) return;
-            _isFilteredInfo = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsFilteredDebug
-    {
-        get => _isFilteredDebug;
-        set
-        {
-            if (value == _isFilteredDebug) return;
-            _isFilteredDebug = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsFilteredTrace
-    {
-        get => _isFilteredTrace;
-        set
-        {
-            if (value == _isFilteredTrace) return;
-            _isFilteredTrace = value;
-            OnPropertyChanged();
-        }
+        _prevSubscription?.Dispose();
+        var observable = AppLogService.Logs
+            .Connect()
+            .Filter(x =>
+            {
+                bool c1 = (IsFilteredCritical && x.LogLevel == LogLevel.Critical) ||
+                          (IsFilteredError && x.LogLevel == LogLevel.Error) ||
+                          (IsFilteredWarning && x.LogLevel == LogLevel.Warning) ||
+                          (IsFilteredInfo && x.LogLevel == LogLevel.Information) ||
+                          (IsFilteredDebug && x.LogLevel == LogLevel.Debug) ||
+                          (IsFilteredTrace && x.LogLevel == LogLevel.Trace);
+                if (string.IsNullOrWhiteSpace(FilterText))
+                {
+                    return c1;
+                }
+                else
+                {
+                    return c1 && (x.Message.Contains(FilterText, StringComparison.OrdinalIgnoreCase) ||
+                                  x.CategoryName.Contains(FilterText));
+                }
+            })
+            .Bind(out _logs);
+        OnPropertyChanged(nameof(Logs));
+        _prevSubscription = observable.Subscribe();
     }
 }

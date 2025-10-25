@@ -1,11 +1,13 @@
-﻿using System;
+using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using ClassIsland.Core;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Runtime.InteropServices;
 
 using Timer = System.Timers.Timer;
 
@@ -30,15 +32,29 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
         return Task.CompletedTask;
     }
 
+    private long GetMemoryUsage()
+    {
+        if (OperatingSystem.IsMacOS())
+            {
+                // 在macOS平台上，不可使用PrivateMemorySize64字段，详见https://github.com/dotnet/runtime/issues/105665
+                // 使用WorkingSet64字段，**结果可能略大**
+                return Process.GetCurrentProcess().WorkingSet64;
+            }
+            else
+            {
+                return Process.GetCurrentProcess().PrivateMemorySize64;
+            }
+
+            return 0;
+    }
+
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
     {
-        var size = Process.GetCurrentProcess().PrivateMemorySize64;
-        //Console.WriteLine(size);
+        var size = GetMemoryUsage();
         Logger.LogInformation("当前内存使用: {}", Helpers.StorageSizeHelper.FormatSize((ulong)size)+$"({size} Bytes)");
         if (size < MemoryLimitBytes) 
             return;
         Logger.LogCritical("达到内存使用上限！ {} / {}", Helpers.StorageSizeHelper.FormatSize((ulong)size)+$"({size} Bytes)", Helpers.StorageSizeHelper.FormatSize((ulong)MemoryLimitBytes)+$"({MemoryLimitBytes} Bytes)");
-        //var startInfo = Process.GetCurrentProcess().StartInfo;
         var path = Environment.ProcessPath;
         if (path != null)
         {
@@ -52,7 +68,6 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
             };
             Process.Start(startInfo);
         }
-        //Process.Start(startInfo);
         AppBase.Current.Stop();
     }
 }

@@ -1,0 +1,42 @@
+﻿<controls:ComponentBase x:TypeArguments="componentSettings:ClockComponentSettings" 
+                        x:Class="ClassIsland.Controls.Components.ClockComponent"
+                        xmlns="https://github.com/avaloniaui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                        xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                        xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+                        xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                        xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                        mc:Ignorable="d" 
+                        d:DesignHeight="450" d:DesignWidth="800">
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center"
+          TextElement.FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+          x:Name="Root"
+          Classes.TimeSeparatorShowing="{Binding IsTimeSeparatorShowing}"
+          Classes.ShowSeconds="{Binding Settings.ShowSeconds}"
+          DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClockComponent}}">
+        <Grid.Styles>
+            <Style Selector="Grid#Root">
+                <Style Selector="^ TextBlock#TextBlock1">
+                    <Setter Property="Opacity" Value="0" />
+                    <Setter Property="Text" Value="{Binding CurrentTime, StringFormat={}{0:HH:mm}}" />
+                </Style>
+                <Style Selector="^.TimeSeparatorShowing TextBlock#TextBlock1">
+                    <Setter Property="Opacity" Value="1" />
+                </Style>
+                <Style Selector="^.ShowSeconds TextBlock#TextBlock1">
+                    <Setter Property="Text" Value="{Binding CurrentTime, StringFormat={}{0:HH:mm:ss}}" />
+                </Style>
+            </Style>
+        </Grid.Styles>
+        <TextBlock x:Name="TextBlock1" />
+        <TextBlock HorizontalAlignment="Left"
+                   Text="{Binding CurrentTime, StringFormat={}{0:HH}}"
+                   Classes.hidden="{Binding IsTimeSeparatorShowing}"/>
+        <TextBlock HorizontalAlignment="Right"
+                   Text="{Binding CurrentTime, StringFormat={}{0:mm}}"
+                   TextAlignment="End"
+                   Classes.hidden="{Binding IsTimeSeparatorShowing}"/>
+    </Grid>
+</controls:ComponentBase>

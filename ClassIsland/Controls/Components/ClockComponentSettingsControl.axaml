@@ -1,0 +1,46 @@
+﻿<controls1:ComponentBase x:TypeArguments="componentSettings:ClockComponentSettings" 
+                         x:Class="ClassIsland.Controls.Components.ClockComponentSettingsControl"
+                         xmlns="https://github.com/avaloniaui"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                         xmlns:controls="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+                         xmlns:controls1="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+                         xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                         xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                         xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                         xmlns:controls2="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                         mc:Ignorable="d"
+                         d:DesignHeight="450"
+                         d:DesignWidth="800">
+    <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClockComponentSettingsControl}}">
+        <StackPanel Classes="settings-container animated-intro" Margin="0">
+            <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xE4D2;}"
+                                        Header="使用实际时间"
+                                        Description="显示不经过时间偏移的系统时间。">
+                <controls2:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding Settings.ShowRealTime, Mode=TwoWay}"/>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+
+            <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xEC26;}"
+                                        Header="显示秒数"
+                                        Description="启用后，时钟将显示精准到秒的时间。">
+                <controls2:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding Settings.ShowSeconds, Mode=TwoWay}"/>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+            
+            <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xE85F;}"
+                                        Header="闪动时间分隔符"
+                                        Description="模拟电子时钟的分隔符闪动效果。"
+                                        IsVisible="{Binding !Settings.ShowSeconds}">
+                <controls2:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding Settings.FlashTimeSeparator, Mode=TwoWay}"/>
+                </controls2:SettingsExpander.Footer>
+            </controls2:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+</controls1:ComponentBase>

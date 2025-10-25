@@ -1,0 +1,230 @@
+<local:LessonControlBase x:Class="ClassIsland.Core.Controls.LessonsControls.LessonControlExpanded"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
+             xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+             xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="LessonControlExpandedRoot"
+             Classes.ChangedClass="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource Self}}"
+             Classes.HighlightChangedClass="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}"
+             Classes.ExtraInfo4ShowSeconds="{Binding ExtraInfo4ShowSeconds, RelativeSource={RelativeSource Self}}">
+    <Interaction.Behaviors>
+        <DataTriggerBehavior Binding="{Binding CurrentTimeLayoutItem.TimeType, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}"
+                             Value="1">
+            <AddClassAction ClassName="Breaking"/>
+        </DataTriggerBehavior>
+    </Interaction.Behaviors>
+    <local:LessonControlBase.Styles>
+        <Style Selector="#LessonControlExpandedRoot controls|HighlightBox#TextHighlightBox">
+            <Setter Property="IsHighlight" Value="False" />
+        </Style>
+        
+        <Style Selector="#LessonControlExpandedRoot.ChangedClass.HighlightChangedClass controls|HighlightBox#TextHighlightBox">
+            <Setter Property="IsHighlight" Value="True" />
+        </Style>
+        
+        <Style Selector="TabItem">
+            <Setter Property="IsVisible" Value="False"></Setter>
+        </Style>
+        <Style Selector="TabControl">
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+    </local:LessonControlBase.Styles>
+    <local:LessonControlBase.Resources>
+        <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
+        <converters:SecondsToFormatTimeConverter x:Key="SecondsToFormatTimeConverter" />
+        <converters:SecondsToFormatTimeConverter x:Key="SecondsToFormatTimeConverterCeiling" Ceiling="True"/>
+        <converters:SecondsToFormatTimeMultiConverter x:Key="SecondsToFormatTimeMultiConverter" />
+        <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
+        <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
+    </local:LessonControlBase.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=local:LessonControlExpanded}}">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <LayoutTransformControl>
+                <LayoutTransformControl.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                </LayoutTransformControl.LayoutTransform>
+                <Border Width="16"/>
+            </LayoutTransformControl>
+            
+            <Grid>
+                <!-- <Grid.DataContext> -->
+                <!--     <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}"> -->
+                <!--         <Binding Path="Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}"/> -->
+                <!--         <Binding Path="ClassInfo.SubjectId" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}"/> -->
+                <!--     </MultiBinding> -->
+                <!-- </Grid.DataContext> -->
+                <controls:HighlightBox x:Name="TextHighlightBox">
+                    <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                               FontWeight="Bold" Text="{Binding DisplayingSubject.Name, Mode=OneWay}"/>
+                </controls:HighlightBox>
+            </Grid>
+            
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                <Panel Margin="6 0 0 0"
+                       IsVisible="{Binding SettingsSource.ShowExtraInfoOnTimePoint}">
+                    <Border>
+                        <Border.IsVisible>
+                            <Binding Path="MasterTabIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                <Binding.ConverterParameter>
+                                    <system:Int32>0</system:Int32>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                        </Border.IsVisible>
+                        <Panel VerticalAlignment="Bottom" TextElement.FontSize="{DynamicResource MainWindowSecondaryFontSize}"
+                               x:Name="DetailedInfoTabControl">
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>0</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run Text="{Binding CurrentTimeLayoutItem.StartTime, StringFormat='{}{0:hh\\:mm}'}">
+                                </Run><Run Text="-">
+                                </Run><Run Text="{Binding CurrentTimeLayoutItem.EndTime, StringFormat='{}{0:hh\\:mm}'}" />
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>1</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run>
+                                    <Run.Text>
+                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay">
+                                            <Binding Path="Seconds" Mode="OneWay" />
+                                            <Binding Path="TotalSeconds" Mode="OneWay" />
+                                        </MultiBinding>
+                                    </Run.Text>
+                                </Run>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>2</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run Text="-"/><Run>
+                                    <Run.Text>
+                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay"
+                                                      ConverterParameter="1">
+                                            <Binding Path="LeftSeconds" Mode="OneWay" />
+                                            <Binding Path="TotalSeconds" Mode="OneWay" />
+                                        </MultiBinding>
+                                    </Run.Text>
+                                </Run>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>3</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource TimeLongToPercentMultiConverter}"
+                                                  Mode="OneWay">
+                                            <Binding Path="Seconds" Mode="OneWay" />
+                                            <Binding Path="TotalSeconds" Mode="OneWay" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>4</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run Text="-"/><Run Text="{Binding LeftSeconds,
+                                                    Converter={StaticResource SecondsToFormatTimeConverterCeiling}}"/>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Bottom">
+                                <TextBlock.IsVisible>
+                                    <Binding Path="DetailIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <system:Int32>5</system:Int32>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </TextBlock.IsVisible>
+                                <Run Text="-"/><Run Text="{Binding LeftSeconds,
+                                                    Converter={StaticResource SecondsToFormatTimeConverter},
+                                                    ConverterParameter={StaticResource TrueValue}}"/>
+                            </TextBlock>
+                        </Panel>
+                    </Border>
+                    <Border>
+                        <Border.IsVisible>
+                            <Binding Path="MasterTabIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                <Binding.ConverterParameter>
+                                    <system:Int32>1</system:Int32>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                        </Border.IsVisible>
+                        <Grid VerticalAlignment="Bottom">
+                            <Border Background="{DynamicResource AccentFillColorTertiaryBrush}"
+                                    Height="{Binding Bounds.Height, ElementName=BorderStroke}"
+                                    ClipToBounds="True"
+                                    BorderThickness="1"
+                                    Padding="8 2"
+                                    Opacity="0.3"
+                                    VerticalAlignment="Bottom"
+                                    CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
+                            </Border>
+                            <Border ClipToBounds="True"
+                                    BorderBrush="{DynamicResource AccentFillColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    Padding="8 2"
+                                    x:Name="BorderStroke"
+                                    VerticalAlignment="Bottom"
+                                    CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
+                                <Grid>
+                                    <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center"
+                                               IsVisible="{Binding !SettingsSource.IsNonExactCountdownEnabled}">
+                                        <Run Text="-">
+                                        </Run><Run Text="{Binding LeftSeconds,
+                                                   Converter={StaticResource SecondsToFormatTimeConverter},
+                                                   ConverterParameter={StaticResource TrueValue}}"/>
+                                    </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center"
+                                               IsVisible="{Binding SettingsSource.IsNonExactCountdownEnabled}">
+                                        <Run Text="&lt;">
+                                        </Run><Run Text="{Binding SettingsSource.CountdownSeconds, Mode=OneWay, Converter={StaticResource SecondsToFormatTimeConverterCeiling}}"/>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Panel>
+                
+            </StackPanel>
+
+            <LayoutTransformControl>
+                <LayoutTransformControl.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                </LayoutTransformControl.LayoutTransform>
+                <Border Width="16"/>
+            </LayoutTransformControl>
+        </StackPanel>
+        <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                     MinWidth="0"
+                     Value="{Binding ProgressPercent}" Maximum="1"/>
+        
+    </Grid>
+</local:LessonControlBase>
+

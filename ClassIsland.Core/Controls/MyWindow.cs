@@ -1,23 +1,29 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Interop;
-using System.Windows.Media;
 using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.Graphics.Dwm;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Labs.Input;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Rendering;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Assists;
+using ClassIsland.Core.Commands;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Theming;
-using Adorner = System.Windows.Forms.Design.Behavior.Adorner;
+using FluentAvalonia.UI.Windowing;
 
 namespace ClassIsland.Core.Controls;
 
 /// <summary>
 /// 通用窗口基类
 /// </summary>
-public class MyWindow : Window
+public class MyWindow : AppWindow
 {
     private bool _isAdornerAdded;
 
@@ -26,7 +32,40 @@ public class MyWindow : Window
     /// </summary>
     public static bool ShowOssWatermark { get; internal set; } = false;
 
-    private IThemeService? ThemeService { get; }
+    private bool _enableMicaWindow;
+
+    private int _debugGraphState = 0;
+
+    private bool _suppressTouchMode = false;
+
+    /// <summary>
+    /// 启用云母窗口背景的直接属性
+    /// </summary>
+    public static readonly DirectProperty<MyWindow, bool> EnableMicaWindowProperty = AvaloniaProperty.RegisterDirect<MyWindow, bool>(
+        nameof(EnableMicaWindow), o => o.EnableMicaWindow, (o, v) => o.EnableMicaWindow = v);
+
+    private bool _isMicaSupported;
+
+    public static readonly DirectProperty<MyWindow, bool> IsMicaSupportedProperty = AvaloniaProperty.RegisterDirect<MyWindow, bool>(
+        nameof(IsMicaSupported), o => o.IsMicaSupported, (o, v) => o.IsMicaSupported = v);
+
+    public bool IsMicaSupported
+    {
+        get => _isMicaSupported;
+        set => SetAndRaise(IsMicaSupportedProperty, ref _isMicaSupported, value);
+    }
+
+    
+    /// <summary>
+    /// 启用云母窗口背景
+    /// </summary>
+    public bool EnableMicaWindow
+    {
+        get => _enableMicaWindow;
+        set => SetAndRaise(EnableMicaWindowProperty, ref _enableMicaWindow, value);
+    }
+
+    private AppToastAdorner? _appToastAdorner;
 
     /// <summary>
     /// 构造函数
@@ -35,74 +74,112 @@ public class MyWindow : Window
     {
         try
         {
-            ThemeService = IAppHost.GetService<IThemeService>();
-            ThemeService.ThemeUpdated += ThemeServiceOnThemeUpdated;
             IAppHost.GetService<IHangService>().AssumeHang();
         }
         catch
         {
             // ignored
         }
+
+        IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version.Build > 22000;
+        Initialized += OnInitialized;
         Loaded += OnLoaded;
+        RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
+        KeyDown += OnKeyDown;
+        PointerPressed += OnPointerUpdated;
+        // PointerMoved += OnPointerUpdated;
+    }
+    
+    private void OnPointerUpdated(object? sender, PointerEventArgs e)
+    {
+        PointerStateAssist.SetIsTouchMode(this, _suppressTouchMode | e.Pointer.Type == PointerType.Touch);
     }
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
-
-        if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark)&& Content is UIElement element && !_isAdornerAdded)
+        switch (e.Key)
         {
-            var layer = AdornerLayer.GetAdornerLayer(element);
-            layer?.Add(new DevelopmentBuildAdorner(element, AppBase.Current.IsDevelopmentBuild, ShowOssWatermark));
-            _isAdornerAdded = true;
+            case Key.F3:
+            {
+                if (_debugGraphState == 0)
+                {
+                    _debugGraphState = (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ? 2 : 1;
+                }
+                else
+                {
+                    _debugGraphState = 0;
+                }
+
+                RendererDiagnostics.DebugOverlays = _debugGraphState switch
+                {
+                    0 => RendererDebugOverlays.None,
+                    1 => RendererDebugOverlays.Fps,
+                    2 => RendererDebugOverlays.Fps | RendererDebugOverlays.LayoutTimeGraph |
+                         RendererDebugOverlays.RenderTimeGraph,
+                    _ => RendererDebugOverlays.None
+                };
+                break;
+            }
+            case Key.F6:
+                if (PointerStateAssist.GetIsTouchMode(this))
+                {
+                    PointerStateAssist.SetIsTouchMode(this, false);
+                    _suppressTouchMode = false;
+                }
+                else
+                {
+                    PointerStateAssist.SetIsTouchMode(this, true);
+                    if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                    {
+                        _suppressTouchMode = true;
+                    }
+                }
+                this.ShowToast($"(debug) IsTouchMode={PointerStateAssist.GetIsTouchMode(this)}, Suppress={_suppressTouchMode}");
+                break;
+            case Key.F7 when _appToastAdorner != null:
+                foreach (var message in _appToastAdorner.Messages)
+                {
+                    message.Close();
+                }
+                break;
         }
     }
 
-    private void ThemeServiceOnThemeUpdated(object? sender, ThemeUpdatedEventArgs e)
+    private void OnInitialized(object? sender, EventArgs e)
     {
-        UpdateImmersiveDarkMode(e.RealThemeMode);
+        var commands = CommandManager.GetCommandBindings(this);
+        commands.Add(new CommandBinding(UriNavigationCommands.UriNavigationCommand,
+            (_, args) => IAppHost.TryGetService<IUriNavigationService>()
+                ?.NavigateWrapped(new Uri(args.Parameter?.ToString() ?? "classisland:")),
+            (_, args) => args.CanExecute = true));
+        CommandManager.SetCommandBindings(this, commands);
     }
 
-    protected override void OnContentRendered(EventArgs e)
+    private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        base.OnContentRendered(e);
-        UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
-        Debug.WriteLine("rendered.");
-    }
+        if (EnableMicaWindow && IsMicaSupported)
+        {
+            TransparencyLevelHint = [WindowTransparencyLevel.Mica];
+            Background = Brushes.Transparent;
+        }
 
-    private unsafe void UpdateImmersiveDarkMode(int mode)
-    {
-        var trueVal = 0x01;
-        var falseVal = 0x00;
-        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
-        var build = Environment.OSVersion.Version.Build;
-        if (build < 17763)
+        if (Content is not Control element || _isAdornerAdded)
         {
             return;
         }
-        //Debug.WriteLine(build);
 
-        if (mode == 0)
+        var layer = AdornerLayer.GetAdornerLayer(element);
+        var appToastAdorner = _appToastAdorner = new AppToastAdorner(this);
+        layer?.Children.Add(appToastAdorner);
+        AdornerLayer.SetAdornedElement(appToastAdorner, this);
+        
+        if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark))
         {
-            PInvoke.DwmSetWindowAttribute(hWnd,
-                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
-                &falseVal,
-                (uint)Marshal.SizeOf(typeof(int)));
+            var adorner = new DevelopmentBuildAdorner(AppBase.Current.IsDevelopmentBuild, ShowOssWatermark);
+            layer?.Children.Add(adorner);
+            AdornerLayer.SetAdornedElement(adorner, this);
         }
-        else
-        {
-            PInvoke.DwmSetWindowAttribute(hWnd,
-                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
-                &trueVal,
-                (uint)Marshal.SizeOf(typeof(int)));
-        }
-
-        // 在Windows10系统上强制刷新标题栏
-        if (build < 22000)
-        {
-            uint WM_NCACTIVATE = 0x0086;
-            PInvoke.SendMessage(hWnd, WM_NCACTIVATE, new WPARAM((nuint)(!IsActive ? 1 : 0)), 0);
-            PInvoke.SendMessage(hWnd, WM_NCACTIVATE, new WPARAM((nuint)(IsActive ? 1 : 0)), 0);
-        }
+        _isAdornerAdded = true;
     }
+
 }

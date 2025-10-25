@@ -1,5 +1,7 @@
-﻿using System.Text.Json.Serialization;
-using ClassIsland.Shared.Models.Action;
+﻿using System.Diagnostics;
+using System.Text.Json.Serialization;
+using ClassIsland.Shared.JsonConverters;
+using ClassIsland.Shared.Models.Automation;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -8,40 +10,39 @@ namespace ClassIsland.Shared.Models.Profile;
 /// </summary>
 public class TimeLayoutItem : AttachableSettingsObject, IComparable
 {
-    private DateTime _startSecond = DateTime.Now;
-    private DateTime _endSecond = DateTime.Now;
-    private bool _isOnClass = true;
+    private string _startSecond = "";
+    private string _endSecond =  "";
     private int _timeType = 0;
     private bool _isHideDefault = false;
-    private string _defaultClassId = "";
+    private Guid _defaultClassId = Guid.Empty;
     private string _breakName = "";
     private ActionSet? _actionSet;
+    private TimeSpan _startTime = TimeSpan.Zero;
+    private TimeSpan _endTime = TimeSpan.Zero;
 
     /// <summary>
     /// 时间段在一天中开始的秒钟数
     /// </summary>
-    public DateTime StartSecond
+    [Obsolete("请使用 StartTime 属性。", true)]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public string StartSecond
     {
         get => _startSecond;
         set
         {
             if (value == _startSecond) return;
-            //EnsureTime(value, EndSecond);
             OnPropertyChanging();
             _startSecond = value;
-            if (TimeType is 2 or 3)
-            {
-                EndSecond = value;
-            }
             OnPropertyChanged();
-            OnPropertyChanged(nameof(Last));
         }
     }
 
     /// <summary>
     /// 时间段在一天中结束的秒钟数
     /// </summary>
-    public DateTime EndSecond
+    [Obsolete("请使用 EndTime 属性。", true)]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public string EndSecond
     {
         get => _endSecond;
         set
@@ -50,6 +51,42 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
             OnPropertyChanging();
             //EnsureTime(StartSecond, value);
             _endSecond = value;
+            OnPropertyChanged();
+
+        }
+    }
+
+    /// <summary>
+    /// 时间点在一天中开始的时间
+    /// </summary>
+    public TimeSpan StartTime
+    {
+        get => _startTime;
+        set
+        {
+            if (value.Equals(_startTime)) return;
+            OnPropertyChanging();
+            _startTime = value;
+            if (TimeType is 2 or 3)
+            {
+                EndTime = value;
+            }
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(Last));
+        }
+    }
+
+    /// <summary>
+    /// 时间点在一天中结束的时间
+    /// </summary>
+    public TimeSpan EndTime
+    {
+        get => _endTime;
+        set
+        {
+            if (value.Equals(_endTime)) return;
+            OnPropertyChanging();
+            _endTime = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(Last));
         }
@@ -69,12 +106,15 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     /// </summary>
     public static readonly TimeLayoutItem Empty = new()
     {
-        StartSecond = DateTime.MinValue,
-        EndSecond = DateTime.MinValue,
+        StartTime = TimeSpan.Zero,
+        EndTime = TimeSpan.Zero,
     };
 
+    /// <summary>
+    /// 时间点持续时间
+    /// </summary>
     [JsonIgnore]
-    public TimeSpan Last => EndSecond.TimeOfDay - StartSecond.TimeOfDay;
+    public TimeSpan Last => EndTime - StartTime;
 
     /// <summary>
     /// 时间点类型
@@ -115,7 +155,8 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     /// <summary>
     /// 默认科目ID
     /// </summary>
-    public string DefaultClassId
+    [JsonConverter(typeof(GuidEmptyFallbackConverter))]
+    public Guid DefaultClassId
     {
         get => _defaultClassId;
         set
@@ -134,7 +175,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     public string BreakNameText => string.IsNullOrEmpty(BreakName) ? "课间休息" : BreakName;
 
     /// <summary>
-    /// 自定义课间名称。应使用<see cref="BreakNameText"/>获取实际课间名称。
+    /// 自定义课间名称，可能为空。通过 <see cref="BreakNameText"/> 获取实际显示的课间名称。
     /// </summary>
     public string BreakName
     {
@@ -176,14 +217,28 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
             return -1;
         }
 
-        if (o.StartSecond.TimeOfDay < StartSecond.TimeOfDay)
+        if (o.StartTime < StartTime)
         {
             return -1;
         }
-        if (o.StartSecond.TimeOfDay > StartSecond.TimeOfDay)
+        if (o.StartTime > StartTime)
         {
             return 1;
         }
         return 0;
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var timeTypeText = TimeType switch
+        {
+            0 => "上课",
+            1 => "课间休息",
+            2 => "分割线",
+            3 => "行动",
+            _ => "？？？"
+        };
+        return $"{timeTypeText} {StartTime}-{EndTime}";
     }
 }

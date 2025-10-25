@@ -1,29 +1,31 @@
-﻿using System.Windows;
+using Avalonia;
 
 namespace ClassIsland.Core;
 
 /// <summary>
-/// 绑定代理类
+/// 绑定代理
 /// </summary>
-public class BindingProxy : Freezable
+public class BindingProxy : AvaloniaObject
 {
-    #region Overrides of Freezable
-
-    /// <inheritdoc />
-    protected override Freezable CreateInstanceCore()
+    private BindingProxy()
     {
-        return new BindingProxy();
+        
     }
+}
 
-    #endregion
+/// <summary>
+/// 绑定代理
+/// </summary>
+/// <typeparam name="T">绑定数据类型</typeparam>
+public class BindingProxy<T> : AvaloniaObject
+{
+    
+    public static readonly StyledProperty<T> DataProperty = AvaloniaProperty.Register<BindingProxy, T>(
+        nameof(Data));
 
-    public object Data
+    public T Data
     {
-        get { return (object)GetValue(DataProperty); }
-        set { SetValue(DataProperty, value); }
+        get => GetValue(DataProperty);
+        set => SetValue(DataProperty, value);
     }
-
-    // Using a DependencyProperty as the backing store for Data.  This enables animation, styling, binding, etc...
-    public static readonly DependencyProperty DataProperty =
-        DependencyProperty.Register("Data", typeof(object), typeof(BindingProxy));
 }

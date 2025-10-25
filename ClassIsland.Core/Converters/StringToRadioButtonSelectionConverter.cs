@@ -1,32 +1,22 @@
 ﻿using System.Globalization;
-using System.Windows.Data;
+
+using Avalonia.Data.Converters;
 
 namespace ClassIsland.Core.Converters;
 
 public class StringToRadioButtonSelectionConverter : IMultiValueConverter
 {
-    private string _valueRaw = "";
-
-    public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(IList<object?> value, Type targetType, object parameter, CultureInfo culture)
     {
-        var r = (string)value[0];
-        var p = (string)value[1];
-        _valueRaw = p;
-        return r == p;
-    }
-    
-
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    {
-        if ((bool)value)
+        if (value[0] is string r1 && value[1] is string p1)
         {
-            return new[]
-            {
-                _valueRaw,
-                _valueRaw
-            };
+            return r1 == p1;
+        }
+        if (value[0] is Guid r2 && value[1] is Guid p2)
+        {
+            return r2 == p2;
         }
 
-        return null;
+        return false;
     }
 }

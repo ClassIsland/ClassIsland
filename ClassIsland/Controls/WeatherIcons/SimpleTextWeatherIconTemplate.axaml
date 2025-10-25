@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:controls="clr-namespace:ClassIsland.Controls">
+    <DataTemplate DataType="{x:Type system:String}" x:Key="SimpleTextWeatherIconTemplate">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock Text="~" Foreground="{DynamicResource MaterialDesignBody}"
+                       x:Name="Separator"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                       IsVisible="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='To'}">
+            </TextBlock>
+            <TextBlock
+                Text="{Binding WeatherName, RelativeSource={RelativeSource AncestorType=controls:WeatherPackIconControl}}"
+                VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </StackPanel >
+    </DataTemplate>
+</ResourceDictionary>

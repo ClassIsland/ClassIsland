@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
-using System.Windows.Data;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
+
 
 namespace ClassIsland.Core.Converters;
 
@@ -12,6 +14,6 @@ public class PreventNullConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object parameter, CultureInfo culture)
     {
-        return value ?? Binding.DoNothing;
+        return value ?? BindingOperations.DoNothing;
     }
 }

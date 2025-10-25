@@ -1,0 +1,17 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Source: https://github.com/irihitech/Semi.Avalonia/blob/08d55c2b7a5d4a29dd30f28cefc3b5df1ee5f1a2/src/Semi.Avalonia/Animations/SemiPopupAnimations.axaml#L2 -->
+    <Style Selector="PopupRoot">
+        <Setter Property="ci:PopupIntroAnimationBehavior.IsIntroAnimationEnabled" Value="True"/>
+    </Style>
+    <Style Selector="OverlayPopupHost">
+        <Setter Property="ci:PopupIntroAnimationBehavior.IsIntroAnimationEnabled" Value="True"/>
+    </Style>
+</Styles>

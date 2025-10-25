@@ -1,0 +1,51 @@
+<UserControl x:Class="ClassIsland.Core.Controls.ComponentPresenter"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             ClipToBounds="False"
+             Loaded="ComponentPresenter_OnLoaded">
+    <UserControl.Styles>
+        <Style Selector="local|ComponentPresenter[IsOnMainWindow=True]">
+            <Setter Property="Opacity" Value="{Binding $self.Settings.Opacity, FallbackValue=1.0}"/>
+        </Style>
+        <Style Selector="Border#ComponentRootBorder.OnMainWindow">
+            <Setter Property="TextElement.FontSize" Value="{DynamicResource MainWindowBodyFontSize}"/>
+            <Style Selector="^.MaxWidthEnabled">
+                <Setter Property="MaxWidth" Value="{Binding Settings.MaxWidth , RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+            </Style>
+            <Style Selector="^.MinWidthEnabled">
+                <Setter Property="MinWidth" Value="{Binding Settings.MinWidth , RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+            </Style>
+            <Style Selector="^.FixedWidthEnabled">
+                <Setter Property="Width" Value="{Binding Settings.FixedWidth , RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+            </Style>
+            
+            <Style Selector="^ ContentPresenter#MainContentPresenter">
+                <Setter Property="HorizontalAlignment" Value="{Binding Settings.HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+            </Style>
+        </Style>
+    </UserControl.Styles>
+    <Panel>
+        <local:Shimmer x:Name="Shimmer" AutoDetectContentLoadState="False"
+                       ClipToBounds="False"
+                       Padding="0 8">
+            <Border x:Name="ComponentRootBorder"
+                    SizeChanged="ComponentRootBorder_OnSizeChanged"
+                    Classes.OnMainWindow="{Binding IsOnMainWindow, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                    Classes.MaxWidthEnabled="{Binding Settings.IsMaxWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                    Classes.MinWidthEnabled="{Binding Settings.IsMinWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                    Classes.FixedWidthEnabled="{Binding Settings.IsFixedWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}">
+                <ContentPresenter x:Name="MainContentPresenter"
+                                  local:ComponentPresenter.ComponentVisibilityChanged="MainContentPresenter_OnComponentVisibilityChanged"
+                                  Content="{Binding PresentingContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}" />
+            </Border>
+        </local:Shimmer>
+        <Border Width="{Binding Settings.LastWidthCache, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                IsVisible="{Binding !#Shimmer.IsContentLoaded}"/>
+    </Panel>
+</UserControl>
+

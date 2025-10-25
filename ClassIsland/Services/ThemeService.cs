@@ -1,13 +1,17 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Media;
+using Avalonia.Styling;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
-
-using MaterialDesignThemes.Wpf;
-
+using FluentAvalonia.Styling;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -23,8 +27,7 @@ public class ThemeService : IHostedService, IThemeService
     public async Task StopAsync(CancellationToken cancellationToken)
     {
     }
-
-    public ITheme? CurrentTheme { get; set; } 
+    
 
     public ILogger<ThemeService> Logger { get; }
 
@@ -37,84 +40,37 @@ public class ThemeService : IHostedService, IThemeService
 
     public int CurrentRealThemeMode { get; set; } = 0;
 
-    public void SetTheme(int themeMode, Color primary, Color secondary)
+    public void SetTheme(int themeMode, Color? primary)
     {
-        var paletteHelper = new PaletteHelper();
-        var theme = paletteHelper.GetTheme();
-        var lastPrimary = theme.PrimaryMid.Color;
-        var lastSecondary = theme.SecondaryMid.Color;
-        var lastBaseTheme = theme.GetBaseTheme();
-        switch (themeMode)
-        {
-            case 0:
-                try
-                {
-                    var key = Registry.CurrentUser.OpenSubKey(
-                        "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize");
-                    if (key != null)
-                    {
-                        if ((int?)key.GetValue("AppsUseLightTheme") == 0)
-                        {
-                            theme.SetBaseTheme(new MaterialDesignDarkTheme());
-                        }
-                        else
-                        {
-                            theme.SetBaseTheme(new MaterialDesignLightTheme());
-                        }
-                    }
-                }
-                catch(Exception ex)
-                {
-                    Logger.LogError(ex, "无法获取系统明暗主题，使用默认（亮色）主题。");
-                    theme.SetBaseTheme(new MaterialDesignLightTheme());
-                }
-                break;
-
-            case 1:
-                theme.SetBaseTheme(new MaterialDesignLightTheme());
-                break;
-            case 2:
-                theme.SetBaseTheme(new MaterialDesignDarkTheme());
-                break;
-        }
-        
-        ((Theme)theme).ColorAdjustment = new ColorAdjustment()
-        {
-            DesiredContrastRatio = 4.5F,
-            Contrast = Contrast.Medium,
-            Colors = ColorSelection.All
-        };
-        
-        theme.SetPrimaryColor(primary);
-        theme.SetSecondaryColor(secondary);
-        var lastTheme = paletteHelper.GetTheme();
-
-        if (lastPrimary == theme.PrimaryMid.Color &&
-            lastSecondary == theme.SecondaryMid.Color &&
-            lastBaseTheme == theme.GetBaseTheme())
+        var faTheme = Application.Current!.Styles
+            .OfType<FluentAvaloniaTheme>()
+            .FirstOrDefault();
+        if (faTheme == null)
         {
             return;
         }
-
-
-        paletteHelper.SetTheme(theme);
-        CurrentTheme = theme;
-        Logger.LogInformation("设置主题：{}", theme);
-        CurrentRealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1;
-        ThemeUpdated?.Invoke(this, new ThemeUpdatedEventArgs
+        
+        AppBase.Current.RequestedThemeVariant = themeMode switch
         {
-            ThemeMode = themeMode,
-            Primary = primary,
-            Secondary = secondary,
-            RealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1
-        });
-
-        var resource = new ResourceDictionary
-        {
-            Source = CurrentRealThemeMode == 0 ?
-                new Uri("pack://application:,,,/ClassIsland;component/Themes/LightTheme.xaml") :
-                new Uri("pack://application:,,,/ClassIsland;component/Themes/DarkTheme.xaml")
+            0 => ThemeVariant.Default,
+            1 => ThemeVariant.Light,
+            2 => ThemeVariant.Dark,
+            _ => ThemeVariant.Default
         };
-        Application.Current.Resources.MergedDictionaries[0] = resource;
+
+        faTheme.CustomAccentColor = primary;
+        faTheme.PreferUserAccentColor = primary == null;
+        faTheme.PreferSystemTheme = themeMode == 0;
+        
+        // 计算应用画刷
+        var brush = AppBase.Current.TryFindResource("AccentFillColorSelectedTextBackgroundBrush",
+            ThemeVariant.Default, out var v)
+            ? v as SolidColorBrush
+            : null;
+        var newBrush = brush == null ? null : new SolidColorBrush(brush.Color, 0.10);
+        if (newBrush != null)
+        {
+            AppBase.Current.Resources["CustomizedAccentBarBackground1Brush"] = newBrush;
+        }
     }
 }

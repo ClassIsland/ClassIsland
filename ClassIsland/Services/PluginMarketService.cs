@@ -12,6 +12,7 @@ using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Downloader;
@@ -39,21 +40,11 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
         { "moeyy", "https://github.moeyy.xyz/https://github.com" }
     };
 
-private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
     private bool _isLoadingPluginSource = false;
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
 
-    public ObservableDictionary<string, PluginInfo> MergedPlugins
-    {
-        get => _mergedPlugins;
-        set
-        {
-            if (Equals(value, _mergedPlugins)) return;
-            _mergedPlugins = value;
-            OnPropertyChanged();
-        }
-    }
+    public ObservableDictionary<string, PluginInfo> MergedPlugins { get; } = new();
 
     public bool IsLoadingPluginSource
     {
@@ -163,7 +154,7 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
             ? FallbackMirrors
             : SettingsService.Settings.OfficialIndexMirrors;
         const string repo = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/plugin/index.zip?time={time}";
-        return SettingsService.Settings.PluginIndexes.Append(new PluginIndexInfo()
+        return SettingsService.Settings.PluginIndexes.Where(x => !string.IsNullOrWhiteSpace(x.Url)).Append(new PluginIndexInfo()
         {
             Id = DefaultPluginIndexKey,
             Url = repo,
@@ -307,7 +298,9 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
                 root = index.DownloadMirrors.First().Value;
             }
             Logger.LogDebug("插件源 {} 选择的镜像根：{}", name, root);
-            foreach (var plugin in index.Plugins)
+            foreach (var plugin in index.Plugins.Where(x =>
+                         Version.TryParse(x.Manifest.ApiVersion, out var version) &&
+                         version >= Version.Parse("2.0.0.0")))
             {
                 var id = plugin.Manifest.Id;
                 plugin.DownloadUrl = plugin.DownloadUrl.Replace("{root}", root);

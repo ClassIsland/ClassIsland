@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
+using Avalonia;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Controls.CommonDialog;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.UriNavigation;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
@@ -56,7 +58,7 @@ public class UriNavigationService : IUriNavigationService
 
     public void Navigate(Uri uri)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             if (uri.Scheme == IUriNavigationService.UriScheme)
             {
@@ -78,7 +80,7 @@ public class UriNavigationService : IUriNavigationService
     public void NavigateWrapped(Uri uri, out Exception? exception)
     {
         Exception? exc = null;
-        Application.Current.Dispatcher.Invoke(() =>
+        Dispatcher.UIThread.Invoke(() =>
         {
             try
             {
@@ -88,7 +90,7 @@ public class UriNavigationService : IUriNavigationService
             {
                 exc = ex;
                 Logger.LogError(ex, "无法导航到 {}", uri);
-                CommonDialog.ShowError($"无法导航到 {uri}：{ex.Message}");
+                _ = CommonTaskDialogs.ShowDialog("导航失败", $"无法导航到 {uri}：{ex.Message}");
             }
         });
         exception = exc;

@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
+using ClassIsland.Core.ComponentModels;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Plugin;
@@ -13,6 +15,7 @@ public class PluginIndexInfo : ObservableRecipient
     private string _url = "";
     private string _selectedMirror = "";
     private ObservableDictionary<string, string> _mirrors = new();
+    private SyncDictionaryList<string, string>? _mirrorsList;
 
     /// <summary>
     /// 插件索引 Guid
@@ -67,6 +70,22 @@ public class PluginIndexInfo : ObservableRecipient
         {
             if (Equals(value, _mirrors)) return;
             _mirrors = value;
+            MirrorsList = new SyncDictionaryList<string, string>(value, () => "");
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 此插件源的镜像列表
+    /// </summary>
+    [JsonIgnore]
+    public SyncDictionaryList<string, string>? MirrorsList
+    {
+        get => _mirrorsList;
+        private set
+        {
+            if (Equals(value, _mirrorsList)) return;
+            _mirrorsList = value;
             OnPropertyChanged();
         }
     }

@@ -1,0 +1,61 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls">
+    <Design.PreviewWith>
+        <controls:Field Label="label" Prefix="AA" Suffix="BB">
+            <TextBox Text="Hello world!"/>
+        </controls:Field>
+    </Design.PreviewWith>
+
+    <Style Selector="controls|Field">
+        <!-- Set Defaults -->
+        <Setter Property="Cursor" Value="{Binding $self.Content.Cursor}"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="Auto,*" ColumnDefinitions="Auto,*,Auto">
+                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                           Target="{Binding #MainContent}"
+                           Content="{TemplateBinding Label}"
+                           VerticalAlignment="Center"
+                           Margin="0 0 0 1" 
+                           x:Name="LabelControl"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{TemplateBinding Prefix, Mode=OneWay}"
+                               Margin="0 0 6 0"
+                               VerticalAlignment="Center"
+                               x:Name="PrefixTextBlock"/>
+                    <ContentPresenter Grid.Row="1" Grid.Column="1"
+                                      x:Name="MainContent"
+                                      HorizontalAlignment="Stretch"
+                                      HorizontalContentAlignment="Stretch"
+                                      Content="{TemplateBinding Content}"
+                                      VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{TemplateBinding Suffix, Mode=OneWay}"
+                               Margin="6 0 0 0"
+                               VerticalAlignment="Center"
+                               x:Name="SuffixTextBlock"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^ /template/ Label#LabelControl, 
+                ^ /template/ TextBlock#PrefixTextBlock, 
+                ^ /template/ TextBlock#SuffixTextBlock">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+        
+        <Style Selector="^:has-label /template/ Label#LabelControl">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="^:has-prefix /template/ TextBlock#PrefixTextBlock">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="^:has-suffix /template/ TextBlock#SuffixTextBlock">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        
+        <Style Selector="^ /template/ ContentPresenter#MainContent > :is(Control)">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+    </Style>
+</Styles>

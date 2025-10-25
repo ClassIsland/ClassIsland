@@ -1,0 +1,34 @@
+﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.GroupComponent"
+                  x:TypeArguments="componentSettings:GroupComponentSettings"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings" 
+             ClipToBounds="False"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:GroupComponent}}">
+        <ItemsControl Grid.Column="0"
+                      Margin="-6 0"
+                      ItemsSource="{Binding Settings.Children}"
+                      ClipToBounds="False">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Classes="components-panel" VerticalAlignment="Stretch"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ci:ComponentPresenter IsOnMainWindow="True" 
+                                           Settings="{Binding}"
+                                           HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                           HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                           Margin="6 0" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</ci:ComponentBase>

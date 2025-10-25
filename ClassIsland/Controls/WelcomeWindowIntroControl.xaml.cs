@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,3 +47,4 @@ public partial class WelcomeWindowIntroControl : UserControl
         });
     }
 }
+#endif

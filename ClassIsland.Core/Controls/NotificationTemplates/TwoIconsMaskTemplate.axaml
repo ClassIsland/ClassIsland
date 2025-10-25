@@ -1,0 +1,23 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:templates="clr-namespace:ClassIsland.Core.Models.Notification.Templates"
+                    xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <DataTemplate x:Key="{x:Static templates:TwoIconsMaskTemplateData.TemplateResourceKey}"
+                  DataType="{x:Type templates:TwoIconsMaskTemplateData}">
+        <StackPanel Orientation="Horizontal" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center">
+            <controls:IconSourceElement IconSource="{Binding LeftIconSource}" 
+                                        VerticalAlignment="Center"
+                                        Classes="repair-fontsize"
+                                        TextElement.FontSize="20"
+                                        Height="20" Width="20"/>
+            <TextBlock Text="{Binding Text}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" 
+                       Margin="8 0" FontWeight="Bold"/>
+            <controls:IconSourceElement IconSource="{Binding RightIconSource}" 
+                                        VerticalAlignment="Center"
+                                        Classes="repair-fontsize"
+                                        TextElement.FontSize="20"
+                                        Height="20" Width="20"/>
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

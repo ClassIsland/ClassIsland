@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
-using System.Windows.Data;
+using Avalonia;
+using Avalonia.Data.Converters;
+
 
 namespace ClassIsland.Core.Converters;
 
@@ -7,12 +9,13 @@ public class SizeDoubleToCornerRadiusConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is double v)
+        var p = double.TryParse(parameter as string ?? "", out var r1) ? r1 : 2.0;
+        return value switch
         {
-            return v / 2;
-        }
-
-        return null;
+            double v1 => new CornerRadius(v1 / p), 
+            int v2 => new CornerRadius(v2 / p),
+            _ => null
+        };
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

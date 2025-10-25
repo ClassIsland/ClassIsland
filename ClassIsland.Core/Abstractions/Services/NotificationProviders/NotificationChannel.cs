@@ -1,13 +1,10 @@
-﻿using System.Windows.Controls;
-using System.Windows.Media;
-using ClassIsland.Core.Attributes;
+﻿using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
-using MaterialDesignThemes.Wpf;
-using System.Windows.Media.Imaging;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Controls;
 
 namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 
@@ -64,11 +61,12 @@ public class NotificationChannel : INotificationSender, INotificationProvider
         var info = ChannelInfo;
         Name = info.Name;
         Description = info.Description;
-        IconElement = new PackIcon()
+        IconElement = new FluentIcon()
         {
-            Kind = info.PackIcon,
+            Glyph = info.IconGlyph,
             Width = 24,
-            Height = 24
+            Height = 24,
+            FontSize = 24
         };
 
         __NotificationHostService.RegisterNotificationChannel(this);
@@ -83,7 +81,7 @@ public class NotificationChannel : INotificationSender, INotificationProvider
     /// <inheritdoc />
     public void ShowNotification(NotificationRequest request)
     {
-        __NotificationHostService.ShowNotification(request, ProviderGuid, ChannelGuid);
+        __NotificationHostService.ShowNotification(request, ProviderGuid, ChannelGuid, true);
     }
 
     /// <inheritdoc />
