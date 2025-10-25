@@ -564,8 +564,11 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     
     private PixelPoint GetCenter()
     {
-        var scale = SettingsService.Settings.Scale;
         // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
+        if (GridWrapper?.GetVisualRoot() == null)
+        {
+            return _centerPointCache;
+        }
         var p = GridWrapper?.PointToScreen(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2));
         if (p == null)
         {
