@@ -69,9 +69,6 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
     private IDisposable? _tomorrowScheduleShowModeObserver;
     private IDisposable? _hideFinishedClassObserver;
     private IDisposable? _showEmptyPlaceholderObserver;
-    private IDisposable? _lessonsListBoxSelectedIndexObserver;
-    private IDisposable? _currentClassPlanObserver;
-
     public int LessonsListBoxSelectedIndex
     {
         get => GetValue(LessonsListBoxSelectedIndexProperty);
@@ -135,18 +132,15 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         _tomorrowScheduleShowModeObserver?.Dispose();
         _hideFinishedClassObserver?.Dispose();
         _showEmptyPlaceholderObserver?.Dispose();
-        _lessonsListBoxSelectedIndexObserver?.Dispose();
-        _currentClassPlanObserver?.Dispose();
         
         _tomorrowScheduleShowModeObserver = null;
         _hideFinishedClassObserver = null;
         _showEmptyPlaceholderObserver = null;
-        _lessonsListBoxSelectedIndexObserver = null;
-        _currentClassPlanObserver = null;
     }
 
     private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
+        CurrentTimeStateChanged();
         CheckTomorrowClassShowMode();
         _tomorrowScheduleShowModeObserver ??= Settings
             .ObservableForProperty(x => x.TomorrowScheduleShowMode)
@@ -157,10 +151,6 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         _showEmptyPlaceholderObserver ??= Settings
             .ObservableForProperty(x => x.ShowPlaceholderOnEmptyClassPlan)
             .Subscribe(_ => ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan);
-        _lessonsListBoxSelectedIndexObserver ??= this.GetObservable(LessonsListBoxSelectedIndexProperty)
-            .Subscribe(_ => MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex);
-        _currentClassPlanObserver ??= LessonsService.ObservableForProperty(x => x.CurrentClassPlan)
-            .Subscribe(_ => MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex);
 
         HideFinishedClass = Settings.HideFinishedClass;
         ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan;
@@ -216,6 +206,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
             Settings;
         ShowCurrentLessonOnlyOnClass = settingsSource.ShowCurrentLessonOnlyOnClass;
         TomorrowClassPlan = LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1));
+        MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
