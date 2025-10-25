@@ -8,6 +8,7 @@ using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia.Threading;
@@ -69,7 +70,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {nameof(settings.DiagnosticMemoryKillFreqDay), settings.DiagnosticMemoryKillFreqDay.ToString("F3")}
         };
 
-        return string.Join('\n', from i in list select $"{i.Key}: {i.Value}");
+        return string.Join(Environment.NewLine, from i in list select $"{i.Key}: {i.Value}");
     }
 
     public static void BeginStartup()
@@ -94,7 +95,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         try
         {
             var temp = Directory.CreateTempSubdirectory("ClassIslandDiagnosticExport").FullName;
-            var logs = string.Join('\n', AppLogService.Logs);
+            var logs = string.Join(Environment.NewLine, AppLogService.Logs);
             //await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
             await File.WriteAllTextAsync(Path.Combine(temp, "DiagnosticInfo.txt"), GetDiagnosticInfo());
             File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Path.Combine(temp, "Settings.json"));
@@ -129,18 +130,33 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             throw;
         }
     }
-
+    
     public static void GetDeviceInfo(out string name, out string vendor)
     {
         name = "???";
         vendor = "???";
         try
         {
-            var moc = new ManagementClass("Win32_ComputerSystemProduct").GetInstances();
-            foreach (var mo in moc)
+            if (OperatingSystem.IsWindows())
             {
-                name = mo.GetPropertyValue("Name") as string ?? "???";
-                vendor = mo.GetPropertyValue("Vendor") as string ?? "???";
+                using var moc = new ManagementClass("Win32_ComputerSystemProduct").GetInstances();
+                foreach (var mo in moc)
+                {
+                    name = mo.GetPropertyValue("Name") as string ?? "???";
+                    vendor = mo.GetPropertyValue("Vendor") as string ?? "???";
+                }
+            }
+
+            if (OperatingSystem.IsLinux())
+            {
+                if(File.Exists("/sys/devices/virtual/dmi/id/product_name")) name=File.ReadAllText("/sys/devices/virtual/dmi/id/product_name").Trim();
+                if (File.Exists("/sys/devices/virtual/dmi/id/sys_vendor")) vendor = File.ReadAllText("/sys/devices/virtual/dmi/id/sys_vendor").Trim();
+            }
+
+            if (OperatingSystem.IsMacOS())
+            {
+                vendor = "Apple Inc.";
+                name = "Macintosh";
             }
         }
         catch
@@ -193,8 +209,10 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         }
 
         DisableCorruptPlugins(plugins);
-        var pluginsWarning = "\n\n此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：\n"
-                             + string.Join("\n", plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"));
+        var pluginsWarning = Environment.NewLine + Environment.NewLine +
+                             "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：" + Environment.NewLine
+                             + string.Join(Environment.NewLine,
+                                 plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"));
         var message = $"""
                        很抱歉，ClassIsland 遇到了无法解决的问题，即将退出。堆栈跟踪信息已复制到剪贴板。点击【确定】将退出应用，点击【取消】将启动调试器。
 

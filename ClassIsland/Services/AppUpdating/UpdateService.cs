@@ -266,7 +266,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 UpdateDistributionInfoPath);
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             await PlatformServices.DesktopToastService.ShowToastAsync("发现新版本",
-                $"{Assembly.GetExecutingAssembly().GetName().Version} -> {latest.Version}\n" +
+                $"{Assembly.GetExecutingAssembly().GetName().Version} -> {latest.Version}" +Environment.NewLine+
                 "点击以查看详细信息。", UpdateNotificationClickedCallback);
 
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;

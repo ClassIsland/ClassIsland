@@ -42,7 +42,7 @@ public class CsesExportHelper
         if (warnings.Count > 0)
         {
             var r = await ContentDialogHelper.ShowConfirmationDialog("兼容性警告",
-                "以下课表无法导出到 CSES 格式：\n" + string.Join('\n', warnings) + "\n\n是否继续导出？", positiveText: "继续");
+                "以下课表无法导出到 CSES 格式："+Environment.NewLine + string.Join(Environment.NewLine, warnings) + Environment.NewLine+Environment.NewLine+"是否继续导出？", positiveText: "继续");
             if (!r)
             {
                 return;

@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
 namespace ClassIsland;
 
+[SupportedOSPlatform("windows")]
 public class RegistryNotifier
 {
     [DllImport("advapi32.dll", EntryPoint = "RegNotifyChangeKeyValue")]

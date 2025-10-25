@@ -26,7 +26,7 @@ public class AppLogger(AppLogService appLogService, string categoryName) : ILogg
         {
             scopes.AddRange(ScopeStack.Value.Select(scope => (scope.ToString() ?? "") + " => "));
         }
-        var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? "\n" + exception : "");
+        var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? Environment.NewLine + exception : "");
         AppLogService.AddLog(new LogEntry()
         {
             LogLevel = logLevel,

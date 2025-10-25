@@ -133,7 +133,7 @@ public partial class AppLogsWindow : MyWindow
         try
         {
             var logs = DataGridMain.SelectedItems.Cast<object?>().Select(x => x?.ToString() ?? "").ToList();
-            Clipboard?.SetTextAsync(string.Join('\n', logs));
+            Clipboard?.SetTextAsync(string.Join(Environment.NewLine, logs));
             this.ShowSuccessToast($"已将 {logs.Count} 条日志复制到剪贴板。");
         }
         catch (Exception ex)

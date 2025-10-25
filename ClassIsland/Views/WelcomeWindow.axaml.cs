@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
@@ -104,6 +105,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         MainFrame.Navigate(type);
     }
 
+    [SupportedOSPlatform("windows")]
     private async Task CreateShortcutsWindows()
     {
         var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
