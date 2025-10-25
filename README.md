@@ -19,6 +19,8 @@
 ![GitHub Repo size](https://img.shields.io/github/repo-size/ClassIsland/ClassIsland?style=flat-square&color=3cb371)
 [![GitHub Repo Languages](https://img.shields.io/github/languages/top/ClassIsland/ClassIsland?style=flat-square)](https://github.com/ClassIsland/ClassIsland/search?l=c%23)
 
+<a href="https://hellogithub.com/repository/ClassIsland/ClassIsland" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=fb844b7286244bf8a1d67bfd228a95c7&claim_uid=kZp2qRKGVYrXoTS" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显示工具，可以在 Windows PC、Mac 及 Linux 设备屏幕上显示各种信息。<br/>
 本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
@@ -45,7 +47,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 ### 课表编辑与管理
 
 - [x] 简洁直观的 [课表编辑工具](https://docs.classisland.tech/app/classplan)
-- [x] 从 Excel 表格、[CSES](https://github.com/cses-org/cses) 或其他软件 [导入课表](https://docs.classisland.tech/app/profile/#%E4%BB%8E%E8%A1%A8%E6%A0%BC%E5%AF%BC%E5%85%A5)
+- [x] 从 Excel 表格、[CSES](https://github.com/SmartTeachCN/CSES) 或其他软件 [导入课表](https://docs.classisland.tech/app/profile/#%E4%BB%8E%E8%A1%A8%E6%A0%BC%E5%AF%BC%E5%85%A5)
 - [x] 将课表信息导出到 Excel 表格
 - [x] 多周轮换、快速录入时间表、自定义设置
 - [x] 单日/跨天临时换课
@@ -176,7 +178,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-31-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-33-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -229,6 +231,8 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/HuYihe2008"><img src="https://avatars.githubusercontent.com/u/76118866?v=4?s=100" width="100px;" alt="JamYido"/><br /><sub><b>JamYido</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=HuYihe2008" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://cszj.wang/"><img src="https://avatars.githubusercontent.com/u/41245552?v=4?s=100" width="100px;" alt="吕舒君"/><br /><sub><b>吕舒君</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Lvshujun0918" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tlnkmc"><img src="https://avatars.githubusercontent.com/u/122972130?v=4?s=100" width="100px;" alt="Mux_Yang"/><br /><sub><b>Mux_Yang</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=tlnkmc" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.pizero.top/"><img src="https://avatars.githubusercontent.com/u/71167373?v=4?s=100" width="100px;" alt="Pizero"/><br /><sub><b>Pizero</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=pizeroLOL" title="Code">💻</a> <a href="#platform-pizeroLOL" title="Packaging/porting to new platform">📦</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/lrsgzs"><img src="https://avatars.githubusercontent.com/u/99574908?v=4?s=100" width="100px;" alt="lrs2187"/><br /><sub><b>lrs2187</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=lrsgzs" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
@@ -257,6 +261,14 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
     </td>
     <td>
     Free code signing on Windows provided by <a href="https://signpath.io">SignPath.io</a>, certficate by <a href="https://signpath.org/">SignPath Foundation</a>
+    </td>
+  </tr> 
+  <tr>
+    <td>
+      <img alt="苏州晔淞信息科技有限公司" src="https://res.classisland.tech/sponsors/ystron.png" width="50" height="50"/>
+    </td>
+    <td>
+    由<a href="https://www.yesongit.com">苏州晔淞信息科技有限公司</a>提供云计算支持。苏州晔淞信息科技有限公司以自主创新、灵活开放的理念，以行业领先的云计算平台助力云上业务创新。
     </td>
   </tr> 
 </table>

@@ -40,7 +40,7 @@ public partial class GptSovitsSpeechServiceSettingsControl : SpeechProviderContr
             IsInternal = true,
             GptSoVitsServerIp = "paimon.tts.wez.ink",
             GptSoVitsBatchSize = 5,
-            GptSoVitsPort = "80",
+            GptSoVitsPort = "20080",
             GptSoVitsPromptText = "既然罗莎莉亚说足迹上有元素力，用元素视野应该能很清楚地看到吧。",
             GptSoVitsRefAudioPath = "template_audio/paimon.wav"
         },
@@ -51,7 +51,7 @@ public partial class GptSovitsSpeechServiceSettingsControl : SpeechProviderContr
             IsInternal = true,
             GptSoVitsServerIp = "klee.tts.wez.ink",
             GptSoVitsBatchSize = 5,
-            GptSoVitsPort = "80",
+            GptSoVitsPort = "20080",
             GptSoVitsPromptText = "买东西那天还有一个人一起帮着看了款式，那个人好像叫",
             GptSoVitsRefAudioPath = "template_audio/klee.wav"
         },
