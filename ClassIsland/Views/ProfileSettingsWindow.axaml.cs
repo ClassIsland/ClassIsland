@@ -68,6 +68,43 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.MasterPageTabSelectIndex = 3;
         }
         InitializeComponent();
+        KeyDown += OnKeyDown;
+    }
+
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (ViewModel.SelectedTimeLayout?.Layouts == null || ViewModel.SelectedTimeLayout.Layouts.Count == 0)
+            return;
+
+        var layouts = ViewModel.SelectedTimeLayout.Layouts;
+        var currentIndex = ViewModel.SelectedTimePoint != null ? layouts.IndexOf(ViewModel.SelectedTimePoint) : -1;
+        switch (e.Key)
+        {
+            case Key.Up:
+                // 向上切换到前一个时间点
+                if (currentIndex > 0)
+                {
+                    ViewModel.SelectedTimePoint = layouts[currentIndex - 1];
+                    TimeLineListControl?.ScrollIntoView(ViewModel.SelectedTimePoint);
+                    e.Handled = true;
+                }
+                break;
+            case Key.Down:
+                // 向下切换到后一个时间点
+                if (currentIndex >= 0 && currentIndex < layouts.Count - 1)
+                {
+                    ViewModel.SelectedTimePoint = layouts[currentIndex + 1];
+                    TimeLineListControl?.ScrollIntoView(ViewModel.SelectedTimePoint);
+                    e.Handled = true;
+                }
+                else if (currentIndex == -1 && layouts.Count > 0)
+                {
+                    ViewModel.SelectedTimePoint = layouts[0];
+                    TimeLineListControl?.ScrollIntoView(ViewModel.SelectedTimePoint);
+                    e.Handled = true;
+                }
+                break;
+        }
     }
     
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
