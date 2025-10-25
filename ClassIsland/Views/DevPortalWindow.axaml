@@ -150,6 +150,22 @@
             <TabItem Header="调课日历">
                 <controls:ScheduleCalendarControl/>
             </TabItem>
+            <TabItem Header="WeatherIcon">
+                <Grid>
+                    <ListBox ItemsSource="{Binding ViewModel.WeatherService.WeatherStatusList}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <controls:WeatherPackIconControl Code="{Binding Code}"
+                                                                     Width="24" Height="24"/>
+                                    <TextBlock Text="{Binding Weather}" VerticalAlignment="Center"/>
+
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </ci:MyWindow>

@@ -9,11 +9,13 @@ namespace ClassIsland.ViewModels;
 public partial class DevPortalViewModel(
     INotificationHostService notificationHostService,
     SettingsService settingsService,
-    IExactTimeService exactTimeService) : ObservableObject
+    IExactTimeService exactTimeService,
+    IWeatherService weatherService) : ObservableObject
 {
     public INotificationHostService NotificationHostService { get; } = notificationHostService;
     public SettingsService SettingsService { get; } = settingsService;
     public IExactTimeService ExactTimeService { get; } = exactTimeService;
+    public IWeatherService WeatherService { get; } = weatherService;
 
     [ObservableProperty] private string _notificationMaskText = "";
     

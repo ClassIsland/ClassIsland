@@ -7,10 +7,10 @@
         <Border Background="Transparent" x:Name="OuterBorder" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <ci:FluentIcon HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                               Width="16"
-                               Height="16"
-                               FontSize="16"
-                               Margin="0 1 0 -1"
+                               Width="20"
+                               Height="20"
+                               FontSize="24"
+                               Margin="0 1.2 0 -1.2"
                                Glyph="{Binding Converter={x:Static converters:WeatherConverters.WeatherTypeToIconGlyphConverter}}">
                 </ci:FluentIcon>
             </Viewbox></Border>

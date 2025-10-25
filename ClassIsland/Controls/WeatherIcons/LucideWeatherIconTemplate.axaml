@@ -1,16 +1,15 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
-                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:converters="using:ClassIsland.Converters">
-    <DataTemplate DataType="{x:Type system:String}" x:Key="LucideWeatherIconTemplate">
+    <DataTemplate DataType="{x:Type x:String}" x:Key="LucideWeatherIconTemplate">
         <Border Background="Transparent" x:Name="OuterBorder" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 -1 0 0">
+            <Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                 <ci:LucideIcon HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                Width="16"
                                Height="16"
                                FontSize="16"
-                               Margin="0 0 0 0"
+                               Margin="1"
                                Glyph="{Binding Converter={x:Static converters:WeatherConverters.WeatherTypeToLucideIconGlyphConverter}}">
                 </ci:LucideIcon>
             </Viewbox>
