@@ -76,7 +76,7 @@ public class FileDialogService
                 dialog.SetFileTypes(filterSpecs);
             }
 
-            dialog.Show(HWND.Null);
+            dialog.Show((HWND)root);
             dialog.GetResults(out var resultsArray);
             if (resultsArray != null)
             {
@@ -170,54 +170,6 @@ public class FileDialogService
         catch (Exception ex)
         {
             Console.WriteLine($"Error in ShowSaveFileDialog: {ex.Message}");
-        }
-        finally
-        {
-            PInvoke.CoUninitialize();
-        }
-
-        return null;
-    }
-
-    public static unsafe string? ShowFolderDialog(string? title = null, string? initialDirectory = null)
-    {
-        var hr = PInvoke.CoInitializeEx(null, COINIT.COINIT_APARTMENTTHREADED | COINIT.COINIT_DISABLE_OLE1DDE);
-        if (hr.Failed)
-            return null;
-
-        try
-        {
-            var fileOpenDialog = new FileOpenDialog();
-            var dialog = (IFileOpenDialog)fileOpenDialog;
-
-            // 设置为文件夹选择模式
-            dialog.SetOptions(FILEOPENDIALOGOPTIONS.FOS_PICKFOLDERS | FILEOPENDIALOGOPTIONS.FOS_PATHMUSTEXIST);
-
-            if (!string.IsNullOrEmpty(title))
-            {
-                dialog.SetTitle(title);
-            }
-
-            if (!string.IsNullOrEmpty(initialDirectory))
-            {
-                var hr2 = PInvoke.SHCreateItemFromParsingName(initialDirectory, null, typeof(IShellItem).GUID, out var shellItem);
-                if (hr2.Succeeded && shellItem != null)
-                {
-                    dialog.SetFolder((IShellItem)shellItem);
-                }
-            }
-
-            dialog.Show(HWND.Null);
-            dialog.GetResult(out var resultItem);
-            if (resultItem != null)
-            {
-                resultItem.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out var path);
-                return path.ToString();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in ShowFolderDialog: {ex.Message}");
         }
         finally
         {
