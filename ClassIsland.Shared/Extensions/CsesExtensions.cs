@@ -63,7 +63,17 @@ public static class CsesExtensions
 
                 return true;
             }).Key;
-            var timeLayout = timeLayoutKey == Guid.Empty ? new TimeLayout() : result.TimeLayouts[timeLayoutKey];
+            TimeLayout timeLayout;
+            bool isNewTimeLayout = timeLayoutKey == Guid.Empty;
+            if (isNewTimeLayout)
+            {
+                timeLayout = new TimeLayout();
+                timeLayoutKey = Guid.NewGuid();
+            }
+            else
+            {
+                timeLayout = result.TimeLayouts[timeLayoutKey];
+            }
 
             var classPlan = new ClassPlan();
             for (var j = 0; j < i.Classes.Count; j++)
@@ -74,29 +84,27 @@ public static class CsesExtensions
                     SubjectId = subjectId,
                 });
 
-                if (timeLayoutKey != null)
-                {
-                    continue;
-                }
-                timeLayout.Layouts.Add(new TimeLayoutItem()
-                {
-                    TimeType = 0,
-                    StartTime = i.Classes[j].StartTime,
-                    EndTime = i.Classes[j].EndTime,
-                });
-                if (j < i.Classes.Count - 1)
+                if (isNewTimeLayout)
                 {
                     timeLayout.Layouts.Add(new TimeLayoutItem()
                     {
-                        TimeType = 1,
-                        StartTime = i.Classes[j].EndTime,
-                        EndTime = i.Classes[j + 1].StartTime,
+                        TimeType = 0,
+                        StartTime = i.Classes[j].StartTime,
+                        EndTime = i.Classes[j].EndTime,
                     });
+                    if (j < i.Classes.Count - 1)
+                    {
+                        timeLayout.Layouts.Add(new TimeLayoutItem()
+                        {
+                            TimeType = 1,
+                            StartTime = i.Classes[j].EndTime,
+                            EndTime = i.Classes[j + 1].StartTime,
+                        });
+                    }
                 }
             }
-            if (timeLayoutKey == null)
+            if (isNewTimeLayout)
             {
-                timeLayoutKey = Guid.NewGuid();
                 result.TimeLayouts[timeLayoutKey] = timeLayout;
             }
 
