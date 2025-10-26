@@ -983,12 +983,17 @@ public partial class App : AppBase, IAppHost
 
     public override void Restart(string[] parameters)
     {
+        Restart(parameters, false);
+    }
+    
+    public override void Restart(string[] parameters, bool restartToLauncher)
+    {
         Stop();
         var path = Environment.ProcessPath;
         if (path == null)
             return;
         var replaced = path.Replace(".dll", PlatformExecutableExtension);
-        var startInfo = new ProcessStartInfo(replaced);
+        var startInfo = new ProcessStartInfo(restartToLauncher ? ExecutingEntrance : replaced);
         foreach (var i in parameters)
         {
             startInfo.ArgumentList.Add(i);

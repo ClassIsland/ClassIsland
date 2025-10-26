@@ -155,7 +155,7 @@
                         </Binding>
                     </Button.IsVisible>
                 </Button>
-                <Button Content="下载更新" Classes="accent" Margin="4"
+                <Button Content="下载并安装" Classes="accent" Margin="4"
                         Click="ButtonDownloadUpdate_OnClick">
                     <Button.IsVisible>
                         <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"

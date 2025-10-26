@@ -202,7 +202,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         if (Settings.LastUpdateStatus == UpdateStatus.UpdateAvailable)
         {
             await DownloadUpdateAsync();
-            Settings.AutoInstallUpdateNextStartup = false;
         }
 
         if (Settings.UpdateMode < 3)
@@ -212,7 +211,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
         if (Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
         {
-            Settings.AutoInstallUpdateNextStartup = true;
+            await ExtractUpdateAsync();
         }
     }
 
@@ -250,6 +249,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
             DistributionMetadata = await RequestHelper.SaveJson<DistributionMetadata>(
                 new Uri("api/v1/public/distributions/metadata", UriKind.Relative), UpdateDistributionMetadataPath);
+            if (!DistributionMetadata.Channels.ContainsKey(Settings.SelectedUpdateChannelV3))
+            {
+                Settings.SelectedUpdateChannelV3 = DistributionMetadata.DefaultChannelId;
+            }
             var latest = await RequestHelper.GetJson<LatestDistributionInfoMinResponse>(
                 new Uri($"api/v1/public/distributions/latest/{Settings.SelectedUpdateChannelV3}", UriKind.Relative));
             spanGetIndex.Finish(SpanStatus.Ok);

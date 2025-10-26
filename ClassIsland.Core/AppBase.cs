@@ -31,6 +31,13 @@ public abstract class AppBase : Application, IAppHost
     public abstract void Restart(string[] parameters);
 
     /// <summary>
+    /// 重启应用程序。
+    /// </summary>
+    /// <param name="parameters">重启应用时使用的参数</param>
+    /// <param name="restartToLauncher">以启动器可执行程序作为重启目标</param>
+    public abstract void Restart(string[] parameters, bool restartToLauncher);
+
+    /// <summary>
     /// 停止当前应用程序。
     /// </summary>
     public abstract void Stop();

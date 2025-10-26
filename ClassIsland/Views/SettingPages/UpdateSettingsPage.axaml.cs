@@ -76,6 +76,7 @@ public partial class UpdateSettingsPage : SettingsPageBase
     private async void ButtonDownloadUpdate_OnClick(object sender, RoutedEventArgs e)
     {
         await ViewModel.UpdateService.DownloadUpdateAsync();
+        await ViewModel.UpdateService.ExtractUpdateAsync();
     }
 
     private void UpdateChannelInfo()
@@ -124,7 +125,7 @@ public partial class UpdateSettingsPage : SettingsPageBase
 
     private void ButtonRestart_OnClick(object? sender, RoutedEventArgs e)
     {
-        AppBase.Current.Restart();
+        AppBase.Current.Restart(["-m"], true);
     }
 
     private async void SettingsExpanderItemCheckUpdateForce_OnClick(object? sender, RoutedEventArgs e)
