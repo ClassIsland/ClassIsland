@@ -191,7 +191,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private async Task AppStartupBackground()
     {
-        CleanupPrevDeployments();
+        if (Settings.LastUpdateStatus == UpdateStatus.UpdateDeployed)
+        {
+            CleanupPrevDeployments();
+            await PlatformServices.DesktopToastService.ShowToastAsync("更新成功",
+                $"应用已更新到 {AppBase.AppVersion}，点击以查看详细信息。", UpdateNotificationClickedCallback);
+            Settings.LastUpdateStatus = UpdateStatus.UpToDate;
+        }
+        
         await CheckUpdateAsync();
 
         if (Settings.UpdateMode < 2)
