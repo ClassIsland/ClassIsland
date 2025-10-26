@@ -580,7 +580,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             Logger.LogInformation("正在部署应用更新");
             var fileMapJson = await File.ReadAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json"));
             var fileMapSig = await File.ReadAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json.sig"));
-            var deploymentLock = ConfigureFileHelper.LoadConfigUnWrapped<DeploymentLock>(Path.Combine(UpdateTempPath, "FileMap.json.sig"), false);
+            var deploymentLock = ConfigureFileHelper.LoadConfigUnWrapped<DeploymentLock>(Path.Combine(UpdateTempPath, "Deployment.lock"), false);
             if (!deploymentLock.FileMapSha512.SequenceEqual(SHA512.HashData(Encoding.UTF8.GetBytes(fileMapJson))))
             {
                 throw new InvalidOperationException("文件图哈希与下载时不符合，可能已经损坏");
@@ -728,6 +728,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                         var existedPath = Path.Combine(existedFileRoot, path);
                         
                         Logger.LogTrace("Deploy Copy EXISTED {} -> {}", existedPath, targetPath);
+                        File.Copy(existedPath, targetPath, true);
+                        continue;
                     }
                     
                     var hashHex = Convert.ToHexString(fileInfo.FileSha512);
