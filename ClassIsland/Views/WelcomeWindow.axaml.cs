@@ -112,8 +112,8 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "ClassIsland.lnk");
         var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "ClassIsland.lnk");
         using var shortcut = new WindowsShortcut();
-        shortcut.Path = Environment.ProcessPath;
-        shortcut.WorkingDirectory = Environment.CurrentDirectory;
+        shortcut.Path = AppBase.ExecutingEntrance;
+        shortcut.WorkingDirectory = Path.GetDirectoryName(AppBase.ExecutingEntrance);
         if (ViewModel.CreateStartupShortcut)
             shortcut.Save(startupPath);
         if (ViewModel.CreateStartMenuShortcut)

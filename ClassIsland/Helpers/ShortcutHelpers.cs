@@ -17,8 +17,8 @@ public static class ShortcutHelpers
                 "ClassIsland.lnk");
 
             using var shortcut = new WindowsShortcut();
-            shortcut.Path = Environment.ProcessPath;
-            shortcut.WorkingDirectory = Environment.CurrentDirectory;
+            shortcut.Path = AppBase.ExecutingEntrance;
+            shortcut.WorkingDirectory = Path.GetDirectoryName(AppBase.ExecutingEntrance);
             shortcut.Save(desktopPath);
         }
         else if (OperatingSystem.IsLinux())
@@ -39,8 +39,8 @@ public static class ShortcutHelpers
                 "ClassIsland.lnk");
 
             using var shortcut = new WindowsShortcut();
-            shortcut.Path = Environment.ProcessPath;
-            shortcut.WorkingDirectory = Environment.CurrentDirectory;
+            shortcut.Path = AppBase.ExecutingEntrance;
+            shortcut.WorkingDirectory = Path.GetDirectoryName(AppBase.ExecutingEntrance);
             shortcut.Save(startMenuPath);
         }
         else if (OperatingSystem.IsLinux())

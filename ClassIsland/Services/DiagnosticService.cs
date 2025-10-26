@@ -52,6 +52,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {"AppPackageRoot", CommonDirectories.AppPackageRoot},
             {"AppRoot", CommonDirectories.AppRootFolderPath},
             {"AppCurrentDirectory", Environment.CurrentDirectory},
+            {"AppExecutingEntrance", AppBase.ExecutingEntrance},
             {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},
             {"AppStartupDurationMs", StartupDurationMs.ToString()},
             {"AppVersion", App.AppVersionLong},
