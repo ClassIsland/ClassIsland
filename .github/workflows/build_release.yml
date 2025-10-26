@@ -1,7 +1,7 @@
 name: Build
 
 on:
-  push:
+#  push:
   workflow_dispatch:
     inputs:
       release_tag:
@@ -21,7 +21,7 @@ on:
         required: false
         type: boolean
 env:
-  PDC_CLIENT_VERSION: 1.0.0.1
+  PDC_CLIENT_VERSION: 1.0.0.2
 jobs:
   build_app:
     runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-15' || 'windows-2022' ) }}
