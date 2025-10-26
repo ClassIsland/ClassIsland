@@ -173,7 +173,7 @@ jobs:
   sign_1:
     name: Sign_1
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' && !github.event.inputs.is_test_mode }}
+    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' && inputs.is_test_mode != true }}
     needs: [ build_app, build_launcher ]
     steps:
       - name: Checkout
@@ -338,7 +338,7 @@ jobs:
     concurrency:
       group: "publish-public"
     environment:
-      name: ${{ github.event.inputs.is_test_mode && 'staging' || 'public' }}
+      name: ${{ inputs.is_test_mode == true && 'staging' || 'public' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -408,7 +408,7 @@ jobs:
           tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
           
       - name: Upload Nuget packages to NuGet Gallery
-        if: ${{ github.event_name != 'pull_request' && !github.event.inputs.is_test_mode }}
+        if: ${{ github.event_name != 'pull_request' && !inputs.is_test_mode }}
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}
         run: |
