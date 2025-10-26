@@ -738,6 +738,21 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     File.Copy(fullPath, targetPath, true);
                 }
             }
+
+            if (OperatingSystem.IsLinux() && AppBase.Current.PackagingType == "folder")
+            {
+                using var proc = Process.Start(new ProcessStartInfo("chmod",
+                [
+                    "+x",
+                    Path.GetFullPath(Path.Combine(root,
+                        "ClassIsland"))
+                ]));
+                var task = proc?.WaitForExitAsync();
+                if (task != null)
+                {
+                    await task;
+                }
+            }
             File.Copy(Path.Combine(UpdateTempPath, "FileMap.json"), Path.Combine(appPath, "files.json"));
             
             Logger.LogInformation("正在激活新的部署");
