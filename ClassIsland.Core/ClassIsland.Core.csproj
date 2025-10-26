@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
-    <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.1.0" />
+    <PackageReference Condition="'$(Configuration)'=='Debug'" Include="AvaloniaUI.DiagnosticsSupport" Version="2.1.0" />
     <PackageReference Include="ClassIsland.Markdown.Avalonia" Version="11.0.3.4" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
       <PrivateAssets>all</PrivateAssets>

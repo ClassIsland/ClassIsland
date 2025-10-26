@@ -70,7 +70,9 @@ class Program
                 ],
                 RenderingMode = BuildRenderingMode(renderingMode)
             })
+#if DEBUG
             .WithDeveloperTools()
+#endif
             .UsePlatformDetect()
             .LogToHostSink();
 
