@@ -48,7 +48,7 @@ public interface IManagementService
     /// 集控服务器连接
     /// </summary>
     IManagementServerConnection? Connection { get; }
-    internal Task SetupManagement();
+    internal Task<bool> SetupManagement();
     internal void SaveSettings();
     
     /// <summary>

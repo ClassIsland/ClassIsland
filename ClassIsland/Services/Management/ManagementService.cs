@@ -14,6 +14,7 @@ using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.Helpers;
 using ClassIsland.Models.Authorize;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Client;
 using ClassIsland.Shared.Protobuf.Service;
@@ -141,25 +142,25 @@ public class ManagementService : IManagementService
         CredentialConfig.PropertyChanged += (sender, args) => SaveConfig(LocalManagementCredentialsPath, CredentialConfig);
     }
 
-    public async Task SetupManagement()
+    public async Task<bool> SetupManagement()
     {
         if (!IsManagementEnabled)
         {
             SetupLocalManagement();
-            return;
+            return true;
         }
 
         Logger.LogInformation("正在初始化集控");
 
-        await ReloadManagementAsync();
+        return await ReloadManagementAsync();
     }
 
-    public async Task ReloadManagementAsync()
+    public async Task<bool> ReloadManagementAsync()
     {
         Logger.LogInformation("正在重载集控配置");
         if (Connection == null)
         {
-            return;
+            return true;
         }
 
         //Load old config
@@ -175,6 +176,12 @@ public class ManagementService : IManagementService
             CredentialConfig = LoadConfig<ManagementCredentialConfig>(ManagementCredentialsPath);
             Versions = LoadConfig<ManagementVersions>(ManagementVersionsPath);
             Manifest = await Connection.GetManifest();
+            if (Manifest.CoreVersion.Major != IAppHost.CoreVersion.Major)
+            {
+                await CommonTaskDialogs.ShowDialog("集控核心版本不兼容",
+                    $"您正在核心版本主版本号（{IAppHost.CoreVersion}）与集控数据核心版本主版本号（{Manifest.CoreVersion}）不同的 ClassIsland 加入集控，这可能会导致您的数据损坏。请运行兼容贵组织集控服务的 ClassIsland 版本，或者联系您的管理员了解详细信息。");
+                return false;
+            }
             SaveConfig(ManagementManifestPath, Manifest);
             // 拉取策略
             if (Manifest.PolicySource.IsNewerAndNotNull(Versions.PolicyVersion))
@@ -194,9 +201,9 @@ public class ManagementService : IManagementService
             CredentialConfig = oldCredential;
             Versions = oldVersions;
             Logger.LogError(e, "拉取集控清单与策略失败");
-            return;
         }
 
+        return true;
     }
 
     public void SaveSettings()
@@ -221,6 +228,11 @@ public class ManagementService : IManagementService
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(settings.ManagementServerKind), "无效的服务器类型。");
+        }
+
+        if (mf.CoreVersion.Major != IAppHost.CoreVersion.Major)
+        {
+            throw new InvalidOperationException($"集控服务核心版本（{mf.CoreVersion}）与应用当前核心版本不兼容（{IAppHost.CoreVersion}）");
         }
 
         var dialog = new TaskDialog

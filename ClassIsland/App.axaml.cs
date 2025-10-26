@@ -604,8 +604,13 @@ public partial class App : AppBase, IAppHost
         }
         var spanLaunching = transaction.StartChild("startup-launching");
         var spanSetupMgmt = spanLaunching.StartChild("startup-setup-mgmt");
-        await GetService<IManagementService>().SetupManagement();
+        var successSetupMgmt = await GetService<IManagementService>().SetupManagement();
         spanSetupMgmt.Finish();
+        if (!successSetupMgmt)
+        {
+            Stop();
+            return;
+        }
         var spanLoadingSettings = spanLaunching.StartChild("startup-loading-settings");
         await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;

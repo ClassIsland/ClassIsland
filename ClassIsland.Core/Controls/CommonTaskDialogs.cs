@@ -22,7 +22,7 @@ public static class CommonTaskDialogs
         var dialog = new TaskDialog()
         {
             Content = content,
-            SubHeader = header,
+            Header = header,
             Buttons =
             {
                 new TaskDialogButton("确定", true)

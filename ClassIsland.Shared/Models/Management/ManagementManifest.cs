@@ -51,4 +51,9 @@ public class ManagementManifest
     /// 组织名称
     /// </summary>
     public string OrganizationName { get; set; } = "组织名称";
+
+    /// <summary>
+    /// 集控信息的核心版本
+    /// </summary>
+    public Version CoreVersion { get; set; } = new Version(0, 0, 0, 0);
 }
