@@ -1020,4 +1020,9 @@ public partial class MainWindow : Window
     {
         Dispatcher.UIThread.InvokeAsync(() => Height = LayoutContainerGrid.Bounds.Height, DispatcherPriority.Render);
     }
+
+    private void NativeMenuItemDebugOpenScreenshotWindow_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<ScreenshotHelperWindow>().Show();
+    }
 }

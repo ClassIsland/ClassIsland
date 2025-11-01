@@ -99,6 +99,7 @@ public partial class App
         services.AddTransient<WelcomeViewModel>();
         services.AddTransient<ClassChangingViewModel>();
         services.AddTransient<DataTransferViewModel>();
+        services.AddTransient<ScreenshotHelperViewModel>();
         // ViewModels/SettingsPages
         services.AddTransient<GeneralSettingsViewModel>();
         services.AddTransient<AboutSettingsViewModel>();
@@ -113,6 +114,7 @@ public partial class App
         services.AddTransient<ErrorSettingsViewModel>();
         services.AddTransient<ThemesSettingsViewModel>();
         services.AddTransient<UpdateSettingsPageViewModel>();
+        services.AddTransient<DebugPageViewModel>();
         // Views
         services.AddSingleton<MainWindow>();
         // services.AddTransient<SplashWindowBase, SplashWindow>();
@@ -129,7 +131,7 @@ public partial class App
         services.AddTransient<DevPortalWindow>();
         services.AddTransient<WelcomeWindow>();
         services.AddTransient<DataTransferWindow>();
-        services.AddTransient<DebugPageViewModel>();
+        services.AddTransient<ScreenshotHelperWindow>();
         // 设置页面
         services.AddSettingsPage<GeneralSettingsPage>();
         services.AddSettingsPage<ComponentsSettingsPage>();

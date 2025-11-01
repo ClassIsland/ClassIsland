@@ -1,0 +1,36 @@
+<ci:MyWindow xmlns="https://github.com/avaloniaui"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:ci="http://classisland.tech/schemas/xaml/core"
+          xmlns:views="clr-namespace:ClassIsland.Views"
+          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+          x:Class="ClassIsland.Views.ScreenshotHelperWindow"
+          Title="截图"
+          d:DataContext="{d:DesignInstance views:ScreenshotHelperWindow}">
+    <StackPanel Spacing="4">
+        <ci:Field Label="窗口">
+            <ComboBox ItemsSource="{Binding ViewModel.Windows}"
+                      SelectedItem="{Binding ViewModel.SelectedWindow}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock>
+                            <Run Text="{Binding Window.Title}"/>
+                            (Id=<Run Text="{Binding Id}"/>)
+                        </TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </ci:Field>
+        <ci:Field Label="保存文件夹">
+            <TextBox Text="{Binding ViewModel.ImageBasePath}"/>
+        </ci:Field>
+        <ci:Field Label="缩放">
+            <NumericUpDown Value="{Binding ViewModel.Scale}"/>
+        </ci:Field>
+        <Grid>
+            <Button HorizontalAlignment="Left" Click="ButtonRefresh_OnClick">刷新</Button>
+            <Button HorizontalAlignment="Right" Classes="accent" Click="ButtonScreenshot_OnClick">截图</Button>
+        </Grid>
+    </StackPanel>
+</ci:MyWindow>
