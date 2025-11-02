@@ -9,7 +9,7 @@
 
 <!-- ![软件截图 - 主界面](https://github.com/ClassIsland/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3) -->
 
-![Banner](https://res.classisland.tech/banners/banner-v2.webp)
+![Banner](https://res.classisland.tech/banners/banner-v2-1.webp)
 
 [![Stars](https://img.shields.io/github/stars/ClassIsland/ClassIsland?label=Stars)](https://github.com/ClassIsland/ClassIsland)
 [![正式版 Release](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&color=%233fb950&label=正式版)](https://github.com/ClassIsland/ClassIsland/releases/latest)
