@@ -679,7 +679,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible)
                 {
                     var center = GetCenter();
-                    TopmostEffectWindow.PlayEffect(new RippleEffect(center));
+                    TopmostEffectWindow.PlayEffect(new RippleEffect(center, MaskContent.Color));
                 }
 
                 if (!cancellationToken.IsCancellationRequested)

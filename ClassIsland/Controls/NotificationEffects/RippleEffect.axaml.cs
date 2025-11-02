@@ -1,16 +1,13 @@
+using Avalonia;
+using Avalonia.Animation.Easings;
+using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Rendering.Composition;
+using ClassIsland.Shared.Interfaces.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using Avalonia;
-using Avalonia.Animation;
-using Avalonia.Animation.Easings;
-using Avalonia.Controls;
-using Avalonia.Data.Core;
-using Avalonia.Rendering.Composition;
-using Avalonia.Styling;
-using ClassIsland.Shared.Interfaces.Controls;
 
 namespace ClassIsland.Controls.NotificationEffects;
 
@@ -19,6 +16,16 @@ namespace ClassIsland.Controls.NotificationEffects;
 /// </summary>
 public partial class RippleEffect : UserControl, INotificationEffectControl
 {
+    public static readonly StyledProperty<IBrush?> FillProperty =
+        AvaloniaProperty.Register<RippleEffect, IBrush?>(
+            nameof(Fill));
+
+    public IBrush? Fill
+    {
+        get => GetValue(FillProperty);
+        set => SetValue(FillProperty, value);
+    }
+
     public static readonly StyledProperty<double> CenterXProperty = AvaloniaProperty.Register<RippleEffect, double>(
         nameof(CenterX));
 
@@ -48,12 +55,12 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
     
     private PixelPoint CenterPoint { get; }
 
-    public RippleEffect(PixelPoint center)
+    public RippleEffect(PixelPoint center, IBrush? brush = null)
     {
         CenterPoint = center;
+        Fill = brush ?? (Application.Current!.TryFindResource("AccentFillColorDefaultBrush", out var v) ? (IBrush)v : null);
         InitializeComponent();
         EllipseMain.IsVisible = true;
-        
     }
 
 
