@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
-        <LangVersion>13</LangVersion>
+        <LangVersion>12</LangVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
     </PropertyGroup>
