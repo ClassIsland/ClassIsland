@@ -165,7 +165,11 @@ public class WindowPlatformService : IWindowPlatformService
         var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
         try
         {
-            _ = GetWindowText((HWND)handle, pClassName, PwstrCapcity - 1);
+            var len = GetWindowText((HWND)handle, pClassName, PwstrCapcity);
+            if (len <= 0)
+            {
+                return string.Empty;
+            }
             var className = pClassName.ToString();
             return className;
         }
@@ -180,7 +184,11 @@ public class WindowPlatformService : IWindowPlatformService
         var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
         try
         {
-            _ = GetClassName((HWND)handle, pClassName, PwstrCapcity - 1);
+            var len = GetClassName((HWND)handle, pClassName, PwstrCapcity);
+            if (len <= 0)
+            {
+                return string.Empty;
+            }
             var className = pClassName.ToString();
             return className;
         }
@@ -203,11 +211,15 @@ public class WindowPlatformService : IWindowPlatformService
     public bool IsForegroundWindowFullscreen(Screen screen)
     {
         var win = GetForegroundWindow();
-        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
+        if (win == HWND.Null)
+        {
+            return false;
+        }
+        GetWindowRect(win, out RECT rect);
         var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
-        GetClassName(win, pClassName, PwstrCapcity  -1);
+        var len = GetClassName(win, pClassName, PwstrCapcity);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        var className = pClassName.ToString();
+        var className = len > 0 ? pClassName.ToString() : string.Empty;
         Marshal.FreeHGlobal(nClassName);
         if (className == "WorkerW" || className == "Progman")
         {
@@ -220,10 +232,14 @@ public class WindowPlatformService : IWindowPlatformService
     public bool IsForegroundWindowMaximized(Screen screen)
     {
         var win = GetForegroundWindow();
-        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
+        if (win == HWND.Null)
+        {
+            return false;
+        }
+        GetWindowRect(win, out RECT rect);
         var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
-        GetClassName(win, pClassName, PwstrCapcity - 1);
-        var className = pClassName.ToString();
+        var len = GetClassName(win, pClassName, PwstrCapcity);
+        var className = len > 0 ? pClassName.ToString() : string.Empty;
         Marshal.FreeHGlobal(nClassName);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
         if (className is "WorkerW" or "Progman")
