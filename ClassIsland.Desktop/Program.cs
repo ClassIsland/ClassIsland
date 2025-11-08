@@ -8,6 +8,7 @@ using ClassIsland.Platforms.Linux.Services;
 using ClassIsland.Platforms.MacOs.Services;
 #endif
 using System.Diagnostics;
+using System.Runtime.Versioning;
 using Avalonia;
 using Avalonia.Logging;
 using Avalonia.Media;
@@ -29,10 +30,11 @@ class Program
         var stopTokenSource = new CancellationTokenSource();
         ActivatePlatforms(out var postInit, stopTokenSource.Token);
         var buildApp = ClassIsland.Program.AppEntry(args);
+#if Platforms_Windows
         var renderingMode = int.TryParse(GlobalStorageService.GetValue("Win32RenderingMode") ?? "", out var v1)
             ? v1
             : 0;
-        
+#endif
         var r =  AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
@@ -60,6 +62,7 @@ class Program
                     }
                 ]
             })
+#if Platforms_Windows
             .With(new Win32PlatformOptions()
             {
                 // 禁用 DirectComposition 以修复在部分版本 Windows 上 CPU 占用过高的问题。
@@ -70,6 +73,10 @@ class Program
                 ],
                 RenderingMode = BuildRenderingMode(renderingMode)
             })
+#endif
+#if Platforms_MacOs
+            .With(new MacOSPlatformOptions(){ShowInDock = false}) // Info.plist中的LSUIElement本应起到隐藏Dock栏图标的作用，但在macOS 26.1中似乎不工作
+#endif
 #if DEBUG
             .WithDeveloperTools()
 #endif
@@ -125,6 +132,7 @@ class Program
 #endif
     }
 
+    [SupportedOSPlatform("windows")]
     private static IReadOnlyList<Win32RenderingMode> BuildRenderingMode(int userValue)
     {
         if (userValue is <= 0 or > 4)
