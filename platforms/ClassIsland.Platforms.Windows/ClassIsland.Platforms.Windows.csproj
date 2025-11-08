@@ -13,8 +13,7 @@
         <ProjectReference Include="..\..\vendors\ClassIsland.WinRTReferences\ClassIsland.WinRTReferences.csproj" 
                           ExcludeAssets=""/>
         <ProjectReference Include="..\..\vendors\System.Device.Location\System.Device.Location.csproj" />
-        <ProjectReference Include="..\ClassIsland.Platforms.Windows.FilePickerHost\ClassIsland.Platforms.Windows.FilePickerHost.csproj" />
-    </ItemGroup>
+   </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
