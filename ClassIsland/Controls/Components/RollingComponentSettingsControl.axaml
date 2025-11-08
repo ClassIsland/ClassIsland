@@ -31,7 +31,7 @@
                     <ci:Field Suffix="px/秒">
                         <controls:NumberBox Width="150"
                                             Minimum="0.1"
-                                            Value="{Binding Settings.SpeedPixelPerSecond}" />
+                                            Value="{Binding Settings.SpeedPixelPerSecond, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                     </ci:Field>
                 </controls:SettingsExpander.Footer>
             </controls:SettingsExpander>
@@ -51,7 +51,7 @@
                         <ci:Field Suffix="秒">
                             <controls:NumberBox Width="150"
                                                 Minimum="0" Maximum="{x:Static helpers:TimeSpanHelper.MaxTimeSpanSeconds}"
-                                                Value="{Binding Settings.PauseSeconds}" />
+                                                Value="{Binding Settings.PauseSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                         </ci:Field>
                     </controls:SettingsExpanderItem.Footer>
                 </controls:SettingsExpanderItem>
@@ -62,7 +62,7 @@
                         <ci:Field Suffix="px">
                             <controls:NumberBox Width="150"
                                                 Minimum="0"
-                                                Value="{Binding Settings.PauseOffsetX}" />
+                                                Value="{Binding Settings.PauseOffsetX, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                         </ci:Field>
                     </controls:SettingsExpanderItem.Footer>
                 </controls:SettingsExpanderItem>

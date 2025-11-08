@@ -53,7 +53,7 @@
             <controls:NumberBox 
                 MinWidth="100" Minimum="0"
                 SpinButtonPlacementMode="Compact"
-                Value="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Mode=TwoWay}" />
+                Value="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Mode=TwoWay, Converter={x:Static ci:NotNaNConverter.Instance}}" />
         </controls1:Field>
         
         <WrapPanel Classes="animated-resize">
@@ -69,7 +69,7 @@
                     Maximum="36000" Minimum="0"
                     MinWidth="100"
                     SpinButtonPlacementMode="Compact"
-                    Value="{Binding Settings.CountdownSeconds, Mode=TwoWay}" />
+                    Value="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={x:Static ci:NotNaNConverter.Instance}}" />
             </controls1:Field>
         </WrapPanel>
         <CheckBox Content="使用模糊倒计时"

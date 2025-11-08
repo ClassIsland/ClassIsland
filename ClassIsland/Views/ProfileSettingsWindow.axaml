@@ -904,13 +904,13 @@
                                         <controls:NumberBox
                                             Maximum="36000" Minimum="0" HorizontalAlignment="Stretch"
                                             Foreground="{DynamicResource MaterialDesignBody}"
-                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                     </ci:Field>
                                     <ci:Field Label="默认课间时间点时长" Suffix="分钟">
                                         <controls:NumberBox
                                             Maximum="36000" Minimum="0" HorizontalAlignment="Stretch"
                                             Foreground="{DynamicResource MaterialDesignBody}"
-                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                     </ci:Field>
                                 </StackPanel>
                             </Expander>

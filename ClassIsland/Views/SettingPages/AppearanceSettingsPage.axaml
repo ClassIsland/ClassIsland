@@ -480,7 +480,7 @@
 
                     <controls2:SettingsExpanderItem.Footer>
                         <controls1:Field>
-                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowSecondaryFontSize}"/>
+                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowSecondaryFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </controls1:Field>
                     </controls2:SettingsExpanderItem.Footer>
                 </controls2:SettingsExpanderItem>
@@ -489,7 +489,7 @@
 
                     <controls2:SettingsExpanderItem.Footer>
                         <controls1:Field>
-                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowBodyFontSize}"/>
+                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowBodyFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </controls1:Field>
                     </controls2:SettingsExpanderItem.Footer>
                 </controls2:SettingsExpanderItem>
@@ -498,7 +498,7 @@
 
                     <controls2:SettingsExpanderItem.Footer>
                         <controls1:Field>
-                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowEmphasizedFontSize}"/>
+                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowEmphasizedFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </controls1:Field>
                     </controls2:SettingsExpanderItem.Footer>
                 </controls2:SettingsExpanderItem>
@@ -507,7 +507,7 @@
 
                     <controls2:SettingsExpanderItem.Footer>
                         <controls1:Field>
-                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowLargeFontSize}"/>
+                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowLargeFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </controls1:Field>
                     </controls2:SettingsExpanderItem.Footer>
                 </controls2:SettingsExpanderItem>

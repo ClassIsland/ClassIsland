@@ -13,6 +13,7 @@
                          xmlns:components="clr-namespace:ClassIsland.Controls.Components"
                          xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                          xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                         xmlns:ci="http://classisland.tech/schemas/xaml/core"
                          mc:Ignorable="d">
     <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=components:CountDownComponentSettingsControl}}">
         <StackPanel Classes="settings-container animated-intro" Margin="0">
@@ -237,7 +238,7 @@
                         <StackPanel Orientation="Horizontal" Spacing="4">
                             <controls3:NumberBox MinWidth="150"
                                                  SpinButtonPlacementMode="Inline"
-                                                 Value="{Binding Settings.CycleCountLimit}"
+                                                 Value="{Binding Settings.CycleCountLimit, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                  Maximum="33550336" Minimum="1"
                                                  IsVisible="{Binding Settings.IsCycleCountLimited}"
                                                  VerticalAlignment="Center"/>
