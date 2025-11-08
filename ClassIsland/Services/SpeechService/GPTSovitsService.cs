@@ -44,7 +44,6 @@ public class GptSoVitsService : ISpeechService
 
     private GptSoVitsPlayInfo? _currentPlayInfo;
 
-    private SoundPlayer? CurrentWavePlayer { get; set; }
 
     public GptSoVitsService(IAudioService audioService, ILogger<GptSoVitsService> logger, SettingsService settingsService)
     {
@@ -104,16 +103,6 @@ public class GptSoVitsService : ISpeechService
     public void ClearSpeechQueue()
     {
         requestingCancellationTokenSource?.Cancel();
-        try
-        {
-            CurrentWavePlayer?.Stop();
-            CurrentWavePlayer?.Dispose();
-            CurrentWavePlayer = null;
-        }
-        catch (Exception e)
-        {
-            // ignored
-        }
 
         _currentPlayInfo?.CancellationTokenSource.Cancel();
         while (PlayingQueue.Count > 0)
@@ -214,39 +203,12 @@ public class GptSoVitsService : ISpeechService
                 Logger.LogError("语音文件不存在：{FilePath}", playInfo.FilePath);
                 continue;
             }
-
-            CurrentWavePlayer?.Stop();
-            CurrentWavePlayer?.Dispose();
-            using var device = AudioService.TryInitializeDefaultPlaybackDevice();
-            device?.Start();
+            
             try
             {
-                using var player = CurrentWavePlayer = new SoundPlayer(AudioService.AudioEngine, IAudioService.DefaultAudioFormat,
-                    new StreamDataProvider(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, File.OpenRead(playInfo.FilePath)))
-                {
-                    Volume = (float)SettingsService.Settings.SpeechVolume
-                };
                 Logger.LogDebug("开始播放 {FilePath}", playInfo.FilePath);
-                device?.MasterMixer.AddComponent(player);
-
-                var playbackTcs = new TaskCompletionSource<bool>();
-                void PlaybackStoppedHandler(object? sender, EventArgs args)
-                {
-                    playInfo.IsPlayingCompleted = true;
-                    playbackTcs.SetResult(true);
-                }
-
-                player.PlaybackEnded += PlaybackStoppedHandler;
-                playInfo.CancellationTokenSource.Token.Register(() =>
-                {
-                    playbackTcs.SetResult(false);
-                });
-                player.Play();
-                playInfo.IsPlayingCompleted = false;
-
-                await playbackTcs.Task;
-
-                player.PlaybackEnded -= PlaybackStoppedHandler;
+                await AudioService.PlayAudioAsync(File.OpenRead(playInfo.FilePath),
+                    (float)SettingsService.Settings.SpeechVolume, playInfo.CancellationTokenSource.Token);
                 Logger.LogDebug("结束播放 {FilePath}", playInfo.FilePath);
             }
             catch (Exception ex)
@@ -256,9 +218,6 @@ public class GptSoVitsService : ISpeechService
         }
 
         _currentPlayInfo = null;
-        CurrentWavePlayer?.Stop();
-        CurrentWavePlayer?.Dispose();
-        CurrentWavePlayer = null;
         IsPlaying = false;
     }
 }

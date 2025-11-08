@@ -24,7 +24,7 @@ namespace ClassIsland.Desktop;
 class Program
 {
     [STAThread]
-    static async Task<int> Main(string[] args)
+    static int Main(string[] args)
     {
         var stopTokenSource = new CancellationTokenSource();
         ActivatePlatforms(out var postInit, stopTokenSource.Token);

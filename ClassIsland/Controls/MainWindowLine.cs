@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
@@ -597,9 +598,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             NotificationHostService.RequestQueue.Clear();
         }
 
-        SoundPlayer? player = null;
-        var device = AudioService.TryInitializeDefaultPlaybackDevice();
-        device?.Start();
+        CancellationTokenSource? stopNotificationSoundCts = null;
         while (_notificationQueue.Count > 0)
         {
             var request = _notificationQueue.Dequeue();
@@ -653,21 +652,15 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 {
                     try
                     {
-                        if (player != null)
+                        if (stopNotificationSoundCts?.IsCancellationRequested == false)
                         {
-                            player.Stop();
-                            device?.MasterMixer.RemoveComponent(player);
-                            player.Dispose();
+                            await stopNotificationSoundCts.CancelAsync();
+                            stopNotificationSoundCts.Dispose();
                         }
+                        stopNotificationSoundCts = new CancellationTokenSource();
                         Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
-                        var provider = new StreamDataProvider(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, 
-                            string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
-                            ? AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)
-                            : File.OpenRead(settings.NotificationSoundPath));
-                        player = new SoundPlayer(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, provider);
-                        player.Volume = (float)SettingsService.Settings.NotificationSoundVolume;
-                        device?.MasterMixer.AddComponent(player);
-                        player.Play();
+                        await AudioService.PlayAudioAsync(File.OpenRead(settings.NotificationSoundPath),
+                            (float)SettingsService.Settings.NotificationSoundVolume, stopNotificationSoundCts.Token);
                     }
                     catch (Exception e)
                     {
@@ -757,9 +750,11 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         OverlayContent = null;
         MaskContent = null;
         _isOverlayOpen = false;
-        player?.Stop();
-        player?.Dispose();
-        device?.Dispose();
+        if (stopNotificationSoundCts?.IsCancellationRequested == false)
+        {
+            await stopNotificationSoundCts.CancelAsync();
+        }
+        stopNotificationSoundCts?.Dispose();
         MainWindow.ReleaseTopmostLock(TopmostLock);
     }
 

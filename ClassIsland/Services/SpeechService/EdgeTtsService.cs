@@ -46,10 +46,7 @@ public class EdgeTtsService : ISpeechService
     private CancellationTokenSource? requestingCancellationTokenSource;
 
     private EdgeTtsPlayInfo? _currentPlayInfo;
-
-    private SoundPlayer? CurrentWavePlayer { get; set; }
-
-
+    
     public EdgeTtsService(IAudioService audioService, ILogger<EdgeTtsService> logger, SettingsService settingsService)
     {
         AudioService = audioService;
@@ -122,9 +119,6 @@ public class EdgeTtsService : ISpeechService
     public void ClearSpeechQueue()
     {
         requestingCancellationTokenSource?.Cancel();
-        CurrentWavePlayer?.Stop();
-        CurrentWavePlayer?.Dispose();
-        CurrentWavePlayer = null;
         _currentPlayInfo?.CancellationTokenSource.Cancel();
         foreach (var pair in PlayingQueue)
         {
@@ -138,8 +132,7 @@ public class EdgeTtsService : ISpeechService
         if (IsPlaying)
             return;
         IsPlaying = true;
-        using var device = AudioService.TryInitializeDefaultPlaybackDevice();
-        device?.Start();
+
 
         while (PlayingQueue.Count > 0)
         {
@@ -153,29 +146,12 @@ public class EdgeTtsService : ISpeechService
                 Logger.LogDebug("等待下载完成结束");
             }
 
-            CurrentWavePlayer?.Stop();
-            CurrentWavePlayer?.Dispose();
             try
             {
-                var player = CurrentWavePlayer = new SoundPlayer(AudioService.AudioEngine, IAudioService.DefaultAudioFormat,
-                    new StreamDataProvider(AudioService.AudioEngine, IAudioService.DefaultAudioFormat, File.OpenRead(playInfo.FilePath)))
-                {
-                    Volume = (float)SettingsService.Settings.SpeechVolume
-                };
+                
                 Logger.LogDebug("开始播放 {}", playInfo.FilePath);
-                device?.MasterMixer.AddComponent(player);
-                var tcs = new TaskCompletionSource<bool>();
-                player.PlaybackEnded += (sender, args) =>
-                {
-                    playInfo.IsPlayingCompleted = true;
-                    tcs.SetResult(true);
-                };
-                playInfo.CancellationTokenSource.Token.Register(() =>
-                {
-                    tcs.SetResult(false);
-                });
-                player.Play();
-                await tcs.Task;
+                await AudioService.PlayAudioAsync(File.OpenRead(playInfo.FilePath),
+                    (float)SettingsService.Settings.SpeechVolume, playInfo.CancellationTokenSource.Token);
                 Logger.LogDebug("结束播放 {}", playInfo.FilePath);
             }
             catch (Exception ex)
@@ -184,8 +160,6 @@ public class EdgeTtsService : ISpeechService
             }
         }
         
-        CurrentWavePlayer?.Dispose();
-        CurrentWavePlayer = null;
         _currentPlayInfo = null;
         IsPlaying = false;
     }
