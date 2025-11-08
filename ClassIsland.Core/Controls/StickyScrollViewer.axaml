@@ -1,0 +1,61 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls">
+
+    <Style Selector="controls|StickyScrollViewer">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0" Height="{TemplateBinding CollapsedHeight, Mode=OneWay}"/>
+                    <ContentPresenter Content="{TemplateBinding HeaderContent}"
+                                      ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                      x:Name="PART_Header"
+                                      Margin="{TemplateBinding RealHeaderHeight, Converter={x:Static controls:StickyScrollViewer.DoubleToHeaderMarginConverter}}"/>
+                    <ScrollViewer x:Name="PART_MainScrollViewer"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto">
+                        <Grid x:Name="InnerGrid">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Height="{TemplateBinding SpaceAreaHeight, Mode=OneWay}"/>
+                            <ContentPresenter Grid.Row="1"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^ /template/ ContentPresenter#PART_Header">
+            <Setter Property="Grid.Row" Value="0"/>
+            <Setter Property="Grid.RowSpan" Value="2"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+        <Style Selector="^ /template/ ScrollViewer#PART_MainScrollViewer">
+            <Setter Property="Grid.RowSpan" Value="1"/>
+            <Setter Property="Grid.Row" Value="1"/>
+        </Style>
+        <Style Selector="^ /template/ Grid#InnerGrid">
+                
+        </Style>
+        <Style Selector="^:header-collapsed">
+            <Style Selector="^ /template/ ContentPresenter#PART_Header">
+            </Style>
+            <Style Selector="^ /template/ ScrollViewer#PART_MainScrollViewer">
+                <Setter Property="Grid.RowSpan" Value="1"/>
+                <Setter Property="Grid.Row" Value="1"/>
+            </Style>
+            <Style Selector="^ /template/ Grid#InnerGrid">
+                
+            </Style>
+        </Style>
+    </Style>
+</Styles>

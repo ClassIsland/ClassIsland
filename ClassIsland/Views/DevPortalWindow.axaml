@@ -166,6 +166,29 @@
                     </ListBox>
                 </Grid>
             </TabItem>
+            <TabItem Header="StickyScrollViewer">
+                <Grid>
+                    <ci:StickyScrollViewer CollapsedHeight="75">
+                        <ci:StickyScrollViewer.HeaderContent>
+                            <Border HorizontalAlignment="Stretch"
+                                    Background="Aqua"
+                                    Height="250"/>
+                        </ci:StickyScrollViewer.HeaderContent>
+                        <StackPanel>
+                            <TextBlock FontSize="24" TextWrapping="Wrap">
+                                <Run Text="{StaticResource TestStringLong}"/>
+                                <Run Text="{StaticResource TestStringLong}"/>
+                                <Run Text="{StaticResource TestStringLong}"/>
+                                <Run Text="{StaticResource TestStringLong}"/>
+                                <Run Text="{StaticResource TestStringLong}"/>
+                                <Run Text="{StaticResource TestStringLong}"/>
+                                <Run Text="{StaticResource TestStringLong}"/>
+                                <Run Text="{StaticResource TestStringLong}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </ci:StickyScrollViewer>
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </ci:MyWindow>
