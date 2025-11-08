@@ -93,7 +93,6 @@ class Program
         PlatformServices.DesktopService = new DesktopService();
         PlatformServices.SystemEventsService = new SystemEventsService();
         PlatformServices.DesktopToastService = new DesktopToastService();
-        PlatformServices.FilePickerService = new PlatformFilePickerService();
         postInitCallback = () =>
         {
             AppBase.Current.AppStarted += (sender, args) =>
