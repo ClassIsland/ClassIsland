@@ -26,7 +26,7 @@
                     <ci:Field Suffix="秒">
                         <controls:NumberBox Width="150" SpinButtonPlacementMode="Inline"
                                             Minimum="0.1"
-                                            Value="{Binding Settings.SlideSeconds}"/>
+                                            Value="{Binding Settings.SlideSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                     </ci:Field>
                 </controls:SettingsExpander.Footer>
             </controls:SettingsExpander>

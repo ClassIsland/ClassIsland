@@ -52,7 +52,7 @@
                                 Minimum="0"
                                  Width="150"
                                 SpinButtonPlacementMode="Inline"
-                                 Value="{Binding ViewModel.SettingsService.Settings.AutoBackupIntervalDays}"/>
+                                 Value="{Binding ViewModel.SettingsService.Settings.AutoBackupIntervalDays, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </ci:Field>
                     </controls:SettingsExpanderItem.Footer>
                 </controls:SettingsExpanderItem>
@@ -65,7 +65,7 @@
                                 Minimum="0"
                                 Width="150"
                                 SpinButtonPlacementMode="Inline"
-                                Value="{Binding ViewModel.SettingsService.Settings.AutoBackupLimit}"/>
+                                Value="{Binding ViewModel.SettingsService.Settings.AutoBackupLimit, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </ci:Field>
                     </controls:SettingsExpanderItem.Footer>
                 </controls:SettingsExpanderItem>

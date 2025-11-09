@@ -77,12 +77,12 @@
                     <Grid ColumnDefinitions="*,*">
                         <!-- 向右偏移 -->
                         <ci:Field Label="向右偏移" Grid.Column="0">
-                            <controls1:NumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetX}"
+                            <controls1:NumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetX, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                  SpinButtonPlacementMode="Inline"/>
                         </ci:Field>
                         <!-- 向下偏移 -->
                         <ci:Field Label="向下偏移" Grid.Column="1">
-                            <controls1:NumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetY}"
+                            <controls1:NumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetY, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                  SpinButtonPlacementMode="Inline"/>
                         </ci:Field>
                     </Grid>
@@ -182,7 +182,7 @@
                     <controls1:SettingsExpanderItem.Footer>
                         <ci:Field Suffix="ms">
                             <controls1:NumberBox Width="150"
-                                                 Value="{Binding ViewModel.SettingsService.Settings.TouchInFadingDurationMs}"
+                                                 Value="{Binding ViewModel.SettingsService.Settings.TouchInFadingDurationMs, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                  SpinButtonPlacementMode="Inline"
                                                  Minimum="0"
                                                  Foreground="{DynamicResource MaterialDesignBody}"/>

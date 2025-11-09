@@ -282,7 +282,7 @@
                         <controls3:NumberBox VerticalAlignment="Center"
                                              MinWidth="147"
                                              SpinButtonPlacementMode="Inline"
-                                             Value="{Binding ViewModel.SettingsService.Settings.TimeOffsetSeconds}" />
+                                             Value="{Binding ViewModel.SettingsService.Settings.TimeOffsetSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                     </ci:Field>
                 </controls3:SettingsExpander.Footer>
                 <controls3:SettingsExpanderItem Content="自动时间偏移"
@@ -300,7 +300,7 @@
                                     MinWidth="147"
                                     SpinButtonPlacementMode="Inline"
                                     IsEnabled="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"
-                                    Value="{Binding ViewModel.SettingsService.Settings.TimeAutoAdjustSeconds}"/>
+                                    Value="{Binding ViewModel.SettingsService.Settings.TimeAutoAdjustSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                             </ci:Field>
                         </DockPanel>
                     </controls3:SettingsExpanderItem.Footer>

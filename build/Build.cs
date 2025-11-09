@@ -45,7 +45,7 @@ partial class Build : NukeBuild
     readonly AbsolutePath AppSecretsPath = RootDirectory / "ClassIsland" / "secrets.g.cs";
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    readonly Configuration Configuration = Configuration.Release ;
     
 
     Target GenerateMetadata => _ => _

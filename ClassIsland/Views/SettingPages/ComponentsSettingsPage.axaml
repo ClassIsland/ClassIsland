@@ -543,7 +543,7 @@
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field>
                                             <controls:NumberBox
-                                                Value="{Binding MainWindowSecondaryFontSize}" />
+                                                Value="{Binding MainWindowSecondaryFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                         </ci:Field>
                                     </controls:SettingsExpanderItem.Footer>
                                 </controls:SettingsExpanderItem>
@@ -553,7 +553,7 @@
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field>
                                             <controls:NumberBox
-                                                Value="{Binding MainWindowBodyFontSize}" />
+                                                Value="{Binding MainWindowBodyFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                         </ci:Field>
                                     </controls:SettingsExpanderItem.Footer>
                                 </controls:SettingsExpanderItem>
@@ -563,7 +563,7 @@
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field>
                                             <controls:NumberBox
-                                                Value="{Binding MainWindowEmphasizedFontSize}" />
+                                                Value="{Binding MainWindowEmphasizedFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                         </ci:Field>
                                     </controls:SettingsExpanderItem.Footer>
                                 </controls:SettingsExpanderItem>
@@ -573,7 +573,7 @@
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field>
                                             <controls:NumberBox
-                                                Value="{Binding MainWindowLargeFontSize}" />
+                                                Value="{Binding MainWindowLargeFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                         </ci:Field>
                                     </controls:SettingsExpanderItem.Footer>
                                 </controls:SettingsExpanderItem>
@@ -640,7 +640,7 @@
                                             <controls:NumberBox VerticalAlignment="Center"
                                                      Width="150"
                                                      SpinButtonPlacementMode="Inline"
-                                                     Value="{Binding FixedWidth}" />
+                                                     Value="{Binding FixedWidth, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                         </ci:Field>
                                         <ToggleSwitch VerticalAlignment="Center"
                                                       IsChecked="{Binding IsFixedWidthEnabled}" />
@@ -656,7 +656,7 @@
                                 <controls:SettingsExpanderItem>
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field Suffix="px" IsVisible="{Binding IsMinWidthEnabled}">
-                                            <controls:NumberBox Value="{Binding MinWidth}"
+                                            <controls:NumberBox Value="{Binding MinWidth, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                                 SpinButtonPlacementMode="Inline"
                                                                 Width="150"/>
                                         </ci:Field>
@@ -671,7 +671,7 @@
                                 <controls:SettingsExpanderItem>
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field Suffix="px" IsVisible="{Binding IsMaxWidthEnabled}">
-                                            <controls:NumberBox Value="{Binding MaxWidth}"
+                                            <controls:NumberBox Value="{Binding MaxWidth, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                                 SpinButtonPlacementMode="Inline"
                                                                 Width="150"/>
                                         </ci:Field>
@@ -706,13 +706,13 @@
                                             </Style>
                                         </Grid.Styles>
                                         <controls:NumberBox Grid.Row="2" Grid.Column="1"
-                                                            Value="{Binding MarginLeft}"/>
+                                                            Value="{Binding MarginLeft, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                                         <controls:NumberBox Grid.Row="1" Grid.Column="2"
-                                                            Value="{Binding MarginTop}"/>
+                                                            Value="{Binding MarginTop, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                                         <controls:NumberBox Grid.Row="2" Grid.Column="3"
-                                                            Value="{Binding MarginRight}"/>
+                                                            Value="{Binding MarginRight, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                                         <controls:NumberBox Grid.Row="3" Grid.Column="2"
-                                                            Value="{Binding MarginBottom}"/>
+                                                            Value="{Binding MarginBottom, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                                         
                                         <Rectangle Grid.Row="2" Grid.Column="2"
                                                 Width="100" Height="40" Margin="4"
@@ -871,7 +871,7 @@
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field>
                                             <controls:NumberBox
-                                                Value="{Binding MainWindowSecondaryFontSize}" />
+                                                Value="{Binding MainWindowSecondaryFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                         </ci:Field>
                                     </controls:SettingsExpanderItem.Footer>
                                 </controls:SettingsExpanderItem>
@@ -881,7 +881,7 @@
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field>
                                             <controls:NumberBox
-                                                Value="{Binding MainWindowBodyFontSize}" />
+                                                Value="{Binding MainWindowBodyFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                         </ci:Field>
                                     </controls:SettingsExpanderItem.Footer>
                                 </controls:SettingsExpanderItem>
@@ -891,7 +891,7 @@
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field>
                                             <controls:NumberBox
-                                                Value="{Binding MainWindowEmphasizedFontSize}" />
+                                                Value="{Binding MainWindowEmphasizedFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                         </ci:Field>
                                     </controls:SettingsExpanderItem.Footer>
                                 </controls:SettingsExpanderItem>
@@ -901,7 +901,7 @@
                                     <controls:SettingsExpanderItem.Footer>
                                         <ci:Field>
                                             <controls:NumberBox
-                                                Value="{Binding MainWindowLargeFontSize}" />
+                                                Value="{Binding MainWindowLargeFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                         </ci:Field>
                                     </controls:SettingsExpanderItem.Footer>
                                 </controls:SettingsExpanderItem>

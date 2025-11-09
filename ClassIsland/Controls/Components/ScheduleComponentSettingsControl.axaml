@@ -103,7 +103,7 @@
                             <controls:NumberBox Grid.Row="0" Width="100"
                                      Grid.Column="1"
                                      VerticalAlignment="Center"
-                                     Value="{Binding Settings.CountdownSeconds, Mode=TwoWay}" />
+                                     Value="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                         </controls:SettingsExpanderItem.Footer>
                     </controls:SettingsExpanderItem>
                     <controls:SettingsExpanderItem Content="使用模糊倒计时">

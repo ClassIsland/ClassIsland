@@ -205,7 +205,7 @@ public partial class DebugPage : SettingsPageBase
         {
             Title = "测试通知",
             Body = "Hello world!",
-            HeroImageUri = new Uri("avares://ClassIsland/Assets/Banner.png"),
+            HeroImageUri = new Uri("https://res.classisland.tech/banners/banner-v2.webp"),
             LogoImageUri = new Uri("avares://ClassIsland/Assets/HoYoStickers/白厄_没事.png"),
             Buttons =
             {

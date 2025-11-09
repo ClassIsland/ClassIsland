@@ -35,9 +35,12 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// AboutSettingsPage.xaml 的交互逻辑
 /// </summary>
+[HidePageTitle]
 [SettingsPageInfo("about", "关于 ClassIsland", "\ue9e4", "\ue9e3", SettingsPageCategory.About)]
 public partial class AboutSettingsPage : SettingsPageBase
 {
+    public static string DisplayVersion => $"{AppBase.AppVersion} (Codename {AppBase.AppCodeName})";
+    
     public AboutSettingsViewModel ViewModel { get; } = IAppHost.GetService<AboutSettingsViewModel>();
 
     public AboutSettingsPage()

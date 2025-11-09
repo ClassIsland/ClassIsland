@@ -428,13 +428,14 @@
     <ci:DrawerHost DrawerPlacement="Right"
                IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
                DrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
-        <Grid RowDefinitions="48, *">
+        <Grid RowDefinitions="48, *" ColumnDefinitions="300, *">
             <!-- Background Layer -->
-            <Border Grid.Row="1" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch" />
 
-            <TabControl Grid.Row="0" Grid.RowSpan="2" Padding="0" Classes="navigation"
+            <TabControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2"  
+                        Padding="0" Classes="navigation"
                         SelectionChanged="MasterTabControl_OnSelectionChanged"
                         x:Name="MasterTabControl"
                         SelectedIndex="{Binding ViewModel.MasterPageTabSelectIndex}">
@@ -903,13 +904,13 @@
                                         <controls:NumberBox
                                             Maximum="36000" Minimum="0" HorizontalAlignment="Stretch"
                                             Foreground="{DynamicResource MaterialDesignBody}"
-                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                     </ci:Field>
                                     <ci:Field Label="默认课间时间点时长" Suffix="分钟">
                                         <controls:NumberBox
                                             Maximum="36000" Minimum="0" HorizontalAlignment="Stretch"
                                             Foreground="{DynamicResource MaterialDesignBody}"
-                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            Value="{Binding ViewModel.SettingsService.Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                     </ci:Field>
                                 </StackPanel>
                             </Expander>
@@ -1747,7 +1748,7 @@
             </TabControl>
 
             <!-- 信息栏 -->
-            <controls:CommandBar Grid.Row="0" HorizontalAlignment="Right" DefaultLabelPosition="Right">
+            <controls:CommandBar Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" DefaultLabelPosition="Right">
                 <controls:CommandBar.SecondaryCommands>
                     
                 </controls:CommandBar.SecondaryCommands>

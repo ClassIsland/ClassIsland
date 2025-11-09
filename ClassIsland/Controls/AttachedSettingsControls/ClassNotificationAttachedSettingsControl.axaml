@@ -27,7 +27,7 @@
         <!-- 准备上课提醒时间 -->
         <controls1:Field Suffix="秒" Label="准备上课提醒时间">
             <controls2:NumberBox Maximum="3600" Minimum="0"
-                                 Value="{Binding Settings.ClassPreparingDeltaTime}"
+                                 Value="{Binding Settings.ClassPreparingDeltaTime, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                  SpinButtonPlacementMode="Compact"/>
         </controls1:Field>
         

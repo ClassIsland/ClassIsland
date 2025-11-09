@@ -4,14 +4,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>ClassIsland.Platform.Windows</RootNamespace>
-        <TargetFramework>net8.0-windows7</TargetFramework>
+        <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
         <ProjectReference Include="..\..\ClassIsland\ClassIsland.csproj" />
-        <ProjectReference Include="..\..\vendors\ClassIsland.WinRTReferences\ClassIsland.WinRTReferences.csproj" 
-                          ExcludeAssets=""/>
         <ProjectReference Include="..\..\vendors\System.Device.Location\System.Device.Location.csproj" />
    </ItemGroup>
 
