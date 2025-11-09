@@ -27,6 +27,12 @@ public class StickyScrollViewer : ContentControl
     
     public static FuncValueConverter<double, GridLength> DoubleToGridLengthConverter { get; } =
         new(x => new GridLength(x, GridUnitType.Pixel));
+
+    public static readonly AttachedProperty<double> HeaderFadingOpacityProperty =
+        AvaloniaProperty.RegisterAttached<StickyScrollViewer, Control, double>("HeaderFadingOpacity", 1.0, inherits: true);
+
+    public static void SetHeaderFadingOpacity(Control obj, double value) => obj.SetValue(HeaderFadingOpacityProperty, value);
+    public static double GetHeaderFadingOpacity(Control obj) => obj.GetValue(HeaderFadingOpacityProperty);
     
     public static readonly StyledProperty<double> CollapsedHeightProperty = AvaloniaProperty.Register<StickyScrollViewer, double>(
         nameof(CollapsedHeight), 150);
@@ -113,6 +119,7 @@ public class StickyScrollViewer : ContentControl
             ? (_header.Bounds.Height - CollapsedHeight)
             : _mainScrollViewer.Offset.Y;
         SpaceAreaHeight = _header.Bounds.Height - CollapsedHeight;
+        SetHeaderFadingOpacity(this, collapsed ? 0 : 1 - Math.Pow(_mainScrollViewer.Offset.Y / (_header.Bounds.Height - CollapsedHeight), 3));
         PseudoClasses.Set(":header-collapsed", collapsed);
     }
 }

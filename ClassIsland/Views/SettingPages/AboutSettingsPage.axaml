@@ -3,24 +3,20 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
-      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-      xmlns:ci="clr-namespace:ClassIsland"
-      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
-      xmlns:models="clr-namespace:ClassIsland.Models"
+      xmlns:local="using:ClassIsland.Views.SettingPages"
+      xmlns:controls="using:ClassIsland.Core.Abstractions.Controls"
+      xmlns:ci="using:ClassIsland"
+      xmlns:controls1="using:ClassIsland.Core.Controls"
+      xmlns:models="using:ClassIsland.Models"
       xmlns:commands="http://classisland.tech/schemas/xaml/core"
       xmlns:controls2="clr-namespace:ClassIsland.Controls"
+      xmlns:ci2="http://classisland.tech/schemas/xaml/core"
       xmlns:system="clr-namespace:System;assembly=System.Runtime"
       xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
       xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       d:DataContext="{d:DesignInstance local:AboutSettingsPage}">
-
-    <controls:SettingsPageBase.Styles>
-        
-    </controls:SettingsPageBase.Styles>
     <controls:SettingsPageBase.Resources>
         <Grid Margin="16" x:Key="ContributorsDrawer" Width="300" RowDefinitions="Auto,Auto,Auto,*">
             <TextBlock Grid.Row="0" Text="贡献人员" Theme="{StaticResource SubtitleTextBlockStyle}" />
@@ -222,63 +218,106 @@
         </Grid>
 
     </controls:SettingsPageBase.Resources>
-    <ScrollViewer>
-        <StackPanel Classes="settings-container">
-            <StackPanel>
-                <!-- banner -->
-                <Border ClipToBounds="True">
-                    <StackPanel>
-                        <Border CornerRadius="4 4 0 0"
-                                PointerPressed="DebugBorder_OnPointerPressed">
-                            <Image Source="/Assets/Banner.png" Stretch="UniformToFill" HorizontalAlignment="Center"
-                                   VerticalAlignment="Center" />
-                        </Border>
-                        <controls3:SettingsExpanderItem IsClickEnabled="True"
-                                                        Click="UIElementAppInfo_OnMouseDown">
-                            <Grid HorizontalAlignment="Stretch" >
-                                <!-- about -->
-                                <StackPanel>
-                                    <TextBlock Background="Transparent" PointerPressed="UIElementAppInfo_OnMouseDown">
-                                        <Run Text="ClassIsland" FontSize="24" />
-                                        <Run Text="{x:Static ci:App.AppVersion}" />
-                                        <Run Text="(Codename" />
-                                        <Run Text="{x:Static ci:App.AppCodeName}" /><Run Text=")" />
-                                        <LineBreak />
-                                        <Run Text="Copyright (c) 2023-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" />
-                                        <Run Text="HelloWRC"/>
-                                    </TextBlock>
-                                </StackPanel>
-                                <!-- Links -->
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right"
-                                            Spacing="2">
-                                    <Button Theme="{StaticResource TransparentButton}"
-                                            Content="{controls1:FluentIcon &#xE905;, FontSize=20}"
-                                            ToolTip.Tip="项目主页"
-                                            Click="UriNavigationCommands_OnClick"
-                                            CommandParameter="https://classisland.tech"/>
-                                    <Button Theme="{StaticResource TransparentButton}"
-                                            Content="{controls1:FluentIcon &#xE23C;, FontSize=20}"
-                                            ToolTip.Tip="文档"
-                                            Click="UriNavigationCommands_OnClick"
-                                            CommandParameter="https://docs.classisland.tech"/>
-                                    <Button Theme="{StaticResource TransparentButton}"
-                                            Content="{commands:LucideIcon &#xE0EA;, FontSize=16}"
-                                            ToolTip.Tip="GitHub"
-                                            Click="UriNavigationCommands_OnClick"
-                                            CommandParameter="https://github.com/ClassIsland/ClassIsland"/>
-                                    <Button Theme="{StaticResource TransparentButton}"
-                                            Content="{controls1:FluentIcon &#xE3EE;, FontSize=20}"
-                                            ToolTip.Tip="加入社区"
-                                            Click="UriNavigationCommands_OnClick"
-                                            CommandParameter="https://docs.classisland.tech/community/"/>
-                                </StackPanel>
-                            </Grid>
-                        </controls3:SettingsExpanderItem>
-                    </StackPanel>
+    <controls1:StickyScrollViewer CollapsedHeight="58">
+        <controls1:StickyScrollViewer.HeaderContent>
+            <Grid >
+                <Panel MaxHeight="300" 
+                       Opacity="{Binding $self.(ci2:StickyScrollViewer.HeaderFadingOpacity)}"
+                       Background="Transparent">
+                    <Panel.OpacityMask>
+                        <LinearGradientBrush StartPoint="0%, 0%"
+                                             EndPoint="0%, 100%">
+                            <GradientStop Color="#ffffffff" Offset="0.0"/>
+                            <GradientStop Color="#ffffffff" Offset="0.75"/>
+                            <GradientStop Color="#00ffffff" Offset="0.92"/>
+                        </LinearGradientBrush>
+                    </Panel.OpacityMask>
+                    <Border Background="#0d1111" />
+                    <Image Source="/Assets/BannerMain_App2.png" Stretch="Uniform" 
+                           HorizontalAlignment="Center"
+                           PointerPressed="DebugBorder_OnPointerPressed"
+                           MaxWidth="{StaticResource SettingsContainerWidth}"
+                           VerticalAlignment="Top">
+                        
+                    </Image>
+                </Panel>
+                <Border Margin="12 16 18 0"
+                        MaxWidth="{StaticResource SettingsContainerWidth}">
+                    <TextBlock FontWeight="Normal"
+                               Text="关于 ClassIsland"
+                               VerticalAlignment="Bottom"
+                               Theme="{StaticResource TitleTextBlockStyle}"
+                               Margin="0 8"/>
                 </Border>
-            </StackPanel>
+            </Grid>
+        </controls1:StickyScrollViewer.HeaderContent>
+        <StackPanel Classes="settings-container ">
+            <controls3:SettingsExpander Header="ClassIsland"
+                                        IsExpanded="True">
+                <controls3:SettingsExpander.Footer>
+                    <TextBlock Text="{x:Static local:AboutSettingsPage.DisplayVersion}"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                </controls3:SettingsExpander.Footer>
+                <controls3:SettingsExpander.IconSource>
+                    <controls3:ImageIconSource Source="/Assets/AppLogo.png"/>
+                </controls3:SettingsExpander.IconSource>
+                <controls3:SettingsExpanderItem Description="本项目基于 GNU General Public License v3.0 获得许可。">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <WrapPanel Classes="animated-resize">
+                            <WrapPanel.Styles>
+                                <Style Selector="HyperlinkButton">
+                                    <Setter Property="Padding" Value="4"/>
+                                    <Setter Property="Margin" Value="2"/>
+                                </Style>
+                            </WrapPanel.Styles>
+                            <HyperlinkButton Click="SettingsExpanderItemShowOssLicense_OnClick"
+                                             CommandParameter="https://classisland.tech">
+                                <TextBlock Text="开放源代码许可"/>
+                            </HyperlinkButton>
+                            <HyperlinkButton Click="ButtonPrivacy_OnClick"
+                                             CommandParameter="https://docs.classisland.tech">
+                                <TextBlock Text="隐私政策"/>
+                            </HyperlinkButton>
+                        </WrapPanel>
+                    </controls3:SettingsExpanderItem.Footer>
+                    <TextBlock Background="Transparent" PointerPressed="UIElementAppInfo_OnMouseDown">
+                        <Run Text="Copyright (c) 2023-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" /> HelloWRC
+                    </TextBlock>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="常用链接">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <WrapPanel Classes="animated-resize">
+                            <WrapPanel.Styles>
+                                <Style Selector="HyperlinkButton">
+                                    <Setter Property="Padding" Value="4"/>
+                                    <Setter Property="Margin" Value="2"/>
+                                </Style>
+                            </WrapPanel.Styles>
+                            <HyperlinkButton Click="UriNavigationCommands_OnClick"
+                                             CommandParameter="https://classisland.tech">
+                                <TextBlock Text="项目主页"/>
+                            </HyperlinkButton>
+                            <HyperlinkButton Click="UriNavigationCommands_OnClick"
+                                             CommandParameter="https://docs.classisland.tech">
+                                <TextBlock Text="帮助文档"/>
+                            </HyperlinkButton>
+                            <HyperlinkButton Click="UriNavigationCommands_OnClick"
+                                             CommandParameter="https://github.com/ClassIsland/ClassIsland">
+                                <TextBlock Text="GitHub"/>
+                            </HyperlinkButton>
+                            <HyperlinkButton Click="UriNavigationCommands_OnClick"
+                                             CommandParameter="https://docs.classisland.tech/community/">
+                                <TextBlock Text="加入社区"/>
+                            </HyperlinkButton>
+                        </WrapPanel>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                
+            </controls3:SettingsExpander>
 
-            <StackPanel Margin="0 12 0 0" Classes="cardContainer">
+            <controls3:SettingsExpander Header="遇到问题？" IconSource="{commands:FluentIconSource &#xE3F6;}"
+                                        IsExpanded="True">
                 <controls3:SettingsExpanderItem
                     Click="UriNavigationCommands_OnClick"
                     CommandParameter="https://github.com/ClassIsland/ClassIsland/issues/"
@@ -295,23 +334,10 @@
                     Click="ButtonDiagnosticInfo_OnClick"
                     Content="查看诊断信息"
                     IsClickEnabled="True"/>
-            </StackPanel>
-
-            <StackPanel Margin="0 12 0 0" Classes="cardContainer">
-                <controls3:SettingsExpanderItem 
-                    IsClickEnabled="True"
-                    Click="Sayings_OnMouseLeftButtonDown">
-                    <StackPanel>
-                        <TextBlock Text="回声洞" FontWeight="Bold"/>
+            </controls3:SettingsExpander>
             
-                        <controls2:TypingControl Margin="0 8 0 0"
-                                                 Text="{Binding ViewModel.Sayings, Mode=OneWay}"
-                                                 IsBusy="{Binding ViewModel.IsSayingBusy, Mode=OneWayToSource}"/>
-                    </StackPanel>
-                </controls3:SettingsExpanderItem>
-            </StackPanel>
-            
-            <StackPanel Margin="0 12 0 0" Classes="cardContainer">
+            <controls3:SettingsExpander Header="鸣谢" IconSource="{commands:FluentIconSource &#xE971;}"
+                                        IsExpanded="True">
                 <controls3:SettingsExpanderItem 
                     Content="贡献人员"
                     Click="ButtonContributors_OnClick"
@@ -321,7 +347,7 @@
                     Click="ButtonThirdPartyLibs_OnClick"
                     IsClickEnabled="True"/>
                 <controls3:SettingsExpanderItem>
-                    <TextBlock LineHeight="30" Margin="24 12 0 0" FontSize="14" TextWrapping="Wrap">
+                    <TextBlock LineHeight="30" Margin="0 0 0 0" FontSize="14" TextWrapping="Wrap">
                         本项目受到
                         <HyperlinkButton Click="Hyperlink2_OnClick">DuguSand/class_form</HyperlinkButton>
                         的启发而开发。<LineBreak/>
@@ -335,19 +361,20 @@
                     </TextBlock>
                 </controls3:SettingsExpanderItem>
 
-            </StackPanel>
+            </controls3:SettingsExpander>
             
-            <StackPanel Margin="0 12 0 0" Classes="cardContainer">
+            <controls3:SettingsExpander Header="回声洞" IconSource="{commands:FluentIconSource &#xE55F;}">
                 <controls3:SettingsExpanderItem 
-                    Content="查看开放源代码许可"
-                    Click="SettingsExpanderItemShowOssLicense_OnClick"
-                    IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem 
-                    Click="ButtonPrivacy_OnClick"
-                    Content="查看隐私政策"
-                    IsClickEnabled="True"/>
-            </StackPanel>
+                    IsClickEnabled="True"
+                    Click="Sayings_OnMouseLeftButtonDown">
+                    <StackPanel>
+                        <controls2:TypingControl
+                                 Text="{Binding ViewModel.Sayings, Mode=OneWay}"
+                                 IsBusy="{Binding ViewModel.IsSayingBusy, Mode=OneWayToSource}"/>
+                    </StackPanel>
+                </controls3:SettingsExpanderItem>
+            </controls3:SettingsExpander>
             
         </StackPanel>
-    </ScrollViewer>
+    </controls1:StickyScrollViewer>
 </controls:SettingsPageBase>
