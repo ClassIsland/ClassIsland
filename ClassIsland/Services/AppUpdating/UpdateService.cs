@@ -261,7 +261,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 Settings.SelectedUpdateChannelV3 = DistributionMetadata.DefaultChannelId;
             }
             var latest = await RequestHelper.GetJson<LatestDistributionInfoMinResponse>(
-                new Uri($"api/v1/public/distributions/latest/{Settings.SelectedUpdateChannelV3}", UriKind.Relative));
+                new Uri($"api/v1/public/distributions/latest/{Settings.SelectedUpdateChannelV3}?appVersion={AppBase.AppVersion}", UriKind.Relative));
             spanGetIndex.Finish(SpanStatus.Ok);
             if (!IsNewerVersion(isForce, isCancel, Version.Parse(latest.Version)))
             {

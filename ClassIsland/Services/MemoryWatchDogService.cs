@@ -55,19 +55,6 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
         if (size < MemoryLimitBytes) 
             return;
         Logger.LogCritical("达到内存使用上限！ {} / {}", Helpers.StorageSizeHelper.FormatSize((ulong)size)+$"({size} Bytes)", Helpers.StorageSizeHelper.FormatSize((ulong)MemoryLimitBytes)+$"({MemoryLimitBytes} Bytes)");
-        var path = Environment.ProcessPath;
-        if (path != null)
-        {
-            var replaced = path.Replace(".dll", ".exe");
-            var startInfo = new ProcessStartInfo(replaced)
-            {
-                ArgumentList =
-                {
-                    "-q", "-m", "-psmk"
-                }
-            };
-            Process.Start(startInfo);
-        }
-        AppBase.Current.Stop();
+        AppBase.Current.Restart(["-q", "-m", "-psmk"]);
     }
 }
