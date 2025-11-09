@@ -115,8 +115,7 @@ gitGraph
 
 ### 提交
 
-在本代码仓库提交时，请尽量遵守[约定式提交规范](https://www.conventionalcommits.org/zh-hans/v1.0.0/)。
-
+在本代码仓库提交时，请尽量遵守[约定式提交规范](https://www.conventionalcommits.org/zh-hans/v1.0.0/)。考虑到目前 ClassIsland 项目规模较大，请在进行提交时考虑为提交[添加范围](./doc/Contributing/Scopes.md)。
 ### 合并更改
 
 在进行合并之前，请先测试您贡献的代码，确保您贡献的代码能稳定运作。
