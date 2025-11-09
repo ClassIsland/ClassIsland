@@ -23,33 +23,19 @@ public partial class HomePage : UserControl
         InitializeComponent();
     }
 
-    private void ContinueWithArguments(string[] args)
-    {
-        AppBase.Current.Stop();
-        var path = Environment.ProcessPath;
-        var replaced = path!.Replace(".dll", ".exe");
-        var startInfo = new ProcessStartInfo(replaced);
-        startInfo.ArgumentList.Add("-m");
-        foreach (var arg in args)
-        {
-            startInfo.ArgumentList.Add(arg);
-        }
-        Process.Start(startInfo);
-    }
-
     private void ButtonContinue_OnClick(object sender, RoutedEventArgs e)
     {
-        ContinueWithArguments([]);
+        AppBase.Current.Restart(["-m"]);
     }
 
     private void ButtonContinueSafe_OnClick(object sender, RoutedEventArgs e)
     {
-        ContinueWithArguments([ "--safe" ]);
+        AppBase.Current.Restart(["-m", "--safe"]);
     }
 
     private void ButtonContinueDiagnostic_OnClick(object sender, RoutedEventArgs e)
     {
-        ContinueWithArguments(["--diagnostic", "--verbose"]);
+        AppBase.Current.Restart(["-m", "--diagnostic", "--verbose"]);
     }
 
     private void ButtonOpenLogFolder_OnClick(object sender, RoutedEventArgs e)

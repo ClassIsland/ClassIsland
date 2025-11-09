@@ -34,7 +34,7 @@
                                                Content="以诊断模式继续使用 ClassIsland"
                                                Description="在日志中记录详细的信息，并启用控制台输出。"
                                                ActionIconSource="{ci:FluentIconSource &#xe44e;}"
-                                               Click="ButtonContinue_OnClick"/>
+                                               Click="ButtonContinueDiagnostic_OnClick"/>
                 <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe889;}"
                                                Content="打开日志目录"
                                                ActionIconSource="{ci:FluentIconSource &#xec2e;}"
