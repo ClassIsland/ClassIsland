@@ -84,7 +84,7 @@ var startInfo = new ProcessStartInfo()
     WorkingDirectory = root,
     EnvironmentVariables =
     {
-        {"ClassIsland_PackageRoot", Path.GetFullPath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ".")}
+        {"ClassIsland_PackageRoot", root}
     }
 };
 foreach (var i in args)
