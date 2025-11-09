@@ -73,7 +73,12 @@ public class DesktopToastService : IDesktopToastService
                 content.Activated?.Invoke(sender, EventArgs.Empty);
                 CleanUpActions();
             });
-            toast.ExpiresOnReboot = true;
+
+            if (Environment.OSVersion.Version >= new Version(10, 0, 18362, 0))
+            {
+                toast.ExpiresOnReboot = true;
+            }
+            
             toast.Dismissed += (_, _) =>
             {
                 CleanUpActions();
