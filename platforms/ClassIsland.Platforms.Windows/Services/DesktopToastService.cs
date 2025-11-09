@@ -9,6 +9,8 @@ using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
+using ClassIsland.Shared;
+using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32;
 using SoundFlow.Enums;
@@ -76,8 +78,9 @@ public class DesktopToastService : IDesktopToastService
             {
                 CleanUpActions();
             };
-            toast.Failed += (_, _) =>
+            toast.Failed += (_, args) =>
             {
+                IAppHost.GetService<ILogger<DesktopToastService>>().LogError(args.ErrorCode, "显示通知失败");
                 CleanUpActions();
             };
         });
