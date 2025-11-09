@@ -1,3 +1,4 @@
+using ClassIsland.Core;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction.Services;
 using WindowsShortcutFactory;
@@ -16,8 +17,8 @@ public class DesktopService : IDesktopService
             if (value)
             {
                 using var shortcut = new WindowsShortcut();
-                shortcut.Path = Environment.ProcessPath;
-                shortcut.WorkingDirectory = Environment.CurrentDirectory;
+                shortcut.Path = AppBase.ExecutingEntrance;
+                shortcut.WorkingDirectory = Path.GetDirectoryName(AppBase.ExecutingEntrance);
                 shortcut.Save(path);
             }
             else
