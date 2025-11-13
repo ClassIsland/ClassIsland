@@ -49,7 +49,7 @@ public class ModifyAppSettingsActionSettings : ObservableRecipient
         }
         set
         {
-            if (value.Equals(_value) || value == null) return;
+            if (value == null || value.Equals(_value)) return;
             _value = value;
             OnPropertyChanged();
         }

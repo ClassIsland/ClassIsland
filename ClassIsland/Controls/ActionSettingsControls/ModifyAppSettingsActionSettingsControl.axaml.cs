@@ -8,9 +8,13 @@ using System.Reflection;
 using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
+using Avalonia.Controls.Templates;
+using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models;
 using ClassIsland.Models.Actions;
@@ -45,6 +49,11 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
 
     SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
+
+    readonly Lazy<IComponentsService> _componentsService = new(App.GetService<IComponentsService>);
+    public IComponentsService ComponentsService => _componentsService.Value;
+
+
     ILogger<ModifyAppSettingsActionSettingsControl> Logger { get; } =
         App.GetService<ILogger<ModifyAppSettingsActionSettingsControl>>();
 
@@ -65,7 +74,11 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
     Control ControlTypeContentPresenter => _controlTypeContentPresenter ??=
         (Control)this.FindResource("ModifyAppSettingsActionControlTypeContentPresenter");
 
-    List<SettingsPropertyDetail> SettingsProperties => _settingsProperties ??= GetSettingsProperties();
+    List<SettingsPropertyDetail> SettingsProperties => _settingsProperties ??= GetSettingsProperties()
+        .OrderByDescending(item => item.IsSettingsInfoAttributed)
+        .ThenBy(item => item.Glyph == null)
+        .ThenBy(item => item.Name)
+        .ToList();
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
@@ -92,7 +105,10 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
     protected override void OnAdded()
     {
         base.OnAdded();
-        OpenSelectorDialog();
+        if (Settings.Name == "")
+            OpenSelectorDialog();
+        else
+            FillCurrentValue();
     }
 
     protected override bool IsUndoDeleteRequested()
@@ -162,8 +178,6 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         else
             ViewModel.SettingsSearchResults = SettingsProperties
                 .Where(item => MatchesKeyword(item, kw))
-                .OrderByDescending(item => item.IsSettingsInfoAttributed)
-                .ThenBy(item => item.Name)
                 .ToList();
     }
 
@@ -174,7 +188,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         var detail = PackPropertyIntoSettingsPropertyDetail(property);
         if (detail == null) return;
         ViewModel.CurrentSettingsPropertyDetail = detail;
-        ViewModel.ControlType = DetermineControlType(property.PropertyType, detail.Enums);
+        ViewModel.ControlType = DetermineControlType(property.PropertyType, detail.Enums, Settings.Name);
         if (ViewModel.ControlType == "enums")
         {
             FillCurrentValue();
@@ -255,9 +269,30 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         };
     }
 
-    [Pure]
-    static string DetermineControlType(Type type, string[]? enums)
+    ModifyAppSettingsActionKindTemplateSelector? _kindTemplateSelector;
+
+    ModifyAppSettingsActionKindTemplateSelector KindTemplateSelector
     {
+        get
+        {
+            if (_kindTemplateSelector != null) return _kindTemplateSelector;
+
+            if (Resources.TryGetValue("ModifyAppSettingsActionControlTypeContentPresenter", out var resource) &&
+                resource is ContentPresenter contentPresenter)
+            {
+                _kindTemplateSelector = contentPresenter.ContentTemplate as ModifyAppSettingsActionKindTemplateSelector;
+            }
+
+            return _kindTemplateSelector;
+        }
+    }
+
+
+    [Pure]
+    string DetermineControlType(Type type, string[]? enums, string name)
+    {
+        if (KindTemplateSelector.Templates.ContainsKey(name))
+            return name;
         return enums == null
             ? TypeToControlType.GetValueOrDefault(type, "normal")
             : "enums";

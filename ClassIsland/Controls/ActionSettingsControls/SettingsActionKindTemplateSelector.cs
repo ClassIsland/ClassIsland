@@ -12,6 +12,8 @@ public class ModifyAppSettingsActionKindTemplateSelector : AvaloniaObject, IData
     [Content]
     public Dictionary<string, IDataTemplate> Templates { get; set; } = new();
 
+    public string? Name { get; set; }
+
     public static readonly DirectProperty<ModifyAppSettingsActionKindTemplateSelector, string> KindProperty =
         AvaloniaProperty.RegisterDirect<ModifyAppSettingsActionKindTemplateSelector, string>(nameof(Kind), o => o.Kind, (o, v) => o.Kind = v);
 

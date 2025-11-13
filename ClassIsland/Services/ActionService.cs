@@ -164,34 +164,33 @@ public class ActionService : IActionService
     public ActionService(ILogger<ActionService> logger)
     {
         Logger = logger;
+        ActionMenuTree.Add(new ActionMenuTreeGroup("应用设置", "\uef27",
+            SettingItem("选择应用设置…", "\uEEF7", ""),
+            SettingItem("组件配置方案", "\ue06f", "CurrentComponentConfig"),
+            SettingItem("应用主题", "\ue5cb", "Theme"),
+            SettingItem("窗口停靠位置", "\uf397", "WindowDockingLocation"),
+            SettingItem("窗口层级", "\uea2f", "WindowLayer"),
+            SettingItem("窗口向右偏移", "\ue099", "WindowDockingOffsetX"),
+            SettingItem("窗口向下偏移", "\ue094", "WindowDockingOffsetY")
+        ));
 
-        ActionMenuTree.TryGetValue("应用设置", out var group);
-        group.IconGlyph = "\uef27";
-        (group as ActionMenuTreeGroup)?.Children.Insert(0,
-            new ActionMenuTreeItem<ModifyAppSettingsActionSettings>(
-                "classisland.settings",
-                "选择应用设置…",
-                "\uEEF7",
-                s => s.Name = ""));
 
-        ActionMenuTree.Add(new ActionMenuTreeGroup("运行", "\uEC2E"));
-        ActionMenuTree["运行"].AddRange([
-            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "应用程序", "\uF4B1",
+        ActionMenuTree.Add(new ActionMenuTreeGroup("运行", "\uec2e",
+            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "应用程序", "\uf4b1",
                 s => s.RunType = RunActionSettings.RunActionRunType.Application),
             new ActionMenuTreeItem<RunActionSettings>("classisland.os.run",
                 OperatingSystem.IsWindows() ? "cmd 命令" : "终端命令",
-                "\uE508",
+                "\ue508",
                 s => s.RunType = RunActionSettings.RunActionRunType.Command),
-            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件", "\uE687",
+            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件", "\ue687",
                 s => s.RunType = RunActionSettings.RunActionRunType.File),
-            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件夹", "\uE875",
+            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "文件夹", "\ue875",
                 s => s.RunType = RunActionSettings.RunActionRunType.Folder),
-            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "Url 链接", "\uE905",
-                s => s.RunType = RunActionSettings.RunActionRunType.Url),
-        ]);
+            new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "Url 链接", "\ue905",
+                s => s.RunType = RunActionSettings.RunActionRunType.Url)
+        ));
 
-        ActionMenuTree.Add(new ActionMenuTreeGroup("提醒", "\ue025"));
-        ActionMenuTree["提醒"].AddRange([
+        ActionMenuTree.Add(new ActionMenuTreeGroup("提醒", "\ue025",
             new ActionMenuTreeItem<NotificationActionSettings>("classisland.showNotification", "显示提醒…", "\ue02f",
                 s => s.IsWaitForCompleteEnabled = false),
             new ActionMenuTreeItem<NotificationActionSettings>("classisland.showNotification", "显示提醒并等待…", "\ue02b",
@@ -201,14 +200,18 @@ public class ActionService : IActionService
             new ActionMenuTreeItem<WeatherNotificationActionSettings>("classisland.notification.weather", "气象预警", "\uf431",
                 s => s.NotificationKind = 1),
             new ActionMenuTreeItem<WeatherNotificationActionSettings>("classisland.notification.weather", "逐小时天气预报", "\uf357",
-                s => s.NotificationKind = 2),
-        ]);
+                s => s.NotificationKind = 2)
+        ));
 
-        ActionMenuTree.Add(new ActionMenuTreeGroup("ClassIsland", "\ue454"));
-        ActionMenuTree["ClassIsland"].AddRange([
+        ActionMenuTree.Add(new ActionMenuTreeGroup("ClassIsland", "\ue454",
             new ActionMenuTreeItem("classisland.app.quit", "退出 ClassIsland", "\ue0df"),
-            new ActionMenuTreeItem("classisland.app.restart", "重启 ClassIsland", "\ue0bd"),
-        ]);
+            new ActionMenuTreeItem("classisland.app.restart", "重启 ClassIsland", "\ue0bd")
+        ));
+
+        return;
+
+        static ActionMenuTreeItem<ModifyAppSettingsActionSettings> SettingItem(string displayName, string icon, string name) =>
+            new("classisland.settings", displayName, icon, s => s.Name = name);
     }
 
     [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]

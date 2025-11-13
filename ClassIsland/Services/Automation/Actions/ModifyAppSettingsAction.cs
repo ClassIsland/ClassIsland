@@ -12,7 +12,7 @@ using ClassIsland.Models;
 using ClassIsland.Models.Actions;
 namespace ClassIsland.Services.Automation.Actions;
 
-[ActionInfo("classisland.settings", "修改应用设置", "\uef27", addDefaultToMenu: false)]
+[ActionInfo("classisland.settings", "应用设置", "\uef27", addDefaultToMenu: false)]
 public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSettings>
 {
     SettingsService SettingsService { get; } = App.GetService<SettingsService>();

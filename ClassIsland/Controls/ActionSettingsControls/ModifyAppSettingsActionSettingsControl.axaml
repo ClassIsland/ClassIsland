@@ -37,10 +37,11 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel LastChildFill="False">
-                                <RadioButton Content="{Binding Name}"
-                                             IsChecked="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}" />
-                                <TextBlock x:Name="ValueTextBlock"
-                                           Margin="4 0 0 0"
+                                <RadioButton IsChecked="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}">
+                                    <ci:IconText Glyph="{Binding Glyph}"
+                                                 Text="{Binding Name}" />
+                                </RadioButton>
+                                <TextBlock Margin="4 0 0 0"
                                            VerticalAlignment="Center"
                                            Text="{Binding FriendlyValue}"
                                            DockPanel.Dock="Right"
@@ -86,9 +87,13 @@
                     </DataTemplate>
                     <DataTemplate x:Key="normal">
                         <TextBox VerticalAlignment="Center"
+                                 Text="{Binding #This.ViewModel.InputValue}"
                                  AcceptsReturn="True"
-                                 TextWrapping="Wrap"
-                                 Text="{Binding #This.ViewModel.InputValue}" />
+                                 TextWrapping="Wrap" />
+                    </DataTemplate>
+                    <DataTemplate x:Key="CurrentComponentConfig">
+                        <ComboBox ItemsSource="{Binding #This.ComponentsService.ComponentConfigs}"
+                                  SelectedItem="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                 </local:ModifyAppSettingsActionKindTemplateSelector>
             </ContentPresenter.ContentTemplate>
@@ -97,9 +102,9 @@
 
     <StackPanel>
         <DockPanel>
-            <Button VerticalAlignment="Center"
-                    Click="SelectorButton_OnClick"
-                    MinHeight="30.4">
+            <Button MinHeight="30.4"
+                    VerticalAlignment="Center"
+                    Click="SelectorButton_OnClick">
                 <ci:IconText Glyph="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Glyph, FallbackValue=&#xE7C9;}"
                              Text="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Name, FallbackValue=选择…}" />
             </Button>
