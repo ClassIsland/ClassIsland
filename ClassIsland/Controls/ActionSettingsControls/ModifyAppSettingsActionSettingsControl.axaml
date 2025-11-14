@@ -77,8 +77,8 @@
                                       IsChecked="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                     <DataTemplate x:Key="color">
-                        <fa:ColorPickerButton VerticalAlignment="Center"
-                                              Color="{Binding #This.ViewModel.InputValue}" />
+                        <ColorPicker VerticalAlignment="Center"
+                                     Color="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                     <DataTemplate x:Key="enums">
                         <ComboBox ItemsSource="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Enums}"

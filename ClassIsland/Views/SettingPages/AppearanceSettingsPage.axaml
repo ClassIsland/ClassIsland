@@ -46,7 +46,7 @@
                 <controls2:SettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                     
-                        <controls2:ColorPickerButton
+                        <ColorPicker
                             VerticalAlignment="Center"
                             Margin="0 0 6 0"
                             Color="{Binding ViewModel.SettingsService.Settings.BackgroundColor, Mode=TwoWay}"
@@ -173,7 +173,7 @@
                         </Binding>
                     </controls2:SettingsExpander.IsVisible>
                     <controls2:SettingsExpander.Footer>
-                        <controls2:ColorPickerButton
+                        <ColorPicker
                             Color="{Binding ViewModel.SettingsService.Settings.PrimaryColor, Mode=TwoWay}" />
                     </controls2:SettingsExpander.Footer>
                 </controls2:SettingsExpander>
@@ -520,7 +520,7 @@
                 <controls2:SettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                     
-                        <controls2:ColorPickerButton
+                        <ColorPicker
                             VerticalAlignment="Center"
                             Margin="0 0 6 0"
                             Color="{Binding ViewModel.SettingsService.Settings.CustomForegroundColor, Mode=TwoWay}"

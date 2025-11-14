@@ -385,7 +385,7 @@
                                         Description="事件名称和倒计时的字体颜色。"
                                         IsExpanded="True">
                 <controls3:SettingsExpander.Footer>
-                    <controls3:ColorPickerButton 
+                    <ColorPicker 
                         Color="{Binding Settings.FontColor,Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
                 <controls3:SettingsExpanderItem Content="进度条使用强调色"

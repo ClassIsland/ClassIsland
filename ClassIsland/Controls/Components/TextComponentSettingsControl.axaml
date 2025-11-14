@@ -27,7 +27,7 @@
                                         Header="字体颜色"
                                         Description="选择要显示文本的颜色。">
                 <controls1:SettingsExpander.Footer>
-                    <controls1:ColorPickerButton Color="{Binding Settings.FontColor, Mode=TwoWay}" />
+                    <ColorPicker Color="{Binding Settings.FontColor, Mode=TwoWay}" />
                 </controls1:SettingsExpander.Footer>
             </controls1:SettingsExpander>
             
