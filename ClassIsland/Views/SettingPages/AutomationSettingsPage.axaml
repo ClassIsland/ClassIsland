@@ -52,15 +52,8 @@
                           ColumnDefinitions="Auto,*,Auto">
                         <Button Margin="6"
                                 Command="{Binding $parent[local:AutomationSettingsPage].AddWorkflowCommand}"
+                                Theme="{StaticResource TransparentButton}"
                                 Classes.invert-foreground-accent="{Binding ViewModel.AutomationService.Workflows.Count}">
-                            <Button.Styles>
-                                <Style Selector="Button.invert-foreground-accent">
-                                    <Setter Property="Theme" Value="{StaticResource TransparentButton}"/>
-                                </Style>
-                                <Style Selector="Button:not(.invert-foreground-accent) /template/ ContentPresenter#PART_ContentPresenter">
-                                    <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
-                                </Style>
-                            </Button.Styles>
                             <ci:IconText Glyph="&#xE00D;"
                                          Text="添加自动化"
                                          ToolTip.Tip="添加一个自动化。"

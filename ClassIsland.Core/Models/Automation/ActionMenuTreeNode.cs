@@ -5,6 +5,8 @@ namespace ClassIsland.Core.Models.Automation;
 /// <summary>
 /// 代表一个「添加行动」菜单中的菜单节点，用于构建「添加行动」层叠菜单。
 /// </summary>
+/// <param name="name">菜单节点名称。</param>
+/// <param name="iconGlyph">菜单节点图标。形如 "\ue9a8" FluentIcon Glyph 格式。支持留空。</param>
 public abstract class ActionMenuTreeNode(string name, string? iconGlyph)
 {
     /// <summary>
@@ -39,6 +41,7 @@ public class ActionMenuTreeItem : ActionMenuTreeNode
 public class ActionMenuTreeItem<TSettings> : ActionMenuTreeItem where TSettings : new()
 {
     /// <inheritdoc cref="ActionMenuTreeItem{T}" />
+    /// <inheritdoc cref="ActionMenuTreeNode" />
     public ActionMenuTreeItem(string actionItemId, string name, string? iconGlyph, Action<TSettings> actionItemSettingsSetter) :
         base(actionItemId, name, iconGlyph)
     {
@@ -58,6 +61,7 @@ public class ActionMenuTreeItem<TSettings> : ActionMenuTreeItem where TSettings 
 public class ActionMenuTreeGroup : ActionMenuTreeNode
 {
     /// <inheritdoc cref="ActionMenuTreeGroup" />
+    /// <inheritdoc cref="ActionMenuTreeNode" />
     public ActionMenuTreeGroup(string name, string? iconGlyph = null, params ActionMenuTreeNode[] children) : base(name, iconGlyph)
     {
         Children.AddRange(children);
@@ -80,15 +84,12 @@ public class ActionMenuTreeNodeCollection : KeyedCollection<string, ActionMenuTr
     /// </summary>
     /// <param name="groupName">菜单组中文名称。</param>
     /// <exception cref="ArgumentException">如果无此菜单组，抛出。</exception>
-    public ActionMenuTreeNodeCollection this[string groupName]
+    public new ActionMenuTreeNodeCollection this[string groupName]
     {
         get
         {
-            if (TryGetValue(groupName, out var node))
-            {
-                if (node is ActionMenuTreeGroup group)
-                    return group.Children;
-            }
+            if (TryGetValue(groupName, out var node) && node is ActionMenuTreeGroup group)
+                return group.Children;
 
             throw new ArgumentException($"未找到 ActionMenuTreeGroup “{groupName}”。");
         }

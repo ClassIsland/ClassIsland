@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Automation;
@@ -17,6 +18,9 @@ public abstract class ActionSettingsControlBase : UserControl
 {
     /// 当行动项被用户添加时，此方法将被调用。
     protected virtual void OnAdded() { }
+
+    /// 当行动项被用户添加时，此事件将被调用。
+    protected event EventHandler? ActionItemAdded;
 
     /// <summary>
     /// 当行动项被用户删除时，此方法将被调用，以询问是否需要提供撤销删除按钮。
@@ -38,21 +42,32 @@ public abstract class ActionSettingsControlBase : UserControl
         ActionIconChanged?.Invoke(this, newIconGlyph);
 
     /// 调用此方法，以打开抽屉并显示控件。
-    /// <param name="control">要显示的 ContentControl 控件。注意：此控件需设定宽度。</param>
+    /// <param name="control">要显示的 ContentControl 或 Control 控件。注意：此控件需设定宽度。</param>
     /// <param name="isOpenInDialog">优先在 Dialog 中打开。默认为 false，即优先在应用设置抽屉中打开。</param>
-    protected async Task ShowDrawer(ContentControl control, bool isOpenInDialog = false)
+    protected async Task ShowDrawer(Control control, bool isOpenInDialog = false)
     {
         if (!isOpenInDialog &&
             this.GetVisualRoot() is Window window &&
             window.GetType().FullName == "ClassIsland.Views.SettingsWindowNew")
         {
+            control.Classes.Remove("in-dialog");
             control.Classes.Add("in-drawer");
-            control.Padding = new(16);
+            if (control is ContentControl cc)
+                cc.Padding = new(16);
+            else
+                control.Margin = new(16);
             SettingsPageBase.OpenDrawerCommand.Execute(control);
         }
         else
         {
+            control.Classes.Remove("in-drawer");
             control.Classes.Add("in-dialog");
+
+            if (control.Parent is ContentDialog contentDialog)
+            {
+                contentDialog.Content = null;
+            }
+
             var dialog = new ContentDialog
             {
                 Content = control,
@@ -68,7 +83,12 @@ public abstract class ActionSettingsControlBase : UserControl
 
 
 
-    internal void NotifyAdded() => OnAdded();
+    internal void NotifyAdded()
+    {
+        ActionItemAdded?.Invoke(this, EventArgs.Empty);
+        OnAdded();
+    }
+
     internal bool ShouldShowUndoDeleteButton() => IsUndoDeleteRequested();
     internal object? SettingsInternal { get; set; }
     internal event EventHandler<string>? ActionNameChanged;

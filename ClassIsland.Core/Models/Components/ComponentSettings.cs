@@ -59,7 +59,7 @@ public class ComponentSettings : ObservableRecipient, IMainWindowCustomizableNod
         set
         {
             if (value == _id) return;
-            _id = value;
+            _id = value.ToLower();
             OnPropertyChanged();
             OnPropertyChanged(nameof(AssociatedComponentInfo));
         }

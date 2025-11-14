@@ -7,23 +7,17 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ClassIsland.Core;
-using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
-using ClassIsland.Core.Models.Components;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Models;
-using ClassIsland.Models.ComponentSettings;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
-using ClassIsland.Core.Models.Ruleset;
+using ClassIsland.Services.Automation.Actions;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
-using Edge_tts_sharp.Model;
-using Octokit;
 
 namespace ClassIsland.Services;
 
@@ -183,9 +177,10 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         }
 
         var type = info.PropertyType;
-        value = Convert.ChangeType(value, type);
+        if (value.GetType() != type)
+            value = ModifyAppSettingsAction.ToTargetType(value.ToString(), type);
 
-        if (!isPropertyOverlayNotNull)
+        if (!isPropertyOverlayNotNull || propertyOverlay.Contains(key))
         {
             propertyOverlay = [];
             var sourceValue = info.GetValue(Settings);
@@ -200,6 +195,9 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         return true;
     }
 
+    public static PropertyInfo? GetPropertyInfoByName(string name) =>
+        typeof(Settings).GetProperty(name, SettingsPropertiesFlags);
+
     /// <summary>
     /// 删除应用设置叠层。
     /// </summary>
@@ -208,12 +206,11 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     /// <returns>是否进行了删除。删除出错会抛出。</returns>
     public bool RemoveSettingsOverlay(Guid guid, string name)
     {
-        var key = guid.ToString();
         if (!Settings.SettingsOverlays.TryGetValue(name, out var propertyOverlay))
             return false;
 
         var lengthBefore = propertyOverlay.Count;
-        propertyOverlay.Remove(key);
+        propertyOverlay.Remove(guid.ToString());
         var length = propertyOverlay.Count;
         if (length == lengthBefore)
             return false;
@@ -225,9 +222,9 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         var type = info.PropertyType;
         var last = propertyOverlay[length - 1]; // propertyOverlay 至少存在一项。
         if (last is JsonElement json)
-            last = JsonSerializer.Deserialize(json.GetRawText(), type, AllowReadingFromString);
-        else
-            last = Convert.ChangeType(last, type);
+            last = json.Deserialize(type);
+        if (last.GetType() != type)
+            last = ModifyAppSettingsAction.ToTargetType(last.ToString(), type);
 
         info.SetValue(Settings, last);
 

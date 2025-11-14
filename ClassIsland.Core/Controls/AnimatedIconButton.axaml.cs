@@ -4,6 +4,7 @@ using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
+using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
@@ -23,6 +24,9 @@ public class AnimatedIconButton : Button
     {
         _isKeepingExpandedSubscribe = IsKeepingExpandedProperty.Changed.Subscribe(_ => UpdateStatus());
     }
+
+    public static FuncValueConverter<double, Thickness> TextBlockPaddingFuncConverter { get; } =
+        new(s => new Thickness(10, 5, s, 6));
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
