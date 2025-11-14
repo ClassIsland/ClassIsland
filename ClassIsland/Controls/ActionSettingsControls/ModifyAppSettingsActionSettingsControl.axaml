@@ -73,8 +73,7 @@
                         <NumericUpDown Value="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                     <DataTemplate x:Key="bool">
-                        <ToggleSwitch Margin="5 -8 0 -5"
-                                      VerticalAlignment="Top"
+                        <ToggleSwitch Margin="0 -15 0 -10"
                                       IsChecked="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                     <DataTemplate x:Key="color">
@@ -88,8 +87,13 @@
                     <DataTemplate x:Key="normal">
                         <TextBox VerticalAlignment="Center"
                                  Text="{Binding #This.ViewModel.InputValue}"
-                                 AcceptsReturn="True"
-                                 TextWrapping="Wrap" />
+                                 AcceptsReturn="{Binding #This.ViewModel.IsInInputerContentPresenter2}">
+                            <TextBox.Styles>
+                                <Style Selector="TextBox[AcceptsReturn=True]">
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                </Style>
+                            </TextBox.Styles>
+                        </TextBox>
                     </DataTemplate>
                     <DataTemplate x:Key="CurrentComponentConfig">
                         <ComboBox ItemsSource="{Binding #This.ComponentsService.ComponentConfigs}"
@@ -101,28 +105,32 @@
     </ci:ActionSettingsControlBase.Resources>
 
     <StackPanel>
-        <DockPanel>
-            <Button MinHeight="30.4"
+        <Grid ColumnDefinitions="Auto Auto * Auto">
+            <Button Height="30"
                     VerticalAlignment="Center"
                     Click="SelectorButton_OnClick">
                 <ci:IconText Glyph="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Glyph, FallbackValue=&#xE7C9;}"
                              Text="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Name, FallbackValue=选择…}" />
             </Button>
 
-            <ci:AnimatedIconButton x:Name="FillCurrentValueButton"
+            <TextBlock Margin="5 0"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       Text="修改为" />
+
+            <ContentPresenter x:Name="InputerContentPresenter1"
+                              Grid.Column="2" />
+
+            <ci:AnimatedIconButton Grid.Column="3"
+                x:Name="FillCurrentValueButton"
                                    HorizontalAlignment="Right"
-                                   VerticalContentAlignment="Top"
-                                   Glyph="&#xE18B;"
+                                   VerticalAlignment="Stretch"
+                                   Glyph="&#xE47C;"
                                    Text="当前值"
                                    Click="FillCurrentValueButton_OnClick"
                                    Theme="{StaticResource TransparentButton}"
                                    ToolTip.Tip="填入当前值" />
-        </DockPanel>
-        <DockPanel IsVisible="{Binding #This.ViewModel.ControlType, Converter={x:Static ObjectConverters.IsNotNull}}">
-            <TextBlock Margin="0 0 5 0"
-                       VerticalAlignment="Center"
-                       Text="修改为" />
-            <ContentPresenter x:Name="InputerContentPresenter" />
-        </DockPanel>
+        </Grid>
+        <ContentPresenter x:Name="InputerContentPresenter2" />
     </StackPanel>
 </ci:ActionSettingsControlBase>

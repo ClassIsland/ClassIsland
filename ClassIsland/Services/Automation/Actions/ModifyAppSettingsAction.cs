@@ -48,7 +48,7 @@ public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSetting
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
-    [Pure] public static bool IsTypeSupported(Type type)
+    [Pure] public static bool IsTypeSupported(Type? type)
     {
         if (type == null) return false;
 

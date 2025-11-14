@@ -164,8 +164,15 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
 
     void UpdateInputer()
     {
-        InputerContentPresenter.Content = null;
-        InputerContentPresenter.Content = ControlTypeContentPresenter;
+        InputerContentPresenter1.Content = null;
+        InputerContentPresenter2.Content = null;
+        ViewModel.IsInInputerContentPresenter2 =
+            !IsTypeSupported(ViewModel.CurrentSettingsPropertyDetail?.Type) ||
+            ViewModel.CurrentSettingsPropertyDetail?.Type == typeof(string) && (Settings.Value as string)?.Length > 20;
+        if (ViewModel.IsInInputerContentPresenter2)
+            InputerContentPresenter2.Content = ControlTypeContentPresenter;
+        else
+            InputerContentPresenter1.Content = ControlTypeContentPresenter;
     }
 
     void UpdateSearchResults()
@@ -303,6 +310,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         [ObservableProperty] string _controlType;
         [ObservableProperty] SettingsPropertyDetail _currentSettingsPropertyDetail;
         [ObservableProperty] List<SettingsPropertyDetail> _settingsSearchResults;
+        [ObservableProperty] bool _isInInputerContentPresenter2;
 
         object _inputValue;
 
