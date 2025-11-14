@@ -542,7 +542,8 @@
                         FontFamily="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
                         Margin="0 4 0 0"
                         TextAlignment="Center"
-                        xml:space="preserve">以旧日余烬，为来世破晓！
+                        xml:space="preserve">最后这一页 就让它无言
+我会在扉页 等待你续写 起点
 语文 数学 英语 历史 物理 政治 化学 生物 地理
 the quick brown fox jumps over a lazy dog
 THE QUICK BROWN FOX JUMPS OVER A LAZY DOG
