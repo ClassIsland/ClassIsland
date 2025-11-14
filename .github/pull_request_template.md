@@ -6,8 +6,8 @@
 ## 破坏性变更
 <!--- 在这里列出所有破坏性变更，没有则可删除这一节。 -->
 
-## 修复的 Issue
-<!--- 如果这个 PR 修复了 issue，请像这样列出： 
+## 相关 Issue
+<!--- 如果这个 PR 可以关闭某些 issue，请像这样列出： 
 Fixes #123
 Fixes #456
 详见：https://docs.github.com/zh/get-started/writing-on-github/working-with-advanced-formatting/using-keywords-in-issues-and-pull-requests
