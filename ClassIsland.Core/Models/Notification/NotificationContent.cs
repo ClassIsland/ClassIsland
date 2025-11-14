@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows;
 using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Media;
 using ClassIsland.Core.Controls.NotificationTemplates;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification.Templates;
@@ -19,6 +20,7 @@ public class NotificationContent : ObservableRecipient
     private bool _isSpeechEnabled = true;
     private string _speechContent = "";
     private TimeSpan _duration = TimeSpan.FromSeconds(5);
+    private IBrush? _color;
     private DateTime? _endTime;
     private object? _contentTemplateResourceKey;
 
@@ -72,6 +74,15 @@ public class NotificationContent : ObservableRecipient
     {
         get => _speechContent;
         set => SetProperty(ref _speechContent, value);
+    }
+
+    /// <summary>
+    /// 此部分的涟漪特效颜色。
+    /// </summary>
+    public IBrush? Color
+    {
+        get => _color;
+        set => SetProperty(ref _color, value);
     }
 
     /// <summary>
