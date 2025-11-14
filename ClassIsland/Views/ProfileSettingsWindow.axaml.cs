@@ -68,7 +68,9 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.MasterPageTabSelectIndex = 3;
         }
         InitializeComponent();
-        KeyDown += OnKeyDown;
+        TimeLineListControl.SelectionChanged += TimeLineListControl_OnSelectionChanged;
+        TimeLineListControl.KeyDown += OnKeyDown;
+        ListViewTimePoints.KeyDown += OnKeyDown;
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -105,6 +107,12 @@ public partial class ProfileSettingsWindow : MyWindow
                 }
                 break;
         }
+    }
+
+    private void TimeLineListControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (TimeLineListControl?.SelectedItem != null)
+            TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
     }
     
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
