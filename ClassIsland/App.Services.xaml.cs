@@ -204,9 +204,9 @@ public partial class App
         services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
         services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
         // 触发器
+        services.AddTrigger<RulesetChangedTrigger>();
         services.AddTrigger<SignalTrigger, SignalTriggerSettingsControl>();
         services.AddTrigger<UriTrigger, UriTriggerSettingsControl>();
-        services.AddTrigger<RulesetChangedTrigger>();
         services.AddTrigger<CronTrigger, CronTriggerSettingsControl>();
         services.AddTrigger<AppStartupTrigger>();
         services.AddTrigger<AppStoppingTrigger>();

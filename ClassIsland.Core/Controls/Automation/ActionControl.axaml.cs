@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Automation;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Automation;
 using CommunityToolkit.Mvvm.Input;
 namespace ClassIsland.Core.Controls.Automation;
@@ -13,6 +15,8 @@ public partial class ActionControl : UserControl
 {
     /// <inheritdoc cref="ActionControl" />
     public ActionControl() => InitializeComponent();
+
+    IActionService ActionService { get; } = IAppHost.GetService<IActionService>();
 
     [RelayCommand]
     void AddAction(ActionMenuTreeItem menu)
@@ -48,4 +52,14 @@ public partial class ActionControl : UserControl
         get => GetValue(ActionSetProperty);
         set => SetValue(ActionSetProperty, value);
     }
+
+    static ActionControl()
+    {
+        ActionSetProperty.Changed.AddClassHandler<ActionControl>((sender, e) =>
+        {
+            var newValue = (ActionSet)e.NewValue;
+            sender.ActionService.MigrateActionSet(newValue);
+        });
+    }
+
 }

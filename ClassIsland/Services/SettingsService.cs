@@ -167,7 +167,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         var key = guid.ToString();
         var isPropertyOverlayNotNull = Settings.SettingsOverlays.TryGetValue(name, out var propertyOverlay);
         if (isPropertyOverlayNotNull)
-            propertyOverlay.Remove(key);
+            propertyOverlay!.Remove(key);
 
         var info = typeof(Settings).GetProperty(name, SettingsPropertiesFlags);
         if (info == null)
@@ -176,11 +176,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             return false;
         }
 
-        var type = info.PropertyType;
-        if (value.GetType() != type)
-            value = ModifyAppSettingsAction.ToTargetType(value.ToString(), type);
-
-        if (!isPropertyOverlayNotNull || propertyOverlay.Contains(key))
+        if (!isPropertyOverlayNotNull || propertyOverlay!.Contains(key))
         {
             propertyOverlay = [];
             var sourceValue = info.GetValue(Settings);
@@ -196,7 +192,8 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     }
 
     public static PropertyInfo? GetPropertyInfoByName(string name) =>
-        typeof(Settings).GetProperty(name, SettingsPropertiesFlags);
+        string.IsNullOrEmpty(name) ? null :
+            typeof(Settings).GetProperty(name, SettingsPropertiesFlags);
 
     /// <summary>
     /// 删除应用设置叠层。
@@ -219,13 +216,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         if (info == null)
             return false;
 
-        var type = info.PropertyType;
         var last = propertyOverlay[length - 1]; // propertyOverlay 至少存在一项。
-        if (last is JsonElement json)
-            last = json.Deserialize(type);
-        if (last.GetType() != type)
-            last = ModifyAppSettingsAction.ToTargetType(last.ToString(), type);
-
         info.SetValue(Settings, last);
 
         if (length > 1)

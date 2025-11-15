@@ -6,11 +6,10 @@
                               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                               xmlns:ci="http://classisland.tech/schemas/xaml/core"
-                              xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                               xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
                               xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions">
     <ci:ActionSettingsControlBase.Resources>
-        <Panel x:Key="ModifyAppSettingsActionSettingsDrawer"
+        <Panel x:Key="ModifyAppSettingsAction_SettingsDrawer"
                d:DataContext="{d:DesignInstance local:ModifyAppSettingsActionSettingsControl}"
                Width="400">
             <Grid Classes="animated-intro"
@@ -52,7 +51,6 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <!--  无结果  -->
                 <StackPanel Grid.Row="2"
                             Margin="0 50"
                             HorizontalAlignment="Center"
@@ -63,26 +61,35 @@
             </Grid>
         </Panel>
 
-        <ContentPresenter x:Key="ModifyAppSettingsActionControlTypeContentPresenter">
+        <ContentPresenter x:Key="ModifyAppSettingsAction_ControlTemplateContentPresenter">
             <ContentPresenter.ContentTemplate>
-                <local:ModifyAppSettingsActionKindTemplateSelector Kind="{Binding #This.ViewModel.ControlType}">
+                <local:ModifyAppSettingsActionControlTemplateSelector
+                    ControlTemplateName="{Binding #This.ViewModel.ControlTemplateName}">
+
+                    <!-- 定制属性控件 -->
+                    <DataTemplate x:Key="CurrentComponentConfig">
+                        <ComboBox ItemsSource="{Binding #This.ComponentsService.Value.ComponentConfigs}"
+                                  SelectedItem="{Binding #This.ViewModel.InputValue}" />
+                    </DataTemplate>
+
+                    <!-- 通用属性控件 -->
                     <DataTemplate x:Key="int">
                         <NumericUpDown Value="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                     <DataTemplate x:Key="double">
-                        <NumericUpDown Value="{Binding #This.ViewModel.InputValue}" />
+                        <NumericUpDown Value="{Binding #This.ViewModel.InputValue, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                     </DataTemplate>
                     <DataTemplate x:Key="bool">
                         <ToggleSwitch Margin="0 -15 0 -10"
                                       IsChecked="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                     <DataTemplate x:Key="color">
-                        <ColorPicker VerticalAlignment="Center"
-                                     HorizontalAlignment="Left"
+                        <ColorPicker HorizontalAlignment="Left"
+                                     VerticalAlignment="Center"
                                      Color="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                     <DataTemplate x:Key="enums">
-                        <ComboBox ItemsSource="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Enums}"
+                        <ComboBox ItemsSource="{Binding #This.ViewModel.CurrentSettingsInfo.Enums}"
                                   SelectedIndex="{Binding #This.ViewModel.InputValue, Converter={StaticResource PreventNullConverter}}" />
                     </DataTemplate>
                     <DataTemplate x:Key="normal">
@@ -91,16 +98,12 @@
                                  AcceptsReturn="{Binding #This.ViewModel.IsInInputerContentPresenter2}">
                             <TextBox.Styles>
                                 <Style Selector="TextBox[AcceptsReturn=True]">
-                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                    <Setter Property="TextWrapping" Value="Wrap" />
                                 </Style>
                             </TextBox.Styles>
                         </TextBox>
                     </DataTemplate>
-                    <DataTemplate x:Key="CurrentComponentConfig">
-                        <ComboBox ItemsSource="{Binding #This.ComponentsService.ComponentConfigs}"
-                                  SelectedItem="{Binding #This.ViewModel.InputValue}" />
-                    </DataTemplate>
-                </local:ModifyAppSettingsActionKindTemplateSelector>
+                </local:ModifyAppSettingsActionControlTemplateSelector>
             </ContentPresenter.ContentTemplate>
         </ContentPresenter>
     </ci:ActionSettingsControlBase.Resources>
@@ -110,20 +113,20 @@
             <Button Height="30"
                     VerticalAlignment="Center"
                     Click="SelectorButton_OnClick">
-                <ci:IconText Glyph="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Glyph, FallbackValue=&#xE7C9;}"
-                             Text="{Binding #This.ViewModel.CurrentSettingsPropertyDetail.Name, FallbackValue=选择…}" />
+                <ci:IconText Glyph="{Binding #This.ViewModel.CurrentSettingsInfo.Glyph, FallbackValue=&#xE7C9;}"
+                             Text="{Binding #This.ViewModel.CurrentSettingsInfo.Name, FallbackValue=选择…}" />
             </Button>
 
-            <TextBlock Margin="5 0"
-                       Grid.Column="1"
+            <TextBlock Grid.Column="1"
+                       Margin="5 0"
                        VerticalAlignment="Center"
                        Text="修改为" />
 
             <ContentPresenter x:Name="InputerContentPresenter1"
                               Grid.Column="2" />
 
-            <ci:AnimatedIconButton Grid.Column="3"
-                x:Name="FillCurrentValueButton"
+            <ci:AnimatedIconButton x:Name="FillCurrentValueButton"
+                                   Grid.Column="3"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Stretch"
                                    Glyph="&#xE47C;"

@@ -79,7 +79,7 @@
                       HorizontalAlignment="Center">
                 <NumericUpDown MinWidth="100" HorizontalAlignment="Center"
                                FontSize="15"
-                               Value="{Binding SettingsService.Settings.TimeOffsetSeconds, UpdateSourceTrigger=PropertyChanged}" />
+                               Value="{Binding SettingsService.Settings.TimeOffsetSeconds, UpdateSourceTrigger=PropertyChanged, Converter={x:Static ci:NotNaNConverter.Instance}}" />
             </ci:Field>
             <Button Margin="0 16 0 0"
                     Width="48" Height="48" CornerRadius="24"

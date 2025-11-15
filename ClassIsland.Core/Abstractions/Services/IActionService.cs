@@ -54,6 +54,21 @@ public interface IActionService
     /// </summary>
     internal Task RevertActionItemAsync(ActionItem actionItem, ActionSet actionSet);
 
+    /// <summary>
+    /// ClassIsland 调用此方法以迁移（升级）运行时行动组。
+    /// </summary>
+    internal void MigrateActionSet(ActionSet actionSet);
+
+    /// <summary>
+    /// ClassIsland 调用此方法以迁移（升级）运行时行动项。
+    /// </summary>
+    internal void MigrateActionItem(ActionItem actionItem);
+
+    /// <summary>
+    /// ClassIsland 调用此方法以迁移（升级）未注册的运行时行动项。
+    /// </summary>
+    internal void MigrateUnknownActionItem(ActionItem actionItem);
+
 
 
     [Obsolete("注意！行动 v2 注册方法已过时，请参阅 ClassIsland 开发文档进行迁移。")]
