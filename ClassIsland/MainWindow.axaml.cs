@@ -167,6 +167,8 @@ public partial class MainWindow : Window
     public static FontFamily DefaultFontFamily { get; }=
         FontFamily.Parse(DefaultFontFamilyKey);
 
+    public NativeMenu MoreOptionsMenu { get; } = [];
+
     public MainWindow(SettingsService settingsService, 
         IProfileService profileService,
         INotificationHostService notificationHostService, 
@@ -217,6 +219,7 @@ public partial class MainWindow : Window
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
         IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
+        TaskBarIconService.MoreOptionsMenu = MoreOptionsMenu;
     }
 
     private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
