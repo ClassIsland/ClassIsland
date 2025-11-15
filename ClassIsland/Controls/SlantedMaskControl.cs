@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
@@ -144,13 +146,13 @@ public class SlantedMaskControl : Control
     /// <summary>打开遮罩（两边 -> 中间）</summary>
     public async void Open()
     {
-        await StartSequence(open: true).ConfigureAwait(false);
-    }
+        await StartSequence(open: true);
+    }   
 
     /// <summary>关闭遮罩（中间 -> 两边）</summary>
     public async void Close()
     {
-        await StartSequence(open: false).ConfigureAwait(false);
+        await StartSequence(open: false);
     }
 
     private async Task StartSequence(bool open)
@@ -164,44 +166,40 @@ public class SlantedMaskControl : Control
         int dur = Math.Max(1, RegionDurationMs);
         int stag = Math.Max(0, StageStaggerMs);
 
-        // 为每个 region 构建 Animation（带 Delay）
-        // 我们按阶段安排开始时间：open: outer(0,4) start 0, inner(1,3) start stag, center(2) start 2*stag
-        // close: reverse（center first）
-        var tasks = new List<Task>();
-
         try
         {
+            var animation = new Animation
+            { 
+                Duration = TimeSpan.FromMilliseconds(stag + dur),
+                FillMode = FillMode.Forward,
+                Easing = open ? new QuarticEaseOut() : new QuadraticEaseIn()// 如果你的 Avalonia 版本没有 Easing 属性，可以移除或改为适配的写法
+            };
             if (open)
             {
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Region0Progress = Region1Progress = Region2Progress = Region3Progress = Region4Progress = 0;
-                });
-                tasks.Add(RunRegionAnim(0, 0, dur, true, token));
-                tasks.Add(RunRegionAnim(4, 0, dur, true, token));
-
-                tasks.Add(RunRegionAnim(1, (int)(stag * 0.75), dur, true, token));
-                tasks.Add(RunRegionAnim(3, (int)(stag * 0.75), dur, true, token));
-
-                tasks.Add(RunRegionAnim(2, (int)(stag * 1), dur, true, token));
+                Region0Progress = Region1Progress = Region2Progress = Region3Progress = Region4Progress = 0;
+                
+                animation.Children.AddRange(BuildRegionAnimKeyframe(0, 0, dur, true));
+                animation.Children.AddRange(BuildRegionAnimKeyframe(4, 0, dur, true));
+                
+                animation.Children.AddRange(BuildRegionAnimKeyframe(1, (int)(stag * 0.75), dur, true));
+                animation.Children.AddRange(BuildRegionAnimKeyframe(3, (int)(stag * 0.75), dur, true));
+                
+                animation.Children.AddRange(BuildRegionAnimKeyframe(2, (int)(stag * 1), dur, true));
             }
             else
             {
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Region0Progress = Region1Progress = Region2Progress = Region3Progress = Region4Progress = 1;
-                });
-                tasks.Add(RunRegionAnim(2, 0, dur, false, token));
-
-                tasks.Add(RunRegionAnim(1, (int)(stag * 0.75), dur, false, token));
-                tasks.Add(RunRegionAnim(3, (int)(stag * 0.75), dur, false, token));
-
-                tasks.Add(RunRegionAnim(0, (int)(stag * 1), dur, false, token));
-                tasks.Add(RunRegionAnim(4, (int)(stag * 1), dur, false, token));
+                Region0Progress = Region1Progress = Region2Progress = Region3Progress = Region4Progress = 1;
+                
+                animation.Children.AddRange(BuildRegionAnimKeyframe(2, 0, dur, false));
+                
+                animation.Children.AddRange(BuildRegionAnimKeyframe(1, (int)(stag * 0.75), dur, false));
+                animation.Children.AddRange(BuildRegionAnimKeyframe(3, (int)(stag * 0.75), dur, false));
+                
+                animation.Children.AddRange(BuildRegionAnimKeyframe(0, (int)(stag * 1), dur, false));
+                animation.Children.AddRange(BuildRegionAnimKeyframe(4, (int)(stag * 1), dur, false));
             }
-
-            // 等待所有动画完成（或被取消）
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            
+            await animation.RunAsync(this, token);
         }
         catch (TaskCanceledException)
         {
@@ -216,59 +214,43 @@ public class SlantedMaskControl : Control
             // 最终修正值（避免插值残留）
             if (!token.IsCancellationRequested)
             {
-                _ = Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    double finish = open ? 1.0 : 0.0;
-                    Region0Progress = Region1Progress = Region2Progress = Region3Progress = Region4Progress = finish;
-                });
+                double finish = open ? 1.0 : 0.0;
+                Region0Progress = Region1Progress = Region2Progress = Region3Progress = Region4Progress = finish;
             }
         }
 
         return;
-        
-        double DoCubicOut(double x) => 1 - Math.Pow(1 - x, 3);
     }
-
-    /// <summary>
-    /// 为单个 region 运行动画：在 delayMs 后开始，从 0->1（open）或 1->0（close）
-    /// 通过 Avalonia.Animation.Animation 去插值驱动对应的 StyledProperty。
-    /// </summary>
-    private async Task RunRegionAnim(int regionIndex, int delayMs, int durationMs, bool forward,
-        CancellationToken token)
+    
+    private IList<KeyFrame> BuildRegionAnimKeyframe(int regionIndex, int delayMs, int durationMs, bool forward, bool last=false)
     {
-        await Dispatcher.UIThread.InvokeAsync(async () =>
+        var targetProperty = GetRegionProperty(regionIndex);
+        double from = forward ? 0.0 : 1.0;
+        double to = forward ? 1.0 : 0.0;
+
+        var kf0 = new KeyFrame
         {
-            var animation = new Animation
-            {
-                Delay = TimeSpan.FromMilliseconds(delayMs),
-                Duration = TimeSpan.FromMilliseconds(durationMs),
-                FillMode = FillMode.Forward,
-                Easing = forward ? new QuarticEaseOut() : new QuadraticEaseIn()// 如果你的 Avalonia 版本没有 Easing 属性，可以移除或改为适配的写法
-            };
+            KeyTime = TimeSpan.FromMilliseconds(delayMs),
+            Setters = { new Setter(targetProperty, from) }
+        };
+        var kf1 = new KeyFrame
+        {
+            Setters = { new Setter(targetProperty, to) }
+        };
+        if (last)
+        {
+            kf1.Cue = new Cue(1.0);
+        }
+        else
+        {
+            kf1.KeyTime = TimeSpan.FromMilliseconds(delayMs + durationMs);
+        }
 
-            // 目标属性与值
-            var targetProperty = GetRegionProperty(regionIndex);
-            double from = forward ? 0.0 : 1.0;
-            double to = forward ? 1.0 : 0.0;
 
-            // 创建 KeyFrames（通过 Setter 设置属性值）
-            var kf0 = new KeyFrame
-            {
-                Cue = new Cue(0d),
-                Setters = { new Setter(targetProperty, from) }
-            };
-            var kf1 = new KeyFrame
-            {
-                Cue = new Cue(1d),
-                Setters = { new Setter(targetProperty, to) }
-            };
-
-            animation.Children.Add(kf0);
-            animation.Children.Add(kf1);
-            
-            await animation.RunAsync(this, token).ConfigureAwait(false);
-        });
+        return [kf0, kf1];
     }
+    
+    
 
     // 辅助：根据 index 返回对应的 StyledProperty<double>
     private static AvaloniaProperty<double> GetRegionProperty(int idx)
@@ -288,6 +270,7 @@ public class SlantedMaskControl : Control
 
     #region 绘制
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public override void Render(DrawingContext context)
     {
         base.Render(context);
