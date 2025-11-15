@@ -118,13 +118,13 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         }
         else if (e.PropertyName == nameof(ViewModel.InputValue))
         {
-            if (IsPropertySupported(Settings.Name, ViewModel.CurrentSettingsInfo?.Type))
+            // if (IsPropertySupported(Settings.Name, ViewModel.CurrentSettingsInfo?.Type))
                 Settings.Value = ViewModel.InputValue;
-            else
-            {
-                Settings.Value = JsonSerializer.Deserialize(ViewModel.InputValue.ToString()!,
-                    ViewModel.CurrentSettingsInfo?.Type!)!;
-            }
+            // else
+            // {
+            //     Settings.Value = JsonSerializer.Deserialize(ViewModel.InputValue.ToString()!,
+            //         ViewModel.CurrentSettingsInfo?.Type!)!;
+            // }
         }
     }
 

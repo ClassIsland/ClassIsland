@@ -7,6 +7,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Automation;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Automation;
 using CommunityToolkit.Mvvm.Input;
 namespace ClassIsland.Core.Controls.Automation;
@@ -19,9 +20,12 @@ public partial class ActionItemControl : UserControl
 {
     public ActionItemControl() => InitializeComponent();
 
+    public IActionService ActionService { get; } = IAppHost.GetService<IActionService>();
+
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        ActionService.MigrateActionItem(ActionItem);
         UpdateContent();
     }
 
