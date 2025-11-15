@@ -95,7 +95,7 @@ public abstract class ActionSettingsControlBase : UserControl
     internal event EventHandler<string?>? ActionIconChanged;
 
 
-    static Lazy<IActionService> ActionService = new(IAppHost.GetService<IActionService>());
+    static Lazy<IActionService> ActionService { get; } = new(IAppHost.GetService<IActionService>);
 
     /// <summary>
     /// 获取行动设置控件实例。

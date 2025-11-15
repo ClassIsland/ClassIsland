@@ -100,7 +100,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
 
     protected override bool IsUndoDeleteRequested()
     {
-        return JsonSerializer.Serialize(Settings.Value).Length > 10;
+        return JsonSerializer.Serialize(Settings.Value, FriendlyJsonSerializerOptions).Length > 15;
     }
 
     void ActionSettings_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -122,7 +122,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
             // else
             // {
             //     Settings.Value = JsonSerializer.Deserialize(ViewModel.InputValue.ToString()!,
-            //         ViewModel.CurrentSettingsInfo?.Type!)!;
+            //         ViewModel.CurrentSettingsInfo?.Type!, ModifyAppSettingsAction.FriendlyJsonSerializerOptions)!;
             // }
         }
     }
@@ -206,8 +206,8 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
 
     [Pure]
     object ToInputValue(string name, object? value, Type type) => IsPropertySupported(name, type)
-        ? value ?? "null"
-        : JsonSerializer.Serialize(value, type, FriendlyJsonSerializerOptions);
+        ? value ?? "null!"
+        : JsonSerializer.Serialize(value, FriendlyJsonSerializerOptions);
 
     [Pure]
     List<SettingsInfo> GetSettingsProperties()
@@ -261,7 +261,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
     {
         return value switch
         {
-            null => "null",
+            null => "null!",
             int index and >= 0 when index < enums?.Length => enums[index],
             Color color => color.ToString(),
             _ => EasyTypes.Contains(GetUnderlyingType(type))

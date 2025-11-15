@@ -2,7 +2,10 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Text.Json;
 using ClassIsland.Services;
+using ClassIsland.Services.Automation.Actions;
+using ClassIsland.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
 namespace ClassIsland.Models.Actions;
 
 /// <summary>
@@ -10,6 +13,9 @@ namespace ClassIsland.Models.Actions;
 /// </summary>
 public class ModifyAppSettingsActionSettings : ObservableRecipient
 {
+    static Lazy<ILogger<ModifyAppSettingsActionSettings>> Logger { get; } =
+        new(IAppHost.GetService<ILogger<ModifyAppSettingsActionSettings>>);
+
     string _name = "";
     public string Name
     {
@@ -32,9 +38,17 @@ public class ModifyAppSettingsActionSettings : ObservableRecipient
             if (info == null || _value.GetType() == info.PropertyType) return _value;
 
             if (_value is not JsonElement json)
-                return ToTargetType(_value, info.PropertyType) ?? _value;
+                return _value = (ToTargetType(_value, info.PropertyType) ?? _value);
 
-            return json.Deserialize(info.PropertyType) ?? _value;
+            try
+            {
+                return _value = (json.Deserialize(info.PropertyType, ModifyAppSettingsAction.FriendlyJsonSerializerOptions) ?? _value);
+            }
+            catch (JsonException ex)
+            {
+                Logger.Value.LogError(ex, "无法将 {_value} 获取为 {type} 类型。", _value, info.PropertyType);
+                return _value;
+            }
         }
         set
         {
@@ -63,7 +77,7 @@ public class ModifyAppSettingsActionSettings : ObservableRecipient
             if (type == typeof(bool))
                 return bool.Parse(str);
 
-            return JsonSerializer.Deserialize(str, type);
+            return JsonSerializer.Deserialize(str, type, ModifyAppSettingsAction.FriendlyJsonSerializerOptions);
         }
         catch
         {

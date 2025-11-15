@@ -150,11 +150,6 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
 
     public const BindingFlags SettingsPropertiesFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
-    public static readonly JsonSerializerOptions AllowReadingFromString = new()
-    {
-        NumberHandling = JsonNumberHandling.AllowReadingFromString
-    };
-
     /// <summary>
     /// 添加应用设置叠层。
     /// </summary>
