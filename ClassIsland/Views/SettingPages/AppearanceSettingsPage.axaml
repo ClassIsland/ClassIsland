@@ -46,7 +46,7 @@
                 <controls2:SettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                     
-                        <controls2:ColorPickerButton
+                        <ColorPicker
                             VerticalAlignment="Center"
                             Margin="0 0 6 0"
                             Color="{Binding ViewModel.SettingsService.Settings.BackgroundColor, Mode=TwoWay}"
@@ -100,7 +100,7 @@
                                 VerticalAlignment="Center"
                                 IsSnapToTickEnabled="True"/>
                         <NumericUpDown
-                            Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
+                            Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={x:Static ci:NotNaNConverter.Instance}}"
                             Margin="6,0,0,0"
                             Width="125"/>
                     </StackPanel>
@@ -173,7 +173,7 @@
                         </Binding>
                     </controls2:SettingsExpander.IsVisible>
                     <controls2:SettingsExpander.Footer>
-                        <controls2:ColorPickerButton
+                        <ColorPicker
                             Color="{Binding ViewModel.SettingsService.Settings.PrimaryColor, Mode=TwoWay}" />
                     </controls2:SettingsExpander.Footer>
                 </controls2:SettingsExpander>
@@ -520,7 +520,7 @@
                 <controls2:SettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                     
-                        <controls2:ColorPickerButton
+                        <ColorPicker
                             VerticalAlignment="Center"
                             Margin="0 0 6 0"
                             Color="{Binding ViewModel.SettingsService.Settings.CustomForegroundColor, Mode=TwoWay}"
@@ -542,7 +542,8 @@
                         FontFamily="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
                         Margin="0 4 0 0"
                         TextAlignment="Center"
-                        xml:space="preserve">以旧日余烬，为来世破晓！
+                        xml:space="preserve">最后这一页 就让它无言
+我会在扉页 等待你续写 起点
 语文 数学 英语 历史 物理 政治 化学 生物 地理
 the quick brown fox jumps over a lazy dog
 THE QUICK BROWN FOX JUMPS OVER A LAZY DOG

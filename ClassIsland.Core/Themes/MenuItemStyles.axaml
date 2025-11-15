@@ -1,0 +1,32 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="MenuItem[(ci|PointerStateAssist.IsTouchMode)=True]">
+        <Setter Property="Padding" Value="{StaticResource MenuFlyoutItemThemePadding}"/>
+    </Style>
+    <Style Selector="MenuItem /template/ ContentControl#PART_ToggleIconPresenter">
+        <Setter Property="Width" Value="18"/>
+        <Setter Property="Height" Value="18"/>
+        <Setter Property="Margin" Value="0 0 8 0"/>
+    </Style>
+    
+    <Style Selector="MenuItem:icon /template/ Viewbox#PART_IconPresenter">
+        <Setter Property="Width" Value="18"/>
+        <Setter Property="Height" Value="18"/>
+        <Setter Property="TextElement.FontSize" Value="18"/>
+        <Setter Property="Margin" Value="0 0 8 0"/>
+    </Style>
+    <Style Selector="controls|MenuFlyoutSubItem:icons /template/ Viewbox#IconRoot">
+        <Setter Property="Width" Value="18"/>
+        <Setter Property="Height" Value="18"/>
+        <Setter Property="TextElement.FontSize" Value="18"/>
+    </Style>
+</Styles>

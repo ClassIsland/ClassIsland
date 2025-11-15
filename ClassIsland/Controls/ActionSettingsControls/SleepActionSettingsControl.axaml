@@ -11,7 +11,7 @@
         <ci:Field Suffix="秒" HorizontalAlignment="Left">
             <NumericUpDown MinWidth="147"
                            Minimum="0"
-                           Value="{Binding Settings.Value}" />
+                           Value="{Binding Settings.Value, Converter={x:Static ci:NotNaNConverter.Instance}}" />
         </ci:Field>
     </Panel>
 </ci:ActionSettingsControlBase>

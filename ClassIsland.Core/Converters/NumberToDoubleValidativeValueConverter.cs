@@ -20,7 +20,7 @@ public class NotNaNConverter : IValueConverter
     {
         if (value is not double d)
         {
-            return BindingOperations.DoNothing;
+            return value ?? BindingOperations.DoNothing;
         }
 
         return double.IsFinite(d) ? d : BindingOperations.DoNothing;

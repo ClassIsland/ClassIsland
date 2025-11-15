@@ -64,7 +64,7 @@
                                        Command="{Binding $parent[local:ActionControl].AddActionCommand}"
                                        CommandParameter="{Binding}">
                         <fa:MenuFlyoutItem.IconSource>
-                            <ci:FluentIconSource Glyph="{Binding IconGlyph}" />
+                            <ci:FluentIconSource Glyph="{Binding IconGlyph}" FontSize="18"/>
                         </fa:MenuFlyoutItem.IconSource>
                     </fa:MenuFlyoutItem>
                 </DataTemplate>

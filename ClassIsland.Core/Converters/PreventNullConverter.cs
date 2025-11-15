@@ -14,6 +14,6 @@ public class PreventNullConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object parameter, CultureInfo culture)
     {
-        return value ?? BindingOperations.DoNothing;
+        return value is -1 or null ? BindingOperations.DoNothing : value;
     }
 }

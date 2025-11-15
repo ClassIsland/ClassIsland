@@ -93,9 +93,8 @@ jobs:
           osName: ${{ matrix.os }}
           appVersion: ${{ steps.tagName.outputs.tag }} 
           buildName: ${{ matrix.package == 'folder' &&  'appBase' || 'app' }}  # 打包版本的构建将在这一步直接产生完整的包体，无需经过分装
-        run: |
-          pwsh -ep bypass ./build.ps1 PublishApp
-
+        run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishApp' || './build.sh PublishApp' }}
+      
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
@@ -159,8 +158,8 @@ jobs:
           arch: ${{ matrix.arch }}
           osName: ${{ matrix.os }}
           buildName: launcher
-        run: |
-          pwsh -ep bypass ./build.ps1 PublishLauncher
+        run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishLauncher' || './build.sh PublishLauncher' }} 
+          
 
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact

@@ -463,7 +463,7 @@
                                 <controls:SettingsExpander.Footer>
                                     <StackPanel Orientation="Horizontal">
                                     
-                                        <controls:ColorPickerButton
+                                        <ColorPicker
                                             VerticalAlignment="Center"
                                             Margin="0 0 6 0"
                                             Color="{Binding BackgroundColor, Mode=TwoWay}"
@@ -584,7 +584,7 @@
                                                         Description="调整字体颜色，将覆盖【外观】设置和主界面行中设置的值。">
                                 <controls:SettingsExpander.Footer>
                                     <StackPanel Orientation="Horizontal">
-                                        <controls:ColorPickerButton
+                                        <ColorPicker
                                             VerticalAlignment="Center"
                                             Margin="0 0 6 0"
                                             Color="{Binding ForegroundColor, Mode=TwoWay}"
@@ -793,7 +793,7 @@
                                 <controls:SettingsExpander.Footer>
                                     <StackPanel Orientation="Horizontal">
                                     
-                                        <controls:ColorPickerButton
+                                        <ColorPicker
                                             VerticalAlignment="Center"
                                             Margin="0 0 6 0"
                                             Color="{Binding BackgroundColor, Mode=TwoWay}"
@@ -912,7 +912,7 @@
                                                         Description="调整字体颜色，将覆盖【外观】设置和主界面行中设置的值。">
                                 <controls:SettingsExpander.Footer>
                                     <StackPanel Orientation="Horizontal">
-                                        <controls:ColorPickerButton
+                                        <ColorPicker
                                             VerticalAlignment="Center"
                                             Margin="0 0 6 0"
                                             Color="{Binding ForegroundColor, Mode=TwoWay}"

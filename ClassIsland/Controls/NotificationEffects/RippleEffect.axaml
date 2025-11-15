@@ -20,7 +20,7 @@
                  Canvas.Top="{Binding CenterY}"
                  VerticalAlignment="Center"
                  HorizontalAlignment="Center"
-                 Fill="{DynamicResource AccentFillColorDefaultBrush}" RenderTransformOrigin="0.5, 0.5">
+                 Fill="{Binding Fill}" RenderTransformOrigin="0.5, 0.5">
             <Ellipse.RenderTransform>
                 <TransformGroup>
                     <TranslateTransform X="{Binding EllipseSize, Converter={StaticResource RippleEffectTranslationConverter}}" 

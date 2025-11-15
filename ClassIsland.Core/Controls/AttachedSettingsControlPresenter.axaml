@@ -143,11 +143,9 @@
                     </Button>
                     <Grid>
                         <controls:IconText Glyph="{Binding ControlInfo.IconGlyph, Mode=OneWay}"
-                                           UseFontIcon="True"
                                            Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"
                                            IsVisible="{Binding IsDependencyMode, Converter={StaticResource InvertBooleanConverter}}"/>
                         <controls:IconText Glyph="{Binding DependencyItemPackIconKind, Mode=OneWay}"
-                                           UseFontIcon="True"
                                            Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
                                            IsVisible="{Binding IsDependencyMode}">
                             <controls:IconText.Styles>

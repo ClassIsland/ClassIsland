@@ -47,12 +47,27 @@ public interface IActionService
     /// 触发行动项。行动错误已被捕获。已中断运行的行动项会在此处拦截。
     /// </summary>
     /// <param name="isRevertable">行动是否将会被恢复。默认为 true。</param>
-    private protected Task InvokeActionItemAsync(ActionItem actionItem, ActionSet actionSet, bool isRevertable = true);
+    internal Task InvokeActionItemAsync(ActionItem actionItem, ActionSet actionSet, bool isRevertable = true);
 
     /// <summary>
     /// 恢复行动项。行动错误已被捕获。设置为不能恢复的行动项会被忽略。
     /// </summary>
-    private protected Task RevertActionItemAsync(ActionItem actionItem, ActionSet actionSet);
+    internal Task RevertActionItemAsync(ActionItem actionItem, ActionSet actionSet);
+
+    /// <summary>
+    /// ClassIsland 调用此方法以迁移（升级）运行时行动组。
+    /// </summary>
+    internal void MigrateActionSet(ActionSet actionSet);
+
+    /// <summary>
+    /// ClassIsland 调用此方法以迁移（升级）运行时行动项。
+    /// </summary>
+    internal void MigrateActionItem(ActionItem actionItem);
+
+    /// <summary>
+    /// ClassIsland 调用此方法以迁移（升级）未注册的运行时行动项。
+    /// </summary>
+    internal void MigrateUnknownActionItem(ActionItem actionItem);
 
 
 

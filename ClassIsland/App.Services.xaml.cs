@@ -28,7 +28,6 @@ using ClassIsland.Models.Rules;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
-using ClassIsland.Services.ActionHandlers;
 using ClassIsland.Services.AppUpdating;
 using ClassIsland.Services.Automation.Actions;
 using ClassIsland.Services.Automation.Triggers;
@@ -204,10 +203,10 @@ public partial class App
         services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
         services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
         services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
-        // // 触发器
+        // 触发器
+        services.AddTrigger<RulesetChangedTrigger>();
         services.AddTrigger<SignalTrigger, SignalTriggerSettingsControl>();
         services.AddTrigger<UriTrigger, UriTriggerSettingsControl>();
-        services.AddTrigger<RulesetChangedTrigger>();
         services.AddTrigger<CronTrigger, CronTriggerSettingsControl>();
         services.AddTrigger<AppStartupTrigger>();
         services.AddTrigger<AppStoppingTrigger>();
@@ -232,20 +231,13 @@ public partial class App
         services.AddRule<RainTimeRuleSettings, RainTimeRuleSettingsControl>("classisland.weather.rainTime", "距离降水开始/结束还剩", "\uF43F");
         // 行动提供方
         services.AddAction<SignalTriggerSettings, BroadcastSignalActionSettingsControl>("classisland.broadcastSignal", "广播信号", "\uE561");
-        services.AddAction<CurrentComponentConfigActionSettings, CurrentComponentConfigActionSettingsControl>("classisland.settings.currentComponentConfig", "组件配置方案", "\ue06f", "应用设置");
-        services.AddAction<ThemeActionSettings, ThemeActionSettingsControl>("classisland.settings.theme", "应用主题", "\uE5CB", "应用设置");
-        services.AddAction<WindowDockingLocationActionSettings, WindowDockingLocationActionSettingsControl>("classisland.settings.windowDockingLocation", "窗口停靠位置", "\uf397", "应用设置");
-        services.AddAction<WindowLayerActionSettings, WindowLayerActionSettingsControl>("classisland.settings.windowLayer", "窗口层级", "\uea2f", "应用设置");
-        services.AddAction<WindowDockingOffsetXActionSettings, WindowDockingOffsetXActionSettingsControl>("classisland.settings.windowDockingOffsetX", "窗口向右偏移", "\ue099", "应用设置");
-        services.AddAction<WindowDockingOffsetYActionSettings, WindowDockingOffsetYActionSettingsControl>("classisland.settings.windowDockingOffsetY", "窗口向下偏移", "\ue094", "应用设置");
         services.AddAction<RunAction, RunActionSettingsControl>();
         services.AddAction<NotificationAction, NotificationActionSettingsControl>();
         services.AddAction<SleepAction, SleepActionSettingsControl>();
-        services.AddAction<SettingsAction, SettingsActionSettingsControl>();
+        services.AddAction<ModifyAppSettingsAction, ModifyAppSettingsActionSettingsControl>();
         services.AddAction<WeatherNotificationAction, WeatherNotificationActionSettingControl>();
         services.AddAction<AppQuitAction>();
         services.AddAction<AppRestartAction, AppRestartActionSettingsControl>();
-        services.AddHostedService<AppSettingsActionHandler>();
 
         // 认证提供方
         services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
