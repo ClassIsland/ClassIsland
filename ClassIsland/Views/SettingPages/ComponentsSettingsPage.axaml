@@ -390,7 +390,7 @@
                         </ListBox.ItemTemplate>
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <WrapPanel Classes="animated-resize">
+                                <WrapPanel>
                                     <Interaction.Behaviors>
                                         <BehaviorCollection>
                                             <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
