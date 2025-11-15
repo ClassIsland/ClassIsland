@@ -29,7 +29,7 @@
                     </Style>
                 </StackPanel.Styles>
                 <!-- Today -->
-                <TextBlock Text="{Binding DateTimes[0], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Classes="l-secondary" Text="{Binding DateTimes[0], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[0], Converter={StaticResource IntToStringConverter}}"
                                                  Height="24"
                                                  VerticalAlignment="Center"
@@ -39,7 +39,7 @@
                 </TextBlock>
                 <Separator Margin="8 2"/>
 
-                <TextBlock Text="{Binding DateTimes[1], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Classes="l-secondary" Text="{Binding DateTimes[1], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[1], Converter={StaticResource IntToStringConverter}}"
                                                  Height="24"
                                                  VerticalAlignment="Center"
@@ -49,7 +49,7 @@
                 </TextBlock>
                 <Separator Margin="8 2"/>
 
-                <TextBlock Text="{Binding DateTimes[2], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Classes="l-secondary" Text="{Binding DateTimes[2], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[2], Converter={StaticResource IntToStringConverter}}"
                                                   Height="24"
                                                   VerticalAlignment="Center"
@@ -59,7 +59,7 @@
                 </TextBlock>
                 <Separator Margin="8 2"/>
 
-                <TextBlock Text="{Binding DateTimes[3], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Classes="l-secondary" Text="{Binding DateTimes[3], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[3], Converter={StaticResource IntToStringConverter}}"
                                                  Height="24"
                                                  VerticalAlignment="Center"
@@ -69,7 +69,7 @@
                 </TextBlock>
                 <Separator Margin="8 2"/>
 
-                <TextBlock Text="{Binding DateTimes[4], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Classes="l-secondary" Text="{Binding DateTimes[4], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[4], Converter={StaticResource IntToStringConverter}}"
                                                  Height="24"
                                                  VerticalAlignment="Center"
@@ -79,7 +79,7 @@
                 </TextBlock>
                 <Separator Margin="8 2"/>
 
-                <TextBlock Text="{Binding DateTimes[5], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Classes="l-secondary" Text="{Binding DateTimes[5], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[5], Converter={StaticResource IntToStringConverter}}"
                                                  Height="24"
                                                  VerticalAlignment="Center"

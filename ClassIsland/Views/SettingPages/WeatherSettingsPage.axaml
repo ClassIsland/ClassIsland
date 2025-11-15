@@ -83,6 +83,7 @@
                         Margin="6 0 0 0" />
             </StackPanel>
             <TextBlock
+                Classes="l-instructive"
                 Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.UpdateTime, Mode=OneWay}">
             </TextBlock>
             <ItemsControl ItemsSource="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Alerts}"

@@ -120,7 +120,8 @@
                     </Button>
 
                     <TextBlock Margin="0 16 0 0" TextWrapping="Wrap"
-                               Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。" />
+                               Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。" 
+                               Classes="l-instructive"/>
                     <!--<TextBlock Text="{Binding ViewModel.SettingsService.Settings.WindowDockingLocation, Mode=OneWay}"/>-->
                 </StackPanel>
             </Grid>

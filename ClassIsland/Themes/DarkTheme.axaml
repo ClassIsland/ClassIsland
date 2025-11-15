@@ -16,4 +16,6 @@
 
     <!-- 自定义背景色 -->
     <SolidColorBrush x:Key="CustomizedAccentBarBackground1Brush" Color="#26374C" />
+    
+    <SolidColorBrush x:Key="TextFillColorInformativeSecondaryBrush" Color="#dfffffff" />
 </ResourceDictionary>

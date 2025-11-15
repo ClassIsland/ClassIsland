@@ -1,0 +1,44 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector=":is(Control)">
+        <Style Selector="^.l-primary, ^.l1">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+        </Style>
+        <Style Selector="^.l-secondary, ^.l2">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorInformativeSecondaryBrush}"/>
+        </Style>
+        <Style Selector="^.l-instructive, ^.l3">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+        </Style>
+        <Style Selector="^.l-decoration, ^.l4">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+        </Style>
+        <Style Selector="^.l-inactive, ^.l5">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+        </Style>
+    </Style>
+    <Style Selector=":is(TextElement)">
+        <Style Selector="^.l-primary, ^.l1">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+        </Style>
+        <Style Selector="^.l-secondary, ^.l2">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorInformativeSecondaryBrush}"/>
+        </Style>
+        <Style Selector="^.l-instructive, ^.l3">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+        </Style>
+        <Style Selector="^.l-decoration, ^.l4">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
+        </Style>
+        <Style Selector="^.l-inactive, ^.l5">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+        </Style>
+    </Style>
+</Styles>

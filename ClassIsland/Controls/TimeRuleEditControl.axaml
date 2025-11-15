@@ -10,7 +10,8 @@
     <StackPanel>
         <Separator Margin="0 8 0 8" />
         <ci:IconText Text="触发规则" Glyph="&#xf17e;" Margin="0 0 0 8" />
-        <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
+        <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap"
+                   Classes="l-instructive"/>
 
         <TextBlock Text="当今天是：" Margin="0 8 0 0" />
         <ListBox ItemsSource="{x:Static viewModels:TimeRuleEditViewModel.WeekDayOptions}"
