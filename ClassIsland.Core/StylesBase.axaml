@@ -36,6 +36,7 @@
     <StyleInclude Source="/Themes/PopupAnimations.axaml"/>
     <StyleInclude Source="/Themes/ComponentsPanelStyles.axaml"/>
     <StyleInclude Source="/Themes/SlidingListBox.axaml"/>
+    <StyleInclude Source="/Themes/MenuItemStyles.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
     <StyleInclude Source="/Controls/DrawerHost.axaml"/>
     <StyleInclude Source="/Controls/TouchDragThumb.axaml"/>

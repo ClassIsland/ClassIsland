@@ -55,7 +55,7 @@
                                             </MultiBinding>
                                         </fa:MenuFlyoutItem.CommandParameter>
                                         <fa:MenuFlyoutItem.IconSource>
-                                            <ci:FluentIconSource Glyph="{Binding IconGlyph}" />
+                                            <ci:FluentIconSource Glyph="{Binding IconGlyph}" FontSize="20"/>
                                         </fa:MenuFlyoutItem.IconSource>
                                     </fa:MenuFlyoutItem>
                                 </DataTemplate>

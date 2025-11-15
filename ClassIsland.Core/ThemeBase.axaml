@@ -39,6 +39,7 @@
     <system:Boolean x:Key="FalseValue">False</system:Boolean>
     
     <system:Double x:Key="NavigationViewItemOnLeftIconBoxHeight">18</system:Double>
+    <Thickness x:Key="MenuFlyoutItemThemePaddingNarrow">11,5,11,6</Thickness>
     
     <!-- IconFonts -->
     <FontFamily x:Key="FluentIcons">avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable</FontFamily>
