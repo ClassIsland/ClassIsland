@@ -77,7 +77,7 @@
                         <NumericUpDown Value="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                     <DataTemplate x:Key="double">
-                        <NumericUpDown Value="{Binding #This.ViewModel.InputValue}" />
+                        <NumericUpDown Value="{Binding #This.ViewModel.InputValue, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                     </DataTemplate>
                     <DataTemplate x:Key="bool">
                         <ToggleSwitch Margin="0 -15 0 -10"

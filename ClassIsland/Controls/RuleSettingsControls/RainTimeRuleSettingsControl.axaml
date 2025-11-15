@@ -16,7 +16,7 @@
                       OffContent="距离开始">
         </ToggleSwitch>
         <ci:Field Grid.Column="1" Suffix="分钟">
-        <NumericUpDown Value="{Binding Settings.RainTimeMinutes}"
+        <NumericUpDown Value="{Binding Settings.RainTimeMinutes, Converter={x:Static ci:NotNaNConverter.Instance}}"
                             Grid.Column="1"
                             Minimum="0" Maximum="120"/>
         </ci:Field>

@@ -100,7 +100,7 @@
                                 VerticalAlignment="Center"
                                 IsSnapToTickEnabled="True"/>
                         <NumericUpDown
-                            Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
+                            Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={x:Static ci:NotNaNConverter.Instance}}"
                             Margin="6,0,0,0"
                             Width="125"/>
                     </StackPanel>

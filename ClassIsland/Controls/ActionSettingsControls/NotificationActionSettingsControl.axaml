@@ -29,7 +29,7 @@
                           Suffix="秒">
                     <NumericUpDown MinWidth="150"
                                    Minimum="0"
-                                   Value="{Binding Settings.MaskDurationSeconds}" />
+                                   Value="{Binding Settings.MaskDurationSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                 </ci:Field>
 
 
@@ -44,7 +44,7 @@
                           Suffix="秒">
                     <NumericUpDown MinWidth="150"
                                    Minimum="0"
-                                   Value="{Binding Settings.ContentDurationSeconds}" />
+                                   Value="{Binding Settings.ContentDurationSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                 </ci:Field>
 
 

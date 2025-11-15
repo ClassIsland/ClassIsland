@@ -22,7 +22,7 @@
             </ComboBoxItem>
         </ComboBox>
         <ci:Field Prefix="之前" Suffix="秒">
-            <NumericUpDown Value="{Binding $parent[local:PreTimePointTriggerSettingsControl].Settings.TimeSeconds}" />
+            <NumericUpDown Value="{Binding $parent[local:PreTimePointTriggerSettingsControl].Settings.TimeSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
         </ci:Field>
     </StackPanel>
 </ci:TriggerSettingsControlBase>
