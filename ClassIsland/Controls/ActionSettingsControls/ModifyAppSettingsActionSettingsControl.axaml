@@ -78,6 +78,7 @@
                     </DataTemplate>
                     <DataTemplate x:Key="color">
                         <ColorPicker VerticalAlignment="Center"
+                                     HorizontalAlignment="Left"
                                      Color="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
                     <DataTemplate x:Key="enums">
