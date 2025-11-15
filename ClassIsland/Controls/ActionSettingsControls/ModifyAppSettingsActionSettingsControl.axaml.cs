@@ -33,8 +33,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
     ILogger<ModifyAppSettingsActionSettingsControl> Logger { get; } =
         App.GetService<ILogger<ModifyAppSettingsActionSettingsControl>>();
 
-    readonly Lazy<IComponentsService> _componentsService = new(App.GetService<IComponentsService>);
-    public IComponentsService ComponentsService => _componentsService.Value;
+    Lazy<IComponentsService> ComponentsService { get; } = new(App.GetService<IComponentsService>);
 
     ModifyAppSettingsActionSettingsControlViewModel ViewModel { get; } = new();
 

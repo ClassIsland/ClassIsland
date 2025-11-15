@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using Avalonia.Controls;
-using Avalonia.Controls.Presenters;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Automation;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Automation;
 using FluentAvalonia.UI.Controls;
@@ -95,6 +95,7 @@ public abstract class ActionSettingsControlBase : UserControl
     internal event EventHandler<string?>? ActionIconChanged;
 
 
+    static Lazy<IActionService> ActionService = new(IAppHost.GetService<IActionService>());
 
     /// <summary>
     /// 获取行动设置控件实例。
@@ -106,7 +107,12 @@ public abstract class ActionSettingsControlBase : UserControl
 
         // Bug：过于简单的控件会在此开始加载 AXAML，此时 Settings 仍为 null。
         var control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(actionItem.Id);
-        if (control == null) return null;
+        if (control == null)
+        {
+            ActionService.Value.MigrateUnknownActionItem(actionItem);
+            control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(actionItem.Id);
+            if (control == null) return null;
+        }
 
         var settingsType = control.GetType().BaseType?.GetGenericArguments().FirstOrDefault();
         if (settingsType != null)

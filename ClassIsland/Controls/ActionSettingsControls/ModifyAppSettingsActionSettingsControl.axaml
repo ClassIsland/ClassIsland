@@ -68,7 +68,7 @@
 
                     <!-- 定制属性控件 -->
                     <DataTemplate x:Key="CurrentComponentConfig">
-                        <ComboBox ItemsSource="{Binding #This.ComponentsService.ComponentConfigs}"
+                        <ComboBox ItemsSource="{Binding #This.ComponentsService.Value.ComponentConfigs}"
                                   SelectedItem="{Binding #This.ViewModel.InputValue}" />
                     </DataTemplate>
 

@@ -167,11 +167,11 @@ public class ActionService : IActionService
         }
     }
 
-    public void MigrateActionSet(ActionSet actionSet)
-    {
-    }
+    public void MigrateActionSet(ActionSet actionSet) { }
 
-    public void MigrateActionItem(ActionItem actionItem)
+    public void MigrateActionItem(ActionItem actionItem) { }
+
+    public void MigrateUnknownActionItem(ActionItem actionItem)
     {
         // 1.7.107.0
         // 迁移应用设置行动 classisland.settings
