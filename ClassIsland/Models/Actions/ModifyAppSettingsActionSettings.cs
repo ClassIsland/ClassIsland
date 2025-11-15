@@ -1,8 +1,6 @@
 using System;
-using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Avalonia.Data;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 namespace ClassIsland.Models.Actions;
@@ -30,28 +28,46 @@ public class ModifyAppSettingsActionSettings : ObservableRecipient
     {
         get
         {
-            if (_value is not JsonElement json) return _value;
-
             var info = typeof(Settings).GetProperty(Name, SettingsService.SettingsPropertiesFlags);
-            if (info == null) return _value;
+            if (info == null || _value.GetType() == info.PropertyType) return _value;
 
-            object? s = null;
-            try
-            {
-                s = json.Deserialize(info.PropertyType);
-            }
-            catch (JsonException ex)
-            {
-                Debug.WriteLine(ex);
-            }
+            if (_value is not JsonElement json)
+                return ToTargetType(_value, info.PropertyType) ?? _value;
 
-            return s ?? _value;
+            return json.Deserialize(info.PropertyType) ?? _value;
         }
         set
         {
             if (value == null || value.Equals(_value)) return;
             _value = value;
-            OnPropertyChanged();
+            // OnPropertyChanged();
+        }
+    }
+
+    [Pure] static object? ToTargetType(object value, Type type)
+    {
+        var str = value.ToString();
+        if (str == null) return null;
+
+        if (type == typeof(string))
+            return value;
+
+        try
+        {
+            if (type == typeof(int))
+                return (int)double.Parse(str);
+
+            if (type == typeof(double))
+                return double.Parse(str);
+
+            if (type == typeof(bool))
+                return bool.Parse(str);
+
+            return JsonSerializer.Deserialize(str, type);
+        }
+        catch
+        {
+            return null;
         }
     }
 }

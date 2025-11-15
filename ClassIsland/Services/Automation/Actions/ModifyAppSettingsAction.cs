@@ -4,7 +4,6 @@ using System.Diagnostics.Contracts;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
@@ -19,6 +18,7 @@ public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSetting
 
     protected override async Task OnInvoke()
     {
+        if (Settings.Name == "") return;
         await base.OnInvoke();
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -36,6 +36,7 @@ public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSetting
 
     protected override async Task OnRevert()
     {
+        if (Settings.Name == "") return;
         await base.OnRevert();
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -48,49 +49,10 @@ public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSetting
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
-    [Pure] public static bool IsTypeSupported(Type? type)
-    {
-        if (type == null) return false;
-
-        type = GetUnderlyingType(type);
-
-        if (EasyTypes.Contains(type) || type == typeof(Color))
-            return true;
-
-        return type.IsEnum;
-    }
-
     [Pure]
-    public static Type GetUnderlyingType(Type propertyType)
-    {
-        Type? s = null;
-        if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
-        {
-            s = Nullable.GetUnderlyingType(propertyType);
-        }
-
-        return s ?? propertyType;
-    }
+    public static Type GetUnderlyingType(Type propertyType) =>
+        Nullable.GetUnderlyingType(propertyType) ?? propertyType;
 
     public static readonly HashSet<Type> EasyTypes =
         [typeof(string), typeof(int), typeof(double), typeof(bool)];
-
-    [Pure, Obsolete]
-    public static object ToTargetType(string value, Type type)
-    {
-        if (type == typeof(string))
-            return value;
-
-        if (type == typeof(int))
-            return (int)double.Parse(value);
-
-        if (type == typeof(double))
-            return double.Parse(value);
-
-        if (type == typeof(bool))
-            return bool.Parse(value);
-
-        return JsonSerializer.Deserialize(value, type);
-
-    }
 }

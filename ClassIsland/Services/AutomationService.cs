@@ -179,7 +179,7 @@ public class AutomationService(ILogger<AutomationService> Logger, IRulesetServic
                     var s = new ModifyAppSettingsActionSettings
                     {
                         Name = processedName,
-                        Value = item.Settings.GetType().GetProperty("Value")?.GetValue(item.Settings)
+                        Value = ((JsonElement)item.Settings!).GetProperty("Value").ToString()
                     };
                     item.Settings = s;
                     item.Id = "classisland.settings";

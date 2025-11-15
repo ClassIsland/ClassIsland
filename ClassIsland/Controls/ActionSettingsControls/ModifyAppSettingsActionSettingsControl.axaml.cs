@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -9,13 +9,10 @@ using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
-using Avalonia.Controls.Templates;
-using Avalonia.Data;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Attributes;
 using ClassIsland.Models;
 using ClassIsland.Models.Actions;
 using ClassIsland.Services;
@@ -29,52 +26,43 @@ namespace ClassIsland.Controls.ActionSettingsControls;
 /// </summary>
 public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsControlBase<ModifyAppSettingsActionSettings>
 {
-    static readonly Dictionary<Type, string> TypeToControlType = new()
-    {
-        { typeof(bool), "bool" },
-        { typeof(int), "int" },
-        { typeof(double), "double" },
-        { typeof(Color), "color" }
-    };
-
-    Control? _controlTypeContentPresenter;
-    Control? _drawer;
-    List<SettingsPropertyDetail>? _settingsProperties;
-    TextBox? GlobalSearchSettingsTextBox;
-
-    public ModifyAppSettingsActionSettingsControl()
-    {
-        InitializeComponent();
-    }
+    public ModifyAppSettingsActionSettingsControl() => InitializeComponent();
 
     SettingsService SettingsService { get; } = App.GetService<SettingsService>();
-
-
-    readonly Lazy<IComponentsService> _componentsService = new(App.GetService<IComponentsService>);
-    public IComponentsService ComponentsService => _componentsService.Value;
-
 
     ILogger<ModifyAppSettingsActionSettingsControl> Logger { get; } =
         App.GetService<ILogger<ModifyAppSettingsActionSettingsControl>>();
 
+    readonly Lazy<IComponentsService> _componentsService = new(App.GetService<IComponentsService>);
+    public IComponentsService ComponentsService => _componentsService.Value;
+
     ModifyAppSettingsActionSettingsControlViewModel ViewModel { get; } = new();
+
+    Control? _drawer;
+    ContentPresenter? _controlTypeContentPresenter;
+    List<SettingsInfo>? _settingsProperties;
+    ModifyAppSettingsActionControlTemplateSelector? _controlTemplateSelector;
 
     Control Drawer
     {
         get
         {
             if (_drawer != null) return _drawer;
-
-            _drawer ??= (Control)this.FindResource("ModifyAppSettingsActionSettingsDrawer");
+            _drawer = (Control)this.FindResource("ModifyAppSettingsAction_SettingsDrawer")!;
             _drawer.DataContext = this;
             return _drawer;
         }
     }
 
-    Control ControlTypeContentPresenter => _controlTypeContentPresenter ??=
-        (Control)this.FindResource("ModifyAppSettingsActionControlTypeContentPresenter");
+    ModifyAppSettingsActionControlTemplateSelector ControlTemplateSelector => _controlTemplateSelector ??=
+        (ModifyAppSettingsActionControlTemplateSelector)ControlTypeContentPresenter.ContentTemplate!;
 
-    List<SettingsPropertyDetail> SettingsProperties => _settingsProperties ??= GetSettingsProperties()
+    ContentPresenter ControlTypeContentPresenter => _controlTypeContentPresenter ??=
+        (ContentPresenter)this.FindResource("ModifyAppSettingsAction_ControlTemplateContentPresenter")!;
+
+    TextBox? GlobalSearchSettingsTextBox;
+
+    List<SettingsInfo> SettingsProperties => _settingsProperties ??= GetSettingsProperties()
         .OrderByDescending(item => item.IsSettingsInfoAttributed)
         .ThenBy(item => item.Glyph == null)
         .ThenBy(item => item.Name)
@@ -89,17 +77,17 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
 
         var property = SettingsService.GetPropertyInfoByName(Settings.Name);
         if (property != null)
-            ViewModel.InputValue = ToInputValue(Settings.Value, property.PropertyType);
+            ViewModel.InputValue = ToInputValue(Settings.Name, Settings.Value, property.PropertyType);
 
-        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
-        Settings.PropertyChanged += ActionSettingsOnPropertyChanged;
+        ViewModel.PropertyChanged += ViewModel_OnPropertyChanged;
+        Settings.PropertyChanged += ActionSettings_OnPropertyChanged;
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-        ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
-        Settings.PropertyChanged -= ActionSettingsOnPropertyChanged;
+        ViewModel.PropertyChanged -= ViewModel_OnPropertyChanged;
+        Settings.PropertyChanged -= ActionSettings_OnPropertyChanged;
     }
 
     protected override void OnAdded()
@@ -116,35 +104,42 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         return JsonSerializer.Serialize(Settings.Value).Length > 10;
     }
 
-    void ActionSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    void ActionSettings_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(Settings.Name)) UpdateSuggestions();
     }
 
-    void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    void ViewModel_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(ViewModel.ControlType))
+        if (e.PropertyName == nameof(ViewModel.ControlTemplateName))
         {
             UpdateInputer();
             FillCurrentValue();
         }
         else if (e.PropertyName == nameof(ViewModel.InputValue))
         {
-            if (IsTypeSupported(ViewModel.CurrentSettingsPropertyDetail.Type))
+            if (IsPropertySupported(Settings.Name, ViewModel.CurrentSettingsInfo?.Type))
                 Settings.Value = ViewModel.InputValue;
             else
             {
-                try
-                {
-                    Settings.Value = JsonSerializer.Deserialize(ViewModel.InputValue.ToString(),
-                        ViewModel.CurrentSettingsPropertyDetail.Type);
-                }
-                catch (JsonException ex)
-                {
-                    Debug.WriteLine(ex);
-                }
+                Settings.Value = JsonSerializer.Deserialize(ViewModel.InputValue.ToString()!,
+                    ViewModel.CurrentSettingsInfo?.Type!)!;
             }
         }
+    }
+
+    [Pure] bool IsPropertySupported(string name, Type? type)
+    {
+        if (IsCustomizedControlTemplateSupported(name)) return true;
+
+        if (type == null) return false;
+
+        type = GetUnderlyingType(type);
+
+        if (EasyTypes.Contains(type) || type == typeof(Color))
+            return true;
+
+        return type.IsEnum;
     }
 
     void SelectorButton_OnClick(object? sender, RoutedEventArgs e) => OpenSelectorDialog();
@@ -152,7 +147,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
 
     void SearchSettingsTextBox_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
-        GlobalSearchSettingsTextBox = (TextBox)sender;
+        GlobalSearchSettingsTextBox = (TextBox)sender!;
         UpdateSearchResults();
     }
 
@@ -167,8 +162,8 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         InputerContentPresenter1.Content = null;
         InputerContentPresenter2.Content = null;
         ViewModel.IsInInputerContentPresenter2 =
-            !IsTypeSupported(ViewModel.CurrentSettingsPropertyDetail?.Type) ||
-            ViewModel.CurrentSettingsPropertyDetail?.Type == typeof(string) && (Settings.Value as string)?.Length > 20;
+            !IsPropertySupported(Settings.Name, ViewModel.CurrentSettingsInfo?.Type) ||
+            ViewModel.CurrentSettingsInfo?.Type == typeof(string) && (Settings.Value as string)?.Length > 20;
         if (ViewModel.IsInInputerContentPresenter2)
             InputerContentPresenter2.Content = ControlTypeContentPresenter;
         else
@@ -180,7 +175,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         var kw = GlobalSearchSettingsTextBox?.Text?.Trim();
         if (string.IsNullOrWhiteSpace(kw))
             ViewModel.SettingsSearchResults = SettingsProperties
-                .Where(item => IsTypeSupported(item.Type))
+                .Where(item => IsPropertySupported(item.PropertyName, item.Type))
                 .ToList();
         else
             ViewModel.SettingsSearchResults = SettingsProperties
@@ -194,9 +189,9 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         if (property == null) return;
         var detail = PackPropertyIntoSettingsPropertyDetail(property);
         if (detail == null) return;
-        ViewModel.CurrentSettingsPropertyDetail = detail;
-        ViewModel.ControlType = DetermineControlType(property.PropertyType, detail.Enums, Settings.Name);
-        if (ViewModel.ControlType == "enums")
+        ViewModel.CurrentSettingsInfo = detail;
+        ViewModel.ControlTemplateName = DetermineControlType(property.PropertyType, detail.Enums, Settings.Name);
+        if (ViewModel.ControlTemplateName == "enums")
         {
             FillCurrentValue();
         }
@@ -207,28 +202,28 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         var property = SettingsService.GetPropertyInfoByName(Settings.Name);
         if (property == null) return;
         var value = property.GetValue(SettingsService.Settings);
-        ViewModel.InputValue = ToInputValue(value, property.PropertyType);
+        ViewModel.InputValue = ToInputValue(Settings.Name, value, property.PropertyType);
     }
 
     [Pure]
-    static object ToInputValue(object value, Type type) => IsTypeSupported(type)
-        ? value
+    object ToInputValue(string name, object? value, Type type) => IsPropertySupported(name, type)
+        ? value ?? "null"
         : JsonSerializer.Serialize(value, type, FriendlyJsonSerializerOptions);
 
     [Pure]
-    List<SettingsPropertyDetail> GetSettingsProperties()
+    List<SettingsInfo> GetSettingsProperties()
     {
         return typeof(Settings)
             .GetProperties(SettingsService.SettingsPropertiesFlags)
             .Select(PackPropertyIntoSettingsPropertyDetail)
-            .OfType<SettingsPropertyDetail>()
+            .OfType<SettingsInfo>()
             .OrderByDescending(item => item.IsSettingsInfoAttributed)
             .ThenBy(item => item.Name)
             .ToList();
     }
 
     [Pure]
-    SettingsPropertyDetail? PackPropertyIntoSettingsPropertyDetail(PropertyInfo property)
+    SettingsInfo? PackPropertyIntoSettingsPropertyDetail(PropertyInfo property)
     {
         object? value;
         try
@@ -241,20 +236,20 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
             return null;
         }
 
-        var settingsInfo = property.GetCustomAttribute<SettingsInfo>();
+        var settingsInfo = property.GetCustomAttribute<Core.Attributes.SettingsInfo>();
         var type = property.PropertyType;
         var enums = settingsInfo?.Enums ?? (type.IsEnum ? Enum.GetNames(GetUnderlyingType(type)) : null);
-        return new SettingsPropertyDetail(settingsInfo?.Name ?? property.Name, settingsInfo?.Glyph, enums)
+        return new SettingsInfo(settingsInfo?.Name ?? property.Name, settingsInfo?.Glyph, enums)
         {
             PropertyName = property.Name,
-            Type = property.PropertyType,
+            Type = type,
             FriendlyValue = GetFriendlyValue(value, type, enums),
             IsSettingsInfoAttributed = settingsInfo != null
         };
     }
 
     [Pure]
-    static bool MatchesKeyword(SettingsPropertyDetail item, string keyword)
+    static bool MatchesKeyword(SettingsInfo item, string keyword)
     {
         return item.Name?.Contains(keyword, StringComparison.OrdinalIgnoreCase) == true ||
                item.PropertyName.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
@@ -271,52 +266,43 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
             int index and >= 0 when index < enums?.Length => enums[index],
             Color color => color.ToString(),
             _ => EasyTypes.Contains(GetUnderlyingType(type))
-                ? value.ToString()
+                ? value.ToString()!
                 : JsonSerializer.Serialize(value, FriendlyJsonSerializerOptions)
         };
-    }
-
-    ModifyAppSettingsActionKindTemplateSelector? _kindTemplateSelector;
-
-    ModifyAppSettingsActionKindTemplateSelector KindTemplateSelector
-    {
-        get
-        {
-            if (_kindTemplateSelector != null) return _kindTemplateSelector;
-
-            if (Resources.TryGetValue("ModifyAppSettingsActionControlTypeContentPresenter", out var resource) &&
-                resource is ContentPresenter contentPresenter)
-            {
-                _kindTemplateSelector = contentPresenter.ContentTemplate as ModifyAppSettingsActionKindTemplateSelector;
-            }
-
-            return _kindTemplateSelector;
-        }
     }
 
 
     [Pure]
     string DetermineControlType(Type type, string[]? enums, string name)
     {
-        if (KindTemplateSelector.Templates.ContainsKey(name))
-            return name;
+        if (IsCustomizedControlTemplateSupported(name)) return name;
         return enums == null
             ? TypeToControlType.GetValueOrDefault(type, "normal")
             : "enums";
     }
 
+    static readonly Dictionary<Type, string> TypeToControlType = new()
+    {
+        { typeof(bool), "bool" },
+        { typeof(int), "int" },
+        { typeof(double), "double" },
+        { typeof(Color), "color" }
+    };
+
+    [Pure] bool IsCustomizedControlTemplateSupported(string name) =>
+        ControlTemplateSelector.Templates.ContainsKey(name);
+
     public partial class ModifyAppSettingsActionSettingsControlViewModel : ObservableRecipient
     {
-        [ObservableProperty] string _controlType;
-        [ObservableProperty] SettingsPropertyDetail _currentSettingsPropertyDetail;
-        [ObservableProperty] List<SettingsPropertyDetail> _settingsSearchResults;
+        [ObservableProperty] string _controlTemplateName = null!;
+        [ObservableProperty] SettingsInfo? _currentSettingsInfo = null;
+        [ObservableProperty] List<SettingsInfo> _settingsSearchResults = null!;
         [ObservableProperty] bool _isInInputerContentPresenter2;
 
-        object _inputValue;
-
-        public object InputValue
+        object? _inputValue;
+        [NotNull] public object? InputValue
         {
-            get => _inputValue;
+            get => _inputValue!;
             set
             {
                 if (value == null) return;
@@ -326,7 +312,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         }
     }
 
-    public class SettingsPropertyDetail(string? name, string? glyph, string[]? enums = null) : SettingsInfo(name, glyph, enums)
+    public class SettingsInfo(string? name, string? glyph, string[]? enums = null) : Core.Attributes.SettingsInfo(name, glyph, enums)
     {
         /// <summary>
         /// 属性名称
@@ -344,7 +330,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         public string FriendlyValue { get; init; } = string.Empty;
 
         /// <summary>
-        /// 是否有<see cref="SettingsInfo" />特性
+        /// 是否有<see cref="Core.Attributes.SettingsInfo" />特性
         /// </summary>
         public bool IsSettingsInfoAttributed { get; init; }
     }

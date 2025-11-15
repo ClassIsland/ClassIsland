@@ -2,36 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
-using System.Windows;
 using Avalonia.Media;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
-using ClassIsland.Helpers;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AllContributors;
 using CommunityToolkit.Mvvm.ComponentModel;
-
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
 using Octokit;
-
-using WindowsShortcutFactory;
-
-using File = System.IO.File;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Abstractions.Models.Speech;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.ComponentModels;
-using static ClassIsland.Core.Attributes.SettingsInfo;
 
 namespace ClassIsland.Models;
 
@@ -245,7 +234,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("显示主界面")]
+    [SettingsInfo("显示主界面", "\uEFBF")]
     public bool IsMainWindowVisible
     {
         get => _isMainWindowVisible;
@@ -722,7 +711,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("时间偏移")]
+    [SettingsInfo("时间偏移", "\uE4D2")]
     public double TimeOffsetSeconds
     {
         get => _timeOffsetSeconds;
@@ -871,7 +860,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("应用主题色")]
+    [SettingsInfo("强调色", "\uEC54")]
     public Color PrimaryColor
     {
         get => _primaryColor;
@@ -1020,7 +1009,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("背景不透明度")]
+    [SettingsInfo("背景不透明度", "\uF37D")]
     public double Opacity
     {
         get => _opacity;
@@ -1032,7 +1021,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("界面缩放")]
+    [SettingsInfo("界面缩放", "\uF4D1")]
     public double Scale
     {
         get => _scale;
@@ -1066,7 +1055,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("圆角半径")]
+    [SettingsInfo("圆角半径", "\uF031")]
     public double RadiusX
     {
         get => _radiusX;
@@ -1166,6 +1155,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("分体主界面", "\uf023")]
     public bool IsIslandSeperated
     {
         get => _isIslandSeperated;
