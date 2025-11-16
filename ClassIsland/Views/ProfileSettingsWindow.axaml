@@ -89,6 +89,7 @@
                            Margin="0 0 0 4"
                            IsVisible="{Binding IsOverlay}" TextWrapping="Wrap"/>
                 <TextBlock Text="当课表设置为自动启用时，将会根据触发规则自动启用该课表。否则只能通过临时课表或临时层手动启用该课表。" 
+                           Classes="l-instructive"
                            IsVisible="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}"
                            TextWrapping="Wrap"/>
 
@@ -228,6 +229,7 @@
                         <Separator Margin="0 16 0 4"/>
                         <ci:IconText Glyph="&#xEA2F;" Text="临时层" Margin="0 0 0 8"/>
                         <TextBlock Text="临时层课表将优先于临时课表应用。临时层课表将在该课表过期后自动清除。"
+                                   Classes="l-instructive"
                                    TextWrapping="Wrap"
                                    Margin="0 0 0 4"/>
                         <StackPanel Orientation="Horizontal">
@@ -245,7 +247,8 @@
 
                     <Separator Margin="0 16 0 4"/>
                     <ci:IconText Glyph="&#xE6B1;" Text="临时课表" Margin="0 0 0 8"/>
-                    <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天有效。" TextWrapping="Wrap"/>
+                    <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天有效。" TextWrapping="Wrap"
+                               Classes="l-instructive"/>
                     <Button Theme="{StaticResource TransparentButton}" 
                             HorizontalAlignment="Left"
                             ToolTip.Tip="清除选择的临时课表，并恢复至正常课表安排。"
@@ -1198,7 +1201,8 @@
                                             <StackPanel x:Name="StackPanelClassTimePointSettings" Spacing="8">
                                                 <CheckBox Content="默认隐藏"
                                                           IsChecked="{Binding ViewModel.SelectedTimePoint.IsHideDefault}" />
-                                                <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap" />
+                                                <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap" 
+                                                           Classes="l-instructive"/>
 
                                                 <Separator Margin="0 4 0 0" />
                                                 <ci:IconText Glyph="&#xE47A;" Text="默认课程"  />

@@ -23,7 +23,7 @@
         <Grid HorizontalAlignment="Center" IsVisible="{Binding !IsOverlay}">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12 0">
                 <!-- Today -->
-                <TextBlock Text="今天" FontWeight="Bold" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Text="今天" Classes="l-secondary" FontWeight="Bold" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherRangePackIconControl Value="{Binding Info.ForecastDaily.Weather.Value[0]}"
                                                       Height="24"
                                                       VerticalAlignment="Center"
@@ -44,7 +44,7 @@
                            Width="1"
                            Height="20" />
                 <!-- Tomorrow -->
-                <TextBlock Text="明天" FontWeight="Bold" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Text="明天" Classes="l-secondary" FontWeight="Bold" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherRangePackIconControl Value="{Binding Info.ForecastDaily.Weather.Value[1]}"
                                                       Height="24"
                                                       VerticalAlignment="Center"
@@ -65,7 +65,7 @@
                            Width="1"
                            Height="20" />
                 <!-- Tomorrow -->
-                <TextBlock Text="后天" FontWeight="Bold" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Text="后天" Classes="l-secondary" FontWeight="Bold" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherRangePackIconControl Value="{Binding Info.ForecastDaily.Weather.Value[2]}"
                                                       Height="24"
                                                       VerticalAlignment="Center"

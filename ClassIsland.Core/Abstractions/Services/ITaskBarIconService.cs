@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Avalonia.Controls;
 
 namespace ClassIsland.Core.Abstractions.Services;
@@ -12,4 +13,13 @@ public interface ITaskBarIconService
     /// </summary>
     TrayIcon MainTaskBarIcon { get; }
     
+    /// <summary>
+    /// 主菜单更多选项的内容
+    /// </summary>
+    IList<NativeMenuItemBase> MoreOptionsMenuItems { get; }
+    
+    /// <summary>
+    /// 用于承载更多选项内容的 <see cref="NativeMenu"/>
+    /// </summary>
+    internal NativeMenu? MoreOptionsMenu { get; set; }
 }

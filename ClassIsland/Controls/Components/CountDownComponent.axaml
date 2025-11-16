@@ -81,7 +81,7 @@
             </Panel>
             <TextBlock Text="距离"
                        x:Name="TextBlockTo"
-                       Classes="connector"
+                       Classes="connector l-instructive"
                        IsVisible="{Binding !Settings.IsCompactModeEnabled}"
                        VerticalAlignment="Center" />
             <TextBlock Text="{Binding Settings.CountDownName}"
@@ -90,7 +90,7 @@
                        VerticalAlignment="Center" />
             <TextBlock Text="{Binding Settings.CountDownConnector}"
                        VerticalAlignment="Center"
-                       Classes="connector"
+                       Classes="connector l-instructive"
                        x:Name="TextBlockConnector"
                        IsVisible="{Binding !Settings.IsCompactModeEnabled}"/>
             <TextBlock Text="{Binding DaysLeft, Mode=OneWay}" 

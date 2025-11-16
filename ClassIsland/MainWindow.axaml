@@ -76,6 +76,8 @@
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>
+            <NativeMenuItem Header="更多选项…" Menu="{Binding MoreOptionsMenu}"
+                            IsVisible="{Binding !!$self.Menu.Items.Count}"/>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="编辑档案…" Click="ButtonSettings_OnClick" />
             <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" />
