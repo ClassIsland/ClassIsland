@@ -1,7 +1,9 @@
 using System.Diagnostics;
 using System.Linq;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums;
 
 namespace ClassIsland.Services.Automation.Triggers;
 
@@ -10,9 +12,7 @@ public class AppStartupTrigger : TriggerBase
 {
     public override void Loaded()
     {
-        var stack = new StackTrace();
-        if (stack.GetFrames().FirstOrDefault(x => x.GetMethod()?.DeclaringType == typeof(App)) != null)
-        {
+        if (AppBase.CurrentLifetime < ApplicationLifetime.Running) {
             Trigger();
         }
     }
