@@ -46,6 +46,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     private List<NotificationRequest> PlayingNotifications { get; } = [];
 
+    private HashSet<NotificationRequest> PoppedRequests { get; } = [];
+
     public NotificationRequest? CurrentRequest { get; set; }
 
     public NotificationRequest GetRequest()
@@ -311,17 +313,21 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     private List<NotificationRequest> PopRequests()
     {
-        if (RequestQueue.Count <= 0)
+        NotificationRequest? head;
+        do
         {
-            return [];
-        }
-        
-        var head = RequestQueue.Dequeue();
+            if (RequestQueue.Count <= 0)
+            {
+                return [];
+            }
+            head = RequestQueue.Dequeue();
+        } while (PoppedRequests.Remove(head));
         List<NotificationRequest> requests = [];
 
         while (head != null)
         {
             requests.Add(head);
+            PoppedRequests.Add(head);
             PlayingNotifications.Add(head);
             head = head.ChainedNextRequest;
         }
