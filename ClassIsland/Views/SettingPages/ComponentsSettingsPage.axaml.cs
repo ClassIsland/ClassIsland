@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -208,6 +210,11 @@ public partial class ComponentsSettingsPage : SettingsPageBase
             return;
         }
 
+        var type = componentSettings.AssociatedComponentInfo.ComponentType?.BaseType;
+        if (componentSettings.Settings is JsonElement && type != null)
+        {
+            componentSettings.Settings = ComponentsService.LoadComponentSettings(componentSettings, type);
+        }
         if (componentSettings.Settings is not IComponentContainerSettings settings)
         {
             return;
