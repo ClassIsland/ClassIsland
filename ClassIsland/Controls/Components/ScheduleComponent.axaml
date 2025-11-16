@@ -94,6 +94,7 @@
                            HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}"
                            HideFinishedClass="{Binding Settings.HideFinishedClass, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"
                            x:Name="MainLessonsListBox"
+                           FadeCompletedClasses="{Binding Settings.FadeCompletedClasses, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"
                            IsLiveUpdatingEnabled="True"/>
         <ci:LessonsListBox Grid.Column="1" 
                            Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"

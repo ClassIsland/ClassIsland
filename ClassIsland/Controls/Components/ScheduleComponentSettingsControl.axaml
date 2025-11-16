@@ -130,6 +130,14 @@
                         <ToggleSwitch IsChecked="{Binding Settings.HideFinishedClass, Mode=TwoWay}"/>
                     </controls:SettingsExpander.Footer>
                 </controls:SettingsExpander>
+                
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF37D;}"
+                                           Header="淡化上过的课程"
+                                           Description="已经上过的课程将被淡化显示。">
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding Settings.FadeCompletedClasses, Mode=TwoWay}"/>
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
 
                 <!-- 标记换课课程 -->
                 <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE15F;}"
