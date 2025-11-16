@@ -471,7 +471,7 @@
                                      SelectionChanged="SelectingItemsControlClassPlans_OnSelectionChanged">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <WrapPanel Orientation="Horizontal" Classes="animated-resize">
+                                        <WrapPanel Orientation="Horizontal" Classes="animated-resize =">
                                             <WrapPanel.Styles>
                                                 <Style Selector="Border.ClassTableTag">
                                                     <Setter Property="BorderThickness" Value="1" />
@@ -502,7 +502,7 @@
                                                         Margin="4 0 2 0" Padding="8 0"
                                                         VerticalAlignment="Center"
                                                         ToolTip.Tip="触发规则"
-                                                        Classes="ClassTableTag"
+                                                        Classes="ClassTableTag l-secondary"
                                                         Classes.IsTagActivated="{Binding Value.IsActivated}">
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <ci:FluentIcon Classes="ClassTableTagIcon"
@@ -564,7 +564,7 @@
                                                 <Border MinWidth="20" Height="24" CornerRadius="12"
                                                         Margin="2 0" Padding="8 0"
                                                         VerticalAlignment="Center"
-                                                        Classes="ClassTableTag"
+                                                        Classes="ClassTableTag l-secondary"
                                                         ToolTip.Tip="课表群"
                                                         DataContext="{Binding Value.AssociatedGroup, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}}">
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -581,7 +581,7 @@
                                                         Margin="2 0" Padding="8 0"
                                                         VerticalAlignment="Center"
                                                         ToolTip.Tip="时间表"
-                                                        Classes="ClassTableTag"
+                                                        Classes="ClassTableTag l-secondary"
                                                         Classes.IsWrong="{Binding Value.TimeLayoutId, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static system:Guid.Empty}}">
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <ci:FluentIcon Glyph="&#xF0EB;" />
@@ -1334,7 +1334,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Grid>
-                                                    <ci:FluentIcon>
+                                                    <ci:FluentIcon Classes="l-instructive">
                                                         <Interaction.Behaviors>
                                                             <DataTriggerBehavior Binding="{Binding IsOutDoor}" Value="True">
                                                                 <AddClassAction ClassName="out-door"/>
