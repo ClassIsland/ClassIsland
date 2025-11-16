@@ -24,7 +24,7 @@ public class AudioService(ILogger<AudioDevice> logger) : IAudioService
     {
         get
         {
-            if (Thread.CurrentThread.GetApartmentState() != ApartmentState.MTA)
+            if (OperatingSystem.IsWindows() && Thread.CurrentThread.GetApartmentState() != ApartmentState.MTA)
             {
                 throw new InvalidOperationException(
                     "出于线程安全考虑，禁止在非 MTA 线程上调用 AudioEngine。请在 MTA 线程上调用 AudioEngine。详细请见 https://github.com/ClassIsland/ClassIsland/issues/1333#issuecomment-3505591836");

@@ -602,6 +602,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         while (_notificationQueue.Count > 0)
         {
             var request = _notificationQueue.Dequeue();
+            Logger.LogTrace("nid = {}", request.GetHashCode());
             INotificationSettings settings = SettingsService.Settings;
             foreach (var i in new List<NotificationSettings?>([
                              request.ChannelSettings,

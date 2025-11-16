@@ -103,6 +103,15 @@ public class LessonsListBox : ListBox
         set => SetValue(HideFinishedClassProperty, value);
     }
 
+    public static readonly StyledProperty<bool> FadeCompletedClassesProperty = AvaloniaProperty.Register<LessonsListBox, bool>(
+        nameof(FadeCompletedClasses));
+
+    public bool FadeCompletedClasses
+    {
+        get => GetValue(FadeCompletedClassesProperty);
+        set => SetValue(FadeCompletedClassesProperty, value);
+    }
+
 
     /// <inheritdoc />
     public LessonsListBox()
