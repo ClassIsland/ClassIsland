@@ -164,7 +164,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 ## 开发
 
-![Alt](https://repobeats.axiom.co/api/embed/ace0a0609166a47b16a58bb7d2d0d5e20968d4d1.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/ca0697cbbfea1d5ab5350fb86d7056e803552b2a.svg "Repobeats analytics image")
 
 本项目目前开发状态：
 
