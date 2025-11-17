@@ -1,4 +1,4 @@
-﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.PluginsSettingsPage"
+<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.PluginsSettingsPage"
       xmlns="https://github.com/avaloniaui"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -277,6 +277,13 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </ci:Field>
+                <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xE99E;}" Margin="0 8 0 0"
+                                            Header="忽略 SSL/TLS 证书错误"
+                                            Description="临时禁用插件镜像证书校验, 将降低安全性。">
+                    <controls2:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IgnoreSslForPluginMirrors, Mode=TwoWay}"/>
+                    </controls2:SettingsExpander.Footer>
+                </controls2:SettingsExpander>
                 <Separator Margin="0 16 0 8"/>
                 <ci:IconText Glyph="&#xE99A;" Text="自定义插件源" Margin="0 0 0 8"/>
                 <WrapPanel Margin="0 0 0 0">

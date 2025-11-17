@@ -88,6 +88,12 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
         PluginSourceDownloadProgress = 0.0;
         Logger.LogInformation("正在刷新插件源……");
         var transaction = SentrySdk.StartTransaction("Update Plugin Index", "pluginIndex.update");
+        var ignoreSsl = SettingsService.Settings.IgnoreSslForPluginMirrors;
+        var prevCallback = (ignoreSsl ? ServicePointManager.ServerCertificateValidationCallback : null);
+        if (ignoreSsl)
+        {
+            ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
+        }
         try
         {
             if (SettingsService.Settings.OfficialIndexMirrors.Count <= 0)
@@ -142,6 +148,13 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
             transaction.Finish(ex, SpanStatus.InternalError);
             Logger.LogError(ex, "无法加载插件源。");
             Exception = ex;
+        }
+        finally
+        {
+            if (ignoreSsl)
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevCallback;
+            }
         }
         Logger.LogInformation("插件源刷新成功。");
         SettingsService.Settings.LastRefreshPluginSourceTime = DateTime.Now;
@@ -241,6 +254,12 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
         {
             task.Progress = args.ProgressPercentage;
         };
+        var ignoreSsl = SettingsService.Settings.IgnoreSslForPluginMirrors;
+        var prevCallback = (ignoreSsl ? ServicePointManager.ServerCertificateValidationCallback : null);
+        if (ignoreSsl)
+        {
+            ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
+        }
         try
         {
             BindDownloadTasks();
@@ -261,6 +280,13 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
             transaction.GetLastActiveSpan()?.Finish(e, SpanStatus.InternalError);
             transaction.Finish(e, SpanStatus.InternalError);
             Logger.LogError(e, "无法从 {} 下载插件 {}", url, id);
+        }
+        finally
+        {
+            if (ignoreSsl)
+            {
+                ServicePointManager.ServerCertificateValidationCallback = prevCallback;
+            }
         }
         task.IsDownloading = false;
         DownloadTasks.Remove(id);
