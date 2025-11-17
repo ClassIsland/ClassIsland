@@ -33,7 +33,7 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
     public ObservableDictionary<string, PluginIndex> Indexes { get; } = new();
     public ILogger<PluginMarketService> Logger { get; } = logger;
 
-    public ObservableDictionary<string, string> FallbackMirrors { get; } = new()
+    public static ObservableDictionary<string, string> FallbackMirrors { get; } = new()
     {
         { "github", "https://github.com" },
         { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
