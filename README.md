@@ -177,6 +177,8 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 如果您有意愿为 ClassIsland 做出代码贡献，请先阅读 [贡献指南](CONTRIBUTING.md) 来了解如何为 ClassIsland 做代码贡献。我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/ClassIsland/ClassIsland/pulls)。
 
+您可以参考 [DeepWiki](https://deepwiki.com/ClassIsland/ClassIsland) 来了解项目结构。 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ClassIsland/ClassIsland)
+
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
