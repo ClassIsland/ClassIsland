@@ -64,7 +64,7 @@ public partial class GeneralSettingsPage : SettingsPageBase
     
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(ViewModel.RenderingModeSelectedIndex))
+        if (e.PropertyName is nameof(ViewModel.RenderingModeSelectedIndex) or nameof(ViewModel.UseNativeTitlebar))
         {
             RequestRestart();
         }

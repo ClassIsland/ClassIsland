@@ -19,6 +19,7 @@ using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using HotAvalonia;
 using Sentry;
 using System.Diagnostics;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.JsonConverters;
 
@@ -106,6 +107,11 @@ public static class Program
         catch
         {
             // ignore
+        }
+
+        if (bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var b))
+        {
+            IThemeService.UseNativeTitlebar = b;
         }
 
         return () => new App()

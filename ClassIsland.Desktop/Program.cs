@@ -1,4 +1,5 @@
 ﻿#if Platforms_Windows
+using ClassIsland.Platform.Windows;
 using ClassIsland.Platform.Windows.Services;
 #endif
 #if Platforms_Linux
@@ -100,6 +101,7 @@ class Program
                 
             };
         };
+        PatcherEntrance.InstallPatchers();
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);

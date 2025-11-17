@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Avalonia;
@@ -28,6 +29,12 @@ namespace ClassIsland.Core.Controls;
 [PseudoClasses(":no-easter-eggs")]
 public class MyWindow : AppWindow
 {
+    private static readonly PropertyInfo? IsWindowsProperty = typeof(AppWindow).GetProperty("IsWindows", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly FieldInfo? IsAppWindowRegistryProperty = AppDomain.CurrentDomain.GetAssemblies()
+        .FirstOrDefault(x => x.GetName().Name == "FluentAvalonia")
+        ?.GetType("FluentAvalonia.UI.Windowing.Win32WindowManager")
+        ?.GetField("_appWindowRegistry", BindingFlags.NonPublic | BindingFlags.Static);
+    
     private bool _isAdornerAdded;
 
     /// <summary>
@@ -84,7 +91,12 @@ public class MyWindow : AppWindow
             // ignored
         }
 
-        IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version.Build > 22000;
+        if (IThemeService.UseNativeTitlebar)
+        {
+            PseudoClasses.Remove(":windows");
+            IsWindowsProperty?.SetValue(this, false);
+        }
+        IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version >= WindowsVersions.Win11V21H2;
         Initialized += OnInitialized;
         Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);

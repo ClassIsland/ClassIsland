@@ -1,8 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using ClassIsland.Core.Controls;
 using ClassIsland.Enums;
 
@@ -21,6 +23,13 @@ public partial class DataTransferWindow : MyWindow
     {
         InitializeComponent();
         Content = _dataTransferPage = new DataTransferPage();
+        if (OperatingSystem.IsMacOS())
+        {
+            ExtendClientAreaToDecorationsHint = true;
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
+            ExtendClientAreaTitleBarHeightHint = -1;
+            SystemDecorations = SystemDecorations.Full;
+        }
     }
 
     public async Task PerformClassIslandImport(string root, ImportEntries importEntries)

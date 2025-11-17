@@ -251,6 +251,10 @@
     <Style Selector="controls|MenuFlyoutSubItem">
         <Setter Property="ci:FaMenuFlyoutSubItemTouchFixAssist.IsRepairApplied" Value="True"/>
     </Style>
+    
+    <Style Selector=":is(windowing|AppWindow):not(:windows) :is(Control).custom-titlebar-only">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
 
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>

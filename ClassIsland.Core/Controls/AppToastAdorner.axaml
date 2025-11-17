@@ -9,13 +9,7 @@
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
     <Grid RowDefinitions="Auto, *">
         <!-- Gap for Windows title bar -->
-        <Border Height="32" Grid.Row="0">
-            <Border.IsVisible>
-                <OnPlatform Default="False">
-                    <On Options="Windows" Content="True" />
-                </OnPlatform>
-            </Border.IsVisible>
-        </Border>
+        <Border Height="32" Grid.Row="0" Classes="custom-titlebar-only"/>
         
         <ItemsControl Grid.Row="1"
                       ItemsSource="{Binding $parent[ci:AppToastAdorner].Messages}"

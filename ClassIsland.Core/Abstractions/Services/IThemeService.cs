@@ -47,4 +47,10 @@ public interface IThemeService
     /// 是否禁用动画等待。默认情况下 ClassIsland 在进行阻塞 UI 线程的操作时，会确保动画播放完成。启用此选项后将不会等待动画播放完成，可以一定程度上地提升加载速度。
     /// </summary>
     public static bool IsWaitForTransientDisabled { get; internal set; } = false;
+
+    /// <summary>
+    /// 是否使用系统标题栏
+    /// </summary>
+    public static bool UseNativeTitlebar { get; internal set; } = !OperatingSystem.IsWindows() 
+                                                                  || Environment.OSVersion.Version < WindowsVersions.Win10V1809;
 }
