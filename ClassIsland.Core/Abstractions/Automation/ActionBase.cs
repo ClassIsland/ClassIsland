@@ -108,7 +108,7 @@ public abstract class ActionBase
     internal object? SettingsInternal { get; set; }
     internal CancellationTokenSource InterruptCts { get; set; }
 
-    static Lazy<IActionService> ActionService = new(IAppHost.GetService<IActionService>());
+    static Lazy<IActionService> ActionService = new(IAppHost.GetService<IActionService>);
 
     /// 获取行动提供方实例。
     /// <param name="actionItem">要获取行动提供方的行动项。</param>
