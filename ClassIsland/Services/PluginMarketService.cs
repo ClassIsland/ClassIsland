@@ -286,7 +286,7 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
             var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, i.Id);
             var name = Path.GetFileName(indexFolderPath);
             Logger.LogDebug("正在加载插件源：{}", name);
-            var indexPath = Path.Combine(indexFolderPath, "index.json");
+            var indexPath = Path.Combine(indexFolderPath, "index.v2.json");
             if (!File.Exists(indexPath))
                 continue;
             var index = Indexes[name] = ConfigureFileHelper.LoadConfig<PluginIndex>(indexPath);
