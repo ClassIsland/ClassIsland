@@ -81,16 +81,13 @@ catch (Exception e)
 var startInfo = new ProcessStartInfo()
 {
     FileName = exePath,
-    WorkingDirectory = root,
-    EnvironmentVariables =
-    {
-        {"ClassIsland_PackageRoot", root}
-    }
+    WorkingDirectory = root
 };
 foreach (var i in args)
 {
     startInfo.ArgumentList.Add(i);
 }
+startInfo.EnvironmentVariables["ClassIsland_PackageRoot"] = root;  // 防止因环境变量已设置导致启动器崩溃
 Process.Start(startInfo);
 
 return 0;
