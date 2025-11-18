@@ -964,6 +964,10 @@ public partial class App : AppBase, IAppHost
                 IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
                 IAppHost.Host?.Services.GetService<IComponentsService>()?.SaveConfig();
             }
+            if (PlatformServices.WindowPlatformService is IDisposable d)
+            {
+                d.Dispose();
+            }
             DesktopLifetime?.Shutdown();
             try
             {

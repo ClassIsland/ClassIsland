@@ -53,9 +53,9 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
     
     private void InitEventHook()
     {
-        lock (_hookLock) 
+        lock (_hookLock)
         {
-            if (_hooksUnhooked) 
+            if (_hooksUnhooked)
             {
                 return;
             }
@@ -239,7 +239,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
     public bool IsForegroundWindowFullscreen(Screen screen)
     {
         var win = GetForegroundWindow();
-        if (win == HWND.Null || new HandleRef(null, win).Handle == IntPtr.Zero) 
+        if (win == HWND.Null || new HandleRef(null, win).Handle == IntPtr.Zero)
         {
             return false;
         }
@@ -247,7 +247,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
         var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
         try
         {
-            GetClassName(win, pClassName, PwstrCapcity  - 1);
+            GetClassName(win, pClassName, PwstrCapcity - 1);
             var className = pClassName.ToString();
             if (className is "WorkerW" or "Progman")
             {
@@ -265,7 +265,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
     public bool IsForegroundWindowMaximized(Screen screen)
     {
         var win = GetForegroundWindow();
-        if (win == HWND.Null || new HandleRef(null, win).Handle == IntPtr.Zero) 
+        if (win == HWND.Null || new HandleRef(null, win).Handle == IntPtr.Zero)
         {
             return false;
         }
