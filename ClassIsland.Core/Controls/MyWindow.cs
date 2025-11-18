@@ -17,6 +17,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Commands;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Theming;
 using FluentAvalonia.UI.Windowing;
@@ -86,7 +87,9 @@ public class MyWindow : AppWindow
             // ignored
         }
         
-        IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version >= WindowsVersions.Win11V21H2;
+        IsMicaSupported = OperatingSystem.IsWindows() 
+                          && Environment.OSVersion.Version >= WindowsVersions.Win11V21H2
+                          && AvaloniaUnsafeAccessorHelpers.GetActiveWin32CompositionMode() == Win32CompositionMode.WinUIComposition;
         Initialized += OnInitialized;
         Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
