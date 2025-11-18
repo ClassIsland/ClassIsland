@@ -38,6 +38,7 @@
     <StyleInclude Source="/Themes/SlidingListBox.axaml"/>
     <StyleInclude Source="/Themes/MenuItemStyles.axaml"/>
     <StyleInclude Source="/Themes/Layers.axaml"/>
+    <StyleInclude Source="/Themes/TabStrip.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
     <StyleInclude Source="/Controls/DrawerHost.axaml"/>
     <StyleInclude Source="/Controls/TouchDragThumb.axaml"/>
@@ -254,6 +255,10 @@
     
     <Style Selector=":is(windowing|AppWindow):not(:windows) :is(Control).custom-titlebar-only">
         <Setter Property="IsVisible" Value="False"/>
+    </Style>
+    
+    <Style Selector=":is(Button).light">
+        <Setter Property="Background" Value="Transparent"/>
     </Style>
 
     <!-- 修复字体飞上去的问题 -->
