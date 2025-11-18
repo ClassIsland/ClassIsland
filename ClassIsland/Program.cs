@@ -109,11 +109,6 @@ public static class Program
             // ignore
         }
 
-        if (bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var b))
-        {
-            IThemeService.UseNativeTitlebar = b;
-        }
-
         return () => new App()
         {
             Mutex = mutex,

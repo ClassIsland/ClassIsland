@@ -42,7 +42,9 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Services;
 using ClassIsland.Enums;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -413,6 +415,16 @@ public partial class App : AppBase, IAppHost
     public override void OnFrameworkInitializationCompleted()
     {
         DesktopLifetime!.Startup += DesktopLifetimeOnStartup;
+        if (bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var b))
+        {
+            IThemeService.UseNativeTitlebar = b;
+        }
+        else
+        {
+            IThemeService.UseNativeTitlebar = !System.OperatingSystem.IsWindows() 
+                                              || AvaloniaUnsafeAccessorHelpers.GetActiveWin32CompositionMode() 
+                                                    != Win32CompositionMode.WinUIComposition;
+        }
         base.OnFrameworkInitializationCompleted();
     }
 

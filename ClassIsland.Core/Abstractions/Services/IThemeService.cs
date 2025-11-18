@@ -51,6 +51,5 @@ public interface IThemeService
     /// <summary>
     /// 是否使用系统标题栏
     /// </summary>
-    public static bool UseNativeTitlebar { get; internal set; } = !OperatingSystem.IsWindows() 
-                                                                  || Environment.OSVersion.Version < WindowsVersions.Win10V1809;
+    public static bool UseNativeTitlebar { get; internal set; }
 }
