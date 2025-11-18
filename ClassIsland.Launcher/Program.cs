@@ -11,10 +11,26 @@ using Windows.Win32.UI.WindowsAndMessaging;
 using Mono.Unix;
 #endif
 
+// 获取对应平台的可执行文件路径
+string executableName;
+if (OperatingSystem.IsWindows())
+{
+    executableName = "ClassIsland.Desktop.exe";
+} else if (OperatingSystem.IsLinux())
+{
+    executableName = "ClassIsland.Desktop";
+}
+else
+{
+    ShowError("ClassIsland 正在不支持的平台上运行，无法继续。");
+    return 1;
+}
+
 var root = Path.GetFullPath(Path.GetDirectoryName(Environment.ProcessPath) ?? "");
 var installation = Directory.GetDirectories(root)
     .Where(x => Path.GetFileName(x).StartsWith("app") &&
-                !(File.Exists(Path.Combine(x, ".destroy")) || File.Exists(Path.Combine(x, ".partial"))))
+                !(File.Exists(Path.Combine(x, ".destroy")) || File.Exists(Path.Combine(x, ".partial"))) &&
+                File.Exists(Path.Combine(x, executableName)))
     .OrderBy(x => File.Exists(Path.Combine(x, ".current")) ? 1 : 0)
     .ThenBy(x =>
     {
@@ -40,22 +56,7 @@ var installation = Directory.GetDirectories(root)
     })
     .FirstOrDefault();
 
-// 获取对应平台的可执行文件路径
-string executableName;
-if (OperatingSystem.IsWindows())
-{
-    executableName = "ClassIsland.Desktop.exe";
-} else if (OperatingSystem.IsLinux())
-{
-    executableName = "ClassIsland.Desktop";
-}
-else
-{
-    ShowError("ClassIsland 正在不支持的平台上运行，无法继续。");
-    return 1;
-}
-
-if (installation == null || !File.Exists(Path.Combine(installation, executableName)))
+if (installation == null)
 {
     ShowError("找不到有效的 ClassIsland 版本，可能是安装已损坏。请在 https://classisland.tech/download 重新下载并安装 ClassIsland。");
     return 1;
