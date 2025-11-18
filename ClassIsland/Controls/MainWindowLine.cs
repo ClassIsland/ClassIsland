@@ -660,7 +660,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                         }
                         stopNotificationSoundCts = new CancellationTokenSource();
                         Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
-                        await AudioService.PlayAudioAsync(string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                        _ = AudioService.PlayAudioAsync(string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
                                 ? AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)
                                 : File.OpenRead(settings.NotificationSoundPath),
                             (float)SettingsService.Settings.NotificationSoundVolume, stopNotificationSoundCts.Token);
