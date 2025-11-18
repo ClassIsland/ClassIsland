@@ -17,6 +17,7 @@
                    VerticalAlignment="Center"
                    LineSpacing="0"
                    Margin="0 0 0 -4"
+                   x:Name="TextElement"
                    IsVisible="{Binding $parent[ci:IconText].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
     </StackPanel>
 </UserControl>

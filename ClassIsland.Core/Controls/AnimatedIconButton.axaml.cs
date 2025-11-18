@@ -18,6 +18,7 @@ namespace ClassIsland.Core.Controls;
 /// <seealso cref="IsKeepingExpanded"/>
 [TemplatePart(Name = "PART_Button", Type = typeof(Button))]
 [TemplatePart(Name = "PART_IconText", Type = typeof(IconText))]
+[PseudoClasses(":expanded")]
 public class AnimatedIconButton : Button
 {
     public AnimatedIconButton()
@@ -79,23 +80,26 @@ public class AnimatedIconButton : Button
         _button.Width = _lastTargetWidth =
             IsKeepingExpanded ? _iconTextWidth : _iconOnlyWidth;
 
-        _duration = (int)((_iconTextWidth - _iconOnlyWidth) * 1 + 220);
+        Duration = TimeSpan.FromMilliseconds((int)((_iconTextWidth - _iconOnlyWidth) * 1 + 220));
     }
 
     void Entered(object? sender, PointerEventArgs e)
     {
         _targetWidth = _iconTextWidth;
+        _isExpandedByMouse = true;
         UpdateStatus();
     }
 
     void Leaved(object? sender, PointerEventArgs e)
     {
         _targetWidth = _iconOnlyWidth;
+        _isExpandedByMouse = false;
         UpdateStatus();
     }
 
     void UpdateStatus()
     {
+        PseudoClasses.Set(":expanded", IsKeepingExpanded || _isExpandedByMouse);
         AnimateTo(IsKeepingExpanded ? _iconTextWidth : _targetWidth);
     }
 
@@ -107,7 +111,7 @@ public class AnimatedIconButton : Button
 
         var animation = new Animation
         {
-            Duration = TimeSpan.FromMilliseconds(_duration),
+            Duration = Duration,
             Easing = new SineEaseOut(),
             FillMode = FillMode.Forward,
             Children = {
@@ -160,14 +164,25 @@ public class AnimatedIconButton : Button
         set => SetValue(IsKeepingExpandedProperty, value);
     }
 
+    private TimeSpan _duration;
+
+    public static readonly DirectProperty<AnimatedIconButton, TimeSpan> DurationProperty = AvaloniaProperty.RegisterDirect<AnimatedIconButton, TimeSpan>(
+        nameof(Duration), o => o.Duration, (o, v) => o.Duration = v);
+
+    public TimeSpan Duration
+    {
+        get => _duration;
+        set => SetAndRaise(DurationProperty, ref _duration, value);
+    }
+
     double _iconOnlyWidth;
     double _iconTextWidth;
     double _targetWidth;
     double _lastTargetWidth;
-    int _duration;
     Button _button;
     IconText _iconText;
     CancellationTokenSource? _cts;
     CancellationToken CtsToken => (_cts ??= new CancellationTokenSource()).Token;
     IDisposable? _isKeepingExpandedSubscribe;
+    private bool _isExpandedByMouse;
 }

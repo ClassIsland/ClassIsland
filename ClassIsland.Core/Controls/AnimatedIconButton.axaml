@@ -23,10 +23,31 @@
                                      Foreground="{TemplateBinding Foreground}"
                                      Background="{TemplateBinding Background}"
                                      FontSize="{TemplateBinding FontSize}"
-                                     FontWeight="{TemplateBinding FontWeight}" />
+                                     FontWeight="{TemplateBinding FontWeight}">
+                            <ci:IconText.Styles>
+                                <Style Selector="ci|IconText TextBlock#TextElement">
+                                    <Setter Property="Transitions">
+                                        <Transitions>
+                                            <DoubleTransition Property="Opacity" Duration="{Binding $parent[ci:AnimatedIconButton].Duration}">
+                                                <DoubleTransition.Easing>
+                                                    <SineEaseInOut/>
+                                                </DoubleTransition.Easing>
+                                            </DoubleTransition>
+                                        </Transitions>
+                                    </Setter>
+                                </Style>
+                            </ci:IconText.Styles>
+                        </ci:IconText>
                     </Button>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        
+        <Style Selector="^ /template/ ci|IconText#PART_IconText TextBlock#TextElement">
+            <Setter Property="Opacity" Value="0.0"/>
+        </Style>
+        <Style Selector="^:expanded /template/ ci|IconText#PART_IconText TextBlock#TextElement">
+            <Setter Property="Opacity" Value="1.0"/>
+        </Style>
     </Style>
 </Styles>
