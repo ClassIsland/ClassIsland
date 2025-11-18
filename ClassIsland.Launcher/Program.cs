@@ -32,7 +32,7 @@ var installation = Directory.GetDirectories(root)
                 !(File.Exists(Path.Combine(x, ".destroy")) || File.Exists(Path.Combine(x, ".partial"))) &&
                 File.Exists(Path.Combine(x, executableName)))
     .OrderBy(x => File.Exists(Path.Combine(x, ".current")) ? 1 : 0)
-    .ThenBy(x =>
+    .ThenByDescending(x =>
     {
         var filename = Path.GetFileName(x);
         var split = filename.Split('-');
@@ -43,7 +43,7 @@ var installation = Directory.GetDirectories(root)
 
         return Version.TryParse(split[1], out var version) ? version : new Version();
     })
-    .ThenBy(x =>
+    .ThenByDescending(x =>
     {
         var filename = Path.GetFileName(x);
         var split = filename.Split('-');
