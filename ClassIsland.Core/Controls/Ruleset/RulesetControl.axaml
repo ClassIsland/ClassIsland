@@ -48,9 +48,12 @@
             <TextBlock Text="规则集" Theme="{StaticResource SubtitleTextBlockStyle}"
                            Margin="0 0 0 8" IsVisible="{Binding ShowTitle}"/>
             <WrapPanel Orientation="Horizontal">
-                <ToggleButton Content="非" IsChecked="{Binding Ruleset.IsReversed}"
-                              Margin="0 0 2 0"
-                              Classes="light"/>
+                <ToggleButton 
+                    Content="{controls:FluentIcon &#xE161;}"
+                    ToolTip.Tip="反转"
+                    IsChecked="{Binding Ruleset.IsReversed}"
+                    Margin="0 0 2 0"
+                    Classes="light"/>
                 <TabStrip Theme="{StaticResource TabStripStyle}"
                           Classes="compact"
                           SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
@@ -105,9 +108,12 @@
                                       HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                             <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Stretch" Margin="0 0 0 2">
                                 <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                    <ToggleButton Content="非" IsChecked="{Binding IsReversed}"
-                                                  Margin="0 0 2 0"
-                                                  Classes="light"/>
+                                    <ToggleButton 
+                                        Content="{controls:FluentIcon &#xE161;}"
+                                        ToolTip.Tip="反转"
+                                        IsChecked="{Binding IsReversed}"
+                                        Margin="0 0 2 0"
+                                        Classes="light"/>
                                     <TabStrip Theme="{StaticResource TabStripStyle}"
                                               Classes="compact"
                                               SelectedIndex="{Binding Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
@@ -172,17 +178,24 @@
                                                 ToolTip.Tip="删除"
                                                 Command="{Binding RemoveRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                                 CommandParameter="{Binding}"
+                                                VerticalAlignment="Center"
                                                 Content="{controls:FluentIcon &#xE671;}">
                                         </Button>
                                         <Ellipse Grid.Column="1" Width="8" Height="8"
                                                  Margin="4 0 8 0"
                                                  DataContext="{Binding State}"
+                                                 VerticalAlignment="Center"
                                                  Classes="rule-state-indicator"/>
-                                        <ToggleButton Grid.Column="2" Content="非" IsChecked="{Binding IsReversed}"
+                                        <ToggleButton Grid.Column="2" 
+                                                      Content="{controls:FluentIcon &#xE161;}"
+                                                      ToolTip.Tip="反转"
+                                                      IsChecked="{Binding IsReversed}"
+                                                      VerticalAlignment="Center"
                                                       Classes="light"/>
                                         <ComboBox Grid.Column="3"
                                                   Margin="2 0"
                                                   SelectedValue="{Binding Id}"
+                                                  VerticalAlignment="Center"
                                                   SelectedValueBinding="{Binding Key}"
                                                   ItemsSource="{x:Static services:IRulesetService.Rules}">
                                             <ComboBox.ItemTemplate>
@@ -194,7 +207,8 @@
                                         </ComboBox>
                                         <local:RulesetSettingsControlPresenter Grid.Column="4"
                                             Rule="{Binding Mode=OneWay}"
-                                            RuleId="{Binding Id, Mode=OneWay}" />
+                                            RuleId="{Binding Id, Mode=OneWay}"
+                                            VerticalAlignment="Center"/>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
