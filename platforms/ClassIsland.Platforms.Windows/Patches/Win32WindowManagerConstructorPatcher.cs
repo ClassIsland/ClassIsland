@@ -4,6 +4,8 @@ using HarmonyLib;
 
 namespace ClassIsland.Platform.Windows.Patches;
 
+// FIXME: 这里应该考虑和上游协商，添加对系统标题栏的支持
+// 但考虑到一时无法促成此事，只能先这样了。
 [HarmonyPatch]
 public class Win32WindowManagerConstructorPatcher
 {

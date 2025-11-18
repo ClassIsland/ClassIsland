@@ -29,11 +29,6 @@ namespace ClassIsland.Core.Controls;
 [PseudoClasses(":no-easter-eggs")]
 public class MyWindow : AppWindow
 {
-    private static readonly PropertyInfo? IsWindowsProperty = typeof(AppWindow).GetProperty("IsWindows", BindingFlags.NonPublic | BindingFlags.Instance);
-    private static readonly FieldInfo? IsAppWindowRegistryProperty = AppDomain.CurrentDomain.GetAssemblies()
-        .FirstOrDefault(x => x.GetName().Name == "FluentAvalonia")
-        ?.GetType("FluentAvalonia.UI.Windowing.Win32WindowManager")
-        ?.GetField("_appWindowRegistry", BindingFlags.NonPublic | BindingFlags.Static);
     
     private bool _isAdornerAdded;
 
@@ -90,12 +85,7 @@ public class MyWindow : AppWindow
         {
             // ignored
         }
-
-        if (IThemeService.UseNativeTitlebar)
-        {
-            PseudoClasses.Remove(":windows");
-            IsWindowsProperty?.SetValue(this, false);
-        }
+        
         IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version >= WindowsVersions.Win11V21H2;
         Initialized += OnInitialized;
         Loaded += OnLoaded;
