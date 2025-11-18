@@ -182,9 +182,14 @@
             </Panel>
             <!-- 预警信号 -->
             <ItemsControl ItemsSource="{Binding SettingsService.Settings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
-                          IsVisible="{Binding Settings.ShowAlerts}"
                           Margin="6 0 0 0"
                           ClipToBounds="False">
+                <ItemsControl.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="Settings.ShowAlerts"/>
+                        <Binding Path="!!SettingsService.Settings.LastWeatherInfo.Alerts.Count"/>
+                    </MultiBinding>
+                </ItemsControl.IsVisible>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Classes="animated-resize"/>
