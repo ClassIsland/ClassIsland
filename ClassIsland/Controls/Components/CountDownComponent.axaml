@@ -66,7 +66,7 @@
         <StackPanel Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
             <Panel VerticalAlignment="Center" Margin="0 0 4 0"
                    x:Name="CircleProgressRoot">
-                <Ellipse Width="21.4" Height="21.4" Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}" 
+                <Ellipse Width="21.4" Height="21.4" Stroke="{DynamicResource ControlStrongStrokeColorDisabledBrush}" 
                          StrokeThickness="2.6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <Path Width="22" Height="22" 
                          x:Name="ProgressAccent"
