@@ -171,6 +171,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
         { "moeyy", "https://github.moeyy.xyz/https://github.com" }
     };
+    private bool _ignoreSslForPluginMirrors = false;
 
     private bool _isMigratedFromv14 = false;
     private DateTime _lastRefreshPluginSourceTime = DateTime.MinValue;
@@ -2138,6 +2139,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (Equals(value, _pluginIndexes)) return;
             _pluginIndexes = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IgnoreSslForPluginMirrors
+    {
+        get => _ignoreSslForPluginMirrors;
+        set
+        {
+            if (value == _ignoreSslForPluginMirrors) return;
+            _ignoreSslForPluginMirrors = value;
             OnPropertyChanged();
         }
     }
