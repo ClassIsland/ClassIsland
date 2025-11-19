@@ -29,13 +29,6 @@
                 <Setter Property="ToolTip.Tip" Value="已满足"/>
             </Style>
         </Style>
-        <Style Selector="controls|AnimatedIconButton.display-role">
-            <Style Selector="^ /template/ Button#PART_Button">
-                <Setter Property="Padding" Value="0"/>
-                <Setter Property="IsHitTestVisible" Value="False"/>
-            </Style>
-            <Setter Property="Theme" Value="{StaticResource TransparentButton}"/>
-        </Style>
     </UserControl.Styles>
     <UserControl.Resources>
         <converters:RuleLogicalModeToIntConverter x:Key="RuleLogicalModeToIntConverter" />
@@ -171,44 +164,42 @@
                             </Interaction.Behaviors>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid Margin="0 0 0 2" ColumnDefinitions="Auto,Auto,Auto,Auto,*">
-                                        <Button Grid.Column="0"
-                                                Theme="{StaticResource TransparentButton}"
-                                                Classes="circle"
-                                                ToolTip.Tip="删除"
-                                                Command="{Binding RemoveRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
-                                                CommandParameter="{Binding}"
-                                                VerticalAlignment="Center"
-                                                Content="{controls:FluentIcon &#xE671;}">
-                                        </Button>
-                                        <Ellipse Grid.Column="1" Width="8" Height="8"
-                                                 Margin="4 0 8 0"
-                                                 DataContext="{Binding State}"
-                                                 VerticalAlignment="Center"
-                                                 Classes="rule-state-indicator"/>
-                                        <ToggleButton Grid.Column="2" 
-                                                      Content="{controls:FluentIcon &#xE161;}"
-                                                      ToolTip.Tip="反转"
-                                                      IsChecked="{Binding IsReversed}"
-                                                      VerticalAlignment="Center"
-                                                      Classes="light"/>
-                                        <ComboBox Grid.Column="3"
-                                                  Margin="2 0"
-                                                  SelectedValue="{Binding Id}"
-                                                  VerticalAlignment="Center"
-                                                  SelectedValueBinding="{Binding Key}"
-                                                  ItemsSource="{x:Static services:IRulesetService.Rules}">
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <controls:IconText Glyph="{Binding Value.IconGlyph}"
-                                                                       Text="{Binding Value.Name}" />
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
-                                        <local:RulesetSettingsControlPresenter Grid.Column="4"
+                                    <Grid Margin="0 0 0 2" ColumnDefinitions="Auto,*">
+                                        <StackPanel Orientation="Horizontal"
+                                                    Grid.Column="0"
+                                                    Classes="items-valign-center"
+                                                    VerticalAlignment="Top">
+                                            <Button Theme="{StaticResource TransparentButton}"
+                                                    Classes="circle"
+                                                    ToolTip.Tip="删除"
+                                                    Command="{Binding RemoveRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="{controls:FluentIcon &#xE671;}">
+                                            </Button>
+                                            <Ellipse Width="8" Height="8"
+                                                     Margin="4 0 8 0"
+                                                     DataContext="{Binding State}"
+                                                     Classes="rule-state-indicator"/>
+                                            <ToggleButton Content="{controls:FluentIcon &#xE161;}"
+                                                          ToolTip.Tip="反转"
+                                                          IsChecked="{Binding IsReversed}"
+                                                          Classes="light"/>
+                                            <ComboBox Margin="2 0"
+                                                      SelectedValue="{Binding Id}"
+                                                      SelectedValueBinding="{Binding Key}"
+                                                      ItemsSource="{x:Static services:IRulesetService.Rules}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <controls:IconText Glyph="{Binding Value.IconGlyph}"
+                                                                           Text="{Binding Value.Name}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <local:RulesetSettingsControlPresenter Grid.Column="1"
                                             Rule="{Binding Mode=OneWay}"
                                             RuleId="{Binding Id, Mode=OneWay}"
-                                            VerticalAlignment="Center"/>
+                                            VerticalAlignment="Top"/>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

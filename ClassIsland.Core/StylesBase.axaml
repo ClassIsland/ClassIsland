@@ -261,6 +261,14 @@
     <Style Selector=":is(Button).light">
         <Setter Property="Background" Value="Transparent"/>
     </Style>
+    
+    <Style Selector="ci|AnimatedIconButton.display-role">
+        <Style Selector="^ /template/ Button#PART_Button">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+        </Style>
+        <Setter Property="Theme" Value="{StaticResource TransparentButton}"/>
+    </Style>
 
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
