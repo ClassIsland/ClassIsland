@@ -289,7 +289,7 @@
                         VerticalAlignment="Bottom"
                         CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                     <StackPanel Orientation="Horizontal">
-                        <ci:FluentIcon Glyph="&#xF453;" VerticalAlignment="Center"
+                        <ci:LucideIcon Glyph="&#xE092;" VerticalAlignment="Center"
                                        FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                        Margin="0 0 4 0"/>
                         <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
