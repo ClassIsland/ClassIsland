@@ -23,6 +23,8 @@ public static class ControlColorHelper
         {
             var brush = new SolidColorBrush(new Color(255, color.R,
                 color.G, color.B));
+            var brush1 = new SolidColorBrush(new Color(218, color.R,
+                color.G, color.B));
             var brushSecondary = new SolidColorBrush(new Color(197, color.R,
                 color.G, color.B));
             var brushTertiary = new SolidColorBrush(new Color(135, color.R,
@@ -32,6 +34,7 @@ public static class ControlColorHelper
             control.SetValue(TemplatedControl.ForegroundProperty, brush);
             control.SetValue(TextElement.ForegroundProperty, brush);
             control.Resources["TextFillColorPrimaryBrush"] = brush;
+            control.Resources["TextFillColorInformativeSecondaryBrush"] = brush1;
             control.Resources["TextFillColorSecondaryBrush"] = brushSecondary;
             control.Resources["TextFillColorTertiaryBrush"] = brushTertiary;
             control.Resources["TextFillColorDisabledBrush"] = brushDisabled;
@@ -39,6 +42,7 @@ public static class ControlColorHelper
         else
         {
             control.Resources.Remove("TextFillColorPrimaryBrush");
+            control.Resources.Remove("TextFillColorInformativeSecondaryBrush");
             control.Resources.Remove("TextFillColorSecondaryBrush");
             control.Resources.Remove("TextFillColorTertiaryBrush");
             control.Resources.Remove("TextFillColorDisabledBrush");
