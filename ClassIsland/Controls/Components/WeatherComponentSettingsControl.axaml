@@ -12,7 +12,7 @@
                         xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
-    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
         <ScrollViewer>
             <StackPanel Classes="settings-container animated-intro" Margin="0">
                 <controls1:InfoBar Message="本页面仅包含组件设置，要调整显示天气的城市，请转到【天气】选项卡"
@@ -22,15 +22,20 @@
                                             Header="显示天气信息"
                                             Description="显示当前天气信息摘要。">
                     <controls1:SettingsExpander.Footer>
-                        <ComboBox SelectedIndex="{Binding Settings.MainWeatherInfoKind}"
-                                  MinWidth="110">
-                            <ComboBoxItem>天气类型/气温</ComboBoxItem>
-                            <ComboBoxItem>湿度</ComboBoxItem>
-                            <ComboBoxItem>风力</ComboBoxItem>
-                            <ComboBoxItem>AQI</ComboBoxItem>
-                            <ComboBoxItem>气压</ComboBoxItem>
-                            <ComboBoxItem>体感温度</ComboBoxItem>
-                        </ComboBox>
+                        <StackPanel Orientation="Horizontal" Spacing="4"
+                                    Classes="items-valign-center">
+                            <ComboBox SelectedIndex="{Binding Settings.MainWeatherInfoKind}"
+                                      IsVisible="{Binding Settings.ShowMainWeatherInfo}"
+                                      MinWidth="110">
+                                <ComboBoxItem>天气类型/气温</ComboBoxItem>
+                                <ComboBoxItem>湿度</ComboBoxItem>
+                                <ComboBoxItem>风力</ComboBoxItem>
+                                <ComboBoxItem>AQI</ComboBoxItem>
+                                <ComboBoxItem>气压</ComboBoxItem>
+                                <ComboBoxItem>体感温度</ComboBoxItem>
+                            </ComboBox>
+                            <ToggleSwitch IsChecked="{Binding Settings.ShowMainWeatherInfo}"/>
+                        </StackPanel>
                     </controls1:SettingsExpander.Footer>
                 </controls1:SettingsExpander>
                 
@@ -63,5 +68,5 @@
                 </controls1:SettingsExpander>
             </StackPanel>
         </ScrollViewer>
-    </Grid>
+    </StackPanel>
 </controls:ComponentBase>
