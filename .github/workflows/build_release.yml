@@ -225,7 +225,7 @@ jobs:
           path: ./out_signed/*
             
   pack_app:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os == 'windows' && 'windows-2022' || 'ubuntu-latest' }}
     needs: [ sign_1 ]
     if: ${{ always() && success('build_app') && success('build_launcher') }}
     env:
@@ -236,7 +236,7 @@ jobs:
     strategy:
       matrix:
         build_type: ['full', 'selfContained']
-        package: ['folder']
+        package: ['folder', 'installer']
         arch: ['x64', 'x86', 'arm64']
         os: ['windows', 'linux']
         exclude:
@@ -269,12 +269,23 @@ jobs:
           osName: ${{ matrix.os }}
           buildType: ${{ matrix.build_type }}
         run: pwsh -ep bypass ./tools/release-gen/pack/entry.ps1
+        # entry.ps1 should always prepare the folder layout under ./out_pack
+        # When matrix.package == 'installer', the folder will be used by Inno Setup step below.
+      
+      - name: Compile .ISS to .EXE Installer
+        if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: ClassIsland/installer/setup.iss
+          options: '/O+ /DAppVersion=${{ github.event.inputs.release_tag }} /FClassIsland-Setup-${{ github.event.inputs.release_tag }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe /O${{ github.workspace }}\\out_pack'
         
-      - name: Upload Packages to Artifacts
+      - name: Upload Packages and Installer to Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_name }}
-          path: ./out_pack/*.zip
+          path: |
+            ./out_pack/*.zip
+            ./out_pack/*.exe
           
   build_nupkg:
     runs-on: windows-2022  # For a list of available runner types, refer to
