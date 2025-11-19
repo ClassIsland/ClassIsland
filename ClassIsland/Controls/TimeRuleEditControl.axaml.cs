@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
@@ -17,12 +18,15 @@ public partial class TimeRuleEditControl : UserControl
     /// <inheritdoc />
     public TimeRuleEditControl()
     {
-        this.GetObservable(TimeRuleProperty).Subscribe(TimeRulePropertyOnNext);
+        this.GetObservable(TimeRuleProperty)
+            .Skip(1)
+            .Subscribe(_ => TimeRulePropertyOnNext());
         InitializeComponent();
     }
 
-    private void TimeRulePropertyOnNext(TimeRule? newValue)
+    private void TimeRulePropertyOnNext()
     {
+        var newValue = TimeRule;
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
         SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
         if (newValue != null)
@@ -40,7 +44,7 @@ public partial class TimeRuleEditControl : UserControl
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (_updating || TimeRule == null) return;
+        if (_updatingDiv || TimeRule == null) return;
         if (e.PropertyName == nameof(ViewModel.WeekCountDivIndex))
         {
             TimeRule.WeekCountDiv = ViewModel.WeekCountDivIndex;
@@ -50,12 +54,12 @@ public partial class TimeRuleEditControl : UserControl
             TimeRule.WeekCountDivTotal = ViewModel.WeekCountDivTotalIndex + 2;
             if (TimeRule.WeekCountDivTotal < TimeRule.WeekCountDiv)
             {
-                _updating = true;
+                _updatingDiv = true;
                 ViewModel.WeekCountDivIndex = -1;
                 Dispatcher.UIThread.Post(() =>
                     ViewModel.WeekCountDivIndex = 0,
                     DispatcherPriority.Background);
-                _updating = false;
+                _updatingDiv = false;
             }
             UpdateWeekCountDivTotalOptions();
             UpdateWeekCountDivOptions();
@@ -64,9 +68,9 @@ public partial class TimeRuleEditControl : UserControl
     
     private void UpdateWeekCountDivOptions()
     {
-        if (_updating || TimeRule == null) return;      
+        if (_updatingDiv || TimeRule == null) return;      
         if (ViewModel.WeekCountDivOptions.Count == TimeRule.WeekCountDivTotal + 1) return;
-        _updating = true;
+        _updatingDiv = true;
         
         if (TimeRule.WeekCountDivTotal == 2)
         {
@@ -85,14 +89,14 @@ public partial class TimeRuleEditControl : UserControl
         WeekCountDivListBox.ItemsSource = ViewModel.WeekCountDivOptions;
         ViewModel.WeekCountDivIndex = Math.Min(w, ViewModel.WeekCountDivOptions.Count - 1); // 在单双周和多周间切换时，索引会掉为 -1
 
-        _updating = false;
+        _updatingDiv = false;
     }
     
     private void UpdateWeekCountDivTotalOptions()
     {
-        if (_updating) return;
+        if (_updatingDivTotal) return;
         if (ViewModel.WeekCountDivTotalOptions.Count == MaxCycle - 1) return;
-        _updating = true;
+        _updatingDivTotal = true;
         
         ViewModel.WeekCountDivTotalOptions = ["两周"];
         for (var i = 3; i <= MaxCycle; i++)
@@ -108,7 +112,7 @@ public partial class TimeRuleEditControl : UserControl
             WeekCountDivTotalListBox.ItemsSource = ViewModel.WeekCountDivTotalOptions;
             ViewModel.WeekCountDivTotalIndex = Math.Min(w, ViewModel.WeekCountDivTotalOptions.Count - 1);
             
-            _updating = false;
+            _updatingDivTotal = false;
         });
     }
 
@@ -122,7 +126,10 @@ public partial class TimeRuleEditControl : UserControl
 
     public TimeRuleEditViewModel ViewModel { get; } = new();
     private SettingsService SettingsService { get; } = App.GetService<SettingsService>();
-    private bool _updating;
+    
+    private bool _updatingDiv;
+    private bool _updatingDivTotal;
+    
     private int MaxCycle => Math.Max(SettingsService.Settings.MultiWeekRotationMaxCycle, TimeRule?.WeekCountDivTotal ?? 0);
     public TimeRule? TimeRule
     {
@@ -131,4 +138,5 @@ public partial class TimeRuleEditControl : UserControl
     }
     public static readonly StyledProperty<TimeRule?> TimeRuleProperty = 
         AvaloniaProperty.Register<TimeRuleEditControl, TimeRule?>(nameof(TimeRule));
+    
 }
