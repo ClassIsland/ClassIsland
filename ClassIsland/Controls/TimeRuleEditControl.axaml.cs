@@ -74,11 +74,11 @@ public partial class TimeRuleEditControl : UserControl
         
         if (TimeRule.WeekCountDivTotal == 2)
         {
-            ViewModel.WeekCountDivOptions = ["不限", "单周", "双周"];
+            ViewModel.WeekCountDivOptions = ["每周启用", "单周", "双周"];
         }
         else
         {
-            ViewModel.WeekCountDivOptions = ["不限"];
+            ViewModel.WeekCountDivOptions = ["每周启用"];
             for (var i = 1; i <= TimeRule.WeekCountDivTotal; i++)
             {
                 ViewModel.WeekCountDivOptions.Add($"第{i.ToChinese()}周");

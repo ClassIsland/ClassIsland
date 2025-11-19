@@ -39,6 +39,7 @@
     <StyleInclude Source="/Themes/MenuItemStyles.axaml"/>
     <StyleInclude Source="/Themes/Layers.axaml"/>
     <StyleInclude Source="/Themes/TabStrip.axaml"/>
+    <StyleInclude Source="/Themes/Utils.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
     <StyleInclude Source="/Controls/DrawerHost.axaml"/>
     <StyleInclude Source="/Controls/TouchDragThumb.axaml"/>
