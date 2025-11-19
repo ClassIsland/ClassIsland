@@ -32,7 +32,7 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
         {
             var credential = credentialString != null ? ConvertCredentialStringToModel(credentialString) : new Credential();
             var window = new AuthorizeWindow(credential, true);
-            await window.ShowDialog(parent ?? AppBase.Current.PhonyRootWindow);
+            await window.ShowDialog(parent ?? AppBase.Current.GetRootWindow());
             return window.DialogResult != true ? credentialString : ConvertCredentialModelToString(credential);
         }
         catch (Exception e)
@@ -54,7 +54,7 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
         {
             var credential = ConvertCredentialStringToModel(credentialString);
             var window = new AuthorizeWindow(credential, false);
-            await window.ShowDialog(parent ?? AppBase.Current.PhonyRootWindow);
+            await window.ShowDialog(parent ?? AppBase.Current.GetRootWindow());
             return window.DialogResult;
         }
         catch (Exception e)

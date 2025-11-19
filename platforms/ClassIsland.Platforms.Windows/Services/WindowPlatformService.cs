@@ -146,7 +146,8 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             if (state)
             {
                 SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
-                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING);
+                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
+                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
             }
         }
         if ((features & WindowFeatures.Topmost) > 0)
@@ -154,7 +155,8 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             if (state)
             {
                 SetWindowPos((HWND)handle, HWND.HWND_TOPMOST, 0, 0, 0, 0,
-                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING);
+                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
+                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
             }
         }
         if ((features & WindowFeatures.Private) > 0)
