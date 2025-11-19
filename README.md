@@ -1,8 +1,4 @@
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
-<!--
-> [!caution]
-> 目前我们正在进行备案更变，2025/6/25-2025/7/29 期间 ClassIsland 所有网络服务可能无法访问，届时可能无法正常下载/更新应用和插件。感谢大家的理解和支持。
--->
 <div align="center">
 
 # <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28" width="28"/> ClassIsland
@@ -125,7 +121,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 **首先，请确保您的设备满足以下推荐需求：**
 
 - Windows 10 或更高版本
-- macOS 11 或更高版本 [^1]
+- macOS Big Sur 11 或更高版本 [^1]
 - Debian（或其衍生版）10 或更高版本，X11 图形环境 [^1]
   
 [^1]: 仅适用于 1.7.105.1 及更高版本的 ClassIsland
