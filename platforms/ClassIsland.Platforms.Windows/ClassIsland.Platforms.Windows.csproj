@@ -22,9 +22,5 @@
         </PackageReference>
         <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Helpers\" />
-    </ItemGroup>
     <Import Project="../../Global.props" />
 </Project>

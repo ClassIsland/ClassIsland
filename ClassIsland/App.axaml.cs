@@ -38,6 +38,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -425,7 +426,6 @@ public partial class App : AppBase, IAppHost
                                               || AvaloniaUnsafeAccessorHelpers.GetActiveWin32CompositionMode() 
                                                     != Win32CompositionMode.WinUIComposition;
         }
-        base.OnFrameworkInitializationCompleted();
     }
 
     private async void DesktopLifetimeOnStartup(object? sender, ControlledApplicationLifetimeStartupEventArgs e)

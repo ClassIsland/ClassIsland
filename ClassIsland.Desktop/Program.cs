@@ -1,5 +1,6 @@
 ﻿#if Platforms_Windows
 using ClassIsland.Platform.Windows;
+using ClassIsland.Platform.Windows.Helpers;
 using ClassIsland.Platform.Windows.Services;
 #endif
 #if Platforms_Linux
@@ -98,7 +99,7 @@ class Program
         {
             AppBase.Current.AppStarted += (sender, args) =>
             {
-                
+                OSKIntegration.Integrate();
             };
         };
         PatcherEntrance.InstallPatchers();
