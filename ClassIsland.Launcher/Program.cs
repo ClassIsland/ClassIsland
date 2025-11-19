@@ -11,35 +11,6 @@ using Windows.Win32.UI.WindowsAndMessaging;
 using Mono.Unix;
 #endif
 
-var root = Path.GetFullPath(Path.GetDirectoryName(Environment.ProcessPath) ?? "");
-var installation = Directory.GetDirectories(root)
-    .Where(x => Path.GetFileName(x).StartsWith("app") &&
-                !(File.Exists(Path.Combine(x, ".destroy")) || File.Exists(Path.Combine(x, ".partial"))))
-    .OrderBy(x => File.Exists(Path.Combine(x, ".current")) ? 1 : 0)
-    .ThenBy(x =>
-    {
-        var filename = Path.GetFileName(x);
-        var split = filename.Split('-');
-        if (split.Length <= 1)
-        {
-            return new Version();
-        }
-
-        return Version.TryParse(split[1], out var version) ? version : new Version();
-    })
-    .ThenBy(x =>
-    {
-        var filename = Path.GetFileName(x);
-        var split = filename.Split('-');
-        if (split.Length <= 2)
-        {
-            return 0;
-        }
-
-        return int.TryParse(split[2], out var n) ? n : 0;
-    })
-    .FirstOrDefault();
-
 // 获取对应平台的可执行文件路径
 string executableName;
 if (OperatingSystem.IsWindows())
@@ -55,7 +26,37 @@ else
     return 1;
 }
 
-if (installation == null || !File.Exists(Path.Combine(installation, executableName)))
+var root = Path.GetFullPath(Path.GetDirectoryName(Environment.ProcessPath) ?? "");
+var installation = Directory.GetDirectories(root)
+    .Where(x => Path.GetFileName(x).StartsWith("app") &&
+                !(File.Exists(Path.Combine(x, ".destroy")) || File.Exists(Path.Combine(x, ".partial"))) &&
+                File.Exists(Path.Combine(x, executableName)))
+    .OrderBy(x => File.Exists(Path.Combine(x, ".current")) ? 1 : 0)
+    .ThenByDescending(x =>
+    {
+        var filename = Path.GetFileName(x);
+        var split = filename.Split('-');
+        if (split.Length <= 1)
+        {
+            return new Version();
+        }
+
+        return Version.TryParse(split[1], out var version) ? version : new Version();
+    })
+    .ThenByDescending(x =>
+    {
+        var filename = Path.GetFileName(x);
+        var split = filename.Split('-');
+        if (split.Length <= 2)
+        {
+            return 0;
+        }
+
+        return int.TryParse(split[2], out var n) ? n : 0;
+    })
+    .FirstOrDefault();
+
+if (installation == null)
 {
     ShowError("找不到有效的 ClassIsland 版本，可能是安装已损坏。请在 https://classisland.tech/download 重新下载并安装 ClassIsland。");
     return 1;
@@ -81,16 +82,13 @@ catch (Exception e)
 var startInfo = new ProcessStartInfo()
 {
     FileName = exePath,
-    WorkingDirectory = root,
-    EnvironmentVariables =
-    {
-        {"ClassIsland_PackageRoot", root}
-    }
+    WorkingDirectory = root
 };
 foreach (var i in args)
 {
     startInfo.ArgumentList.Add(i);
 }
+startInfo.EnvironmentVariables["ClassIsland_PackageRoot"] = root;  // 防止因环境变量已设置导致启动器崩溃
 Process.Start(startInfo);
 
 return 0;

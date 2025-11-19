@@ -65,4 +65,16 @@ public class GeneralSettingsViewModel(
             OnPropertyChanged();
         }
     }
+    
+    public bool UseNativeTitlebar
+    {
+        get => bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var v)
+            ? v
+            : IThemeService.UseNativeTitlebar;
+        set
+        {
+            GlobalStorageService.SetValue("UseNativeTitlebar", value.ToString());
+            OnPropertyChanged();
+        } 
+    }
 }

@@ -16,7 +16,6 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Models.Automation;
 using ClassIsland.Models;
-using ClassIsland.Models.Actions;
 using Microsoft.Extensions.DependencyInjection;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Automation;
@@ -166,25 +165,6 @@ public class AutomationService(ILogger<AutomationService> Logger, IRulesetServic
         if (File.Exists(CurrentConfigPath))
         {
             Workflows = ConfigureFileHelper.LoadConfig<ObservableCollection<Workflow>>(CurrentConfigPath);
-
-            // migrate
-            {
-                const string prefix = "classisland.settings.";
-                foreach (var item in Workflows
-                             .SelectMany(workflow => workflow.ActionSet.ActionItems)
-                             .Where(item => item.Id.StartsWith(prefix)))
-                {
-                    var suffix = item.Id[prefix.Length..];
-                    var processedName = $"{char.ToUpper(suffix[0])}{suffix[1..]}";
-                    var s = new ModifyAppSettingsActionSettings
-                    {
-                        Name = processedName,
-                        Value = ((JsonElement)item.Settings!).GetProperty("Value").ToString()
-                    };
-                    item.Settings = s;
-                    item.Id = "classisland.settings";
-                }
-            }
         }
         else
         {

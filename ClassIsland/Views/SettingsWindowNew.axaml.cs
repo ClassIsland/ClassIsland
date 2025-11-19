@@ -128,6 +128,14 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         SettingsService.Settings
             .ObservableForProperty(x => x.IsDebugOptionsEnabled)
             .Subscribe(_ => BuildNavigationMenuItems());
+
+        if (OperatingSystem.IsMacOS())
+        {
+            ExtendClientAreaToDecorationsHint = true;
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
+            ExtendClientAreaTitleBarHeightHint = -1;
+            SystemDecorations = SystemDecorations.Full;
+        }
     }
 
     private void BuildNavigationMenuItems()

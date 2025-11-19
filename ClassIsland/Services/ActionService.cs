@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services;
@@ -22,6 +23,8 @@ public class ActionService : IActionService
         if (actionSet.Status == ActionSetStatus.Reverting)
             await InterruptActionSetAsync(actionSet);
         if (actionSet.IsWorking) return;
+
+        MigrateActionSet(actionSet);
 
         Logger.LogInformation("触发行动组“{行动组}”。", actionSet.Name);
         actionSet.SetStartRunning(true);
@@ -50,6 +53,8 @@ public class ActionService : IActionService
         if (actionSet.Status == ActionSetStatus.Invoking)
             await InterruptActionSetAsync(actionSet);
         if (actionSet.IsWorking) return;
+
+        MigrateActionSet(actionSet);
 
         Logger.LogInformation("恢复行动组“{行动组}”。", actionSet.Name);
         actionSet.SetStartRunning(false);
@@ -99,6 +104,8 @@ public class ActionService : IActionService
         if (provider == null) return;
         if (!ActionInfos.TryGetValue(actionItem.Id, out var actionInfo)) return;
 
+        MigrateActionItem(actionItem);
+
         var actionItemText = $"行动组“{actionSet.Name}”中的{(actionItem.IsRevertActionItem ? "恢复" : "")}行动项“{actionInfo.Name}”";
         Logger.LogTrace("触发{行动项}。", actionItemText);
         try
@@ -118,7 +125,9 @@ public class ActionService : IActionService
             return;
         var provider = ActionBase.GetInstance(actionItem);
         if (provider == null) return;
-        if (!ActionInfos.TryGetValue(actionItem.Id, out var actionInfo) || actionInfo.IsRevertable == false) return;
+        if (!ActionInfos.TryGetValue(actionItem.Id, out var actionInfo) || !actionInfo.IsRevertable) return;
+
+        MigrateActionItem(actionItem);
 
         var actionItemText = $"行动组“{actionSet.Name}”中的行动项“{actionInfo.Name}”";
         Logger.LogTrace("恢复{行动项}。", actionItemText);
@@ -155,6 +164,36 @@ public class ActionService : IActionService
 
             if (newIndex == -1) continue;
             i = newIndex + 1;
+        }
+    }
+
+    public void MigrateActionSet(ActionSet actionSet) { }
+
+    public void MigrateActionItem(ActionItem actionItem) { }
+
+    public void MigrateUnknownActionItem(ActionItem actionItem)
+    {
+        // 1.7.107.0
+        // 迁移应用设置行动 classisland.settings
+        {
+            const string prefix = "classisland.settings.";
+            if (actionItem.Id.StartsWith(prefix))
+            {
+                Logger.LogInformation("迁移行动项 {} 到新应用设置行动", actionItem.Id);
+
+                var suffix = actionItem.Id[prefix.Length..];
+                var processedName = $"{char.ToUpper(suffix[0])}{suffix[1..]}";
+
+                actionItem.Id = "classisland.settings";
+
+                var settings = new ModifyAppSettingsActionSettings { Name = processedName };
+                if (actionItem.Settings is JsonElement jsonElement &&
+                    jsonElement.TryGetProperty("Value", out var value))
+                {
+                    settings.Value = value.ToString();
+                }
+                actionItem.Settings = settings;
+            }
         }
     }
 

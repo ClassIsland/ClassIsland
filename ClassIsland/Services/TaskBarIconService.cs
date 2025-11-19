@@ -37,6 +37,10 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
         ToolTipText = "ClassIsland"
     };
 
+    public IList<NativeMenuItemBase> MoreOptionsMenuItems => MoreOptionsMenu!.Items;
+    
+    public NativeMenu? MoreOptionsMenu { get; set; }
+
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         return;

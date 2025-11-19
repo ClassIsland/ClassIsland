@@ -97,7 +97,7 @@ public class DesktopToastService : IDesktopToastService
             content.Activated?.Invoke(sender, EventArgs.Empty);
             CleanUpActions();
         });
-        if (Environment.OSVersion.Version >= new Version(10, 0, 18362, 0))
+        if (Environment.OSVersion.Version >= WindowsVersions.Win10V1903)
         {
             toast.ExpiresOnReboot = true;
         }

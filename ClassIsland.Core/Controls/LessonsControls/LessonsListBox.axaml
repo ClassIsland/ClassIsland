@@ -34,6 +34,7 @@
                 SeparatorDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.SeparatorLessonControlResourceKey}}"
                 ExpandedDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.ExpandedLessonControlResourceKey}}"
                 MinimizedDataTemplate="{StaticResource {x:Static lessonsControls:LessonsListBox.MinimizedLessonControlResourceKey}}"/>
+            <lessonsControls:LessonsListBoxFadingStateConverter x:Key="LessonsListBoxFadingStateConverter"/>
         </ControlTheme.Resources>
         <Setter Property="lessonsControls:LessonControlBase.DefaultLessonControlSettings" Value="{Binding $self.LessonControlSettings, Mode=OneWay}"/>
         <Setter Property="lessonsControls:LessonControlBase.ClassPlan" Value="{Binding $self.ClassPlan, Mode=OneWay}"/>
@@ -50,7 +51,30 @@
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
-                    <Grid>
+                    <Grid x:Name="_LessonsRoot">
+                        <Grid.Styles>
+                            <Style Selector="Grid#_LessonsRoot.faded">
+                                <Setter Property="Opacity" Value="0.6"/>
+                            </Style>
+                        </Grid.Styles>
+                        <Classes.faded>
+                            <MultiBinding Converter="{StaticResource LessonsListBoxFadingStateConverter}"
+                                          Mode="OneWay">
+                                <Binding Path="$parent[lessonsControls:LessonsListBox].FadeCompletedClasses" RelativeSource="{RelativeSource AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                <Binding/>
+                                <Binding Path="$parent[lessonsControls:LessonsListBox].SelectedItem" RelativeSource="{RelativeSource AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                <Binding Path="$parent[lessonsControls:LessonsListBox].ClassPlan.ValidTimeLayoutItems" Mode="OneWay"/>
+                            </MultiBinding>
+                        </Classes.faded>
+                        <Grid.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.15">
+                                    <DoubleTransition.Easing>
+                                        <CubicEaseInOut/>
+                                    </DoubleTransition.Easing>
+                                </DoubleTransition>
+                            </Transitions>
+                        </Grid.Transitions>
                         <ContentPresenter>
                             <ContentPresenter.Content>
                                 <Binding/>

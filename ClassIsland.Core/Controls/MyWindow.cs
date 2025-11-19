@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Avalonia;
@@ -16,6 +17,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Commands;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Theming;
 using FluentAvalonia.UI.Windowing;
@@ -28,6 +30,7 @@ namespace ClassIsland.Core.Controls;
 [PseudoClasses(":no-easter-eggs")]
 public class MyWindow : AppWindow
 {
+    
     private bool _isAdornerAdded;
 
     /// <summary>
@@ -83,8 +86,10 @@ public class MyWindow : AppWindow
         {
             // ignored
         }
-
-        IsMicaSupported = OperatingSystem.IsWindows() && Environment.OSVersion.Version.Build > 22000;
+        
+        IsMicaSupported = OperatingSystem.IsWindows() 
+                          && Environment.OSVersion.Version >= WindowsVersions.Win11V21H2
+                          && AvaloniaUnsafeAccessorHelpers.GetActiveWin32CompositionMode() == Win32CompositionMode.WinUIComposition;
         Initialized += OnInitialized;
         Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);

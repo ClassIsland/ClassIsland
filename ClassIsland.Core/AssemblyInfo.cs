@@ -3,6 +3,7 @@ using Avalonia.Metadata;
 
 [assembly: InternalsVisibleTo("ClassIsland")]
 [assembly: InternalsVisibleTo("ClassIsland.Desktop")]
+[assembly: InternalsVisibleTo("ClassIsland.Platforms.Windows")]
 
 [assembly: XmlnsPrefix("http://classisland.tech/schemas/xaml/core", "ci")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core")]

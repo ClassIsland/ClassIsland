@@ -1,8 +1,4 @@
 ﻿<controls:MyWindow x:Class="ClassIsland.Views.SettingsWindowNew"
-        ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaChromeHints="PreferSystemChrome"
-        ExtendClientAreaTitleBarHeightHint="-1"
-        SystemDecorations="Full"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -141,24 +137,14 @@
                                Width="18" Height="18"
                                DockPanel.Dock="Left"
                                Name="WindowIcon"
-                               RenderOptions.BitmapInterpolationMode="HighQuality">
-                            <Image.IsVisible>
-                                <OnPlatform Default="False">
-                                    <On Options="Windows" Content="True" />
-                                </OnPlatform>
-                            </Image.IsVisible>
-                        </Image>
+                               RenderOptions.BitmapInterpolationMode="HighQuality"
+                               Classes="custom-titlebar-only"/>
 
                         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                    FontSize="12" Margin="0 2 0 0"
                                    IsHitTestVisible="False"
-                                   VerticalAlignment="Center">
-                            <TextBlock.IsVisible>
-                                <OnPlatform Default="False">
-                                    <On Options="Windows" Content="True" />
-                                </OnPlatform>
-                            </TextBlock.IsVisible>
-                        </TextBlock>
+                                   VerticalAlignment="Center"
+                                   Classes="custom-titlebar-only"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal"
@@ -251,13 +237,7 @@
                         </Button>
                     </StackPanel>
                     <!-- 金刚键空位 -->
-                    <Border Grid.Column="3" Width="140">
-                        <Border.IsVisible>
-                            <OnPlatform Default="False">
-                                <On Options="Windows" Content="True" />
-                            </OnPlatform>
-                        </Border.IsVisible>
-                    </Border>
+                    <Border Grid.Column="3" Width="140" Classes="custom-titlebar-only"/>
                     <!--     <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" -->
                 <!--                 Margin="0 -16"> -->
                 <!--         <Button ToolTip.Tip="返回" -->

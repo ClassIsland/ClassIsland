@@ -48,7 +48,9 @@
         <converters:WindDirectionConverter x:Key="StringToDoubleConverter" />
     </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                    Classes="items-valign-center"
+                    Spacing="6">
             <Panel IsVisible="{Binding Settings.ShowMainWeatherInfo}"
                    Classes="content-only">
                 <Border>
@@ -182,9 +184,13 @@
             </Panel>
             <!-- 预警信号 -->
             <ItemsControl ItemsSource="{Binding SettingsService.Settings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
-                          IsVisible="{Binding Settings.ShowAlerts}"
-                          Margin="6 0 0 0"
                           ClipToBounds="False">
+                <ItemsControl.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="Settings.ShowAlerts"/>
+                        <Binding Path="!!SettingsService.Settings.LastWeatherInfo.Alerts.Count"/>
+                    </MultiBinding>
+                </ItemsControl.IsVisible>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Classes="animated-resize"/>
@@ -260,7 +266,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <!-- 降水预警 -->
-            <Grid VerticalAlignment="Center" Margin="4 0 0 0">
+            <Grid VerticalAlignment="Center">
                 <Grid.IsVisible>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                         <Binding Path="!!SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes"/>
@@ -284,7 +290,7 @@
                         VerticalAlignment="Bottom"
                         CornerRadius="{Binding Bounds.Height, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                     <StackPanel Orientation="Horizontal">
-                        <ci:FluentIcon Glyph="&#xF453;" VerticalAlignment="Center"
+                        <ci:LucideIcon Glyph="&#xE092;" VerticalAlignment="Center"
                                        FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                        Margin="0 0 4 0"/>
                         <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"

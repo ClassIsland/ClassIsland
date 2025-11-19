@@ -69,6 +69,7 @@
             
             <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
                 <Panel Margin="6 0 0 0"
+                       Classes="l-secondary"
                        IsVisible="{Binding SettingsSource.ShowExtraInfoOnTimePoint}">
                     <Border>
                         <Border.IsVisible>
@@ -221,9 +222,17 @@
                 <Border Width="16"/>
             </LayoutTransformControl>
         </StackPanel>
-        <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                     MinWidth="0"
-                     Value="{Binding ProgressPercent}" Maximum="1"/>
+        
+        <!-- HACK: 为什么进度条拉伸了就缩不回去了😰 -->
+        <Canvas VerticalAlignment="Bottom"
+                HorizontalAlignment="Stretch"
+                x:Name="ProgressContainer"
+                Height="{Binding #ProgressBar.Bounds.Height}">
+            <ProgressBar 
+                Width="{Binding #ProgressContainer.Bounds.Width, Mode=OneWay}"
+                x:Name="ProgressBar" MinWidth="0"
+                Value="{Binding ProgressPercent}" Maximum="1"/>
+        </Canvas>
         
     </Grid>
 </local:LessonControlBase>

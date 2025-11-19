@@ -1,4 +1,5 @@
 using System.Text.Json;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Automation;
 using Microsoft.Extensions.DependencyInjection;
@@ -107,7 +108,7 @@ public abstract class ActionBase
     internal object? SettingsInternal { get; set; }
     internal CancellationTokenSource InterruptCts { get; set; }
 
-
+    static Lazy<IActionService> ActionService = new(IAppHost.GetService<IActionService>);
 
     /// 获取行动提供方实例。
     /// <param name="actionItem">要获取行动提供方的行动项。</param>
@@ -116,7 +117,12 @@ public abstract class ActionBase
         if (string.IsNullOrEmpty(actionItem?.Id)) return null;
 
         var provider = IAppHost.Host?.Services.GetKeyedService<ActionBase>(actionItem.Id);
-        if (provider == null) return null;
+        if (provider == null)
+        {
+            ActionService.Value.MigrateUnknownActionItem(actionItem);
+            provider = IAppHost.Host?.Services.GetKeyedService<ActionBase>(actionItem.Id);
+            if (provider == null) return null;
+        }
 
         var settingsType = provider.GetType().BaseType?.GetGenericArguments().FirstOrDefault();
         if (settingsType != null)

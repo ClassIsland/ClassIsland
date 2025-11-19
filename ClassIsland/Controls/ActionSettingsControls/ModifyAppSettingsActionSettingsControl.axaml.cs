@@ -33,8 +33,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
     ILogger<ModifyAppSettingsActionSettingsControl> Logger { get; } =
         App.GetService<ILogger<ModifyAppSettingsActionSettingsControl>>();
 
-    readonly Lazy<IComponentsService> _componentsService = new(App.GetService<IComponentsService>);
-    public IComponentsService ComponentsService => _componentsService.Value;
+    Lazy<IComponentsService> ComponentsService { get; } = new(App.GetService<IComponentsService>);
 
     ModifyAppSettingsActionSettingsControlViewModel ViewModel { get; } = new();
 
@@ -118,13 +117,13 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         }
         else if (e.PropertyName == nameof(ViewModel.InputValue))
         {
-            if (IsPropertySupported(Settings.Name, ViewModel.CurrentSettingsInfo?.Type))
+            // if (IsPropertySupported(Settings.Name, ViewModel.CurrentSettingsInfo?.Type))
                 Settings.Value = ViewModel.InputValue;
-            else
-            {
-                Settings.Value = JsonSerializer.Deserialize(ViewModel.InputValue.ToString()!,
-                    ViewModel.CurrentSettingsInfo?.Type!)!;
-            }
+            // else
+            // {
+            //     Settings.Value = JsonSerializer.Deserialize(ViewModel.InputValue.ToString()!,
+            //         ViewModel.CurrentSettingsInfo?.Type!)!;
+            // }
         }
     }
 

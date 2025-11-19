@@ -7,6 +7,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Automation;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Automation;
 using CommunityToolkit.Mvvm.Input;
 namespace ClassIsland.Core.Controls.Automation;
@@ -19,9 +20,12 @@ public partial class ActionItemControl : UserControl
 {
     public ActionItemControl() => InitializeComponent();
 
+    public IActionService ActionService { get; } = IAppHost.GetService<IActionService>();
+
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        ActionService.MigrateActionItem(ActionItem);
         UpdateContent();
     }
 
@@ -33,11 +37,12 @@ public partial class ActionItemControl : UserControl
 
     void UpdateContent()
     {
+        var newControl = ActionSettingsControlBase.GetInstance(ActionItem);
+
         ActionInfoIconText.Glyph =
             IActionService.ActionInfos.TryGetValue(ActionItem.Id, out var actionInfo) ? actionInfo.IconGlyph : "\uee31";
         ActionInfoIconText.Text = actionInfo?.Name ?? $"{ActionItem.Id}（未知行动）";
 
-        var newControl = ActionSettingsControlBase.GetInstance(ActionItem);
         if (newControl != null)
         {
             newControl.ActionNameChanged += ControlOnActionNameChanged;

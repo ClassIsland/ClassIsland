@@ -25,6 +25,7 @@
                             </Transitions>
                         </Border.Transitions>
                         <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
                                           VerticalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>

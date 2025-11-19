@@ -87,6 +87,7 @@ public partial class App
         services.AddSingleton<IAuthorizeService, AuthorizeService>();
         services.AddSingleton<UriTriggerHandlerService>();
         services.AddSingleton<SignalTriggerHandlerService>();
+        services.AddSingleton<TrayMenuTriggerHandlerService>();
         services.AddSingleton<IAnnouncementService, AnnouncementService>();
         services.AddSingleton<ILocationService>(PlatformServices.LocationService);
         services.AddSingleton<IXamlThemeService, XamlThemeService>();
@@ -207,6 +208,7 @@ public partial class App
         services.AddTrigger<RulesetChangedTrigger>();
         services.AddTrigger<SignalTrigger, SignalTriggerSettingsControl>();
         services.AddTrigger<UriTrigger, UriTriggerSettingsControl>();
+        services.AddTrigger<TrayMenuTrigger, TrayMenuTriggerSettingsControl>();
         services.AddTrigger<CronTrigger, CronTriggerSettingsControl>();
         services.AddTrigger<AppStartupTrigger>();
         services.AddTrigger<AppStoppingTrigger>();
