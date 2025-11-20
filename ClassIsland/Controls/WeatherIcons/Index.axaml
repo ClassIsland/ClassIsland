@@ -5,5 +5,6 @@
         <ResourceInclude Source="FluentDesignWeatherIconTemplate.axaml"/>
         <ResourceInclude Source="SimpleTextWeatherIconTemplate.axaml"/>
         <ResourceInclude Source="LucideWeatherIconTemplate.axaml"/>
+        <ResourceInclude Source="SFSymbolsWeatherIconTemplate.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
