@@ -18,7 +18,7 @@
                Classes="items-valign-center"
                Orientation="Horizontal">
         <TabStrip Theme="{StaticResource TabStripStyle}"
-                  Classes="compact"
+                  Classes="compact toggle"
                   Margin="0 0 1 0">
             <TabStripItem IsSelected="{Binding !Settings.IsRemainingTime}">
                 <ci:AnimatedIconButton Glyph="&#xE157;" Text="开始" 
