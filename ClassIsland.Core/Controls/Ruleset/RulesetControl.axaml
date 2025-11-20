@@ -48,7 +48,7 @@
                     Margin="0 0 2 0"
                     Classes="light"/>
                 <TabStrip Theme="{StaticResource TabStripStyle}"
-                          Classes="compact"
+                          Classes="compact toggle"
                           SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
                           Margin="0 0 4 0">
                     <TabStripItem>
@@ -108,7 +108,7 @@
                                         Margin="0 0 2 0"
                                         Classes="light"/>
                                     <TabStrip Theme="{StaticResource TabStripStyle}"
-                                              Classes="compact"
+                                              Classes="compact toggle"
                                               SelectedIndex="{Binding Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
                                               Margin="0 0 4 0">
                                         <TabStripItem>

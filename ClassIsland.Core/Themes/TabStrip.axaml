@@ -4,6 +4,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="using:FluentAvalonia.UI.Controls"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
     x:CompileBindings="True">
     <Design.PreviewWith>
         <Border Padding="10">
@@ -187,14 +188,45 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}">
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        x:Name="Border">
+                        <Border.Transitions>
+                            <Transitions>
+                                <BrushTransition Property="Background" Duration="0:0:0.1" Easing="0,0 0,1"/>
+                                <BrushTransition Property="BorderBrush" Duration="0:0:0.1" Easing="0,0 0,1"/>
+                                <BrushTransition Property="TextElement.Foreground" Duration="0:0:0.1" Easing="0,0 0,1"/>
+                            </Transitions>
+                        </Border.Transitions>
                         <ItemsPresenter
-                            Margin="{TemplateBinding Padding}"
-                            VerticalAlignment="Stretch"
-                            ItemsPanel="{TemplateBinding ItemsPanel}" />
+                             Margin="{TemplateBinding Padding}"
+                             VerticalAlignment="Stretch"
+                             ItemsPanel="{TemplateBinding ItemsPanel}" />
                     </Border>
                 </ControlTemplate>
             </Setter>
+            
+            <Style Selector="^.toggle">
+                <Setter Property="Interaction.Behaviors">
+                    <BehaviorCollectionTemplate>
+                        <BehaviorCollection>
+                            <ci:ToggleTabStripBehavior/>
+                        </BehaviorCollection>
+                    </BehaviorCollectionTemplate>
+                </Setter>
+                
+                <Style Selector="^ /template/ Border#Border">
+                    <Style Selector="^ :is(Control)">
+                        <Setter Property="IsHitTestVisible" Value="False"/>
+                    </Style>
+                </Style>
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}"/>
+                </Style>
+                <Style Selector="^:pointerdown">
+                    <Setter Property="Background" Value="{DynamicResource CardBackgroundTertiaryBrush}"/>
+                </Style>
+                
+            </Style>
         </ControlTheme>
 
         <ItemsPanelTemplate x:Key="DefaultPanel">
@@ -202,4 +234,6 @@
         </ItemsPanelTemplate>
 
     </Styles.Resources>
+    
+    
 </Styles>

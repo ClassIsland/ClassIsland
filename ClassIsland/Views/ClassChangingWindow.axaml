@@ -81,18 +81,21 @@
                         ClassInfo="{Binding ViewModel.SelectedClassInfo}"
                         Subjects="{Binding ViewModel.ProfileService.Profile.Subjects}"
                         Height="40"/>
-                    <ComboBox Margin="4 0"
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center"
-                              Grid.Column="1"
-                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.IsSwapMode, Converter={x:Static converters:ClassChangeIsSwapModeOnToSwapModeIndexConverter.Instance}}">
-                        <ComboBoxItem>
-                            <ci:IconText Glyph="&#xe131;" Text="替换"/>
-                        </ComboBoxItem>
-                        <ComboBoxItem>
-                            <ci:IconText Glyph="&#xe15f;" Text="交换"/>
-                        </ComboBoxItem>
-                    </ComboBox>
+                    <TabStrip Grid.Column="1" Theme="{StaticResource TabStripStyle}"
+                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.IsSwapMode, Converter={x:Static converters:ClassChangeIsSwapModeOnToSwapModeIndexConverter.Instance}}"
+                              Classes="compact toggle"
+                              Margin="4 0">
+                        <TabStripItem>
+                            <ci:AnimatedIconButton Glyph="&#xe131;" Text="替换" 
+                                                   IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"
+                                                   Classes="display-role"/>
+                        </TabStripItem>
+                        <TabStripItem>
+                            <ci:AnimatedIconButton Glyph="&#xe15f;" Text="交换" 
+                                                   IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"
+                                                   Classes="display-role"/>
+                        </TabStripItem>
+                    </TabStrip>
                     <Carousel Grid.Column="2"
                              VerticalAlignment="Center"
                              HorizontalAlignment="Stretch"
