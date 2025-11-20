@@ -185,6 +185,11 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             propertyOverlay["@"] = sourceValue;
         }
 
+        var targetType = ModifyAppSettingsAction.GetUnderlyingType(info.PropertyType);
+        if (value is JsonElement je)
+        {
+            value = je.Deserialize(targetType, AllowReadingFromString);
+        }
         info.SetValue(Settings, value);
         propertyOverlay[key] = value;
         Settings.SettingsOverlays[name] = propertyOverlay;
@@ -217,6 +222,11 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             return false;
 
         var last = propertyOverlay[length - 1]; // propertyOverlay 至少存在一项。
+        var targetType = ModifyAppSettingsAction.GetUnderlyingType(info.PropertyType);
+        if (last is JsonElement je)
+        {
+            last = je.Deserialize(targetType, AllowReadingFromString);
+        }
         info.SetValue(Settings, last);
 
         if (length > 1)
