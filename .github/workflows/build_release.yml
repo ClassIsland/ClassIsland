@@ -270,7 +270,7 @@ jobs:
           path: ./installer/setup.iss
           options: >
             /DAppVersion=${{ github.event.inputs.release_tag || '2.0.0' }}
-            /FClassIsland-Setup-${{ github.event.inputs.release_tag || '2.0.0' }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe
+            /F"${{ github.workspace }}/out_pack/ClassIsland-Setup-${{ github.event.inputs.release_tag || '2.0.0' }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe"
             /O"${{ github.workspace }}\out_pack"
             /DSourceDir="${{ github.workspace }}\out_pack\pack"
       
@@ -280,8 +280,8 @@ jobs:
         with:
           name: ${{ env.artifact_name }}
           path: |
-            ./out_pack/*.zip
-            ./out_pack/*.exe
+            ${{ github.workspace }}/out_pack/*.zip
+            ${{ github.workspace }}/out_pack/*.exe
           
   build_nupkg:
     runs-on: windows-2022
