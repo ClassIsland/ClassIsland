@@ -266,23 +266,39 @@ jobs:
       - name: Package Windows Installer (Windows-only, Installer-only)
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
         shell: pwsh
+        env:
+          version: ${{ github.event.inputs.release_tag }}
+          osName: windows
+          arch: ${{ matrix.arch }}
+          buildType: ${{ matrix.build_type }}
         run: |
           $ws = $env:GITHUB_WORKSPACE
-          $arch = "${{ matrix.arch }}"
-          $build_type = "${{ matrix.build_type }}"
-          $src = Join-Path $ws "out_artifacts/out_appBase_windows_${arch}_${build_type}_folder"
-          $dst = Join-Path $ws "out_pack"
           $script = Join-Path $ws "tools/release-gen/pack/folder.ps1"
 
+          $zipName = "out_appBase_${env:osName}_${env:arch}_${env:buildType}_folder.zip"
+          $zipSource = Join-Path $ws "out_artifacts/$zipName"
+          $zipDestDir = Join-Path $ws "out"
+
+          if (-not (Test-Path $zipDestDir)) {
+            New-Item -ItemType Directory -Path $zipDestDir | Out-Null
+          }
+
+          Write-Host "Copying ZIP: $zipSource -> $zipDestDir"
+          Copy-Item -Path $zipSource -Destination $zipDestDir -Force
+
           Write-Host "Script path: $script"
-          Write-Host "Running folder.ps1 -src $src -dst $dst"
+          Write-Host "Running folder.ps1 with:"
+          Write-Host "  version=$env:version"
+          Write-Host "  osName=$env:osName"
+          Write-Host "  arch=$env:arch"
+          Write-Host "  buildType=$env:buildType"
 
           if (-not (Test-Path $script)) {
             Write-Host "ERROR: Script does not exist at: $script"
             exit 1
           }
 
-          pwsh -ep bypass -File "$script" -src "$src" -dst "$dst"
+          pwsh -ep bypass -File "$script"
 
 
       - name: Compile .iss to .exe Installer (Windows-only)
