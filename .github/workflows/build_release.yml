@@ -268,11 +268,11 @@ jobs:
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: ./installer/setup.iss
-          options: >
+          options: |
             /DAppVersion=${{ github.event.inputs.release_tag || '2.0.0' }}
             /FClassIsland-Setup-${{ github.event.inputs.release_tag || '2.0.0' }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe
             /O"${{ github.workspace }}\out_pack"
-            /DSourceDir="${{ github.workspace }}\out_pack\pack\"
+            /DSourceDir="${{ github.workspace }}\out_pack\pack"
       
 
       - name: Upload Packages and Installer to Artifacts
