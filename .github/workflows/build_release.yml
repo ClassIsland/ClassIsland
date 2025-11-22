@@ -234,6 +234,8 @@ jobs:
           - os: linux
             arch: x86
           - os: linux
+            package: installer
+          - os: linux
             build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
     name: Pack_App_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
     steps:
@@ -260,18 +262,6 @@ jobs:
           osName: ${{ matrix.os }}
           buildType: ${{ matrix.build_type }}
         run: pwsh -ep bypass ./tools/release-gen/pack/entry.ps1
-        # entry.ps1 should always prepare the folder layout under ./out_pack
-        # When matrix.package == 'installer', the folder will be used by Inno Setup step below.
-
-      - name: dbug List all files
-        if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
-        shell: pwsh
-        run: |
-          Write-Host "Listing all files in workspace:"
-          Get-ChildItem -Path . -Recurse | Select-Object FullName
-          Write-Host "Listing all files in out_artifacts:"
-          Get-ChildItem -Path ./out_artifacts -Recurse | Select-Object FullName
-
 
       - name: Compile .iss to .exe Installer
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
@@ -282,7 +272,7 @@ jobs:
             /DAppVersion=${{ github.event.inputs.release_tag || '2.0.0' }}
             /FClassIsland-Setup-${{ github.event.inputs.release_tag || '2.0.0' }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe
             /O"${{ github.workspace }}\out_pack"
-            /DSourceDir="${{ github.workspace }}\out_artifacts\out_appBase_windows_${{ matrix.arch }}_${{ matrix.build_type }}_folder"
+            /DSourceDir="${{ github.workspace }}\out_pack\pack\"
       
 
       - name: Upload Packages and Installer to Artifacts
