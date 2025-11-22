@@ -147,6 +147,11 @@ public abstract class AppBase : Application, IAppHost
     public static FontFamily LucideIconsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#lucide");
     
     /// <summary>
+    /// SF Symbols 字体
+    /// </summary>
+    public static FontFamily SFSymbolsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#SF-Symbols");
+    
+    /// <summary>
     /// 虚根窗口
     /// </summary>
     public Window PhonyRootWindow = null!;

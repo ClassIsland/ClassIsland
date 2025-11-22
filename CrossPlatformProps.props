@@ -39,7 +39,7 @@
         <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Platforms_MacOs)'=='true'">
-        <TargetFramework>$(BaseFramework)-macos15</TargetFramework>
+        <TargetFramework>$(BaseFramework)-macos15.0</TargetFramework>
         <DefineConstants>$(DefineConstants);Platforms_MacOs</DefineConstants>
         <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     </PropertyGroup>

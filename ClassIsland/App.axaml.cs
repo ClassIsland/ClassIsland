@@ -240,6 +240,7 @@ public partial class App : AppBase, IAppHost
         }
         IconExpressionHelper.RegisterHandler("fluent", args => new FluentIconSource(args[0]));
         IconExpressionHelper.RegisterHandler("lucide", args => new LucideIconSource(args[0]));
+        IconExpressionHelper.RegisterHandler("sfsymbols", args => new SFSymbolsIconSource(args[0]));
         IconExpressionHelper.RegisterHandler("bitmap", args => new BitmapIconSource
         {
             UriSource = new Uri(args[0]),

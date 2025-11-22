@@ -223,7 +223,7 @@
                     <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}"/>
                 </Style>
                 <Style Selector="^:pointerdown">
-                    <Setter Property="Background" Value="{DynamicResource CardBackgroundTertiaryBrush}"/>
+                    <Setter Property="Background" Value="Transparent"/>
                 </Style>
                 
             </Style>
