@@ -267,13 +267,14 @@ jobs:
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
         shell: pwsh
         run: |
-          # This script will copy all necessary files and create the installer folder layout in out_pack\pack
-          # Replace with the actual packaging script if needed (e.g., pack_windows.ps1)
-          pwsh -ep bypass ./tools/release-gen/folder.ps1 `
-            -ArtifactsPath "./out_artifacts" `
-            -Arch "${{ matrix.arch }}" `
-            -BuildType "${{ matrix.build_type }}" `
-            -OutputPath "./out_pack/pack"
+          $ws = $env:GITHUB_WORKSPACE
+          $arch = "${{ matrix.arch }}"
+          $build_type = "${{ matrix.build_type }}"
+          $src = Join-Path $ws "out_artifacts/out_appBase_windows_${arch}_${build_type}_folder"
+          $dst = Join-Path $ws "out_pack"
+          $script = Join-Path $ws "tools/release-gen/folder.ps1"
+          Write-Host "Running $script -src $src -dst $dst"
+          pwsh -File $script -src $src -dst $dst
 
 
       - name: Compile .iss to .exe Installer (Windows-only)
