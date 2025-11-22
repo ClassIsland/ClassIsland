@@ -20,8 +20,10 @@ on:
         description: '是否处于测试发布模式'
         required: false
         type: boolean
+
 env:
   PDC_CLIENT_VERSION: 1.0.0.2
+
 jobs:
   build_app:
     runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-15' || 'windows-2022' ) }}
@@ -64,7 +66,6 @@ jobs:
       - name: List files
         run: ls
       
-      # Install the .NET Core workload
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
@@ -131,18 +132,9 @@ jobs:
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
 
-      # - name: Cache .nuke/temp, ~/.nuget/packages
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       .nuke/temp
-      #       ~/.nuget/packages
-      #     key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj', '**/*.props') }}-${{ env.build_id }}
-
       - name: List files
         run: ls
       
-      # Install the .NET Core workload
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
@@ -160,7 +152,6 @@ jobs:
           buildName: launcher
         run: ${{ matrix.os == 'windows' && 'pwsh -ep bypass ./build.ps1 PublishLauncher' || './build.sh PublishLauncher' }} 
           
-
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
@@ -271,13 +262,70 @@ jobs:
         run: pwsh -ep bypass ./tools/release-gen/pack/entry.ps1
         # entry.ps1 should always prepare the folder layout under ./out_pack
         # When matrix.package == 'installer', the folder will be used by Inno Setup step below.
-      
-      - name: Compile .iss to .exe Installer
+
+      - name: Debug: list workspace & out_pack (Windows-only)
+        if: ${{ matrix.os == 'windows' }}
+        shell: pwsh
+        run: |
+          Write-Host "Current directory: $(Get-Location)"
+          Write-Host "=== repo root (top-level) ==="
+          Get-ChildItem -Path . -Force -Depth 2 | ForEach-Object { Write-Host $_.FullName }
+          Write-Host "=== out_pack tree (full) ==="
+          if (Test-Path ./out_pack) { Get-ChildItem -Path ./out_pack -Recurse | ForEach-Object { Write-Host $_.FullName } } else { Write-Host "out_pack not found" }
+
+      - name: Ensure out_pack\pack exists and normalize layout (Windows-only)
+        if: ${{ matrix.os == 'windows' }}
+        shell: pwsh
+        run: |
+          $ws = $env:GITHUB_WORKSPACE
+          $out_pack = Join-Path $ws 'out_pack'
+          $out_pack_pack = Join-Path $out_pack 'pack'
+          Write-Host "GITHUB_WORKSPACE = $ws"
+          # create out_pack if missing
+          if (-Not (Test-Path $out_pack)) {
+            Write-Host "Creating $out_pack"
+            New-Item -ItemType Directory -Path $out_pack -Force | Out-Null
+          }
+          # if out_pack\pack already exists, leave it
+          if (-Not (Test-Path $out_pack_pack)) {
+            # if out_pack has files or directories, move them into out_pack\pack
+            $children = Get-ChildItem -Path $out_pack -Force | Where-Object { $_.Name -ne 'pack' }
+            if ($children.Count -gt 0) {
+              Write-Host "Creating $out_pack_pack and moving existing items into it"
+              New-Item -ItemType Directory -Path $out_pack_pack -Force | Out-Null
+              foreach ($c in $children) {
+                # skip if it's the pack folder itself
+                $src = $c.FullName
+                Write-Host "Moving $src -> $out_pack_pack"
+                Move-Item -Path $src -Destination $out_pack_pack -Force
+              }
+            } else {
+              Write-Host "No children under out_pack, creating empty pack folder"
+              New-Item -ItemType Directory -Path $out_pack_pack -Force | Out-Null
+            }
+          } else {
+            Write-Host "out_pack\\pack already exists"
+          }
+          Write-Host "Final out_pack\\pack contents:"
+          Get-ChildItem -Path $out_pack_pack -Recurse | ForEach-Object { Write-Host $_.FullName }
+
+
+      - name: Compile .iss to .exe Installer (Windows-only)
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: ./ClassIsland/installer/setup.iss
-          options: '/DAppVersion=${{ github.event.inputs.release_tag }} /FClassIsland-Setup-${{ github.event.inputs.release_tag }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe /O"${{ github.workspace }}\out_pack"'        
+          path: ./ClassIsland/installer/Installer.iss
+          options: >
+            /DAppVersion=${{ github.event.inputs.release_tag }}
+            /FClassIsland-Setup-${{ github.event.inputs.release_tag }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe
+            /O"${{ github.workspace }}\out_pack"
+      
+      - name: Debug: list out_pack after Inno
+        if: ${{ matrix.os == 'windows' }}
+        shell: pwsh
+        run: |
+          Write-Host "Contents of ./out_pack after Inno step:"
+          if (Test-Path ./out_pack) { Get-ChildItem ./out_pack -Recurse | ForEach-Object { Write-Host $_.FullName } } else { Write-Host "out_pack missing" }
 
       - name: Upload Packages and Installer to Artifacts
         uses: actions/upload-artifact@v4
@@ -288,13 +336,11 @@ jobs:
             ./out_pack/*.exe
           
   build_nupkg:
-    runs-on: windows-2022  # For a list of available runner types, refer to
-    # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-2022
     env:
-      Solution_Name: ClassIsland.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
-      # Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      Wap_Project_Directory: ClassIsland/ClassIsland    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      Wap_Project_Path: ClassIsland/ClassIsland/ClassIsland.csproj                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      Solution_Name: ClassIsland.sln
+      Wap_Project_Directory: ClassIsland/ClassIsland
+      Wap_Project_Path: ClassIsland/ClassIsland/ClassIsland.csproj
     name: Build Nuget Packages
     steps:
       - name: Checkout
@@ -307,13 +353,11 @@ jobs:
       - name: List files
         run: ls
 
-      # Install the .NET Core workload
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
 
-      # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
         
@@ -398,16 +442,6 @@ jobs:
           pwsh -ep Bypass -c ./tools/release-gen/install-pdcc.ps1 win
           ./pdcc/PhainonDistributionCenter.Client.exe ./phainon.yml Publish ${{ github.event.inputs.primary_version }} ${{ github.event.inputs.release_tag }} ./out
           
-      # - name: Sentry Release
-      #   uses: getsentry/action-release@v1.7.0
-      #   env:
-      #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      #     SENTRY_ORG: classisland
-      #     SENTRY_PROJECT: classisland
-      #     SENTRY_URL: ${{ vars.SENTRY_URL }}
-      #   with:
-      #     environment: production
-      
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
@@ -425,4 +459,3 @@ jobs:
           ls
           cd out_artifacts/out_nupkgs
           dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
-
