@@ -273,8 +273,16 @@ jobs:
           $src = Join-Path $ws "out_artifacts/out_appBase_windows_${arch}_${build_type}_folder"
           $dst = Join-Path $ws "out_pack"
           $script = Join-Path $ws "tools/release-gen/folder.ps1"
-          Write-Host "Running $script -src $src -dst $dst"
-          pwsh -File $script -src $src -dst $dst
+
+          Write-Host "Script path: $script"
+          Write-Host "Running folder.ps1 -src $src -dst $dst"
+
+          if (-not (Test-Path $script)) {
+            Write-Host "ERROR: Script does not exist at: $script"
+            exit 1
+          }
+
+          pwsh -ep bypass -c "& \"$script\" -src \"$src\" -dst \"$dst\""
 
 
       - name: Compile .iss to .exe Installer (Windows-only)
