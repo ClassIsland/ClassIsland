@@ -263,42 +263,14 @@ jobs:
         # entry.ps1 should always prepare the folder layout under ./out_pack
         # When matrix.package == 'installer', the folder will be used by Inno Setup step below.
 
-      - name: Package Windows Installer (Windows-only, Installer-only)
+      - name: dbug List all files
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
         shell: pwsh
-        env:
-          version: ${{ github.event.inputs.release_tag }}
-          osName: windows
-          arch: ${{ matrix.arch }}
-          buildType: ${{ matrix.build_type }}
         run: |
-          $ws = $env:GITHUB_WORKSPACE
-          $script = Join-Path $ws "tools/release-gen/pack/folder.ps1"
-
-          $zipName = "out_appBase_${env:osName}_${env:arch}_${env:buildType}_folder.zip"
-          $zipSource = Join-Path $ws "out_artifacts/$zipName"
-          $zipDestDir = Join-Path $ws "out"
-
-          if (-not (Test-Path $zipDestDir)) {
-            New-Item -ItemType Directory -Path $zipDestDir | Out-Null
-          }
-
-          Write-Host "Copying ZIP: $zipSource -> $zipDestDir"
-          Copy-Item -Path $zipSource -Destination $zipDestDir -Force
-
-          Write-Host "Script path: $script"
-          Write-Host "Running folder.ps1 with:"
-          Write-Host "  version=$env:version"
-          Write-Host "  osName=$env:osName"
-          Write-Host "  arch=$env:arch"
-          Write-Host "  buildType=$env:buildType"
-
-          if (-not (Test-Path $script)) {
-            Write-Host "ERROR: Script does not exist at: $script"
-            exit 1
-          }
-
-          pwsh -ep bypass -File "$script"
+          Write-Host "Listing all files in workspace:"
+          Get-ChildItem -Path . -Recurse | Select-Object FullName
+          Write-Host "Listing all files in out_artifacts:"
+          Get-ChildItem -Path ./out_artifacts -Recurse | Select-Object FullName
 
 
       - name: Compile .iss to .exe Installer (Windows-only)
