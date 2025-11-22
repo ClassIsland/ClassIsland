@@ -1,4 +1,5 @@
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
+
 <div align="center">
 
 # <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28" width="28"/> ClassIsland
