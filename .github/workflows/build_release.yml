@@ -235,6 +235,8 @@ jobs:
             arch: x86
           - os: linux
             package: installer
+          - build_type: full
+            package: installer
           - os: linux
             build_type: full  # Linux 上安装 .NET 运行时很不方便，故使用自包含打包。
     name: Pack_App_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
@@ -269,10 +271,10 @@ jobs:
         with:
           path: ./installer/setup.iss
           options: >
-            /DAppVersion=${{ github.event.inputs.release_tag || '2.0.0' }}
-            /F"${{ github.workspace }}/out_pack/ClassIsland-Setup-${{ github.event.inputs.release_tag || '2.0.0' }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe"
-            /O"${{ github.workspace }}\out_pack"
-            /DSourceDir="${{ github.workspace }}\out_pack\pack"
+            /DAppVersion=${{ github.event.inputs.release_tag || '2.0.0.0' }}
+            /FClassIsland_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_installer.exe
+            /O${{ github.workspace }}\out_pack
+            /DSourceDir=${{ github.workspace }}\out_pack\pack
       
 
       - name: Upload Packages and Installer to Artifacts
