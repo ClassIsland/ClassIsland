@@ -275,6 +275,7 @@ jobs:
             /FClassIsland_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_installer.exe
             /O${{ github.workspace }}\out_pack
             /DSourceDir=${{ github.workspace }}\out_pack\pack
+            /DArch=${{ matrix.arch }}
       
 
       - name: Upload Packages and Installer to Artifacts

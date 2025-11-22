@@ -28,6 +28,16 @@ LicenseFile={#GetEnv("GITHUB_WORKSPACE") + "\\LICENSE.txt"}
 SetupIconFile={#GetEnv("GITHUB_WORKSPACE") + "\\ClassIsland\\Assets\\AppLogo.ico"}
 SolidCompression=yes
 ; WizardStyle=modern dynamic windows11
+#if Arch == "x64"
+  ArchitecturesInstallIn64BitMode=x64
+  ArchitecturesAllowed=x64
+#elif Arch == "arm64"
+  ArchitecturesInstallIn64BitMode=arm64
+  ArchitecturesAllowed=arm64
+#else
+  ; x86 不需要特殊设置，默认即可
+  ArchitecturesAllowed=x86 x64 arm64
+#endif
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
