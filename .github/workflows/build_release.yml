@@ -263,75 +263,17 @@ jobs:
         # entry.ps1 should always prepare the folder layout under ./out_pack
         # When matrix.package == 'installer', the folder will be used by Inno Setup step below.
 
-      - name: Copy Windows Build Outputs to out_pack\pack (Windows-only, Installer-only)
+      - name: Package Windows Installer (Windows-only, Installer-only)
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
         shell: pwsh
         run: |
-          $arch = "${{ matrix.arch }}"
-          $build_type = "${{ matrix.build_type }}"
-          $src = "./out_artifacts/out_appBase_windows_${arch}_${build_type}_folder/"
-          $dst = "./out_pack/pack"
-          Write-Host "Copying build outputs from $src to $dst"
-          if (-Not (Test-Path $src)) {
-            Write-Host "Source folder $src does not exist!"
-            exit 1
-          }
-          if (-Not (Test-Path $dst)) {
-            Write-Host "Destination folder $dst does not exist, creating..."
-            New-Item -ItemType Directory -Path $dst -Force | Out-Null
-          }
-          # Copy EXE, DLL, and resource files (recursively)
-          Get-ChildItem -Path $src -Recurse -Include *.exe,*.dll,*.pdb,*.json,*.xml,*.png,*.ico,*.dat,*.resources,*.config | ForEach-Object {
-            $target = Join-Path $dst $_.Name
-            Write-Host "Copying $($_.FullName) to $target"
-            Copy-Item -Path $_.FullName -Destination $dst -Force
-          }
-
-      - name: dbug list workspace & out_pack (Windows-only)
-        if: ${{ matrix.os == 'windows' }}
-        shell: pwsh
-        run: |
-          Write-Host "Current directory: $(Get-Location)"
-          Write-Host "=== repo root (top-level) ==="
-          Get-ChildItem -Path . -Force -Depth 2 | ForEach-Object { Write-Host $_.FullName }
-          Write-Host "=== out_pack tree (full) ==="
-          if (Test-Path ./out_pack) { Get-ChildItem -Path ./out_pack -Recurse | ForEach-Object { Write-Host $_.FullName } } else { Write-Host "out_pack not found" }
-
-      - name: Ensure out_pack\pack exists and normalize layout (Windows-only)
-        if: ${{ matrix.os == 'windows' }}
-        shell: pwsh
-        run: |
-          $ws = $env:GITHUB_WORKSPACE
-          $out_pack = Join-Path $ws 'out_pack'
-          $out_pack_pack = Join-Path $out_pack 'pack'
-          Write-Host "GITHUB_WORKSPACE = $ws"
-          # create out_pack if missing
-          if (-Not (Test-Path $out_pack)) {
-            Write-Host "Creating $out_pack"
-            New-Item -ItemType Directory -Path $out_pack -Force | Out-Null
-          }
-          # if out_pack\pack already exists, leave it
-          if (-Not (Test-Path $out_pack_pack)) {
-            # if out_pack has files or directories, move them into out_pack\pack
-            $children = Get-ChildItem -Path $out_pack -Force | Where-Object { $_.Name -ne 'pack' }
-            if ($children.Count -gt 0) {
-              Write-Host "Creating $out_pack_pack and moving existing items into it"
-              New-Item -ItemType Directory -Path $out_pack_pack -Force | Out-Null
-              foreach ($c in $children) {
-                # skip if it's the pack folder itself
-                $src = $c.FullName
-                Write-Host "Moving $src -> $out_pack_pack"
-                Move-Item -Path $src -Destination $out_pack_pack -Force
-              }
-            } else {
-              Write-Host "No children under out_pack, creating empty pack folder"
-              New-Item -ItemType Directory -Path $out_pack_pack -Force | Out-Null
-            }
-          } else {
-            Write-Host "out_pack\\pack already exists"
-          }
-          Write-Host "Final out_pack\\pack contents:"
-          Get-ChildItem -Path $out_pack_pack -Recurse | ForEach-Object { Write-Host $_.FullName }
+          # This script will copy all necessary files and create the installer folder layout in out_pack\pack
+          # Replace with the actual packaging script if needed (e.g., pack_windows.ps1)
+          pwsh -ep bypass ./tools/release-gen/folder.ps1 `
+            -ArtifactsPath "./out_artifacts" `
+            -Arch "${{ matrix.arch }}" `
+            -BuildType "${{ matrix.build_type }}" `
+            -OutputPath "./out_pack/pack"
 
 
       - name: Compile .iss to .exe Installer (Windows-only)
@@ -344,12 +286,6 @@ jobs:
             /FClassIsland-Setup-${{ github.event.inputs.release_tag }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe
             /O"${{ github.workspace }}\out_pack"
       
-      - name: dbug list out_pack after Inno
-        if: ${{ matrix.os == 'windows' }}
-        shell: pwsh
-        run: |
-          Write-Host "Contents of ./out_pack after Inno step:"
-          if (Test-Path ./out_pack) { Get-ChildItem ./out_pack -Recurse | ForEach-Object { Write-Host $_.FullName } } else { Write-Host "out_pack missing" }
 
       - name: Upload Packages and Installer to Artifacts
         uses: actions/upload-artifact@v4

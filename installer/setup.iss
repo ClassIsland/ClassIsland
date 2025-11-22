@@ -21,7 +21,7 @@ DisableProgramGroupPage=yes
 LicenseFile={#GetEnv("GITHUB_WORKSPACE") + "\\LICENSE"}
 SetupIconFile={#GetEnv("GITHUB_WORKSPACE") + "\\ClassIsland\\Assets\\AppLogo.ico"}
 SolidCompression=yes
-WizardStyle=modern dynamic windows11
+; WizardStyle=modern dynamic windows11
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
