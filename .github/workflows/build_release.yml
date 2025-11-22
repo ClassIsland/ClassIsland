@@ -282,6 +282,7 @@ jobs:
             /DAppVersion=${{ github.event.inputs.release_tag || '2.0.0' }}
             /FClassIsland-Setup-${{ github.event.inputs.release_tag || '2.0.0' }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe
             /O"${{ github.workspace }}\out_pack"
+            /DSourceDir="${{ github.workspace }}\out_artifacts\out_appBase_windows_${{ matrix.arch }}_${{ matrix.build_type }}_folder"
       
 
       - name: Upload Packages and Installer to Artifacts

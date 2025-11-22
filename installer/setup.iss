@@ -5,7 +5,9 @@
 #define AppPublisher "ClassIsland"
 #define AppURL "https://classisland.tech/"
 #define AppExeName "ClassIsland.exe"
-#define SourceDir GetEnv("GITHUB_WORKSPACE") + "\\out_pack\\pack"
+#define SourceDir "{#SourceDir}"
+[Files]
+Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Setup]
 AppId={{09B0F8C9-4C5C-4762-9288-7D5C3F72B09D}}
