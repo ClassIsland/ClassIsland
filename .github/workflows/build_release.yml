@@ -272,7 +272,7 @@ jobs:
           $build_type = "${{ matrix.build_type }}"
           $src = Join-Path $ws "out_artifacts/out_appBase_windows_${arch}_${build_type}_folder"
           $dst = Join-Path $ws "out_pack"
-          $script = Join-Path $ws "tools/release-gen/folder.ps1"
+          $script = Join-Path $ws "tools/release-gen/pack/folder.ps1"
 
           Write-Host "Script path: $script"
           Write-Host "Running folder.ps1 -src $src -dst $dst"
