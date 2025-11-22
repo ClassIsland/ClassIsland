@@ -5,7 +5,7 @@
 #define AppPublisher "ClassIsland"
 #define AppURL "https://classisland.tech/"
 #define AppExeName "ClassIsland.exe"
-#define SourceDir "{#SourceDir}"
+#define SourceDir GetDefine('SourceDir', '')
 [Files]
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
