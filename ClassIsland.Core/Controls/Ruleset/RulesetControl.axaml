@@ -41,16 +41,28 @@
             <TextBlock Text="规则集" Theme="{StaticResource SubtitleTextBlockStyle}"
                            Margin="0 0 0 8" IsVisible="{Binding ShowTitle}"/>
             <WrapPanel Orientation="Horizontal">
-                <ComboBox Margin="0 0 8 0"
-                          SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}">
-                    <ComboBoxItem>
-                        <controls:IconText Glyph="&#xE590;" Text="当以下任意规则组满足时" />
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        <controls:IconText Glyph="&#xE591;" Text="当以下所有规则组满足时" />
-                    </ComboBoxItem>
-                </ComboBox>
-                <CheckBox Content="反转" IsChecked="{Binding Ruleset.IsReversed}"/>
+                <ToggleButton 
+                    Content="{controls:FluentIcon &#xE161;}"
+                    ToolTip.Tip="反转"
+                    IsChecked="{Binding Ruleset.IsReversed}"
+                    Margin="0 0 2 0"
+                    Classes="light"/>
+                <TabStrip Theme="{StaticResource TabStripStyle}"
+                          Classes="compact toggle"
+                          SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
+                          Margin="0 0 4 0">
+                    <TabStripItem>
+                        <controls:AnimatedIconButton Glyph="&#xE590;" Text="规则组任一满足时" 
+                                                     Classes="display-role"
+                                                     IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}" />
+                    </TabStripItem>
+                    <TabStripItem>
+                        <controls:AnimatedIconButton Glyph="&#xE591;" Text="规则组全部满足时" 
+                                                     Classes="display-role"
+                                                     IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"/>
+                    </TabStripItem>
+                </TabStrip>
+                
                 <Button Theme="{StaticResource TransparentButton}"
                         Classes="accent"
                         Click="ButtonAddRule_OnClick">
@@ -63,90 +75,116 @@
         </StackPanel>
 
         <!-- Main list box -->
-        <ListBox Grid.Row="1" ItemsSource="{Binding Ruleset.Groups}">
-            <Interaction.Behaviors>
-                <ItemDragBehavior/>
-            </Interaction.Behaviors>
+        <ListBox Grid.Row="1" ItemsSource="{Binding Ruleset.Groups}"
+                 Margin="0 8 0 0">
+            <ListBox.ItemContainerTheme>
+                <ControlTheme TargetType="ListBoxItem">
+                    <Setter Property="Template">
+                        <ControlTemplate>
+                            <Border Margin="0 0 0 6"
+                                    Padding="8 4"
+                                    Background="{DynamicResource ControlFillColorTertiaryBrush}"
+                                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                <ContentPresenter Content="{Binding $parent[ListBoxItem].Content}"
+                                                  ContentTemplate="{Binding $parent[ListBoxItem].ContentTemplate}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter>
+                </ControlTheme>
+            </ListBox.ItemContainerTheme>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="{DynamicResource MaterialDesignToolBarBackground}"
-                            Padding="8"
-                            CornerRadius="2"
-                            Margin="-4">
-                        <Grid RowDefinitions="Auto,*">
-                            <ScrollViewer Grid.Row="0" PointerWheelChanged="ScrollViewerRulesetActions_OnPointerWheelChanged"
-                                          HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                                <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Stretch" Margin="0 0 0 2">
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                        <ComboBox Margin="0 0 8 0"
-                                                  SelectedIndex="{Binding Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}">
-                                            <ComboBoxItem>
-                                                <controls:IconText Glyph="&#xE590;" Text="当以下任意规则满足时" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <controls:IconText Glyph="&#xE591;" Text="当以下所有规则满足时" />
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                        <CheckBox Content="反转" IsChecked="{Binding IsReversed}"/>
-                                        <Button Theme="{StaticResource TransparentButton}"
-                                                Classes="accent"
-                                                Command="{Binding AddRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
-                                                CommandParameter="{Binding}">
-                                            <controls:IconText Glyph="&#xE00D;" Text="规则"
-                                                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
-                                        </Button>
-                                    </StackPanel>
+                    <Grid RowDefinitions="Auto,*">
+                        <ScrollViewer Grid.Row="0" PointerWheelChanged="ScrollViewerRulesetActions_OnPointerWheelChanged"
+                                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Stretch" Margin="0 0 0 2">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <ToggleButton 
+                                        Content="{controls:FluentIcon &#xE161;}"
+                                        ToolTip.Tip="反转"
+                                        IsChecked="{Binding IsReversed}"
+                                        Margin="0 0 2 0"
+                                        Classes="light"/>
+                                    <TabStrip Theme="{StaticResource TabStripStyle}"
+                                              Classes="compact toggle"
+                                              SelectedIndex="{Binding Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
+                                              Margin="0 0 4 0">
+                                        <TabStripItem>
+                                            <controls:AnimatedIconButton Glyph="&#xE590;" Text="规则任一满足时" 
+                                                                         Classes="display-role"
+                                                                         IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}" />
+                                        </TabStripItem>
+                                        <TabStripItem>
+                                            <controls:AnimatedIconButton Glyph="&#xE591;" Text="规则全部满足时" 
+                                                                         Classes="display-role"
+                                                                         IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"/>
+                                        </TabStripItem>
+                                    </TabStrip>
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Classes="accent"
+                                            Command="{Binding AddRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
+                                            CommandParameter="{Binding}">
+                                        <controls:IconText Glyph="&#xE00D;" Text="规则"
+                                                           Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+                                    </Button>
+                                </StackPanel>
 
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                        <Ellipse Width="8" Height="8"
-                                                 Margin="4 4 8 0"
-                                                 DataContext="{Binding State}"
-                                                 Classes="rule-state-indicator"/>
-                                        <ToggleSwitch ToolTip.Tip="启用规则集"
-                                                      IsChecked="{Binding IsEnabled}"
-                                                      Margin="0 0 4 0"/>
-                                        <Button
-                                            Theme="{StaticResource TransparentButton}"
-                                                Classes="circle"
-                                                ToolTip.Tip="复制"
-                                                Command="{Binding DuplicateGroupCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
-                                                CommandParameter="{Binding}"
-                                                Margin="0 0 4 0">
-                                            <controls1:SymbolIcon Symbol="Copy"/>
-                                        </Button>
-                                        <Button Theme="{StaticResource TransparentButton}"
-                                                Classes="circle"
-                                                Command="{Binding RemoveGroupCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="删除"
-                                                Content="{controls:FluentIcon &#xE671;}">
-                                        </Button>
-                                    </StackPanel>
-                                </Grid>
-                            </ScrollViewer>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                    <Ellipse Width="8" Height="8"
+                                             Margin="4 4 8 0"
+                                             DataContext="{Binding State}"
+                                             Classes="rule-state-indicator"/>
+                                    <ToggleSwitch ToolTip.Tip="启用规则集"
+                                                  OnContent="" OffContent=""
+                                                  IsChecked="{Binding IsEnabled}"
+                                                  Margin="0 0 4 0"/>
+                                    <Button
+                                        Theme="{StaticResource TransparentButton}"
+                                        ToolTip.Tip="复制"
+                                        Command="{Binding DuplicateGroupCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
+                                        CommandParameter="{Binding}"
+                                        Margin="0 0 4 0"
+                                        Content="{controls:FluentIcon &#xE58B;}">
+                                    </Button>
+                                    <Button Theme="{StaticResource TransparentButton}"
+                                            Command="{Binding RemoveGroupCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
+                                            CommandParameter="{Binding}"
+                                            ToolTip.Tip="删除"
+                                            Content="{controls:FluentIcon &#xE671;}">
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
 
-                            <ItemsControl Grid.Row="1" ItemsSource="{Binding Rules}">
-                                <Interaction.Behaviors>
-                                    <ItemDragBehavior/>
-                                </Interaction.Behaviors>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="0 0 0 2" ColumnDefinitions="Auto,Auto,Auto,Auto,*">
-                                            <Button Grid.Column="0"
-                                                    Theme="{StaticResource TransparentButton}"
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding Rules}">
+                            <Interaction.Behaviors>
+                                <ItemDragBehavior/>
+                            </Interaction.Behaviors>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0 0 0 2" ColumnDefinitions="Auto,*">
+                                        <StackPanel Orientation="Horizontal"
+                                                    Grid.Column="0"
+                                                    Classes="items-valign-center"
+                                                    VerticalAlignment="Top">
+                                            <Button Theme="{StaticResource TransparentButton}"
                                                     Classes="circle"
                                                     ToolTip.Tip="删除"
                                                     Command="{Binding RemoveRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                                     CommandParameter="{Binding}"
                                                     Content="{controls:FluentIcon &#xE671;}">
                                             </Button>
-                                            <Ellipse Grid.Column="1" Width="8" Height="8"
+                                            <Ellipse Width="8" Height="8"
                                                      Margin="4 0 8 0"
                                                      DataContext="{Binding State}"
                                                      Classes="rule-state-indicator"/>
-                                            <CheckBox Grid.Column="2"
-                                                      Content="反转" IsChecked="{Binding IsReversed}" />
-                                            <ComboBox Grid.Column="3"
+                                            <ToggleButton Content="{controls:FluentIcon &#xE161;}"
+                                                          ToolTip.Tip="反转"
+                                                          IsChecked="{Binding IsReversed}"
+                                                          Classes="light"/>
+                                            <ComboBox Margin="2 0"
                                                       SelectedValue="{Binding Id}"
                                                       SelectedValueBinding="{Binding Key}"
                                                       ItemsSource="{x:Static services:IRulesetService.Rules}">
@@ -157,15 +195,16 @@
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>
                                             </ComboBox>
-                                            <local:RulesetSettingsControlPresenter Grid.Column="4"
-                                                Rule="{Binding Mode=OneWay}"
-                                                RuleId="{Binding Id, Mode=OneWay}" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Grid>
-                    </Border>
+                                        </StackPanel>
+                                        <local:RulesetSettingsControlPresenter Grid.Column="1"
+                                            Rule="{Binding Mode=OneWay}"
+                                            RuleId="{Binding Id, Mode=OneWay}"
+                                            VerticalAlignment="Top"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

@@ -1,0 +1,18 @@
+<ci:TriggerSettingsControlBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:triggers="clr-namespace:ClassIsland.Models.Automation.Triggers"
+             xmlns:triggerSettingsControls="clr-namespace:ClassIsland.Controls.TriggerSettingsControls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:TypeArguments="triggers:TrayMenuTriggerSettings"
+             x:Class="ClassIsland.Controls.TriggerSettingsControls.TrayMenuTriggerSettingsControl">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=triggerSettingsControls:TrayMenuTriggerSettingsControl}}"
+          ColumnDefinitions="*, Auto">
+        <TextBox Grid.Column="0" Text="{Binding Settings.Header}"
+                 Watermark="（菜单显示名称）" Margin="0 0 4 0"/>
+        <CheckBox Grid.Column="1" Content="恢复"
+                  IsChecked="{Binding Settings.IsRevert}"/>
+    </Grid>
+</ci:TriggerSettingsControlBase>

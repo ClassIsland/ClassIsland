@@ -68,6 +68,56 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.MasterPageTabSelectIndex = 3;
         }
         InitializeComponent();
+        TimeLineListControl.SelectionChanged += TimeLineListControl_OnSelectionChanged;
+        TimeLineListControl.KeyDown += OnKeyDown;
+        ListViewTimePoints.KeyDown += OnKeyDown;
+    }
+
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        var layouts = ViewModel.SelectedTimeLayout?.Layouts;
+        if (layouts == null || layouts.Count == 0)
+            return;
+
+        int currentIndex = ViewModel.SelectedTimePoint != null
+            ? layouts.IndexOf(ViewModel.SelectedTimePoint)
+            : -1;
+
+        switch (e.Key)
+        {
+            case Key.Up:
+                if (layouts.Count > 0)
+                {
+                    // 第一个按上 → 最后一个
+                    int nextIndex = (currentIndex <= 0)
+                        ? layouts.Count - 1
+                        : currentIndex - 1;
+
+                    ViewModel.SelectedTimePoint = layouts[nextIndex];
+                    TimeLineListControl?.ScrollIntoView(ViewModel.SelectedTimePoint);
+                    e.Handled = true;
+                }
+                break;
+            case Key.Down:
+                if (layouts.Count > 0)
+                {
+                    // 最后一个往下 → 第一个
+                    int nextIndex = (currentIndex >= layouts.Count - 1 || currentIndex < 0)
+                        ? 0
+                        : currentIndex + 1;
+
+                    ViewModel.SelectedTimePoint = layouts[nextIndex];
+                    TimeLineListControl?.ScrollIntoView(ViewModel.SelectedTimePoint);
+                    e.Handled = true;
+                }
+                break;
+        }
+    }
+
+    private void TimeLineListControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (TimeLineListControl?.SelectedItem != null)
+            TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
     }
     
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)

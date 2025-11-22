@@ -38,11 +38,14 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Services;
 using ClassIsland.Enums;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -237,6 +240,7 @@ public partial class App : AppBase, IAppHost
         }
         IconExpressionHelper.RegisterHandler("fluent", args => new FluentIconSource(args[0]));
         IconExpressionHelper.RegisterHandler("lucide", args => new LucideIconSource(args[0]));
+        IconExpressionHelper.RegisterHandler("sfsymbols", args => new SFSymbolsIconSource(args[0]));
         IconExpressionHelper.RegisterHandler("bitmap", args => new BitmapIconSource
         {
             UriSource = new Uri(args[0]),
@@ -413,33 +417,22 @@ public partial class App : AppBase, IAppHost
     public override void OnFrameworkInitializationCompleted()
     {
         DesktopLifetime!.Startup += DesktopLifetimeOnStartup;
-        base.OnFrameworkInitializationCompleted();
+        if (bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var b))
+        {
+            IThemeService.UseNativeTitlebar = b;
+        }
+        else
+        {
+            IThemeService.UseNativeTitlebar = !System.OperatingSystem.IsWindows() 
+                                              || AvaloniaUnsafeAccessorHelpers.GetActiveWin32CompositionMode() 
+                                                    != Win32CompositionMode.WinUIComposition;
+        }
     }
 
     private async void DesktopLifetimeOnStartup(object? sender, ControlledApplicationLifetimeStartupEventArgs e)
     {
 
-        PhonyRootWindow = new Window()
-        {
-            Width = 1,
-            Height = 1,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            ShowActivated = false,
-            SystemDecorations = SystemDecorations.None,
-            ShowInTaskbar = false,
-            Background = Brushes.Transparent,
-            TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ],
-            Title = "PhonyRootWindow"
-        };
-        PhonyRootWindow.Closing += (sender, args) =>
-        {
-            if (args.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
-            {
-                return;
-            }
-            args.Cancel = true;
-        };
-        PhonyRootWindow.Show();
+        CreatePhonyRootWindow();
         PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         Initialized?.Invoke(this, EventArgs.Empty);
         var transaction = SentrySdk.StartTransaction(
@@ -827,7 +820,32 @@ public partial class App : AppBase, IAppHost
         }
     }
 
-    
+    private void CreatePhonyRootWindow()
+    {
+        PhonyRootWindow = new Window()
+        {
+            Width = 1,
+            Height = 1,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            ShowActivated = false,
+            SystemDecorations = SystemDecorations.None,
+            ShowInTaskbar = false,
+            Background = Brushes.Transparent,
+            TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ],
+            Title = "PhonyRootWindow"
+        };
+        PhonyRootWindow.Closing += (sender, args) =>
+        {
+            if (args.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+            {
+                return;
+            }
+            args.Cancel = true;
+        };
+        PhonyRootWindow.Show();
+    }
+
+
     private ISpeechService GetSpeechService(IServiceProvider provider)
     {
         try
@@ -951,6 +969,10 @@ public partial class App : AppBase, IAppHost
                 IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
                 IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
                 IAppHost.Host?.Services.GetService<IComponentsService>()?.SaveConfig();
+            }
+            if (PlatformServices.WindowPlatformService is IDisposable d)
+            {
+                d.Dispose();
             }
             DesktopLifetime?.Shutdown();
             try

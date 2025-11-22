@@ -7,18 +7,35 @@
              xmlns:local="clr-namespace:ClassIsland.Controls.RuleSettingsControls"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:rules="clr-namespace:ClassIsland.Models.Rules"
-                      mc:Ignorable="d"
+             xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters;assembly=ClassIsland.Core"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <WrapPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RainTimeRuleSettingsControl}}">
-
-        <ToggleSwitch Grid.Column="0" IsChecked="{Binding Settings.IsRemainingTime}"
-                      OnContent="距离结束"
-                      OffContent="距离开始">
-        </ToggleSwitch>
-        <ci:Field Grid.Column="1" Suffix="分钟">
-        <NumericUpDown Value="{Binding Settings.RainTimeMinutes, Converter={x:Static ci:NotNaNConverter.Instance}}"
-                            Grid.Column="1"
-                            Minimum="0" Maximum="120"/>
+    <ci:RuleSettingsControlBase.Resources>
+        <converters:RuleLogicalModeToIntConverter x:Key="RuleLogicalModeToIntConverter" />
+    </ci:RuleSettingsControlBase.Resources>
+    <WrapPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RainTimeRuleSettingsControl}}"
+               Classes="items-valign-center"
+               Orientation="Horizontal">
+        <TabStrip Theme="{StaticResource TabStripStyle}"
+                  Classes="compact toggle"
+                  Margin="0 0 1 0">
+            <TabStripItem IsSelected="{Binding !Settings.IsRemainingTime}">
+                <ci:AnimatedIconButton Glyph="&#xE157;" Text="开始" 
+                                             Classes="display-role"
+                                             IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}" />
+            </TabStripItem>
+            <TabStripItem IsSelected="{Binding Settings.IsRemainingTime}">
+                <ci:AnimatedIconButton Glyph="&#xE159;" Text="结束" 
+                                             Classes="display-role"
+                                             IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"/>
+            </TabStripItem>
+        </TabStrip>
+        <ci:Field  Suffix="分钟">
+            <controls:NumberBox Value="{Binding Settings.RainTimeMinutes, Converter={x:Static ci:NotNaNConverter.Instance}}"
+                                SpinButtonPlacementMode="Compact"
+                                Margin="0 0 -4 0"
+                                Minimum="0" Maximum="120"/>
         </ci:Field>
     </WrapPanel>
 </ci:RuleSettingsControlBase>

@@ -1,8 +1,4 @@
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
-<!--
-> [!caution]
-> 目前我们正在进行备案更变，2025/6/25-2025/7/29 期间 ClassIsland 所有网络服务可能无法访问，届时可能无法正常下载/更新应用和插件。感谢大家的理解和支持。
--->
 <div align="center">
 
 # <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28" width="28"/> ClassIsland
@@ -125,7 +121,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 **首先，请确保您的设备满足以下推荐需求：**
 
 - Windows 10 或更高版本
-- macOS 11 或更高版本 [^1]
+- macOS Big Sur 11 或更高版本 [^1]
 - Debian（或其衍生版）10 或更高版本，X11 图形环境 [^1]
   
 [^1]: 仅适用于 1.7.105.1 及更高版本的 ClassIsland
@@ -164,7 +160,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 ## 开发
 
-![Alt](https://repobeats.axiom.co/api/embed/ace0a0609166a47b16a58bb7d2d0d5e20968d4d1.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/ca0697cbbfea1d5ab5350fb86d7056e803552b2a.svg "Repobeats analytics image")
 
 本项目目前开发状态：
 
@@ -176,6 +172,8 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 要在本地编译应用，请参考文档[配置 ClassIsland 本体开发环境](https://docs.classisland.tech/dev/get-started/devlopment.html)。
 
 如果您有意愿为 ClassIsland 做出代码贡献，请先阅读 [贡献指南](CONTRIBUTING.md) 来了解如何为 ClassIsland 做代码贡献。我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/ClassIsland/ClassIsland/pulls)。
+
+您可以参考 [DeepWiki](https://deepwiki.com/ClassIsland/ClassIsland) 来了解项目结构。 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ClassIsland/ClassIsland)
 
 ## 致谢
 

@@ -230,6 +230,7 @@
                     <Panel Margin="-2 0">
                         <Border Classes="line-background"/>
                         <Border ClipToBounds="True"
+                                MinWidth="40"
                                 CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}">
                             <ContentPresenter Content="{Binding}"
                                               Margin="16 0" />

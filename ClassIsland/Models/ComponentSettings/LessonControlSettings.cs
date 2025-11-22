@@ -20,6 +20,7 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
     private int _tomorrowScheduleShowMode = 1;
     private bool _highlightChangedClass = false;
     private bool _isNonExactCountdownEnabled = false;
+    private bool _fadeCompletedClasses = true;
 
     public bool ShowExtraInfoOnTimePoint
     {
@@ -171,6 +172,17 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _hideFinishedClass) return;
             _hideFinishedClass = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool FadeCompletedClasses
+    {
+        get => _fadeCompletedClasses;
+        set
+        {
+            if (value == _fadeCompletedClasses) return;
+            _fadeCompletedClasses = value;
             OnPropertyChanged();
         }
     }

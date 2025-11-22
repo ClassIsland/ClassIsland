@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -172,7 +173,10 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
             if (!File.Exists(indexPath))
                 continue;
             var index = Indexes[name] = ConfigureFileHelper.LoadConfig<ThemeIndex>(indexPath);
-            var pluginIndex = PluginMarketService.Indexes[name];
+            var pluginIndex = PluginMarketService.Indexes.GetValueOrDefault(name) ?? new PluginIndex()
+            {
+                DownloadMirrors = Services.PluginMarketService.FallbackMirrors
+            };
             var mirror = i.SelectedMirror;
             if (!pluginIndex.DownloadMirrors.TryGetValue(mirror, out var root))
             {

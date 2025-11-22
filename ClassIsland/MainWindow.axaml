@@ -34,7 +34,8 @@
         Loaded="MainWindow_OnLoaded"
         X11Properties.WmClass="classisland_main"
         Closing="MainWindow_OnClosing"
-        ShowActivated="False">
+        ShowActivated="False"
+        TransparencyBackgroundFallback="Transparent">
     <Window.Resources>
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
@@ -76,6 +77,8 @@
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>
+            <NativeMenuItem Header="更多选项…" Menu="{Binding MoreOptionsMenu}"
+                            IsVisible="{Binding !!$self.Menu.Items.Count}"/>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="编辑档案…" Click="ButtonSettings_OnClick" />
             <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" />

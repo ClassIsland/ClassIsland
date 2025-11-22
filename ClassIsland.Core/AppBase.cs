@@ -147,6 +147,11 @@ public abstract class AppBase : Application, IAppHost
     public static FontFamily LucideIconsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#lucide");
     
     /// <summary>
+    /// SF Symbols 字体
+    /// </summary>
+    public static FontFamily SFSymbolsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#SF-Symbols");
+    
+    /// <summary>
     /// 虚根窗口
     /// </summary>
     public Window PhonyRootWindow = null!;
@@ -157,8 +162,16 @@ public abstract class AppBase : Application, IAppHost
     /// <returns>优先返回当前激活的窗口。如果没有激活的窗口，则返回虚窗口。</returns>
     public Window GetRootWindow()
     {
-        return Current.DesktopLifetime?.Windows.FirstOrDefault(x => x is { IsActive: true, IsVisible: true }) ??
-               Current.PhonyRootWindow;
+        var w =  Current.DesktopLifetime?.Windows
+            .Where(x => x.GetType().Name != "TrayPopupRoot" && x is { IsActive: true, IsVisible: true })
+            .OrderBy(x => x == MainWindow ? 1 : 0)  // 将主窗口的优先级下降，防止出现因主界面置底导致内容子窗口的问题
+            .FirstOrDefault();
+        if (w != null) 
+            return w;
+        w = PhonyRootWindow;
+        w.Activate();
+
+        return w;
     }
 
     /// <summary>

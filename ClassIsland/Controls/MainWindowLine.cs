@@ -602,6 +602,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         while (_notificationQueue.Count > 0)
         {
             var request = _notificationQueue.Dequeue();
+            Logger.LogTrace("nid = {}", request.GetHashCode());
             INotificationSettings settings = SettingsService.Settings;
             foreach (var i in new List<NotificationSettings?>([
                              request.ChannelSettings,
@@ -659,7 +660,9 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                         }
                         stopNotificationSoundCts = new CancellationTokenSource();
                         Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
-                        await AudioService.PlayAudioAsync(File.OpenRead(settings.NotificationSoundPath),
+                        _ = AudioService.PlayAudioAsync(string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                                ? AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)
+                                : File.OpenRead(settings.NotificationSoundPath),
                             (float)SettingsService.Settings.NotificationSoundVolume, stopNotificationSoundCts.Token);
                     }
                     catch (Exception e)

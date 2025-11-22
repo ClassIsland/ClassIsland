@@ -4,27 +4,50 @@
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:controls="clr-namespace:ClassIsland.Controls"
              xmlns:viewModels="clr-namespace:ClassIsland.ViewModels">
+    <UserControl.Styles>
+        <Style Selector=":is(Control).faded">
+            <Setter Property="Opacity" Value="0.60"/>
+        </Style>
+    </UserControl.Styles>
     <UserControl.Resources>
         <ci:PreventNullConverter x:Key="PreventNullConverter" />
     </UserControl.Resources>
     <StackPanel>
         <Separator Margin="0 8 0 8" />
         <ci:IconText Text="触发规则" Glyph="&#xf17e;" Margin="0 0 0 8" />
-        <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
+        <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap"
+                   Classes="l-instructive"/>
+        
+        <StackPanel Orientation="Horizontal" Classes="items-valign-center"
+                    Margin="0 8 0 0"
+                    Spacing="2">
+            <TextBlock Text="每"
+                       Classes.faded="{Binding !!!$parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
+            <ComboBox x:Name="WeekCountDivTotalListBox"
+                     SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivTotalIndex}"
+                     Classes.faded="{Binding !!!$parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
+            <TextBlock Text="的"
+                       Classes.faded="{Binding !!!$parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
+            <ComboBox x:Name="WeekCountDivListBox"
+                      SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"/>
+        </StackPanel>
 
-        <TextBlock Text="当今天是：" Margin="0 8 0 0" />
+        <TextBlock Text="当今天是：" Margin="0 6 0 0" />
         <ListBox ItemsSource="{x:Static viewModels:TimeRuleEditViewModel.WeekDayOptions}"
                  SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].TimeRule.WeekDay, Converter={StaticResource PreventNullConverter}}"
-                 Theme="{StaticResource ChipListBoxTheme}" />
-
-        <TextBlock Text="当本周是：" Margin="0 8 0 0" />
-        <ListBox x:Name="WeekCountDivListBox"
-                 SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivIndex}"
-                 Theme="{StaticResource ChipListBoxTheme}" />
-
-        <TextBlock Text="每轮周数：" Margin="0 8 0 0" />
-        <ListBox x:Name="WeekCountDivTotalListBox"
-                 SelectedIndex="{Binding $parent[controls:TimeRuleEditControl].ViewModel.WeekCountDivTotalIndex}"
-                 Theme="{StaticResource ChipListBoxTheme}" />
+                 Theme="{StaticResource ChipListBoxTheme}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}"
+                               HorizontalAlignment="Center"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="7"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+        </ListBox>
+        
     </StackPanel>
 </UserControl>

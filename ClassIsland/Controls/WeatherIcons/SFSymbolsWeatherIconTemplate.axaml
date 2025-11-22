@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                    xmlns:converters="using:ClassIsland.Converters">
+    <DataTemplate DataType="{x:Type x:String}" x:Key="SFSymbolsWeatherIconTemplate">
+        <Border Background="Transparent" x:Name="OuterBorder" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                 <ci:SFSymbolsIcon HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Glyph="{Binding Converter={x:Static converters:WeatherConverters.WeatherTypeToSFSymbolsIconNameConverter}}"
+                                Width="16" Height="16" />
+            </Viewbox>
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

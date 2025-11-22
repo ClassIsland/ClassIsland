@@ -5,17 +5,20 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using ClassIsland.Core.Controls;
 using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
 
 namespace ClassIsland.Platform.Windows.Services;
 
-public class WindowPlatformService : IWindowPlatformService
+public class WindowPlatformService : IWindowPlatformService, IDisposable
 {
     private const int PwstrCapcity = 256;
 
     private static List<HWINEVENTHOOK> _hooks = [];
+    private static bool _hooksUnhooked = false;
+    private static readonly object _hookLock = new();
 
     private static WINEVENTPROC? _eventProc;
     
@@ -25,16 +28,38 @@ public class WindowPlatformService : IWindowPlatformService
 
     public nint ForegroundWindowHandle { get; set; } = nint.Zero;
 
-    ~WindowPlatformService()
+    public void Dispose()
     {
-        foreach (var hook in _hooks)
+        lock (_hookLock)
         {
-            UnhookWinEvent(hook);
+            if (_hooksUnhooked)
+                return;
+
+            for (int i = 0; i < _hooks.Count; i++)
+            {
+                var hook = _hooks[i];
+                if (hook != default)
+                {
+                    UnhookWinEvent(hook);
+                }
+                _hooks[i] = default;
+            }
+            _hooks.Clear();
+            _hooksUnhooked = true;
+            _eventProc = null;
+            GC.SuppressFinalize(this);
         }
     }
     
     private void InitEventHook()
     {
+        lock (_hookLock)
+        {
+            if (_hooksUnhooked)
+            {
+                return;
+            }
+        }
         _eventProc = PfnWinEventProc;
         uint[] events = [EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_MOVESIZEEND, EVENT_SYSTEM_MOVESIZESTART,
             EVENT_SYSTEM_MINIMIZEEND, EVENT_OBJECT_LOCATIONCHANGE];
@@ -56,7 +81,18 @@ public class WindowPlatformService : IWindowPlatformService
     
     private void PfnWinEventProc(HWINEVENTHOOK hook, uint @event, HWND hwnd, int idObject, int child, uint thread, uint time)
     {
-        if (hwnd != GetForegroundWindow())
+        if (hwnd == HWND.Null || new HandleRef(null, hwnd).Handle == IntPtr.Zero)
+        {
+            return;
+        }
+
+        var currentForeground = GetForegroundWindow();
+        if (currentForeground == HWND.Null || new HandleRef(null, currentForeground).Handle == IntPtr.Zero)
+        {
+            return;
+        }
+
+        if (hwnd != currentForeground)
         {
             return;
         }
@@ -73,7 +109,7 @@ public class WindowPlatformService : IWindowPlatformService
             _ => _isMoving
         };
 
-        var foregroundWindow = ForegroundWindowHandle = GetForegroundWindow();
+        var foregroundWindow = ForegroundWindowHandle = currentForeground;
         Dispatcher.UIThread.Invoke(() =>
         {
             foreach (var handler in _changedEventHandlers)
@@ -110,7 +146,8 @@ public class WindowPlatformService : IWindowPlatformService
             if (state)
             {
                 SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
-                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING);
+                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
+                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
             }
         }
         if ((features & WindowFeatures.Topmost) > 0)
@@ -118,7 +155,8 @@ public class WindowPlatformService : IWindowPlatformService
             if (state)
             {
                 SetWindowPos((HWND)handle, HWND.HWND_TOPMOST, 0, 0, 0, 0,
-                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING);
+                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
+                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
             }
         }
         if ((features & WindowFeatures.Private) > 0)
@@ -148,7 +186,7 @@ public class WindowPlatformService : IWindowPlatformService
 
     public void RegisterForegroundWindowChangedEvent(EventHandler<ForegroundWindowChangedEventArgs> handler)
     {
-        if (_hooks.Count <= 0)
+        if (_hooks.Count <= 0 && !_hooksUnhooked)
         {
             InitEventHook();
         }
@@ -203,15 +241,24 @@ public class WindowPlatformService : IWindowPlatformService
     public bool IsForegroundWindowFullscreen(Screen screen)
     {
         var win = GetForegroundWindow();
-        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
-        var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
-        GetClassName(win, pClassName, PwstrCapcity  -1);
-        //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        var className = pClassName.ToString();
-        Marshal.FreeHGlobal(nClassName);
-        if (className == "WorkerW" || className == "Progman")
+        if (win == HWND.Null || new HandleRef(null, win).Handle == IntPtr.Zero)
         {
             return false;
+        }
+        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
+        var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
+        try
+        {
+            GetClassName(win, pClassName, PwstrCapcity - 1);
+            var className = pClassName.ToString();
+            if (className is "WorkerW" or "Progman")
+            {
+                return false;
+            }
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(nClassName);
         }
         return new PixelRect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.Bounds);
 
@@ -220,15 +267,25 @@ public class WindowPlatformService : IWindowPlatformService
     public bool IsForegroundWindowMaximized(Screen screen)
     {
         var win = GetForegroundWindow();
-        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
-        var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
-        GetClassName(win, pClassName, PwstrCapcity - 1);
-        var className = pClassName.ToString();
-        Marshal.FreeHGlobal(nClassName);
-        //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        if (className is "WorkerW" or "Progman")
+        if (win == HWND.Null || new HandleRef(null, win).Handle == IntPtr.Zero)
         {
             return false;
+        }
+        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
+        var pClassName = NativeHelpers.BuildPWSTR(PwstrCapcity, out var nClassName);
+        try
+        {
+            GetClassName(win, pClassName, PwstrCapcity - 1);
+            var className = pClassName.ToString();
+            //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
+            if (className is "WorkerW" or "Progman")
+            {
+                return false;
+            }
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(nClassName);
         }
         return new PixelRect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.WorkingArea);
     }

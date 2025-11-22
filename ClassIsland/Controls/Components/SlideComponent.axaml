@@ -116,6 +116,7 @@
                                            HidingRules="{Binding HidingRules, Mode=OneWay}"
                                            HideOnRule="{Binding HideOnRule, Mode=OneWay}"
                                            VerticalAlignment="Stretch"
+                                           MaxHeight="{DynamicResource IslandContainerHeight}"
                                            Margin="6 0" />
                     </Grid>
                 </DataTemplate>

@@ -51,6 +51,13 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
     {
         InitializeComponent();
         DataContext = this;
+        if (OperatingSystem.IsMacOS())
+        {
+            ExtendClientAreaToDecorationsHint = true;
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
+            ExtendClientAreaTitleBarHeightHint = -1;
+            SystemDecorations = SystemDecorations.Full;
+        }
     }
     
     // Create a page based on a Type, but you can create it however you want
