@@ -8,7 +8,7 @@
 #define SourceDir GetEnv("GITHUB_WORKSPACE") + "\\out_pack\\pack"
 
 [Setup]
-AppId={09B0F8C9-4C5C-4762-9288-7D5C3F72B09D}
+AppId={{09B0F8C9-4C5C-4762-9288-7D5C3F72B09D}}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
