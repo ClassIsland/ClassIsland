@@ -263,6 +263,30 @@ jobs:
         # entry.ps1 should always prepare the folder layout under ./out_pack
         # When matrix.package == 'installer', the folder will be used by Inno Setup step below.
 
+      - name: Copy Windows Build Outputs to out_pack\pack (Windows-only, Installer-only)
+        if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.arch }}"
+          $build_type = "${{ matrix.build_type }}"
+          $src = "./out_artifacts/out_appBase_windows_${arch}_${build_type}_folder/"
+          $dst = "./out_pack/pack"
+          Write-Host "Copying build outputs from $src to $dst"
+          if (-Not (Test-Path $src)) {
+            Write-Host "Source folder $src does not exist!"
+            exit 1
+          }
+          if (-Not (Test-Path $dst)) {
+            Write-Host "Destination folder $dst does not exist, creating..."
+            New-Item -ItemType Directory -Path $dst -Force | Out-Null
+          }
+          # Copy EXE, DLL, and resource files (recursively)
+          Get-ChildItem -Path $src -Recurse -Include *.exe,*.dll,*.pdb,*.json,*.xml,*.png,*.ico,*.dat,*.resources,*.config | ForEach-Object {
+            $target = Join-Path $dst $_.Name
+            Write-Host "Copying $($_.FullName) to $target"
+            Copy-Item -Path $_.FullName -Destination $dst -Force
+          }
+
       - name: dbug list workspace & out_pack (Windows-only)
         if: ${{ matrix.os == 'windows' }}
         shell: pwsh
@@ -314,7 +338,7 @@ jobs:
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: ./ClassIsland/installer/Installer.iss
+          path: ./installer/setup.iss
           options: >
             /DAppVersion=${{ github.event.inputs.release_tag }}
             /FClassIsland-Setup-${{ github.event.inputs.release_tag }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe
