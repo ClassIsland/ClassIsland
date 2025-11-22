@@ -272,13 +272,13 @@ jobs:
         # entry.ps1 should always prepare the folder layout under ./out_pack
         # When matrix.package == 'installer', the folder will be used by Inno Setup step below.
       
-      - name: Compile .ISS to .EXE Installer
+      - name: Compile .iss to .exe Installer
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: ClassIsland/installer/setup.iss
-          options: '/O+ /DAppVersion=${{ github.event.inputs.release_tag }} /FClassIsland-Setup-${{ github.event.inputs.release_tag }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe /O${{ github.workspace }}\\out_pack'
-        
+          path: ./ClassIsland/installer/setup.iss
+          options: '/DAppVersion=${{ github.event.inputs.release_tag }} /FClassIsland-Setup-${{ github.event.inputs.release_tag }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe /O"${{ github.workspace }}\out_pack"'        
+
       - name: Upload Packages and Installer to Artifacts
         uses: actions/upload-artifact@v4
         with:
