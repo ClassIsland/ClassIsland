@@ -282,7 +282,7 @@ jobs:
             exit 1
           }
 
-          pwsh -ep bypass -c "& \"$script\" -src \"$src\" -dst \"$dst\""
+          pwsh -ep bypass -File "$script" -src "$src" -dst "$dst"
 
 
       - name: Compile .iss to .exe Installer (Windows-only)
