@@ -27,7 +27,7 @@ DisableProgramGroupPage=yes
 LicenseFile={#GetEnv("GITHUB_WORKSPACE") + "\\LICENSE.txt"}
 SetupIconFile={#GetEnv("GITHUB_WORKSPACE") + "\\ClassIsland\\Assets\\AppLogo.ico"}
 SolidCompression=yes
-; WizardStyle=modern dynamic windows11
+WizardStyle=modern dynamic windows11
 #if Arch == "x64"
   ArchitecturesInstallIn64BitMode=x64
   ArchitecturesAllowed=x64
