@@ -263,7 +263,7 @@ jobs:
         # entry.ps1 should always prepare the folder layout under ./out_pack
         # When matrix.package == 'installer', the folder will be used by Inno Setup step below.
 
-      - name: Debug: list workspace & out_pack (Windows-only)
+      - name: dbug list workspace & out_pack (Windows-only)
         if: ${{ matrix.os == 'windows' }}
         shell: pwsh
         run: |
@@ -320,7 +320,7 @@ jobs:
             /FClassIsland-Setup-${{ github.event.inputs.release_tag }}-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.build_type }}.exe
             /O"${{ github.workspace }}\out_pack"
       
-      - name: Debug: list out_pack after Inno
+      - name: dbug list out_pack after Inno
         if: ${{ matrix.os == 'windows' }}
         shell: pwsh
         run: |
