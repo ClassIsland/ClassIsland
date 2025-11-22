@@ -11,7 +11,11 @@ Get-ChildItem -Path ./out
 
 # Install PDCC
 
-./tools/release-gen/install-pdcc.ps1 ${env:osName}
+$pdcOs = 'linux'
+if (env:osName -eq 'windows') {
+    $pdcOs = 'win'
+}
+./tools/release-gen/install-pdcc.ps1 $pdcOs
 
 $appBaseName = "out_appBase_${env:osName}_${env:arch}_${env:buildType}_folder"
 $launcherName = "out_launcher_${env:osName}_${env:arch}_aot_singleFile"
