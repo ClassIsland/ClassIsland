@@ -5,9 +5,13 @@
 #define AppPublisher "ClassIsland"
 #define AppURL "https://classisland.tech/"
 #define AppExeName "ClassIsland.exe"
-#define SourceDir GetDefine('SourceDir', '')
+
+#ifndef SourceDir
+#define SourceDir "D:/a/ClassIsland/ClassIsland/out_artifacts/out_appBase_windows_x64_full_folder"
+#endif
+
 [Files]
-Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourceDir}/*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Setup]
 AppId={{09B0F8C9-4C5C-4762-9288-7D5C3F72B09D}}
@@ -32,9 +36,6 @@ Name: "chinesetraditional"; MessagesFile: "languages\\ChineseTraditional.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-
-[Files]
-Source: "{#SourceDir}\\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"

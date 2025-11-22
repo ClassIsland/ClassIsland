@@ -265,7 +265,7 @@ jobs:
 
       - name: Compile .iss to .exe Installer
         if: ${{ matrix.os == 'windows' && matrix.package == 'installer' }}
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
         with:
           path: ./installer/setup.iss
           options: >
