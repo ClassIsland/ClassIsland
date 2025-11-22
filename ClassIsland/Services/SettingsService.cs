@@ -157,7 +157,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     /// <param name="name">设置属性名称。</param>
     /// <param name="value">要设置的值。</param>
     /// <returns>是否成功。失败会抛出。</returns>
-    public bool AddSettingsOverlay(Guid guid, string name, object value)
+    public bool AddSettingsOverlay(Guid guid, string name, object? value)
     {
         var key = guid.ToString();
         var isPropertyOverlayNotNull = Settings.SettingsOverlays.TryGetValue(name, out var propertyOverlay);
@@ -212,6 +212,8 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             return false;
 
         var last = propertyOverlay[length - 1]; // propertyOverlay 至少存在一项。
+        if (last is JsonElement json)
+            last = json.Deserialize(info.PropertyType);
         info.SetValue(Settings, last);
 
         if (length > 1)

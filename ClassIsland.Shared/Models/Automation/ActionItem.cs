@@ -42,6 +42,8 @@ public partial class ActionItem : ObservableRecipient
     /// </summary>
     [ObservableProperty] string _id = "";
 
+    partial void OnIdChanged(string value) => Exception = null;
+
     /// <summary>
     /// 行动项设置。
     /// </summary>

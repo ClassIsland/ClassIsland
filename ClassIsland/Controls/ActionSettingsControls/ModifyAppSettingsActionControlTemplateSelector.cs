@@ -22,7 +22,7 @@ public class ModifyAppSettingsActionControlTemplateSelector : AvaloniaObject, ID
         set => SetAndRaise(ControlTemplateNameProperty, ref _controlTemplateName, value);
     }
 
-    public Control? Build(object? param) => Templates.GetValueOrDefault(ControlTemplateName)?.Build(param);
+    public Control? Build(object? param = null) => Templates.GetValueOrDefault(ControlTemplateName)?.Build(param);
 
     public bool Match(object? data) => true;
 }

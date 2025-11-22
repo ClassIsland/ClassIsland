@@ -115,8 +115,8 @@ public class RunAction : ActionBase<RunActionSettings>
             if (!process.HasExited)
                 process.Kill(entireProcessTree: true);
             throw new OperationCanceledException(
-                $"命令执行中断。" +Environment.NewLine+
-                $"标准输出：{(stdoutBuilder.Length == 0 ? "(空)" : stdoutBuilder)}"+Environment.NewLine +
+                $"命令执行被中断。" + Environment.NewLine +
+                $"标准输出：{(stdoutBuilder.Length == 0 ? "(空)" : stdoutBuilder)}" + Environment.NewLine +
                 $"错误输出：{(stderrBuilder.Length == 0 ? "(空)" : stderrBuilder)}");
         }
 
@@ -124,7 +124,7 @@ public class RunAction : ActionBase<RunActionSettings>
         {
             throw new InvalidOperationException(
                 $"命令执行失败 (退出代码: {process.ExitCode})。" +Environment.NewLine+
-                $"标准输出：{(stdoutBuilder.Length == 0 ? "(空)" : stdoutBuilder)}"+Environment.NewLine +
+                $"标准输出：{(stdoutBuilder.Length == 0 ? "(空)" : stdoutBuilder)}" + Environment.NewLine +
                 $"错误输出：{(stderrBuilder.Length == 0 ? "(空)" : stderrBuilder)}");
         }
 

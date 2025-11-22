@@ -203,18 +203,17 @@ public class ActionService : IActionService
     public ActionService(ILogger<ActionService> logger)
     {
         Logger = logger;
-        ActionMenuTree.Add(new ActionMenuTreeGroup("应用设置", "\uef27",
-            SettingItem("选择应用设置…", "\uEEF7", ""),
+        ActionMenuTree.Add(
+            new ActionMenuTreeGroup("应用设置", "\uef27",
+            SettingItem("选择应用设置…", "\ue454", ""),
             SettingItem("组件配置方案", "\ue06f", "CurrentComponentConfig"),
             SettingItem("应用主题", "\ue5cb", "Theme"),
-            SettingItem("窗口停靠位置", "\uf397", "WindowDockingLocation"),
-            SettingItem("窗口层级", "\uea2f", "WindowLayer"),
-            SettingItem("窗口向右偏移", "\ue099", "WindowDockingOffsetX"),
-            SettingItem("窗口向下偏移", "\ue094", "WindowDockingOffsetY")
+            SettingItem("窗口停靠位置", "\uf397", "WindowDockingLocation")
         ));
 
 
-        ActionMenuTree.Add(new ActionMenuTreeGroup("运行", "\uec2e",
+        ActionMenuTree.Add(
+            new ActionMenuTreeGroup("运行", "\uec2e",
             new ActionMenuTreeItem<RunActionSettings>("classisland.os.run", "应用程序", "\uf4b1",
                 s => s.RunType = RunActionSettings.RunActionRunType.Application),
             new ActionMenuTreeItem<RunActionSettings>("classisland.os.run",
@@ -229,7 +228,8 @@ public class ActionService : IActionService
                 s => s.RunType = RunActionSettings.RunActionRunType.Url)
         ));
 
-        ActionMenuTree.Add(new ActionMenuTreeGroup("提醒", "\ue025",
+        ActionMenuTree.Add(
+            new ActionMenuTreeGroup("提醒", "\ue025",
             new ActionMenuTreeItem<NotificationActionSettings>("classisland.showNotification", "显示提醒…", "\ue02f",
                 s => s.IsWaitForCompleteEnabled = false),
             new ActionMenuTreeItem<NotificationActionSettings>("classisland.showNotification", "显示提醒并等待…", "\ue02b",
@@ -242,7 +242,8 @@ public class ActionService : IActionService
                 s => s.NotificationKind = 2)
         ));
 
-        ActionMenuTree.Add(new ActionMenuTreeGroup("ClassIsland", "\ue454",
+        ActionMenuTree.Add(
+            new ActionMenuTreeGroup("ClassIsland", "\ue454",
             new ActionMenuTreeItem("classisland.app.quit", "退出 ClassIsland", "\ue0df"),
             new ActionMenuTreeItem("classisland.app.restart", "重启 ClassIsland", "\ue0bd")
         ));

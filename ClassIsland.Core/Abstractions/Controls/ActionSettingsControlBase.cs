@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.VisualTree;
@@ -14,13 +15,56 @@ namespace ClassIsland.Core.Abstractions.Controls;
 /// 行动设置控件基类。
 /// </summary>
 /// <typeparam name="TSettings">行动设置类型。需要获取行动设置的行动设置控件须标注此类型。</typeparam>
+/// <example>
+/// FooActionSettingsControl.axaml
+/// <code>
+/// &lt;ci:ActionSettingsControlBase
+///     x:Class="FooActionSettingsControl">
+/// </code>
+/// FooActionSettingsControl.axaml.cs
+/// <code>
+/// public class FooActionSettingsControl : ActionSettingsControlBase { }
+/// </code>
+///
+/// BarActionSettingsControl.axaml
+/// <code>
+/// &lt;ci:ActionSettingsControlBase
+///     x:Class="FooActionSettingsControl"
+///     x:TypeArguments="BarActionSettings">
+/// </code>
+/// BarActionSettingsControl.axaml.cs
+/// <code>
+/// public class BarActionSettingsControl : ActionSettingsControlBase&lt;BarActionSettings> { }
+/// </code>
+/// </example>
 public abstract class ActionSettingsControlBase : UserControl
 {
+    /// <summary>
     /// 当行动项被用户添加时，此方法将被调用。
-    protected virtual void OnAdded() { }
+    /// </summary>
+    /// <remarks>
+    /// 如需控制触发顺序，请重写 <see cref="OnAttachedToVisualTree"/>，此方法会在 base.<see cref="OnAttachedToVisualTree"/> 调用时触发。
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// public class FooActionSettingsControl : ActionSettingsControlBase
+    /// {
+    ///     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    ///     {
+    ///         base.OnAttachedToVisualTree(e); // OnAdded() 将在此处触发。
+    ///         Bar();
+    ///     }
+    /// }
+    /// </code>
+    /// </example>
+    protected virtual void OnAdded()
+    {
+        // if (!this.IsAttachedToVisualTree()) return;
+        ActionItemAdded?.Invoke(this, EventArgs.Empty);
+    }
 
     /// 当行动项被用户添加时，此事件将被调用。
-    protected event EventHandler? ActionItemAdded;
+    public event EventHandler? ActionItemAdded;
 
     /// <summary>
     /// 当行动项被用户删除时，此方法将被调用，以询问是否需要提供撤销删除按钮。
@@ -83,19 +127,23 @@ public abstract class ActionSettingsControlBase : UserControl
 
 
 
-    internal void NotifyAdded()
-    {
-        ActionItemAdded?.Invoke(this, EventArgs.Empty);
-        OnAdded();
-    }
-
     internal bool ShouldShowUndoDeleteButton() => IsUndoDeleteRequested();
     internal object? SettingsInternal { get; set; }
     internal event EventHandler<string>? ActionNameChanged;
     internal event EventHandler<string?>? ActionIconChanged;
+    internal bool IsNewAdded = false;
+
+    /// <inheritdoc />
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        if (!IsNewAdded) return;
+        IsNewAdded = false;
+        OnAdded();
+    }
 
 
-    static Lazy<IActionService> ActionService { get; } = new(IAppHost.GetService<IActionService>);
+    static Lazy<IActionService?> ActionService { get; } = new(IAppHost.TryGetService<IActionService>);
 
     /// <summary>
     /// 获取行动设置控件实例。
@@ -109,7 +157,7 @@ public abstract class ActionSettingsControlBase : UserControl
         var control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(actionItem.Id);
         if (control == null)
         {
-            ActionService.Value.MigrateUnknownActionItem(actionItem);
+            ActionService.Value?.MigrateUnknownActionItem(actionItem);
             control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(actionItem.Id);
             if (control == null) return null;
         }

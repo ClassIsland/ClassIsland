@@ -234,7 +234,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("显示主界面", "\uEFBF")]
+    [SettingsInfo("显示主界面", "\uEFBF", order: 1)]
     public bool IsMainWindowVisible
     {
         get => _isMainWindowVisible;
@@ -534,7 +534,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// </list>
     /// </value>
 
-    [SettingsInfo("点击托盘图标行为", "\uE5C1", enums: ["打开主菜单", "打开档案编辑窗口", "显示/隐藏主界面", "打开换课窗口"])]
+    [SettingsInfo("点击托盘图标行为", "\uE5C1", enums: ["打开主菜单", "打开档案编辑窗口", "显示/隐藏主界面", "打开换课窗口"], order: 2)]
     public int TaskBarIconClickBehavior
     {
         get => _taskBarIconClickBehavior;
@@ -711,7 +711,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("时间偏移", "\uE4D2")]
+    [SettingsInfo("时间偏移", "\uE4D2", order: 2)]
     public double TimeOffsetSeconds
     {
         get => _timeOffsetSeconds;
@@ -848,7 +848,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Appearence
 
-    [SettingsInfo("应用主题", "\uE5CB", enums:["跟随系统", "明亮", "黑暗"])]
+    [SettingsInfo("应用主题", "\uE5CB", enums:["跟随系统", "明亮", "黑暗"], order: 1)]
     public int Theme
     {
         get => _theme;
@@ -860,7 +860,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("强调色", "\uEC54")]
+    [SettingsInfo("强调色", "\uEC54", order: 1)]
     public Color PrimaryColor
     {
         get => _primaryColor;
@@ -1009,7 +1009,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("背景不透明度", "\uF37D")]
+    [SettingsInfo("背景不透明度", "\uF37D", order: 1)]
     public double Opacity
     {
         get => _opacity;
@@ -1021,7 +1021,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("界面缩放", "\uF4D1")]
+    [SettingsInfo("界面缩放", "\uF4D1", order: 1)]
     public double Scale
     {
         get => _scale;
@@ -1055,7 +1055,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("圆角半径", "\uF031")]
+    [SettingsInfo("圆角半径", "\uF031", order: 1)]
     public double RadiusX
     {
         get => _radiusX;
@@ -1155,7 +1155,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("分体主界面", "\uf023")]
+    [SettingsInfo("分体主界面", "\uf023", order: 1)]
     public bool IsIslandSeperated
     {
         get => _isIslandSeperated;
@@ -1171,7 +1171,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Components
 
-    [SettingsInfo("组件配置方案", "\ue06f")]
+    [SettingsInfo("组件配置方案", "\ue06f", order: 1)]
     public string CurrentComponentConfig
     {
         get => _currentComponentConfig;
@@ -1693,7 +1693,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// #############
     /// </code>
     /// </value>
-    [SettingsInfo("窗口停靠位置", "\uf397", enums: ["左上角", "中上侧", "右上角", "左下角", "中下侧", "右下角"])]
+    [SettingsInfo("窗口停靠位置", "\uf397", enums: ["左上角", "中上侧", "右上角", "左下角", "中下侧", "右下角"], order: 1)]
     public int WindowDockingLocation
     {
         get => _windowDockingLocation;
@@ -1739,7 +1739,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("窗口向右偏移", "\ue099")]
+    [SettingsInfo("窗口向右偏移", "\ue099", order: 2)]
     public int WindowDockingOffsetX
     {
         get => _windowDockingOffsetX;
@@ -1751,7 +1751,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("窗口向下偏移", "\ue094")]
+    [SettingsInfo("窗口向下偏移", "\ue094", order: 2)]
     public int WindowDockingOffsetY
     {
         get => _windowDockingOffsetY;
@@ -1787,7 +1787,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// 0 - 置底<br/>
     /// 1 - 置顶
     /// </value>
-    [SettingsInfo("窗口层级", "\uea2f", enums: ["置底", "置顶"])]
+    [SettingsInfo("窗口层级", "\uea2f", enums: ["置底", "置顶"], order: 2)]
     public int WindowLayer
     {
         get => _windowLayer;

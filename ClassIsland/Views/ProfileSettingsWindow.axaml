@@ -1267,12 +1267,9 @@
                                                     Title="不信任的档案"
                                                     Message="当前档案不受信任，行动时间点不会自动运行。"
                                                     Margin="0 4"/>
-                                                <Button Theme="{StaticResource TransparentButton}"
-                                                        HorizontalAlignment="Left"
-                                                        Click="ButtonDebugTriggerAction_OnClick"
-                                                        Margin="0 0 0 2">
-                                                    <ci:IconText Glyph="&#xEDBB;" Text="触发" />
-                                                </Button>
+                                                <automation:ActionSetRunningControl ActionSet="{Binding ViewModel.SelectedTimePoint.ActionSet}"
+                                                        Margin="0 0 0 6"
+                                                        IsRevertButtonVisible="False"/>
                                                 <automation:ActionControl
                                                     ActionSet="{Binding ViewModel.SelectedTimePoint.ActionSet}" />
                                             </StackPanel>

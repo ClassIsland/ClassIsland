@@ -12,11 +12,16 @@
             <ci:FluentIcon.IsVisible>
                 <Binding Path="$parent[ci:IconText].Glyph" Converter="{x:Static StringConverters.IsNotNullOrEmpty}" />
             </ci:FluentIcon.IsVisible>
+            <ci:FluentIcon.RenderTransform>
+                <TranslateTransform Y="1.5" />
+            </ci:FluentIcon.RenderTransform>
         </ci:FluentIcon>
         <TextBlock Text="{Binding $parent[ci:IconText].Text}"
                    VerticalAlignment="Center"
-                   LineSpacing="0"
-                   Margin="0 0 0 -4"
-                   IsVisible="{Binding $parent[ci:IconText].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                   IsVisible="{Binding $parent[ci:IconText].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <TextBlock.RenderTransform>
+                <TranslateTransform Y="2" />
+            </TextBlock.RenderTransform>
+        </TextBlock>
     </StackPanel>
 </UserControl>

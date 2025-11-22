@@ -10,7 +10,7 @@
         <StackPanel.Styles>
             <Style Selector="StackPanel > ci|AnimatedIconButton">
                 <Setter Property="Theme" Value="{StaticResource TransparentButton}" />
-                <Style Selector="^.transitions-foreground /template/ Button#PART_Button /template/ ContentPresenter#PART_ContentPresenter">
+                <Style Selector="^ /template/ Button#PART_Button /template/ ContentPresenter#PART_ContentPresenter">
                     <Setter Property="Transitions">
                         <Transitions>
                             <BrushTransition Property="Background"
@@ -30,12 +30,12 @@
 
         <ci:AnimatedIconButton Glyph="&#xEDBF;"
                                Text="触发"
-                               Classes="transitions-foreground"
                                Command="{Binding $parent[local:ActionSetRunningControl].InvokeActionCommand}"
                                ToolTip.Tip="触发行动。">
             <Classes.foreground-accent>
                 <Binding Path="$parent[local:ActionSetRunningControl].ActionSet.Status"
-                         Converter="{x:Static ObjectConverters.Equal}">
+                         Converter="{x:Static ObjectConverters.Equal}"
+                         FallbackValue="True">
                     <Binding.ConverterParameter>
                         <enums:ActionSetStatus>Normal</enums:ActionSetStatus>
                     </Binding.ConverterParameter>
@@ -57,7 +57,6 @@
 
         <ci:AnimatedIconButton Glyph="&#xEE67;"
                                Text="中断"
-                               Classes="transitions-foreground"
                                Command="{Binding $parent[local:ActionSetRunningControl].InterruptActionCommand}"
                                ToolTip.Tip="中断行动运行。">
             <Classes.foreground-accent>
@@ -76,7 +75,7 @@
                                Text="恢复"
                                Command="{Binding $parent[local:ActionSetRunningControl].RevertActionCommand}"
                                ToolTip.Tip="触发恢复行动。"
-                               IsVisible="{Binding $parent[local:ActionSetRunningControl].IsRevertEnabled}">
+                               IsVisible="{Binding $parent[local:ActionSetRunningControl].IsRevertButtonVisible}">
             <Classes.foreground-accent>
                 <Binding Path="$parent[local:ActionSetRunningControl].ActionSet.Status"
                          Converter="{x:Static ObjectConverters.Equal}">

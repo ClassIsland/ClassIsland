@@ -19,7 +19,7 @@ public abstract class ActionBase
     /// <seealso cref="InterruptCancellationToken"/>
     protected virtual async Task OnInvoke()
     {
-        ActionItem.SetStartRunning();
+        // ActionItem.SetStartRunning();
     }
 
     /// 当此行动恢复时，此方法将被调用。<br/>
@@ -31,7 +31,7 @@ public abstract class ActionBase
     /// <seealso cref="InterruptCancellationToken"/>
     protected virtual async Task OnRevert()
     {
-        ActionItem.SetStartRunning();
+        // ActionItem.SetStartRunning();
     }
 
     /// 当此行动运行被中断时，此方法将被调用。
@@ -88,6 +88,7 @@ public abstract class ActionBase
 
         try
         {
+            ActionItem.SetStartRunning();
             await action();
         }
         catch (Exception ex) when (ex is TaskCanceledException && InterruptCts?.IsCancellationRequested == true) { }
@@ -108,7 +109,7 @@ public abstract class ActionBase
     internal object? SettingsInternal { get; set; }
     internal CancellationTokenSource InterruptCts { get; set; }
 
-    static Lazy<IActionService> ActionService { get; } = new(IAppHost.GetService<IActionService>);
+    static Lazy<IActionService?> ActionService { get; } = new(IAppHost.TryGetService<IActionService>);
 
     /// 获取行动提供方实例。
     /// <param name="actionItem">要获取行动提供方的行动项。</param>
@@ -119,7 +120,7 @@ public abstract class ActionBase
         var provider = IAppHost.Host?.Services.GetKeyedService<ActionBase>(actionItem.Id);
         if (provider == null)
         {
-            ActionService.Value.MigrateUnknownActionItem(actionItem);
+            ActionService.Value?.MigrateUnknownActionItem(actionItem);
             provider = IAppHost.Host?.Services.GetKeyedService<ActionBase>(actionItem.Id);
             if (provider == null) return null;
         }

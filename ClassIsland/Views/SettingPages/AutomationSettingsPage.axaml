@@ -131,8 +131,22 @@
                                         <!--                  ToolTip.Tip="该自动化正在运行。"/> -->
                                         <controls:WorkflowProgressIndicatorControl Grid.Column="2"
                                             VerticalAlignment="Center" Margin="0 0 4 0"
-                                            IsVisible="{Binding ActionSet.IsWorking}"
-                                            Workflow="{Binding}"/>
+                                            Tag="{Binding ActionSet.IsWorking}"
+                                            Workflow="{Binding}">
+                                            <controls:WorkflowProgressIndicatorControl.Styles>
+                                                <Style Selector="controls|WorkflowProgressIndicatorControl">
+                                                    <Setter Property="Opacity" Value="0" />
+                                                    <Setter Property="Transitions">
+                                                        <Transitions>
+                                                            <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+                                                        </Transitions>
+                                                    </Setter>
+                                                    <Style Selector="^[Tag=True]">
+                                                        <Setter Property="Opacity" Value="1" />
+                                                    </Style>
+                                                </Style>
+                                            </controls:WorkflowProgressIndicatorControl.Styles>
+                                        </controls:WorkflowProgressIndicatorControl>
 
                                         <ToggleSwitch Grid.Column="3" VerticalAlignment="Center"
                                                       IsChecked="{Binding ActionSet.IsEnabled}" />

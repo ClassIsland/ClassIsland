@@ -9,9 +9,14 @@
                               xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
                               xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions">
     <ci:ActionSettingsControlBase.Resources>
-        <Panel x:Key="ModifyAppSettingsAction_SettingsDrawer"
+        <Panel x:Key="Drawer"
                d:DataContext="{d:DesignInstance local:ModifyAppSettingsActionSettingsControl}"
                Width="400">
+            <!-- <Panel.Styles> -->
+            <!--     <Style Selector="Panel.in-dialog"> -->
+            <!--         <Setter Property="MaxHeight">800</Setter> -->
+            <!--     </Style> -->
+            <!-- </Panel.Styles> -->
             <Grid Classes="animated-intro"
                   RowDefinitions="Auto Auto *">
                 <TextBlock Margin="0 0 0 8"
@@ -30,23 +35,35 @@
                          SelectionMode="Single">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <VirtualizingStackPanel Classes="animated-intro" />
+                            <VirtualizingStackPanel />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel LastChildFill="False">
-                                <RadioButton IsChecked="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}">
-                                    <ci:IconText Glyph="{Binding Glyph}"
-                                                 Text="{Binding Name}" />
-                                </RadioButton>
+                                <ci:IconText Height="23"
+                                             VerticalContentAlignment="Center"
+                                             Glyph="{Binding Glyph}"
+                                             Text="{Binding Name}" />
                                 <TextBlock Margin="4 0 0 0"
                                            VerticalAlignment="Center"
-                                           Text="{Binding FriendlyValue}"
+                                           Text="{Binding PreviewValue, Mode=OneTime}"
                                            DockPanel.Dock="Right"
                                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                                           ToolTip.Tip="{Binding FriendlyValue}" />
-
+                                           MaxLines="3">
+                                    <TextBlock.Styles>
+                                        <Style Selector="TextBlock">
+                                            <Setter Property="ToolTip.Tip">
+                                                <Setter.Value>
+                                                    <Template>
+                                                        <TextBlock Text="{Binding PreviewValue, Mode=OneTime}"
+                                                                   MaxLines="50" />
+                                                    </Template>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </TextBlock.Styles>
+                                </TextBlock>
                             </DockPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -61,51 +78,47 @@
             </Grid>
         </Panel>
 
-        <ContentPresenter x:Key="ModifyAppSettingsAction_ControlTemplateContentPresenter">
-            <ContentPresenter.ContentTemplate>
-                <local:ModifyAppSettingsActionControlTemplateSelector
-                    ControlTemplateName="{Binding #This.ViewModel.ControlTemplateName}">
+        <local:ModifyAppSettingsActionControlTemplateSelector x:Key="ControlTemplateSelector">
 
-                    <!-- 定制属性控件 -->
-                    <DataTemplate x:Key="CurrentComponentConfig">
-                        <ComboBox ItemsSource="{Binding #This.ComponentsService.Value.ComponentConfigs}"
-                                  SelectedItem="{Binding #This.ViewModel.InputValue}" />
-                    </DataTemplate>
+            <!--  定制属性控件  -->
+            <DataTemplate x:Key="CurrentComponentConfig">
+                <ComboBox ItemsSource="{Binding #This.ComponentsService.Value.ComponentConfigs}"
+                          SelectedItem="{Binding #This.ViewModel.InputValue, Converter={StaticResource PreventNullConverter}}" />
+            </DataTemplate>
 
-                    <!-- 通用属性控件 -->
-                    <DataTemplate x:Key="int">
-                        <NumericUpDown Value="{Binding #This.ViewModel.InputValue}" />
-                    </DataTemplate>
-                    <DataTemplate x:Key="double">
-                        <NumericUpDown Value="{Binding #This.ViewModel.InputValue, Converter={x:Static ci:NotNaNConverter.Instance}}" />
-                    </DataTemplate>
-                    <DataTemplate x:Key="bool">
-                        <ToggleSwitch Margin="0 -15 0 -10"
-                                      IsChecked="{Binding #This.ViewModel.InputValue}" />
-                    </DataTemplate>
-                    <DataTemplate x:Key="color">
-                        <ColorPicker HorizontalAlignment="Left"
-                                     VerticalAlignment="Center"
-                                     Color="{Binding #This.ViewModel.InputValue}" />
-                    </DataTemplate>
-                    <DataTemplate x:Key="enums">
-                        <ComboBox ItemsSource="{Binding #This.ViewModel.CurrentSettingsInfo.Enums}"
-                                  SelectedIndex="{Binding #This.ViewModel.InputValue, Converter={StaticResource PreventNullConverter}}" />
-                    </DataTemplate>
-                    <DataTemplate x:Key="normal">
-                        <TextBox VerticalAlignment="Center"
-                                 Text="{Binding #This.ViewModel.InputValue}"
-                                 AcceptsReturn="{Binding #This.ViewModel.IsInInputerContentPresenter2}">
-                            <TextBox.Styles>
-                                <Style Selector="TextBox[AcceptsReturn=True]">
-                                    <Setter Property="TextWrapping" Value="Wrap" />
-                                </Style>
-                            </TextBox.Styles>
-                        </TextBox>
-                    </DataTemplate>
-                </local:ModifyAppSettingsActionControlTemplateSelector>
-            </ContentPresenter.ContentTemplate>
-        </ContentPresenter>
+            <!--  通用属性控件  -->
+            <DataTemplate x:Key=".bool">
+                <ToggleSwitch Margin="0 -15 0 -10"
+                              IsChecked="{Binding #This.ViewModel.InputValue}" />
+            </DataTemplate>
+            <DataTemplate x:Key=".int">
+                <NumericUpDown FormatString="0"
+                               Value="{Binding #This.ViewModel.InputValue}" />
+            </DataTemplate>
+            <DataTemplate x:Key=".double">
+                <NumericUpDown Value="{Binding #This.ViewModel.InputValue, Converter={x:Static ci:NotNaNConverter.Instance}}" />
+            </DataTemplate>
+            <DataTemplate x:Key=".color">
+                <ColorPicker HorizontalAlignment="Left"
+                             VerticalAlignment="Center"
+                             Color="{Binding #This.ViewModel.InputValue}" />
+            </DataTemplate>
+            <DataTemplate x:Key=".enums">
+                <ComboBox ItemsSource="{Binding #This.ViewModel.CurrentSettingsInfo.Enums}"
+                          SelectedIndex="{Binding #This.ViewModel.InputValue, Converter={StaticResource PreventNullConverter}}" />
+            </DataTemplate>
+            <DataTemplate x:Key=".text">
+                <TextBox VerticalAlignment="Center"
+                         Text="{Binding #This.ViewModel.InputValue}"
+                         AcceptsReturn="{Binding #This.ViewModel.IsInContentPresenter2}">
+                    <TextBox.Styles>
+                        <Style Selector="TextBox[AcceptsReturn=True]">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                        </Style>
+                    </TextBox.Styles>
+                </TextBox>
+            </DataTemplate>
+        </local:ModifyAppSettingsActionControlTemplateSelector>
     </ci:ActionSettingsControlBase.Resources>
 
     <StackPanel>
@@ -113,28 +126,35 @@
             <Button Height="30"
                     VerticalAlignment="Center"
                     Click="SelectorButton_OnClick">
-                <ci:IconText Glyph="{Binding #This.ViewModel.CurrentSettingsInfo.Glyph, FallbackValue=&#xE7C9;}"
+                <ci:IconText MinHeight="23"
+                             Glyph="{Binding #This.ViewModel.CurrentSettingsInfo.Glyph, FallbackValue=&#xE7C9;}"
                              Text="{Binding #This.ViewModel.CurrentSettingsInfo.Name, FallbackValue=选择…}" />
             </Button>
 
             <TextBlock Grid.Column="1"
                        Margin="5 0"
                        VerticalAlignment="Center"
-                       Text="修改为" />
+                       Text="修改为"
+                       IsVisible="{Binding #This.ViewModel.ControlTemplateName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
             <ContentPresenter x:Name="InputerContentPresenter1"
-                              Grid.Column="2" />
+                              Grid.Column="2"
+                              IsVisible="{Binding !#This.ViewModel.IsInContentPresenter2}" />
 
             <ci:AnimatedIconButton x:Name="FillCurrentValueButton"
                                    Grid.Column="3"
+                                   Margin="0"
+                                   Padding="0"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Stretch"
+                                   VerticalContentAlignment="Stretch"
                                    Glyph="&#xE47C;"
                                    Text="当前值"
                                    Click="FillCurrentValueButton_OnClick"
                                    Theme="{StaticResource TransparentButton}"
                                    ToolTip.Tip="填入当前值" />
         </Grid>
-        <ContentPresenter x:Name="InputerContentPresenter2" />
+        <ContentPresenter x:Name="InputerContentPresenter2"
+                          IsVisible="{Binding #This.ViewModel.IsInContentPresenter2}" />
     </StackPanel>
 </ci:ActionSettingsControlBase>

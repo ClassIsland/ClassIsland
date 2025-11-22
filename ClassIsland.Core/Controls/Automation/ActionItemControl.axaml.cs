@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -49,8 +48,7 @@ public partial class ActionItemControl : UserControl
             newControl.ActionIconChanged += ControlOnActionIconChanged;
             RootContentPresenter.Content = newControl;
             RootContentPresenter.IsVisible = true;
-            if (ActionItem.IsNewAdded)
-                newControl.Loaded += ControlOnLoaded;
+            newControl.IsNewAdded = ActionItem.IsNewAdded;
         }
         else
         {
@@ -59,9 +57,6 @@ public partial class ActionItemControl : UserControl
         }
         ActionItem.IsNewAdded = false;
     }
-
-    void ControlOnLoaded(object? sender, RoutedEventArgs routedEventArgs) =>
-        (sender as ActionSettingsControlBase).NotifyAdded();
 
     void ControlOnActionNameChanged(object? sender, string e) => ActionInfoIconText.Text = e;
     void ControlOnActionIconChanged(object? sender, string? e) => ActionInfoIconText.Glyph = e;
@@ -73,7 +68,6 @@ public partial class ActionItemControl : UserControl
         {
             oldControl.ActionNameChanged -= ControlOnActionNameChanged;
             oldControl.ActionIconChanged -= ControlOnActionIconChanged;
-            oldControl.Loaded -= ControlOnLoaded;
         }
 
         RootContentPresenter.Content = null;

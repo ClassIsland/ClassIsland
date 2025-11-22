@@ -30,21 +30,27 @@ public partial class ActionSetRunningControl : UserControl
         ActionService.InterruptActionSetAsync(ActionSet);
     }
 
-    public static readonly StyledProperty<ActionSet> ActionSetProperty =
-        AvaloniaProperty.Register<ActionItemControl, ActionSet>(nameof(ActionSet));
+    ActionSet _actionSet = new();
+
+    public static readonly DirectProperty<ActionSetRunningControl, ActionSet> ActionSetProperty =
+        AvaloniaProperty.RegisterDirect<ActionSetRunningControl, ActionSet>(
+            nameof(ActionSet), o => o.ActionSet, (o, v) =>
+            {
+                if (v != null) o.ActionSet = v;
+            });
 
     public ActionSet ActionSet
     {
-        get => GetValue(ActionSetProperty);
-        set => SetValue(ActionSetProperty, value);
+        get => _actionSet;
+        set => SetAndRaise(ActionSetProperty, ref _actionSet, value);
     }
 
-    public static readonly StyledProperty<bool> IsRevertEnabledProperty =
-        AvaloniaProperty.Register<ActionSetRunningControl, bool>(nameof(IsRevertEnabled), true);
+    public static readonly StyledProperty<bool> IsRevertButtonVisibleProperty =
+        AvaloniaProperty.Register<ActionSetRunningControl, bool>(nameof(IsRevertButtonVisible), true);
 
-    public bool IsRevertEnabled
+    public bool IsRevertButtonVisible
     {
-        get => GetValue(IsRevertEnabledProperty);
-        set => SetValue(IsRevertEnabledProperty, value);
+        get => GetValue(IsRevertButtonVisibleProperty);
+        set => SetValue(IsRevertButtonVisibleProperty, value);
     }
 }

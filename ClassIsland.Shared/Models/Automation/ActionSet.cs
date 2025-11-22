@@ -22,7 +22,7 @@ public partial class ActionSet : ObservableRecipient
         InterruptCts?.Dispose();
         RunningTcs?.Task.Dispose();
         InterruptCts = new();
-        RunningTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        RunningTcs = new();
         Status = isInvoke ? ActionSetStatus.Invoking : ActionSetStatus.Reverting;
         foreach (var a in ActionItems)
         {

@@ -846,16 +846,6 @@ public partial class ProfileSettingsWindow : MyWindow
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.edit");
     }
     
-    private void ButtonDebugTriggerAction_OnClick(object sender, RoutedEventArgs e)
-    {
-        var action = ViewModel.SelectedTimePoint?.ActionSet;
-        if (action == null)
-        {
-            return;
-        }
-        ViewModel.ActionService.InvokeActionSetAsync(action);
-    }
-    
     private void ButtonOverwriteClasses_OnClick(object sender, RoutedEventArgs e)
     {
         if (ViewModel.SelectedTimePoint == null)
