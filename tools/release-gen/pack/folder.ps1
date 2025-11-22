@@ -12,7 +12,7 @@ Get-ChildItem -Path ./out
 # Install PDCC
 
 $pdcOs = 'linux'
-if (env:osName -eq 'windows') {
+if ($env:osName -eq 'windows') {
     $pdcOs = 'win'
 }
 ./tools/release-gen/install-pdcc.ps1 $pdcOs
