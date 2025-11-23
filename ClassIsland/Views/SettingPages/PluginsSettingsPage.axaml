@@ -258,6 +258,19 @@
                 </Panel>
             </Grid>
         </DataTemplate>
+        
+        <ScrollViewer x:Key="PluginUpdateSettingsDrawer" Width="320"
+              HorizontalAlignment="Stretch"
+              Margin="16" >
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="插件更新设置" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                
+                <CheckBox IsChecked="{Binding ViewModel.SettingsService.Settings.IsPluginsUpdateNotificationEnabled}"
+                          Content="插件有更新时通知我"/>
+                <CheckBox IsChecked="{Binding ViewModel.SettingsService.Settings.IsPluginsAutoUpdateEnabled}"
+                          Content="自动更新插件"/>
+            </StackPanel>
+        </ScrollViewer>
 
         <Grid x:Key="PluginSourceManageDrawer" Width="500"
               HorizontalAlignment="Stretch"
@@ -418,12 +431,16 @@
                                         <MenuItem Icon="{ci:FluentIcon &#xE99A;}" Header="管理插件源…"
                                                   Click="MenuItemManagePluginSources_OnClick"
                                                   IsEnabled="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}"/>
+                                        <MenuItem Icon="{ci:FluentIcon &#xE161;}" Header="插件更新设置…"
+                                                  Click="MenuItemPluginUpdateSettings_OnClick"
+                                                  IsEnabled="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}"/>
                                         <Separator/>
                                         <MenuItem Icon="{ci:FluentIcon &#xE071;}" Header="从本地安装…"
                                                   Click="ButtonInstallFromLocal_OnClick"/>
                                         <Separator/>
                                         <MenuItem Icon="{ci:FluentIcon &#xE88D;}" Header="打开插件文件夹…"
                                                   Click="MenuItemOpenPluginsFolder_OnClick"/>
+                                        
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>

@@ -464,5 +464,11 @@ public partial class PluginsSettingsPage : SettingsPageBase
         // 这里清除掉来自 PopupBase 的调用堆栈，防止出现打开抽屉命令执行事件传播错误的问题。
         Dispatcher.UIThread.InvokeAsync(OpenPluginSourceManager);
     }
+
+    private void MenuItemPluginUpdateSettings_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // 这里清除掉来自 PopupBase 的调用堆栈，防止出现打开抽屉命令执行事件传播错误的问题。
+        Dispatcher.UIThread.InvokeAsync(() => OpenDrawer("PluginUpdateSettingsDrawer"));
+    }
 }
 

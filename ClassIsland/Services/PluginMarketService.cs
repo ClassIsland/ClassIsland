@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -7,31 +8,35 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Shared;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Downloader;
 using Microsoft.Extensions.Logging;
+using ReactiveUI;
 using Sentry;
 
 namespace ClassIsland.Services;
 
-public class PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger) : ObservableRecipient, IPluginMarketService
+public class PluginMarketService : ObservableRecipient, IPluginMarketService
 {
     public static string DefaultPluginIndexKey { get; } = "Default";
 
-    public SettingsService SettingsService { get; } = settingsService;
-    public IPluginService PluginService { get; } = pluginService;
+    public SettingsService SettingsService { get; }
+    public IPluginService PluginService { get; }
 
     public ObservableDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
 
     public ObservableDictionary<string, PluginIndex> Indexes { get; } = new();
-    public ILogger<PluginMarketService> Logger { get; } = logger;
+    public ILogger<PluginMarketService> Logger { get; }
 
     public static ObservableDictionary<string, string> FallbackMirrors { get; } = new()
     {
@@ -43,6 +48,19 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
     private bool _isLoadingPluginSource = false;
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
+    private IDisposable? _pluginsUpdateProgressObserver;
+
+    public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger)
+    {
+        SettingsService = settingsService;
+        PluginService = pluginService;
+        Logger = logger;
+        
+        if (DateTime.Now - SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
+        {
+            _ = RefreshPluginSourceAsync();
+        }
+    }
 
     public ObservableDictionary<string, PluginInfo> MergedPlugins { get; } = new();
 
@@ -141,6 +159,17 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
                 i++;
             }
             LoadPluginSource();
+            var count = MergedPlugins.Count(x => x.Value.IsUpdateAvailable && x.Value.IsEnabled);
+            if (count > 0)
+            {
+                await PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+                {
+                    Title = "插件更新可用",
+                    Body = $"有 {count} 个插件有新版本可用，点击以查看详细信息。",
+                    Activated = (_, _) => IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"))
+                });
+                UpdateAllPlugins();
+            }
             transaction.Finish(SpanStatus.Ok);
         }
         catch (Exception ex)
@@ -174,6 +203,42 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
             SelectedMirror = SettingsService.Settings.OfficialSelectedMirror ?? "github",
             Mirrors = SettingsService.Settings.OfficialIndexMirrors
         });
+    }
+
+    public void UpdateAllPlugins(bool discardDisabled=false)
+    {
+        var toUpdate = MergedPlugins
+            .Where(x => x.Value is { IsUpdateAvailable: true, DownloadProgress: null } && (discardDisabled || x.Value.IsEnabled))
+            .ToImmutableDictionary();
+        foreach (var (id, _) in toUpdate)
+        {
+            RequestDownloadPlugin(id);
+        }
+        
+        if (_pluginsUpdateProgressObserver != null)
+        {
+            return;
+        }
+        _pluginsUpdateProgressObserver = DownloadTasks.ObservableForProperty(x => x.Count)
+            .Subscribe(_ =>
+            {
+                if (DownloadTasks.Count > 0) return;
+
+                if (SettingsService.Settings.IsPluginsUpdateNotificationEnabled)
+                {
+                    PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+                    {
+                        Title = "插件更新完成",
+                        Body = "已将所有插件升级到最新版本，将在下次启动应用时生效。",
+                        Buttons =
+                        {
+                            { "立即重启", () => AppBase.Current.Restart() }
+                        }
+                    });
+                }
+                _pluginsUpdateProgressObserver?.Dispose();
+                _pluginsUpdateProgressObserver = null;
+            });
     }
 
     public PluginIndexItem? ResolveMarketPlugin(string id)
@@ -338,7 +403,9 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
                     pluginLocal.StarsCount = plugin.StarsCount;
                     if (Version.TryParse(pluginLocal.Manifest.Version, out var versionLocal) &&
                         Version.TryParse(plugin.Manifest.Version, out var versionRemote) &&
-                        versionRemote > versionLocal)
+                        Version.TryParse(plugin.Manifest.ApiVersion, out var apiVersion) &&
+                        Version.TryParse(AppBase.AppVersion, out var appVersion) &&
+                        versionRemote > versionLocal)  // TODO: 在 2.0 发布后，添加 api 版本校验！
                     {
                         pluginLocal.IsUpdateAvailable = true;
                     }

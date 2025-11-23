@@ -73,4 +73,9 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// </summary>
     /// <returns>获取到的索引信息</returns>
     public IEnumerable<PluginIndexInfo> GetIndexInfos();
+
+    /// <summary>
+    /// 更新全部插件。
+    /// </summary>
+    public void UpdateAllPlugins(bool discardDisabled=false);
 }

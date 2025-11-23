@@ -1728,6 +1728,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _debugSubChannelOverride = "";
     private string _debugPublicKeyOverride = "";
     private string _debugPhainonRootUrlOverride = "";
+    private bool _isPluginsAutoUpdateEnabled = true;
+    private bool _isPluginsUpdateNotificationEnabled = true;
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -2172,6 +2174,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isPluginMarketWarningVisible) return;
             _isPluginMarketWarningVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsPluginsAutoUpdateEnabled
+    {
+        get => _isPluginsAutoUpdateEnabled;
+        set
+        {
+            if (value == _isPluginsAutoUpdateEnabled) return;
+            _isPluginsAutoUpdateEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsPluginsUpdateNotificationEnabled
+    {
+        get => _isPluginsUpdateNotificationEnabled;
+        set
+        {
+            if (value == _isPluginsUpdateNotificationEnabled) return;
+            _isPluginsUpdateNotificationEnabled = value;
             OnPropertyChanged();
         }
     }
