@@ -459,7 +459,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             {
                 var (hashHex, (fileName, file)) = pair;
                 var updateStopwatch = Stopwatch.StartNew();
-                Logger.LogInformation("开始下载 {}({})", fileName, file.ArchiveDownloadUrl);
+                Logger.LogTrace("开始下载 {}({})", fileName, file.ArchiveDownloadUrl);
                 var info = downloadTasksMap.GetValueOrDefault(hashHex) ?? DownloadTaskInfo.CreateEmpty();
                 info.State = DownloadState.Downloading;
                 await using var downloader = DownloadBuilder.New()
@@ -504,7 +504,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 await taskCompletionSource.Task;
                 info.State = DownloadState.Completed;
                 // DownloadTasks.Remove(info);
-                Logger.LogInformation("下载完成 {}({})", fileName, file.ArchiveDownloadUrl);
+                Logger.LogTrace("下载完成 {}({})", fileName, file.ArchiveDownloadUrl);
             });
 
             await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "FileMap.json"), DistributionInfo.FileMapJson,
@@ -513,7 +513,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 DistributionInfo.FileMapSignature, cancellationToken);
             await File.WriteAllTextAsync(Path.Combine(UpdateTempPath, "Deployment.lock"),
                 JsonSerializer.Serialize(deploymentLock), cancellationToken);
-            Logger.LogInformation("全部下载完成！");
+            Logger.LogInformation("更新全部下载完成！");
             Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
         }
         catch (TaskCanceledException)

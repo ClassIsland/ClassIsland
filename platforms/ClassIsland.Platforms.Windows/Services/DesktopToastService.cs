@@ -110,9 +110,17 @@ public class DesktopToastService : IDesktopToastService
             CleanUpActions();
         };
         
-        var notifier = toastManagerFactory.CreateToastNotifier(AumId);
-        notifier.Show(toast);
-
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var notifier = toastManagerFactory.CreateToastNotifier(AumId);
+            try
+            {
+                notifier.Show(toast);
+            }
+            catch
+            {
+            }
+        });
         return;
         
         void CleanUpActions()

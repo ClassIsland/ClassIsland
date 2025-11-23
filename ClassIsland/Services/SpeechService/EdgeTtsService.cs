@@ -74,12 +74,9 @@ public class EdgeTtsService : ISpeechService
     public void EnqueueSpeechQueue(string text)
     {
         Logger.LogInformation("以{}朗读文本：{}", SettingsService.Settings.EdgeTtsVoiceName, text);
-        var r = requestingCancellationTokenSource;
+        var previousRequest = requestingCancellationTokenSource;
+        previousRequest?.Cancel();
         requestingCancellationTokenSource = new CancellationTokenSource();
-        if (r is { IsCancellationRequested: false })
-        {
-            CancellationTokenSource.CreateLinkedTokenSource(r.Token, requestingCancellationTokenSource.Token);
-        }
 
         var cache = GetCachePath(text);
         Logger.LogDebug("语音缓存：{}", cache);
@@ -87,27 +84,56 @@ public class EdgeTtsService : ISpeechService
         Task? task = null;
         if (!File.Exists(cache))
         {
-            task = Task.Run(() =>
+            task = Task.Run(async () =>
                 {
-                    var completed = false;
-                    var voice = Voices.Find(voice => voice.ShortName == SettingsService.Settings.EdgeTtsVoiceName);
-                    var completeHandle = new CancellationTokenSource();
-                    var options = new PlayOption()
+                    var voice = Voices.Find(v => v.ShortName == SettingsService.Settings.EdgeTtsVoiceName);
+                    var tcs = new TaskCompletionSource<bool>();
+                    try
                     {
-                        Text = text
-                    };
-                    EdgeTts.Invoke(options, voice, (Action<List<byte>>)(binary =>
+                        var options = new PlayOption()
+                        {
+                            Text = text
+                        };
+                        EdgeTts.Invoke(options, voice, (Action<List<byte>>)(binary =>
+                        {
+                            try
+                            {
+                                if (requestingCancellationTokenSource.IsCancellationRequested)
+                                {
+                                    tcs.TrySetResult(false);
+                                    return;
+                                }
+                                var dir = Path.GetDirectoryName(cache);
+                                if (!string.IsNullOrWhiteSpace(dir) && !Directory.Exists(dir))
+                                {
+                                    Directory.CreateDirectory(dir);
+                                }
+                                var temp = cache + ".tmp";
+                                File.WriteAllBytes(temp, binary.ToArray());
+                                File.Move(temp, cache, true);
+                                tcs.TrySetResult(true);
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.LogError(ex, "语音缓存写入失败: {}", cache);
+                                tcs.TrySetResult(false);
+                            }
+                        }));
+                    }
+                    catch (Exception ex)
                     {
-                        if (completeHandle.IsCancellationRequested)
-                            return;
-                        File.WriteAllBytes(cache, binary.ToArray());
-                        completed = true;
-                        completeHandle.Cancel();
-                    }));
-                    completeHandle.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(15));
-                    completeHandle.Cancel();
-                },
-                requestingCancellationTokenSource.Token);
+                        Logger.LogError(ex, "语音请求失败");
+                        tcs.TrySetResult(false);
+                    }
+                    try
+                    {
+                        await Task.WhenAny(tcs.Task, Task.Delay(TimeSpan.FromSeconds(20), requestingCancellationTokenSource.Token));
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // ignore
+                    }
+                }, requestingCancellationTokenSource.Token);
         }
         
         if (requestingCancellationTokenSource.IsCancellationRequested)
@@ -144,6 +170,11 @@ public class EdgeTtsService : ISpeechService
                 Logger.LogDebug("等待下载完成");
                 await playInfo.DownloadTask;
                 Logger.LogDebug("等待下载完成结束");
+            }
+            if (!File.Exists(playInfo.FilePath))
+            {
+                Logger.LogWarning("语音缓存不存在: {}", playInfo.FilePath);
+                continue;
             }
 
             try
