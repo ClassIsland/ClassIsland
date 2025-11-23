@@ -275,7 +275,7 @@
             <!-- 时间偏移 -->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE4C4;}" 
                                         Header="时间偏移"
-                                        Description="设定课程时间与实际时间的偏移值。增大偏移以抵消铃声提前，减小偏移以抵消铃声滞后。"
+                                        Description="设定课程时间与实际时间的偏移值。用法：如果该值为正，那么将会在获得云端ntp服务器（启用从指定的ntp服务器获得时间）/系统时间（启用使用系统时间）的基础上，向后增加相应的秒数；如果该值为负，那么将会在获得云端ntp服务器（启用从指定的ntp服务器获得时间）/系统时间（启用使用系统时间）的基础上，向前减少相应的秒数，以此来和你学校的上课铃声进行匹配。"
                                         IsExpanded="True">
                 <controls3:SettingsExpander.Footer>
                     <ci:Field Suffix="秒">
