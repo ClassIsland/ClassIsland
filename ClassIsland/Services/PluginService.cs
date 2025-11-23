@@ -139,6 +139,11 @@ public class PluginService : IPluginService
             {
                 info.LoadStatus = PluginLoadStatus.Disabled;
             }
+            if (info.IsEnabled && Version.TryParse(info.Manifest.ApiVersion, out var apiVersion) && apiVersion < new Version(2, 0, 0, 0))
+            {
+                info.LoadStatus = PluginLoadStatus.Error;
+                info.Exception = new InvalidOperationException($"不兼容的 API 版本 {apiVersion}。插件的 API 版本需要至少为 2.0.0.0 才能被当前版本的 ClassIsland 加载。");
+            }
         }
         var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
         Console.WriteLine($"Resolved load order: {string.Join(", ", loadOrder)}");
