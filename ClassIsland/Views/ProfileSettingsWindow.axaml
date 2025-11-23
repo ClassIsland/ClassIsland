@@ -88,10 +88,26 @@
                 <TextBlock Text="临时层课表将忽略触发规则强制启用。" 
                            Margin="0 0 0 4"
                            IsVisible="{Binding IsOverlay}" TextWrapping="Wrap"/>
-                <TextBlock Text="当课表设置为自动启用时，将会根据触发规则自动启用该课表。否则只能通过临时课表或临时层手动启用该课表。" 
+                <TextBlock Text="将会根据触发规则自动启用该课表。" 
                            Classes="l-instructive"
-                           IsVisible="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}"
-                           TextWrapping="Wrap"/>
+                           TextWrapping="Wrap">
+                    <TextBlock.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="IsEnabled"/>
+                            <Binding Path="!IsOverlay"/>
+                        </MultiBinding>
+                    </TextBlock.IsVisible>
+                </TextBlock>
+                <TextBlock Text="该课表不会自动启用，只能通过临时课表或临时层手动启用该课表。" 
+                           Classes="l-instructive"
+                           TextWrapping="Wrap">
+                    <TextBlock.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="!IsEnabled"/>
+                            <Binding Path="!IsOverlay"/>
+                        </MultiBinding>
+                    </TextBlock.IsVisible>
+                </TextBlock>
 
                 <StackPanel IsEnabled="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}" 
                             IsVisible="{Binding IsEnabled}">
