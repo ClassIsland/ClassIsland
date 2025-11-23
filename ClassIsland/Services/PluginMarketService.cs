@@ -210,16 +210,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         var toUpdate = MergedPlugins
             .Where(x => x.Value is { IsUpdateAvailable: true, DownloadProgress: null } && (discardDisabled || x.Value.IsEnabled))
             .ToImmutableDictionary();
-        foreach (var (id, _) in toUpdate)
-        {
-            RequestDownloadPlugin(id);
-        }
-        
-        if (_pluginsUpdateProgressObserver != null)
-        {
-            return;
-        }
-        _pluginsUpdateProgressObserver = DownloadTasks.ObservableForProperty(x => x.Count)
+        _pluginsUpdateProgressObserver ??= DownloadTasks.ObservableForProperty(x => x.Count)
             .Subscribe(_ =>
             {
                 if (DownloadTasks.Count > 0) return;
@@ -236,9 +227,15 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                         }
                     });
                 }
+
                 _pluginsUpdateProgressObserver?.Dispose();
                 _pluginsUpdateProgressObserver = null;
             });
+        
+        foreach (var (id, _) in toUpdate)
+        {
+            RequestDownloadPlugin(id);
+        }
     }
 
     public PluginIndexItem? ResolveMarketPlugin(string id)

@@ -595,6 +595,7 @@ public partial class App : AppBase, IAppHost
             dtWindow.Show();
             var entries = int.TryParse(ApplicationCommand.ImportEntries, out var r) ? r : 0;
             await dtWindow.PerformClassIslandImport(ApplicationCommand.ImportV1, (ImportEntries)entries);
+            return;
         }
         var spanLaunching = transaction.StartChild("startup-launching");
         var spanSetupMgmt = spanLaunching.StartChild("startup-setup-mgmt");
@@ -765,7 +766,7 @@ public partial class App : AppBase, IAppHost
                     ImportName = "ClassIsland"
                 };
                 dtWindow.Show();
-                dtWindow.ImportComplete();
+                dtWindow.ImportComplete(ApplicationCommand.ImportV1Complete);
             }
         };
 #if DEBUG

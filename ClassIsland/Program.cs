@@ -55,7 +55,8 @@ public static class Program
             new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动"),
             new Option<string>(["--importV1"], "指定要导入的 ClassIsland 1.7 配置目录"),
             new Option<string>(["--importEntries"], "指定要导入的 ClassIsland 1.7 配置信息"),
-            new Option<bool>(["--importComplete"], "启动时显示导入完成窗口")
+            new Option<bool>(["--importComplete"], "启动时显示导入完成窗口"),
+            new Option<bool>(["--importV1Complete"], "从 ClassIsland 1 导入成功"),
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);

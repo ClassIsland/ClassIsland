@@ -50,4 +50,6 @@ public class ApplicationCommand
     public string ImportEntries { get; set; } = "0";
 
     public bool ImportComplete { get; set; } = false;
+
+    public bool ImportV1Complete { get; set; } = false;
 }
