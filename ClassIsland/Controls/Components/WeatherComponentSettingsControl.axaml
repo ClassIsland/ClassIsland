@@ -1,4 +1,4 @@
-﻿<controls:ComponentBase x:TypeArguments="componentSettings:WeatherComponentSettings"
+<controls:ComponentBase x:TypeArguments="componentSettings:WeatherComponentSettings"
                         x:Class="ClassIsland.Controls.Components.WeatherComponentSettingsControl"
                         xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -65,6 +65,15 @@
                     <controls1:SettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.ShowRainTime, Mode=TwoWay}"/>
                     </controls1:SettingsExpander.Footer>
+                    <controls1:SettingsExpanderItem Content="模糊长时间降雨倒计时时间显示精度"
+                                                    Description="开启后，大于 60min 的降雨时间将会以 0.5h 为单位模糊显示，关闭则总是以精确分钟显示。">
+                        <controls1:SettingsExpanderItem.IsVisible>
+                            <Binding Path="Settings.ShowRainTime"/>
+                        </controls1:SettingsExpanderItem.IsVisible>
+                        <controls1:SettingsExpanderItem.Footer>
+                            <ToggleSwitch IsChecked="{Binding Settings.IsFuzzyLongRainCountdownEnabled, Mode=TwoWay}"/>
+                        </controls1:SettingsExpanderItem.Footer>
+                    </controls1:SettingsExpanderItem>
                 </controls1:SettingsExpander>
             </StackPanel>
         </ScrollViewer>

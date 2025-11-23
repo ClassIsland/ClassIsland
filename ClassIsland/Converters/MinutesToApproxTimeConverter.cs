@@ -31,12 +31,12 @@ public class MinutesToApproxTimeConverter : IValueConverter
             return "0min";
         }
 
-        var approxPrefix = isNegative ? "-~" : "~";
+        var approxPrefix = isNegative ? "~-" : "~";
 
         if (absMinutes >= 60)
         {
             var hours = absMinutes / 60.0;
-            var rounded = Math.Round(hours * 2.0) / 2.0;
+            var rounded = Math.Round(hours * 2.0, MidpointRounding.AwayFromZero) / 2.0;
 
             var text = Math.Abs(rounded % 1.0) < 1e-9
                 ? ((int)rounded).ToString(culture)
@@ -44,8 +44,8 @@ public class MinutesToApproxTimeConverter : IValueConverter
             return approxPrefix + text + "h";
         }
 
-        var roundedMinutes = (int)Math.Max(1, Math.Round(absMinutes / 5.0) * 5.0);
-        return approxPrefix + roundedMinutes.ToString(culture) + "min";
+        var exactPrefix = isNegative ? "-" : string.Empty;
+        return exactPrefix + absMinutes.ToString(culture) + "min";
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

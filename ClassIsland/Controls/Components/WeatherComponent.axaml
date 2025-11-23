@@ -294,9 +294,18 @@
                                        FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                        Margin="0 0 4 0"/>
                         <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
-                                   VerticalAlignment="Center" FontWeight="Regular">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay, Converter={x:Static converters:MinutesToApproxTimeConverter.Instance}}" />
+                                   VerticalAlignment="Center" FontWeight="Regular"
+                                   IsVisible="{Binding $parent[local:WeatherComponent].Settings.IsFuzzyLongRainCountdownEnabled}">
+                            <TextBlock.Text>
+                                <Binding Path="SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes"
+                                         Mode="OneWay"
+                                         Converter="{x:Static converters:MinutesToApproxTimeConverter.Instance}" />
+                            </TextBlock.Text>
                         </TextBlock>
+                        <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
+                                   VerticalAlignment="Center" FontWeight="Regular"
+                                   IsVisible="{Binding $parent[local:WeatherComponent].Settings.IsFuzzyLongRainCountdownEnabled, Converter={StaticResource InvertBooleanConverter}}"
+                                   Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay, StringFormat={}{0}min}" />
                     </StackPanel>
                 </Border>
             </Grid>
