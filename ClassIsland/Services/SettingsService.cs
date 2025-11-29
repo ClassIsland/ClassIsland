@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -186,9 +187,13 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         return true;
     }
 
+    // PropertyInfo 缓存。
+    private static readonly ConcurrentDictionary<string, PropertyInfo?> _propertyCache = new();
+
     public static PropertyInfo? GetPropertyInfoByName(string name) =>
         string.IsNullOrEmpty(name) ? null :
-            typeof(Settings).GetProperty(name, SettingsPropertiesFlags);
+            _propertyCache.GetOrAdd(name,
+                key => typeof(Settings).GetProperty(key, SettingsPropertiesFlags));
 
     /// <summary>
     /// 删除应用设置叠层。

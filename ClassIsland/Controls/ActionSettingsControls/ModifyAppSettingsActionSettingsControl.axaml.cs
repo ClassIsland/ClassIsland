@@ -109,7 +109,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
                 }
                 finally { ViewModel._inputValueLock = null; }
             }
-            else if (ViewModel.ControlTemplateName == ".text" && prevType != ViewModel.CurrentSettingsInfo?.Type)
+            else if (ViewModel.ControlTemplateName == ".string" && prevType != ViewModel.CurrentSettingsInfo?.Type)
             {
                 FillCurrentValue();
             }
@@ -277,7 +277,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
 
         ViewModel.IsInContentPresenter2 =
             Settings.Value?.ToString()?.Contains(Environment.NewLine) == true ||
-            ViewModel.ControlTemplateName == ".text" &&
+            ViewModel.ControlTemplateName == ".string" &&
             Settings.Value?.ToString()?.Length > 20;
 
         if (ViewModel.IsInContentPresenter2)
@@ -295,6 +295,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
 
         string DetermineControlType(Type type)
         {
+            ViewModel.IsModeVisible = false;
             if (IsCustomizedControlTemplateSupported(Settings.Name))
                 return Settings.Name;
 
@@ -302,11 +303,19 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
                 return ".enums";
 
             if (type == typeof(bool)) return ".bool";
-            if (type == typeof(int)) return ".int";
-            if (type == typeof(double)) return ".double";
+            if (type == typeof(int))
+            {
+                ViewModel.IsModeVisible = true;
+                return ".int";
+            }
+            if (type == typeof(double))
+            {
+                ViewModel.IsModeVisible = true;
+                return ".double";
+            }
             if (type == typeof(Color)) return ".color";
 
-            return ".text";
+            return ".string";
         }
     }
 
@@ -325,22 +334,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         }
     }
 
-    string? _lastName;
-    PropertyInfo? _cachedPropertyInfo;
-    PropertyInfo? CurrentPropertyInfo
-    {
-        get
-        {
-            var currentName = Settings.Name;
-            if (currentName != _lastName)
-            {
-                _cachedPropertyInfo = SettingsService.GetPropertyInfoByName(currentName);
-                _lastName = currentName;
-            }
-            return _cachedPropertyInfo;
-        }
-    }
-
+    PropertyInfo? CurrentPropertyInfo => SettingsService.GetPropertyInfoByName(Settings.Name);
 
     bool SetInputValue(object? value)
     {
@@ -362,7 +356,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
 
                 switch (ViewModel.ControlTemplateName)
                 {
-                    case ".text":
+                    case ".string":
                         return value switch
                         {
                             string str => str,
@@ -421,9 +415,9 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
             return value;
         }
     }
-}
 
 #endregion
+}
 
 public partial class ModifyAppSettingsActionSettingsControlViewModel : ObservableRecipient
 {
@@ -460,6 +454,7 @@ public partial class ModifyAppSettingsActionSettingsControlViewModel : Observabl
     [ObservableProperty] SettingsInfo? _currentSettingsInfo = null;
     [ObservableProperty] List<SettingsInfo> _settingsSearchResults = null!;
     [ObservableProperty] bool _isInContentPresenter2;
+    [ObservableProperty] bool _isModeVisible;
 }
 
 public class SettingsInfo(string? name, string? glyph, string[]? enums = null, double order = 10) : Core.Attributes.SettingsInfo(name, glyph, enums, order)

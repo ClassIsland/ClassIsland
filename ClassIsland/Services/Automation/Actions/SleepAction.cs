@@ -11,78 +11,58 @@ namespace ClassIsland.Services.Automation.Actions;
 [ActionInfo("classisland.action.sleep", "等待时长", "\ue9a8")]
 public class SleepAction : ActionBase<SleepActionSettings>
 {
+    readonly Stopwatch _sw = Stopwatch.StartNew();
+
     protected override async Task OnInvoke()
     {
         await base.OnInvoke();
-        ActionItem.Progress = 0;
-        var sw = Stopwatch.StartNew();
-        var tcs = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        var dueTimeChanged = false;
-        Timer? timer = null;
-        timer = new Timer(_ => CheckAndReport(), null, 0, 1000);
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await Task.Delay(20, InterruptCancellationToken);
-                CheckAndReport();
-            }
-            catch (TaskCanceledException) {}
-        });
-
         Settings.PropertyChanged += OnPropertyChanged;
-
-        await using var reg = InterruptCancellationToken.Register(() => tcs.TrySetCanceled());
 
         try
         {
-            await tcs.Task.ConfigureAwait(false);
+            while (!InterruptCancellationToken.IsCancellationRequested)
+            {
+                var targetMs = Settings.Value * 1000;
+                var elapsedMs = _sw.ElapsedMilliseconds;
+
+                if (elapsedMs >= targetMs)
+                {
+                    ActionItem.Progress = 100;
+                    break;
+                }
+
+                if (ActionItem.Progress == null)
+                    ActionItem.Progress = 10 / Settings.Value;
+                else
+                    ActionItem.Progress = elapsedMs * 100 / targetMs;
+
+                var remainingMs = (int)(targetMs - elapsedMs);
+                var checkInterval = Math.Min(remainingMs, 1000);
+                await Task.Delay(checkInterval, InterruptCancellationToken);
+            }
         }
+        catch (OperationCanceledException) { }
         finally
         {
-            await timer.DisposeAsync();
             Settings.PropertyChanged -= OnPropertyChanged;
         }
-        return;
+    }
 
-        void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Settings.Value))
         {
-            if (e.PropertyName == nameof(Settings.Value))
-                CheckAndReport();
-        }
+            var targetMs = Settings.Value * 1000;
+            var elapsed = _sw.ElapsedMilliseconds;
 
-        void CheckAndReport()
-        {
-            var targetSeconds = Settings.Value;
-            var elapsed = sw.Elapsed.TotalSeconds;
-            var remaining = targetSeconds - elapsed;
-
-            if (remaining <= 0)
+            if (elapsed >= targetMs)
             {
                 ActionItem.Progress = 100;
-                tcs.TrySetResult(null);
-                return;
-            }
-
-            var pct = Math.Clamp(elapsed / targetSeconds * 100, 0, 100);
-            ActionItem.Progress = pct;
-
-            if (remaining <= 1)
-            {
-                if (!dueTimeChanged)
-                {
-                    dueTimeChanged = true;
-                    timer?.Change((int)(remaining * 1000), 100);
-                }
             }
             else
             {
-                if (dueTimeChanged)
-                {
-                    dueTimeChanged = false;
-                    timer?.Change(1, 1000);
-                }
+                var progress = elapsed * 100 / targetMs;
+                ActionItem.Progress = progress;
             }
         }
     }
