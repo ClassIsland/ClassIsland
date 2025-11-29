@@ -717,7 +717,7 @@ public partial class App : AppBase, IAppHost
             spanLoadMainWindow.Finish();
             transaction.Finish();
             SentrySdk.ConfigureScope(s => s.Transaction = null);
-            GetService<IAutomationService>().Initialize();
+            GetService<IAutomationService>();
             GetService<IRulesetService>().NotifyStatusChanged();
             File.Delete(startupCountFilePath);
             if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)

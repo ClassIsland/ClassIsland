@@ -10,11 +10,6 @@ namespace ClassIsland.Core.Abstractions.Services;
 public interface IAutomationService
 {
     /// <summary>
-    /// 初始化服务。此方法由 StartupCompleted 调用。
-    /// </summary>
-    void Initialize();
-
-    /// <summary>
     /// 所有触发器提供方信息。
     /// </summary>
     static List<TriggerInfo> RegisteredTriggers { get; } = [];

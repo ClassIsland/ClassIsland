@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 namespace ClassIsland.Models.Actions;
 
@@ -23,4 +24,17 @@ public class ModifyAppSettingsActionSettings : ObservableRecipient
     /// </summary>
     /// 从 config 序列化时，为 JsonElement
     public object? Value { get; set; }
+
+    int _mode = 0;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public int Mode
+    {
+        get => _mode;
+        set
+        {
+            if (value == _mode) return;
+            _mode = value;
+            OnPropertyChanged();
+        }
+    }
 }

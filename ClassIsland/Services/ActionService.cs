@@ -6,7 +6,6 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services;
 using System.Threading.Tasks;
-using AvaloniaEdit.Utils;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Models.Automation;
 using ClassIsland.Models.Actions;
@@ -30,16 +29,13 @@ public class ActionService : IActionService
         actionSet.SetStartRunning(true);
         try
         {
-            await Task.Run(
-                    async () =>
-                        await ChangeableListForEachAsync(
-                            () => actionSet.ActionItems.Where(x => !x.IsRevertActionItem),
-                            async x =>
-                            {
-                                await InvokeActionItemAsync(x, actionSet, isRevertable && actionSet.IsRevertEnabled);
-                            },
-                            actionSet.InterruptCts?.Token),
-                    actionSet.InterruptCts?.Token ?? CancellationToken.None)
+            await ChangeableListForEachAsync(
+                () => actionSet.ActionItems.Where(x => !x.IsRevertActionItem),
+                async x =>
+                {
+                    await InvokeActionItemAsync(x, actionSet, isRevertable && actionSet.IsRevertEnabled);
+                },
+                actionSet.InterruptCts?.Token)
                 .ConfigureAwait(false);
         }
         finally
@@ -60,19 +56,16 @@ public class ActionService : IActionService
         actionSet.SetStartRunning(false);
         try
         {
-            await Task.Run(
-                    async () =>
-                        await ChangeableListForEachAsync(
-                            () => actionSet.ActionItems.Where(x => x.IsRevertActionItem || x.IsRevertEnabled),
-                            async x =>
-                            {
-                                if (x.IsRevertActionItem)
-                                    await InvokeActionItemAsync(x, actionSet, isRevertable: false);
-                                else if (x.IsRevertEnabled)
-                                    await RevertActionItemAsync(x, actionSet);
-                            },
-                            actionSet.InterruptCts?.Token),
-                    actionSet.InterruptCts?.Token ?? CancellationToken.None)
+            await ChangeableListForEachAsync(
+                () => actionSet.ActionItems.Where(x => x.IsRevertActionItem || x.IsRevertEnabled),
+                async x =>
+                {
+                    if (x.IsRevertActionItem)
+                        await InvokeActionItemAsync(x, actionSet, isRevertable: false);
+                    else if (x.IsRevertEnabled)
+                        await RevertActionItemAsync(x, actionSet);
+                },
+                actionSet.InterruptCts?.Token)
                 .ConfigureAwait(false);
         }
         finally
@@ -144,7 +137,7 @@ public class ActionService : IActionService
     static async Task ChangeableListForEachAsync<TItem>(
         Func<IEnumerable<TItem>> listProvider,
         Func<TItem, Task> action,
-        CancellationToken? cancellationToken = null)
+        CancellationToken? cancellationToken = null) where TItem : notnull
     {
         if (cancellationToken?.IsCancellationRequested == true) return;
         var currentList = listProvider().ToList();
@@ -159,11 +152,23 @@ public class ActionService : IActionService
 
             if (cancellationToken?.IsCancellationRequested == true) break;
 
-            currentList = listProvider().ToList();
-            var newIndex = currentList.IndexOf(item);
+            var newList = listProvider().ToList();
+            if (newList.Count != currentList.Count || !newList.SequenceEqual(currentList))
+            {
+                currentList = newList;
 
-            if (newIndex == -1) continue;
-            i = newIndex + 1;
+                // 只在列表发生变化时才重新创建索引映射
+                var itemIndexMap = currentList
+                    .Select((listItem, index) => (listItem, index))
+                    .ToDictionary(x => x.listItem, x => x.index);
+
+                if (!itemIndexMap.TryGetValue(item, out var newIndex)) continue;
+                i = newIndex + 1;
+            }
+            else
+            {
+                i++;
+            }
         }
     }
 
