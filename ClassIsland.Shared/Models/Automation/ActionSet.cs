@@ -19,10 +19,20 @@ public partial class ActionSet : ObservableRecipient
     /// <param name="isInvoke">开始触发为 true，开始恢复为 false。</param>
     public void SetStartRunning(bool isInvoke)
     {
-        InterruptCts?.Dispose();
-        RunningTcs?.Task.Dispose();
-        InterruptCts = new();
-        RunningTcs = new();
+        var oldCts = Interlocked.Exchange(ref InterruptCts, null);
+        if (oldCts != null)
+        {
+            oldCts.Cancel();
+            oldCts.Dispose();
+        }
+
+        var oldTcs = Interlocked.Exchange(ref RunningTcs, null);
+        if (oldTcs != null)
+            oldTcs.TrySetCanceled();
+
+        Interlocked.Exchange(ref InterruptCts, new());
+        Interlocked.Exchange(ref RunningTcs, new(TaskCreationOptions.RunContinuationsAsynchronously));
+
         Status = isInvoke ? ActionSetStatus.Invoking : ActionSetStatus.Reverting;
         foreach (var a in ActionItems)
         {
@@ -37,9 +47,15 @@ public partial class ActionSet : ObservableRecipient
     /// <param name="isInvoke">结束触发为 true，结束恢复为 false。</param>
     public void SetEndRunning(bool isInvoke)
     {
-        var isCancellationRequested = InterruptCts?.Token.IsCancellationRequested != false;
-        InterruptCts?.Dispose();
-        InterruptCts = null;
+        var isCancellationRequested = Volatile.Read(ref InterruptCts)?.IsCancellationRequested ?? true;
+
+        var oldCts = Interlocked.Exchange(ref InterruptCts, null);
+        if (oldCts != null)
+        {
+            oldCts.Cancel();
+            oldCts.Dispose();
+        }
+
         Status = isCancellationRequested switch
         {
             false => isInvoke && IsRevertEnabled ? ActionSetStatus.IsOn : ActionSetStatus.Normal,
@@ -47,9 +63,10 @@ public partial class ActionSet : ObservableRecipient
             true when Status is ActionSetStatus.Reverting => ActionSetStatus.IsOn,
             _ => Status
         };
-        RunningTcs?.SetResult(null);
-        RunningTcs?.Task.Dispose();
-        RunningTcs = null;
+
+        var oldTcs = Interlocked.Exchange(ref RunningTcs, null);
+        if (oldTcs != null)
+            oldTcs.TrySetResult(null);
     }
 
 

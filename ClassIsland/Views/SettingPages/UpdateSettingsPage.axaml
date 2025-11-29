@@ -192,12 +192,14 @@
                 <Button Content="检查更新" Margin="4"
                         Click="ButtonCheckUpdate_OnClick">
                     <Button.IsVisible>
-                        <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
-                                 Converter="{x:Static ObjectConverters.NotEqual}">
-                            <Binding.ConverterParameter>
-                                <enums:UpdateStatus>UpToDate</enums:UpdateStatus>
-                            </Binding.ConverterParameter>
-                        </Binding>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
+                                     Converter="{x:Static ObjectConverters.NotEqual}"
+                                     ConverterParameter="{x:Static enums:UpdateStatus.UpToDate}" />
+                            <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
+                                     Converter="{x:Static ObjectConverters.NotEqual}"
+                                     ConverterParameter="{x:Static enums:UpdateStatus.UpdateDeployed}" />
+                        </MultiBinding>
                     </Button.IsVisible>
                 </Button>
             </WrapPanel>

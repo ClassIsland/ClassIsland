@@ -68,22 +68,20 @@ public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSetting
 
         if (IsTypeSupported(type))
         {
-            if (value is JsonElement jsonElement)
-                return jsonElement.Deserialize(type, FriendlyJsonSerializerOptions);
-            else
-                return Convert.ChangeType(value, type);
+            return value switch
+            {
+                JsonElement jsonElement => jsonElement.Deserialize(type, FriendlyJsonSerializerOptions),
+                _ => Convert.ChangeType(value, type)
+            };
         }
         else
         {
-            if (value is JsonElement json)
+            return value switch
             {
-                return json.Deserialize(type, FriendlyJsonSerializerOptions);
-            }
-
-            if (value is string str)
-                return JsonSerializer.Deserialize(str, type, FriendlyJsonSerializerOptions);
-
-            return Convert.ChangeType(value, type);
+                JsonElement json => json.Deserialize(type, FriendlyJsonSerializerOptions),
+                string str => JsonSerializer.Deserialize(str, type, FriendlyJsonSerializerOptions),
+                _ => Convert.ChangeType(value, type)
+            };
         }
     }
 
