@@ -107,7 +107,7 @@
                 <ComboBox ItemsSource="{Binding #This.ViewModel.CurrentSettingsInfo.Enums}"
                           SelectedIndex="{Binding #This.ViewModel.InputValue, Converter={StaticResource PreventNullConverter}}" />
             </DataTemplate>
-            <DataTemplate x:Key=".text">
+            <DataTemplate x:Key=".string">
                 <TextBox VerticalAlignment="Center"
                          Text="{Binding #This.ViewModel.InputValue}"
                          AcceptsReturn="{Binding #This.ViewModel.IsInContentPresenter2}">

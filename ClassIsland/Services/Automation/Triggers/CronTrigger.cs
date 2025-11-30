@@ -4,8 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Automation;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Automation.Triggers;
+using Microsoft.Extensions.Logging;
 using TimeCrontab;
 
 namespace ClassIsland.Services.Automation.Triggers;
@@ -16,6 +18,9 @@ public class CronTrigger : TriggerBase<CronTriggerSettings>
     private Crontab? _crontab;
 
     private CancellationTokenSource? _stopCancellationTokenSource;
+
+    ILogger<CronTrigger> Logger { get; } = App.GetService<ILogger<CronTrigger>>();
+    IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
 
     public override void Loaded()
     {
@@ -33,7 +38,8 @@ public class CronTrigger : TriggerBase<CronTriggerSettings>
                 continue;
             }
 
-            await Task.Delay(_crontab.GetSleepTimeSpan(DateTime.Now), _stopCancellationTokenSource.Token);
+            var now = ExactTimeService.GetCurrentLocalDateTime();
+            await Task.Delay(_crontab.GetSleepTimeSpan(now), _stopCancellationTokenSource.Token);
             if (_stopCancellationTokenSource.IsCancellationRequested)
             {
                 break;
@@ -54,11 +60,19 @@ public class CronTrigger : TriggerBase<CronTriggerSettings>
         {
             _stopCancellationTokenSource.Cancel();
         }
-        _crontab = Crontab.TryParse(Settings.CronExpression);
-        if (_crontab != null)
+
+        try
         {
+            _crontab = Crontab.Parse(Settings.CronExpression);
+
+            var now = ExactTimeService.GetCurrentLocalDateTime();
+            Logger.LogInformation("cron 表达式解析成功，下次触发时间：{}", _crontab.GetNextOccurrence(now).ToLongTimeString());
             _stopCancellationTokenSource = new CancellationTokenSource();
             Task.Factory.StartNew(CronWorker, TaskCreationOptions.LongRunning);
+        }
+        catch (TimeCrontabException ex)
+        {
+            Logger.LogWarning(ex, "cron 表达式解析失败：");
         }
     }
 

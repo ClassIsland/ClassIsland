@@ -22,9 +22,7 @@ using ClassIsland.Shared.Models.Automation;
 namespace ClassIsland.Services;
 
 /// <inheritdoc cref="IAutomationService"/>
-public class AutomationService(ILogger<AutomationService> Logger, IRulesetService RulesetService, SettingsService SettingsService,
-    IActionService ActionService, IWindowRuleService WindowRuleService, IProfileService ProfileService, ILessonsService LessonsService,
-    IExactTimeService ExactTimeService) : ObservableRecipient, IAutomationService
+public class AutomationService : ObservableRecipient, IAutomationService
 {
     public static readonly string AutomationConfigsFolderPath =
         Path.Combine(CommonDirectories.AppConfigPath, "Automations");
@@ -33,8 +31,28 @@ public class AutomationService(ILogger<AutomationService> Logger, IRulesetServic
         Path.GetFullPath(Path.Combine(AutomationConfigsFolderPath,
             SettingsService.Settings.CurrentAutomationConfig + ".json"));
 
-    public void Initialize()
+    readonly ILogger<AutomationService> Logger;
+    readonly IRulesetService RulesetService;
+    readonly SettingsService SettingsService;
+    readonly IActionService ActionService;
+    readonly IWindowRuleService WindowRuleService;
+    readonly IProfileService ProfileService;
+    readonly ILessonsService LessonsService;
+    readonly IExactTimeService ExactTimeService;
+
+    public AutomationService(ILogger<AutomationService> logger, IRulesetService rulesetService, SettingsService settingsService,
+        IActionService actionService, IWindowRuleService windowRuleService, IProfileService profileService, ILessonsService lessonsService,
+        IExactTimeService exactTimeService) : base()
     {
+        Logger = logger;
+        RulesetService = rulesetService;
+        SettingsService = settingsService;
+        ActionService = actionService;
+        WindowRuleService = windowRuleService;
+        ProfileService = profileService;
+        LessonsService = lessonsService;
+        ExactTimeService = exactTimeService;
+
         LoadConfig();
         RefreshConfigs();
 
