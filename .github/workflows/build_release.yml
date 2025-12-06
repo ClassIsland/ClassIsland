@@ -124,7 +124,7 @@ jobs:
           - os: linux
             arch: x86
     name: Build_Launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
-    container: ${{ matrix.os == 'Linux' && 'ghcr.io/classisland/philia-build-image' || '' }}
+    container: ${{ matrix.os == 'Linux' && 'ghcr.io/classisland/philia-build-image:main' || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
