@@ -124,6 +124,7 @@ jobs:
           - os: linux
             arch: x86
     name: Build_Launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
+    container: ${{ matrix.os == 'Linux' && 'ghcr.io/classisland/philia-build-image' || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -141,6 +142,9 @@ jobs:
           dotnet-version: |
             8.0.x
             9.0.x
+
+      - name: Setup Environment
+        run: select-objcopy ${{ matrix.arch }}
 
       - name: ☢️ Nuke
         env:
