@@ -616,6 +616,9 @@ public partial class App : AppBase, IAppHost
         {
             Settings.DiagnosticMemoryKillCount++;
             Settings.DiagnosticLastMemoryKillTime = DateTime.Now;
+            #if !DEBUG
+            Logger.LogWarning($"上次会话因MLE结束。MemoryKillCount={Settings.DiagnosticMemoryKillCount}");
+            #endif
         }
         spanLoadingSettings.Finish();
         //OverrideFocusVisualStyle();

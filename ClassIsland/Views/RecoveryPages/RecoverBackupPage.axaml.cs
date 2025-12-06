@@ -1,10 +1,3 @@
-using System;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core;
@@ -13,6 +6,14 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.RecoveryPages;
 using FluentAvalonia.UI.Controls;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.RecoveryPages;
@@ -23,9 +24,9 @@ namespace ClassIsland.Views.RecoveryPages;
 public partial class RecoverBackupPage : UserControl
 {
     public Frame? MainFrame { get; init; }
-    
+
     public UserControl? LastPage { get; init; }
-    
+
     public RecoverBackupViewModel ViewModel { get; } = new();
     public RecoverBackupPage()
     {
@@ -35,12 +36,27 @@ public partial class RecoverBackupPage : UserControl
 
     private void RecoverBackupPage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (Directory.Exists(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups")))
+        var backupPath = Path.Combine(CommonDirectories.AppRootFolderPath, "Backups");
+
+        if (Directory.Exists(backupPath))
         {
-            ViewModel.Backups =
-                new ObservableCollection<string>(
-                    Directory.GetFiles(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups")).OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName).Concat(
-                        Directory.GetDirectories(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups")).OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName))!); 
+            var excludeFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase) // 忽略指定的文件
+            {
+                ".DS_Store",
+                "Thumbs.db",
+                "desktop.ini"
+            };
+
+            IEnumerable<string?> files = Directory.GetFiles(backupPath)
+                 .Where(file => !excludeFiles.Contains(Path.GetFileName(file)))
+                 .OrderByDescending(Directory.GetLastWriteTime)
+                 .Select(Path.GetFileName);
+
+            IEnumerable<string?> directories = Directory.GetDirectories(backupPath)
+                .OrderByDescending(Directory.GetLastWriteTime)
+                .Select(Path.GetFileName);
+
+            ViewModel.Backups = new ObservableCollection<string>(files.Concat(directories));
         }
     }
 
@@ -68,10 +84,12 @@ public partial class RecoverBackupPage : UserControl
 
         await Task.Run(() =>
         {
-            if(Path.GetExtension(backupPath)==".zip"){
+            if (Path.GetExtension(backupPath) == ".zip")
+            {
                 ZipFile.ExtractToDirectory(backupPath, CommonDirectories.AppRootFolderPath, true);
             }
-            if(Directory.Exists(backupPath)){
+            if (Directory.Exists(backupPath))
+            {
                 FileFolderService.CopyFolder(backupPath, CommonDirectories.AppRootFolderPath, true);
             }
         });
@@ -84,7 +102,7 @@ public partial class RecoverBackupPage : UserControl
             return;
         }
 
-        var result = await ContentDialogHelper.ShowConfirmationDialog("恢复备份", 
+        var result = await ContentDialogHelper.ShowConfirmationDialog("恢复备份",
             $"您确定要把应用配置恢复到备份 {ViewModel.SelectedBackupName} 的状态吗？此操作无法撤销。",
             root: TopLevel.GetTopLevel(this));
         if (!result)
