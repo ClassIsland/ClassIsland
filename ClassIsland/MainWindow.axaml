@@ -19,6 +19,7 @@
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:enums="clr-namespace:ClassIsland.Shared.Enums;assembly=ClassIsland.Shared"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         d:DataContext="{d:DesignInstance local:MainWindow}"
@@ -165,18 +166,27 @@
                       ci:MainWindowStylesAssist.IsCustomBackgroundColorEnabled="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}"
                       ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
                       ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
-                    <Interaction.Behaviors>
-                        <DataTriggerBehavior Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}" Value="0">
-                            <AddClassAction ClassName="BasicHidingMode" />
-                        </DataTriggerBehavior>
-                        <DataTriggerBehavior Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}" Value="1">
-                            <AddClassAction ClassName="AdvancedHidingMode" />
-                        </DataTriggerBehavior>
-                        <DataTriggerBehavior Binding="{Binding LessonsService.CurrentState, Mode=OneWay}"
-                                             Value="OnClass">
-                            <AddClassAction ClassName="StateOnClass" />
-                        </DataTriggerBehavior>
-                    </Interaction.Behaviors>
+                    <Classes.BasicHidingMode>
+                        <Binding Path="ViewModel.Settings.HideMode" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>0</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Classes.BasicHidingMode>
+                    <Classes.AdvancedHidingMode>
+                        <Binding Path="ViewModel.Settings.HideMode" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>1</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Classes.AdvancedHidingMode>
+                    <Classes.StateOnClass>
+                        <Binding Path="LessonsService.CurrentState" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <enums:TimeState>OnClass</enums:TimeState>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </Classes.StateOnClass>
                     <Grid.Effect>
                         <DropShadowEffect BlurRadius="8" Opacity="0"
                                           Color="Black" />
