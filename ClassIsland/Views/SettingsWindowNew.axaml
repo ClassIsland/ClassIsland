@@ -123,6 +123,16 @@
                                 </OnPlatform>
                             </Border.IsVisible>
                         </Border>
+                        <Button Name="BackButton"
+                                Grid.Column=""
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Margin="0 -8 0 -8"
+                                Click="BackButton_OnClick"
+                                IsVisible="{Binding #NavigationFrame.CanGoBack}"
+                                MinWidth="40" Width="48"
+                                ToolTip.Tip="返回"
+                                Classes="nav-back">
+                        </Button>
                         <Button Name="TogglePaneButton"
                                 Grid.Column=""
                                 Theme="{StaticResource PaneToggleButtonStyle}"
@@ -131,6 +141,7 @@
                                 Click="TogglePaneButton_OnClick"
                                 IsVisible="{Binding !#NavigationView.IsPaneToggleButtonVisible}"
                                 MinWidth="40" Width="48"/>
+                        
                         <Image Margin="12 4"
                                IsHitTestVisible="False"
                                Source="/Assets/AppLogo.png"
