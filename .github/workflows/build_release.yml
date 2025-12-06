@@ -143,9 +143,11 @@ jobs:
             8.0.x
             9.0.x
 
-      - name: Setup Environment
+      - name: Setup philia Environment
         if: ${{ matrix.os == 'linux' }}
-        run: select-objcopy ${{ matrix.arch }}
+        run: |
+          select-objcopy ${{ matrix.arch }}
+          git config --global --add safe.directory '*'
 
       - name: ☢️ Nuke
         env:
