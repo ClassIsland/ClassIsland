@@ -198,21 +198,31 @@ public partial class PluginsSettingsPage : SettingsPageBase
         var file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
         {
             Title = "从本地安装插件",
-            FileTypeFilter = [IPluginService.PluginPackageFileType]
+            FileTypeFilter = [IPluginService.PluginPackageFileType],
+            AllowMultiple = true
         }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
         PopupHelper.RestoreAllPopups();
         if (file.Count <= 0)
             return;
-        var path = file[0];
-        
-        try
+
+        var success = 0;
+        foreach (var path in file)
         {
-            File.Copy(path, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(path)), true);
-            RequestRestart();
+            try
+            {
+                File.Copy(path, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(path)), true);
+                success++;
+            }
+            catch (Exception exception)
+            {
+                this.ShowErrorToast($"无法安装插件 {path}", exception);
+            }
         }
-        catch (Exception exception)
+
+        if (success > 0)
         {
-            this.ShowErrorToast($"无法安装插件", exception);
+            this.ShowSuccessToast($"成功安装了 {success} 个插件。");
+            RequestRestart();
         }
     }
 
