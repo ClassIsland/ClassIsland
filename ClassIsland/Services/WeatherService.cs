@@ -103,34 +103,34 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         if (!IsWeatherRefreshed)
             return false;
 
-        // 今天的日出日落 (ForecastDaily.SunRiseSet.Value[0])
-        var todaySunRiseSet = Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value.FirstOrDefault();
-        if (todaySunRiseSet == null)
-        {
+        var now = DateTimeOffset.Now;
+        if (!TryGetSunTimes(now, out var sunrise, out var sunset))
             return false;
-        }
-        if (!DateTime.TryParse(todaySunRiseSet.From, out var sunRise) ||
-            !DateTime.TryParse(todaySunRiseSet.To, out var sunSet))
-        {
-            return false;
-        }
-        var now = DateTime.Now;
-        var targetTime = settings.IsSunset ? sunSet : sunRise;
 
-        if (targetTime < now)
+        return settings.IsSunset
+            ? (now >= sunset || now < sunrise)
+            : (now >= sunrise && now < sunset);
+    }
+
+    private bool TryGetSunTimes(DateTimeOffset now, out DateTimeOffset sunrise, out DateTimeOffset sunset)
+    {
+        sunrise = default;
+        sunset = default;
+        var list = Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value;
+        foreach (var item in list)
         {
-            var tomorrowSunRiseSet = Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value.ElementAtOrDefault(1);
-            if (tomorrowSunRiseSet != null)
+            if (!DateTimeOffset.TryParse(item.From, CultureInfo.InvariantCulture, DateTimeStyles.None, out var sr))
+                continue;
+            if (!DateTimeOffset.TryParse(item.To, CultureInfo.InvariantCulture, DateTimeStyles.None, out var ss))
+                continue;
+            if (sr.Date == now.Date || ss.Date == now.Date)
             {
-                if (DateTime.TryParse(settings.IsSunset ? tomorrowSunRiseSet.To : tomorrowSunRiseSet.From, out var nextTargetTime))
-                {
-                    targetTime = nextTargetTime;
-                }
+                sunrise = sr;
+                sunset = ss;
+                return true;
             }
         }
-        var diff = (targetTime - now).TotalMinutes;
-
-        return diff > 0 && diff <= settings.TimeMinutes;
+        return false;
     }
 
     private bool HasAlertRuleHandler(object? o)

@@ -28,11 +28,5 @@
                                              IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"/>
             </TabStripItem>
         </TabStrip>
-        <ci:Field  Suffix="分钟">
-            <controls:NumberBox Value="{Binding Settings.TimeMinutes, Converter={x:Static ci:NotNaNConverter.Instance}}"
-                                SpinButtonPlacementMode="Compact"
-                                Margin="0 0 -4 0"
-                                Minimum="0" Maximum="1440"/>
-        </ci:Field>
     </WrapPanel>
 </ci:RuleSettingsControlBase>
