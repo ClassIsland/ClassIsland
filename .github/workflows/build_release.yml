@@ -124,7 +124,7 @@ jobs:
           - os: linux
             arch: x86
     name: Build_Launcher_${{ matrix.os }}_${{ matrix.arch }}_${{ matrix.build_type }}_${{ matrix.package }}
-    container: ${{ matrix.os == 'Linux' && 'ghcr.io/classisland/philia-build-image:main' || '' }}
+    container: ${{ matrix.os == 'linux' && 'ghcr.io/classisland/philia-build-image:main' || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -144,6 +144,7 @@ jobs:
             9.0.x
 
       - name: Setup Environment
+        if: ${{ matrix.os == 'linux' }}
         run: select-objcopy ${{ matrix.arch }}
 
       - name: ☢️ Nuke
