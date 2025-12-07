@@ -1,0 +1,38 @@
+<ci:RuleSettingsControlBase x:Class="ClassIsland.Controls.RuleSettingsControls.SunRiseSetRuleSettingsControl"
+                            x:TypeArguments="rules:SunRiseSetRuleSettings"
+                            xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ClassIsland.Controls.RuleSettingsControls"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:rules="clr-namespace:ClassIsland.Models.Rules"
+             xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters;assembly=ClassIsland.Core"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <WrapPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SunRiseSetRuleSettingsControl}}"
+               Classes="items-valign-center"
+               Orientation="Horizontal">
+        <TabStrip Theme="{StaticResource TabStripStyle}"
+                  Classes="compact toggle"
+                  Margin="0 0 1 0">
+            <TabStripItem IsSelected="{Binding !Settings.IsSunset}">
+                <ci:AnimatedIconButton Glyph="&#xED39;" Text="日出"
+                                             Classes="display-role"
+                                             IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}" />
+            </TabStripItem>
+            <TabStripItem IsSelected="{Binding Settings.IsSunset}">
+                <ci:AnimatedIconButton Glyph="&#xEC46;" Text="日落"
+                                             Classes="display-role"
+                                             IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"/>
+            </TabStripItem>
+        </TabStrip>
+        <ci:Field  Suffix="分钟">
+            <controls:NumberBox Value="{Binding Settings.TimeMinutes, Converter={x:Static ci:NotNaNConverter.Instance}}"
+                                SpinButtonPlacementMode="Compact"
+                                Margin="0 0 -4 0"
+                                Minimum="0" Maximum="1440"/>
+        </ci:Field>
+    </WrapPanel>
+</ci:RuleSettingsControlBase>

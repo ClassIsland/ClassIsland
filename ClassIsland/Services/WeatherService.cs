@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -59,6 +59,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         RulesetService.RegisterRuleHandler("classisland.weather.currentWeather", CurrentWeatherRuleHandler);
         RulesetService.RegisterRuleHandler("classisland.weather.hasWeatherAlert", HasAlertRuleHandler);
         RulesetService.RegisterRuleHandler("classisland.weather.rainTime", RainTimeRuleHandler);
+        RulesetService.RegisterRuleHandler("classisland.weather.sunRiseSet", SunRiseSetRuleHandler);
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Start();
         _ = QueryWeatherAsync();
@@ -93,6 +94,43 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         var baseTime = (settings.IsRemainingTime ? -1.0 : 1.0) * Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes;
         return baseTime > 0 && baseTime <= settings.RainTimeMinutes;
         
+    }
+
+    private bool SunRiseSetRuleHandler(object? o)
+    {
+        if (o is not SunRiseSetRuleSettings settings)
+            return false;
+        if (!IsWeatherRefreshed)
+            return false;
+
+        // 今天的日出日落 (ForecastDaily.SunRiseSet.Value[0])
+        var todaySunRiseSet = Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value.FirstOrDefault();
+        if (todaySunRiseSet == null)
+        {
+            return false;
+        }
+        if (!DateTime.TryParse(todaySunRiseSet.From, out var sunRise) ||
+            !DateTime.TryParse(todaySunRiseSet.To, out var sunSet))
+        {
+            return false;
+        }
+        var now = DateTime.Now;
+        var targetTime = settings.IsSunset ? sunSet : sunRise;
+
+        if (targetTime < now)
+        {
+            var tomorrowSunRiseSet = Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value.ElementAtOrDefault(1);
+            if (tomorrowSunRiseSet != null)
+            {
+                if (DateTime.TryParse(settings.IsSunset ? tomorrowSunRiseSet.To : tomorrowSunRiseSet.From, out var nextTargetTime))
+                {
+                    targetTime = nextTargetTime;
+                }
+            }
+        }
+        var diff = (targetTime - now).TotalMinutes;
+
+        return diff > 0 && diff <= settings.TimeMinutes;
     }
 
     private bool HasAlertRuleHandler(object? o)
