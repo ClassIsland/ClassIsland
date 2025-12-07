@@ -277,7 +277,7 @@ public partial class App
             Url = "https://github.com/ClassIsland/ClassIsland"
         });
         // Plugins
-        if (!ApplicationCommand.Safe)
+        if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1))
         {
             PluginService.InitializePlugins(context, services);
         }

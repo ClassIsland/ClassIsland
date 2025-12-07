@@ -19,6 +19,7 @@ using ClassIsland.Extensions;
 using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared.Helpers;
+using Pastel;
 
 
 namespace ClassIsland.Desktop;
@@ -28,6 +29,14 @@ class Program
     [STAThread]
     static int Main(string[] args)
     {
+#if DEBUG
+        if (!Debugger.IsAttached && Environment.GetEnvironmentVariable("ClassIsland_WaitDebuggers") == "1")
+        {
+            Console.WriteLine("[*] 请附加一个调试器，然后按 Enter 继续。".Pastel("#01fffd"));
+            Console.ReadLine();
+            Debugger.Break();
+        }    
+#endif
         var stopTokenSource = new CancellationTokenSource();
         ActivatePlatforms(out var postInit, stopTokenSource.Token);
         var buildApp = ClassIsland.Program.AppEntry(args);
