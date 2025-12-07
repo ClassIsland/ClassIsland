@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -59,6 +59,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         RulesetService.RegisterRuleHandler("classisland.weather.currentWeather", CurrentWeatherRuleHandler);
         RulesetService.RegisterRuleHandler("classisland.weather.hasWeatherAlert", HasAlertRuleHandler);
         RulesetService.RegisterRuleHandler("classisland.weather.rainTime", RainTimeRuleHandler);
+        RulesetService.RegisterRuleHandler("classisland.weather.sunRiseSet", SunRiseSetRuleHandler);
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Start();
         _ = QueryWeatherAsync();
@@ -93,6 +94,43 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         var baseTime = (settings.IsRemainingTime ? -1.0 : 1.0) * Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes;
         return baseTime > 0 && baseTime <= settings.RainTimeMinutes;
         
+    }
+
+    private bool SunRiseSetRuleHandler(object? o)
+    {
+        if (o is not SunRiseSetRuleSettings settings)
+            return false;
+        if (!IsWeatherRefreshed)
+            return false;
+
+        var now = DateTimeOffset.Now;
+        if (!TryGetSunTimes(now, out var sunrise, out var sunset))
+            return false;
+
+        return settings.IsSunset
+            ? (now >= sunset || now < sunrise)
+            : (now >= sunrise && now < sunset);
+    }
+
+    private bool TryGetSunTimes(DateTimeOffset now, out DateTimeOffset sunrise, out DateTimeOffset sunset)
+    {
+        sunrise = default;
+        sunset = default;
+        var list = Settings.LastWeatherInfo.ForecastDaily.SunRiseSet.Value;
+        foreach (var item in list)
+        {
+            if (!DateTimeOffset.TryParse(item.From, CultureInfo.InvariantCulture, DateTimeStyles.None, out var sr))
+                continue;
+            if (!DateTimeOffset.TryParse(item.To, CultureInfo.InvariantCulture, DateTimeStyles.None, out var ss))
+                continue;
+            if (sr.Date == now.Date || ss.Date == now.Date)
+            {
+                sunrise = sr;
+                sunset = ss;
+                return true;
+            }
+        }
+        return false;
     }
 
     private bool HasAlertRuleHandler(object? o)

@@ -1,0 +1,67 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:commands="http://classisland.tech/schemas/xaml/core">
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="../ThemeBase.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="Button.nav-back">
+        <Setter Property="Theme" Value="{StaticResource PaneToggleButtonStyle}"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="LayoutRoot"
+                        Background="{TemplateBinding Background}"
+                        Margin="{TemplateBinding Padding}"
+                        Height="{TemplateBinding MinHeight}"
+                        HorizontalAlignment="Stretch"
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
+                    <Grid Name="ContentRoot"
+                          ColumnDefinitions="Auto,*">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="{DynamicResource PaneToggleButtonHeightGridLength}" />
+                        </Grid.RowDefinitions>
+
+                        <Border Width="{TemplateBinding MinWidth}">
+                            <Viewbox Name="IconHost"
+                                     Width="16"
+                                     Height="16"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <TextBlock Name="Icon"
+                                           Text="&#xe109;"
+                                           Margin="0 0 0 -2"
+                                           FontFamily="{x:Static commands:AppBase.FluentIconsFontFamily}"
+                                           FontSize="{TemplateBinding FontSize}"
+                                           RenderTransform="none">
+                                    <TextBlock.Transitions>
+                                        <Transitions>
+                                            <TransformOperationsTransition Duration="00:00:00.083"
+                                                                           Property="RenderTransform" />
+                                        </Transitions>
+                                    </TextBlock.Transitions>
+                                </TextBlock>
+                            </Viewbox>
+                        </Border>
+
+                        <ContentPresenter Name="ContentPresenter"
+                                          VerticalContentAlignment="Center"
+                                          Content="{TemplateBinding Content}"
+                                          FontSize="{TemplateBinding FontSize}"
+                                          Padding="4,0,0,0"
+                                          Grid.Column="1" />
+
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

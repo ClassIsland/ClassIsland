@@ -232,7 +232,7 @@
             <!-- 降低主界面进度条精度 -->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xe5e3;}" 
                                         Header="降低主界面进度条精度"
-                                        Description="启用后将降低主界面精度条精度，降低主界面更新频率，以减少应用的性能占用。">
+                                        Description="启用后将降低主界面进度条精度，降低主界面更新频率，以减少应用的性能占用。">
                 <controls3:SettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.ReduceProgressAccuracy}"/>
                 </controls3:SettingsExpander.Footer>

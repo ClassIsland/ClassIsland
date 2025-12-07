@@ -220,7 +220,7 @@
     </controls:SettingsPageBase.Resources>
     <controls1:StickyScrollViewer CollapsedHeight="58">
         <controls1:StickyScrollViewer.HeaderContent>
-            <Grid >
+            <Grid>
                 <Panel MaxHeight="300" 
                        Opacity="{Binding $self.(ci2:StickyScrollViewer.HeaderFadingOpacity)}"
                        Background="Transparent">
@@ -233,6 +233,43 @@
                         </LinearGradientBrush>
                     </Panel.OpacityMask>
                     <Border Background="#0d1111" />
+                    <Panel MaxWidth="{StaticResource SettingsContainerWidth}">
+                        <Panel.Styles>
+                            <Style Selector="Panel">
+                                <Style.Animations>
+                                    <Animation Delay="0:0:0.25" Duration="0:0:0.2"
+                                               FillMode="Both" Easing="0,0 0,1">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="Opacity" Value="0.0"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="100%">
+                                            <Setter Property="Opacity" Value="1.0"/>
+                                        </KeyFrame>
+                                    </Animation> 
+                                </Style.Animations>
+                            </Style>
+                        </Panel.Styles>
+                        <Border Width="{Binding $self.Bounds.Height}"
+                                HorizontalAlignment="Left"
+                                Margin="-150 -100 0 0">
+                            <Border.Background>
+                                <RadialGradientBrush Center="50%, 50%">
+                                    <GradientStop Offset="0.2" Color="#ff0c0e1f"/>
+                                    <GradientStop Offset="1" Color="#ff0d1111"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <Border Width="{Binding $self.Bounds.Height}"
+                                HorizontalAlignment="Right"
+                                Margin="0 0 100 -50">
+                            <Border.Background>
+                                <RadialGradientBrush Center="50%, 50%">
+                                    <GradientStop Offset="0.2" Color="#ff0c0e1f"/>
+                                    <GradientStop Offset="1" Color="#ff0d1111"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </Panel>
                     <Image Source="/Assets/BannerMain_App2.png" Stretch="Uniform" 
                            HorizontalAlignment="Center"
                            PointerPressed="DebugBorder_OnPointerPressed"
@@ -281,7 +318,7 @@
                             </HyperlinkButton>
                         </WrapPanel>
                     </controls3:SettingsExpanderItem.Footer>
-                    <TextBlock Background="Transparent" PointerPressed="UIElementAppInfo_OnMouseDown">
+                    <TextBlock Background="Transparent" >
                         <Run Text="Copyright (c) 2023-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" /> HelloWRC
                     </TextBlock>
                 </controls3:SettingsExpanderItem>

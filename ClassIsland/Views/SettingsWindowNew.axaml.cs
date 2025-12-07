@@ -257,6 +257,17 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 transaction?.Finish(SpanStatus.InternalError);
             }
         }
+        else if (e.NavigationMode == NavigationMode.Back)
+        {
+            // 对于通过其它方式导航的设置页面，需要手动设置选中的导航菜单项
+            var info = e.Content is SettingsPageBase spb
+                ? SettingsWindowRegistryService.Registered.FirstOrDefault(x => Equals(x.Id, spb.Tag))
+                : null;
+            NavigationView.SelectedItem = NavigationView.MenuItems
+                .OfType<NavigationViewItem>()
+                .FirstOrDefault(x => Equals(x.Tag, info));
+            ViewModel.SelectedPageInfo = info;
+        }
         ViewModel.IsNavigating = false;
         ViewModel.CanGoBack = NavigationFrame.CanGoBack;
     }
@@ -362,6 +373,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             _cachedPages[id ?? ""] = pageNew;
         }
 
+        if (pageNew != null)
+        {
+            pageNew.Tag = id;
+        }
         return pageNew;
     }
 
@@ -765,5 +780,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         var dialog = new JoinManagementDialog();
         dialog.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
+    }
+
+    private void BackButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        NavigationFrame.GoBack();
     }
 }
