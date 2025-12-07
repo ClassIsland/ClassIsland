@@ -244,7 +244,9 @@ public partial class App
         // 认证提供方
         services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
         // 语音提供方
-        services.AddSpeechProvider<SystemSpeechService>();
+if (System.OperatingSystem.IsWindows()) {
+    services.AddSpeechProvider<SystemSpeechService>();
+}
         services.AddSpeechProvider<EdgeTtsService, EdgeTtsSpeechServiceSettingsControl>();
         services.AddSpeechProvider<GptSoVitsService, GptSovitsSpeechServiceSettingsControl>();
         // 天气图标模板
