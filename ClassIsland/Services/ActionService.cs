@@ -25,7 +25,7 @@ public class ActionService : IActionService
 
         MigrateActionSet(actionSet);
 
-        Logger.LogInformation("触发行动组“{行动组}”。", actionSet.Name);
+        Logger.LogTrace("触发行动组“{行动组}”。", actionSet.Name);
         actionSet.SetStartRunning(true);
         try
         {
@@ -52,7 +52,7 @@ public class ActionService : IActionService
 
         MigrateActionSet(actionSet);
 
-        Logger.LogInformation("恢复行动组“{行动组}”。", actionSet.Name);
+        Logger.LogTrace("恢复行动组“{行动组}”。", actionSet.Name);
         actionSet.SetStartRunning(false);
         try
         {
