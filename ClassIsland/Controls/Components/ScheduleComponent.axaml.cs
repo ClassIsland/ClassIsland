@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -218,7 +219,6 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
 
     private void UpdateTomorrowVisibility()
     {
-        // “无展示课程时显示”
         var showOnEmpty = Settings.TomorrowScheduleShowMode == 1;
         if (!showOnEmpty)
         {
@@ -228,34 +228,25 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         var selectedItem = LessonsService.CurrentTimeLayoutItem;
         var classPlan = LessonsService.CurrentClassPlan;
-        bool hasDisplayable = false;
-        if (classPlan?.ValidTimeLayoutItems is { Count: > 0 })
-        {
-            foreach (var item in classPlan.ValidTimeLayoutItems)
-            {
-                if (item.TimeType == 3)
-                    continue;
-                // 分割线不计入
-                if (item.TimeType == 2)
-                    continue;
-                var pointTime = item.EndTime;
-                if (HideFinishedClass && pointTime < now)
-                    continue;
-                // 默认隐藏
-                if (item.IsHideDefault && !Equals(selectedItem, item))
-                    continue;
-                // 课间
-                if (item.TimeType == 1 && !Equals(selectedItem, item))
-                    continue;
-                // 上课时仅显示当前课程
-                if (ShowCurrentLessonOnlyOnClass && selectedItem?.TimeType == 0 && !Equals(selectedItem, item))
-                    continue;
-                hasDisplayable = true;
-                break;
-            }
-        }
-
+        var hasDisplayable = HasDisplayableItems(classPlan, now, selectedItem);
         PseudoClasses.Set(":show-tomorrow-schedule-on-empty", !hasDisplayable);
+    }
+
+    private bool HasDisplayableItems(ClassPlan? classPlan, TimeSpan now, TimeLayoutItem? selectedItem)
+    {
+        var items = classPlan?.ValidTimeLayoutItems;
+        if (items == null || items.Count == 0) return false;
+        return items.Any(item => ShouldDisplay(item, now, selectedItem, HideFinishedClass, ShowCurrentLessonOnlyOnClass));
+    }
+
+    private static bool ShouldDisplay(TimeLayoutItem item, TimeSpan now, TimeLayoutItem? selectedItem, bool hideFinishedClass, bool showCurrentLessonOnlyOnClass)
+    {
+        if (item.TimeType is 2 or 3) return false;
+        if (hideFinishedClass && item.EndTime < now) return false;
+        if (item.IsHideDefault && !Equals(selectedItem, item)) return false;
+        if (item.TimeType == 1 && !Equals(selectedItem, item)) return false;
+        if (showCurrentLessonOnlyOnClass && selectedItem?.TimeType == 0 && !Equals(selectedItem, item)) return false;
+        return true;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
