@@ -1,4 +1,4 @@
-﻿<controls:ComponentBase x:TypeArguments="componentSettings:WeatherComponentSettings"
+<controls:ComponentBase x:TypeArguments="componentSettings:WeatherComponentSettings"
                         x:Class="ClassIsland.Controls.Components.WeatherComponent"
                         xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -294,10 +294,18 @@
                                        FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                        Margin="0 0 4 0"/>
                         <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
-                                   VerticalAlignment="Center" FontWeight="Regular">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay}">
-                            </Run><Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="min"/>
+                                   VerticalAlignment="Center" FontWeight="Regular"
+                                   IsVisible="{Binding Settings.IsFuzzyLongRainCountdownEnabled}">
+                            <TextBlock.Text>
+                                <Binding Path="SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes"
+                                         Mode="OneWay"
+                                         Converter="{x:Static converters:MinutesToApproxTimeConverter.Instance}" />
+                            </TextBlock.Text>
                         </TextBlock>
+                        <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
+                                   VerticalAlignment="Center" FontWeight="Regular"
+                                   IsVisible="{Binding !Settings.IsFuzzyLongRainCountdownEnabled}"
+                                   Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay, StringFormat={}{0}min}" />
                     </StackPanel>
                 </Border>
             </Grid>

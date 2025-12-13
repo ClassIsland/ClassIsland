@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.ComponentSettings;
 
@@ -19,6 +19,7 @@ public class WeatherComponentSettings : ObservableRecipient
 
     private int _alertsTitleShowMode = 1;
     private bool _showRainTime = true;
+    private bool _isFuzzyLongRainCountdownEnabled = true;
     private bool _showMainWeatherInfo = true;
     private int _mainWeatherInfoKind = 0;
 
@@ -40,6 +41,17 @@ public class WeatherComponentSettings : ObservableRecipient
         {
             if (value == _showRainTime) return;
             _showRainTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsFuzzyLongRainCountdownEnabled
+    {
+        get => _isFuzzyLongRainCountdownEnabled;
+        set
+        {
+            if (value == _isFuzzyLongRainCountdownEnabled) return;
+            _isFuzzyLongRainCountdownEnabled = value;
             OnPropertyChanged();
         }
     }

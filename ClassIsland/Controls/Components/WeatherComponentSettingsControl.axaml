@@ -1,4 +1,4 @@
-﻿<controls:ComponentBase x:TypeArguments="componentSettings:WeatherComponentSettings"
+<controls:ComponentBase x:TypeArguments="componentSettings:WeatherComponentSettings"
                         x:Class="ClassIsland.Controls.Components.WeatherComponentSettingsControl"
                         xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,9 +12,8 @@
                         xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
-        <ScrollViewer>
-            <StackPanel Classes="settings-container animated-intro" Margin="0">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
+        <StackPanel Classes="settings-container animated-intro" Margin="0">
                 <controls1:InfoBar Message="本页面仅包含组件设置，要调整显示天气的城市，请转到【天气】选项卡"
                                    IsOpen="True" IsClosable="False"/>
                 
@@ -61,12 +60,21 @@
                
                 <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF453;}"
                                             Header="显示降水提示"
-                                            Description="启用后，将显示降水即将到来的时间和降水剩余时间。正数代表降水即将到来的时间，负数代表剩余时间。">
+                                            Description="启用后，将显示降水即将到来的时间和降水剩余时间。正数代表降水即将到来的时间，负数代表剩余时间。"
+                                            IsExpanded="{Binding Settings.ShowRainTime, Mode=OneWay}">
                     <controls1:SettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.ShowRainTime, Mode=TwoWay}"/>
                     </controls1:SettingsExpander.Footer>
+                    <controls1:SettingsExpanderItem Content="模糊长时间降雨倒计时时间显示精度"
+                                                    Description="开启后，大于 60min 的降雨时间将会以 0.5h 为单位模糊显示，关闭则总是以精确分钟显示。">
+                        <controls1:SettingsExpanderItem.IsVisible>
+                            <Binding Path="Settings.ShowRainTime"/>
+                        </controls1:SettingsExpanderItem.IsVisible>
+                        <controls1:SettingsExpanderItem.Footer>
+                            <ToggleSwitch IsChecked="{Binding Settings.IsFuzzyLongRainCountdownEnabled, Mode=TwoWay}"/>
+                        </controls1:SettingsExpanderItem.Footer>
+                    </controls1:SettingsExpanderItem>
                 </controls1:SettingsExpander>
-            </StackPanel>
-        </ScrollViewer>
-    </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
 </controls:ComponentBase>
