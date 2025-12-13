@@ -978,6 +978,10 @@ public partial class App : AppBase, IAppHost
             {
                 d.Dispose();
             }
+            if (PlatformServices.DesktopToastService is IDisposable toastService)
+            {
+                toastService.Dispose();
+            }
             DesktopLifetime?.Shutdown();
             try
             {

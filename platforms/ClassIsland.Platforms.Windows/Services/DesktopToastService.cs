@@ -18,35 +18,11 @@ using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 
 namespace ClassIsland.Platform.Windows.Services;
 
-public class DesktopToastService : IDesktopToastService
+public class DesktopToastService : IDesktopToastService, IDisposable
 {
     private string AumId { get; }
 
     private Dictionary<string, Action> ActivationActions { get; } = new();
-    
-    public static void RegisterAumidInRegistry(string appId, string displayName, string iconPath)
-    {
-        // 1. 设置当前进程的 AUMID
-        SetCurrentProcessExplicitAppUserModelID(appId);
-
-        // 2. 构造注册表路径
-        var regPath = $@"Software\Classes\AppUserModelId\{appId}";
-
-        // 3. 在 HKCU 下创建或打开该键
-        using var key = Registry.CurrentUser.CreateSubKey(regPath);
-        if (key == null)
-            throw new InvalidOperationException("无法创建或打开注册表键：" + regPath);
-        
-        key.SetValue("DisplayName", displayName, RegistryValueKind.String);
-        key.SetValue("IconUri", iconPath, RegistryValueKind.String);
-        key.SetValue("IconBackgroundColor", "FFDDDDDD", RegistryValueKind.String);
-    }
-    
-    public DesktopToastService()
-    {
-        AumId = $"cn.classisland.app";
-        RegisterAumidInRegistry(AumId, "ClassIsland", Path.Combine(Environment.CurrentDirectory, "Assets", "AppLogo.png"));
-    }
     
     public async Task ShowToastAsync(DesktopToastContent content)
     {
@@ -83,7 +59,6 @@ public class DesktopToastService : IDesktopToastService
         toastContent.ActivationType = ToastActivationType.Foreground;
         var toastXml = new XmlDocument();
         toastXml.LoadXml(toastContent.GetContent());
-        var toastManagerFactory = ToastNotificationManager.GetDefault();
         var toast = new ToastNotification(toastXml);
         toast.Activated += (sender, args) => Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -110,7 +85,7 @@ public class DesktopToastService : IDesktopToastService
             CleanUpActions();
         };
         
-        var notifier = toastManagerFactory.CreateToastNotifier(AumId);
+        var notifier = ToastNotificationManagerCompat.CreateToastNotifier();
         notifier.Show(toast);
 
         return;
@@ -176,5 +151,11 @@ public class DesktopToastService : IDesktopToastService
     public void ActivateNotificationAction(Guid id)
     {
         
+    }
+
+    public void Dispose()
+    {
+        ToastNotificationManagerCompat.Uninstall();
+        GC.SuppressFinalize(this);
     }
 }
