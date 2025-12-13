@@ -61,6 +61,12 @@ body:
     validations:
       required: true
   - type: textarea
+    id: screenshots
+    attributes:
+      label: 截图/录屏（可选，建议）
+      description: |
+        如果可能，请提供可以用来进一步描述您的问题的截图或录屏。
+  - type: textarea
     id: stacktrace
     attributes:
       label: 堆栈跟踪（可选）
@@ -70,7 +76,9 @@ body:
     id: diagnostics
     attributes:
       label: 诊断信息
-      description: 在【应用设置】->【关于】->【查看诊断信息】中查看。请完整复制其中的诊断信息并粘贴到下面的文本输入框中，不要做任何更改。
+      description: | 
+        在【应用设置】->【关于】->【查看诊断信息】中查看。请完整复制其中的诊断信息并粘贴到下面的文本输入框中，不要做任何更改。
+        ⚠️请始终填写此栏，无论您认为是否需要，否则您的问题将可能因无效被关闭。
       render: plaintext
     validations:
       required: true
