@@ -76,7 +76,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
 
         foreach (var i in Directory.EnumerateDirectories(source))
         {
-            CopyFolder(Path.Combine(source, Path.GetFileName(i)), Path.Combine(destination, Path.GetFileName(i)));
+            CopyFolder(Path.Combine(source, Path.GetFileName(i)), Path.Combine(destination, Path.GetFileName(i)), overwrite);
         }
     }
 
