@@ -295,7 +295,7 @@
                                        Margin="0 0 4 0"/>
                         <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                    VerticalAlignment="Center" FontWeight="Regular"
-                                   IsVisible="{Binding $parent[local:WeatherComponent].Settings.IsFuzzyLongRainCountdownEnabled}">
+                                   IsVisible="{Binding Settings.IsFuzzyLongRainCountdownEnabled}">
                             <TextBlock.Text>
                                 <Binding Path="SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes"
                                          Mode="OneWay"
@@ -304,7 +304,7 @@
                         </TextBlock>
                         <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                    VerticalAlignment="Center" FontWeight="Regular"
-                                   IsVisible="{Binding $parent[local:WeatherComponent].Settings.IsFuzzyLongRainCountdownEnabled, Converter={StaticResource InvertBooleanConverter}}"
+                                   IsVisible="{Binding !Settings.IsFuzzyLongRainCountdownEnabled}"
                                    Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay, StringFormat={}{0}min}" />
                     </StackPanel>
                 </Border>
