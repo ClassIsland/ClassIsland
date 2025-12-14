@@ -42,7 +42,7 @@
                            Margin="0 0 0 8" IsVisible="{Binding ShowTitle}"/>
             <WrapPanel Orientation="Horizontal">
                 <ToggleButton 
-                    Content="{controls:FluentIcon &#xE161;}"
+                    Content="非"
                     ToolTip.Tip="反转"
                     IsChecked="{Binding Ruleset.IsReversed}"
                     Margin="0 0 2 0"
@@ -102,7 +102,7 @@
                             <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Stretch" Margin="0 0 0 2">
                                 <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                                     <ToggleButton 
-                                        Content="{controls:FluentIcon &#xE161;}"
+                                        Content="非"
                                         ToolTip.Tip="反转"
                                         IsChecked="{Binding IsReversed}"
                                         Margin="0 0 2 0"
@@ -180,7 +180,7 @@
                                                      Margin="4 0 8 0"
                                                      DataContext="{Binding State}"
                                                      Classes="rule-state-indicator"/>
-                                            <ToggleButton Content="{controls:FluentIcon &#xE161;}"
+                                            <ToggleButton Content="非"
                                                           ToolTip.Tip="反转"
                                                           IsChecked="{Binding IsReversed}"
                                                           Classes="light"/>
