@@ -14,10 +14,7 @@ $count = $(git rev-list --count HEAD)
 $ver = [System.Version]::Parse($tag)
 
 if ($is_release -eq "true") {
-    # $version = $ver
-    # 此处需要和 1.x 的包区分开来，避免 1.x 开发者下到 2.x 的包
-    # TODO: 正式上线后移除
-    $version = $($ver -as [string]) + "-dev-v2"
+    $version = $ver
 } else {
     $version = $($ver -as [string]) + "-dev" + $count
 }
