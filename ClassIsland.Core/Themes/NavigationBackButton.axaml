@@ -41,6 +41,7 @@
                                            Margin="0 0 0 -2"
                                            FontFamily="{x:Static commands:AppBase.FluentIconsFontFamily}"
                                            FontSize="{TemplateBinding FontSize}"
+                                           RenderTransformOrigin="100%, 50%"
                                            RenderTransform="none">
                                     <TextBlock.Transitions>
                                         <Transitions>
