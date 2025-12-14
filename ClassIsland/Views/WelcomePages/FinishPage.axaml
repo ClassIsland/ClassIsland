@@ -11,32 +11,89 @@
                 Classes="settings-container animated-intro"
                 DataContext="{Binding RelativeSource={RelativeSource AncestorType=welcomePages:FinishPage}}"
                 MaxWidth="600">
+        <Carousel Width="600" x:Name="Carousel"
+                  VerticalAlignment="Stretch"
+                  ClipToBounds="False"
+                  Margin="0 0 0 8">
+            <Carousel.PageTransition>
+                <CompositePageTransition>
+                    <PageSlide Duration="0:0:0.3" Orientation="Horizontal"
+                               SlideOutEasing="0.76, 0, 0.24, 1"
+                               SlideInEasing="0.76, 0, 0.24, 1"/>
+                    <CrossFade Duration="0:0:0.3"/>
+                </CompositePageTransition>
+            </Carousel.PageTransition>
+            <Carousel.Items>
+                <Border VerticalAlignment="Center">
+                    <StackPanel Classes="settings-container animated-intro" MaxWidth="600">
+                        <Image Source="/Assets/Demo_MainMenu.png" Margin="0 0 0 4"/>
+                        <TextBlock Text="点击任务栏托盘图标可以打开应用主菜单。" 
+                                   HorizontalAlignment="Center"
+                        />
+                    </StackPanel>
+                </Border>
+                <Border VerticalAlignment="Center">
+                    <StackPanel Classes="settings-container animated-intro" MaxWidth="600">
+                        <Image Source="/Assets/Demo_OpenProfileSettingsWindow.png" Margin="0 0 0 4"/>
+                        <TextBlock Text="要编辑课表和时间点，请在应用主菜单中点击【编辑档案】。" 
+                                   HorizontalAlignment="Center"
+                        />
+                    </StackPanel>
+                </Border>
+                <Border VerticalAlignment="Center">
+                    <StackPanel Classes="settings-container animated-intro" MaxWidth="600">
+                        <ci:StickerControl Height="85" Width="85"
+                                           Margin="0 0 0 4" 
+                                           StickerSource="/Assets/HoYoStickers/白厄_再见.png"
+                                           StickerToolTip="白厄_再见"
+                                           FallbackIcon="{ci:FluentIconSource &#xE31A;, FontSize=85}"/>
+                        <TextBlock Text="完成" HorizontalAlignment="Center"
+                                   Margin="0 0 0 4"
+                                   Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="恭喜！应用的基本设置已完成，感谢您选用 ClassIsland。点击【&#xE423;】以结束设置向导。" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Carousel.Items>
+        </Carousel>
         
-        <ci:StickerControl Height="85" Width="85"
-                           Margin="0 0 0 4" 
-                           StickerSource="/Assets/HoYoStickers/白厄_再见.png"
-                           StickerToolTip="白厄_再见"
-                           FallbackIcon="{ci:FluentIconSource &#xE31A;, FontSize=85}"/>
-        <TextBlock Text="完成" HorizontalAlignment="Center"
-                   Margin="0 0 0 4"
-                   Theme="{StaticResource SubtitleTextBlockStyle}"/>
-        <TextBlock Text="恭喜！应用的基本设置已完成，感谢您选用 ClassIsland。点击【&#xE423;】以结束设置向导。" HorizontalAlignment="Center"
-                   Margin="0 0 0 8"/>
         
         <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-            <Button Command="{x:Static views:WelcomeWindow.WelcomeNavigateBackCommand}"
+            <Button Click="ButtonPrevious_OnClick"
                     ToolTip.Tip="上一步"
                     Content="{ci:FluentIcon &#xE108;, FontSize=18}"
                     Width="48" Height="48"
                     CornerRadius="24"
                     Margin="0 8 0 0"/>
+            <Button Click="ButtonNext_OnClick"
+                    ToolTip.Tip="下一步"
+                    Content="{ci:FluentIcon &#xE130;, FontSize=18}"
+                    Width="48" Height="48"
+                    CornerRadius="24"
+                    Classes="accent" 
+                    Margin="0 8 0 0">
+                <Button.IsVisible>
+                    <Binding Path="#Carousel.SelectedIndex" Converter="{x:Static ObjectConverters.NotEqual}">
+                        <Binding.ConverterParameter>
+                            <x:Int32>2</x:Int32>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </Button.IsVisible>
+            </Button>
             <Button Command="{x:Static views:WelcomeWindow.FinishWelcomeWizardCommand}"
                     ToolTip.Tip="完成"
                     Content="{ci:FluentIcon &#xE423;, FontSize=18}"
                     Width="48" Height="48"
                     CornerRadius="24"
-                    Classes="accent" 
-                    Margin="0 8 0 0"/>
+                    Classes="accent"
+                    Margin="0 8 0 0">
+                <Button.IsVisible>
+                    <Binding Path="#Carousel.SelectedIndex" Converter="{x:Static ObjectConverters.Equal}">
+                        <Binding.ConverterParameter>
+                            <x:Int32>2</x:Int32>
+                        </Binding.ConverterParameter>
+                    </Binding>
+                </Button.IsVisible>
+            </Button>
         </StackPanel>
     </StackPanel>
 </UserControl>
