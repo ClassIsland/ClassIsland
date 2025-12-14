@@ -347,6 +347,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         MainWindow.RawInputEvent += MainWindowOnRawInputEvent;
         MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        UpdateHiddenState();
         UpdateFadeStatus();
         NotificationHostService.RegisterNotificationConsumer(this, Settings.IsMainLine ? -1 : LineNumber);
         if (Settings != null)
