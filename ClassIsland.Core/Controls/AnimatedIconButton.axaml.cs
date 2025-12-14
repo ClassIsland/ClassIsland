@@ -4,10 +4,13 @@ using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
+
 namespace ClassIsland.Core.Controls;
 
 /// <summary>
@@ -18,12 +21,13 @@ namespace ClassIsland.Core.Controls;
 /// <seealso cref="IsKeepingExpanded"/>
 [TemplatePart(Name = "PART_Button", Type = typeof(Button))]
 [TemplatePart(Name = "PART_IconText", Type = typeof(IconText))]
+[TemplatePart(Name = "PART_GhostIconOnlyIconText", Type = typeof(IconText))]
 [PseudoClasses(":expanded")]
 public class AnimatedIconButton : Button
 {
     public AnimatedIconButton()
     {
-        _isKeepingExpandedSubscribe = IsKeepingExpandedProperty.Changed.Subscribe(_ => UpdateStatus());
+        
     }
 
     public static FuncValueConverter<double, Thickness> TextBlockPaddingFuncConverter { get; } =
@@ -36,20 +40,61 @@ public class AnimatedIconButton : Button
         _button = e.NameScope.Find<Button>("PART_Button");
         if (_button == null) return;
 
-        _iconText = (IconText)_button.Content;
+        if (_iconText != null)
+        {
+            _iconText.SizeChanged -= IconTextOnSizeChanged;
+        }
+        if (_ghostIconOnlyIconText != null)
+        {
+            _ghostIconOnlyIconText.SizeChanged -= IconTextOnSizeChanged;
+        }
 
+        _iconText = (_button.Content as Control)?.GetVisualChildren().OfType<IconText>().FirstOrDefault(x => x.Name == "PART_IconText");
+        _ghostIconOnlyIconText = (_button.Content as Control)?.GetVisualChildren().OfType<IconText>().FirstOrDefault(x => x.Name == "PART_GhostIconOnlyIconText");
+
+        if (_iconText != null)
+            _iconText.SizeChanged += IconTextOnSizeChanged;
+        if (_ghostIconOnlyIconText != null)
+            _ghostIconOnlyIconText.SizeChanged += IconTextOnSizeChanged;
+
+        _isTemplateApplied = true;
+        Initialize();
+    }
+
+    private void IconTextOnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        MeasureWidths();
+    }
+
+    private void Initialize()
+    {
+        if (!_isTemplateApplied)
+        {
+            return;
+        }
+        _isKeepingExpandedSubscribe?.Dispose();
+        _isKeepingExpandedSubscribe = IsKeepingExpandedProperty.Changed.Subscribe(_ => UpdateStatus());
         MeasureWidths();
 
         PointerExited -= Leaved;
         PointerExited += Leaved;
         PointerEntered -= Entered;
         PointerEntered += Entered;
+
+        UpdateStatus();
     }
 
-    protected override void OnUnloaded(RoutedEventArgs e)
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        base.OnUnloaded(e);
+        base.OnAttachedToVisualTree(e);
+        
+        Initialize();
+    }
 
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        
         PointerExited -= Leaved;
         PointerEntered -= Entered;
 
@@ -57,7 +102,7 @@ public class AnimatedIconButton : Button
         CleanupCts();
     }
 
-    void CleanupCts()
+    private void CleanupCts()
     {
         if (_cts != null)
         {
@@ -67,71 +112,38 @@ public class AnimatedIconButton : Button
         }
     }
 
-    void MeasureWidths()
+    private void MeasureWidths()
     {
-        _iconText.Text = string.Empty;
-        _button.Measure(Size.Infinity);
-        _targetWidth = _iconOnlyWidth = _button.DesiredSize.Width;
+        if (_iconText == null || _button == null || _ghostIconOnlyIconText == null)
+        {
+            return;
+        }
 
-        _iconText.Text = Text;
-        _button.Measure(new Size(10_000, 10_000));
-        _iconTextWidth = _button.DesiredSize.Width;
-
-        _button.Width = _lastTargetWidth =
-            IsKeepingExpanded ? _iconTextWidth : _iconOnlyWidth;
-
-        Duration = TimeSpan.FromMilliseconds((int)((_iconTextWidth - _iconOnlyWidth) * 1 + 220));
+        TargetWidth = _ghostIconOnlyIconText.Bounds.Width;
+        FullWidth = _iconText.Bounds.Width;
+        TargetHeight = _iconText.Bounds.Height;
+        
+        Duration = TimeSpan.FromMilliseconds(Math.Max((int)((FullWidth - TargetWidth) * 1 + 220), 0));
     }
 
-    void Entered(object? sender, PointerEventArgs e)
+    private void Entered(object? sender, PointerEventArgs e)
     {
-        _targetWidth = _iconTextWidth;
         _isExpandedByMouse = true;
         UpdateStatus();
     }
 
-    void Leaved(object? sender, PointerEventArgs e)
+    private void Leaved(object? sender, PointerEventArgs e)
     {
-        _targetWidth = _iconOnlyWidth;
         _isExpandedByMouse = false;
         UpdateStatus();
     }
 
-    void UpdateStatus()
+    private void UpdateStatus()
     {
         PseudoClasses.Set(":expanded", IsKeepingExpanded || _isExpandedByMouse);
-        AnimateTo(IsKeepingExpanded ? _iconTextWidth : _targetWidth);
     }
 
-    void AnimateTo(double targetWidth)
-    {
-        if (_lastTargetWidth == targetWidth) return;
-        CleanupCts();
-        _lastTargetWidth = targetWidth;
-
-        var animation = new Animation
-        {
-            Duration = Duration,
-            Easing = new SineEaseOut(),
-            FillMode = FillMode.Forward,
-            Children = {
-                new KeyFrame
-                {
-                    Cue = new Cue(0),
-                    Setters = { new Setter(WidthProperty, _button.Bounds.Width) }
-                },
-                new KeyFrame
-                {
-                    Cue = new Cue(1),
-                    Setters = { new Setter(WidthProperty, targetWidth) }
-                }
-            }
-        };
-        animation.RunAsync(_button, CtsToken);
-    }
-
-
-
+    
     protected override Type StyleKeyOverride => typeof(AnimatedIconButton);
 
     public static readonly StyledProperty<string> GlyphProperty =
@@ -175,14 +187,48 @@ public class AnimatedIconButton : Button
         set => SetAndRaise(DurationProperty, ref _duration, value);
     }
 
-    double _iconOnlyWidth;
-    double _iconTextWidth;
-    double _targetWidth;
-    double _lastTargetWidth;
-    Button _button;
-    IconText _iconText;
-    CancellationTokenSource? _cts;
-    CancellationToken CtsToken => (_cts ??= new CancellationTokenSource()).Token;
-    IDisposable? _isKeepingExpandedSubscribe;
+    private double _targetHeight;
+
+    public static readonly DirectProperty<AnimatedIconButton, double> TargetHeightProperty = AvaloniaProperty.RegisterDirect<AnimatedIconButton, double>(
+        nameof(TargetHeight), o => o.TargetHeight, (o, v) => o.TargetHeight = v);
+
+    public double TargetHeight
+    {
+        get => _targetHeight;
+        set => SetAndRaise(TargetHeightProperty, ref _targetHeight, value);
+    }
+
+    private double _targetWidth;
+
+    public static readonly DirectProperty<AnimatedIconButton, double> TargetWidthProperty = AvaloniaProperty.RegisterDirect<AnimatedIconButton, double>(
+        nameof(TargetWidth), o => o.TargetWidth, (o, v) => o.TargetWidth = v);
+
+    public double TargetWidth
+    {
+        get => _targetWidth;
+        set => SetAndRaise(TargetWidthProperty, ref _targetWidth, value);
+    }
+
+    private double _fullWidth;
+
+    public static readonly DirectProperty<AnimatedIconButton, double> FullWidthProperty = AvaloniaProperty.RegisterDirect<AnimatedIconButton, double>(
+        nameof(FullWidth), o => o.FullWidth, (o, v) => o.FullWidth = v);
+
+    public double FullWidth
+    {
+        get => _fullWidth;
+        set => SetAndRaise(FullWidthProperty, ref _fullWidth, value);
+    }
+
+    private bool _isTemplateApplied;
+    private double _iconOnlyWidth;
+    private double _iconTextWidth;
+    private double _lastTargetWidth;
+    private Button? _button;
+    private IconText? _iconText;
+    private IconText? _ghostIconOnlyIconText;
+    private CancellationTokenSource? _cts;
+    private CancellationToken CtsToken => (_cts ??= new CancellationTokenSource()).Token;
+    private IDisposable? _isKeepingExpandedSubscribe;
     private bool _isExpandedByMouse;
 }

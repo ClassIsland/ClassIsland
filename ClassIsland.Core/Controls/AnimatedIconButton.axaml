@@ -18,36 +18,65 @@
                             IsEnabled="{TemplateBinding IsEnabled}"
                             Theme="{TemplateBinding Theme}"
                             Flyout="{TemplateBinding Flyout}">
-                        <ci:IconText Name="PART_IconText"
-                                     Glyph="{TemplateBinding Glyph}"
-                                     Foreground="{TemplateBinding Foreground}"
-                                     Background="{TemplateBinding Background}"
-                                     FontSize="{TemplateBinding FontSize}"
-                                     FontWeight="{TemplateBinding FontWeight}">
-                            <ci:IconText.Styles>
-                                <Style Selector="ci|IconText TextBlock#TextElement">
-                                    <Setter Property="Transitions">
-                                        <Transitions>
-                                            <DoubleTransition Property="Opacity" Duration="{Binding $parent[ci:AnimatedIconButton].Duration}">
-                                                <DoubleTransition.Easing>
-                                                    <SineEaseInOut/>
-                                                </DoubleTransition.Easing>
-                                            </DoubleTransition>
-                                        </Transitions>
-                                    </Setter>
-                                </Style>
-                            </ci:IconText.Styles>
-                        </ci:IconText>
+                        <Canvas x:Name="Canvas" Height="{TemplateBinding TargetHeight}">
+                            <Canvas.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Easing="SineEaseOut"
+                                                      Duration="{Binding $parent[ci:AnimatedIconButton].Duration}"
+                                                      Property="Width"/>
+                                </Transitions>
+                            </Canvas.Transitions>
+                            <ci:IconText Name="PART_IconText"
+                                         Glyph="{TemplateBinding Glyph}"
+                                         Foreground="{TemplateBinding Foreground}"
+                                         Background="{TemplateBinding Background}"
+                                         FontSize="{TemplateBinding FontSize}"
+                                         FontWeight="{TemplateBinding FontWeight}"
+                                         Text="{TemplateBinding Text}">
+                                <ci:IconText.Styles>
+                                    <Style Selector="ci|IconText TextBlock#TextElement">
+                                        <Setter Property="Transitions">
+                                            <Transitions>
+                                                <DoubleTransition Property="Opacity"
+                                                                  Duration="{Binding $parent[ci:AnimatedIconButton].Duration}">
+                                                    <DoubleTransition.Easing>
+                                                        <SineEaseInOut />
+                                                    </DoubleTransition.Easing>
+                                                </DoubleTransition>
+                                            </Transitions>
+                                        </Setter>
+                                    </Style>
+                                </ci:IconText.Styles>
+                            </ci:IconText>
+                            <ci:IconText Name="PART_GhostIconOnlyIconText"
+                                         Glyph="{TemplateBinding Glyph}"
+                                         Foreground="{TemplateBinding Foreground}"
+                                         Background="{TemplateBinding Background}"
+                                         FontSize="{TemplateBinding FontSize}"
+                                         FontWeight="{TemplateBinding FontWeight}"
+                                         Opacity="0"
+                                         IsHitTestVisible="False"
+                                         IsTabStop="False">
+                            </ci:IconText>
+                        </Canvas>
                     </Button>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
         
-        <Style Selector="^ /template/ ci|IconText#PART_IconText TextBlock#TextElement">
+        <Style Selector="^ /template/ Button#PART_Button Canvas#Canvas ci|IconText#PART_IconText TextBlock#TextElement">
             <Setter Property="Opacity" Value="0.0"/>
         </Style>
-        <Style Selector="^:expanded /template/ ci|IconText#PART_IconText TextBlock#TextElement">
+        <Style Selector="^:expanded /template/ Button#PART_Button Canvas#Canvas ci|IconText#PART_IconText TextBlock#TextElement">
             <Setter Property="Opacity" Value="1.0"/>
         </Style>
+        
+        <Style Selector="^ /template/ Canvas#Canvas">
+            <Setter Property="Width" Value="{Binding TargetWidth, RelativeSource={RelativeSource TemplatedParent}}"/>
+        </Style>
+        <Style Selector="^:expanded /template/ Canvas#Canvas">
+            <Setter Property="Width" Value="{Binding FullWidth, RelativeSource={RelativeSource TemplatedParent}}"/>
+        </Style>
+        
     </Style>
 </Styles>
