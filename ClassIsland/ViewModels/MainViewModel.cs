@@ -41,7 +41,8 @@ public class MainViewModel : ObservableRecipient
     private double _actualRootOffsetY = 0.0;
     private Rect _actualClientBound = new();
     private ObservableCollection<Control> _effectControls = [];
-    
+    private bool _isEditMode = false;
+
 
     public Profile Profile
     {
@@ -326,6 +327,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (Equals(value, _effectControls)) return;
             _effectControls = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsEditMode
+    {
+        get => _isEditMode;
+        set
+        {
+            if (value == _isEditMode) return;
+            _isEditMode = value;
             OnPropertyChanged();
         }
     }

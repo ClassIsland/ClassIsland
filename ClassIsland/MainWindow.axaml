@@ -27,7 +27,6 @@
         SystemDecorations="None"
         ShowInTaskbar="False"
         d:Width="600"
-        Background="Transparent"
         TransparencyLevelHint="Transparent"
         SizeChanged="MainWindow_OnSizeChanged"
         Activated="MainWindow_OnActivated"
@@ -37,6 +36,12 @@
         Closing="MainWindow_OnClosing"
         ShowActivated="False"
         TransparencyBackgroundFallback="Transparent">
+    <Window.Transitions>
+        <Transitions>
+            <BrushTransition Property="Background"
+                             Duration="0:0:0.2"/>
+        </Transitions>
+    </Window.Transitions>
     <Window.Resources>
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
@@ -81,6 +86,7 @@
             <NativeMenuItem Header="更多选项…" Menu="{Binding MoreOptionsMenu}"
                             IsVisible="{Binding !!$self.Menu.Items.Count}"/>
             <NativeMenuItemSeparator/>
+            <NativeMenuItem Header="编辑主界面…" Click="NativeMenuItemEnterEditMode_OnClick" />
             <NativeMenuItem Header="编辑档案…" Click="ButtonSettings_OnClick" />
             <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" />
             <NativeMenuItem Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick" >
@@ -126,8 +132,14 @@
                 <Setter Property="IsVisible" Value="False"/>
             </Style>
         </Style>
-        <Style Selector=":is(Control)">
+        <Style Selector=":not(:edit-mode) :is(Control)">
             <Setter Property="Focusable" Value="False"/>
+        </Style>
+        <Style Selector=":is(Window)">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector=":is(Window):edit-mode">
+            <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefaultBrush}"/>
         </Style>
     </Window.Styles>
     <Grid>
@@ -170,6 +182,9 @@
                         </Style>
                         <Style Selector=":dock-bottom LayoutTransformControl#RootLayoutTransformControl">
                             <Setter Property="VerticalAlignment" Value="Bottom"/>
+                        </Style>
+                        <Style Selector=":edit-mode LayoutTransformControl#RootLayoutTransformControl">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
                         </Style>
                     </LayoutTransformControl.Styles>
                     <LayoutTransformControl.LayoutTransform>
@@ -286,24 +301,29 @@
 
                         </Border>
 
-                        <!--<hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>-->
-                        <!--<tb:TaskbarIcon ContextMenu="{StaticResource AppConteGriddu}"
-                        DataContext="{Binding}"
-                        x:Name="MyTaskBarIcon"
-                        IconSource="/Assets/AppLogo.ico"
-                        MenuActivation="LeftOrRightClick"
-                        ToolTipText="ClassIsland"
-                        ToolTip.Tip="ClassIsland">
-            </tb:TaskbarIcon>-->
-
-                        <!-- Content -->
-
                     </Grid>
                 </LayoutTransformControl>
             </Panel>
-
         </Canvas>
-        <!-- Scale debug -->
+        
+        <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 64"
+                IsVisible="{Binding ViewModel.IsEditMode}"
+                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+                CornerRadius="6"
+                Padding="4"
+                BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}"
+                BorderThickness="1">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <Button Click="ButtonExitEditMode_OnClick" Theme="{StaticResource TransparentButton}">
+                    <ci:IconText Glyph="&#xE071;" Text="添加组件"/>
+                </Button>
+                <Button Click="ButtonExitEditMode_OnClick" Classes="accent">
+                    <ci:IconText Glyph="&#xE424;" Text="完成"/>
+                </Button>
+            </StackPanel>
+        </Border>
+        
+        <!-- debug -->
         <StackPanel IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}"
                     HorizontalAlignment="Left"
                     Margin="0 16 0 0"

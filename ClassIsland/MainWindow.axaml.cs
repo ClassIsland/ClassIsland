@@ -58,7 +58,7 @@ namespace ClassIsland;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-[PseudoClasses(":dock-top", ":dock-bottom")]
+[PseudoClasses(":dock-top", ":dock-bottom", ":edit-mode")]
 public partial class MainWindow : Window, ITopmostEffectPlayer
 {
     // public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
@@ -547,6 +547,17 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             UpdateFadeStatus();
         }
+
+        if (e.PropertyName == nameof(ViewModel.IsEditMode))
+        {
+            PseudoClasses.Set(":edit-mode", ViewModel.IsEditMode);
+            if (ViewModel.IsEditMode)
+            {
+                Activate();
+            }
+            UpdateWindowLayer();
+            UpdateTheme();
+        }
     }
 
     private void UpdateFadeStatus()
@@ -590,7 +601,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             return;
         }
-        if (ViewModel.IsNotificationWindowExplicitShowed)
+        if (ViewModel.IsNotificationWindowExplicitShowed || ViewModel.IsEditMode)
         {
             //SetWindowPos(hWnd, NativeWindowHelper.HWND_TOPMOST, 0, 0, 0, 0,
             //    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
@@ -609,7 +620,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         UpdateWindowPos();
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, true);
-        if (!ViewModel.Settings.IsMouseClickingEnabled)
+        if (!ViewModel.Settings.IsMouseClickingEnabled && !ViewModel.IsEditMode)
         {
             PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);
         }
@@ -664,7 +675,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         switch (ViewModel.Settings.WindowLayer)
         {
             case 0: // bottom
-                Topmost = ViewModel.IsNotificationWindowExplicitShowed;
+                Topmost = ViewModel.IsNotificationWindowExplicitShowed || ViewModel.IsEditMode;
                 break;
             case 1:
                 Topmost = true;
@@ -1029,5 +1040,15 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             ViewModel.EffectControls.Remove(visual1);
         };
         effect.Play();
+    }
+
+    private void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
+    {
+        ViewModel.IsEditMode = true;
+    }
+
+    private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.IsEditMode = false;
     }
 }
