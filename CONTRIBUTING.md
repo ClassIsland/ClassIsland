@@ -68,10 +68,10 @@ flowchart LR
 
 ClassIsland 代码仓库目前具有以下分支：
 
-- [`dev`](https://github.com/HelloWRC/ClassIsland/tree/dev)：开发下一个版本的ClassIsland。
-- [`master`](https://github.com/HelloWRC/ClassIsland/tree/master)：对目前最新发布的稳定版本进行维护。
+- [`master`](https://github.com/HelloWRC/ClassIsland/tree/master)：ClassIsland 主要开发分支。
+- `x.x`（版本号，如 `2.0`）：ClassIsland 对分支版本对应的版本的维护分支。
 
-在开发下一个版本的 ClassIsland 过程中，也会在 `master` 分支上并行维护当前稳定版本的功能，如以下示意图所示：
+当开始下个版本的 ClassIsland 时，会将当前的主分支分叉到对应的维护分支。在开发下一个版本的 ClassIsland 过程中，也会在维护分支上并行维护当前稳定版本的功能，如以下示意图所示：
 
 > [!note]
 > 以下图表的提交id和标签名称仅供示意。
@@ -81,36 +81,46 @@ ClassIsland 代码仓库目前具有以下分支：
 %%{init: {'gitGraph': {'showBranches': true, 'showCommitLabel':true,'mainBranchName': 'master'}} }%%
 gitGraph
     commit
-    commit tag: "1.4.0.1（稳定通道）"
-    branch dev
+    commit tag: "2.0.0.0（稳定通道）"
     commit
     commit
+    commit tag: "2.0.0.1（稳定通道）"
+    branch 2.0
     commit
+    commit
+    commit tag: "2.0.0.2（稳定通道）"
     checkout master
     commit
-    commit tag: "1.4.0.2 （稳定通道）"
-    checkout dev
-    merge master
     commit
-    commit tag: "1.4.x.0 （测试通道）"
+    commit tag: "2.0.1.0 （测试通道）"
+    commit
+    merge 2.0
+    commit
+    commit tag: "2.1.0.0 （稳定通道）"
+    branch 2.1
+    commit
+    commit
+    commit tag: "2.1.0.1 （稳定通道）"
     checkout master
-    merge dev
-    commit tag: "1.5.0.0 （稳定通道）"
+    commit
+    commit
+    merge 2.1
+    commit tag: "2.1.1.0 （测试通道）"
 ```
 
 由于不同开发分支上的代码接口可能存在差异。因此，**根据您做出的贡献类型，您需要选择不同的基础分支。**
 
-**以下类型的贡献建议以 `master` 为基础分支：**
+**以下类型的贡献建议以当前的维护分支为基础分支：**
 
 - 修复稳定版中的 Bug
 - 对稳定版中的功能进行小幅度的优化
-- 修改README等文档
 
-**以下类型的贡献建议以 `dev` 为基础分支：**
+**以下类型的贡献建议以 `master` 为基础分支：**
 
 - 添加新的功能
 - 对代码进行重构
 - 其它对 ClassIsland 进行较大改动的贡献
+- 修改README等文档
 
 
 ### 提交
