@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Avalonia;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
@@ -36,6 +37,7 @@ public class MainViewModel : ObservableRecipient
     private NotificationContent? _currentOverlayContent;
     private double _actualRootOffsetX = 0;
     private double _actualRootOffsetY = 0.0;
+    private Rect _actualClientBound = new();
 
     public Profile Profile
     {
@@ -298,6 +300,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value.Equals(_actualRootOffsetY)) return;
             _actualRootOffsetY = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Rect ActualClientBound
+    {
+        get => _actualClientBound;
+        set
+        {
+            if (value.Equals(_actualClientBound)) return;
+            _actualClientBound = value;
             OnPropertyChanged();
         }
     }

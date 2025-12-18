@@ -735,18 +735,20 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var oy = ViewModel.Settings.WindowDockingOffsetY / dpiY;
         var fullscreen = ViewModel.IsForegroundFullscreen;
         var bounds = fullscreen ? screen.Bounds : clientRect;
-        LayoutContainerGrid.Width = Width = bounds.Width / dpiX;
-        LayoutContainerGrid.Height = Height = (bounds.Height
-                                               - (ViewModel is
-                                               {
-                                                   IsForegroundFullscreen: false, Settings.IsIgnoreWorkAreaEnabled: true
-                                               }
-                                                   ? 1
-                                                   : 0))  // 防止 Windows 发电误以为是全屏
+        var relativeX = clientRect.X - bounds.X;
+        var relativeY = clientRect.Y - bounds.Y;
+        var width = clientRect.Width;
+        var height = clientRect.Height;
+        // 创建相对矩形
+        var clientBoundsRelative = new PixelRect(relativeX, relativeY, width, height)
+            .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
+        ViewModel.ActualClientBound = clientBoundsRelative;
+        LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
+        LayoutContainerGrid.Height = Height = (screen.Bounds.Height - 1)  // 防止 Windows 发电误以为是全屏
                                               / dpiY;
         ViewModel.ActualRootOffsetX = ox;
         ViewModel.ActualRootOffsetY = oy;
-        var newPos = new PixelPoint((int)clientRect.X, (int)clientRect.Y);
+        var newPos = new PixelPoint((int)screen.Bounds.X, (int)screen.Bounds.Y);
         if (Position != newPos)
         {
             Position = newPos;
