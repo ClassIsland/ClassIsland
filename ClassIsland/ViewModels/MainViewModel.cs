@@ -34,6 +34,8 @@ public class MainViewModel : ObservableRecipient
     private string? _lastStoryboardName;
     private NotificationContent? _currentMaskContent;
     private NotificationContent? _currentOverlayContent;
+    private double _actualRootOffsetX = 0;
+    private double _actualRootOffsetY = 0.0;
 
     public Profile Profile
     {
@@ -274,6 +276,28 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _lastStoryboardName) return;
             _lastStoryboardName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double ActualRootOffsetX
+    {
+        get => _actualRootOffsetX;
+        set
+        {
+            if (value.Equals(_actualRootOffsetX)) return;
+            _actualRootOffsetX = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double ActualRootOffsetY
+    {
+        get => _actualRootOffsetY;
+        set
+        {
+            if (value.Equals(_actualRootOffsetY)) return;
+            _actualRootOffsetY = value;
             OnPropertyChanged();
         }
     }

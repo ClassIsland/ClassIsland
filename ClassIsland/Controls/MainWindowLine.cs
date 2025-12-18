@@ -232,7 +232,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private ISpeechService SpeechService { get; } = IAppHost.GetService<ISpeechService>();
 
-    private TopmostEffectWindow TopmostEffectWindow { get; } = IAppHost.GetService<TopmostEffectWindow>();
+    private ITopmostEffectPlayer TopmostEffectWindow { get; } = IAppHost.GetService<ITopmostEffectPlayer>();
 
     private IAudioService AudioService { get; } = IAppHost.GetService<IAudioService>();
 

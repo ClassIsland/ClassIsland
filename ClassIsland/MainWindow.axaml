@@ -130,10 +130,24 @@
             <Setter Property="Focusable" Value="False"/>
         </Style>
     </Window.Styles>
-    <StackPanel>
-        <Grid x:Name="LayoutContainerGrid" SizeChanged="LayoutContainerGrid_OnSizeChanged">
+    <Grid>
+        <Grid x:Name="LayoutContainerGrid"
+              Classes="animated-resize">
             <!-- ROOT -->
-            <LayoutTransformControl>
+            <LayoutTransformControl x:Name="RootLayoutTransformControl" 
+                                    ClipToBounds="False">
+                <LayoutTransformControl.RenderTransform>
+                    <TranslateTransform X="{Binding ViewModel.ActualRootOffsetX}"
+                                        Y="{Binding ViewModel.ActualRootOffsetY}"/>
+                </LayoutTransformControl.RenderTransform>
+                <LayoutTransformControl.Styles>
+                    <Style Selector=":dock-top LayoutTransformControl#RootLayoutTransformControl">
+                        <Setter Property="VerticalAlignment" Value="Top"/>
+                    </Style>
+                    <Style Selector=":dock-bottom LayoutTransformControl#RootLayoutTransformControl">
+                        <Setter Property="VerticalAlignment" Value="Bottom"/>
+                    </Style>
+                </LayoutTransformControl.Styles>
                 <LayoutTransformControl.LayoutTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="{Binding ViewModel.Settings.Scale, Mode=OneWay}"
@@ -144,7 +158,6 @@
                     </TransformGroup>
                 </LayoutTransformControl.LayoutTransform>
                 <Grid ClipToBounds="True"
-                      VerticalAlignment="Top"
                       HorizontalAlignment="Stretch"
                       x:Name="GridRoot"
                       RenderTransformOrigin="0,0"
@@ -192,7 +205,7 @@
                                           Color="Black" />
                     </Grid.Effect>
 
-                    <Border ClipToBounds="True"
+                    <Border ClipToBounds="False"
                             x:Name="ResourceLoaderBorder"
                             TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
                         <Border.Resources>
@@ -202,6 +215,7 @@
                             <ItemsControl Grid.Column="0"
                                           x:Name="RootMainWindowLinesItemsControl"
                                           VerticalAlignment="Stretch"
+                                          ClipToBounds="False"
                                           ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -280,5 +294,6 @@
                        IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}">
                 <Run Text="{x:Static local:App.AppVersionLong}" />
             </TextBlock>
-        </Grid></StackPanel>
+        </Grid>
+    </Grid>
 </Window>

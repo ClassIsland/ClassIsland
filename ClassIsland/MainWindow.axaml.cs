@@ -37,6 +37,7 @@ using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Services;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Interfaces.Controls;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
 using FluentAvalonia.UI.Controls;
@@ -58,7 +59,7 @@ namespace ClassIsland;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 [PseudoClasses(":dock-top", ":dock-bottom")]
-public partial class MainWindow : Window
+public partial class MainWindow : Window, ITopmostEffectPlayer
 {
     // public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
 
@@ -129,8 +130,6 @@ public partial class MainWindow : Window
     public IRulesetService RulesetService { get; }
     public IWindowRuleService WindowRuleService { get; }
     public IManagementService ManagementService { get; }
-    
-    private TopmostEffectWindow TopmostEffectWindow { get; }
 
     public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
 
@@ -182,8 +181,7 @@ public partial class MainWindow : Window
         IUriNavigationService uriNavigationService,
         IRulesetService rulesetService,
         IWindowRuleService windowRuleService,
-        IManagementService managementService,
-        TopmostEffectWindow topmostEffectWindow)
+        IManagementService managementService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -193,7 +191,6 @@ public partial class MainWindow : Window
         ThemeService = themeService;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
-        TopmostEffectWindow = topmostEffectWindow;
         ComponentsService = componentsService;
         LessonsService = lessonsService;
         UriNavigationService = uriNavigationService;
@@ -732,48 +729,27 @@ public partial class MainWindow : Window
         var screen = GetSelectedScreenSafe();
         if (screen == null)
             return;
-        double offsetAreaTop = ViewModel.Settings.IsIgnoreWorkAreaEnabled ? screen.Bounds.Y : screen.WorkingArea.Y;
-        double offsetAreaBottom = ViewModel.Settings.IsIgnoreWorkAreaEnabled ? screen.Bounds.Bottom : screen.WorkingArea.Bottom;
-        var aw = Bounds.Width * dpiX;
-        var ah = Bounds.Height * dpiY;
+        var clientRect = ViewModel.Settings.IsIgnoreWorkAreaEnabled ? screen.Bounds : screen.WorkingArea;
         var c = (double)(screen.WorkingArea.X + screen.WorkingArea.Right) / 2;
-        var ox = ViewModel.Settings.WindowDockingOffsetX;
-        var oy = ViewModel.Settings.WindowDockingOffsetY;
-        Width = screen.WorkingArea.Width / dpiX;
-        //Height = GridRoot.ActualHeight * scale;
-        // 和 WPF 不同，Avalonia 定位窗口用的基于物理屏幕的像素坐标，而非逻辑坐标，无需 dpi 转换。
-        var x = screen.WorkingArea.X + ox;
-        var y = ViewModel.Settings.WindowDockingLocation switch
-        {
-            0 => //左上
-                //Left = (screen.WorkingArea.Left + ox) / dpiX;
-                (offsetAreaTop + oy),
-            1 => // 中上
-                //Left = (c - aw / 2 + ox) / dpiX;
-                (offsetAreaTop + oy),
-            2 => // 右上
-                //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
-                (offsetAreaTop + oy),
-            3 => // 左下
-                //Left = (screen.WorkingArea.Left + ox) / dpiX;
-                (offsetAreaBottom - ah + oy),
-            4 => // 中下
-                //Left = (c - aw / 2 + ox) / dpiX;
-                (offsetAreaBottom - ah + oy),
-            5 => // 右下
-                //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
-                (offsetAreaBottom - ah + oy),
-            _ => 0.0
-        };
-        var newPos = new PixelPoint((int)x, (int)y);
+        var ox = ViewModel.Settings.WindowDockingOffsetX / dpiX;
+        var oy = ViewModel.Settings.WindowDockingOffsetY / dpiY;
+        var fullscreen = ViewModel.IsForegroundFullscreen;
+        var bounds = fullscreen ? screen.Bounds : clientRect;
+        LayoutContainerGrid.Width = Width = bounds.Width / dpiX;
+        LayoutContainerGrid.Height = Height = (bounds.Height
+                                               - (ViewModel is
+                                               {
+                                                   IsForegroundFullscreen: false, Settings.IsIgnoreWorkAreaEnabled: true
+                                               }
+                                                   ? 1
+                                                   : 0))  // 防止 Windows 发电误以为是全屏
+                                              / dpiY;
+        ViewModel.ActualRootOffsetX = ox;
+        ViewModel.ActualRootOffsetY = oy;
+        var newPos = new PixelPoint((int)clientRect.X, (int)clientRect.Y);
         if (Position != newPos)
         {
             Position = newPos;
-        }
-
-        if (updateEffectWindow)
-        {
-            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
         }
     }
 
@@ -851,8 +827,6 @@ public partial class MainWindow : Window
 
     private void GridRoot_OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        Width = e.NewSize.Width * ViewModel.Settings.Scale;
-        Height = e.NewSize.Height * ViewModel.Settings.Scale;
     }
 
     private async void MenuItemDebugFitSize_OnClick(object sender, RoutedEventArgs e)
@@ -1021,11 +995,16 @@ public partial class MainWindow : Window
 
     private void LayoutContainerGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        Dispatcher.UIThread.InvokeAsync(() => Height = LayoutContainerGrid.Bounds.Height, DispatcherPriority.Render);
+        // Dispatcher.UIThread.InvokeAsync(() => Height = LayoutContainerGrid.Bounds.Height, DispatcherPriority.Render);
     }
 
     private void NativeMenuItemDebugOpenScreenshotWindow_OnClick(object? sender, EventArgs e)
     {
         IAppHost.GetService<ScreenshotHelperWindow>().Show();
+    }
+
+    public void PlayEffect(INotificationEffectControl effect)
+    {
+        
     }
 }
