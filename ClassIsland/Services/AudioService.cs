@@ -36,19 +36,27 @@ public class AudioService(ILogger<AudioDevice> logger) : IAudioService
     public AudioPlaybackDevice? TryInitializeDefaultPlaybackDevice() =>
         TryInitializeDefaultPlaybackDeviceAsync().Result;
 
-    public Task<AudioPlaybackDevice?> TryInitializeDefaultPlaybackDeviceAsync() => Task.Run((() =>
+    public Task<AudioPlaybackDevice?> TryInitializeDefaultPlaybackDeviceAsync() => Task.Run(() =>
     {
-        var deviceInfo = AudioEngine.PlaybackDevices.FirstOrDefault(x => x.IsDefault);
-        if (deviceInfo == default)
+        try
         {
-            Logger.LogDebug("找不到可用的音频设备");
+            var deviceInfo = AudioEngine.PlaybackDevices.FirstOrDefault(x => x.IsDefault);
+            if (deviceInfo == default)
+            {
+                Logger.LogDebug("找不到可用的音频设备");
+                return null;
+            }
+            Logger.LogDebug("初始化音频设备 {} (Id={})", deviceInfo.Name, deviceInfo.Id);
+            var device = AudioEngine.InitializePlaybackDevice(deviceInfo, IAudioService.DefaultAudioFormat);
+            device.MasterMixer.Volume = 1.0f;
+            return device;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "初始化音频设备失败");
             return null;
         }
-        Logger.LogDebug("初始化音频设备 {} (Id={})", deviceInfo.Name, deviceInfo.Id);
-        var device = AudioEngine.InitializePlaybackDevice(deviceInfo, IAudioService.DefaultAudioFormat);
-        device.MasterMixer.Volume = 1.0f;
-        return device;
-    }));
+    });
 
     public Task PlayAudioAsync(Stream audio, float volume, CancellationToken? cancellationToken = null) => Task.Run(async () =>
     {
