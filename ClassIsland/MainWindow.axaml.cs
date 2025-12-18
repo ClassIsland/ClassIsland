@@ -735,10 +735,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var oy = ViewModel.Settings.WindowDockingOffsetY / dpiY;
         var fullscreen = ViewModel.IsForegroundFullscreen;
         var bounds = fullscreen ? screen.Bounds : clientRect;
-        var relativeX = clientRect.X - bounds.X;
-        var relativeY = clientRect.Y - bounds.Y;
-        var width = clientRect.Width;
-        var height = clientRect.Height;
+        var relativeX = clientRect.X - screen.Bounds.X;
+        var relativeY = clientRect.Y - screen.Bounds.Y;
+        var width = bounds.Width;
+        var height = bounds.Height;
         // 创建相对矩形
         var clientBoundsRelative = new PixelRect(relativeX, relativeY, width, height)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
@@ -1007,6 +1007,27 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     public void PlayEffect(INotificationEffectControl effect)
     {
-        
+        Logger.LogInformation("播放顶层特效：{}", effect);
+        if (effect is not Control element)
+            return;
+        ViewModel.EffectControls.Add(element);
+        if (!element.IsLoaded)
+        {
+            element.Loaded += (sender, args) => SetupEffectVisual(element, effect);
+        }
+        else
+        {
+            SetupEffectVisual(element, effect);
+        }
+    }
+
+    private void SetupEffectVisual(Control visual1, INotificationEffectControl effect)
+    {
+        effect.EffectCompleted += (sender, args) =>
+        {
+            Logger.LogInformation("结束播放并移除顶层特效：{}", effect);
+            ViewModel.EffectControls.Remove(visual1);
+        };
+        effect.Play();
     }
 }

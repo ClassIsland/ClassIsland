@@ -138,6 +138,24 @@
                    Width="{Binding ViewModel.ActualClientBound.Width}"
                    Height="{Binding ViewModel.ActualClientBound.Height}"
                    Classes="animated-resize">
+                <!-- 顶层效果 -->
+                <ItemsControl VerticalAlignment="Stretch"
+                              HorizontalAlignment="Stretch"
+                              ItemsSource="{Binding ViewModel.EffectControls, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch">
+                                <ContentPresenter Content="{Binding}"/>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
                 <!-- ROOT -->
                 <LayoutTransformControl x:Name="RootLayoutTransformControl" 
                                         ClipToBounds="False">
@@ -285,21 +303,43 @@
 
         </Canvas>
         <!-- Scale debug -->
-        <TextBlock Foreground="Cyan"
-                   d:Visibility="Collapsed"
-                   IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}">
-            <Run Text="GridRoot:" />
-            <Run Text="{Binding ActualWidth, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}" />
-            <Run Text="{Binding ActualHeight, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}" />
-            <LineBreak />
-            <Run Text="CurrentTime:" />
-            <Run Text="{Binding ViewModel.DebugCurrentTime}" />
-        </TextBlock>
-        <TextBlock Foreground="Cyan"
-                   HorizontalAlignment="Right"
-                   d:Visibility="Collapsed"
-                   IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}">
-            <Run Text="{x:Static local:App.AppVersionLong}" />
-        </TextBlock>
+        <StackPanel IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}"
+                    HorizontalAlignment="Left"
+                    Margin="0 16 0 0"
+                    d:Visibility="Collapsed">
+            <StackPanel.Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="Background" Value="#77222222"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                </Style>
+            </StackPanel.Styles>
+            <TextBlock Text="{x:Static local:App.AppVersionLong}"/>
+            <TextBlock>
+                <Run Text="CurrentTime:" />
+                <Run Text="{Binding ViewModel.DebugCurrentTime}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="IsForegroundMaxWindow:" />
+                <Run Text="{Binding ViewModel.IsForegroundMaxWindow}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="IsForegroundFullscreen:" />
+                <Run Text="{Binding ViewModel.IsForegroundFullscreen}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="ActualClientBound:" />
+                <Run Text="{Binding ViewModel.ActualClientBound}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="WindowPos:" />
+                <Run Text="{Binding Position}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="WindowSize:" />
+                <Run Text="{Binding Width}" />
+                <Run Text="{Binding Height}" />
+            </TextBlock>
+        </StackPanel>
     </Grid>
 </Window>

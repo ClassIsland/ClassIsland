@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Avalonia;
+using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
@@ -38,6 +40,8 @@ public class MainViewModel : ObservableRecipient
     private double _actualRootOffsetX = 0;
     private double _actualRootOffsetY = 0.0;
     private Rect _actualClientBound = new();
+    private ObservableCollection<Control> _effectControls = [];
+    
 
     public Profile Profile
     {
@@ -311,6 +315,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value.Equals(_actualClientBound)) return;
             _actualClientBound = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    public ObservableCollection<Control> EffectControls
+    {
+        get => _effectControls;
+        set
+        {
+            if (Equals(value, _effectControls)) return;
+            _effectControls = value;
             OnPropertyChanged();
         }
     }
