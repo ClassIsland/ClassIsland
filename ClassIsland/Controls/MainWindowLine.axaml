@@ -59,7 +59,7 @@
         <Style Selector="^:pointerover">
             <Setter Property="PointerOver" Value="True"/>
         </Style>
-        <Style Selector="^[IsLineFaded=True]">
+        <Style Selector="^[IsLineFaded=True][(ci|MainWindowStylesAssist.MainWindowInEditMode)=False]">
             <Setter Property="Opacity" Value="0.05"/>
         </Style>
     </Style>

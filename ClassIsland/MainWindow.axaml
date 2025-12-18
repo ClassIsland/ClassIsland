@@ -24,10 +24,8 @@
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         d:DataContext="{d:DesignInstance local:MainWindow}"
         FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
-        SystemDecorations="None"
-        ShowInTaskbar="False"
+        ShowInTaskbar="{Binding ViewModel.IsWindowMode}"
         d:Width="600"
-        TransparencyLevelHint="Transparent"
         SizeChanged="MainWindow_OnSizeChanged"
         Activated="MainWindow_OnActivated"
         Icon="/Assets/AppLogo.ico"
@@ -137,12 +135,18 @@
         </Style>
         <Style Selector=":is(Window)">
             <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="TransparencyLevelHint" Value="Transparent"/>
+            <Setter Property="SystemDecorations" Value="None"/>
         </Style>
         <Style Selector=":is(Window):edit-mode">
             <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefaultBrush}"/>
+            <Setter Property="TransparencyLevelHint" Value="AcrylicBlur, Transparent"/>
+        </Style>
+        <Style Selector=":is(Window):windowed">
+            <Setter Property="SystemDecorations" Value="Full"/>
         </Style>
     </Window.Styles>
-    <Grid>
+    <Grid ci:MainWindowStylesAssist.MainWindowInEditMode="{Binding ViewModel.IsEditMode}">
         <Canvas x:Name="LayoutContainerGrid">
             <Panel x:Name="WorkingRoot"
                    Canvas.Left="{Binding ViewModel.ActualClientBound.X}"
@@ -314,6 +318,7 @@
                 BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}"
                 BorderThickness="1">
             <StackPanel Orientation="Horizontal" Spacing="6">
+                <CheckBox Content="窗口模式" IsChecked="{Binding ViewModel.EditModeIsWindowMode}"/>
                 <Button Click="ButtonExitEditMode_OnClick" Theme="{StaticResource TransparentButton}">
                     <ci:IconText Glyph="&#xE071;" Text="添加组件"/>
                 </Button>
@@ -360,6 +365,14 @@
                 <Run Text="WindowSize:" />
                 <Run Text="{Binding Width}" />
                 <Run Text="{Binding Height}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="IsEditMode:" />
+                <Run Text="{Binding ViewModel.IsEditMode}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="IsWindowMode:" />
+                <Run Text="{Binding ViewModel.IsWindowMode}" />
             </TextBlock>
         </StackPanel>
     </Grid>

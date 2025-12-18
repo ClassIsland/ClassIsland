@@ -51,4 +51,10 @@ public class MainWindowStylesAssist
 
     public static void SetIsCustomBackgroundColorEnabled(Control obj, bool value) => obj.SetValue(IsCustomBackgroundColorEnabledProperty, value);
     public static bool GetIsCustomBackgroundColorEnabled(Control obj) => obj.GetValue(IsCustomBackgroundColorEnabledProperty);
+
+    public static readonly AttachedProperty<bool> MainWindowInEditModeProperty =
+        AvaloniaProperty.RegisterAttached<MainWindowStylesAssist, Control, bool>("MainWindowInEditMode", inherits: true);
+
+    public static void SetMainWindowInEditMode(Control obj, bool value) => obj.SetValue(MainWindowInEditModeProperty, value);
+    public static bool GetMainWindowInEditMode(Control obj) => obj.GetValue(MainWindowInEditModeProperty);
 }

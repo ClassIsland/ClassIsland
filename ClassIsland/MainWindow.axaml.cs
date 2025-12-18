@@ -58,7 +58,7 @@ namespace ClassIsland;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-[PseudoClasses(":dock-top", ":dock-bottom", ":edit-mode")]
+[PseudoClasses(":dock-top", ":dock-bottom", ":edit-mode", ":windowed")]
 public partial class MainWindow : Window, ITopmostEffectPlayer
 {
     // public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
@@ -419,6 +419,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void ReCheckTopmostState()
     {
+        if (ViewModel.IsWindowMode)
+        {
+            return;
+        }
         var handle = TryGetPlatformHandle()?.Handle ?? nint.Zero;
         if (ViewModel.IsNotificationWindowExplicitShowed || ViewModel.Settings.WindowLayer == 1)
         {
@@ -557,6 +561,13 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             }
             UpdateWindowLayer();
             UpdateTheme();
+            _ = Dispatcher.UIThread.InvokeAsync(UpdateTheme);
+        }
+        
+        if (e.PropertyName == nameof(ViewModel.IsWindowMode))
+        {
+            PseudoClasses.Set(":windowed", ViewModel.IsWindowMode);
+            UpdateTheme();
         }
     }
 
@@ -619,7 +630,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private async void UpdateTheme()
     {
         UpdateWindowPos();
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, true);
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, !ViewModel.IsWindowMode);
         if (!ViewModel.Settings.IsMouseClickingEnabled && !ViewModel.IsEditMode)
         {
             PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);
@@ -672,6 +683,14 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void UpdateWindowLayer()
     {
+        if (ViewModel.IsWindowMode)
+        {
+            Topmost = false;
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, false);
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost, false);
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, false);
+            return;
+        }
         switch (ViewModel.Settings.WindowLayer)
         {
             case 0: // bottom
@@ -737,6 +756,15 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel.GridRootLeft = Width / 10 * (scale - 1);
         ViewModel.GridRootTop = Height / 10 * (scale - 1);
 
+        if (ViewModel.IsWindowMode)
+        {
+            ViewModel.ActualClientBound = new Rect(0, 0, Width, Height);
+            LayoutContainerGrid.Width = Width;
+            LayoutContainerGrid.Height = Height;
+            return;
+        }
+
+        WindowState = WindowState.Normal;
         var screen = GetSelectedScreenSafe();
         if (screen == null)
             return;

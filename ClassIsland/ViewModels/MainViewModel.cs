@@ -42,6 +42,7 @@ public class MainViewModel : ObservableRecipient
     private Rect _actualClientBound = new();
     private ObservableCollection<Control> _effectControls = [];
     private bool _isEditMode = false;
+    private bool _editModeIsWindowMode = false;
 
 
     public Profile Profile
@@ -339,6 +340,21 @@ public class MainViewModel : ObservableRecipient
             if (value == _isEditMode) return;
             _isEditMode = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsWindowMode));
         }
     }
+
+    public bool EditModeIsWindowMode
+    {
+        get => _editModeIsWindowMode;
+        set
+        {
+            if (value == _editModeIsWindowMode) return;
+            _editModeIsWindowMode = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsWindowMode));
+        }
+    }
+
+    public bool IsWindowMode => EditModeIsWindowMode && IsEditMode;
 }
