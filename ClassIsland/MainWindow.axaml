@@ -137,7 +137,8 @@
                    Canvas.Top="{Binding ViewModel.ActualClientBound.Y}"
                    Width="{Binding ViewModel.ActualClientBound.Width}"
                    Height="{Binding ViewModel.ActualClientBound.Height}"
-                   Classes="animated-resize">
+                   Classes="animated-resize"
+                   ClipToBounds="True">
                 <!-- 顶层效果 -->
                 <ItemsControl VerticalAlignment="Stretch"
                               HorizontalAlignment="Stretch"
@@ -180,7 +181,7 @@
                             <TranslateTransform />
                         </TransformGroup>
                     </LayoutTransformControl.LayoutTransform>
-                    <Grid ClipToBounds="True"
+                    <Grid ClipToBounds="False"
                           HorizontalAlignment="Stretch"
                           x:Name="GridRoot"
                           RenderTransformOrigin="0,0"
