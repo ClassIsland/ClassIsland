@@ -118,7 +118,7 @@ public class AdvancedContextDragBehavior : StyledElementBehavior<Control>
     private async Task DoDragDrop(PointerEventArgs triggerEvent, object? value)
     {
         var data = new DataObject();
-        data.Set(ContextDropBehavior.DataFormat, value!);
+        data.Set("Context", value!);
 
         var effect = DragDropEffects.None;
 
