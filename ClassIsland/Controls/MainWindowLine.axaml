@@ -30,9 +30,9 @@
         <Setter Property="IsVisible">
             <Setter.Value>
                 <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
-                    <Binding Path="IsAllComponentsHid" RelativeSource="{RelativeSource Self}" 
-                             Converter="{StaticResource InvertBooleanConverter}"/>
+                    <Binding Path="!IsAllComponentsHid" RelativeSource="{RelativeSource Self}" />
                     <Binding Path="IsOverlayOpen" RelativeSource="{RelativeSource Self}"/>
+                    <Binding Path="(ci:MainWindowStylesAssist.MainWindowInEditMode)" RelativeSource="{RelativeSource Self}" />
                 </MultiBinding>
             </Setter.Value>
         </Setter>
