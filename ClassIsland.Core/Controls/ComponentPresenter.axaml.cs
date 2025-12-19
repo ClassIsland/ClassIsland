@@ -84,6 +84,15 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         remove { RemoveHandler(ComponentVisibilityChangedEvent, value); }
     }
 
+    public static readonly StyledProperty<bool> IsVisibleInternalProperty = AvaloniaProperty.Register<ComponentPresenter, bool>(
+        nameof(IsVisibleInternal));
+
+    public bool IsVisibleInternal
+    {
+        get => GetValue(IsVisibleInternalProperty);
+        set => SetValue(IsVisibleInternalProperty, value);
+    }
+
     private static void PropertyChangedCallback(ComponentPresenter d, AvaloniaPropertyChangedEventArgs e)
     {
         if (d.IsOnMainWindow && !GetIsMainWindowLoaded(d))
@@ -262,7 +271,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         else
         {
             RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
-            IsVisible = true;
+            IsVisibleInternal = true;
         }
         UpdateComponentHidState();
     }
@@ -281,11 +290,11 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         }
         if (HidingRules != null && RulesetService.IsRulesetSatisfied(HidingRules))
         {
-            IsVisible = false;
+            IsVisibleInternal = false;
         }
         else
         {
-            IsVisible = true;
+            IsVisibleInternal = true;
         }
     }
 
@@ -314,7 +323,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     {
         var visibleStatePrev = Settings?.IsVisible;
         _isAllComponentsHid = Settings?.Children != null && Settings.Children.FirstOrDefault(x => x.IsVisible) == null;
-        if (Settings != null) Settings.IsVisible = IsVisible && !_isAllComponentsHid;
+        if (Settings != null) Settings.IsVisible = IsVisibleInternal && !_isAllComponentsHid;
         if (Settings?.IsVisible != visibleStatePrev)
         {
             RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));

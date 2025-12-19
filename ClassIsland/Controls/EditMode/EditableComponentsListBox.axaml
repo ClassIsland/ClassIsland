@@ -1,0 +1,72 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Controls.EditMode"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <Design.PreviewWith>
+        <controls:EditableComponentsListBox />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|EditableComponentsListBox">
+        <!-- Set Defaults -->
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Classes="components-panel"/>
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="ClipToBounds" Value="False"/>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:EditableComponentsListBox">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                    <Button Height="32"
+                            
+                            IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
+                            Content="{ci:FluentIcon &#xE00D;, FontSize=20}">
+                    </Button>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+        <Setter Property="ItemContainerTheme">
+            <Setter.Value>
+                <ControlTheme TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="MaxHeight" Value="{DynamicResource IslandContainerHeight}"/>
+                    <Setter Property="MinWidth" Value="0"/>
+                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="ClipToBounds" Value="False"/>
+                    <Setter Property="Template" >
+                        <ControlTemplate>
+                            <Panel>
+                                <Panel.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Margin" Value="0"/>
+                                    </Style>
+                                    <Style Selector="AccessText">
+                                        <Setter Property="Margin" Value="0"/>
+                                    </Style>
+                                </Panel.Styles>
+                                <Border HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="Transparent"/>
+                                <ContentPresenter Name="PART_ContentPresenter"
+                                                  Background="{TemplateBinding Background}"
+                                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Content="{TemplateBinding Content}"
+                                                  Padding="0"
+                                                  ClipToBounds="False"
+                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                                  Margin="0"
+                                                  IsHitTestVisible="False"/>
+                            </Panel>
+                        </ControlTemplate>
+                    </Setter>
+                </ControlTheme>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</Styles>

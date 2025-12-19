@@ -5,6 +5,7 @@ using ClassIsland.Controls.ActionSettingsControls;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Controls.Components;
+using ClassIsland.Controls.EditMode;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Controls.ProfileTransferProviders;
 using ClassIsland.Controls.RuleSettingsControls;
@@ -37,6 +38,7 @@ using ClassIsland.Services.Metadata;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Services.SpeechService;
 using ClassIsland.ViewModels;
+using ClassIsland.ViewModels.EditMode;
 using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Views;
 using ClassIsland.Views.SettingPages;
@@ -100,6 +102,7 @@ public partial class App
         services.AddTransient<ClassChangingViewModel>();
         services.AddTransient<DataTransferViewModel>();
         services.AddTransient<ScreenshotHelperViewModel>();
+        services.AddTransient<EditModeViewModel>();
         // ViewModels/SettingsPages
         services.AddTransient<GeneralSettingsViewModel>();
         services.AddTransient<AboutSettingsViewModel>();
@@ -133,6 +136,7 @@ public partial class App
         services.AddTransient<WelcomeWindow>();
         services.AddTransient<DataTransferWindow>();
         services.AddTransient<ScreenshotHelperWindow>();
+        services.AddTransient<EditModeView>();
         // 设置页面
         services.AddSettingsPage<GeneralSettingsPage>();
         services.AddSettingsPage<ComponentsSettingsPage>();

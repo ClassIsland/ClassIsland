@@ -19,6 +19,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using ClassIsland.Controls.EditMode;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -558,6 +559,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             if (ViewModel.IsEditMode)
             {
                 Activate();
+                EditModeViewCp.Content = IAppHost.GetService<EditModeView>();
+            }
+            else
+            {
+                EditModeViewCp.Content = null;
+                ZoomBorder.ResetMatrix();
             }
             UpdateWindowLayer();
             UpdateTheme();
@@ -743,6 +750,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                                      e.CloseReason != WindowCloseReason.ApplicationShutdown))
         {
             e.Cancel = true;
+            if (ViewModel.IsEditMode)
+            {
+                ViewModel.IsEditMode = false;
+            }
             return;
         }
         AppBase.Current.Stop();

@@ -22,6 +22,7 @@
         <StyleInclude Source="/Controls/MainWindowLine.axaml"/>
         <StyleInclude Source="/Controls/WorkflowProgressIndicatorControl.axaml"/>
         <StyleInclude Source="/Controls/WorkflowProgressIndicatorItemControl.axaml"/>
+        <StyleInclude Source="/Controls/EditMode/EditableComponentsListBox.axaml"/>
         
         <Style Selector=":is(ci|MyWindow)">
             <Setter Property="Icon" Value="/Assets/AppLogo.png"/>

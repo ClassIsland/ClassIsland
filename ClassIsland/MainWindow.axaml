@@ -20,6 +20,7 @@
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:enums="clr-namespace:ClassIsland.Shared.Enums;assembly=ClassIsland.Shared"
+        xmlns:editMode="clr-namespace:ClassIsland.Controls.EditMode"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         d:DataContext="{d:DesignInstance local:MainWindow}"
@@ -130,7 +131,7 @@
                 <Setter Property="IsVisible" Value="False"/>
             </Style>
         </Style>
-        <Style Selector=":not(:edit-mode) :is(Control)">
+        <Style Selector=":is(Window):not(:edit-mode) :is(Control)">
             <Setter Property="Focusable" Value="False"/>
         </Style>
         <Style Selector=":is(Window)">
@@ -147,168 +148,174 @@
         </Style>
     </Window.Styles>
     <Grid ci:MainWindowStylesAssist.MainWindowInEditMode="{Binding ViewModel.IsEditMode}">
-        <Canvas x:Name="LayoutContainerGrid">
-            <Panel x:Name="WorkingRoot"
-                   Canvas.Left="{Binding ViewModel.ActualClientBound.X}"
-                   Canvas.Top="{Binding ViewModel.ActualClientBound.Y}"
-                   Width="{Binding ViewModel.ActualClientBound.Width}"
-                   Height="{Binding ViewModel.ActualClientBound.Height}"
-                   Classes="animated-resize"
-                   ClipToBounds="True">
-                <!-- 顶层效果 -->
-                <ItemsControl VerticalAlignment="Stretch"
+        <ZoomBorder Name="ZoomBorder" 
+                    Stretch="None" 
+                    ZoomSpeed="1.2"
+                    Focusable="True"
+                    EnableConstrains="True"
+                    MaxZoomX="4" MaxZoomY="4"
+                    MinZoomX="0.1" MinZoomY="0.1"
+                    Background="Transparent" 
+                    VerticalAlignment="Stretch" 
+                    HorizontalAlignment="Stretch">
+            <Canvas x:Name="LayoutContainerGrid">
+                <Panel x:Name="WorkingRoot"
+                       Canvas.Left="{Binding ViewModel.ActualClientBound.X}"
+                       Canvas.Top="{Binding ViewModel.ActualClientBound.Y}"
+                       Width="{Binding ViewModel.ActualClientBound.Width}"
+                       Height="{Binding ViewModel.ActualClientBound.Height}"
+                       Classes="animated-resize"
+                       ClipToBounds="{Binding !ViewModel.IsEditMode}">
+                    <!-- 顶层效果 -->
+                    <ItemsControl VerticalAlignment="Stretch"
+                                  HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding ViewModel.EffectControls, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch">
+                                    <ContentPresenter Content="{Binding}"/>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                    <!-- ROOT -->
+                    <LayoutTransformControl x:Name="RootLayoutTransformControl" 
+                                            ClipToBounds="False">
+                        <LayoutTransformControl.RenderTransform>
+                            <TranslateTransform X="{Binding ViewModel.ActualRootOffsetX}"
+                                                Y="{Binding ViewModel.ActualRootOffsetY}"/>
+                        </LayoutTransformControl.RenderTransform>
+                        <LayoutTransformControl.Styles>
+                            <Style Selector=":dock-top LayoutTransformControl#RootLayoutTransformControl">
+                                <Setter Property="VerticalAlignment" Value="Top"/>
+                            </Style>
+                            <Style Selector=":dock-bottom LayoutTransformControl#RootLayoutTransformControl">
+                                <Setter Property="VerticalAlignment" Value="Bottom"/>
+                            </Style>
+                            <Style Selector=":edit-mode LayoutTransformControl#RootLayoutTransformControl">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </LayoutTransformControl.Styles>
+                        <LayoutTransformControl.LayoutTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="{Binding ViewModel.Settings.Scale, Mode=OneWay}"
+                                                ScaleY="{Binding ViewModel.Settings.Scale, Mode=OneWay}" />
+                                <SkewTransform />
+                                <RotateTransform />
+                                <TranslateTransform />
+                            </TransformGroup>
+                        </LayoutTransformControl.LayoutTransform>
+                        <Grid ClipToBounds="False"
                               HorizontalAlignment="Stretch"
-                              ItemsSource="{Binding ViewModel.EffectControls, Mode=OneWay}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch">
-                                <ContentPresenter Content="{Binding}"/>
+                              x:Name="GridRoot"
+                              RenderTransformOrigin="0,0"
+
+                              Classes.ExplicitShowed="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
+                              Classes.OverlayOpened="{Binding ViewModel.IsOverlayOpened, Mode=OneWay}"
+                              Classes.HideOnClass="{Binding ViewModel.Settings.HideOnClass, Mode=OneWay}"
+                              Classes.HideOnMaxWindow="{Binding ViewModel.Settings.HideOnMaxWindow, Mode=OneWay}"
+                              Classes.HideOnFullscreen="{Binding ViewModel.Settings.HideOnFullscreen, Mode=OneWay}"
+                              Classes.ForegroundMaxWindow="{Binding ViewModel.IsForegroundMaxWindow, Mode=OneWay}"
+                              Classes.ForegroundFullscreen="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}"
+                              Classes.HideRuleSatisfied="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}"
+
+                              ci:MainWindowStylesAssist.IsIslandSeperated="{Binding ViewModel.Settings.IsIslandSeperated}"
+                              ci:MainWindowStylesAssist.IsProgressAccuracyReduced="{Binding ViewModel.Settings.ReduceProgressAccuracy}"
+                              ci:MainWindowStylesAssist.CornerRadius="{Binding ViewModel.Settings.RadiusX}"
+                              ci:MainWindowStylesAssist.BackgroundOpacity="{Binding ViewModel.Settings.Opacity}"
+                              ci:MainWindowStylesAssist.BackgroundCorlor="{Binding ViewModel.Settings.BackgroundColor}"
+                              ci:MainWindowStylesAssist.IsCustomBackgroundColorEnabled="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}"
+                              ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
+                              ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
+                            <Classes.BasicHidingMode>
+                                <Binding Path="ViewModel.Settings.HideMode" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <x:Int32>0</x:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.BasicHidingMode>
+                            <Classes.AdvancedHidingMode>
+                                <Binding Path="ViewModel.Settings.HideMode" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <x:Int32>1</x:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.AdvancedHidingMode>
+                            <Classes.StateOnClass>
+                                <Binding Path="LessonsService.CurrentState" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <enums:TimeState>OnClass</enums:TimeState>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </Classes.StateOnClass>
+                            <Grid.Effect>
+                                <DropShadowEffect BlurRadius="8" Opacity="0"
+                                                  Color="Black" />
+                            </Grid.Effect>
+
+                            <Border ClipToBounds="False"
+                                    x:Name="ResourceLoaderBorder"
+                                    TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
+                                <Border.Resources>
+
+                                </Border.Resources>
+                                <Grid>
+                                    <ItemsControl Grid.Column="0"
+                                                  x:Name="RootMainWindowLinesItemsControl"
+                                                  VerticalAlignment="Stretch"
+                                                  ClipToBounds="False"
+                                                  ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Classes="animated-resize"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                    <controls:MainWindowLine
+                                                        WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                        LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                        IsMainLine="{Binding IsMainLine}"
+                                                        IsNotificationEnabled="{Binding IsNotificationEnabled}"
+                                                        LineNumber="0"
+                                                        HorizontalAlignment="Stretch"
+                                                        Settings="{Binding}"
+                                                        IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
+                                                        <editMode:EditableComponentsListBox ItemsSource="{Binding Children}"
+                                                                                   Classes="root-components-control"
+                                                                                   ClipToBounds="False">
+                                                            <editMode:EditableComponentsListBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <ci:ComponentPresenter IsOnMainWindow="True"
+                                                                        IsRootComponent="True"
+                                                                        Settings="{Binding}"
+                                                                        HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                                        HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                                        Margin="6 0" />
+                                                                </DataTemplate>
+                                                            </editMode:EditableComponentsListBox.ItemTemplate>
+                                                        </editMode:EditableComponentsListBox>
+                                                    </controls:MainWindowLine>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+
                             </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Grid/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-                <!-- ROOT -->
-                <LayoutTransformControl x:Name="RootLayoutTransformControl" 
-                                        ClipToBounds="False">
-                    <LayoutTransformControl.RenderTransform>
-                        <TranslateTransform X="{Binding ViewModel.ActualRootOffsetX}"
-                                            Y="{Binding ViewModel.ActualRootOffsetY}"/>
-                    </LayoutTransformControl.RenderTransform>
-                    <LayoutTransformControl.Styles>
-                        <Style Selector=":dock-top LayoutTransformControl#RootLayoutTransformControl">
-                            <Setter Property="VerticalAlignment" Value="Top"/>
-                        </Style>
-                        <Style Selector=":dock-bottom LayoutTransformControl#RootLayoutTransformControl">
-                            <Setter Property="VerticalAlignment" Value="Bottom"/>
-                        </Style>
-                        <Style Selector=":edit-mode LayoutTransformControl#RootLayoutTransformControl">
-                            <Setter Property="VerticalAlignment" Value="Center"/>
-                        </Style>
-                    </LayoutTransformControl.Styles>
-                    <LayoutTransformControl.LayoutTransform>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="{Binding ViewModel.Settings.Scale, Mode=OneWay}"
-                                            ScaleY="{Binding ViewModel.Settings.Scale, Mode=OneWay}" />
-                            <SkewTransform />
-                            <RotateTransform />
-                            <TranslateTransform />
-                        </TransformGroup>
-                    </LayoutTransformControl.LayoutTransform>
-                    <Grid ClipToBounds="False"
-                          HorizontalAlignment="Stretch"
-                          x:Name="GridRoot"
-                          RenderTransformOrigin="0,0"
 
-                          Classes.ExplicitShowed="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
-                          Classes.OverlayOpened="{Binding ViewModel.IsOverlayOpened, Mode=OneWay}"
-                          Classes.HideOnClass="{Binding ViewModel.Settings.HideOnClass, Mode=OneWay}"
-                          Classes.HideOnMaxWindow="{Binding ViewModel.Settings.HideOnMaxWindow, Mode=OneWay}"
-                          Classes.HideOnFullscreen="{Binding ViewModel.Settings.HideOnFullscreen, Mode=OneWay}"
-                          Classes.ForegroundMaxWindow="{Binding ViewModel.IsForegroundMaxWindow, Mode=OneWay}"
-                          Classes.ForegroundFullscreen="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}"
-                          Classes.HideRuleSatisfied="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}"
-
-                          ci:MainWindowStylesAssist.IsIslandSeperated="{Binding ViewModel.Settings.IsIslandSeperated}"
-                          ci:MainWindowStylesAssist.IsProgressAccuracyReduced="{Binding ViewModel.Settings.ReduceProgressAccuracy}"
-                          ci:MainWindowStylesAssist.CornerRadius="{Binding ViewModel.Settings.RadiusX}"
-                          ci:MainWindowStylesAssist.BackgroundOpacity="{Binding ViewModel.Settings.Opacity}"
-                          ci:MainWindowStylesAssist.BackgroundCorlor="{Binding ViewModel.Settings.BackgroundColor}"
-                          ci:MainWindowStylesAssist.IsCustomBackgroundColorEnabled="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}"
-                          ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
-                          ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
-                        <Classes.BasicHidingMode>
-                            <Binding Path="ViewModel.Settings.HideMode" Converter="{x:Static ObjectConverters.Equal}">
-                                <Binding.ConverterParameter>
-                                    <x:Int32>0</x:Int32>
-                                </Binding.ConverterParameter>
-                            </Binding>
-                        </Classes.BasicHidingMode>
-                        <Classes.AdvancedHidingMode>
-                            <Binding Path="ViewModel.Settings.HideMode" Converter="{x:Static ObjectConverters.Equal}">
-                                <Binding.ConverterParameter>
-                                    <x:Int32>1</x:Int32>
-                                </Binding.ConverterParameter>
-                            </Binding>
-                        </Classes.AdvancedHidingMode>
-                        <Classes.StateOnClass>
-                            <Binding Path="LessonsService.CurrentState" Converter="{x:Static ObjectConverters.Equal}">
-                                <Binding.ConverterParameter>
-                                    <enums:TimeState>OnClass</enums:TimeState>
-                                </Binding.ConverterParameter>
-                            </Binding>
-                        </Classes.StateOnClass>
-                        <Grid.Effect>
-                            <DropShadowEffect BlurRadius="8" Opacity="0"
-                                              Color="Black" />
-                        </Grid.Effect>
-
-                        <Border ClipToBounds="False"
-                                x:Name="ResourceLoaderBorder"
-                                TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
-                            <Border.Resources>
-
-                            </Border.Resources>
-                            <Grid>
-                                <ItemsControl Grid.Column="0"
-                                              x:Name="RootMainWindowLinesItemsControl"
-                                              VerticalAlignment="Stretch"
-                                              ClipToBounds="False"
-                                              ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Classes="animated-resize"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                <controls:MainWindowLine
-                                                    WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                    LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                    IsMainLine="{Binding IsMainLine}"
-                                                    IsNotificationEnabled="{Binding IsNotificationEnabled}"
-                                                    LineNumber="0"
-                                                    HorizontalAlignment="Stretch"
-                                                    Settings="{Binding}"
-                                                    IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
-                                                    <ItemsControl ItemsSource="{Binding Children}"
-                                                                  Classes="root-components-control"
-                                                                  ClipToBounds="False">
-                                                        <ItemsControl.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <StackPanel Classes="components-panel" />
-                                                            </ItemsPanelTemplate>
-                                                        </ItemsControl.ItemsPanel>
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <ci:ComponentPresenter IsOnMainWindow="True"
-                                                                    IsRootComponent="True"
-                                                                    Settings="{Binding}"
-                                                                    HidingRules="{Binding HidingRules, Mode=OneWay}"
-                                                                    HideOnRule="{Binding HideOnRule, Mode=OneWay}"
-                                                                    Margin="6 0" />
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
-                                                </controls:MainWindowLine>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
-
-                        </Border>
-
-                    </Grid>
-                </LayoutTransformControl>
-            </Panel>
-        </Canvas>
+                        </Grid>
+                    </LayoutTransformControl>
+                </Panel>
+            </Canvas>
+        </ZoomBorder>
         
         <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 64"
                 IsVisible="{Binding ViewModel.IsEditMode}"
@@ -322,11 +329,16 @@
                 <Button Click="ButtonExitEditMode_OnClick" Theme="{StaticResource TransparentButton}">
                     <ci:IconText Glyph="&#xE071;" Text="添加组件"/>
                 </Button>
+                <Button Theme="{StaticResource TransparentButton}" Command="{Binding #ZoomBorder.ResetMatrix}">
+                    <ci:IconText Glyph="&#xE12F;" Text="重置视图"/>
+                </Button>
                 <Button Click="ButtonExitEditMode_OnClick" Classes="accent">
                     <ci:IconText Glyph="&#xE424;" Text="完成"/>
                 </Button>
             </StackPanel>
         </Border>
+        
+        <ContentPresenter x:Name="EditModeViewCp" />
         
         <!-- debug -->
         <StackPanel IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}"
