@@ -113,7 +113,7 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
     private void PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         var isFromDragThumb = (e.Source as Control)?.FindAncestorOfType<TouchDragThumb>() is not null;
-        var isFromCurrentThumb = e.Source is Control c1 && HasParent(c1, AssociatedObject);
+        var isFromCurrentThumb = e.Source is Control c1 && UITreeHelper.HasParent(c1, AssociatedObject);
         if ((e.Source as Control)?.FindAncestorOfType<ISelectable>() is {} selectable && !Equals(selectable, AssociatedObject))
         {
             isFromCurrentThumb = false;
@@ -436,20 +436,5 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
         var transformBuilder = new TransformOperations.Builder(1);
         transformBuilder.AppendTranslate(x, y);
         control.RenderTransform = transformBuilder.Build();
-    }
-
-    private static bool HasParent(Control? control, Control? parent)
-    {
-        StyledElement? c = control;
-        while (c != null)
-        {
-            c = c.Parent;
-            if (c == parent)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

@@ -559,11 +559,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             if (ViewModel.IsEditMode)
             {
                 Activate();
-                EditModeViewCp.Content = IAppHost.GetService<EditModeView>();
+                EditModeViewCp.Content = ViewModel.EditModeView = IAppHost.GetService<EditModeView>();
             }
             else
             {
-                EditModeViewCp.Content = null;
+                EditModeViewCp.Content = ViewModel.EditModeView = null;
                 ZoomBorder.ResetMatrix();
             }
             UpdateWindowLayer();
@@ -1089,5 +1089,15 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.IsEditMode = false;
+    }
+
+    private void ButtonOpenComponentsLib_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.EditModeView?.OpenComponentsLibDrawer();
+    }
+
+    private void ButtonOpenAppearanceSettings_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.EditModeView?.OpenAppearanceSettingsDrawer();
     }
 }

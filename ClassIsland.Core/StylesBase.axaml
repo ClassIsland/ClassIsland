@@ -47,6 +47,7 @@
     <StyleInclude Source="/Controls/HighlightBox.axaml"/>
     <StyleInclude Source="/Controls/StickerControl.axaml"/>
     <StyleInclude Source="/Controls/StickyScrollViewer.axaml"/>
+    <StyleInclude Source="/Controls/VerticalDrawer.axaml"/>
 
     <!-- Add Styles Here -->
 

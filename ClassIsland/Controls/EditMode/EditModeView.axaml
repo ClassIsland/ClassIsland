@@ -2,7 +2,211 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:editMode="clr-namespace:ClassIsland.Controls.EditMode"
+             xmlns:registry="clr-namespace:ClassIsland.Core.Services.Registry;assembly=ClassIsland.Core"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
+             xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
+             xmlns:attributes="clr-namespace:ClassIsland.Core.Attributes;assembly=ClassIsland.Core"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="ClassIsland.Controls.EditMode.EditModeView">
-    
+             x:Class="ClassIsland.Controls.EditMode.EditModeView"
+             d:DataContext="{d:DesignInstance editMode:EditModeView}"
+             Loaded="Control_OnLoaded"
+             Unloaded="Control_OnUnloaded">
+    <UserControl.Resources>
+        <DataTemplate x:DataType="attributes:ComponentInfo"
+                      x:Key="ComponentInfoPreviewEffect">
+            <Border Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+                    CornerRadius="6"
+                    Padding="4"
+                    BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <controls:IconSourceElement IconSource="{Binding IconSource}"
+                                                VerticalAlignment="Center" Height="16" Width="16"
+                                                ClipToBounds="False"
+                                                TextElement.FontSize="16"
+                                                Classes="repair-fontsize"/>
+                    <TextBlock Text="{Binding Name}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        <ScrollViewer x:Key="AppearanceSettingsDrawer">
+            <StackPanel Classes="settings-container animated-intro">
+                <ci:IconText Glyph="&#xEF27;" Text="基本" Margin="0 0 0 4" />
+                <!-- 界面缩放 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF4D1;}"
+                                           Header="界面缩放"
+                                           Description="主界面的缩放大小。">
+                    <controls:SettingsExpander.Footer>
+                        <Slider Width="180" Minimum="0.75" Maximum="2.5"
+                                VerticalAlignment="Center"
+                                Classes="auto-tooltip"
+                                ci:SliderDragTooltipAssist.StringFormat="F2"
+                                Value="{Binding ViewModel.SettingsService.Settings.Scale}"
+                                TickFrequency="0.05"
+                                TickPlacement="None"
+                                IsSnapToTickEnabled="True" />
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!--背景颜色-->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE523;}"
+                                           Header="背景颜色"
+                                           Description="主界面背景颜色，禁用时将根据应用主题自动选择颜色。">
+                    <controls:SettingsExpander.Footer>
+                        <StackPanel Orientation="Horizontal">
+
+                            <ColorPicker
+                                VerticalAlignment="Center"
+                                Margin="0 0 6 0"
+                                Color="{Binding ViewModel.SettingsService.Settings.BackgroundColor, Mode=TwoWay}"
+                                IsVisible="{Binding ViewModel.SettingsService.Settings.IsCustomBackgroundColorEnabled}" />
+                            <ToggleSwitch VerticalAlignment="Center"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.IsCustomBackgroundColorEnabled}" />
+                        </StackPanel>
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!-- 背景不透明度 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF37D;}"
+                                           Header="背景不透明度"
+                                           Description="主界面背景的不透明度。">
+                    <controls:SettingsExpander.Footer>
+                        <Slider Width="180" Minimum="0" Maximum="1"
+                                Classes="auto-tooltip"
+                                ci:SliderDragTooltipAssist.StringFormat="F2"
+                                Value="{Binding ViewModel.SettingsService.Settings.Opacity}"
+                                TickFrequency="0.05"
+                                IsSnapToTickEnabled="True" />
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!-- 圆角半径 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF031;}"
+                                           Header="圆角半径"
+                                           Description="主界面圆角半径，调至最大数值时左右边缘为半圆。">
+                    <controls:SettingsExpander.Footer>
+                        <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
+                                Value="{Binding ViewModel.SettingsService.Settings.RadiusX}"
+                                TickFrequency="0.5"
+                                ci:SliderDragTooltipAssist.StringFormat="F1"
+                                Classes="auto-tooltip"
+                                IsSnapToTickEnabled="True"
+                                VerticalAlignment="Center" />
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!-- 行间隔 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE6EF;}"
+                                           Header="行间隔"
+                                           Description="主界面行间间隔。">
+                    <controls:SettingsExpander.Footer>
+                        <StackPanel Orientation="Horizontal">
+                            <Slider Width="130" Minimum="0" Maximum="150"
+                                    Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
+                                    TickFrequency="5"
+                                    ci:SliderDragTooltipAssist.StringFormat="F1"
+                                    Classes="auto-tooltip"
+                                    VerticalAlignment="Center"
+                                    IsSnapToTickEnabled="True" />
+                            <NumericUpDown
+                                Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={x:Static ci:NotNaNConverter.Instance}}"
+                                Margin="6,0,0,0"
+                                Width="125" />
+                        </StackPanel>
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!-- 分体主界面 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf023;}"
+                                           Header="分体主界面"
+                                           Description="启用后组件会分开。">
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsIslandSeperated}" />
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+                
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE51E;}"
+                                           Header="更多外观设置"
+                                           ActionIconSource="{ci:FluentIconSource &#xE44E;}"
+                                           IsClickEnabled="True"
+                                           Click="SettingsExpanderNavigateAppearance_OnClick"/>
+            </StackPanel>
+        </ScrollViewer>
+        <Panel x:Key="ComponentsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}">
+            <ListBox ItemsSource="{Binding ViewModel.ComponentInfos}"
+                     Classes="drag-source">
+                <ListBox.Styles>
+                    <Style Selector="ListBox.drag-source ListBoxItem">
+                        <Setter Property="Interaction.Behaviors">
+                            <BehaviorCollectionTemplate>
+                                <BehaviorCollection>
+                                    <ci:AdvancedManagedContextDragBehavior 
+                                        PreviewOpacity="0.5"
+                                        PreviewTemplate="{StaticResource ComponentInfoPreviewEffect}"
+                                        HorizontalDragThreshold="3" VerticalDragThreshold="3" Context="{Binding }">
+                                    </ci:AdvancedManagedContextDragBehavior>
+                                </BehaviorCollection>
+                            </BehaviorCollectionTemplate>
+                        </Setter>
+                    </Style>
+                </ListBox.Styles>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
+                              Margin="0 8" Height="50">
+                            <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                               Width="24"/>
+                            <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
+                                                        Grid.RowSpan="2"
+                                                        Width="32" Height="32"
+                                                        VerticalAlignment="Center"
+                                                        ClipToBounds="False"
+                                                        TextElement.FontSize="32"
+                                                        Classes="repair-fontsize"
+                                                        Margin="0 -4 4 0"
+                                                        IconSource="{Binding IconSource}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2"
+                                       Text="{Binding Name}"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Top"
+                                       Margin="0 0 0 1"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2"
+                                       Text="{Binding Description}"
+                                       Opacity="0.75"
+                                       FontSize="12"
+                                       FontWeight="Regular"
+                                       TextWrapping="Wrap"
+                                       HorizontalAlignment="Stretch"
+                                       TextAlignment="Left"
+                                       TextTrimming="CharacterEllipsis"/>
+                            
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel>
+                            <Interaction.Behaviors>
+                                <BehaviorCollection>
+                                    <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
+                                </BehaviorCollection>
+                            </Interaction.Behaviors>
+                        </WrapPanel>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        </Panel>
+    </UserControl.Resources>
+    <Panel>
+        <ci:VerticalDrawer SmokeBackground="False"
+                           AllowCollapse="True"
+                           Content="{Binding ViewModel.MainDrawerContent}"
+                           Title="{Binding ViewModel.MainDrawerTitle}"
+                           State="{Binding ViewModel.MainDrawerState, Mode=TwoWay}"/>
+    </Panel>
 </UserControl>

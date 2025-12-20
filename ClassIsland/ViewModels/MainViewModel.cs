@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
+using ClassIsland.Controls.EditMode;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
@@ -43,6 +44,7 @@ public class MainViewModel : ObservableRecipient
     private ObservableCollection<Control> _effectControls = [];
     private bool _isEditMode = false;
     private bool _editModeIsWindowMode = false;
+    private EditModeView? _editModeView = null;
 
 
     public Profile Profile
@@ -357,4 +359,15 @@ public class MainViewModel : ObservableRecipient
     }
 
     public bool IsWindowMode => EditModeIsWindowMode && IsEditMode;
+
+    public EditModeView? EditModeView
+    {
+        get => _editModeView;
+        set
+        {
+            if (Equals(value, _editModeView)) return;
+            _editModeView = value;
+            OnPropertyChanged();
+        }
+    }
 }

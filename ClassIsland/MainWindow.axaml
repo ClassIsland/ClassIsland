@@ -326,7 +326,10 @@
                 BorderThickness="1">
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <CheckBox Content="窗口模式" IsChecked="{Binding ViewModel.EditModeIsWindowMode}"/>
-                <Button Click="ButtonExitEditMode_OnClick" Theme="{StaticResource TransparentButton}">
+                <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}">
+                    <ci:IconText Glyph="&#xE51E;" Text="外观"/>
+                </Button>
+                <Button Click="ButtonOpenComponentsLib_OnClick" Theme="{StaticResource TransparentButton}">
                     <ci:IconText Glyph="&#xE071;" Text="添加组件"/>
                 </Button>
                 <Button Theme="{StaticResource TransparentButton}" Command="{Binding #ZoomBorder.ResetMatrix}">

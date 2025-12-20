@@ -11,8 +11,11 @@ using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
 using Avalonia.Xaml.Interactivity;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
 
 namespace ClassIsland.Core.Behaviors;
@@ -36,6 +39,8 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
 
     // Stores the calculated preview offset (TopLeftOfControl - PointerPosition) in TopLevel client coordinates when enabled
     private Point? _calculatedPreviewOffset;
+
+    private bool _isTouch;
 
     /// <summary>
     /// Gets or sets the context value used as a drag payload when the drag starts.
@@ -156,6 +161,24 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
     {
         get => GetValue(PreviewOpacityProperty);
         set => SetValue(PreviewOpacityProperty, value);
+    }
+
+    public static readonly StyledProperty<bool> AllowDragFromDragThumbOnlyProperty = AvaloniaProperty.Register<AdvancedManagedContextDragBehavior, bool>(
+        nameof(AllowDragFromDragThumbOnly));
+
+    public bool AllowDragFromDragThumbOnly
+    {
+        get => GetValue(AllowDragFromDragThumbOnlyProperty);
+        set => SetValue(AllowDragFromDragThumbOnlyProperty, value);
+    }
+
+    public static readonly StyledProperty<bool> CanDragWithoutDragThumbProperty = AvaloniaProperty.Register<AdvancedManagedContextDragBehavior, bool>(
+        nameof(CanDragWithoutDragThumb));
+
+    public bool CanDragWithoutDragThumb
+    {
+        get => GetValue(CanDragWithoutDragThumbProperty);
+        set => SetValue(CanDragWithoutDragThumbProperty, value);
     }
 
     /// <inheritdoc />
@@ -283,6 +306,10 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
 
     private void OnTopLevelPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
+        if (_isTouch)
+        {
+            return;
+        }
         if (!_internalDragging) return;
         _internalDragging = false;
         _internalDragTcs?.TrySetResult(true);
@@ -299,6 +326,20 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
     {
         var ao = AssociatedObject;
         if (ao is null) return;
+        _isTouch = e.Pointer.Type == PointerType.Touch;
+        var isFromDragThumb = (e.Source as Control)?.FindAncestorOfType<TouchDragThumb>() is not null;
+        var isFromCurrentThumb = e.Source is Control c1 && UITreeHelper.HasParent(c1, AssociatedObject);
+        if ((e.Source as Control)?.FindAncestorOfType<ISelectable>() is {} selectable && !Equals(selectable, AssociatedObject))
+        {
+            isFromCurrentThumb = false;
+        }
+        var isTouchMode = e.Pointer.Type == PointerType.Touch;
+        // AssociatedObject?.ShowToast($"(debug) {isFromDragThumb} {isFromCurrentThumb} {isTouchMode}");
+        if ((((!CanDragWithoutDragThumb && isTouchMode) || AllowDragFromDragThumbOnly) && !isFromDragThumb) 
+            || (isFromDragThumb && !isFromCurrentThumb))
+        {
+            return;
+        }
         var properties = e.GetCurrentPoint(ao).Properties;
         if (properties.IsLeftButtonPressed && IsEnabled)
         {
@@ -365,6 +406,10 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
 
     private void OnCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
+        if (_isTouch)
+        {
+            return;
+        }
         Release();
         _captured = false;
         if (_internalDragging)
