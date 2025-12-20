@@ -3,7 +3,9 @@
         xmlns:controls1="using:ClassIsland.Controls.EditMode"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
-        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:behaviors="using:ClassIsland.Behaviors"
+        xmlns:controls2="using:ClassIsland.Controls">
     <Design.PreviewWith>
         <controls1:EditableComponentsListBox />
     </Design.PreviewWith>
@@ -62,72 +64,113 @@
                 <Setter Property="ClipToBounds" Value="False"/>
                 <Setter Property="Template" >
                     <ControlTemplate>
-                        <Panel>
-                            <Panel.Styles>
-                                <Style Selector="TextBlock">
-                                    <Setter Property="Margin" Value="0"/>
-                                </Style>
-                                <Style Selector="AccessText">
-                                    <Setter Property="Margin" Value="0"/>
-                                </Style>
-                            </Panel.Styles>
-                            <ContentPresenter Name="PART_ContentPresenter"
-                                              Background="{TemplateBinding Background}"
-                                              BorderBrush="{TemplateBinding BorderBrush}"
-                                              BorderThickness="{TemplateBinding BorderThickness}"
-                                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                                              Content="{TemplateBinding Content}"
-                                              Padding="0"
-                                              ClipToBounds="False"
-                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              CornerRadius="{TemplateBinding CornerRadius}"
-                                              Margin="0"
-                                              IsHitTestVisible="False"/>
-                        </Panel>
-                    </ControlTemplate>
-                </Setter>
-                
-                <Style Selector="^[(ci|MainWindowStylesAssist.MainWindowInEditMode)=True]">
-                    <Setter Property="Template" >
-                        <ControlTemplate>
-                            <Panel>
+                        <controls2:AdornerAttachHostControl x:Name="AdornerAttachHostControl">
+                            <controls2:AdornerAttachHostControl.IsAttached>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <TemplateBinding Property="IsSelected"/>
+                                    <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
+                                </MultiBinding>
+                            </controls2:AdornerAttachHostControl.IsAttached>
+                            <controls2:AdornerAttachHostControl.AdornerTemplate>
+                                <ControlTemplate>
+                                    <Panel Margin="-9999 -46 -9999 46">
+                                        <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 0"
+                                                Background="{DynamicResource CommandBarOverflowPresenterBackground}"
+                                                CornerRadius="6"
+                                                Padding="4"
+                                                BorderBrush="{DynamicResource CommandBarOverflowPresenterBorderBrush}"
+                                                BorderThickness="1" >
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0">
+                                                    <controls:IconSourceElement IconSource="{Binding AssociatedComponentInfo.IconSource}"
+                                                        VerticalAlignment="Center" Height="16" Width="16"
+                                                        ClipToBounds="False"
+                                                        TextElement.FontSize="16"
+                                                        Classes="repair-fontsize"/>
+                                                    <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
+                                                               VerticalAlignment="Center" Margin="0 1 0 0"/>
+                                                </StackPanel>
+                                                <Button  Theme="{StaticResource TransparentButton}"
+                                                         Content="{ci:FluentIcon &#xEF27;}"
+                                                         ToolTip.Tip="组件设置"/>
+                                                <Button  Theme="{StaticResource TransparentButton}"
+                                                         Content="{ci:FluentIcon &#xEC30;}"
+                                                         ToolTip.Tip="查看子组件"/>
+                                                <Button  Theme="{StaticResource TransparentButton}"
+                                                         Content="{ci:FluentIcon &#xE61D;}"
+                                                         Foreground="IndianRed"
+                                                         ToolTip.Tip="删除"/>
+                                                <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" StrokeThickness="1"
+                                                      HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" >
+                                                </Line>
+                                                <Button  Theme="{StaticResource TransparentButton}"
+                                                         Content="{ci:FluentIcon &#xEBAC;}"
+                                                         ToolTip.Tip="更多选项…"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Panel>
+                                </ControlTemplate>
+                            </controls2:AdornerAttachHostControl.AdornerTemplate>
+                            <Panel x:Name="RootPanel">
                                 <Panel.Styles>
                                     <Style Selector="TextBlock">
-                                        <Setter Property="Margin" Value="0"/>
+                                        <Setter Property="Margin" Value="0" />
                                     </Style>
                                     <Style Selector="AccessText">
-                                        <Setter Property="Margin" Value="0"/>
+                                        <Setter Property="Margin" Value="0" />
                                     </Style>
                                 </Panel.Styles>
                                 <Border HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
-                                        Background="Transparent"/>
-                                <ContentPresenter Name="PART_ContentPresenter"
-                                                  Background="{TemplateBinding Background}"
-                                                  BorderBrush="{TemplateBinding BorderBrush}"
-                                                  BorderThickness="{TemplateBinding BorderThickness}"
-                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                  Content="{TemplateBinding Content}"
-                                                  Padding="0"
-                                                  ClipToBounds="False"
-                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  CornerRadius="{TemplateBinding CornerRadius}"
-                                                  Margin="0"
-                                                  IsHitTestVisible="False"/>
-                                <Thumb HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                    <Thumb.Template>
-                                        <ControlTemplate>
-                                            <Border Background="Transparent"
-                                                    HorizontalAlignment="Stretch"
-                                                    VerticalAlignment="Stretch"/>
-                                        </ControlTemplate>
-                                    </Thumb.Template>
-                                </Thumb>
+                                        Background="Transparent" />
+                                <Grid ColumnDefinitions="Auto, *">
+                                    <Panel Grid.Column="0" IsVisible="{TemplateBinding IsSelected}">
+                                        <ci:TouchDragThumb HorizontalAlignment="Center"
+                                                           Width="20"
+                                                           x:Name="TouchDragThumb"
+                                                           VerticalAlignment="Center"
+                                                           Orientation="Vertical"
+                                                           Background="Red" />
+                                    </Panel>
+                                    <ContentPresenter Grid.Column="1"
+                                                      Name="PART_ContentPresenter"
+                                                      Background="{TemplateBinding Background}"
+                                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      Content="{TemplateBinding Content}"
+                                                      Padding="0"
+                                                      ClipToBounds="False"
+                                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                                      Margin="0"
+                                                      IsHitTestVisible="False" />
+                                </Grid>
+                                <Panel x:Name="SelectedPanel">
+                                    <Panel.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <TemplateBinding Property="IsSelected"/>
+                                            <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
+                                        </MultiBinding>
+                                    </Panel.IsVisible> 
+                                    <Rectangle HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Stretch"
+                                               x:Name="SelectionBorder"
+                                               Stroke="{DynamicResource AccentFillColorDefaultBrush}"
+                                               StrokeThickness="1.5"
+                                               StrokeLineCap="Round"
+                                               StrokeJoin="Bevel"
+                                               Opacity="0.75"
+                                               StrokeDashArray="1, 1.5" />
+                                </Panel>
                             </Panel>
-                        </ControlTemplate>
-                    </Setter>
+                        </controls2:AdornerAttachHostControl>
+                    </ControlTemplate>
+                </Setter>
+                    
+                <Style Selector="^:selected">
+                    
                 </Style>
             </ControlTheme>
         </Setter>
@@ -147,7 +190,6 @@
                     <BehaviorCollection>
                         <ci:AdvancedManagedContextDragBehavior HorizontalDragThreshold="3"
                                                     VerticalDragThreshold="3"
-                                                    CanDragWithoutDragThumb="True"
                                                     PreviewOpacity="0.75"
                                                     PreviewTemplate="{StaticResource ComponentSettingsPreviewEffect}">
                             <ci:AdvancedManagedContextDragBehavior.Context>

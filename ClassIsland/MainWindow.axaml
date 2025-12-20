@@ -319,10 +319,10 @@
         
         <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 64"
                 IsVisible="{Binding ViewModel.IsEditMode}"
-                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+                Background="{DynamicResource CommandBarOverflowPresenterBackground}"
                 CornerRadius="6"
                 Padding="4"
-                BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}"
+                BorderBrush="{DynamicResource CommandBarOverflowPresenterBorderBrush}"
                 BorderThickness="1">
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <CheckBox Content="窗口模式" IsChecked="{Binding ViewModel.EditModeIsWindowMode}"/>

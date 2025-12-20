@@ -136,7 +136,7 @@ public partial class App
         services.AddTransient<WelcomeWindow>();
         services.AddTransient<DataTransferWindow>();
         services.AddTransient<ScreenshotHelperWindow>();
-        services.AddTransient<EditModeView>();
+        services.AddSingleton<EditModeView>();
         // 设置页面
         services.AddSettingsPage<GeneralSettingsPage>();
         services.AddSettingsPage<ComponentsSettingsPage>();

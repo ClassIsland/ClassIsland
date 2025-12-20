@@ -24,6 +24,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Helpers.UI;
@@ -218,6 +219,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
         IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
         TaskBarIconService.MoreOptionsMenu = MoreOptionsMenu;
+        
+        PointerStateAssist.SetIsTouchMode(this, true);  // DEBUG
     }
 
     private void TouchInFadingTimerOnTick(object? sender, EventArgs e)

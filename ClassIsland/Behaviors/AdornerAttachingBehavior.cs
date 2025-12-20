@@ -8,7 +8,7 @@ using Avalonia.Xaml.Interactivity;
 
 namespace ClassIsland.Behaviors;
 
-public class AdornerAttachingBehavior : Behavior<Control>
+public class AdornerAttachingBehavior : StyledElementBehavior<Control>
 {
     public static readonly StyledProperty<ControlTemplate> AdornerTemplateProperty = AvaloniaProperty.Register<AdornerAttachingBehavior, ControlTemplate>(
         nameof(AdornerTemplate));
@@ -29,6 +29,7 @@ public class AdornerAttachingBehavior : Behavior<Control>
     }
 
     private Control? _adorner;
+    private AdornerLayer? _layer;
 
     protected override void OnAttached()
     {
@@ -49,15 +50,15 @@ public class AdornerAttachingBehavior : Behavior<Control>
 
     private void RemoveAdorner()
     {
-        if (AssociatedObject == null)
+        var owner = AssociatedObject;
+        if (owner == null )
         {
             return;
         }
         if (_adorner != null)
         {
-            var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-            AdornerLayer.SetAdorner(AssociatedObject, null);
-            layer?.Children.Remove(_adorner);
+            _layer?.Children.Remove(_adorner);
+            AdornerLayer.SetAdornedElement(_adorner, null);
             _adorner = null;
         }
     }
@@ -68,18 +69,20 @@ public class AdornerAttachingBehavior : Behavior<Control>
         {
             return;
         }
-        var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-        if (_adorner != null)
+        var layer = _layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
+        if (layer == null || _adorner != null)
         {
             return;
         }
         _adorner = new TemplatedControl
         {
-            DataContext = AdornerDataContext,
+            DataContext = AdornerDataContext ?? DataContext,
+            ClipToBounds = false,
             Template = AdornerTemplate
         };
         
+        AdornerLayer.SetIsClipEnabled(_adorner, false);
         layer?.Children.Add(_adorner);
-        AdornerLayer.SetAdorner(AssociatedObject, _adorner);
+        AdornerLayer.SetAdornedElement(_adorner, AssociatedObject);
     }
 }
