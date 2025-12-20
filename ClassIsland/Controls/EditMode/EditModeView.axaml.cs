@@ -22,6 +22,7 @@ public partial class EditModeView : UserControl
     {
         InitializeComponent();
         DataContext = this;
+        PointerStateAssist.SetIsTouchMode(this, true);  // DEBUG
     }
 
     private void OpenDrawer(string key, string? title = null, string? icon = null)

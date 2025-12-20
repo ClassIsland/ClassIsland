@@ -147,9 +147,9 @@
                     <BehaviorCollection>
                         <ci:AdvancedManagedContextDragBehavior HorizontalDragThreshold="3"
                                                     VerticalDragThreshold="3"
+                                                    CanDragWithoutDragThumb="True"
                                                     PreviewOpacity="0.75"
-                                                    PreviewTemplate="{StaticResource ComponentSettingsPreviewEffect}"
-                                                    UsePointerRelativePreviewOffset="True">
+                                                    PreviewTemplate="{StaticResource ComponentSettingsPreviewEffect}">
                             <ci:AdvancedManagedContextDragBehavior.Context>
                                 <controls1:EditableComponentsListBoxDragData
                                     x:CompileBindings="True"

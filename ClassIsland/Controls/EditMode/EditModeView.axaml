@@ -145,6 +145,7 @@
                             <BehaviorCollectionTemplate>
                                 <BehaviorCollection>
                                     <ci:AdvancedManagedContextDragBehavior 
+                                        PreviewOpacity="0.5"
                                         PreviewTemplate="{StaticResource ComponentInfoPreviewEffect}"
                                         HorizontalDragThreshold="3" VerticalDragThreshold="3" Context="{Binding }">
                                     </ci:AdvancedManagedContextDragBehavior>
@@ -155,40 +156,36 @@
                 </ListBox.Styles>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Thumb>
-                            <Thumb.Template>
-                                <ControlTemplate>
-                                    <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
-                                          Margin="0 8" Height="50">
-                                        <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
-                                                                    Grid.RowSpan="2"
-                                                                    Width="32" Height="32"
-                                                                    VerticalAlignment="Center"
-                                                                    ClipToBounds="False"
-                                                                    TextElement.FontSize="32"
-                                                                    Classes="repair-fontsize"
-                                                                    Margin="0 -4 4 0"
-                                                                    IconSource="{Binding IconSource}"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="2"
-                                                   Text="{Binding Name}"
-                                                   HorizontalAlignment="Left"
-                                                   VerticalAlignment="Top"
-                                                   Margin="0 0 0 1"
-                                                   TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Grid.Row="1" Grid.Column="2"
-                                                   Text="{Binding Description}"
-                                                   Opacity="0.75"
-                                                   FontSize="12"
-                                                   FontWeight="Regular"
-                                                   TextWrapping="Wrap"
-                                                   HorizontalAlignment="Stretch"
-                                                   TextAlignment="Left"
-                                                   TextTrimming="CharacterEllipsis"/>
+                        <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
+                              Margin="0 8" Height="50">
+                            <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                               Width="24"/>
+                            <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
+                                                        Grid.RowSpan="2"
+                                                        Width="32" Height="32"
+                                                        VerticalAlignment="Center"
+                                                        ClipToBounds="False"
+                                                        TextElement.FontSize="32"
+                                                        Classes="repair-fontsize"
+                                                        Margin="0 -4 4 0"
+                                                        IconSource="{Binding IconSource}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2"
+                                       Text="{Binding Name}"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Top"
+                                       Margin="0 0 0 1"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2"
+                                       Text="{Binding Description}"
+                                       Opacity="0.75"
+                                       FontSize="12"
+                                       FontWeight="Regular"
+                                       TextWrapping="Wrap"
+                                       HorizontalAlignment="Stretch"
+                                       TextAlignment="Left"
+                                       TextTrimming="CharacterEllipsis"/>
                             
-                                    </Grid>
-                                </ControlTemplate>
-                            </Thumb.Template>
-                        </Thumb>
+                        </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
                 <ListBox.ItemsPanel>
