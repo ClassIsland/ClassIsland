@@ -62,7 +62,7 @@
                 <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="ClipToBounds" Value="False"/>
-                <Setter Property="Template" >
+                <Setter Property="Template" > 
                     <ControlTemplate>
                         <controls2:AdornerAttachHostControl x:Name="AdornerAttachHostControl">
                             <controls2:AdornerAttachHostControl.IsAttached>
@@ -153,7 +153,7 @@
                                             <TemplateBinding Property="IsSelected"/>
                                             <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
                                         </MultiBinding>
-                                    </Panel.IsVisible> 
+                                    </Panel.IsVisible>
                                     <Rectangle HorizontalAlignment="Stretch"
                                                VerticalAlignment="Stretch"
                                                x:Name="SelectionBorder"

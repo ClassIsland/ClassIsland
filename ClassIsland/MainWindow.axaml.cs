@@ -640,16 +640,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private async void UpdateTheme()
     {
         UpdateWindowPos();
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, !ViewModel.IsWindowMode);
-        if (!ViewModel.Settings.IsMouseClickingEnabled && !ViewModel.IsEditMode)
-        {
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);
-        }
-        else
-        {
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, false);
-        }
-
+        UpdateWindowFeatures();
         UpdateWindowLayer();
 
         var primary = (Color?)Colors.DodgerBlue;
@@ -689,6 +680,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
         App._isCriticalSafeModeEnabled = ViewModel.Settings.IsCriticalSafeMode;
         SizeToContent = SizeToContent.Height;
+    }
+
+    private void UpdateWindowFeatures()
+    {
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, !ViewModel.IsWindowMode);
+        if (!ViewModel.Settings.IsMouseClickingEnabled && !ViewModel.IsEditMode)
+        {
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);
+        }
+        else
+        {
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, false);
+        }
     }
 
     private void UpdateWindowLayer()
@@ -836,6 +840,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void MainWindow_OnActivated(object? sender, EventArgs e)
     {
         SetBottom();
+        // 直接监听窗口属性变化并设置鼠标穿透可能导致死循环/栈溢出，故我们在用户点到 ClassIsland 窗口时设置这个。
+        UpdateWindowFeatures();
     }
 
     private void MainWindow_OnStateChanged(object? sender, EventArgs e)
