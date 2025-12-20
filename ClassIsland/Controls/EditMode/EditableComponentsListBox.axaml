@@ -71,9 +71,6 @@
                                     <Setter Property="Margin" Value="0"/>
                                 </Style>
                             </Panel.Styles>
-                            <Border HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    Background="Transparent"/>
                             <ContentPresenter Name="PART_ContentPresenter"
                                               Background="{TemplateBinding Background}"
                                               BorderBrush="{TemplateBinding BorderBrush}"
@@ -90,6 +87,48 @@
                         </Panel>
                     </ControlTemplate>
                 </Setter>
+                
+                <Style Selector="^[(ci|MainWindowStylesAssist.MainWindowInEditMode)=True]">
+                    <Setter Property="Template" >
+                        <ControlTemplate>
+                            <Panel>
+                                <Panel.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Margin" Value="0"/>
+                                    </Style>
+                                    <Style Selector="AccessText">
+                                        <Setter Property="Margin" Value="0"/>
+                                    </Style>
+                                </Panel.Styles>
+                                <Border HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="Transparent"/>
+                                <ContentPresenter Name="PART_ContentPresenter"
+                                                  Background="{TemplateBinding Background}"
+                                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Content="{TemplateBinding Content}"
+                                                  Padding="0"
+                                                  ClipToBounds="False"
+                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                                  Margin="0"
+                                                  IsHitTestVisible="False"/>
+                                <Thumb HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <Thumb.Template>
+                                        <ControlTemplate>
+                                            <Border Background="Transparent"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"/>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Panel>
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
             </ControlTheme>
         </Setter>
         <Setter Property="(Interaction.Behaviors)">
@@ -128,5 +167,7 @@
                 </BehaviorCollectionTemplate>
             </Setter>
         </Style>
+        
+        
     </Style>
 </Styles>

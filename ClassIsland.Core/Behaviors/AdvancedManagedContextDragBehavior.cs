@@ -37,6 +37,8 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
     // Stores the calculated preview offset (TopLeftOfControl - PointerPosition) in TopLevel client coordinates when enabled
     private Point? _calculatedPreviewOffset;
 
+    private bool _isTouch;
+
     /// <summary>
     /// Gets or sets the context value used as a drag payload when the drag starts.
     /// </summary>
@@ -283,6 +285,10 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
 
     private void OnTopLevelPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
+        if (_isTouch)
+        {
+            return;
+        }
         if (!_internalDragging) return;
         _internalDragging = false;
         _internalDragTcs?.TrySetResult(true);
@@ -299,6 +305,7 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
     {
         var ao = AssociatedObject;
         if (ao is null) return;
+        _isTouch = e.Pointer.Type == PointerType.Touch;
         var properties = e.GetCurrentPoint(ao).Properties;
         if (properties.IsLeftButtonPressed && IsEnabled)
         {
@@ -365,6 +372,10 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
 
     private void OnCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
+        if (_isTouch)
+        {
+            return;
+        }
         Release();
         _captured = false;
         if (_internalDragging)
