@@ -1095,4 +1095,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         ViewModel.EditModeView?.OpenComponentsLibDrawer();
     }
+
+    private void ButtonOpenAppearanceSettings_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.EditModeView?.OpenAppearanceSettingsDrawer();
+    }
 }

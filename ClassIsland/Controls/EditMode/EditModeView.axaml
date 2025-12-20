@@ -33,9 +33,112 @@
                 </StackPanel>
             </Border>
         </DataTemplate>
+        <ScrollViewer x:Key="AppearanceSettingsDrawer">
+            <StackPanel Classes="settings-container animated-intro">
+                <ci:IconText Glyph="&#xEF27;" Text="基本" Margin="0 0 0 4" />
+                <!-- 界面缩放 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF4D1;}"
+                                           Header="界面缩放"
+                                           Description="主界面的缩放大小。">
+                    <controls:SettingsExpander.Footer>
+                        <Slider Width="180" Minimum="0.75" Maximum="2.5"
+                                VerticalAlignment="Center"
+                                Classes="auto-tooltip"
+                                ci:SliderDragTooltipAssist.StringFormat="F2"
+                                Value="{Binding ViewModel.SettingsService.Settings.Scale}"
+                                TickFrequency="0.05"
+                                TickPlacement="None"
+                                IsSnapToTickEnabled="True" />
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!--背景颜色-->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE523;}"
+                                           Header="背景颜色"
+                                           Description="主界面背景颜色，禁用时将根据应用主题自动选择颜色。">
+                    <controls:SettingsExpander.Footer>
+                        <StackPanel Orientation="Horizontal">
+
+                            <ColorPicker
+                                VerticalAlignment="Center"
+                                Margin="0 0 6 0"
+                                Color="{Binding ViewModel.SettingsService.Settings.BackgroundColor, Mode=TwoWay}"
+                                IsVisible="{Binding ViewModel.SettingsService.Settings.IsCustomBackgroundColorEnabled}" />
+                            <ToggleSwitch VerticalAlignment="Center"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.IsCustomBackgroundColorEnabled}" />
+                        </StackPanel>
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!-- 背景不透明度 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF37D;}"
+                                           Header="背景不透明度"
+                                           Description="主界面背景的不透明度。">
+                    <controls:SettingsExpander.Footer>
+                        <Slider Width="180" Minimum="0" Maximum="1"
+                                Classes="auto-tooltip"
+                                ci:SliderDragTooltipAssist.StringFormat="F2"
+                                Value="{Binding ViewModel.SettingsService.Settings.Opacity}"
+                                TickFrequency="0.05"
+                                IsSnapToTickEnabled="True" />
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!-- 圆角半径 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF031;}"
+                                           Header="圆角半径"
+                                           Description="主界面圆角半径，调至最大数值时左右边缘为半圆。">
+                    <controls:SettingsExpander.Footer>
+                        <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
+                                Value="{Binding ViewModel.SettingsService.Settings.RadiusX}"
+                                TickFrequency="0.5"
+                                ci:SliderDragTooltipAssist.StringFormat="F1"
+                                Classes="auto-tooltip"
+                                IsSnapToTickEnabled="True"
+                                VerticalAlignment="Center" />
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!-- 行间隔 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE6EF;}"
+                                           Header="行间隔"
+                                           Description="主界面行间间隔。">
+                    <controls:SettingsExpander.Footer>
+                        <StackPanel Orientation="Horizontal">
+                            <Slider Width="130" Minimum="0" Maximum="150"
+                                    Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
+                                    TickFrequency="5"
+                                    ci:SliderDragTooltipAssist.StringFormat="F1"
+                                    Classes="auto-tooltip"
+                                    VerticalAlignment="Center"
+                                    IsSnapToTickEnabled="True" />
+                            <NumericUpDown
+                                Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={x:Static ci:NotNaNConverter.Instance}}"
+                                Margin="6,0,0,0"
+                                Width="125" />
+                        </StackPanel>
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+
+                <!-- 分体主界面 -->
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf023;}"
+                                           Header="分体主界面"
+                                           Description="启用后组件会分开。">
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsIslandSeperated}" />
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+                
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE51E;}"
+                                           Header="更多外观设置"
+                                           ActionIconSource="{ci:FluentIconSource &#xE44E;}"
+                                           IsClickEnabled="True"
+                                           Click="SettingsExpanderNavigateAppearance_OnClick"/>
+            </StackPanel>
+        </ScrollViewer>
         <Panel x:Key="ComponentsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}">
-            <ListBox ItemsSource="{x:Static registry:ComponentRegistryService.Registered}"
-                             Classes="drag-source">
+            <ListBox ItemsSource="{Binding ViewModel.ComponentInfos}"
+                     Classes="drag-source">
                 <ListBox.Styles>
                     <Style Selector="ListBox.drag-source ListBoxItem">
                         <Setter Property="Interaction.Behaviors">
