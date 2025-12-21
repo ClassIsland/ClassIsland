@@ -28,6 +28,7 @@ using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Helpers;
 using ClassIsland.Models.EventArgs;
@@ -42,6 +43,7 @@ using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces.Controls;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
+using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -1090,6 +1092,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         effect.Play();
     }
 
+    #region EditMode
+
     private void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
     {
         ViewModel.IsEditMode = true;
@@ -1109,4 +1113,59 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         ViewModel.EditModeView?.OpenAppearanceSettingsDrawer();
     }
+    private void ListBoxMainWindowLineSettings_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (sender is not EditableComponentsListBox { Tag: MainWindowLineSettings settings } listBox)
+        {
+            return;
+        }
+
+        ViewModel.MainWindowLineListBoxCache[settings] = listBox;
+        ViewModel.MainWindowLineListBoxCacheReversed[listBox] = settings;
+    }
+
+    private void ListBoxMainWindowLineSettings_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (sender is not EditableComponentsListBox listBox)
+        {
+            return;
+        }
+
+        var settings = ViewModel.MainWindowLineListBoxCacheReversed.GetValueOrDefault(listBox);
+        if (settings != null)
+        {
+            ViewModel.MainWindowLineListBoxCache.Remove(settings);
+        }
+        ViewModel.MainWindowLineListBoxCacheReversed.Remove(listBox);
+    }
+    
+    private void SelectorComponents_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings)
+        {
+            // UpdateSettingsVisibility();
+            return;
+        }
+        foreach (var listBox in ViewModel.MainWindowLineListBoxCacheReversed.Keys.Where(x => !Equals(x, sender)))
+        {
+            listBox.SelectedItem = null;
+        }
+        ViewModel.SelectedComponentSettings = settings;
+        
+    }
+
+    [RelayCommand]
+    public void ShowComponentSettings(ComponentSettings? component)
+    {
+        ViewModel.EditModeView?.ShowComponentSettings();
+    }
+    
+    [RelayCommand]
+    public void OpenChildComponents(ComponentSettings? component)
+    {
+        
+    }
+    
+    #endregion
+
 }

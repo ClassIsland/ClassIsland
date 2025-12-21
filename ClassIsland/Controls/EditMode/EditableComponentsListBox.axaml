@@ -5,7 +5,10 @@
         xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:behaviors="using:ClassIsland.Behaviors"
-        xmlns:controls2="using:ClassIsland.Controls">
+        xmlns:controls2="using:ClassIsland.Controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d">
     <Design.PreviewWith>
         <controls1:EditableComponentsListBox />
     </Design.PreviewWith>
@@ -65,6 +68,13 @@
                 <Setter Property="Template" > 
                     <ControlTemplate>
                         <controls2:AdornerAttachHostControl x:Name="AdornerAttachHostControl">
+                            <controls2:AdornerAttachHostControl.Resources>
+                                <ci:BindingProxy x:TypeArguments="controls1:EditableComponentsListBox"
+                                                 x:DataType="{x:Type components:ComponentSettings}"
+                                                 x:CompileBindings="True"
+                                                 x:Key="ParentBindingProxy"
+                                                 Data="{Binding $parent[controls1:EditableComponentsListBox]}"/>
+                            </controls2:AdornerAttachHostControl.Resources>
                             <controls2:AdornerAttachHostControl.IsAttached>
                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
                                     <TemplateBinding Property="IsSelected"/>
@@ -73,7 +83,8 @@
                             </controls2:AdornerAttachHostControl.IsAttached>
                             <controls2:AdornerAttachHostControl.AdornerTemplate>
                                 <ControlTemplate>
-                                    <Panel Margin="-9999 -46 -9999 46">
+                                    <Panel Margin="-9999 -46 -9999 46" 
+                                           d:DataContext="{d:DesignInstance components:ComponentSettings}">
                                         <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 0"
                                                 Background="{DynamicResource CommandBarOverflowPresenterBackground}"
                                                 CornerRadius="6"
@@ -90,22 +101,27 @@
                                                     <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
                                                                VerticalAlignment="Center" Margin="0 1 0 0"/>
                                                 </StackPanel>
-                                                <Button  Theme="{StaticResource TransparentButton}"
-                                                         Content="{ci:FluentIcon &#xEF27;}"
-                                                         ToolTip.Tip="组件设置"/>
-                                                <Button  Theme="{StaticResource TransparentButton}"
-                                                         Content="{ci:FluentIcon &#xEC30;}"
-                                                         ToolTip.Tip="查看子组件"/>
-                                                <Button  Theme="{StaticResource TransparentButton}"
-                                                         Content="{ci:FluentIcon &#xE61D;}"
-                                                         Foreground="IndianRed"
-                                                         ToolTip.Tip="删除"/>
+                                                <Button Theme="{StaticResource TransparentButton}"
+                                                        Content="{ci:FluentIcon &#xEF27;}"
+                                                        Command="{Binding Data.ShowComponentSettingsCommand, Source={StaticResource ParentBindingProxy}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip.Tip="组件设置"/>
+                                                <Button Theme="{StaticResource TransparentButton}"
+                                                        IsVisible="{Binding AssociatedComponentInfo.IsComponentContainer}"
+                                                        Content="{ci:FluentIcon &#xEC30;}"
+                                                        Command="{Binding Data.OpenChildComponentsCommand, Source={StaticResource ParentBindingProxy}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip.Tip="查看子组件"/>
+                                                <Button Theme="{StaticResource TransparentButton}"
+                                                        Content="{ci:FluentIcon &#xE61D;}"
+                                                        Foreground="IndianRed"
+                                                        ToolTip.Tip="删除"/>
                                                 <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" StrokeThickness="1"
                                                       HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" >
                                                 </Line>
-                                                <Button  Theme="{StaticResource TransparentButton}"
-                                                         Content="{ci:FluentIcon &#xEBAC;}"
-                                                         ToolTip.Tip="更多选项…"/>
+                                                <Button Theme="{StaticResource TransparentButton}"
+                                                        Content="{ci:FluentIcon &#xEBAC;}"
+                                                        ToolTip.Tip="更多选项…"/>
                                             </StackPanel>
                                         </Border>
                                     </Panel>
@@ -124,7 +140,13 @@
                                         VerticalAlignment="Stretch"
                                         Background="Transparent" />
                                 <Grid ColumnDefinitions="Auto, *">
-                                    <Panel Grid.Column="0" IsVisible="{TemplateBinding IsSelected}">
+                                    <Panel Grid.Column="0">
+                                        <Panel.IsVisible>
+                                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                <TemplateBinding Property="IsSelected"/>
+                                                <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
+                                            </MultiBinding>
+                                        </Panel.IsVisible>
                                         <ci:TouchDragThumb HorizontalAlignment="Center"
                                                            Width="20"
                                                            x:Name="TouchDragThumb"

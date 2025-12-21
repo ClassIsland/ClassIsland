@@ -2,12 +2,16 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.Xaml.Interactions.DragAndDrop;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Controls.Ruleset;
+using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.EditMode;
@@ -26,15 +30,32 @@ public partial class EditModeView : UserControl
 
     private void OpenDrawer(string key, string? title = null, string? icon = null)
     {
-        ViewModel.MainDrawerContent = this.FindResource(key);
-        ViewModel.MainDrawerTitle = icon == null
+        OpenDrawerCore(this.FindResource(key), icon == null
             ? title
             : new IconText
             {
                 Glyph = icon,
                 Text = title ?? ""
-            };
+            });
+    }
+
+    private void OpenDrawerCore(object? content, object? title)
+    {
+        ViewModel.MainDrawerContent = content;
+        ViewModel.MainDrawerTitle = title;
         ViewModel.MainDrawerState = VerticalDrawerOpenState.Opened;
+    }
+    
+    
+    private void CommandBindingOpenDrawer_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        ViewModel.SecondaryDrawerContent = e.Parameter;
+        ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Opened;
+    }
+
+    private void CommandBindingCloseDrawer_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Closed;
     }
 
     public void OpenComponentsLibDrawer()
@@ -91,5 +112,24 @@ public partial class EditModeView : UserControl
             ViewModel.MainWindow.ViewModel.IsEditMode = false;
         }
         ViewModel.UriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/appearance"));
+    }
+
+    public void ShowComponentSettings()
+    {
+        OpenDrawerCore(this.FindResource("ComponentSettingsDrawer"), 
+            this.FindResource("ComponentSettingsDrawerTitle"));
+    }
+
+
+    private void ButtonOpenRuleset_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (this.FindResource("RulesetControl") is not RulesetControl control ||
+            ViewModel.MainViewModel.SelectedComponentSettings == null) 
+            return;
+        control.Ruleset = ViewModel.MainViewModel.SelectedComponentSettings.HidingRules;
+        SettingsPageBase.OpenDrawerCommand.Execute(control);
+        ViewModel.SecondaryDrawerContent = control;
+        ViewModel.SecondaryDrawerTitle = "编辑规则集";
+        ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Opened;
     }
 }

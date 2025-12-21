@@ -18,9 +18,16 @@ public partial class EditModeViewModel(
     public SettingsService SettingsService { get; } = settingsService;
     public IUriNavigationService UriNavigationService { get; } = uriNavigationService;
 
+    public MainViewModel MainViewModel => MainWindow.ViewModel;
+
     [ObservableProperty] private object? _mainDrawerContent;
     [ObservableProperty] private object? _mainDrawerTitle;
     [ObservableProperty] private VerticalDrawerOpenState _mainDrawerState;
     [ObservableProperty] private bool _isDrawerTempCollapsed;
     [ObservableProperty] private IReadOnlyList<ComponentInfo> _componentInfos = [];
+    [ObservableProperty] private int _componentSettingsTabIndex = 0;
+    
+    [ObservableProperty] private object? _secondaryDrawerContent;
+    [ObservableProperty] private object? _secondaryDrawerTitle;
+    [ObservableProperty] private VerticalDrawerOpenState _secondaryDrawerState;
 }

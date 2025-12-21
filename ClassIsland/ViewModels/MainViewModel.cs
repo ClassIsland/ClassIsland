@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using ClassIsland.Controls.EditMode;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
@@ -14,7 +16,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;
 
-public class MainViewModel : ObservableRecipient
+public partial class MainViewModel : ObservableRecipient
 {
     private Profile _profile = new();
     private Settings _settings = new();
@@ -370,4 +372,10 @@ public class MainViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+    
+    [ObservableProperty] private MainWindowLineSettings? _selectedMainWindowLineSettings;
+    [ObservableProperty] private Dictionary<MainWindowLineSettings, EditableComponentsListBox> _mainWindowLineListBoxCache = new();
+    [ObservableProperty] private Dictionary<EditableComponentsListBox, MainWindowLineSettings> _mainWindowLineListBoxCacheReversed = new();
+    [ObservableProperty] private ComponentSettings? _selectedComponentSettings;
+
 }

@@ -9,12 +9,18 @@
              xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
              xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
              xmlns:attributes="clr-namespace:ClassIsland.Core.Attributes;assembly=ClassIsland.Core"
+             xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Controls.EditMode.EditModeView"
              d:DataContext="{d:DesignInstance editMode:EditModeView}"
              Loaded="Control_OnLoaded"
              Unloaded="Control_OnUnloaded">
+    <input:CommandManager.CommandBindings>
+        <input:CommandBinding Command="{x:Static ci:SettingsPageBase.OpenDrawerCommand}" Executed="CommandBindingOpenDrawer_OnExecuted"/>
+        <input:CommandBinding Command="{x:Static ci:SettingsPageBase.CloseDrawerCommand}" Executed="CommandBindingCloseDrawer_OnExecuted"/>
+    </input:CommandManager.CommandBindings>
     <UserControl.Resources>
+        <ci:RulesetControl x:Key="RulesetControl" Width="500"/>
         <DataTemplate x:DataType="attributes:ComponentInfo"
                       x:Key="ComponentInfoPreviewEffect">
             <Border Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
@@ -201,6 +207,55 @@
                 </ListBox.ItemsPanel>
             </ListBox>
         </Panel>
+        
+        <Grid x:Key="ComponentSettingsDrawerTitle" ColumnDefinitions="Auto *">
+            <StackPanel
+                Grid.Column="0"
+                Orientation="Horizontal" Spacing="8" Classes="items-valign-center">
+                <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0">
+                    <controls:IconSourceElement IconSource="{Binding ViewModel.MainViewModel.SelectedComponentSettings.AssociatedComponentInfo.IconSource}"
+                                                VerticalAlignment="Center" Height="16" Width="16"
+                                                ClipToBounds="False"
+                                                TextElement.FontSize="16"
+                                                Classes="repair-fontsize"/>
+                    <TextBlock Text="{Binding ViewModel.MainViewModel.SelectedComponentSettings.AssociatedComponentInfo.Name}"
+                               VerticalAlignment="Center" Margin="0 1 0 0"/>
+                </StackPanel>
+                <TabStrip Classes="compact" SelectedIndex="{Binding ViewModel.ComponentSettingsTabIndex}">
+                    <TabStrip.IsVisible>
+                        <Binding Path="ViewModel.MainDrawerState" Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <ci:VerticalDrawerOpenState>Opened</ci:VerticalDrawerOpenState>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </TabStrip.IsVisible>
+                    <TabStripItem Content="组件设置"/>
+                    <TabStripItem Content="高级设置"/>
+                </TabStrip>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                        Margin="0 0 4 0">
+                <CheckBox IsChecked="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}">按规则隐藏</CheckBox>
+                <Button Theme="{StaticResource TransparentButton}"
+                        IsEnabled="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                        Content="{ci:FluentIcon &#xF17E;}"
+                        Click="ButtonOpenRuleset_OnClick"
+                        ToolTip.Tip="编辑规则集…"/>
+            </StackPanel>
+        </Grid>
+        
+        <Panel x:Key="ComponentSettingsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}">
+            <TabControl SelectedIndex="{Binding ViewModel.ComponentSettingsTabIndex}">
+                <TabItem IsVisible="False">
+                    <ci:ComponentPresenter Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings}"
+                                           IsPresentingSettings="True"/>
+                </TabItem>
+                <TabItem IsVisible="False">
+                    <ci:ComponentAdvancedSettingsControl Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings, Mode=OneWay}"
+                                                         IsRootComponent="True"/>
+                </TabItem>
+            </TabControl>
+        </Panel>
     </UserControl.Resources>
     <Panel>
         <ci:VerticalDrawer SmokeBackground="False"
@@ -208,5 +263,11 @@
                            Content="{Binding ViewModel.MainDrawerContent}"
                            Title="{Binding ViewModel.MainDrawerTitle}"
                            State="{Binding ViewModel.MainDrawerState, Mode=TwoWay}"/>
+        <ci:VerticalDrawer SmokeBackground="True"
+                           AllowCollapse="False"
+                           ContentHeightRatio="0.65"
+                           Content="{Binding ViewModel.SecondaryDrawerContent}"
+                           Title="{Binding ViewModel.SecondaryDrawerTitle}"
+                           State="{Binding ViewModel.SecondaryDrawerState, Mode=TwoWay}"/>
     </Panel>
 </UserControl>

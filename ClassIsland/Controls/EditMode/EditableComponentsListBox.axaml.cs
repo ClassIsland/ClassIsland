@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -19,6 +20,26 @@ public class EditableComponentsListBox : ListBox
         get => GetValue(ContainerComponentStackProperty);
         set => SetValue(ContainerComponentStackProperty, value);
     }
+
+    public static readonly StyledProperty<ICommand?> ShowComponentSettingsCommandProperty = AvaloniaProperty.Register<EditableComponentsListBox, ICommand?>(
+        nameof(ShowComponentSettingsCommand));
+
+    public ICommand? ShowComponentSettingsCommand
+    {
+        get => GetValue(ShowComponentSettingsCommandProperty);
+        set => SetValue(ShowComponentSettingsCommandProperty, value);
+    }
+
+    public static readonly StyledProperty<ICommand?> OpenChildComponentsCommandProperty = AvaloniaProperty.Register<EditableComponentsListBox, ICommand?>(
+        nameof(OpenChildComponentsCommand));
+
+    public ICommand? OpenChildComponentsCommand
+    {
+        get => GetValue(OpenChildComponentsCommandProperty);
+        set => SetValue(OpenChildComponentsCommandProperty, value);
+    }
+    
+    
 
     public static readonly AttachedProperty<IEnumerable?> ItemsSourceInternalProperty =
         AvaloniaProperty.RegisterAttached<EditableComponentsListBox, Control, IEnumerable?>("ItemsSourceInternal", inherits: true);

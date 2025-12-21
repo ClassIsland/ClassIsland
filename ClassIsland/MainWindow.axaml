@@ -290,6 +290,12 @@
                                                         IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
                                                         <editMode:EditableComponentsListBox ItemsSource="{Binding Children}"
                                                                                    Classes="root-components-control"
+                                                                                   Tag="{Binding}"
+                                                                                   AttachedToVisualTree="ListBoxMainWindowLineSettings_OnAttachedToVisualTree"
+                                                                                   DetachedFromVisualTree="ListBoxMainWindowLineSettings_OnDetachedFromVisualTree"
+                                                                                   SelectionChanged="SelectorComponents_OnSelectionChanged"
+                                                                                   ShowComponentSettingsCommand="{Binding $parent[local:MainWindow].ShowComponentSettingsCommand}"
+                                                                                   OpenChildComponentsCommand="{Binding $parent[local:MainWindow].OpenChildComponentsCommand}"
                                                                                    ClipToBounds="False">
                                                             <editMode:EditableComponentsListBox.ItemTemplate>
                                                                 <DataTemplate>
