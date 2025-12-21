@@ -20,7 +20,7 @@ namespace ClassIsland.Core.Controls;
 public class VerticalDrawer : ContentControl
 {
     public static FuncValueConverter<double, double> ContainerHeightToClosedCanvasBottomPosConverter { get; } =
-        new(x => -x);
+        new(x => -x - 2);
     
     public static FuncValueConverter<double, double> ContainerHeightToCollapsedCanvasBottomPosConverter { get; } =
         new(x => -x + 40);
@@ -95,6 +95,15 @@ public class VerticalDrawer : ContentControl
     {
         get => GetValue(ContainerHeightProperty);
         set => SetValue(ContainerHeightProperty, value);
+    }
+
+    public static readonly StyledProperty<double> RequestedWidthProperty = AvaloniaProperty.Register<VerticalDrawer, double>(
+        nameof(RequestedWidth), double.NaN);
+
+    public double RequestedWidth
+    {
+        get => GetValue(RequestedWidthProperty);
+        set => SetValue(RequestedWidthProperty, value);
     }
 
     private Border? _dismissLayer;
@@ -200,12 +209,11 @@ public class VerticalDrawer : ContentControl
 
     private void UpdatePos()
     {
-        if (_backgroundElement == null || _canvas == null)
+        if (_canvas == null)
         {
             return;
         }
-
-        ContainerLeftPos = (_canvas.Bounds.Width - _backgroundElement.Bounds.Width) / 2;
+        
         ContainerHeight = _canvas.Bounds.Height * ContentHeightRatio;
     }
 

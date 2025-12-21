@@ -260,12 +260,13 @@
     <Panel>
         <ci:VerticalDrawer SmokeBackground="False"
                            AllowCollapse="True"
+                           RequestedWidth="{StaticResource SettingsContainerWidth}"
                            Content="{Binding ViewModel.MainDrawerContent}"
                            Title="{Binding ViewModel.MainDrawerTitle}"
                            State="{Binding ViewModel.MainDrawerState, Mode=TwoWay}"/>
         <ci:VerticalDrawer SmokeBackground="True"
                            AllowCollapse="False"
-                           ContentHeightRatio="0.65"
+                           ContentHeightRatio="0.5"
                            Content="{Binding ViewModel.SecondaryDrawerContent}"
                            Title="{Binding ViewModel.SecondaryDrawerTitle}"
                            State="{Binding ViewModel.SecondaryDrawerState, Mode=TwoWay}"/>

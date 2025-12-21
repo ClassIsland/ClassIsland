@@ -26,101 +26,106 @@
                     <Canvas x:Name="PART_Canvas"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch">
-                        <Border x:Name="PART_BackgroundElement"
-                                Background="{TemplateBinding Background}"
-                                BorderThickness="{StaticResource ContentDialogBorderWidth}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                CornerRadius="{TemplateBinding CornerRadius}"
-                                Height="{TemplateBinding ContainerHeight}"
-                                MaxWidth="{Binding #PART_Canvas.Bounds.Width}"
-                                VerticalAlignment="Center"
-                                Effect="drop-shadow(0 8 32 #66000000)"
-                                BackgroundSizing="{TemplateBinding BackgroundSizing}">
-                            <Border.Transitions>
+                        <Panel x:Name="WorkingPanel" 
+                               Height="{TemplateBinding ContainerHeight}"
+                               Width="{Binding #PART_Canvas.Bounds.Width}">
+                            <Panel.Transitions>
                                 <Transitions>
                                     <DoubleTransition Property="Canvas.Bottom" Duration="0:0:0.25"
-                                                      Easing="0,0 0,1"/>
+                                                      Easing="0,0 0,1" />
                                     <DoubleTransition Property="Height" Duration="0:0:0.25"
-                                                      Easing="0,0 0,1"/>
+                                                      Easing="0,0 0,1" />
                                 </Transitions>
-                            </Border.Transitions>
-                            <!-- Even in WinUI, shadow is always black regardless of light/dark mode -->
-
-                            <!-- if this border isn't here, dialog space displays outside of corner radius at top
-                                 if we put ClipToBounds=True on BackgroundElement above, it clips the shadow -->
-                            <Border ClipToBounds="True"
+                            </Panel.Transitions>
+                            <Border x:Name="PART_BackgroundElement"
+                                    Background="{TemplateBinding Background}"
+                                    BorderThickness="{StaticResource ContentDialogBorderWidth}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
                                     CornerRadius="{TemplateBinding CornerRadius}"
-                                    Padding="8 8 8 0">
-                                <Grid RowDefinitions="32, *" ColumnDefinitions="*, Auto">
-                                    <!-- Title -->
-                                    <ContentPresenter x:Name="PART_TitleContentPresenter"
-                                                      Grid.Row="0" Grid.Column="0"
-                                                      VerticalAlignment="Center"
-                                                      Content="{TemplateBinding Title}"
-                                                      ContentTemplate="{TemplateBinding TitleTemplate}"/>
-                                    <StackPanel Grid.Row="0" Grid.Column="1" 
-                                                Orientation="Horizontal" Classes="items-valign-center"
-                                                Spacing="4">
-                                        <Button Theme="{StaticResource TransparentButton}" 
-                                                Content="{controls:FluentIcon &#xEC5C;}"
-                                                ToolTip.Tip="收起"
-                                                Command="{Binding Collapse, RelativeSource={RelativeSource TemplatedParent}}">
-                                            <Button.IsVisible>
-                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                    <TemplateBinding Property="AllowCollapse"/>
-                                                    <TemplateBinding Property="State" Converter="{x:Static ObjectConverters.Equal}">
-                                                        <TemplateBinding.ConverterParameter>
-                                                            <controls:VerticalDrawerOpenState>Opened</controls:VerticalDrawerOpenState>
-                                                        </TemplateBinding.ConverterParameter>
-                                                    </TemplateBinding>
-                                                </MultiBinding>
-                                            </Button.IsVisible>
-                                        </Button>
-                                        <Button Theme="{StaticResource TransparentButton}" 
-                                                Content="{controls:FluentIcon &#xEC5E;}"
-                                                ToolTip.Tip="展开"
-                                                Command="{Binding Open, RelativeSource={RelativeSource TemplatedParent}}">
-                                            <Button.IsVisible>
-                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                    <TemplateBinding Property="AllowCollapse"/>
-                                                    <TemplateBinding Property="State" Converter="{x:Static ObjectConverters.NotEqual}">
-                                                        <TemplateBinding.ConverterParameter>
-                                                            <controls:VerticalDrawerOpenState>Opened</controls:VerticalDrawerOpenState>
-                                                        </TemplateBinding.ConverterParameter>
-                                                    </TemplateBinding>
-                                                </MultiBinding>
-                                            </Button.IsVisible>
-                                        </Button>
-                                        <Button Theme="{StaticResource TransparentButton}" 
-                                                Content="{controls:FluentIcon &#xE671;}"
-                                                ToolTip.Tip="关闭"
-                                                Command="{Binding Close, RelativeSource={RelativeSource TemplatedParent}}"/>
-                                    </StackPanel>
-                                    <!-- Content -->
-                                    <ContentPresenter x:Name="PART_ContentPresenter"
-                                                      Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                                      Content="{TemplateBinding Content}"
-                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
-                                        <ContentPresenter.Transitions>
-                                            <Transitions>
-                                                <DoubleTransition Property="Opacity" Duration="0:0:0.25"
-                                                                  Easing="0,0 0,1"/>
-                                            </Transitions>
-                                        </ContentPresenter.Transitions>
-                                    </ContentPresenter>
-                                </Grid>
+                                    MaxWidth="{Binding #PART_Canvas.Bounds.Width}"
+                                    Width="{TemplateBinding RequestedWidth}"
+                                    HorizontalAlignment="Center"
+                                    Effect="drop-shadow(0 8 32 #66000000)"
+                                    BackgroundSizing="{TemplateBinding BackgroundSizing}">
+                                <!-- Even in WinUI, shadow is always black regardless of light/dark mode -->
+
+                                <!-- if this border isn't here, dialog space displays outside of corner radius at top
+                                 if we put ClipToBounds=True on BackgroundElement above, it clips the shadow -->
+                                <Border ClipToBounds="True"
+                                        CornerRadius="{TemplateBinding CornerRadius}"
+                                        Padding="8 8 8 0">
+                                    <Grid RowDefinitions="32, *" ColumnDefinitions="*, Auto">
+                                        <!-- Title -->
+                                        <ContentPresenter x:Name="PART_TitleContentPresenter"
+                                                          Grid.Row="0" Grid.Column="0"
+                                                          VerticalAlignment="Center"
+                                                          Content="{TemplateBinding Title}"
+                                                          ContentTemplate="{TemplateBinding TitleTemplate}" />
+                                        <StackPanel Grid.Row="0" Grid.Column="1"
+                                                    Orientation="Horizontal" Classes="items-valign-center"
+                                                    Spacing="4">
+                                            <Button Theme="{StaticResource TransparentButton}"
+                                                    Content="{controls:FluentIcon &#xEC5C;}"
+                                                    ToolTip.Tip="收起"
+                                                    Command="{Binding Collapse, RelativeSource={RelativeSource TemplatedParent}}">
+                                                <Button.IsVisible>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                        <TemplateBinding Property="AllowCollapse" />
+                                                        <TemplateBinding Property="State"
+                                                                         Converter="{x:Static ObjectConverters.Equal}">
+                                                            <TemplateBinding.ConverterParameter>
+                                                                <controls:VerticalDrawerOpenState>Opened</controls:VerticalDrawerOpenState>
+                                                            </TemplateBinding.ConverterParameter>
+                                                        </TemplateBinding>
+                                                    </MultiBinding>
+                                                </Button.IsVisible>
+                                            </Button>
+                                            <Button Theme="{StaticResource TransparentButton}"
+                                                    Content="{controls:FluentIcon &#xEC5E;}"
+                                                    ToolTip.Tip="展开"
+                                                    Command="{Binding Open, RelativeSource={RelativeSource TemplatedParent}}">
+                                                <Button.IsVisible>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                        <TemplateBinding Property="AllowCollapse" />
+                                                        <TemplateBinding Property="State"
+                                                                         Converter="{x:Static ObjectConverters.NotEqual}">
+                                                            <TemplateBinding.ConverterParameter>
+                                                                <controls:VerticalDrawerOpenState>Opened</controls:VerticalDrawerOpenState>
+                                                            </TemplateBinding.ConverterParameter>
+                                                        </TemplateBinding>
+                                                    </MultiBinding>
+                                                </Button.IsVisible>
+                                            </Button>
+                                            <Button Theme="{StaticResource TransparentButton}"
+                                                    Content="{controls:FluentIcon &#xE671;}"
+                                                    ToolTip.Tip="关闭"
+                                                    Command="{Binding Close, RelativeSource={RelativeSource TemplatedParent}}" />
+                                        </StackPanel>
+                                        <!-- Content -->
+                                        <ContentPresenter x:Name="PART_ContentPresenter"
+                                                          Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                          Content="{TemplateBinding Content}"
+                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                                            <ContentPresenter.Transitions>
+                                                <Transitions>
+                                                    <DoubleTransition Property="Opacity" Duration="0:0:0.25"
+                                                                      Easing="0,0 0,1" />
+                                                </Transitions>
+                                            </ContentPresenter.Transitions>
+                                        </ContentPresenter>
+                                    </Grid>
+                                </Border>
                             </Border>
-                        </Border>
+                        </Panel>
                     </Canvas>
                 </Panel>
             </ControlTemplate>
         </Setter>
         
-        <Style Selector="^ /template/ Border#PART_BackgroundElement">
+        <Style Selector="^ /template/ Panel#WorkingPanel">
             <Setter Property="Canvas.Bottom" Value="{Binding ContainerHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:VerticalDrawer.ContainerHeightToClosedCanvasBottomPosConverter}}"/>
-            <Setter Property="Canvas.Left" Value="{Binding ContainerLeftPos, RelativeSource={RelativeSource TemplatedParent}}"/>
         </Style>
         <Style Selector="^ /template/ Border#PART_DismissLayer">
             <Setter Property="IsHitTestVisible" Value="False"/>
@@ -132,17 +137,17 @@
         </Style>
         
         <Style Selector="^:closed">
-            <Style Selector="^ /template/ Border#PART_BackgroundElement">
+            <Style Selector="^ /template/ Panel#WorkingPanel">
                 <Setter Property="Canvas.Bottom" Value="{Binding ContainerHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:VerticalDrawer.ContainerHeightToClosedCanvasBottomPosConverter}}"/>
             </Style>
         </Style>
         <Style Selector="^:collapsed">
-            <Style Selector="^ /template/ Border#PART_BackgroundElement">
+            <Style Selector="^ /template/ Panel#WorkingPanel">
                 <Setter Property="Canvas.Bottom" Value="{Binding ContainerHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static controls:VerticalDrawer.ContainerHeightToCollapsedCanvasBottomPosConverter}}"/>
             </Style>
         </Style>
         <Style Selector="^:opened">
-            <Style Selector="^ /template/ Border#PART_BackgroundElement">
+            <Style Selector="^ /template/ Panel#WorkingPanel">
                 <Setter Property="Canvas.Bottom" Value="0"/>
             </Style>
             <Style Selector="^ /template/ Border#PART_DismissLayer">
