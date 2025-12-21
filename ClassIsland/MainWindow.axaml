@@ -21,6 +21,7 @@
         xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:enums="clr-namespace:ClassIsland.Shared.Enums;assembly=ClassIsland.Shared"
         xmlns:editMode="clr-namespace:ClassIsland.Controls.EditMode"
+        xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         d:DataContext="{d:DesignInstance local:MainWindow}"
@@ -265,7 +266,7 @@
                                 <Border.Resources>
 
                                 </Border.Resources>
-                                <Grid>
+                                <Grid editMode:EditableComponentsListBox.RequestOpenChildComponents="EditableComponentsListBox_OnRequestOpenChildComponents">
                                     <ItemsControl Grid.Column="0"
                                                   x:Name="RootMainWindowLinesItemsControl"
                                                   VerticalAlignment="Stretch"
@@ -295,7 +296,6 @@
                                                                                    DetachedFromVisualTree="ListBoxMainWindowLineSettings_OnDetachedFromVisualTree"
                                                                                    SelectionChanged="SelectorComponents_OnSelectionChanged"
                                                                                    ShowComponentSettingsCommand="{Binding $parent[local:MainWindow].ShowComponentSettingsCommand}"
-                                                                                   OpenChildComponentsCommand="{Binding $parent[local:MainWindow].OpenChildComponentsCommand}"
                                                                                    ClipToBounds="False">
                                                             <editMode:EditableComponentsListBox.ItemTemplate>
                                                                 <DataTemplate>
@@ -312,6 +312,118 @@
                                                 </Grid>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <ItemsControl ItemsSource="{Binding ViewModel.ContainerComponents}" Classes="draggable"
+                                                  x:Name="ContainerComponentsEditHost"
+                                                  ClipToBounds="False">
+                                        <ItemsControl.Styles>
+                                            <Style Selector=":is(ItemsControl).draggable > :is(ContentPresenter)">
+                                                <Setter Property="(Interaction.Behaviors)">
+                                                    <BehaviorCollectionTemplate>
+                                                        <BehaviorCollection>
+                                                            <ci:AdvancedCanvasDragBehavior AllowDragFromDragThumbOnly="True" />
+                                                        </BehaviorCollection>
+                                                    </BehaviorCollectionTemplate>
+                                                </Setter>
+                                            </Style>
+                                            <Style Selector="ItemsControl > ContentPresenter" x:DataType="editMode:EditModeContainerComponentInfo">
+                                                <Setter Property="(Canvas.Left)" Value="{Binding X}" />
+                                                <Setter Property="(Canvas.Top)" Value="{Binding Y}" />
+                                            </Style>
+                                            <Style Selector="ItemsControl > ContentPresenter:dragging">
+                                                <Setter Property="Opacity" Value="0.5" />
+                                                <Setter Property="ZIndex" Value="1" />
+                                            </Style>
+                                        </ItemsControl.Styles>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 0"
+                                                        Background="{DynamicResource CommandBarOverflowPresenterBackground}"
+                                                        CornerRadius="6"
+                                                        Padding="4"
+                                                        BorderBrush="{DynamicResource CommandBarOverflowPresenterBorderBrush}"
+                                                        BorderThickness="1" >
+                                                    <StackPanel Orientation="Horizontal" Classes="items-valign-center"
+                                                                Spacing="4">
+                                                        <ci:TouchDragThumb IsExplicitVisible="True"
+                                                                           Width="20"/>
+                                                        <StackPanel TextElement.FontSize="14"
+                                                                    Classes="items-valign-center"
+                                                                    Orientation="Horizontal" Spacing="4" Margin="4 0 0 0">
+                                                            <Button Content="{ci:FluentIcon &#xE671;}"
+                                                                    ToolTip.Tip="关闭"
+                                                                    Theme="{StaticResource TransparentButton}"
+                                                                    Command="{Binding $parent[local:MainWindow].CloseContainerComponentCommand}"
+                                                                    CommandParameter="{Binding}"/>
+                                                            <controls1:IconSourceElement IconSource="{Binding Settings.AssociatedComponentInfo.IconSource}"
+                                                                                        VerticalAlignment="Center" Height="16" Width="16"
+                                                                                        ClipToBounds="False"
+                                                                                        TextElement.FontSize="16"
+                                                                                        Classes="repair-fontsize"/>
+                                                            <TextBlock Text="{Binding Settings.AssociatedComponentInfo.Name}"
+                                                                       VerticalAlignment="Center" Margin="0 1 0 0"/>
+                                                        </StackPanel>
+                                                        <Panel>
+                                                            <Thumb>
+                                                                <Thumb.Template>
+                                                                    <ControlTemplate>
+                                                                        <Border Background="Transparent"/>
+                                                                    </ControlTemplate>
+                                                                </Thumb.Template>
+                                                            </Thumb>
+                                                            <editMode:EditableComponentsListBox ItemsSource="{Binding Settings.Children}"
+                                                                                                Classes="root-components-control"
+                                                                                                ContainerComponentStack="{Binding ComponentStack}"
+                                                                                                AttachedToVisualTree="ListBoxContainerComponent_OnAttachedToVisualTree"
+                                                                                                DetachedFromVisualTree="ListBoxContainerComponent_OnDetachedFromVisualTree"
+                                                                                                SelectionChanged="SelectorComponents_OnSelectionChanged"
+                                                                                                ShowComponentSettingsCommand="{Binding $parent[local:MainWindow].ShowComponentSettingsCommand}"
+                                                                                                Tag="{Binding}"
+                                                                                                ClipToBounds="False"
+                                                                                                Height="40">
+                                                                <editMode:EditableComponentsListBox.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <ci:ComponentPresenter IsOnMainWindow="True"
+                                                                                               IsRootComponent="True"
+                                                                                               Settings="{Binding}"
+                                                                                               HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                                                               HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                                                               Margin="6 0" />
+                                                                    </DataTemplate>
+                                                                </editMode:EditableComponentsListBox.ItemTemplate>
+                                                            </editMode:EditableComponentsListBox>
+                                                        </Panel>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <Canvas>
+                                                    <Interaction.Behaviors>
+                                                        <CanvasDragBehavior />
+                                                    </Interaction.Behaviors>
+                                                </Canvas>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemContainerTheme>
+                                            <ControlTheme TargetType="ListBoxItem">
+                                                <Setter Property="Template">
+                                                    <ControlTemplate>
+                                                        <ContentPresenter Content="{TemplateBinding Content}"
+                                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                          Padding="0"
+                                                                          ClipToBounds="False"
+                                                                          Margin="0"/>
+                                                    </ControlTemplate>
+                                                </Setter>
+                                            </ControlTheme>
+                                        </ItemsControl.ItemContainerTheme>
+                                        <ItemsControl.Template>
+                                            <ControlTemplate>
+                                                <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                                            </ControlTemplate>
+                                        </ItemsControl.Template>
                                     </ItemsControl>
                                 </Grid>
 

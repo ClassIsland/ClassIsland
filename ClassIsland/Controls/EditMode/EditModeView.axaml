@@ -258,6 +258,8 @@
         </Panel>
     </UserControl.Resources>
     <Panel>
+        
+        
         <ci:VerticalDrawer SmokeBackground="False"
                            AllowCollapse="True"
                            RequestedWidth="{StaticResource SettingsContainerWidth}"

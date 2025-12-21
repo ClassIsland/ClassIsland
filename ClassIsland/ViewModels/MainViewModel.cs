@@ -374,8 +374,13 @@ public partial class MainViewModel : ObservableRecipient
     }
     
     [ObservableProperty] private MainWindowLineSettings? _selectedMainWindowLineSettings;
+    [ObservableProperty] private ObservableCollection<EditableComponentsListBox> _componentsListBoxCache = [];
     [ObservableProperty] private Dictionary<MainWindowLineSettings, EditableComponentsListBox> _mainWindowLineListBoxCache = new();
     [ObservableProperty] private Dictionary<EditableComponentsListBox, MainWindowLineSettings> _mainWindowLineListBoxCacheReversed = new();
     [ObservableProperty] private ComponentSettings? _selectedComponentSettings;
+    
+    [ObservableProperty] private ObservableCollection<EditModeContainerComponentInfo> _containerComponents = [];
+    [ObservableProperty] private Dictionary<EditModeContainerComponentInfo, EditableComponentsListBox> _containerComponentListBoxCache = new();
+    [ObservableProperty] private Dictionary<EditableComponentsListBox, EditModeContainerComponentInfo> _containerComponentListBoxCacheReversed = new();
 
 }

@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using ClassIsland.Controls.EditMode;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -30,4 +33,7 @@ public partial class EditModeViewModel(
     [ObservableProperty] private object? _secondaryDrawerContent;
     [ObservableProperty] private object? _secondaryDrawerTitle;
     [ObservableProperty] private VerticalDrawerOpenState _secondaryDrawerState;
+
+    [ObservableProperty]
+    private Dictionary<ComponentSettings, EditModeContainerComponentInfo> _containerComponentCache = [];
 }

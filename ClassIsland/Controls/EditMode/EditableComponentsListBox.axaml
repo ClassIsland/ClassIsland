@@ -115,6 +115,8 @@
                                                 <Button Theme="{StaticResource TransparentButton}"
                                                         Content="{ci:FluentIcon &#xE61D;}"
                                                         Foreground="IndianRed"
+                                                        Command="{Binding Data.DeleteComponentCommand, Source={StaticResource ParentBindingProxy}}"
+                                                        CommandParameter="{Binding}"
                                                         ToolTip.Tip="删除"/>
                                                 <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" StrokeThickness="1"
                                                       HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" >

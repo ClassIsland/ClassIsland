@@ -1120,6 +1120,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             return;
         }
 
+        if (!ViewModel.ComponentsListBoxCache.Contains(listBox))
+        {
+            ViewModel.ComponentsListBoxCache.Add(listBox);
+        }
         ViewModel.MainWindowLineListBoxCache[settings] = listBox;
         ViewModel.MainWindowLineListBoxCacheReversed[listBox] = settings;
     }
@@ -1137,16 +1141,57 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             ViewModel.MainWindowLineListBoxCache.Remove(settings);
         }
         ViewModel.MainWindowLineListBoxCacheReversed.Remove(listBox);
+        while (ViewModel.ComponentsListBoxCache.Contains(listBox))
+        {
+            ViewModel.ComponentsListBoxCache.Remove(listBox);
+        }
+    }
+    
+    private void ListBoxContainerComponent_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (sender is not EditableComponentsListBox { Tag: EditModeContainerComponentInfo settings } listBox)
+        {
+            return;
+        }
+
+        if (!ViewModel.ComponentsListBoxCache.Contains(listBox))
+        {
+            ViewModel.ComponentsListBoxCache.Add(listBox);
+        }
+        ViewModel.ContainerComponentListBoxCache[settings] = listBox;
+        ViewModel.ContainerComponentListBoxCacheReversed[listBox] = settings;
+    }
+
+    private void ListBoxContainerComponent_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (sender is not EditableComponentsListBox listBox)
+        {
+            return;
+        }
+
+        var settings = ViewModel.ContainerComponentListBoxCacheReversed.GetValueOrDefault(listBox);
+        if (settings != null)
+        {
+            ViewModel.ContainerComponentListBoxCache.Remove(settings);
+        }
+        ViewModel.ContainerComponentListBoxCacheReversed.Remove(listBox);
+        while (ViewModel.ComponentsListBoxCache.Contains(listBox))
+        {
+            ViewModel.ComponentsListBoxCache.Remove(listBox);
+        }
     }
     
     private void SelectorComponents_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings)
+        if (!ViewModel.IsEditMode 
+            || e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings 
+            || sender is not EditableComponentsListBox { ItemsSource: IList<ComponentSettings> list } 
+            || !list.Contains(settings))
         {
             // UpdateSettingsVisibility();
             return;
         }
-        foreach (var listBox in ViewModel.MainWindowLineListBoxCacheReversed.Keys.Where(x => !Equals(x, sender)))
+        foreach (var listBox in ViewModel.ComponentsListBoxCache.Where(x => !Equals(x, sender)))
         {
             listBox.SelectedItem = null;
         }
@@ -1159,11 +1204,26 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         ViewModel.EditModeView?.ShowComponentSettings();
     }
-    
+
     [RelayCommand]
-    public void OpenChildComponents(ComponentSettings? component)
+    public void CloseContainerComponent(EditModeContainerComponentInfo? info)
     {
-        
+        ViewModel.EditModeView?.CloseContainerComponent(info);
+    }
+    
+    private void EditableComponentsListBox_OnRequestOpenChildComponents(object? sender, EditableComponentsListBoxEventArgs e)
+    {
+        ViewModel.EditModeView?.OpenChildComponents(e.Settings, e.ComponentStack, GetContainerComponentEditContainerInitPos(e.ItemPosition));
+    }
+
+    public Point GetContainerComponentEditContainerInitPos(Point pos)
+    {
+        var transform = this.TransformToVisual(ContainerComponentsEditHost);
+        var pointInCanvas = transform?.Transform(pos);
+        if (pointInCanvas == null) 
+            return new Point();
+        var newPoint = new Point(pointInCanvas.Value.X, pointInCanvas.Value.Y + 48);
+        return newPoint;
     }
     
     #endregion

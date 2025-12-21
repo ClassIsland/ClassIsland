@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -26,6 +28,13 @@ public partial class EditModeView : UserControl
     {
         InitializeComponent();
         DataContext = this;
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        
+        ViewModel.MainViewModel.ContainerComponents.Clear();
     }
 
     private void OpenDrawer(string key, string? title = null, string? icon = null)
@@ -119,8 +128,27 @@ public partial class EditModeView : UserControl
         OpenDrawerCore(this.FindResource("ComponentSettingsDrawer"), 
             this.FindResource("ComponentSettingsDrawerTitle"));
     }
-
-
+    
+    public void OpenChildComponents(ComponentSettings? settings, IReadOnlyList<ComponentSettings> stack, Point pos)
+    {
+        if (settings == null)
+        {
+            return;
+        }
+        var info = new EditModeContainerComponentInfo(settings, [..stack, settings])
+        {
+            X = pos.X,
+            Y = pos.Y
+        };
+        var success = ViewModel.ContainerComponentCache.TryAdd(settings, info);
+        if (!success)
+        {
+            return;
+        }
+        ViewModel.MainViewModel.ContainerComponents.Add(info);
+        
+    }
+    
     private void ButtonOpenRuleset_OnClick(object? sender, RoutedEventArgs e)
     {
         if (this.FindResource("RulesetControl") is not RulesetControl control ||
@@ -131,5 +159,17 @@ public partial class EditModeView : UserControl
         ViewModel.SecondaryDrawerContent = control;
         ViewModel.SecondaryDrawerTitle = "编辑规则集";
         ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Opened;
+    }
+
+
+    public void CloseContainerComponent(EditModeContainerComponentInfo? info)
+    {
+        if (info == null)
+        {
+            return;
+        }
+
+        ViewModel.MainViewModel.ContainerComponents.Remove(info);
+        ViewModel.ContainerComponentCache.Remove(info.Settings);
     }
 }

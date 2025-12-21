@@ -5,11 +5,13 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
 using ClassIsland.Core.Models.Components;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ClassIsland.Controls.EditMode;
 
-public class EditableComponentsListBox : ListBox
+public partial class EditableComponentsListBox : ListBox
 {
 
     public static readonly StyledProperty<IReadOnlyList<ComponentSettings>> ContainerComponentStackProperty = AvaloniaProperty.Register<EditableComponentsListBox, IReadOnlyList<ComponentSettings>>(
@@ -29,17 +31,16 @@ public class EditableComponentsListBox : ListBox
         get => GetValue(ShowComponentSettingsCommandProperty);
         set => SetValue(ShowComponentSettingsCommandProperty, value);
     }
-
-    public static readonly StyledProperty<ICommand?> OpenChildComponentsCommandProperty = AvaloniaProperty.Register<EditableComponentsListBox, ICommand?>(
-        nameof(OpenChildComponentsCommand));
-
-    public ICommand? OpenChildComponentsCommand
+    
+    public static readonly RoutedEvent<EditableComponentsListBoxEventArgs> RequestOpenChildComponentsEvent =
+        RoutedEvent.Register<EditableComponentsListBoxEventArgs>(
+            nameof(OpenChildComponents), RoutingStrategies.Bubble, typeof(EditableComponentsListBox));
+     
+    public event EventHandler<EditableComponentsListBoxEventArgs> RequestOpenChildComponents
     {
-        get => GetValue(OpenChildComponentsCommandProperty);
-        set => SetValue(OpenChildComponentsCommandProperty, value);
+        add => AddHandler(RequestOpenChildComponentsEvent, value);
+        remove => RemoveHandler(RequestOpenChildComponentsEvent, value);
     }
-    
-    
 
     public static readonly AttachedProperty<IEnumerable?> ItemsSourceInternalProperty =
         AvaloniaProperty.RegisterAttached<EditableComponentsListBox, Control, IEnumerable?>("ItemsSourceInternal", inherits: true);
@@ -52,4 +53,49 @@ public class EditableComponentsListBox : ListBox
 
     public static void SetIsEditableComponentsListBoxChild(ListBoxItem obj, bool value) => obj.SetValue(IsEditableComponentsListBoxChildProperty, value);
     public static bool GetIsEditableComponentsListBoxChild(ListBoxItem obj) => obj.GetValue(IsEditableComponentsListBoxChildProperty);
+
+    [RelayCommand]
+    private void OpenChildComponents(ComponentSettings? componentSettings)
+    {
+        if (componentSettings == null
+            || ItemsSource is not IList<ComponentSettings> components)
+        {
+            return;
+        }
+
+        var container = ContainerFromItem(componentSettings);
+        if (container == null)
+        {
+            return;
+        }
+        var window = TopLevel.GetTopLevel(this);
+
+        if (window == null)
+            return;
+        var transform = container.TransformToVisual(window);
+        var pointInWindow = transform?.Transform(new Point(0, 0));
+        if (pointInWindow == null)
+        {
+            return;
+        }
+        RaiseEvent(new EditableComponentsListBoxEventArgs(RequestOpenChildComponentsEvent)
+        {
+            Settings = componentSettings,
+            ComponentStack = ContainerComponentStack,
+            ComponentsList = components,
+            ItemPosition = pointInWindow.Value
+        });
+    }
+
+    [RelayCommand]
+    private void DeleteComponent(ComponentSettings? componentSettings)
+    {
+        if (componentSettings == null
+            || ItemsSource is not IList<ComponentSettings> components)
+        {
+            return;
+        }
+
+        components.Remove(componentSettings);
+    }
 }
