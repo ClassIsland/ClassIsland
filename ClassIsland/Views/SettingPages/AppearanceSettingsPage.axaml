@@ -1,4 +1,4 @@
-﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AppearanceSettingsPage"
+<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AppearanceSettingsPage"
       xmlns="https://github.com/avaloniaui"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -405,13 +405,32 @@
                                         Description="自定义主界面显示课表的字体。"
                                         IconSource="{controls1:FluentIconSource &#xF271;}">
                 <controls2:SettingsExpander.Footer>
-                    <ComboBox ItemsSource="{Binding ViewModel.FontFamilies}"
+                    <ComboBox x:Name="FontComboBox"
+                              ItemsSource="{Binding ViewModel.FontFamilies}"
                               Foreground="{DynamicResource MaterialDesignBody}"
-                              SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}">
+                              MaxDropDownHeight="360"
+                              SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}"
+                              HorizontalAlignment="Left">
+                        <ComboBox.Styles>
+                            <Style Selector="ComboBoxItem">
+                                <Setter Property="MinHeight" Value="32"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            </Style>
+                            <Style Selector="#FontComboBox /template/ Popup#PART_Popup">
+                                <Setter Property="Width" Value="280"/>
+                                <Setter Property="MinWidth" Value="280"/>
+                                <Setter Property="PlacementMode" Value="BottomEdgeAlignedRight"/>
+                            </Style>
+                        </ComboBox.Styles>
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock FontFamily="{Binding}" FontWeight="Normal"
                                            ToolTip.Tip="{Binding Name}"
+                                           MaxWidth="240"
+                                           Height="20"
+                                           TextWrapping="NoWrap"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center"
                                            Classes.DefaultFont="{Binding Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static classIsland:MainWindow.DefaultFontFamily}}">
                                     <TextBlock.Styles>
                                         <Style Selector="TextBlock">
