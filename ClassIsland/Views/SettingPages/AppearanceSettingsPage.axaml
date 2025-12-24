@@ -418,7 +418,6 @@
                             </Style>
                             <Style Selector="#FontComboBox /template/ Popup#PART_Popup">
                                 <Setter Property="Width" Value="280"/>
-                                <Setter Property="MinWidth" Value="280"/>
                                 <Setter Property="PlacementMode" Value="BottomEdgeAlignedRight"/>
                             </Style>
                         </ComboBox.Styles>
