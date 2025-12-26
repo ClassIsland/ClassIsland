@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <AvaloniaVersion>11.3.9</AvaloniaVersion>
+        <AvaloniaVersion>11.3.10</AvaloniaVersion>
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Remove="**\*.xaml"/>
