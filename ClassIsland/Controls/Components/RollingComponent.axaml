@@ -1,4 +1,4 @@
-﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.RollingComponent"
+<ci:ComponentBase x:Class="ClassIsland.Controls.Components.RollingComponent"
                   x:TypeArguments="componentSettings:RollingComponentSettings"
                   xmlns="https://github.com/avaloniaui"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -17,14 +17,12 @@
         <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}"
                 Width="{Binding #ItemsControlContainer.Bounds.Width, Mode=OneWay}"
                 HorizontalAlignment="Left">
-            <Grid ColumnDefinitions="Auto,16,Auto" VerticalAlignment="Stretch" 
-                  x:Name="GridScrollContainer"
-                  Height="{Binding #OuterContainerStackPanel.Bounds.Height}">
-                <Border x:Name="ItemsControlContainer" Background="Transparent">
+            <StackPanel Orientation="Horizontal" Spacing="32" VerticalAlignment="Stretch" 
+                        x:Name="GridScrollContainer">
+                <Border x:Name="ItemsControlContainer" Background="Transparent" VerticalAlignment="Stretch">
                     <ItemsControl ItemsSource="{Binding Settings.Children}"
                                   x:Name="ItemsControlCore"
                                   VerticalAlignment="Stretch"
-                                  Height="{Binding Bounds.Height, ElementName=OuterContainerStackPanel}"
                                   SizeChanged="ItemsControlCore_OnSizeChanged">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -43,7 +41,27 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </Border>
-            </Grid>
+                <Border x:Name="ItemsControlContainerCopy" Background="Transparent" VerticalAlignment="Stretch" IsHitTestVisible="False">
+                    <ItemsControl ItemsSource="{Binding Settings.Children}"
+                                  VerticalAlignment="Stretch">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Classes="components-panel" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ci:ComponentPresenter IsOnMainWindow="True"
+                                                       VerticalAlignment="Stretch"
+                                                       Settings="{Binding}"
+                                                       HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                       HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                       Margin="6 0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+            </StackPanel>
         </Canvas>
     </Border>
 </ci:ComponentBase>
