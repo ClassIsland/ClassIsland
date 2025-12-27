@@ -206,7 +206,6 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
         Settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
-
     private void RollingComponent_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
     {
         RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
