@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -27,7 +28,7 @@ namespace ClassIsland.Controls.Components;
 /// </summary>
 [MigrateFrom("E7831603-61A0-4180-B51B-54AD75B1A4D3")]  // 课程表（旧）
 [ComponentInfo("1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8", "课程表", "\ue751", "显示当前的课程表信息。")]
-[PseudoClasses(":show-tomorrow-schedule", ":show-tomorrow-schedule-after-school", ":show-tomorrow-schedule-always")]
+[PseudoClasses(":show-tomorrow-schedule", ":show-tomorrow-schedule-on-empty", ":show-tomorrow-schedule-always")]
 public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, INotifyPropertyChanged
 {
     private bool _hideFinishedClass;
@@ -147,7 +148,11 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
             .Subscribe(_ => CheckTomorrowClassShowMode());
         _hideFinishedClassObserver ??= Settings
             .ObservableForProperty(x => x.HideFinishedClass)
-            .Subscribe(_ => HideFinishedClass = Settings.HideFinishedClass);
+            .Subscribe(_ =>
+            {
+                HideFinishedClass = Settings.HideFinishedClass;
+                UpdateTomorrowVisibility();
+            });
         _showEmptyPlaceholderObserver ??= Settings
             .ObservableForProperty(x => x.ShowPlaceholderOnEmptyClassPlan)
             .Subscribe(_ => ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan);
@@ -155,13 +160,14 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         HideFinishedClass = Settings.HideFinishedClass;
         ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan;
         MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex;
+        UpdateTomorrowVisibility();
     }
 
     private void CheckTomorrowClassShowMode()
     {
         PseudoClasses.Set(":show-tomorrow-schedule", Settings.TomorrowScheduleShowMode is 1 or 2);
-        PseudoClasses.Set(":show-tomorrow-schedule-after-school", Settings.TomorrowScheduleShowMode is 1);
         PseudoClasses.Set(":show-tomorrow-schedule-always", Settings.TomorrowScheduleShowMode is 2);
+        UpdateTomorrowVisibility();
     }
 
     private void LessonsServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -175,6 +181,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
     private void OnLessonsServiceOnCurrentTimeStateChanged(object? o, EventArgs eventArgs)
     {
         CurrentTimeStateChanged();
+        UpdateTomorrowVisibility();
     }
 
     private void CurrentTimeStateChanged()
@@ -207,6 +214,39 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         ShowCurrentLessonOnlyOnClass = settingsSource.ShowCurrentLessonOnlyOnClass;
         TomorrowClassPlan = LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1));
         MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex;
+        UpdateTomorrowVisibility();
+    }
+
+    private void UpdateTomorrowVisibility()
+    {
+        var showOnEmpty = Settings.TomorrowScheduleShowMode == 1;
+        if (!showOnEmpty)
+        {
+            PseudoClasses.Set(":show-tomorrow-schedule-on-empty", false);
+            return;
+        }
+        var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
+        var selectedItem = LessonsService.CurrentTimeLayoutItem;
+        var classPlan = LessonsService.CurrentClassPlan;
+        var hasDisplayable = HasDisplayableItems(classPlan, now, selectedItem);
+        PseudoClasses.Set(":show-tomorrow-schedule-on-empty", !hasDisplayable);
+    }
+
+    private bool HasDisplayableItems(ClassPlan? classPlan, TimeSpan now, TimeLayoutItem? selectedItem)
+    {
+        var items = classPlan?.ValidTimeLayoutItems;
+        if (items == null || items.Count == 0) return false;
+        return items.Any(item => ShouldDisplay(item, now, selectedItem, HideFinishedClass, ShowCurrentLessonOnlyOnClass));
+    }
+
+    private static bool ShouldDisplay(TimeLayoutItem item, TimeSpan now, TimeLayoutItem? selectedItem, bool hideFinishedClass, bool showCurrentLessonOnlyOnClass)
+    {
+        if (item.TimeType is 2 or 3) return false;
+        if (hideFinishedClass && item.EndTime < now) return false;
+        if (item.IsHideDefault && !Equals(selectedItem, item)) return false;
+        if (item.TimeType == 1 && !Equals(selectedItem, item)) return false;
+        if (showCurrentLessonOnlyOnClass && selectedItem?.TimeType == 0 && !Equals(selectedItem, item)) return false;
+        return true;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
