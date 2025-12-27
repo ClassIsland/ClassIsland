@@ -91,12 +91,13 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
             return;
         }
 
-        var width = (InnerContainerWidth);
+        var width = InnerContainerWidth;
+        var spacing = 32.0; // 与 XAML 中的 ColumnDefinition 保持一致
         var pausePos = _pausePos = !Settings.IsPauseEnabled || Settings.PauseOffsetX > width ? 0.0 : Settings.PauseOffsetX;
-        var durationSeconds = width / Math.Max(1, Settings.SpeedPixelPerSecond);
+        var durationSeconds = (width + spacing) / Math.Max(1, Settings.SpeedPixelPerSecond);
         var pauseSeconds = Settings.IsPauseEnabled ? Settings.PauseSeconds : 0.0;
-        var backSeconds = OuterContainerWidth / Math.Max(1, Settings.SpeedPixelPerSecond);
-        var totalSeconds = durationSeconds + pauseSeconds + backSeconds;
+        var totalSeconds = durationSeconds + pauseSeconds;
+
         var visual = ElementComposition.GetElementVisual(GridScrollContainer);
         if (visual is null)
         {
@@ -105,15 +106,22 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
 
         var compositor = visual.Compositor;
         var anim = compositor.CreateVector3DKeyFrameAnimation();
-        anim.Duration = TimeSpanHelper.FromSecondsSafe(pauseSeconds + durationSeconds);
+        anim.Duration = TimeSpanHelper.FromSecondsSafe(totalSeconds);
         anim.IterationBehavior = AnimationIterationBehavior.Forever;
-        anim.InsertKeyFrame(0f, visual.Offset with { X = 0 }, new LinearEasing());
-        anim.InsertKeyFrame((float)(pauseSeconds / totalSeconds), visual.Offset with { X = -pausePos }, new LinearEasing());
-        anim.InsertKeyFrame((float)((pauseSeconds + durationSeconds) / totalSeconds), visual.Offset with { X = -( width + pausePos ) },
-            new LinearEasing());
-        anim.InsertKeyFrame((float)((pauseSeconds + durationSeconds) / totalSeconds), visual.Offset with { X = OuterContainerWidth }, 
-            new LinearEasing());
-        anim.InsertKeyFrame(1f, visual.Offset with { X = 0 }, new LinearEasing());
+
+        // 初始位置（带停顿偏移）
+        var initialOffset = visual.Offset;
+        anim.InsertKeyFrame(0f, initialOffset with { X = (float)-pausePos }, new LinearEasing());
+
+        // 如果启用了停顿，在初始位置保持一段时间
+        if (pauseSeconds > 0)
+        {
+            anim.InsertKeyFrame((float)(pauseSeconds / totalSeconds), initialOffset with { X = (float)-pausePos }, new LinearEasing());
+        }
+
+        // 滚动到末尾（刚好第一个副本完全移出，第二个副本刚好接替第一个副本的位置）
+        anim.InsertKeyFrame(1f, initialOffset with { X = (float)-(width + spacing + pausePos) }, new LinearEasing());
+
         anim.Target = nameof(visual.Offset);
 
         ResetScrollState();
@@ -158,8 +166,13 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
         UpdateScrollState();
     }
 
-    private void ItemsControlCore_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    private double _lastUpdateWidth = 0;
+    
+    private void ItemsControlCore_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
+        if (Math.Abs(e.NewSize.Width - _lastUpdateWidth) < 1.0)
+            return;
+        _lastUpdateWidth = e.NewSize.Width;
         InnerContainerWidth = ItemsControlCore.Bounds.Width;
         UpdateScrollState();
     }
