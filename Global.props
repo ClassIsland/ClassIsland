@@ -9,15 +9,20 @@
 		<ErrorOnDuplicatePublishOutputFiles>False</ErrorOnDuplicatePublishOutputFiles>
 		<CheckEolWorkloads>false</CheckEolWorkloads>
 	</PropertyGroup>
-
+	
+	<Import Project="$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)'))/rolsyn/ClassIsland.SimpleGitInfoGenerator/ClassIsland.SimpleGitInfoGenerator.targets"/>
 	<ItemGroup>
-		<PackageReference Include="GitInfo" Version="2.3.0">
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
+		<ProjectReference Include="$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)'))/rolsyn/ClassIsland.SimpleGitInfoGenerator/ClassIsland.SimpleGitInfoGenerator.csproj"
+						  OutputItemType="Analyzer"
+						  ReferenceOutputAssembly="false" />
+
 		<Compile Include="$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)'))/AssemblyInfo.cs">
 			<LinkBase>Properties</LinkBase>
 		</Compile>
 	</ItemGroup>
+	<PropertyGroup>
+		<GitVersion_UpdateAssemblyInfo>true</GitVersion_UpdateAssemblyInfo>
+	</PropertyGroup>
 
 	<!--<Target Name="PopulateInfo" DependsOnTargets="GitVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
 		<PropertyGroup>
@@ -71,7 +76,9 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>
 	
-	<PropertyGroup>
-        <DefineConstants Condition="'$(NIX)' == 'true'">$(DefineConstants);NIX</DefineConstants>
+	<!-- NIX -->
+	<PropertyGroup Condition="'$(NIX)' == 'true'">
+        <DefineConstants>$(DefineConstants);NIX</DefineConstants>
+		<GitVersion_UpdateAssemblyInfo>false</GitVersion_UpdateAssemblyInfo>
     </PropertyGroup>
 </Project>

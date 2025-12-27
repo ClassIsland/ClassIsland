@@ -1,0 +1,33 @@
+<Project>
+    <PropertyGroup>
+        <GitCommitHash>Unknown</GitCommitHash>
+        <GitBranch>Unknown</GitBranch>
+        <GitTag>0.0.0.0</GitTag> 
+    </PropertyGroup>
+    <Target Name="GetGitInfoForSourceGenerator" BeforeTargets="BeforeBuild;PrepareForBuild;GetAnalyzerSettings"
+            Inputs="$(MSBuildProjectDirectory)\.git\HEAD;$(MSBuildProjectDirectory)\.git\refs\heads\$(GitBranch)"
+            Outputs="$(IntermediateOutputPath)git_info.cache">
+
+        <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
+        </Exec>
+        <Exec Command="git rev-parse --abbrev-ref HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="GitBranch" />
+        </Exec>
+        <Exec Command="git describe --tags --abbrev=0" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="GitTag" />
+        </Exec>
+
+        <!-- 将结果写入缓存文件，以便 MSBuild 追踪状态 -->
+        <WriteLinesToFile File="$(IntermediateOutputPath)git_info.cache"
+                          Lines="$(GitCommitHash);$(GitBranch);$(GitTag)"
+                          Overwrite="true" />
+
+    </Target>
+    
+    <ItemGroup>
+        <CompilerVisibleProperty Include="GitCommitHash" />
+        <CompilerVisibleProperty Include="GitBranch" />
+        <CompilerVisibleProperty Include="GitTag" />
+    </ItemGroup>
+</Project>
