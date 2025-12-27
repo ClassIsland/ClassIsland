@@ -251,6 +251,9 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
                     Logger.LogInformation("已丢弃旧预警：（{}，{}）{}", a.Title, a.PubTime, a.Detail);
             }
             info.Alerts = latest.Values.ToList();
+            
+            //更新时间
+            info.UpdateTimeUnix = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
 
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
