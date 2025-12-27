@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using ClassIsland.Controls.ActionSettingsControls;
@@ -140,7 +141,10 @@ public partial class App
         services.AddSettingsPage<WindowSettingsPage>();
         services.AddSettingsPage<WeatherSettingsPage>();
         services.AddSettingsPage<AutomationSettingsPage>();
-        services.AddSettingsPage<UpdateSettingsPage>();
+        if (UpdateService.AllowedPackageTypes.Contains(PackagingType))
+        {
+            services.AddSettingsPage<UpdateSettingsPage>();
+        }
         services.AddSettingsPage<StorageSettingsPage>();
         services.AddSettingsPage<PrivacySettingsPage>();
         services.AddSettingsPage<PluginsSettingsPage>();
