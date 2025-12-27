@@ -10,11 +10,10 @@
 		<CheckEolWorkloads>false</CheckEolWorkloads>
 	</PropertyGroup>
 	
-	<Import Project="$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)'))/rolsyn/ClassIsland.SimpleGitInfoGenerator/ClassIsland.SimpleGitInfoGenerator.targets"/>
 	<ItemGroup>
-		<ProjectReference Include="$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)'))/rolsyn/ClassIsland.SimpleGitInfoGenerator/ClassIsland.SimpleGitInfoGenerator.csproj"
-						  OutputItemType="Analyzer"
-						  ReferenceOutputAssembly="false" />
+		<PackageReference Include="ClassIsland.SimpleGitInfoGenerator" PrivateAssets="All"
+						  IncludeAssets="build;analyzers"
+						  Version="1.0.0.1"/>
 
 		<Compile Include="$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)'))/AssemblyInfo.cs">
 			<LinkBase>Properties</LinkBase>
