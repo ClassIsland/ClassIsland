@@ -34,6 +34,7 @@ using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
 using IniParser;
 using IniParser.Model;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views;
 
@@ -238,6 +239,7 @@ public partial class DataTransferPage : UserControl
         }
         catch (Exception e)
         {
+            IAppHost.TryGetService<ILogger<DataTransferPage>>()?.LogError(e, "导入时发生意外错误");
             this.ShowErrorToast("导入时发生意外错误", e);
         }
 
@@ -520,6 +522,7 @@ public partial class DataTransferPage : UserControl
         }
         catch (Exception e)
         {
+            IAppHost.TryGetService<ILogger<DataTransferPage>>()?.LogError(e, "导入时发生意外错误");
             this.ShowErrorToast("导入时发生意外错误", e);
         }
     }
