@@ -255,10 +255,6 @@
                                     </Binding.ConverterParameter>
                                 </Binding>
                             </Classes.StateOnClass>
-                            <Grid.Effect>
-                                <DropShadowEffect BlurRadius="8" Opacity="0"
-                                                  Color="Black" />
-                            </Grid.Effect>
 
                             <Border ClipToBounds="False"
                                     x:Name="ResourceLoaderBorder"

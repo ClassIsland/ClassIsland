@@ -160,10 +160,13 @@ public partial class App : AppBase, IAppHost
             PackagingType = "msix";
             return;
         }
-        var packageTypeDir = Path.Combine(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? "./",
+
+        var exeDir = Path.GetDirectoryName(Environment.ProcessPath) ?? "./";
+        var packageTypeDir = Path.Combine(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? exeDir,
             "PackageType");
-        var fallbackPackageTypeDir = Path.Combine("../", "PackageType");
-        var packagingRoot = Path.GetFullPath(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? "../");
+        var fallbackPackageTypeDir = Path.Combine(exeDir, "../", "PackageType");
+        var packagingRoot = Path.GetFullPath(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? 
+                                             Path.Combine(exeDir, "../"));
         if (File.Exists(packageTypeDir))
         {
             try
@@ -226,7 +229,7 @@ public partial class App : AppBase, IAppHost
 
     public override void Initialize()
     {
-        Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ".";
+        Environment.CurrentDirectory = Path.GetDirectoryName(Environment.ProcessPath) ?? "./";
         ActivatePackageType();
         ActivateAppDirectories();
         if (!Design.IsDesignMode && !System.OperatingSystem.IsMacOS())

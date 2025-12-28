@@ -74,30 +74,20 @@
             <SolidColorBrush x:Key="FluentShadowBrush" ></SolidColorBrush>
 
             <ControlTemplate x:Key="MainWindowLineFullControlTemplate" TargetType="controls:MainWindowLine">
-                <Grid 
-                    ClipToBounds="False"
-                    x:Name="GridRoot"
-                    HorizontalAlignment="Stretch">
-                    <Grid.Transitions>
-                        <Transitions>
-                            <EffectTransition Property="Effect" Duration="0:0:0.1">
-                                <EffectTransition.Easing>
-                                    <LinearEasing />
-                                </EffectTransition.Easing>
-                            </EffectTransition>
-                        </Transitions>
-                    </Grid.Transitions>
-                    <Grid.Effect>
-                        <DropShadowEffect OffsetX="0" OffsetY="0" Opacity="0" />
-                    </Grid.Effect>
-                    
+                <Grid
+                     ClipToBounds="False"
+                     x:Name="GridRoot"
+                     HorizontalAlignment="Stretch">
+
                     <!-- Background -->
-                    <Border x:Name="BackgroundBorderWrapper" 
+                    <Border x:Name="BackgroundBorderWrapper"
                             IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.IsIslandSeperated)}">
                         <Border x:Name="BackgroundBorder"
                                 Classes="docking line-background"
                                 Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                                Height="{DynamicResource IslandContainerHeight}" />
+                                Height="{DynamicResource IslandContainerHeight}">
+                            
+                        </Border>
                     </Border>
                     <Border x:Name="BackgroundBorderOverlayMask"
                             Classes="docking primaryColorZone"
@@ -108,6 +98,11 @@
                             ClipToBounds="True"
                             Height="{DynamicResource IslandContainerHeight}"
                             Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}">
+                        <Border.Transitions>
+                            <Transitions>
+                                <BoxShadowsTransition Duration="0:0:0.1" Property="BoxShadow"/>
+                            </Transitions>
+                        </Border.Transitions>
                     </Border>
 
                     <Grid x:Name="ContentClipBorder" Classes="clip-host">
@@ -126,9 +121,10 @@
                                 <Grid x:Name="GridOverlay"
                                       ClipToBounds="False"
                                       Opacity="0">
-                                    <Border Classes.line-background="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"
-                                            IsHitTestVisible="False"
-                                            IsVisible="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"/>
+                                    <Border
+                                        Classes.line-background="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}"
+                                        IsHitTestVisible="False"
+                                        IsVisible="{Binding $self.(ci:MainWindowStylesAssist.IsIslandSeperated)}" />
                                     <Border ClipToBounds="True"
                                             IsHitTestVisible="False"
                                             CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0} ">
@@ -147,35 +143,46 @@
                                     </Border>
                                 </Grid>
                                 <!-- Mask -->
-                                <Border x:Name="OverlayMask"
-                                        TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
-                                        CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}"
+                                <Border x:Name="OverlayMaskShadowRoot"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
-                                        ClipToBounds="True"
-                                        Height="{DynamicResource IslandContainerHeight}"
-                                        RenderTransformOrigin="{x:Static RelativePoint.Center}">
-                                    <Panel>
-                                        <controls:SlantedMaskControl x:Name="SlantedMaskControlSeperated" 
-                                                                     Classes="mask-bg"
-                                                                     ClipToBounds="True"
-                                                                     RegionDurationMs="360"
-                                                                     StageStaggerMs="120"
-                                                                     Fill="{DynamicResource AccentFillColorDefaultBrush}"/>
-                                        <Border TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                        CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}">
+                                    <Border x:Name="OverlayMask"
+                                            TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                            CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}"
+                                            ClipToBounds="True"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            Height="{DynamicResource IslandContainerHeight}"
+                                            RenderTransformOrigin="{x:Static RelativePoint.Center}">
+                                        <Border.Transitions>
+                                            <Transitions>
+                                                <BoxShadowsTransition Duration="0:0:0.1" Property="BoxShadow" />
+                                            </Transitions>
+                                        </Border.Transitions>
+                                        <Panel>
+                                            <controls:SlantedMaskControl x:Name="SlantedMaskControlSeperated"
+                                                                         Classes="mask-bg"
+                                                                         ClipToBounds="True"
+                                                                         RegionDurationMs="360"
+                                                                         StageStaggerMs="120"
+                                                                         Fill="{DynamicResource AccentFillColorDefaultBrush}" />
+                                            <Border
+                                                TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                                                 Padding="12 0">
-                                            <ContentPresenter x:Name="OverlayMaskContent"
-                                                              Opacity="0"
-                                                              Content="{Binding MaskContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
-                                                              ContentTemplate="{Binding MaskContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}">
-                                                <ContentPresenter.RenderTransform>
-                                                    <TransformGroup>
-                                                        <ScaleTransform />
-                                                    </TransformGroup>
-                                                </ContentPresenter.RenderTransform>
-                                            </ContentPresenter>
-                                        </Border>
-                                    </Panel>
+                                                <ContentPresenter x:Name="OverlayMaskContent"
+                                                                  Opacity="0"
+                                                                  Content="{Binding MaskContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
+                                                                  ContentTemplate="{Binding MaskContent.ContentTemplate, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}">
+                                                    <ContentPresenter.RenderTransform>
+                                                        <TransformGroup>
+                                                            <ScaleTransform />
+                                                        </TransformGroup>
+                                                    </ContentPresenter.RenderTransform>
+                                                </ContentPresenter>
+                                            </Border>
+                                        </Panel>
+                                    </Border>
                                 </Border>
                             </Grid>
                         </Panel>
@@ -296,11 +303,17 @@
                     <Style Selector="^ /template/ controls|SlantedMaskControl.mask-bg">
                         <Setter Property="IsOpened" Value="True"/>
                     </Style>
-
+ 
                     <Style Selector="^ /template/ Grid#GridRoot">
-                        <Setter Property="Effect">
-                            <DropShadowEffect OffsetX="0" OffsetY="0" Opacity="1" BlurRadius="8"/>
-                        </Setter>
+                        <!-- <Setter Property="Effect"> -->
+                        <!--     <DropShadowEffect OffsetX="0" OffsetY="0" Opacity="1" BlurRadius="8"/> -->
+                        <!-- </Setter> -->
+                    </Style>
+                    <Style Selector="^[(ci|MainWindowStylesAssist.IsIslandSeperated)=False] /template/ Border#BackgroundBorderOverlayMask">
+                        <Setter Property="BoxShadow" Value="0 8 32 0 #66000000"/>
+                    </Style>
+                    <Style Selector="^[(ci|MainWindowStylesAssist.IsIslandSeperated)=True] /template/ Border#OverlayMaskShadowRoot">
+                        <Setter Property="BoxShadow" Value="0 8 32 0 #66000000"/>
                     </Style>
                     <Style Selector="^ /template/ ContentPresenter#OverlayMaskContent">
                         <Style.Animations>

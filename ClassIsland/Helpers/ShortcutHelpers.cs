@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Platform;
 using ClassIsland.Core;
+using Mono.Unix;
 using WindowsShortcutFactory;
 
 namespace ClassIsland.Helpers;
@@ -66,6 +67,7 @@ public static class ShortcutHelpers
         if (AppBase.Current.PackagingType == "deb")
         {
             File.Copy("/usr/share/applications/cn.classisland.app.desktop", path, true);
+            SetUnixExecutePermission(path);
             return;
         }
         var targetPath = string.IsNullOrEmpty(path)
@@ -77,6 +79,7 @@ public static class ShortcutHelpers
             .ReadToEndAsync();
         var final = string.Format(raw, AppBase.AppVersion, AppBase.ExecutingEntrance);
         await File.WriteAllTextAsync(targetPath, final);
+        SetUnixExecutePermission(path);
     }
 
     public static async Task CopyFreeDesktopIconAsync()
@@ -93,5 +96,14 @@ public static class ShortcutHelpers
             await using var file = File.OpenWrite(Path.Combine(iconsDir, "classisland.png"));
             await src.CopyToAsync(file);
         }
+    }
+
+    public static void SetUnixExecutePermission(string path)
+    {
+        if (!OperatingSystem.IsLinux()) 
+            return;
+        var unixFileInfo = new UnixFileInfo(path);
+        unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute |
+                                              FileAccessPermissions.OtherExecute;
     }
 }
