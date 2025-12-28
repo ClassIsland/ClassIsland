@@ -87,9 +87,6 @@
                             </EffectTransition>
                         </Transitions>
                     </Grid.Transitions>
-                    <Grid.Effect>
-                        <DropShadowEffect OffsetX="0" OffsetY="0" Opacity="0" />
-                    </Grid.Effect>
                     
                     <!-- Background -->
                     <Border x:Name="BackgroundBorderWrapper" 
@@ -298,9 +295,9 @@
                     </Style>
 
                     <Style Selector="^ /template/ Grid#GridRoot">
-                        <Setter Property="Effect">
-                            <DropShadowEffect OffsetX="0" OffsetY="0" Opacity="1" BlurRadius="8"/>
-                        </Setter>
+                        <!-- <Setter Property="Effect"> -->
+                        <!--     <DropShadowEffect OffsetX="0" OffsetY="0" Opacity="1" BlurRadius="8"/> -->
+                        <!-- </Setter> -->
                     </Style>
                     <Style Selector="^ /template/ ContentPresenter#OverlayMaskContent">
                         <Style.Animations>
