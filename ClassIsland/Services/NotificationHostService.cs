@@ -144,6 +144,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications)
     {
+        if (!Settings.IsNotificationEnabled)
+        {
+            request.CompletedTokenSource.Cancel();
+            return;
+        }
         SetupNotificationRequest(request, providerGuid, channelGuid);
         UpdateNotificationPlayingState();
         request.CompletedToken.Register(() => FinishNotificationPlaying(request));
@@ -171,6 +176,14 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     {
         if (requests.Length <= 0)
         {
+            return;
+        }
+        if (!Settings.IsNotificationEnabled)
+        {
+            foreach (var request in requests)
+            {
+                request.CompletedTokenSource.Cancel();
+            }
             return;
         }
 
