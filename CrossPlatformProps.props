@@ -50,7 +50,7 @@
         <DefineConstants>$(DefineConstants);Platforms_Linux</DefineConstants>
     </PropertyGroup>
     
-    <Target Name="PrintPlatformInfo" BeforeTargets="Build">
+    <Target Name="PrintPlatformInfo" BeforeTargets="Build;ProcessFrameworkReferences">
         <Message Text="TargetFramework: $(TargetFramework)" Importance="high"/>
         <Message Text="RuntimeIdentifier: $(RuntimeIdentifier)" Importance="high"/>
         <Message Text="PublishBuilding: $(PublishBuilding)" Importance="high"/>
