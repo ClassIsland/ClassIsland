@@ -41,26 +41,17 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </Border>
-                <Border x:Name="ItemsControlContainerCopy" Background="Transparent" VerticalAlignment="Stretch" IsHitTestVisible="False">
-                    <ItemsControl ItemsSource="{Binding Settings.Children}"
-                                  VerticalAlignment="Stretch">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Classes="components-panel" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ci:ComponentPresenter IsOnMainWindow="True"
-                                                       VerticalAlignment="Stretch"
-                                                       Settings="{Binding}"
-                                                       HidingRules="{Binding HidingRules, Mode=OneWay}"
-                                                       HideOnRule="{Binding HideOnRule, Mode=OneWay}"
-                                                       Margin="6 0" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Border>
+                <Rectangle x:Name="ItemsControlContainerMirror" 
+                           VerticalAlignment="Stretch" 
+                           IsHitTestVisible="False"
+                           Width="{Binding #ItemsControlContainer.Bounds.Width}">
+                    <Rectangle.Fill>
+                        <VisualBrush Visual="{Binding #ItemsControlContainer}" 
+                                     Stretch="None"
+                                     AlignmentX="Left" 
+                                     AlignmentY="Top" />
+                    </Rectangle.Fill>
+                </Rectangle>
             </StackPanel>
         </Canvas>
     </Border>
