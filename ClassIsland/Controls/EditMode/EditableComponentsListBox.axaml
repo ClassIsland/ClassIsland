@@ -71,7 +71,7 @@
                                                             ClipToBounds="False">
                             <controls2:AdornerAttachHostControl.Resources>
                                 <ci:BindingProxy x:TypeArguments="controls1:EditableComponentsListBox"
-                                                 x:DataType="{x:Type components:ComponentSettings}"
+                                                 x:DataType="components:ComponentSettings"
                                                  x:CompileBindings="True"
                                                  x:Key="ParentBindingProxy"
                                                  Data="{Binding $parent[controls1:EditableComponentsListBox]}"/>
@@ -130,7 +130,7 @@
                                     </Panel>
                                 </ControlTemplate>
                             </controls2:AdornerAttachHostControl.AdornerTemplate>
-                            <Panel x:Name="RootPanel">
+                            <Panel x:Name="RootPanel" d:DataContext="{d:DesignInstance components:ComponentSettings}">
                                 <Panel.Styles>
                                     <Style Selector="TextBlock">
                                         <Setter Property="Margin" Value="0" />
@@ -142,36 +142,42 @@
                                 <Border HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Background="Transparent" />
-                                <Grid ColumnDefinitions="Auto, *">
-                                    <Panel Grid.Column="0">
-                                        <Panel.IsVisible>
-                                            <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                <TemplateBinding Property="IsSelected"/>
-                                                <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
-                                            </MultiBinding>
-                                        </Panel.IsVisible>
-                                        <ci:TouchDragThumb HorizontalAlignment="Center"
-                                                           Width="20"
-                                                           x:Name="TouchDragThumb"
-                                                           VerticalAlignment="Center"
-                                                           Orientation="Vertical"
-                                                           Background="Red" />
-                                    </Panel>
-                                    <ContentPresenter Grid.Column="1"
-                                                      Name="PART_ContentPresenter"
-                                                      Background="{TemplateBinding Background}"
-                                                      BorderBrush="{TemplateBinding BorderBrush}"
-                                                      BorderThickness="{TemplateBinding BorderThickness}"
-                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                      Content="{TemplateBinding Content}"
-                                                      Padding="0"
-                                                      ClipToBounds="False"
-                                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      CornerRadius="{TemplateBinding CornerRadius}"
-                                                      Margin="0"
-                                                      IsHitTestVisible="False" />
-                                </Grid>
+                                <ContentPresenter Grid.Column="1"
+                                                  Name="PART_ContentPresenter"
+                                                  Background="{TemplateBinding Background}"
+                                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Content="{TemplateBinding Content}"
+                                                  Padding="0"
+                                                  ClipToBounds="False"
+                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                                  Margin="0"
+                                                  IsHitTestVisible="False"
+                                                  Classes.comps-hidden="{Binding !IsVisible}">
+                                </ContentPresenter>
+                                
+                                <Panel x:Name="ContainerIndicatorPanel">
+                                    <Panel.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
+                                            <Binding Path="AssociatedComponentInfo.IsComponentContainer"/>
+                                            <TemplateBinding Property="IsSelected" Converter="{x:Static BoolConverters.Not}"/>
+                                        </MultiBinding>
+                                    </Panel.IsVisible>
+                                    <Rectangle HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Stretch"
+                                               x:Name="ContainerIndicator"
+                                               Stroke="{DynamicResource SurfaceStrokeColorDefaultBrush}"
+                                               StrokeThickness="1.5"
+                                               StrokeLineCap="Round"
+                                               StrokeJoin="Bevel"
+                                               Opacity="0.75"
+                                               Margin="2 0"
+                                               StrokeDashArray="1, 1.5" />
+                                </Panel>
                                 <Panel x:Name="SelectedPanel">
                                     <Panel.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -189,13 +195,38 @@
                                                Opacity="0.75"
                                                StrokeDashArray="1, 1.5" />
                                 </Panel>
+                                <Panel Opacity="0">
+                                    <Panel.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <TemplateBinding Property="IsSelected"/>
+                                            <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
+                                        </MultiBinding>
+                                    </Panel.IsVisible>
+                                    <ci:TouchDragThumb HorizontalAlignment="Center"
+                                                       Width="20"
+                                                       x:Name="TouchDragThumb"
+                                                       VerticalAlignment="Center"
+                                                       Orientation="Vertical"
+                                                       />
+                                </Panel>
                             </Panel>
                         </controls2:AdornerAttachHostControl>
                     </ControlTemplate>
                 </Setter>
                     
-                <Style Selector="^:selected">
-                    
+                <Style Selector="^[(ci|MainWindowStylesAssist.MainWindowInEditMode)=True] /template/ ContentPresenter#PART_ContentPresenter.comps-hidden">
+                    <Setter Property="OpacityMask">
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="10,0" 
+                                             SpreadMethod="Repeat" >
+                            <LinearGradientBrush.Transform>
+                                <RotateTransform Angle="45" />
+                            </LinearGradientBrush.Transform>
+                            <GradientStop Offset="0" Color="#afffffff" />
+                            <GradientStop Offset="0.5" Color="#afffffff" />
+                            <GradientStop Offset="0.5" Color="#50ffffff" />
+                            <GradientStop Offset="1" Color="#50ffffff" />
+                        </LinearGradientBrush>
+                    </Setter>
                 </Style>
             </ControlTheme>
         </Setter>
