@@ -8,9 +8,10 @@
     </Design.PreviewWith>
 
     <Style Selector="controls|HighlightBox">
+        <Setter Property="ClipToBounds" Value="False"/>
         <Setter Property="Template">
             <ControlTemplate>
-                <Panel Margin="2 0 2 0">
+                <Panel>
                     <Border x:Name="TextHighlightBorder" IsVisible="{TemplateBinding IsHighlight, Mode=OneWay}"
                             Background="{DynamicResource AccentFillColorDefaultBrush}" Opacity="0.4"
                             Height="12" VerticalAlignment="Center"

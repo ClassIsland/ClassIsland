@@ -117,7 +117,7 @@ public abstract class AppBase : Application, IAppHost
         #if NIX
         $"{AppVersion}-{AppCodeName}-NIXBUILD_COMMIT(NIXBUILD_BRANCH) (Core {IAppHost.CoreVersion})";
         #else
-        $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
+        $"{AppVersion}-{AppCodeName}-{GitInfo.CommitHash[..7]}({GitInfo.Branch}) (Core {IAppHost.CoreVersion})";
         #endif
     
     /// <summary>

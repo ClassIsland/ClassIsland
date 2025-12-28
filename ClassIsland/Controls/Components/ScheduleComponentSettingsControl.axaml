@@ -153,7 +153,7 @@
                                            Header="课程表文本间距"
                                            Description="使课程表显示更紧凑或宽松。">
                     <controls:SettingsExpander.Footer>
-                        <Slider Width="150" Minimum="0.3" Maximum="1"
+                        <Slider Width="150" Minimum="0.2" Maximum="1"
                                 Value="{Binding Settings.ScheduleSpacing}"
                                 TickFrequency="0.05" IsSnapToTickEnabled="True"/>
                     </controls:SettingsExpander.Footer>

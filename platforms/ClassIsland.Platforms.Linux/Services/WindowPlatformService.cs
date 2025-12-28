@@ -133,10 +133,11 @@ public class WindowPlatformService : IWindowPlatformService
             return;
         }
         
-        if ((features & WindowFeatures.Transparent) > 0 && state)
+        if ((features & WindowFeatures.Transparent) > 0)
         {
-            var region = XFixesCreateRegion(_display, 0, 0);
+            var region = state ? XFixesCreateRegion(_display, 0, 0) : nint.Zero;
             XFixesSetWindowShapeRegion(_display, handle, ShapeInput, 0, 0, region);
+            XFlush(_display);
         }
         if ((features & WindowFeatures.Bottommost) > 0)
         {
