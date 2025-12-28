@@ -252,6 +252,9 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
             }
             info.Alerts = latest.Values.ToList();
 
+            //更新时间
+            info.UpdateTimeUnix = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
         }
