@@ -159,7 +159,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                 i++;
             }
             LoadPluginSource();
-            var count = MergedPlugins.Count(x => x.Value.IsUpdateAvailable && x.Value.IsEnabled);
+            var count = MergedPlugins.Count(x => x.Value is { IsUpdateAvailable: true, IsEnabled: true, RestartRequired: false });
             if (count > 0)
             {
                 await PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
@@ -208,24 +208,53 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
     public void UpdateAllPlugins(bool discardDisabled=false)
     {
         var toUpdate = MergedPlugins
-            .Where(x => x.Value is { IsUpdateAvailable: true, DownloadProgress: null } && (discardDisabled || x.Value.IsEnabled))
+            .Where(x => x.Value is { IsUpdateAvailable: true, DownloadProgress.IsDownloading: false, RestartRequired: false }
+                        && (discardDisabled || x.Value.IsEnabled))
             .ToImmutableDictionary();
+        if (toUpdate.Count <= 0)
+        {
+            return;
+        }
         _pluginsUpdateProgressObserver ??= DownloadTasks.ObservableForProperty(x => x.Count)
             .Subscribe(_ =>
             {
                 if (DownloadTasks.Count > 0) return;
+                var success = toUpdate.Values.Count(x => x.DownloadProgress?.Exception == null);
 
                 if (SettingsService.Settings.IsPluginsUpdateNotificationEnabled)
                 {
-                    PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+                    if (success == toUpdate.Count)
                     {
-                        Title = "插件更新完成",
-                        Body = "已将所有插件升级到最新版本，将在下次启动应用时生效。",
-                        Buttons =
+                        PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
                         {
-                            { "立即重启", () => AppBase.Current.Restart() }
-                        }
-                    });
+                            Title = "插件更新完成",
+                            Body = $"已将 {success} 个插件升级到最新版本，将在下次启动应用时生效。",
+                            Buttons =
+                            {
+                                { "立即重启", () => AppBase.Current.Restart() }
+                            }
+                        });    
+                    } else if (success > 0 && success < toUpdate.Count)
+                    {
+                        PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+                        {
+                            Title = "插件更新完成",
+                            Body = $"已将 {success} 个插件升级到最新版本，{toUpdate.Count - success} 个插件升级失败。将在下次启动应用时生效。",
+                            Buttons =
+                            {
+                                { "立即重启", () => AppBase.Current.Restart() }
+                            }
+                        });
+                    }
+                    else
+                    {
+                        PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+                        {
+                            Title = "插件更新失败",
+                            Body = $"无法更新插件。请检查您的网络设置，或更换插件镜像源，然后再试一遍。"
+                        });
+                    }
+                    
                 }
 
                 _pluginsUpdateProgressObserver?.Dispose();

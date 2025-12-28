@@ -34,6 +34,7 @@ using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
 using IniParser;
 using IniParser.Model;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views;
 
@@ -150,7 +151,18 @@ public partial class DataTransferPage : UserControl
         settings.ShowEchoCaveWhenSettingsPageLoading = false;
         if (settings.WeatherIconId == "classisland.weatherIcons.materialDesign")
         {
-            settings.WeatherIconId = "classisland.weatherIcons.fluentDesign";
+            settings.WeatherIconId = "classisland.weatherIcons.lucide";
+        }
+
+        if (PlatformServices.DesktopService.IsAutoStartEnabled)
+        {
+            PlatformServices.DesktopService.IsAutoStartEnabled = false;
+            PlatformServices.DesktopService.IsAutoStartEnabled = true;
+        }
+        if (PlatformServices.DesktopService.IsUrlSchemeRegistered)
+        {
+            PlatformServices.DesktopService.IsUrlSchemeRegistered = false;
+            PlatformServices.DesktopService.IsUrlSchemeRegistered = true;
         }
         ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), settings);
     }
@@ -227,6 +239,7 @@ public partial class DataTransferPage : UserControl
         }
         catch (Exception e)
         {
+            IAppHost.TryGetService<ILogger<DataTransferPage>>()?.LogError(e, "导入时发生意外错误");
             this.ShowErrorToast("导入时发生意外错误", e);
         }
 
@@ -509,6 +522,7 @@ public partial class DataTransferPage : UserControl
         }
         catch (Exception e)
         {
+            IAppHost.TryGetService<ILogger<DataTransferPage>>()?.LogError(e, "导入时发生意外错误");
             this.ShowErrorToast("导入时发生意外错误", e);
         }
     }
