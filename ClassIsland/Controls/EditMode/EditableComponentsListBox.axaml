@@ -67,7 +67,8 @@
                 <Setter Property="ClipToBounds" Value="False"/>
                 <Setter Property="Template" > 
                     <ControlTemplate>
-                        <controls2:AdornerAttachHostControl x:Name="AdornerAttachHostControl">
+                        <controls2:AdornerAttachHostControl x:Name="AdornerAttachHostControl"
+                                                            ClipToBounds="False">
                             <controls2:AdornerAttachHostControl.Resources>
                                 <ci:BindingProxy x:TypeArguments="controls1:EditableComponentsListBox"
                                                  x:DataType="{x:Type components:ComponentSettings}"

@@ -15,14 +15,7 @@
                 <Panel>
                     <Border x:Name="PART_DismissLayer" 
                             HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch">
-                        <Border.Transitions>
-                            <Transitions>
-                                <DoubleTransition Property="Opacity" Duration="0:0:0.25"
-                                                  Easing="0,0 0,1"/>
-                            </Transitions>
-                        </Border.Transitions>
-                    </Border>
+                            VerticalAlignment="Stretch"/>
                     <Canvas x:Name="PART_Canvas"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch">
@@ -45,7 +38,7 @@
                                     MaxWidth="{Binding #PART_Canvas.Bounds.Width}"
                                     Width="{TemplateBinding RequestedWidth}"
                                     HorizontalAlignment="Center"
-                                    Effect="drop-shadow(0 8 32 #66000000)"
+                                    BoxShadow="0 8 32 0 #66000000"
                                     BackgroundSizing="{TemplateBinding BackgroundSizing}">
                                 <!-- Even in WinUI, shadow is always black regardless of light/dark mode -->
 
@@ -108,12 +101,6 @@
                                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
-                                            <ContentPresenter.Transitions>
-                                                <Transitions>
-                                                    <DoubleTransition Property="Opacity" Duration="0:0:0.25"
-                                                                      Easing="0,0 0,1" />
-                                                </Transitions>
-                                            </ContentPresenter.Transitions>
                                         </ContentPresenter>
                                     </Grid>
                                 </Border>
@@ -134,6 +121,12 @@
         </Style>
         <Style Selector="^[SmokeBackground=True] /template/ Border#PART_DismissLayer">
             <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefaultBrush}"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.25"
+                                      Easing="0,0 0,1" />
+                </Transitions>
+            </Setter>
         </Style>
         
         <Style Selector="^:closed">
