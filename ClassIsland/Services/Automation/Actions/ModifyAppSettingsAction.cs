@@ -9,7 +9,9 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Converters;
 using ClassIsland.Models.Actions;
+using ClassIsland.Shared.Helpers;
 using Microsoft.Extensions.Logging;
 namespace ClassIsland.Services.Automation.Actions;
 
@@ -98,7 +100,7 @@ public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSetting
     {
         AllowOutOfOrderMetadataProperties = true,
         AllowTrailingCommas = true,
-        Converters = { new JsonStringEnumConverter() },
+        Converters = { new JsonStringEnumConverter(), new ColorHexJsonConverter() },
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
