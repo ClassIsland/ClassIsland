@@ -194,8 +194,8 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
             using var http = new HttpClient();
             var uri = Settings.WeatherLocationSource switch
             {
-                0 => $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn",
-                1 => $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/geo?longitude={Settings.WeatherLongitude}&latitude={Settings.WeatherLatitude}&locale=zh_cn",
+                0 => $"http://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn",
+                1 => $"http://weatherapi.market.xiaomi.com/wtr-v3/location/city/geo?longitude={Settings.WeatherLongitude}&latitude={Settings.WeatherLatitude}&locale=zh_cn",
                 _ => throw new ArgumentOutOfRangeException()
             };
             Logger.LogInformation("获取城市信息： {}", uri);
@@ -226,7 +226,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         {
             using var http = new HttpClient();
             var uri =
-                $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude={cityLatitude}&longitude={cityLongitude}&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
+                $"http://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude={cityLatitude}&longitude={cityLongitude}&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
             var info = await WebRequestHelper.Default.GetJson<WeatherInfo>(new Uri(uri));
 
@@ -280,7 +280,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         if (name != string.Empty)
         {
             uri = new Uri(
-                $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/search?name={Uri.EscapeDataString(name)}&locale=zh_cn");
+                $"http://weatherapi.market.xiaomi.com/wtr-v3/location/city/search?name={Uri.EscapeDataString(name)}&locale=zh_cn");
             logText = logText.Replace("热门", "");
         }
 
