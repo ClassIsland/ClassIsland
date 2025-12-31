@@ -12,7 +12,7 @@
                         d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer>
         <StackPanel
-            Classes="settings-container animated-intro" Margin="0"
+            Classes="settings-container animated-intro" Margin="0,0,0,12"
             DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TextComponentSettingsControl}}">
             <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xE510;}"
                                         Header="文本内容"

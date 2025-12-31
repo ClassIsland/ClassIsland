@@ -16,7 +16,7 @@
     </ci:ComponentBase.Resources>
     <ScrollViewer>
         <StackPanel
-            Classes="settings-container animated-intro" Margin="0"
+            Classes="settings-container animated-intro" Margin="0,0,0,12"
             DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponentSettingsControl}}">
             <!-- 轮换间隔 -->
             <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf361;}"

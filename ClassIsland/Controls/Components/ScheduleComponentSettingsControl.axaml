@@ -17,7 +17,7 @@
     </ci:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ScheduleComponentSettingsControl}}">
         <ScrollViewer>
-            <StackPanel Classes="animated-intro settings-container" Margin="0">
+            <StackPanel Classes="animated-intro settings-container" Margin="0,0,0,12">
                 <!-- 附加设置覆盖提示 -->
                 <controls:InfoBar IsOpen="True" Message="此处的设置可以在档案设置中被附加设置覆盖。">
                     <controls:InfoBar.ActionButton>
