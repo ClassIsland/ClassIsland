@@ -1,4 +1,4 @@
-﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.ScheduleComponent"
+<ci:ComponentBase x:Class="ClassIsland.Controls.Components.ScheduleComponent"
                   x:TypeArguments="componentSettings:LessonControlSettings"
                   xmlns="https://github.com/avaloniaui"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -57,7 +57,7 @@
         </Style>
         
         <Style Selector="local|ScheduleComponent:show-tomorrow-schedule:not(.TomorrowScheduleEmpty)">
-            <Style Selector="^:show-tomorrow-schedule-after-school.AfterSchool, ^:show-tomorrow-schedule-always">
+            <Style Selector="^:show-tomorrow-schedule-on-empty, ^:show-tomorrow-schedule-after-school.AfterSchool, ^:show-tomorrow-schedule-always">
                 <Style Selector="^ Border#Tomorrow">
                     <Setter Property="IsVisible" Value="True"/>
                 </Style>
