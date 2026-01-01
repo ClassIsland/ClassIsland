@@ -161,6 +161,7 @@
                            Height="64"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
         <!-- ROW 1 组件方案管理 -->
@@ -603,5 +604,15 @@
                 </TabItem>
             </TabControl>
         </Grid>
+        
+        <controls:InfoBar Grid.Row="5" Grid.Column="0" 
+                          Message="新功能：现在可以使用⌈编辑模式⌋更加直观地编辑主界面上的组件！"
+                          IsOpen="True">
+            <controls:InfoBar.ActionButton>
+                <Button Content="进入编辑模式"
+                        Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                        CommandParameter="classisland://app/edit?fromSettingsPage=true"/>
+            </controls:InfoBar.ActionButton>
+        </controls:InfoBar>
     </Grid>
 </ci:SettingsPageBase>
