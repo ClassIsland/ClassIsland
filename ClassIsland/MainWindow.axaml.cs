@@ -207,7 +207,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
-
+        
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -331,6 +331,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());
+        UriNavigationService.HandleAppNavigation("edit", args => EnterEditMode());
 
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化输入");
         if (SettingsService.Settings.UseRawInput)
@@ -1095,12 +1096,18 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     #region EditMode
 
-    private async void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
+    private void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
+    {
+        EnterEditMode();
+    }
+
+    private async void EnterEditMode()
     {
         if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
         {
             return;
         }
+
         ViewModel.IsEditMode = true;
     }
 
