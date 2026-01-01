@@ -1102,6 +1102,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.IsEditMode = false;
+        ComponentsService.SaveConfig();
     }
 
     private void ButtonOpenComponentsLib_OnClick(object? sender, RoutedEventArgs e)
