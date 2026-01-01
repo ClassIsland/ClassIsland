@@ -40,14 +40,8 @@ public static class ClassWidgetsProfileTransferHelper
         // TimeLayouts
         // 注意！cw 课表结构中，计数从周一（0）开始。
         var parts = new Dictionary<string, CwProfileTimeSpan?>();
-        var timeLayouts = new Dictionary<string, TimeLayout>();
-        var timeLayoutsMap = new Dictionary<string, Guid>([
-            new KeyValuePair<string, Guid>("default", Guid.NewGuid())
-        ]);
-        for (int i = 0; i < 7; i++)
-        {
-            timeLayoutsMap.Add(i.ToString(), Guid.NewGuid());
-        }
+        
+        
         foreach (var (index, value) in profileCw.Part.OrderBy(x => int.Parse(x.Key)))
         {
             if (value.Count < 3 || value[0] is not JsonElement { ValueKind: JsonValueKind.Number } startHour 
@@ -62,7 +56,7 @@ public static class ClassWidgetsProfileTransferHelper
             {
                 Name = name,
                 StartTime = new TimeSpan(startHour.GetInt32(), endHour.GetInt32(), 0),
-                Type = type.GetRawText() switch
+                Type = type.GetString() switch
                 {
                     "break" => CwProfileTimeSpan.TimeSpanType.Break,
                     _ => CwProfileTimeSpan.TimeSpanType.Part
@@ -70,54 +64,16 @@ public static class ClassWidgetsProfileTransferHelper
             });
         }
 
-        foreach (var (id, timeLine) in profileCw.Timeline.Where(x => x.Value.Count > 0))
-        {
-            var timeLineNormalized = timeLine
-                .Where(x => x.Key.Length == 3
-                            && parts.GetValueOrDefault(x.Key[1].ToString()) != null
-                            && int.TryParse(x.Key[1].ToString(), out _)
-                            && double.TryParse(x.Value, out _))
-                .OrderBy(x => int.Parse(x.Key[1].ToString()))
-                .ToList();
-            if (timeLineNormalized.Count <= 0)
-            {
-                continue;
-            }
-
-            var timeLayout = new TimeLayout();
-            var groupIndex = 0;
-            var prevGroup = timeLineNormalized[0].Key[1].ToString();
-            var prevEnd = parts[prevGroup]!.StartTime;
-            foreach (var (k, v) in timeLineNormalized)
-            {
-                var group = k[1].ToString();
-                if (group != prevGroup)
-                {
-                    prevGroup = group;
-                    groupIndex++;
-                    timeLayout.Layouts.Add(new TimeLayoutItem()
-                    {
-                        TimeType = 2,
-                        StartTime = parts[group]!.StartTime - TimeSpan.FromSeconds(1)
-                    });
-                    prevEnd = parts[group]!.StartTime;
-                }
-
-                var start = prevEnd;
-                var end = prevEnd = start + TimeSpan.FromMinutes(double.Parse(v));
-                timeLayout.Layouts.Add(new TimeLayoutItem()
-                {
-                    TimeType = k[0] == 'f' ? 1 : 0,
-                    StartTime = start,
-                    EndTime = end
-                });
-            }
-            timeLayouts[id] = timeLayout;
-        }
+        var (timeLayouts, timeLayoutsMap) = ImportCwTimeLine(profileCw.Timeline, "单周");
+        var (timeLayoutsEven, timeLayoutsMapEven) = ImportCwTimeLine(profileCw.TimelineEven, "双周");
 
         foreach (var (id, timeLayout) in timeLayouts)
         {
             profile.TimeLayouts[timeLayoutsMap[id]] = timeLayout;
+        }
+        foreach (var (id, timeLayout) in timeLayoutsEven)
+        {
+            profile.TimeLayouts[timeLayoutsMapEven[id]] = timeLayout;
         }
         
         // ClassPlans
@@ -135,7 +91,7 @@ public static class ClassWidgetsProfileTransferHelper
             };
             var cpEven = new ClassPlan()
             {
-                TimeLayoutId = timeLayouts.ContainsKey(day) ? timeLayoutsMap[day] : timeLayoutsMap["default"],
+                TimeLayoutId = timeLayoutsEven.ContainsKey(day) ? timeLayoutsMapEven[day] : timeLayoutsMapEven["default"],
                 TimeLayouts = profile.TimeLayouts
             };
             cpEven.TimeRule.WeekDay = cpOdd.TimeRule.WeekDay = i;
@@ -162,8 +118,8 @@ public static class ClassWidgetsProfileTransferHelper
                 }
             }
 
-            var oddValid = cpOdd.Classes.Any(x => x.SubjectId != subjectsCache[undefinedClassName]);
-            var evenValid = cpEven.Classes.Any(x => x.SubjectId != subjectsCache[undefinedClassName]);
+            var oddValid = !subjectsCache.ContainsKey(undefinedClassName) || cpOdd.Classes.Any(x => x.SubjectId != subjectsCache[undefinedClassName]);
+            var evenValid = !subjectsCache.ContainsKey(undefinedClassName) || cpEven.Classes.Any(x => x.SubjectId != subjectsCache[undefinedClassName]);
             var evenAdded = false;
             if (oddValid)
             {
@@ -182,7 +138,7 @@ public static class ClassWidgetsProfileTransferHelper
             cpOdd.Name += "（单周）";
             cpEven.Name += "（双周）";
             cpOdd.TimeRule.WeekCountDivTotal = cpOdd.TimeRule.WeekCountDivTotal = 2;
-            cpEven.TimeRule.WeekCountDiv = 0;
+            cpEven.TimeRule.WeekCountDiv = 2;
             cpOdd.TimeRule.WeekCountDiv = 1;
             if (!evenAdded)
             {
@@ -190,6 +146,92 @@ public static class ClassWidgetsProfileTransferHelper
             }
         }
 
+        foreach (var (_, cp) in profile.ClassPlans)
+        {
+            cp.RefreshClassesList();
+        }
+        
         return profile;
+
+        (Dictionary<string, TimeLayout> results, Dictionary<string, Guid> map) ImportCwTimeLine(Dictionary<string, List<List<JsonElement>>> timeLines, string description)
+        {
+            var myTimeLayouts = new Dictionary<string, TimeLayout>();
+            var myTimeLayoutsMap = new Dictionary<string, Guid>([
+                new KeyValuePair<string, Guid>("default", Guid.NewGuid())
+            ]);
+            for (int i = 0; i < 7; i++)
+            {
+                myTimeLayoutsMap.Add(i.ToString(), Guid.NewGuid());
+            }
+            foreach (var (id, timeLine) in timeLines.Where(x => x.Value.Count > 0))
+            {
+                var timeLineNormalized = timeLine
+                    .Where(x => x is
+                                [
+                                    { ValueKind: JsonValueKind.Number }, { ValueKind: JsonValueKind.String },
+                                    { ValueKind: JsonValueKind.Number }, { ValueKind: JsonValueKind.Number }
+                                ]
+                                && parts.GetValueOrDefault(x[1].GetString() ?? "") != null)
+                    .OrderBy(x => parts[x[1].GetString() ?? ""]?.StartTime)
+                    .Select(x => new
+                    {
+                        TimeType = x[0].GetInt32(),
+                        PartId = x[1].GetString(),
+                        IndexOfPart = x[2].GetInt32(),
+                        DurationMinutes = x[3].GetDouble()
+                    })
+                    .ToList();
+                if (timeLineNormalized.Count <= 0)
+                {
+                    continue;
+                }
+
+                var timeLayout = new TimeLayout()
+                {
+                    Name = id switch
+                    {
+                        "default" => "默认",
+                        "0" => "周一",
+                        "1" => "周二",
+                        "2" => "周三",
+                        "3" => "周四",
+                        "4" => "周五",
+                        "5" => "周六",
+                        "6" => "周日",
+                        _ => id
+                    } + $"（{description}）"
+                };
+                var groupIndex = 0;
+                var prevGroup = timeLineNormalized[0].PartId;
+                var prevEnd = parts[prevGroup]!.StartTime;
+                foreach (var i in timeLineNormalized)
+                {
+                    var group = i.PartId;
+                    if (group != prevGroup)
+                    {
+                        prevGroup = group;
+                        groupIndex++;
+                        timeLayout.Layouts.Add(new TimeLayoutItem()
+                        {
+                            TimeType = 2,
+                            StartTime = parts[group]!.StartTime - TimeSpan.FromSeconds(1)
+                        });
+                        prevEnd = parts[group]!.StartTime;
+                    }
+
+                    var start = prevEnd;
+                    var end = prevEnd = start + TimeSpan.FromMinutes(i.DurationMinutes);
+                    timeLayout.Layouts.Add(new TimeLayoutItem()
+                    {
+                        TimeType = i.TimeType,
+                        StartTime = start,
+                        EndTime = end
+                    });
+                }
+                myTimeLayouts[id] = timeLayout;
+            }
+
+            return (myTimeLayouts, myTimeLayoutsMap);
+        }
     }
 }

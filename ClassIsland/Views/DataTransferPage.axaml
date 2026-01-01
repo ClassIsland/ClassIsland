@@ -40,7 +40,7 @@
                                                     UriSource="avares://ClassIsland/Assets/AppLogo.png" />
                                             </controls:SettingsExpander.IconSource>
                                         </controls:SettingsExpander>
-                                        <controls:SettingsExpander Header="Class Widgets 1"
+                                        <controls:SettingsExpander Header="Class Widgets 1.2"
                                                                    IsClickEnabled="True"
                                                                    Click="ImportFromClassWidgets1_OnClick"
                                                                    IconSource="{ci:FluentIconSource &#xe06f;}" />
