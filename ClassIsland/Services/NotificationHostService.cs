@@ -48,6 +48,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     private HashSet<NotificationRequest> PoppedRequests { get; } = [];
 
+    private Dictionary<NotificationRequest, WeakReference<INotificationConsumer>> RequestOwners { get; } = new();
+
     public NotificationRequest? CurrentRequest { get; set; }
 
     public NotificationRequest GetRequest()
@@ -111,6 +113,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     {
         Logger.LogTrace("提醒 #{} 已播放完成", request.GetHashCode());
         PlayingNotifications.Remove(request);
+        RequestOwners.Remove(request);
         UpdateNotificationPlayingState();
     }
     
@@ -314,6 +317,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             foreach (var request in requests)
             {
                 PlayingNotifications.Add(request);
+                RequestOwners[request] = new WeakReference<INotificationConsumer>(consumer.Consumer);
             }
             UpdateNotificationPlayingState();
             consumer.Consumer.ReceiveNotifications(requests);
@@ -370,6 +374,19 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         RegisteredConsumers.Add(registerInfo);  // 当列表中什么都没有或者插入项的优先级比列表里所有元素都大时，插入到最后一项。
         if (consumer.AcceptsNotificationRequests && consumer.QueuedNotificationCount <= 0)
         {
+            var orphan = PlayingNotifications
+                .Where(r => !RequestOwners.TryGetValue(r, out var owner) || !owner.TryGetTarget(out var _))
+                .ToList();
+            if (orphan.Count > 0)
+            {
+                Logger.LogTrace("推送未完成的提醒到新消费者：{} 个", orphan.Count);
+                foreach (var r in orphan)
+                {
+                    RequestOwners[r] = new WeakReference<INotificationConsumer>(consumer);
+                }
+                consumer.ReceiveNotifications(orphan);
+                return;
+            }
             consumer.ReceiveNotifications(PopRequests());
         }
     }
@@ -383,6 +400,26 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
 
         RegisteredConsumers.Remove(registerInfo);
+
+        var orphan = RequestOwners
+            .Where(kvp => !kvp.Value.TryGetTarget(out var target) || ReferenceEquals(target, consumer))
+            .Select(kvp => kvp.Key)
+            .ToList();
+        foreach (var r in orphan)
+        {
+            RequestOwners.Remove(r);
+        }
+        var next = RegisteredConsumers
+            .FirstOrDefault(x => x.Consumer.AcceptsNotificationRequests && x.Consumer.QueuedNotificationCount <= 0);
+        if (next != null && orphan.Count > 0)
+        {
+            Logger.LogTrace("消费者注销，移交未完成提醒：{} 个", orphan.Count);
+            foreach (var r in orphan)
+            {
+                RequestOwners[r] = new WeakReference<INotificationConsumer>(next.Consumer);
+            }
+            next.Consumer.ReceiveNotifications(orphan);
+        }
     }
 
     public IList<NotificationRequest> PullNotificationRequests()
@@ -400,6 +437,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             OnPropertyChanged();
         }
     }
+
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

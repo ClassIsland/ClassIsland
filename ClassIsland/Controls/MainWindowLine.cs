@@ -214,6 +214,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private Queue<NotificationRequest> _notificationQueue = new();
 
+
     private bool _isLoadCompleted = false;
 
     private bool _isTemplateApplied = false;
@@ -623,9 +624,17 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             var cancellationToken = request.CancellationTokenSource.Token;
 
             PreProcessNotificationContent(mask);
+            if (request.MaskStartTime == null)
+            {
+                if (mask.EndTime == null)
+                {
+                    mask.EndTime = ExactTimeService.GetCurrentLocalDateTime() + mask.Duration;
+                }
+                request.MaskStartTime = ExactTimeService.GetCurrentLocalDateTime();
+            }
 
-
-            if (request.MaskContent.Duration > TimeSpan.Zero && !cancellationToken.IsCancellationRequested)
+            var maskHasRemaining = request.MaskContent.Duration > TimeSpan.Zero && !cancellationToken.IsCancellationRequested;
+            if (maskHasRemaining)
             {
                 PseudoClasses.Set(":mask-anim", false);
                 PseudoClasses.Set(":overlay-out", false);
@@ -683,7 +692,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 {
                     await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskContent.Duration), cancellationToken);
                 }
-                if (overlay is null || cancellationToken.IsCancellationRequested || overlay.Duration <= TimeSpan.Zero)
+                if (overlay is null || cancellationToken.IsCancellationRequested)
                 {
                     PseudoClasses.Set(":overlay-anim", true);
                     PseudoClasses.Set(":mask-in", false);
@@ -694,6 +703,15 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 else
                 {
                     PreProcessNotificationContent(overlay);
+                    if (request.OverlayStartTime == null)
+                    {
+                        if (overlay.EndTime == null)
+                        {
+                            overlay.EndTime = ExactTimeService.GetCurrentLocalDateTime() + overlay.Duration;
+                        }
+                        request.OverlayStartTime = ExactTimeService.GetCurrentLocalDateTime();
+                        PreProcessNotificationContent(overlay);
+                    }
                     OverlayContent = overlay;
                     if (isOverlaySpeechEnabled)
                     {
@@ -703,6 +721,14 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     PseudoClasses.Set(":mask-in", false);
                     PseudoClasses.Set(":overlay-out", false);
                     PseudoClasses.Set(":overlay-in", true);
+                    var startProgress = 1.0;
+                    if (request.OverlayStartTime != null && overlay.EndTime != null)
+                    {
+                        var total = overlay.EndTime.Value - request.OverlayStartTime.Value;
+                        var remain = overlay.EndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
+                        startProgress = total > TimeSpan.Zero ? Math.Clamp(remain.TotalMilliseconds / total.TotalMilliseconds, 0.0, 1.0) : 0.0;
+                    }
+                    CountdownProgressValue = startProgress;
                     var animation = new Animation()
                     {
                         Duration = overlay.Duration,
@@ -713,7 +739,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                                 Cue = new Cue(0.0),
                                 Setters =
                                 {
-                                    new Setter(CountdownProgressValueProperty, 1.0)
+                                    new Setter(CountdownProgressValueProperty, startProgress)
                                 }
                             },
                             new KeyFrame()
@@ -729,11 +755,82 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     _ = animation.RunAsync(this, cancellationToken);
                     if (!cancellationToken.IsCancellationRequested)
                     {
-                        await Task.Run(() => cancellationToken.WaitHandle.WaitOne(overlay.Duration),
-                            cancellationToken);
+                        await Task.Run(() => cancellationToken.WaitHandle.WaitOne(overlay.Duration), cancellationToken);
                     }
                 }
                 SpeechService.ClearSpeechQueue();
+            }
+            else
+            {
+                if (overlay is not null && !cancellationToken.IsCancellationRequested)
+                {
+                    PreProcessNotificationContent(overlay);
+                    if (request.OverlayStartTime == null)
+                    {
+                        if (overlay.EndTime == null)
+                        {
+                            overlay.EndTime = ExactTimeService.GetCurrentLocalDateTime() + overlay.Duration;
+                        }
+                        request.OverlayStartTime = ExactTimeService.GetCurrentLocalDateTime();
+                        PreProcessNotificationContent(overlay);
+                    }
+                    if (overlay.Duration > TimeSpan.Zero)
+                    {
+                        notificationsShowed = true;
+                        OverlayContent = overlay;
+                        if (isOverlaySpeechEnabled)
+                        {
+                            SpeechService.EnqueueSpeechQueue(overlay.SpeechContent);
+                        }
+                        PseudoClasses.Set(":mask-out", true);
+                        PseudoClasses.Set(":mask-in", false);
+                        PseudoClasses.Set(":overlay-out", false);
+                        PseudoClasses.Set(":overlay-in", true);
+                        var startProgress = 1.0;
+                        if (request.OverlayStartTime != null && overlay.EndTime != null)
+                        {
+                            var total = overlay.EndTime.Value - request.OverlayStartTime.Value;
+                            var remain = overlay.EndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
+                            startProgress = total > TimeSpan.Zero ? Math.Clamp(remain.TotalMilliseconds / total.TotalMilliseconds, 0.0, 1.0) : 0.0;
+                        }
+                        CountdownProgressValue = startProgress;
+                        var animation = new Animation()
+                        {
+                            Duration = overlay.Duration,
+                            Children =
+                            {
+                                new KeyFrame()
+                                {
+                                    Cue = new Cue(0.0),
+                                    Setters =
+                                    {
+                                        new Setter(CountdownProgressValueProperty, startProgress)
+                                    }
+                                },
+                                new KeyFrame()
+                                {
+                                    Cue = new Cue(1.0),
+                                    Setters =
+                                    {
+                                        new Setter(CountdownProgressValueProperty, 0.0)
+                                    }
+                                }
+                            }
+                        };
+                        _ = animation.RunAsync(this, cancellationToken);
+                        if (!cancellationToken.IsCancellationRequested)
+                        {
+                            await Task.Run(() => cancellationToken.WaitHandle.WaitOne(overlay.Duration), cancellationToken);
+                        }
+                    }
+                    else
+                    {
+                        PseudoClasses.Set(":overlay-anim", true);
+                        PseudoClasses.Set(":overlay-out", true);
+                        PseudoClasses.Set(":overlay-in", false);
+                    }
+                    SpeechService.ClearSpeechQueue();
+                }
             }
 
             if (NotificationHostService.RequestQueue.Count + _notificationQueue.Count < 1 && notificationsShowed)

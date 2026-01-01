@@ -138,6 +138,9 @@ public class NotificationRequest : ObservableRecipient
     
     internal bool NotificationSetupCompleted { get; set; }
 
+    public DateTime? MaskStartTime { get; set; }
+    public DateTime? OverlayStartTime { get; set; }
+
     /// <summary>
     /// 取消当前提醒。
     /// </summary>
