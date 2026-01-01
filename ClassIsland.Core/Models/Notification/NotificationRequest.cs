@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Shared.Models.Notification;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -140,6 +140,7 @@ public class NotificationRequest : ObservableRecipient
 
     public DateTime? MaskStartTime { get; set; }
     public DateTime? OverlayStartTime { get; set; }
+    public bool MaskEffectPlayed { get; set; }
 
     /// <summary>
     /// 取消当前提醒。

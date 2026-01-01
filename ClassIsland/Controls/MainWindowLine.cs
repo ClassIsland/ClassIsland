@@ -668,10 +668,12 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             }
         }
         if (settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
-            !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible)
+            !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible &&
+            !request.MaskEffectPlayed)
         {
             var center = GetCenter();
             TopmostEffectWindow.PlayEffect(new RippleEffect(center, MaskContent.Color));
+            request.MaskEffectPlayed = true;
         }
         if (!cancellationToken.IsCancellationRequested)
         {
