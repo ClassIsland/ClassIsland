@@ -96,15 +96,33 @@ public class EdgeTtsService : ISpeechService
                     {
                         Text = text
                     };
-                    EdgeTts.Invoke(options, voice, (Action<List<byte>>)(binary =>
+                    try
                     {
-                        if (completeHandle.IsCancellationRequested)
-                            return;
-                        File.WriteAllBytes(cache, binary.ToArray());
-                        completed = true;
-                        completeHandle.Cancel();
-                    }));
-                    completeHandle.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(15));
+                        EdgeTts.Invoke(options, voice, (Action<List<byte>>)(binary =>
+                        {
+                            if (completeHandle.IsCancellationRequested)
+                                return;
+                            try
+                            {
+                                File.WriteAllBytes(cache, binary.ToArray());
+                                completed = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.LogError(ex, "写入语音缓存文件失败：{}", cache);
+                            }
+                            completeHandle.Cancel();
+                        }));
+                        if (!completeHandle.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(15)))
+                        {
+                            Logger.LogWarning("获取EdgeTTS语音超时。");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "获取EdgeTTS语音失败。");
+                    }
+                    
                     completeHandle.Cancel();
                 },
                 requestingCancellationTokenSource.Token);
@@ -142,8 +160,21 @@ public class EdgeTtsService : ISpeechService
             if (playInfo.DownloadTask != null)
             {
                 Logger.LogDebug("等待下载完成");
-                await playInfo.DownloadTask;
+                try
+                {
+                    await playInfo.DownloadTask;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "等待下载任务失败。");
+                }
                 Logger.LogDebug("等待下载完成结束");
+            }
+
+            if (!File.Exists(playInfo.FilePath))
+            {
+                Logger.LogWarning("找不到语音缓存文件：{}", playInfo.FilePath);
+                continue;
             }
 
             try
