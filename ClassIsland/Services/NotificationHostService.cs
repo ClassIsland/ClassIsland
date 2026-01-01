@@ -413,8 +413,14 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 .ToList();
             if (orphan.Count > 0)
             {
-                Logger.LogTrace("消费者注册, 提醒回归队列: {} 个", orphan.Count);
-                RequeueNotifications(orphan);
+                Logger.LogTrace("消费者注册, 提醒移交给新消费者: {} 个", orphan.Count);
+                foreach (var request in orphan)
+                {
+                    RequestOwners[request] = new WeakReference<INotificationConsumer>(consumer.Consumer);
+                }
+                consumer.Consumer.ReceiveNotifications(orphan);
+                UpdateNotificationPlayingState();
+                return;
             }
         }
         PopRequestsToConsumers();
@@ -436,9 +442,23 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             .ToList();
         if (orphan.Count > 0)
         {
-            Logger.LogTrace("消费者注销, 提醒回归队列: {} 个", orphan.Count);
-            RequeueNotifications(orphan);
-            PopRequestsToConsumers();
+            Logger.LogTrace("消费者注销, 处理提醒: {} 个", orphan.Count);
+            var next = RegisteredConsumers
+                .FirstOrDefault(x => x.Consumer.AcceptsNotificationRequests && x.Consumer.QueuedNotificationCount <= 0);
+            if (next != null)
+            {
+                foreach (var r in orphan)
+                {
+                    RequestOwners[r] = new WeakReference<INotificationConsumer>(next.Consumer);
+                }
+                next.Consumer.ReceiveNotifications(orphan);
+                UpdateNotificationPlayingState();
+            }
+            else
+            {
+                RequeueNotifications(orphan);
+                PopRequestsToConsumers();
+            }
         }
     }
 

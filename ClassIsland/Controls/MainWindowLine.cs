@@ -730,9 +730,17 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         PseudoClasses.Set(":overlay-in", true);
         var startProgress = ComputeOverlayStartProgress(request, overlay);
         CountdownProgressValue = startProgress;
+        var now = ExactTimeService.GetCurrentLocalDateTime();
+        var remaining = overlay.EndTime != null
+            ? overlay.EndTime.Value - now
+            : overlay.Duration;
+        if (remaining < TimeSpan.Zero)
+        {
+            remaining = TimeSpan.Zero;
+        }
         var animation = new Animation()
         {
-            Duration = overlay.Duration,
+            Duration = remaining,
             Children =
             {
                 new KeyFrame()
@@ -756,9 +764,9 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         _ = animation.RunAsync(this, cancellationToken);
         try
         {
-            if (!cancellationToken.IsCancellationRequested)
+            if (!cancellationToken.IsCancellationRequested && remaining > TimeSpan.Zero)
             {
-                await Task.Delay(overlay.Duration, cancellationToken);
+                await Task.Delay(remaining, cancellationToken);
             }
         }
         catch (OperationCanceledException)

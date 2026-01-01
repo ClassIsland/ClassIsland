@@ -11,6 +11,7 @@ namespace ClassIsland.Controls.NotificationProviders;
 
 public partial class ClassNotificationProviderControl : UserControl, INotifyPropertyChanged
 {
+    private readonly string _key = "";
     private object? _element;
     private string _message = "";
     private int _slideIndex = 0;
@@ -33,8 +34,14 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         get => _message;
         set
         {
-            if (value == _message) return;
-            _message = value;
+            var v = value;
+            if (string.IsNullOrWhiteSpace(v) && _key == "ClassPrepareNotifyOverlay")
+            {
+                var seconds = (int)Math.Max(0, Math.Round(LessonsService.OnClassLeftTime.TotalSeconds));
+                v = $"距上课还剩{seconds}秒";
+            }
+            if (v == _message) return;
+            _message = v;
             OnPropertyChanged();
         }
     }
@@ -82,8 +89,9 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
     public ClassNotificationProviderControl(string key)
     {
         InitializeComponent();
-        var visual = this.FindResource(key) as Control;
-        Element = visual;
+        _key = key;
+        var template = this.FindResource(key) as IDataTemplate;
+        Element = template?.Build(this) as Control;
         Timer.Tick += TimerOnTick;
         if (key is "ClassPrepareNotifyOverlay" or "ClassOffOverlay")
         {

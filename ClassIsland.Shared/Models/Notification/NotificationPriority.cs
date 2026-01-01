@@ -23,20 +23,22 @@ public class NotificationPriority(int priority, int index, bool isPriorityOverri
     /// <inheritdoc />
     public int CompareTo(object? obj)
     {
-        if (obj is not NotificationPriority priority)
+        if (obj is not NotificationPriority other)
         {
             return -1;
         }
 
-        if (IsPriorityOverride)
+        // 插队优先
+        if (IsPriorityOverride != other.IsPriorityOverride)
         {
-            return 1;
+            return IsPriorityOverride ? -1 : 1;
         }
-        if (Priority != priority.Priority)
+        // 数字越小优先级越高
+        if (Priority != other.Priority)
         {
-            return Priority - priority.Priority;
+            return Priority - other.Priority;
         }
 
-        return Index - priority.Index;
+        return Index - other.Index;
     }
 }
