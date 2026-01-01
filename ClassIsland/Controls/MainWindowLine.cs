@@ -663,7 +663,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         PseudoClasses.Set(":mask-anim", true);
         PseudoClasses.Set(":mask-in", true);
         PseudoClasses.Set(":overlay-anim", false);
-        if (settings.IsNotificationSoundEnabled && SettingsService.Settings.AllowNotificationSound)
+        if (settings.IsNotificationSoundEnabled && SettingsService.Settings.AllowNotificationSound
+        && !request.MaskSoundPlayed && !_consumerCts.IsCancellationRequested)
         {
             try
             {
@@ -673,6 +674,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     stopNotificationSoundCts.Dispose();
                 }
                 stopNotificationSoundCts = new CancellationTokenSource();
+                request.MaskSoundPlayed = true;
                 _ = AudioService.PlayAudioAsync(string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
                         ? AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)
                         : File.OpenRead(settings.NotificationSoundPath),
@@ -691,9 +693,15 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             request.MaskEffectPlayed = true;
             TopmostEffectWindow.PlayEffect(new RippleEffect(center, MaskContent.Color));
         }
-        if (!cancellationToken.IsCancellationRequested)
+        try
         {
-            await Task.Delay(request.MaskContent.Duration, cancellationToken);
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(request.MaskContent.Duration, cancellationToken);
+            }
+        }
+        catch (OperationCanceledException)
+        {
         }
         return stopNotificationSoundCts;
     }
@@ -736,9 +744,15 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             }
         };
         _ = animation.RunAsync(this, cancellationToken);
-        if (!cancellationToken.IsCancellationRequested)
+        try
         {
-            await Task.Delay(overlay.Duration, cancellationToken);
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(overlay.Duration, cancellationToken);
+            }
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
     

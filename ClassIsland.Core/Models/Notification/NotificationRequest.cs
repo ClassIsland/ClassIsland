@@ -143,6 +143,7 @@ public class NotificationRequest : ObservableRecipient
     public DateTime? MaskStartTime { get; set; }
     public DateTime? OverlayStartTime { get; set; }
     public bool MaskEffectPlayed { get; set; }
+    public bool MaskSoundPlayed { get; set; }
 
     /// <summary>
     /// 取消当前提醒。

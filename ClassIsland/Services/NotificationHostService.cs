@@ -309,7 +309,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     private bool PushNotificationRequests(List<NotificationRequest> requests)
     {
-        var deliverable = requests.Where(r => !r.IsInQueue).ToList();
+        var deliverable = requests.ToList();
         Logger.LogTrace("开始推送提醒 ({})", deliverable.Count);
 
         var consumer = RegisteredConsumers
@@ -371,6 +371,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             {
                 continue;
             }
+            PoppedRequests.Remove(r);
             PlayingNotifications.Remove(r);
             RequestOwners.Remove(r);
             if (!r.CancellationToken.IsCancellationRequested && !r.CompletedToken.IsCancellationRequested)
@@ -387,16 +388,24 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     {
         var registerInfo = new NotificationConsumerRegisterInfo(consumer, priority);
 
+        int insertIndex = -1;
         for (var i = 0; i < RegisteredConsumers.Count; i++)
         {
-            if (RegisteredConsumers[i].Priority <= registerInfo.Priority) 
+            if (RegisteredConsumers[i].Priority <= registerInfo.Priority)
                 continue;
-            RegisteredConsumers.Insert(i, registerInfo);
-            PopRequestsToConsumers();
-            return;
+            insertIndex = i;
+            break;
         }
-        
-        RegisteredConsumers.Add(registerInfo);  // 当列表中什么都没有或者插入项的优先级比列表里所有元素都大时，插入到最后一项。
+
+        if (insertIndex >= 0)
+        {
+            RegisteredConsumers.Insert(insertIndex, registerInfo);
+        }
+        else
+        {
+            RegisteredConsumers.Add(registerInfo);
+        }
+
         if (consumer.AcceptsNotificationRequests && consumer.QueuedNotificationCount <= 0)
         {
             var orphan = PlayingNotifications
@@ -404,11 +413,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 .ToList();
             if (orphan.Count > 0)
             {
-                Logger.LogTrace("消费者注册, 孤儿提醒回归队列: {} 个", orphan.Count);
+                Logger.LogTrace("消费者注册, 提醒回归队列: {} 个", orphan.Count);
                 RequeueNotifications(orphan);
             }
-            PopRequestsToConsumers();
         }
+        PopRequestsToConsumers();
     }
 
     public void UnregisterNotificationConsumer(INotificationConsumer consumer)
@@ -427,7 +436,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             .ToList();
         if (orphan.Count > 0)
         {
-            Logger.LogTrace("消费者注销, 孤儿提醒回归队列: {} 个", orphan.Count);
+            Logger.LogTrace("消费者注销, 提醒回归队列: {} 个", orphan.Count);
             RequeueNotifications(orphan);
             PopRequestsToConsumers();
         }
