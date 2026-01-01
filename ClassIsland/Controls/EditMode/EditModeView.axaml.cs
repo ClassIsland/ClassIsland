@@ -35,6 +35,7 @@ public partial class EditModeView : UserControl
         base.OnDetachedFromVisualTree(e);
         
         ViewModel.MainViewModel.ContainerComponents.Clear();
+        ViewModel.ContainerComponentCache.Clear();
     }
 
     private void OpenDrawer(string key, string? title = null, string? icon = null)
