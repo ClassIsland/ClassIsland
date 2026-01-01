@@ -306,7 +306,7 @@
                     </Button>
                 </WrapPanel>
             </StackPanel>
-            <DataGrid Grid.Row="1"
+            <DataGrid Grid.Row="1" GridLinesVisibility="All"
                       CanUserSortColumns="False"
                       AutoGenerateColumns="False"
                       SelectionMode="Single"
