@@ -33,6 +33,7 @@ public partial class EditModeViewModel(
     [ObservableProperty] private object? _secondaryDrawerContent;
     [ObservableProperty] private object? _secondaryDrawerTitle;
     [ObservableProperty] private VerticalDrawerOpenState _secondaryDrawerState;
+    [ObservableProperty] private MainWindowLineSettings? _selectedMainWindowLineSettings;
 
     [ObservableProperty]
     private Dictionary<ComponentSettings, EditModeContainerComponentInfo> _containerComponentCache = [];

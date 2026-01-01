@@ -8,7 +8,8 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              ClipToBounds="False"
-             Loaded="ComponentPresenter_OnLoaded">
+             Loaded="ComponentPresenter_OnLoaded"
+             Classes.comps-hidden="{Binding !$self.IsVisibleInternal}">
     <UserControl.IsVisible>
         <MultiBinding Converter="{x:Static BoolConverters.Or}">
             <Binding Path="$self.IsVisibleInternal"/>
@@ -16,6 +17,20 @@
         </MultiBinding>
     </UserControl.IsVisible>
     <UserControl.Styles>
+        <Style Selector="ci|ComponentPresenter[(ci|MainWindowStylesAssist.MainWindowInEditMode)=True].comps-hidden">
+            <Setter Property="OpacityMask">
+                <LinearGradientBrush StartPoint="0,0" EndPoint="10,0" 
+                                     SpreadMethod="Repeat" >
+                    <LinearGradientBrush.Transform>
+                        <RotateTransform Angle="45" />
+                    </LinearGradientBrush.Transform>
+                    <GradientStop Offset="0" Color="#afffffff" />
+                    <GradientStop Offset="0.5" Color="#afffffff" />
+                    <GradientStop Offset="0.5" Color="#50ffffff" />
+                    <GradientStop Offset="1" Color="#50ffffff" />
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
         <Style Selector="local|ComponentPresenter[IsOnMainWindow=True]">
             <Setter Property="Opacity" Value="{Binding $self.Settings.Opacity, FallbackValue=1.0}"/>
         </Style>

@@ -163,10 +163,17 @@
                 <Panel x:Name="WorkingRoot"
                        Canvas.Left="{Binding ViewModel.ActualClientBound.X}"
                        Canvas.Top="{Binding ViewModel.ActualClientBound.Y}"
-                       Width="{Binding ViewModel.ActualClientBound.Width}"
                        Height="{Binding ViewModel.ActualClientBound.Height}"
                        Classes="animated-resize"
                        ClipToBounds="{Binding !ViewModel.IsEditMode}">
+                    <Panel.Styles>
+                        <Style Selector="Panel#WorkingRoot[(ci|MainWindowStylesAssist.MainWindowInEditMode)=False]">
+                            <Setter Property="Width" Value="{Binding ViewModel.ActualClientBound.Width}"/>
+                        </Style>
+                        <Style Selector="Panel#WorkingRoot[(ci|MainWindowStylesAssist.MainWindowInEditMode)=True]">
+                            <Setter Property="MinWidth" Value="{Binding ViewModel.ActualClientBound.Width}"/>
+                        </Style>
+                    </Panel.Styles>
                     <!-- 顶层效果 -->
                     <ItemsControl VerticalAlignment="Stretch"
                                   HorizontalAlignment="Stretch"
@@ -263,52 +270,126 @@
 
                                 </Border.Resources>
                                 <Grid editMode:EditableComponentsListBox.RequestOpenChildComponents="EditableComponentsListBox_OnRequestOpenChildComponents">
-                                    <ItemsControl Grid.Column="0"
-                                                  x:Name="RootMainWindowLinesItemsControl"
-                                                  VerticalAlignment="Stretch"
-                                                  ClipToBounds="False"
-                                                  ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Classes="animated-resize"/>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                                    <controls:MainWindowLine
-                                                        WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                        LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                        IsMainLine="{Binding IsMainLine}"
-                                                        IsNotificationEnabled="{Binding IsNotificationEnabled}"
-                                                        LineNumber="0"
-                                                        HorizontalAlignment="Stretch"
-                                                        Settings="{Binding}"
-                                                        IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
-                                                        <editMode:EditableComponentsListBox ItemsSource="{Binding Children}"
-                                                                                   Classes="root-components-control"
-                                                                                   Tag="{Binding}"
-                                                                                   AttachedToVisualTree="ListBoxMainWindowLineSettings_OnAttachedToVisualTree"
-                                                                                   DetachedFromVisualTree="ListBoxMainWindowLineSettings_OnDetachedFromVisualTree"
-                                                                                   SelectionChanged="SelectorComponents_OnSelectionChanged"
-                                                                                   ShowComponentSettingsCommand="{Binding $parent[local:MainWindow].ShowComponentSettingsCommand}"
-                                                                                   ClipToBounds="False">
-                                                            <editMode:EditableComponentsListBox.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <ci:ComponentPresenter IsOnMainWindow="True"
-                                                                        IsRootComponent="True"
-                                                                        Settings="{Binding}"
-                                                                        HidingRules="{Binding HidingRules, Mode=OneWay}"
-                                                                        HideOnRule="{Binding HideOnRule, Mode=OneWay}"
-                                                                        Margin="6 0" />
-                                                                </DataTemplate>
-                                                            </editMode:EditableComponentsListBox.ItemTemplate>
-                                                        </editMode:EditableComponentsListBox>
-                                                    </controls:MainWindowLine>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                    <StackPanel>
+                                        <ItemsControl Grid.Column="0"
+                                                      x:Name="RootMainWindowLinesItemsControl"
+                                                      VerticalAlignment="Stretch"
+                                                      ClipToBounds="False"
+                                                      ItemsSource="{Binding ComponentsService.CurrentComponents.Lines, Mode=OneWay}">
+                                            <ItemsControl.ItemContainerTheme>
+                                                <ControlTheme TargetType="ContentPresenter">
+                                                    <Setter Property="Interaction.Behaviors">
+                                                        <BehaviorCollectionTemplate>
+                                                            <BehaviorCollection>
+                                                                <ci:AdvancedItemDragBehavior Orientation="Vertical"
+                                                                    HorizontalDragThreshold="33550336"
+                                                                    AllowDragFromDragThumbOnly="True"/>
+                                                            </BehaviorCollection>
+                                                        </BehaviorCollectionTemplate>
+                                                    </Setter>
+                                                </ControlTheme>
+                                            </ItemsControl.ItemContainerTheme>
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Classes.animated-resize="{Binding !$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                          ColumnDefinitions="Auto, *, Auto">
+                                                        <Rectangle HorizontalAlignment="Stretch"
+                                                                   Grid.Column="0" Grid.ColumnSpan="3"
+                                                                   VerticalAlignment="Stretch"
+                                                                   x:Name="SelectionBorder"
+                                                                   Stroke="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                                                   StrokeThickness="1.5"
+                                                                   StrokeLineCap="Round"
+                                                                   StrokeJoin="Bevel"
+                                                                   Opacity="0.75"
+                                                                   StrokeDashArray="1, 1.5"
+                                                                   IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
+                                                        <ci:TouchDragThumb Grid.Column="0"
+                                                                           IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
+                                                        <controls:MainWindowLine Grid.Column="1"
+                                                            WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                            LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                            IsMainLine="{Binding IsMainLine}"
+                                                            IsNotificationEnabled="{Binding IsNotificationEnabled}"
+                                                            LineNumber="0"
+                                                            HorizontalAlignment="Stretch"
+                                                            Settings="{Binding}"
+                                                            IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
+                                                            <editMode:EditableComponentsListBox
+                                                                ItemsSource="{Binding Children}"
+                                                                Classes="root-components-control"
+                                                                Tag="{Binding}"
+                                                                AttachedToVisualTree="ListBoxMainWindowLineSettings_OnAttachedToVisualTree"
+                                                                DetachedFromVisualTree="ListBoxMainWindowLineSettings_OnDetachedFromVisualTree"
+                                                                SelectionChanged="SelectorComponents_OnSelectionChanged"
+                                                                ShowComponentSettingsCommand="{Binding $parent[local:MainWindow].ShowComponentSettingsCommand}"
+                                                                ClipToBounds="False">
+                                                                <editMode:EditableComponentsListBox.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <ci:ComponentPresenter IsOnMainWindow="True"
+                                                                            IsRootComponent="True"
+                                                                            Settings="{Binding}"
+                                                                            HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                                            HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                                            Margin="6 0" />
+                                                                    </DataTemplate>
+                                                                </editMode:EditableComponentsListBox.ItemTemplate>
+                                                            </editMode:EditableComponentsListBox>
+                                                        </controls:MainWindowLine>
+                                                        <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                                    Classes="items-valign-center"
+                                                                    IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
+                                                                    Spacing="2"
+                                                                    TextElement.FontSize="14">
+                                                            <Button
+                                                                Command="{Binding $parent[local:MainWindow].OpenMainWindowLineSettingsCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                VerticalAlignment="Center"
+                                                                ToolTip.Tip="设置…"
+                                                                Background="Transparent"
+                                                                BorderThickness="0"
+                                                                Content="{ci:FluentIcon &#xEF27;}" />
+                                                            <ToggleButton
+                                                                IsChecked="{Binding IsMainLine}"
+                                                                Click="ToggleButtonIsMainLine_OnIsCheckedChanged"
+                                                                VerticalAlignment="Center"
+                                                                ToolTip.Tip="此行是主要行"
+                                                                Background="Transparent"
+                                                                BorderThickness="0"
+                                                                Content="{ci:FluentIcon &#xE994;}" />
+                                                            <ToggleButton
+                                                                IsChecked="{Binding IsNotificationEnabled}"
+                                                                VerticalAlignment="Center"
+                                                                ToolTip.Tip="此行可以显示提醒"
+                                                                Click="ToggleButtonIsNotificationEnabled_OnIsCheckedChanged"
+                                                                Background="Transparent"
+                                                                BorderThickness="0"
+                                                                Content="{ci:FluentIcon &#xE02B;}" />
+                                                            <Button
+                                                                Foreground="IndianRed"
+                                                                VerticalAlignment="Center"
+                                                                ToolTip.Tip="删除"
+                                                                Command="{Binding $parent[local:MainWindow].RemoveMainWindowLineCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                Theme="{StaticResource TransparentButton}"
+                                                                Content="{ci:FluentIcon &#xE61D;}" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Button HorizontalAlignment="Center"
+                                                IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
+                                                TextElement.FontSize="14"
+                                                Click="ButtonNewMainWindowLine_OnClick">
+                                            <ci:IconText Glyph="&#xE00D;" Text="新主界面行"/>
+                                        </Button>
+                                    </StackPanel>
                                     <ItemsControl ItemsSource="{Binding ViewModel.ContainerComponents}" Classes="draggable"
                                                   x:Name="ContainerComponentsEditHost"
                                                   ClipToBounds="False">
