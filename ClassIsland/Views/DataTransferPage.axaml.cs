@@ -309,7 +309,7 @@ public partial class DataTransferPage : UserControl
         PopupHelper.DisableAllPopups();
         var file = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(new FolderPickerOpenOptions()
         {
-            Title = "浏览 Class Widgets 数据目录"
+            Title = "浏览 Class Widgets 安装（即有 ClassWidgets[.exe]）的文件夹或其数据目录"
         }, topLevel);
         PopupHelper.RestoreAllPopups();
         if (file.Count <= 0)
@@ -361,7 +361,7 @@ public partial class DataTransferPage : UserControl
         var weather = ini["Weather"];
         if (TryGetStringFromSection(weather, "api", "xiaomi_weather") == "xiaomi_weather")
         {
-            settings.CityId = "weathercn:" + TryGetStringFromSection(weather, "city", "101010100");
+            settings.CityId = TryGetStringFromSection(weather, "city", "weathercn:101010100");
             settings.WeatherLocationSource = 0;
         }
         
@@ -499,7 +499,7 @@ public partial class DataTransferPage : UserControl
                         SkipInvalidLines = true
                     }
                 };
-                var ini = parser.Parse(File.ReadAllText(Path.Combine(root, "config.ini")));
+                var ini = parser.Parse(File.ReadAllText(Path.Combine(root, "config", "config.ini")));
                 if (ViewModel.IsProfileSelected)
                 {
                     ImportClassWidgetsProfile(root, ini);
