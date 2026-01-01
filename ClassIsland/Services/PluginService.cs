@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
@@ -20,6 +13,14 @@ using ClassIsland.Shared.Protobuf.Enum;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -37,6 +38,8 @@ public class PluginService : IPluginService
     public static readonly string PluginManifestFileName = "manifest.yml";
 
     public static readonly string PluginConfigsFolderPath = Path.Combine(CommonDirectories.AppConfigPath, "Plugins");
+
+    public ILogger<PluginService> Logger { get; }
 
     internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
 
@@ -183,12 +186,13 @@ public class PluginService : IPluginService
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);
                 info.LoadStatus = PluginLoadStatus.Loaded;
-                Console.WriteLine($"Initialize plugin: {pluginDir} ({manifest.Version})");
+                Console.WriteLine($"Initialized plugin: {pluginDir} ({manifest.Version})");
             }
             catch (Exception ex)
             {
                 info.Exception = ex;
                 info.LoadStatus = PluginLoadStatus.Error;
+                Console.WriteLine($"Failed to initialize plugin {manifest.Name}:"+ex);
             }
         }
         
