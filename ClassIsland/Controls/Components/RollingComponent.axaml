@@ -12,13 +12,15 @@
                   AttachedToVisualTree="RollingComponent_OnAttachedToVisualTree"
                   DetachedFromVisualTree="RollingComponent_OnDetachedFromVisualTree">
     <Border SizeChanged="OuterContainerStackPanel_OnSizeChanged"
-            x:Name="OuterContainerStackPanel" ClipToBounds="False"
+            x:Name="OuterContainerStackPanel" ClipToBounds="True"
             Margin="-6 0">
         <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}"
                 Width="{Binding #ItemsControlContainer.Bounds.Width, Mode=OneWay}"
                 HorizontalAlignment="Left">
             <Grid ColumnDefinitions="Auto,32,Auto" VerticalAlignment="Stretch" 
                   x:Name="GridScrollContainer"
+                  RenderOptions.BitmapInterpolationMode="LowQuality"
+                  RenderOptions.EdgeMode="Aliased"
                   Height="{Binding #OuterContainerStackPanel.Bounds.Height}">
                 <Border x:Name="ItemsControlContainer" Background="Transparent" VerticalAlignment="Stretch">
                     <ItemsControl ItemsSource="{Binding Settings.Children}"
