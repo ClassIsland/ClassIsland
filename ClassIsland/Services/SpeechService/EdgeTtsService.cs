@@ -151,7 +151,6 @@ public class EdgeTtsService : ISpeechService
             return;
         IsPlaying = true;
 
-
         while (PlayingQueue.Count > 0)
         {
             var playInfo = _currentPlayInfo = PlayingQueue.Dequeue();
