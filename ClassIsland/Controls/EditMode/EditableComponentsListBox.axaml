@@ -202,10 +202,9 @@
                                             <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
                                         </MultiBinding>
                                     </Panel.IsVisible>
-                                    <ci:TouchDragThumb HorizontalAlignment="Center"
-                                                       Width="20"
+                                    <ci:TouchDragThumb HorizontalAlignment="Stretch"
                                                        x:Name="TouchDragThumb"
-                                                       VerticalAlignment="Center"
+                                                       VerticalAlignment="Stretch"
                                                        Orientation="Vertical"
                                                        />
                                 </Panel>
