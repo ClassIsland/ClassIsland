@@ -255,7 +255,7 @@
                 <Setter.Value>
                     <Transitions>
                         <DoubleTransition Property="Opacity" Duration="0:0:0.100"/>
-                        <DoubleTransition Property="BackgroundWidth" Duration="0:0:0.550" Easing="0.00, 1.00, 0.50, 1.10"/>
+                        <DoubleTransition Property="BackgroundWidth" Duration="0:0:0.300" Easing="0.65, 0, 0.35, 1.0"/>
                     </Transitions>
                 </Setter.Value>
             </Setter>
