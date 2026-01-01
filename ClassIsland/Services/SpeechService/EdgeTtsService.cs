@@ -87,7 +87,7 @@ public class EdgeTtsService : ISpeechService
         Task? task = null;
         if (!File.Exists(cache))
         {
-            task = Task.Run(() =>
+            task = Task.Run(async () =>
                 {
                     var completed = false;
                     var voice = Voices.Find(voice => voice.ShortName == SettingsService.Settings.EdgeTtsVoiceName);
@@ -98,7 +98,7 @@ public class EdgeTtsService : ISpeechService
                     };
                     try
                     {
-                        EdgeTts.Invoke(options, voice, (Action<List<byte>>)(binary =>
+                        await EdgeTts.InvokeAsync(options, voice, (Action<List<byte>>)(binary =>
                         {
                             if (completeHandle.IsCancellationRequested)
                                 return;
@@ -123,7 +123,7 @@ public class EdgeTtsService : ISpeechService
                         Logger.LogError(ex, "获取EdgeTTS语音失败。");
                     }
                     
-                    completeHandle.Cancel();
+                    await completeHandle.CancelAsync();
                 },
                 requestingCancellationTokenSource.Token);
         }

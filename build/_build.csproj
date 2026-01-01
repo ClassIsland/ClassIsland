@@ -15,4 +15,8 @@
     <PackageReference Include="Nuke.Common" Version="9.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="..\GitVersion.yml" />
+  </ItemGroup>
+
 </Project>

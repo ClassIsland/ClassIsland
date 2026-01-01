@@ -172,4 +172,10 @@ public partial class EditModeView : UserControl
         ViewModel.MainViewModel.ContainerComponents.Remove(info);
         ViewModel.ContainerComponentCache.Remove(info.Settings);
     }
+
+    public void OpenMainWindowLineSettings(MainWindowLineSettings settings)
+    {
+        ViewModel.SelectedMainWindowLineSettings = settings;
+        OpenDrawer("MainWindowLineSettingsDrawer", "主界面行设置");
+    }
 }

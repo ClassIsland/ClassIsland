@@ -32,7 +32,7 @@
         
         <LayoutTransformControl>
             <LayoutTransformControl.LayoutTransform>
-                <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                <ScaleTransform ScaleX="{Binding (local:LessonControlBase.DefaultLessonControlSettings).ScheduleSpacing, Mode=OneWay}"/>
             </LayoutTransformControl.LayoutTransform>
             <Border Width="10"/>
         </LayoutTransformControl>
@@ -55,7 +55,7 @@
 
         <LayoutTransformControl>
             <LayoutTransformControl.LayoutTransform>
-                <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                <ScaleTransform ScaleX="{Binding (local:LessonControlBase.DefaultLessonControlSettings).ScheduleSpacing, Mode=OneWay}"/>
             </LayoutTransformControl.LayoutTransform>
             <Border Width="10"/>
         </LayoutTransformControl>

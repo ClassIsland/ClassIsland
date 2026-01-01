@@ -8,6 +8,8 @@
         xmlns:controls2="using:ClassIsland.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
+        xmlns:attributes="clr-namespace:ClassIsland.Core.Attributes;assembly=ClassIsland.Core"
         mc:Ignorable="d">
     <Design.PreviewWith>
         <controls1:EditableComponentsListBox />
@@ -67,10 +69,11 @@
                 <Setter Property="ClipToBounds" Value="False"/>
                 <Setter Property="Template" > 
                     <ControlTemplate>
-                        <controls2:AdornerAttachHostControl x:Name="AdornerAttachHostControl">
+                        <controls2:AdornerAttachHostControl x:Name="AdornerAttachHostControl"
+                                                            ClipToBounds="False">
                             <controls2:AdornerAttachHostControl.Resources>
                                 <ci:BindingProxy x:TypeArguments="controls1:EditableComponentsListBox"
-                                                 x:DataType="{x:Type components:ComponentSettings}"
+                                                 x:DataType="components:ComponentSettings"
                                                  x:CompileBindings="True"
                                                  x:Key="ParentBindingProxy"
                                                  Data="{Binding $parent[controls1:EditableComponentsListBox]}"/>
@@ -84,7 +87,10 @@
                             <controls2:AdornerAttachHostControl.AdornerTemplate>
                                 <ControlTemplate>
                                     <Panel Margin="-9999 -46 -9999 46" 
-                                           d:DataContext="{d:DesignInstance components:ComponentSettings}">
+                                           d:DataContext="{d:DesignInstance components:ComponentSettings}"
+                                           x:DataType="components:ComponentSettings">
+                                        <Panel.Resources>
+                                        </Panel.Resources>
                                         <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 0"
                                                 Background="{DynamicResource CommandBarOverflowPresenterBackground}"
                                                 CornerRadius="6"
@@ -123,13 +129,41 @@
                                                 </Line>
                                                 <Button Theme="{StaticResource TransparentButton}"
                                                         Content="{ci:FluentIcon &#xEBAC;}"
-                                                        ToolTip.Tip="更多选项…"/>
+                                                        ToolTip.Tip="更多选项…">
+                                                    <Button.Flyout>
+                                                        <MenuFlyout >
+                                                            <MenuItem Header="包裹到新容器" Icon="{ci:FluentIcon &#xe27e;}"
+                                                                      ItemsSource="{Binding Data.ContainerComponents, Source={StaticResource ParentBindingProxy}}">
+                                                                <MenuItem.ItemContainerTheme>
+                                                                    <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                                        <Setter Property="Header" x:DataType="attributes:ComponentInfo" Value="{Binding Name}"/>
+                                                                        <Setter Property="Icon" x:DataType="attributes:ComponentInfo">
+                                                                            <Template>
+                                                                                <Border>
+                                                                                    <controls:IconSourceElement IconSource="{Binding IconSource}"
+                                                                                        Height="14" Width="14"
+                                                                                        TextElement.FontSize="14"
+                                                                                        Classes="repair-fontsize"/>
+                                                                                </Border>
+                                                                            </Template>
+                                                                        </Setter>
+                                                                        <Setter Property="Command" Value="{Binding Data.CreateContainerComponentCommand, Source={StaticResource ParentBindingProxy}}"/>
+                                                                        <Setter Property="CommandParameter" Value="{Binding}"/>
+                                                                    </ControlTheme>
+                                                                </MenuItem.ItemContainerTheme>
+                                                            </MenuItem>
+                                                            <MenuItem Header="创建副本" Icon="{ci:FluentIcon &#xeeb9;}"
+                                                                      CommandParameter="{Binding}"
+                                                                      Command="{Binding Data.DuplicateComponentCommand, Source={StaticResource ParentBindingProxy}}"/>
+                                                        </MenuFlyout>
+                                                    </Button.Flyout>
+                                                </Button>
                                             </StackPanel>
                                         </Border>
                                     </Panel>
                                 </ControlTemplate>
                             </controls2:AdornerAttachHostControl.AdornerTemplate>
-                            <Panel x:Name="RootPanel">
+                            <Panel x:Name="RootPanel" d:DataContext="{d:DesignInstance components:ComponentSettings}">
                                 <Panel.Styles>
                                     <Style Selector="TextBlock">
                                         <Setter Property="Margin" Value="0" />
@@ -141,36 +175,41 @@
                                 <Border HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
                                         Background="Transparent" />
-                                <Grid ColumnDefinitions="Auto, *">
-                                    <Panel Grid.Column="0">
-                                        <Panel.IsVisible>
-                                            <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                <TemplateBinding Property="IsSelected"/>
-                                                <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
-                                            </MultiBinding>
-                                        </Panel.IsVisible>
-                                        <ci:TouchDragThumb HorizontalAlignment="Center"
-                                                           Width="20"
-                                                           x:Name="TouchDragThumb"
-                                                           VerticalAlignment="Center"
-                                                           Orientation="Vertical"
-                                                           Background="Red" />
-                                    </Panel>
-                                    <ContentPresenter Grid.Column="1"
-                                                      Name="PART_ContentPresenter"
-                                                      Background="{TemplateBinding Background}"
-                                                      BorderBrush="{TemplateBinding BorderBrush}"
-                                                      BorderThickness="{TemplateBinding BorderThickness}"
-                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                      Content="{TemplateBinding Content}"
-                                                      Padding="0"
-                                                      ClipToBounds="False"
-                                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      CornerRadius="{TemplateBinding CornerRadius}"
-                                                      Margin="0"
-                                                      IsHitTestVisible="False" />
-                                </Grid>
+                                <ContentPresenter Grid.Column="1"
+                                                  Name="PART_ContentPresenter"
+                                                  Background="{TemplateBinding Background}"
+                                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Content="{TemplateBinding Content}"
+                                                  Padding="0"
+                                                  ClipToBounds="False"
+                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                                  Margin="0"
+                                                  IsHitTestVisible="False">
+                                </ContentPresenter>
+                                
+                                <Panel x:Name="ContainerIndicatorPanel">
+                                    <Panel.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
+                                            <Binding Path="AssociatedComponentInfo.IsComponentContainer"/>
+                                            <TemplateBinding Property="IsSelected" Converter="{x:Static BoolConverters.Not}"/>
+                                        </MultiBinding>
+                                    </Panel.IsVisible>
+                                    <Rectangle HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Stretch"
+                                               x:Name="ContainerIndicator"
+                                               Stroke="{DynamicResource SurfaceStrokeColorDefaultBrush}"
+                                               StrokeThickness="1.5"
+                                               StrokeLineCap="Round"
+                                               StrokeJoin="Bevel"
+                                               Opacity="0.75"
+                                               Margin="2 0"
+                                               StrokeDashArray="1, 1.5" />
+                                </Panel>
                                 <Panel x:Name="SelectedPanel">
                                     <Panel.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -188,14 +227,23 @@
                                                Opacity="0.75"
                                                StrokeDashArray="1, 1.5" />
                                 </Panel>
+                                <Panel Opacity="0">
+                                    <Panel.IsVisible>
+                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                            <TemplateBinding Property="IsSelected"/>
+                                            <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
+                                        </MultiBinding>
+                                    </Panel.IsVisible>
+                                    <ci:TouchDragThumb HorizontalAlignment="Stretch"
+                                                       x:Name="TouchDragThumb"
+                                                       VerticalAlignment="Stretch"
+                                                       Orientation="Vertical"
+                                                       />
+                                </Panel>
                             </Panel>
                         </controls2:AdornerAttachHostControl>
                     </ControlTemplate>
                 </Setter>
-                    
-                <Style Selector="^:selected">
-                    
-                </Style>
             </ControlTheme>
         </Setter>
         <Setter Property="(Interaction.Behaviors)">
