@@ -586,6 +586,10 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         var mask = request.MaskContent;
         if (request.MaskStartTime == null)
         {
+            if (request.CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
             if (mask.EndTime == null)
             {
                 mask.EndTime = ExactTimeService.GetCurrentLocalDateTime() + mask.Duration;
@@ -614,8 +618,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         if (request.OverlayStartTime != null && overlay.EndTime != null)
         {
             var total = overlay.EndTime.Value - request.OverlayStartTime.Value;
-            var remain = overlay.EndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
-            startProgress = total > TimeSpan.Zero ? Math.Clamp(remain.TotalMilliseconds / total.TotalMilliseconds, 0.0, 1.0) : 0.0;
+            var elapsed = ExactTimeService.GetCurrentLocalDateTime() - request.OverlayStartTime.Value;
+            startProgress = total > TimeSpan.Zero ? Math.Clamp(1.0 - (elapsed.TotalMilliseconds / total.TotalMilliseconds), 0.0, 1.0) : 0.0;
         }
         return startProgress;
     }
@@ -658,8 +662,9 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                         : File.OpenRead(settings.NotificationSoundPath),
                     (float)SettingsService.Settings.NotificationSoundVolume, stopNotificationSoundCts.Token);
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.LogWarning(ex, "播放提醒提示音失败");
             }
         }
         if (settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
@@ -742,7 +747,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         }
         _isOverlayOpen = true;  // 上锁
 
-        var notificationsShowed = false;
+        var playedAnyContent = false;
 
         if (_firstProcessNotificationsTime == DateTime.MinValue)
             _firstProcessNotificationsTime = ExactTimeService.GetCurrentLocalDateTime();
@@ -769,7 +774,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             var maskRemaining = mask.Duration > TimeSpan.Zero && !cancellationToken.IsCancellationRequested;
             if (maskRemaining)
             {
-                notificationsShowed = true;
+                playedAnyContent = true;
                 stopNotificationSoundCts = await PlayMaskAsync(request, settings, isMaskSpeechEnabled, cancellationToken, stopNotificationSoundCts);
                 if (overlay is null || cancellationToken.IsCancellationRequested)
                 {
@@ -781,6 +786,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 }
                 else
                 {
+                    playedAnyContent = true;
                     await PlayOverlayAsync(request, overlay, isOverlaySpeechEnabled, cancellationToken);
                 }
                 SpeechService.ClearSpeechQueue();
@@ -790,7 +796,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 EnsureOverlayStartTimes(request, overlay);
                 if (overlay.Duration > TimeSpan.Zero)
                 {
-                    notificationsShowed = true;
+                    playedAnyContent = true;
                     await PlayOverlayAsync(request, overlay, isOverlaySpeechEnabled, cancellationToken);
                 }
                 else
@@ -801,19 +807,19 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 }
                 SpeechService.ClearSpeechQueue();
             }
-
-            if (NotificationHostService.RequestQueue.Count + _notificationQueue.Count < 1 && notificationsShowed)
-            {
-                PseudoClasses.Set(":overlay-anim", true);
-                PseudoClasses.Set(":overlay-out", true);
-                PseudoClasses.Set(":overlay-in", false);
-            }
             await request.CompletedTokenSource.CancelAsync();
 
             var notifications = NotificationHostService.PullNotificationRequests();
             foreach (var newRequest in notifications)
             {
                 _notificationQueue.Enqueue(newRequest);
+            }
+
+            if (NotificationHostService.RequestQueue.Count + _notificationQueue.Count < 1 && playedAnyContent)
+            {
+                PseudoClasses.Set(":overlay-anim", true);
+                PseudoClasses.Set(":overlay-out", true);
+                PseudoClasses.Set(":overlay-in", false);
             }
         }
 
