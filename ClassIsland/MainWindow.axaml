@@ -170,6 +170,9 @@
                         <Style Selector="Panel#WorkingRoot[(ci|MainWindowStylesAssist.MainWindowInEditMode)=False]">
                             <Setter Property="Width" Value="{Binding ViewModel.ActualClientBound.Width}"/>
                         </Style>
+                        <Style Selector="Panel#WorkingRoot[(ci|MainWindowStylesAssist.MainWindowInEditMode)=True]">
+                            <Setter Property="MinWidth" Value="{Binding ViewModel.ActualClientBound.Width}"/>
+                        </Style>
                     </Panel.Styles>
                     <!-- 顶层效果 -->
                     <ItemsControl VerticalAlignment="Stretch"
