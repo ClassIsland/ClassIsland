@@ -379,7 +379,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 .ToList();
             if (orphan.Count > 0)
             {
-                Logger.LogTrace("推送未完成的提醒到新消费者：{} 个", orphan.Count);
+                Logger.LogTrace("推送未完成的提醒到新消费者: {} 个", orphan.Count);
                 foreach (var r in orphan)
                 {
                     RequestOwners[r] = new WeakReference<INotificationConsumer>(consumer);
@@ -413,7 +413,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             .FirstOrDefault(x => x.Consumer.AcceptsNotificationRequests && x.Consumer.QueuedNotificationCount <= 0);
         if (next != null && orphan.Count > 0)
         {
-            Logger.LogTrace("消费者注销，移交未完成提醒：{} 个", orphan.Count);
+            Logger.LogTrace("消费者注销, 移交未完成提醒: {} 个", orphan.Count);
             foreach (var r in orphan)
             {
                 RequestOwners[r] = new WeakReference<INotificationConsumer>(next.Consumer);
@@ -437,7 +437,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             OnPropertyChanged();
         }
     }
-
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
