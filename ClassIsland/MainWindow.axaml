@@ -163,10 +163,14 @@
                 <Panel x:Name="WorkingRoot"
                        Canvas.Left="{Binding ViewModel.ActualClientBound.X}"
                        Canvas.Top="{Binding ViewModel.ActualClientBound.Y}"
-                       Width="{Binding ViewModel.ActualClientBound.Width}"
                        Height="{Binding ViewModel.ActualClientBound.Height}"
                        Classes="animated-resize"
                        ClipToBounds="{Binding !ViewModel.IsEditMode}">
+                    <Panel.Styles>
+                        <Style Selector="Panel#WorkingRoot[(ci|MainWindowStylesAssist.MainWindowInEditMode)=False]">
+                            <Setter Property="Width" Value="{Binding ViewModel.ActualClientBound.Width}"/>
+                        </Style>
+                    </Panel.Styles>
                     <!-- 顶层效果 -->
                     <ItemsControl VerticalAlignment="Stretch"
                                   HorizontalAlignment="Stretch"
