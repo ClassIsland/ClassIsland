@@ -49,7 +49,7 @@
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
             <LayoutTransformControl>
                 <LayoutTransformControl.LayoutTransform>
-                    <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                    <ScaleTransform ScaleX="{Binding SettingsSource.ScheduleSpacing, Mode=OneWay}"/>
                 </LayoutTransformControl.LayoutTransform>
                 <Border Width="16"/>
             </LayoutTransformControl>
@@ -217,7 +217,7 @@
 
             <LayoutTransformControl>
                 <LayoutTransformControl.LayoutTransform>
-                    <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                    <ScaleTransform ScaleX="{Binding SettingsSource.ScheduleSpacing, Mode=OneWay}"/>
                 </LayoutTransformControl.LayoutTransform>
                 <Border Width="16"/>
             </LayoutTransformControl>

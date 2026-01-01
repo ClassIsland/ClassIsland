@@ -148,7 +148,9 @@
             <Setter Property="SystemDecorations" Value="Full"/>
         </Style>
     </Window.Styles>
-    <Grid ci:MainWindowStylesAssist.MainWindowInEditMode="{Binding ViewModel.IsEditMode}">
+    <Grid ci:MainWindowStylesAssist.MainWindowInEditMode="{Binding ViewModel.IsEditMode}"
+          ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.300"
+          ci:WrapPanelResizingAnimationAssist.Easing="0.65, 0, 0.35, 1.0">
         <ZoomBorder Name="ZoomBorder" 
                     Stretch="None" 
                     ZoomSpeed="1.2"
@@ -238,9 +240,7 @@
                               ci:MainWindowStylesAssist.CornerRadius="{Binding ViewModel.Settings.RadiusX}"
                               ci:MainWindowStylesAssist.BackgroundOpacity="{Binding ViewModel.Settings.Opacity}"
                               ci:MainWindowStylesAssist.BackgroundCorlor="{Binding ViewModel.Settings.BackgroundColor}"
-                              ci:MainWindowStylesAssist.IsCustomBackgroundColorEnabled="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}"
-                              ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.25"
-                              ci:WrapPanelResizingAnimationAssist.Easing="0.25, 1, 0.5, 1">
+                              ci:MainWindowStylesAssist.IsCustomBackgroundColorEnabled="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}">
                             <Classes.BasicHidingMode>
                                 <Binding Path="ViewModel.Settings.HideMode" Converter="{x:Static ObjectConverters.Equal}">
                                     <Binding.ConverterParameter>

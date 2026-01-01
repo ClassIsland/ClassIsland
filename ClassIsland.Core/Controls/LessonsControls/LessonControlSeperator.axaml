@@ -8,7 +8,7 @@
     <StackPanel Orientation="Horizontal" DataContext="{Binding $parent[ci:LessonControlSeparator]}">
         <LayoutTransformControl>
             <LayoutTransformControl.LayoutTransform>
-                <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                <ScaleTransform ScaleX="{Binding (ci:LessonControlBase.DefaultLessonControlSettings).ScheduleSpacing, Mode=OneWay}"/>
             </LayoutTransformControl.LayoutTransform>
             <Border Width="10"/>
         </LayoutTransformControl>
@@ -19,7 +19,7 @@
 
         <LayoutTransformControl>
             <LayoutTransformControl.LayoutTransform>
-                <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                <ScaleTransform ScaleX="{Binding (ci:LessonControlBase.DefaultLessonControlSettings).ScheduleSpacing, Mode=OneWay}"/>
             </LayoutTransformControl.LayoutTransform>
             <Border Width="10"/>
         </LayoutTransformControl>
