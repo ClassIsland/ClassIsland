@@ -160,6 +160,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             return;
         }
         // 如果没有消费者接收推送的提醒，则会加入提醒队列。
+        request.IsInQueue = true;
         RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
     }
 
@@ -295,6 +296,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         while (RequestQueue.Count > 0)
         {
             var r = RequestQueue.Dequeue();
+            r.IsInQueue = false;
             r.CompletedTokenSource.Cancel();
         }
         foreach (var request in PlayingNotifications.ToList())
@@ -307,20 +309,22 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     private bool PushNotificationRequests(List<NotificationRequest> requests)
     {
-        Logger.LogTrace("开始推送提醒 ({})", requests.Count);
+        var deliverable = requests.Where(r => !r.IsInQueue).ToList();
+        Logger.LogTrace("开始推送提醒 ({})", deliverable.Count);
 
         var consumer = RegisteredConsumers
             .FirstOrDefault(x => x.Consumer.AcceptsNotificationRequests && x.Consumer.QueuedNotificationCount <= 0);
-        if (consumer != null)
+        if (consumer != null && deliverable.Count > 0)
         {
             Logger.LogTrace("将推送的提醒消费者：{}(#{})", consumer.Consumer, consumer.Consumer.GetHashCode());
-            foreach (var request in requests)
+            foreach (var request in deliverable)
             {
                 PlayingNotifications.Add(request);
+                request.IsInQueue = false;
                 RequestOwners[request] = new WeakReference<INotificationConsumer>(consumer.Consumer);
             }
             UpdateNotificationPlayingState();
-            consumer.Consumer.ReceiveNotifications(requests);
+            consumer.Consumer.ReceiveNotifications(deliverable);
             return true;
         }
 
@@ -346,6 +350,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             requests.Add(head);
             PoppedRequests.Add(head);
             PlayingNotifications.Add(head);
+            head.IsInQueue = false;
             head = head.ChainedNextRequest;
         }
         
@@ -356,6 +361,26 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     private void PopRequestsToConsumers()
     {
         PushNotificationRequests(PopRequests());
+    }
+
+    private void RequeueNotifications(IList<NotificationRequest> requests)
+    {
+        foreach (var r in requests)
+        {
+            if (r.IsInQueue)
+            {
+                continue;
+            }
+            PlayingNotifications.Remove(r);
+            RequestOwners.Remove(r);
+            if (!r.CancellationToken.IsCancellationRequested && !r.CompletedToken.IsCancellationRequested)
+            {
+                r.IsInQueue = true;
+                var providerIndex = Settings.NotificationProvidersPriority.IndexOf(r.NotificationSourceGuid.ToString());
+                RequestQueue.Enqueue(r, new NotificationPriority(providerIndex, _queueIndex++, r.IsPriorityOverride));
+            }
+        }
+        UpdateNotificationPlayingState();
     }
 
     public void RegisterNotificationConsumer(INotificationConsumer consumer, int priority)
@@ -379,15 +404,10 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 .ToList();
             if (orphan.Count > 0)
             {
-                Logger.LogTrace("推送未完成的提醒到新消费者: {} 个", orphan.Count);
-                foreach (var r in orphan)
-                {
-                    RequestOwners[r] = new WeakReference<INotificationConsumer>(consumer);
-                }
-                consumer.ReceiveNotifications(orphan);
-                return;
+                Logger.LogTrace("消费者注册, 孤儿提醒回归队列: {} 个", orphan.Count);
+                RequeueNotifications(orphan);
             }
-            consumer.ReceiveNotifications(PopRequests());
+            PopRequestsToConsumers();
         }
     }
 
@@ -405,20 +425,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             .Where(kvp => !kvp.Value.TryGetTarget(out var target) || ReferenceEquals(target, consumer))
             .Select(kvp => kvp.Key)
             .ToList();
-        foreach (var r in orphan)
+        if (orphan.Count > 0)
         {
-            RequestOwners.Remove(r);
-        }
-        var next = RegisteredConsumers
-            .FirstOrDefault(x => x.Consumer.AcceptsNotificationRequests && x.Consumer.QueuedNotificationCount <= 0);
-        if (next != null && orphan.Count > 0)
-        {
-            Logger.LogTrace("消费者注销, 移交未完成提醒: {} 个", orphan.Count);
-            foreach (var r in orphan)
-            {
-                RequestOwners[r] = new WeakReference<INotificationConsumer>(next.Consumer);
-            }
-            next.Consumer.ReceiveNotifications(orphan);
+            Logger.LogTrace("消费者注销, 孤儿提醒回归队列: {} 个", orphan.Count);
+            RequeueNotifications(orphan);
+            PopRequestsToConsumers();
         }
     }
 

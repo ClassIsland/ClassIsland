@@ -214,6 +214,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private Queue<NotificationRequest> _notificationQueue = new();
 
+    private CancellationTokenSource _consumerCts = new();
 
     private bool _isLoadCompleted = false;
 
@@ -237,7 +238,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private IAudioService AudioService { get; } = IAppHost.GetService<IAudioService>();
 
-    private Grid? GridWrapper;
+    private Avalonia.Controls.Grid? GridWrapper;
     
     private PixelPoint _centerPointCache = new PixelPoint(0, 0);
 
@@ -344,6 +345,11 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
+        if (_consumerCts.IsCancellationRequested)
+        {
+            _consumerCts.Dispose();
+            _consumerCts = new CancellationTokenSource();
+        }
         MainWindow.MousePosChanged += MainWindowOnMousePosChanged;
         MainWindow.RawInputEvent += MainWindowOnRawInputEvent;
         MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
@@ -363,6 +369,12 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
+        if (!_consumerCts.IsCancellationRequested)
+        {
+            _consumerCts.Cancel();
+        }
+        _notificationQueue.Clear();
+        MainWindow.ReleaseTopmostLock(TopmostLock);
         MainWindow.MousePosChanged -= MainWindowOnMousePosChanged;
         MainWindow.RawInputEvent -= MainWindowOnRawInputEvent;
         MainWindow.MainWindowAnimationEvent -= MainWindowOnMainWindowAnimationEvent;
@@ -626,6 +638,10 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private async Task<CancellationTokenSource?> PlayMaskAsync(NotificationRequest request, INotificationSettings settings, bool isMaskSpeechEnabled, CancellationToken cancellationToken, CancellationTokenSource? stopNotificationSoundCts)
     {
+        if (_consumerCts.IsCancellationRequested)
+        {
+            return stopNotificationSoundCts;
+        }
         EnsureMaskStartTimes(request);
         PseudoClasses.Set(":mask-anim", false);
         PseudoClasses.Set(":overlay-out", false);
@@ -669,11 +685,11 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         }
         if (settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
             !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible &&
-            !request.MaskEffectPlayed)
+            !request.MaskEffectPlayed && !_consumerCts.IsCancellationRequested)
         {
             var center = GetCenter();
-            TopmostEffectWindow.PlayEffect(new RippleEffect(center, MaskContent.Color));
             request.MaskEffectPlayed = true;
+            TopmostEffectWindow.PlayEffect(new RippleEffect(center, MaskContent.Color));
         }
         if (!cancellationToken.IsCancellationRequested)
         {
@@ -729,20 +745,28 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     private PixelPoint GetCenter()
     {
         // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
-        if (GridWrapper?.GetVisualRoot() == null)
+        var grid = GridWrapper;
+        if (grid?.GetVisualRoot() == null
+            || grid.Bounds.Width <= 0
+            || grid.Bounds.Height <= 0)
         {
             return _centerPointCache;
         }
-        var p = GridWrapper?.PointToScreen(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2));
-        if (p == null)
+
+        var p = grid.PointToScreen(new Point(grid.Bounds.Width / 2, grid.Bounds.Height / 2));
+        if (p == default)
         {
             return _centerPointCache;
         }
-        return _centerPointCache = p.Value;
+        return _centerPointCache = p;
     }
 
     private async void ProcessNotification()
     {
+        if (_consumerCts.IsCancellationRequested)
+        {
+            return;
+        }
         if (_isOverlayOpen)
         {
             return;
@@ -764,6 +788,10 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         CancellationTokenSource? stopNotificationSoundCts = null;
         while (_notificationQueue.Count > 0)
         {
+            if (_consumerCts.IsCancellationRequested)
+            {
+                break;
+            }
             var request = _notificationQueue.Dequeue();
             Logger.LogTrace("nid = {}", request.GetHashCode());
             var settings = ResolveNotificationSettings(request);
@@ -809,12 +837,18 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 }
                 SpeechService.ClearSpeechQueue();
             }
-            await request.CompletedTokenSource.CancelAsync();
-
-            var notifications = NotificationHostService.PullNotificationRequests();
-            foreach (var newRequest in notifications)
+            if (!_consumerCts.IsCancellationRequested)
             {
-                _notificationQueue.Enqueue(newRequest);
+                await request.CompletedTokenSource.CancelAsync();
+            }
+
+            if (_notificationQueue.Count == 0)
+            {
+                var notifications = NotificationHostService.PullNotificationRequests();
+                foreach (var newRequest in notifications)
+                {
+                    _notificationQueue.Enqueue(newRequest);
+                }
             }
 
             if (NotificationHostService.RequestQueue.Count + _notificationQueue.Count < 1 && playedAnyContent)

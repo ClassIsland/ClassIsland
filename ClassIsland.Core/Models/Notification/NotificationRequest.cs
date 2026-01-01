@@ -138,6 +138,8 @@ public class NotificationRequest : ObservableRecipient
     
     internal bool NotificationSetupCompleted { get; set; }
 
+    internal bool IsInQueue { get; set; }
+
     public DateTime? MaskStartTime { get; set; }
     public DateTime? OverlayStartTime { get; set; }
     public bool MaskEffectPlayed { get; set; }

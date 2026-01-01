@@ -1072,7 +1072,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         Logger.LogInformation("播放顶层特效：{}", effect);
         if (effect is not Control element)
             return;
-        ViewModel.EffectControls.Add(element);
+        if (!ViewModel.EffectControls.Contains(element))
+        {
+            ViewModel.EffectControls.Add(element);
+        }
         if (!element.IsLoaded)
         {
             element.Loaded += (sender, args) => SetupEffectVisual(element, effect);
@@ -1085,11 +1088,14 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void SetupEffectVisual(Control visual1, INotificationEffectControl effect)
     {
-        effect.EffectCompleted += (sender, args) =>
+        EventHandler? handler = null;
+        handler = (sender, args) =>
         {
             Logger.LogInformation("结束播放并移除顶层特效：{}", effect);
             ViewModel.EffectControls.Remove(visual1);
+            effect.EffectCompleted -= handler;
         };
+        effect.EffectCompleted += handler;
         effect.Play();
     }
 
