@@ -1094,8 +1094,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     #region EditMode
 
-    private void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
+    private async void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
     {
+        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+        {
+            return;
+        }
         ViewModel.IsEditMode = true;
     }
 
