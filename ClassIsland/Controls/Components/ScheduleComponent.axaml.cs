@@ -28,7 +28,7 @@ namespace ClassIsland.Controls.Components;
 /// </summary>
 [MigrateFrom("E7831603-61A0-4180-B51B-54AD75B1A4D3")]  // 课程表（旧）
 [ComponentInfo("1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8", "课程表", "\ue751", "显示当前的课程表信息。")]
-[PseudoClasses(":show-tomorrow-schedule", ":show-tomorrow-schedule-on-empty", ":show-tomorrow-schedule-always")]
+[PseudoClasses(":show-tomorrow-schedule", ":show-tomorrow-schedule-after-school", ":show-tomorrow-schedule-on-empty", ":show-tomorrow-schedule-always")]
 public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, INotifyPropertyChanged
 {
     private bool _hideFinishedClass;
@@ -165,7 +165,8 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
 
     private void CheckTomorrowClassShowMode()
     {
-        PseudoClasses.Set(":show-tomorrow-schedule", Settings.TomorrowScheduleShowMode is 1 or 2);
+        PseudoClasses.Set(":show-tomorrow-schedule", Settings.TomorrowScheduleShowMode is 1 or 2 or 3);
+        PseudoClasses.Set(":show-tomorrow-schedule-after-school", Settings.TomorrowScheduleShowMode is 1);
         PseudoClasses.Set(":show-tomorrow-schedule-always", Settings.TomorrowScheduleShowMode is 2);
         UpdateTomorrowVisibility();
     }
@@ -219,7 +220,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
 
     private void UpdateTomorrowVisibility()
     {
-        var showOnEmpty = Settings.TomorrowScheduleShowMode == 1;
+        var showOnEmpty = Settings.TomorrowScheduleShowMode == 3;
         if (!showOnEmpty)
         {
             PseudoClasses.Set(":show-tomorrow-schedule-on-empty", false);
