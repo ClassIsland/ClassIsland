@@ -12,20 +12,19 @@
                   AttachedToVisualTree="RollingComponent_OnAttachedToVisualTree"
                   DetachedFromVisualTree="RollingComponent_OnDetachedFromVisualTree">
     <Border SizeChanged="OuterContainerStackPanel_OnSizeChanged"
-            x:Name="OuterContainerStackPanel" ClipToBounds="True"
+            x:Name="OuterContainerStackPanel" ClipToBounds="False"
             Margin="-6 0">
         <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}"
                 Width="{Binding #ItemsControlContainer.Bounds.Width, Mode=OneWay}"
                 HorizontalAlignment="Left">
-            <Grid ColumnDefinitions="Auto,32,Auto" VerticalAlignment="Stretch" 
+            <Grid ColumnDefinitions="Auto,16,Auto" VerticalAlignment="Stretch" 
                   x:Name="GridScrollContainer"
-                  RenderOptions.BitmapInterpolationMode="LowQuality"
-                  RenderOptions.EdgeMode="Aliased"
                   Height="{Binding #OuterContainerStackPanel.Bounds.Height}">
-                <Border x:Name="ItemsControlContainer" Background="Transparent" VerticalAlignment="Stretch">
+                <Border x:Name="ItemsControlContainer" Background="Transparent">
                     <ItemsControl ItemsSource="{Binding Settings.Children}"
                                   x:Name="ItemsControlCore"
                                   VerticalAlignment="Stretch"
+                                  Height="{Binding Bounds.Height, ElementName=OuterContainerStackPanel}"
                                   SizeChanged="ItemsControlCore_OnSizeChanged">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -44,17 +43,12 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </Border>
-                <Rectangle x:Name="ItemsControlContainerMirror" 
-                           Grid.Column="2"
-                           VerticalAlignment="Stretch" 
-                           IsHitTestVisible="False"
+                <Rectangle Grid.Column="2"
                            Width="{Binding #ItemsControlContainer.Bounds.Width}"
-                           Height="{Binding #ItemsControlContainer.Bounds.Height}">
+                           Height="{Binding #ItemsControlContainer.Bounds.Height}"
+                           VerticalAlignment="Stretch">
                     <Rectangle.Fill>
-                        <VisualBrush Visual="{Binding #ItemsControlContainer}" 
-                                     Stretch="None"
-                                     AlignmentX="Left" 
-                                     AlignmentY="Top" />
+                        <VisualBrush Visual="{Binding #ItemsControlContainer}" />
                     </Rectangle.Fill>
                 </Rectangle>
             </Grid>
