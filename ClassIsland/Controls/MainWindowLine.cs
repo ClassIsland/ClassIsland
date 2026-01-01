@@ -693,7 +693,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         }
         if (!cancellationToken.IsCancellationRequested)
         {
-            await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskContent.Duration), cancellationToken);
+            await Task.Delay(request.MaskContent.Duration, cancellationToken);
         }
         return stopNotificationSoundCts;
     }
@@ -738,7 +738,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         _ = animation.RunAsync(this, cancellationToken);
         if (!cancellationToken.IsCancellationRequested)
         {
-            await Task.Run(() => cancellationToken.WaitHandle.WaitOne(overlay.Duration), cancellationToken);
+            await Task.Delay(overlay.Duration, cancellationToken);
         }
     }
     
