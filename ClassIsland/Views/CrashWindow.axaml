@@ -13,7 +13,8 @@
                    WindowStartupLocation="CenterScreen"
                    Icon="/Assets/AppLogo.ico"
                    Title="ClassIsland 崩溃报告" Height="450" Width="800"
-                   EnableMicaWindow="True">
+                   EnableMicaWindow="True"
+                   x:DataType="views:CrashWindow">
     <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
         <!-- Header -->
         <controls1:StickerControl Grid.Row="0" Grid.Column="0"

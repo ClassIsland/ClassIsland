@@ -10,7 +10,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
         xmlns:attributes="clr-namespace:ClassIsland.Core.Attributes;assembly=ClassIsland.Core"
-        mc:Ignorable="d">
+        mc:Ignorable="d"
+        x:DataType="controls1:EditableComponentsListBox">
     <Design.PreviewWith>
         <controls1:EditableComponentsListBox />
     </Design.PreviewWith>
@@ -197,7 +198,7 @@
                                     <Panel.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                                             <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
-                                            <Binding Path="AssociatedComponentInfo.IsComponentContainer"/>
+                                            <Binding Path="$self"/>
                                             <TemplateBinding Property="IsSelected" Converter="{x:Static BoolConverters.Not}"/>
                                         </MultiBinding>
                                     </Panel.IsVisible>
@@ -253,7 +254,7 @@
                 <BehaviorCollection>
                     <ManagedContextDropBehavior OverClass="TargetHighlight" 
                                                 Handler="{StaticResource DropHandler}"
-                                                Context="{Binding ItemsSource, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                                Context="{ReflectionBinding ItemsSource, RelativeSource={RelativeSource TemplatedParent}}"/>
                 </BehaviorCollection>
             </BehaviorCollectionTemplate>
         </Setter>

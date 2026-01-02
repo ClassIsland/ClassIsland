@@ -19,7 +19,8 @@
         windowing:AppWindow.AllowInteractionInTitleBar="True"
         SizeChanged="SettingsWindowNew_OnSizeChanged"
         Closing="SettingsWindowNew_OnClosing"
-        Icon="/Assets/AppLogo.ico">
+        Icon="/Assets/AppLogo.ico"
+        x:DataType="local:SettingsWindowNew">
     <controls:MyWindow.Resources>
         <ScrollViewer Width="332" x:Key="ExperimentalSettings"
                       VerticalScrollBarVisibility="Auto">

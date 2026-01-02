@@ -14,7 +14,8 @@
         Title="课表详细信息"
         d:DataContext="{d:DesignInstance local:ClassPlanDetailsWindow}"
         EnableMicaWindow="True"
-        Height="500" Width="800">
+        Height="500" Width="800"
+        x:DataType="local:ClassPlanDetailsWindow">
     <Grid RowDefinitions="Auto,*">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500"/>
@@ -116,7 +117,7 @@
                                                             Opacity="0.25"
                                                             Background="{DynamicResource AccentFillColorDefaultBrush}">
                                                         <Border.IsVisible>
-                                                            <Binding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                                            <Binding Path="$self" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
                                                                 <Binding.ConverterParameter>
                                                                     <enums:AttachedSettingsControlState>Enabled</enums:AttachedSettingsControlState>
                                                                 </Binding.ConverterParameter>
@@ -130,14 +131,14 @@
                                                           CornerRadius="4"
                                                           Classes="settings-node-state-indicator">
                                                         <Classes.Enabled>
-                                                            <Binding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                                            <Binding Path="$self" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
                                                                 <Binding.ConverterParameter>
                                                                     <enums:AttachedSettingsControlState>Enabled</enums:AttachedSettingsControlState>
                                                                 </Binding.ConverterParameter>
                                                             </Binding>
                                                         </Classes.Enabled>
                                                         <Classes.Override>
-                                                            <Binding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                                            <Binding Path="$self" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
                                                                 <Binding.ConverterParameter>
                                                                     <enums:AttachedSettingsControlState>Override</enums:AttachedSettingsControlState>
                                                                 </Binding.ConverterParameter>
@@ -157,12 +158,12 @@
                                                     <ci:AttachedSettingsControlPresenter
                                                         Grid.Column="1"
                                                         Margin="4 0 0 0"
-                                                        ContentId="{Binding Address.Guid, Mode=OneWay}"
-                                                        ContentIndex="{Binding Address.Index, Mode=OneWay}"
-                                                        TargetObject="{Binding Node.Object, Mode=OneWay}"
+                                                        ContentId="{ReflectionBinding Address.Guid, Mode=OneWay}"
+                                                        ContentIndex="{ReflectionBinding Address.Index, Mode=OneWay}"
+                                                        TargetObject="{ReflectionBinding Node.Object, Mode=OneWay}"
                                                         ControlInfo="{Binding ViewModel.DisplayControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassPlanDetailsWindow}, Mode=OneWay}"
                                                         IsDependencyMode="True"
-                                                        State="{Binding State, Mode=OneWay}">
+                                                        State="{ReflectionBinding State, Mode=OneWay}">
                                                     </ci:AttachedSettingsControlPresenter>
                                                 </Grid>
                                             </ControlTemplate>

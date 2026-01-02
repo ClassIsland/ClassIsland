@@ -5,7 +5,8 @@
                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
                     xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
                     xmlns:views="clr-namespace:ClassIsland.Views"
-                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    x:DataType="controls:TimeLineListControl">
     <ControlTheme TargetType="{x:Type controls:TimeLineListControl}" x:Key="{x:Type controls:TimeLineListControl}">
         <ControlTheme.Resources>
             <ci:DayTimeSpanToHeightConverter x:Key="DayTimeSpanToHeightConverter" />
@@ -144,7 +145,7 @@
                 <Setter Property="Canvas.Top">
                     <Setter.Value>
                         <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeToCanvasPosConverter}">
-                            <Binding Path="StartTime"/>
+                            <Binding Path="$self"/>
                             <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
                         </MultiBinding>
                     </Setter.Value>
@@ -153,8 +154,8 @@
                 <Setter Property="Height">
                     <Setter.Value>
                         <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeDeltaToCanvasPosConverter}">
-                            <Binding Path="StartTime" Mode="OneWay"/>
-                            <Binding Path="EndTime" Mode="OneWay"/>
+                            <Binding Path="$self" Mode="OneWay"/>
+                            <Binding Path="$self" Mode="OneWay"/>
                             <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
 
                         </MultiBinding>
@@ -164,16 +165,16 @@
                 <Setter Property="Interaction.Behaviors">
                     <BehaviorCollectionTemplate>
                         <BehaviorCollection>
-                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="2">
+                            <DataTriggerBehavior Binding="{ReflectionBinding TimeType}" Value="2">
                                 <AddClassAction ClassName="timeType-separator"/>
                             </DataTriggerBehavior>
-                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="3">
+                            <DataTriggerBehavior Binding="{ReflectionBinding TimeType}" Value="3">
                                 <AddClassAction ClassName="timeType-actions"/>
                             </DataTriggerBehavior>
-                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="2" ComparisonCondition="NotEqual">
+                            <DataTriggerBehavior Binding="{ReflectionBinding TimeType}" Value="2" ComparisonCondition="NotEqual">
                                 <RemoveClassAction ClassName="timeType-separator"/>
                             </DataTriggerBehavior>
-                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="3" ComparisonCondition="NotEqual">
+                            <DataTriggerBehavior Binding="{ReflectionBinding TimeType}" Value="3" ComparisonCondition="NotEqual">
                                 <RemoveClassAction ClassName="timeType-actions"/>
                             </DataTriggerBehavior>
                             
@@ -193,7 +194,7 @@
                                 <behaviors:TimeLineListItemBehavior ListBoxItem="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                                                     ParentListBox="{Binding $parent[controls:TimeLineListControl]}">
                                     <behaviors:TimeLineListItemBehavior.ThumbTemplate>
-                                        <controls:TimeLineListItemAdornerTemplateSelector TimeType="{Binding TimeType}">
+                                        <controls:TimeLineListItemAdornerTemplateSelector TimeType="{ReflectionBinding TimeType}">
                                             <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.ExpandingTimePointAdornerKey}">
                                                 <Grid>
                                                     <controls:TimeLineListItemExpandingAdornerControl

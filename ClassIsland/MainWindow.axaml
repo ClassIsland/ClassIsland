@@ -32,7 +32,8 @@
         X11Properties.WmClass="classisland_main"
         Closing="MainWindow_OnClosing"
         ShowActivated="False"
-        TransparencyBackgroundFallback="Transparent">
+        TransparencyBackgroundFallback="Transparent"
+        x:DataType="local:MainWindow">
     <Window.Transitions>
         <Transitions>
             <BrushTransition Property="Background"

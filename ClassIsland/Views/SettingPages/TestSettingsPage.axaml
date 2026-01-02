@@ -6,7 +6,8 @@
       xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
       xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
       mc:Ignorable="d"
-      d:DataContext="{d:DesignInstance local:TestSettingsPage}">
+      d:DataContext="{d:DesignInstance local:TestSettingsPage}"
+      x:DataType="local:TestSettingsPage">
     <Grid>
         <StackPanel>
 

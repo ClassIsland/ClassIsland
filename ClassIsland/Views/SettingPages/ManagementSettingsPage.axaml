@@ -12,7 +12,8 @@
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance local:ManagementSettingsPage}"
       d:DesignHeight="450" d:DesignWidth="800"
-      Loaded="ManagementSettingsPage_OnLoaded">
+      Loaded="ManagementSettingsPage_OnLoaded"
+      x:DataType="local:ManagementSettingsPage">
 
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">

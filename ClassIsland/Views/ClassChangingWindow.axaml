@@ -23,12 +23,13 @@
         SizeToContent="WidthAndHeight"
         d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
         WindowStartupLocation="CenterScreen"
-        Unloaded="Control_OnUnloaded">
+        Unloaded="Control_OnUnloaded"
+        x:DataType="local:ClassChangingWindow">
     <controls1:MyWindow.Styles>
         <Style Selector="ci|LessonsListBox ListBoxItem">
             <Setter Property="IsHitTestVisible">
                 <Setter.Value>
-                    <Binding Path="$self.DataContext.TimeType"
+                    <Binding Path="$self.DataContext"
                              Converter="{x:Static ObjectConverters.Equal}">
                         <Binding.ConverterParameter>
                             <system:Int32>0</system:Int32>

@@ -19,7 +19,8 @@
       Design.Width="960" Design.Height="500"
       d:DataContext="{d:DesignInstance local:GeneralSettingsPage}"
       Loaded="GeneralSettingsPage_OnLoaded"
-      Unloaded="GeneralSettingsPage_OnUnloaded">
+      Unloaded="GeneralSettingsPage_OnUnloaded"
+      x:DataType="local:GeneralSettingsPage">
     <controls:SettingsPageBase.Resources>
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
 
