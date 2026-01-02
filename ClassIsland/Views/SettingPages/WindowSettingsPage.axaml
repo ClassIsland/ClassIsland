@@ -140,7 +140,8 @@
             <!-- 窗口层级 -->
             <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xEA2F;}"
                                         Header="窗口层级"
-                                        Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。">
+                                        Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。"
+                                        IsExpanded="True">
                 <controls1:SettingsExpander.Footer>
                     <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.WindowLayer, Mode=TwoWay}"
                               Foreground="{DynamicResource MaterialDesignBody}">
@@ -152,6 +153,38 @@
                         </ComboBoxItem>
                     </ComboBox>
                 </controls1:SettingsExpander.Footer>
+                <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xE125;}"
+                                                Content="窗口层级设置频率"
+                                                Description="ClassIsland 在什么时候重新设置窗口置顶/置底状态。请注意，较高的设置频率可能会产生较高的性能占用并导致主界面内容闪烁。">
+                    <controls1:SettingsExpanderItem.Footer>
+                        <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.WindowTopmostRecheckMode}">
+                            <ComboBoxItem>窗口层级变化时（默认）</ComboBoxItem>
+                            <ComboBoxItem>前台窗口变化时</ComboBoxItem>
+                            <ComboBoxItem>
+                                <StackPanel Orientation="Horizontal"
+                                            Classes="items-valign-center"
+                                            Spacing="4">
+                                    <TextBlock Text="每 50ms"/>
+                                    <ci:FluentIcon Glyph="&#xF431;"
+                                                   FontSize="20"
+                                                   Margin="0 -8"
+                                                   Foreground="Orange"/>
+                                </StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem>
+                                <StackPanel Orientation="Horizontal"
+                                            Classes="items-valign-center"
+                                            Spacing="4">
+                                    <TextBlock Text="每 1ms"/>
+                                    <ci:FluentIcon Glyph="&#xF431;"
+                                                   FontSize="20"
+                                                   Margin="0 -8"
+                                                   Foreground="OrangeRed"/>
+                                </StackPanel>
+                            </ComboBoxItem>
+                        </ComboBox>
+                    </controls1:SettingsExpanderItem.Footer>
+                </controls1:SettingsExpanderItem>
             </controls1:SettingsExpander>
 
             <!-- 指针移入淡化 -->

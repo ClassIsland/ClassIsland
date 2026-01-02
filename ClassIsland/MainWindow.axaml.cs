@@ -35,6 +35,7 @@ using ClassIsland.Helpers;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
+using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Interfaces;
@@ -124,6 +125,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private double _latestDpiX = 1.0;
     private double _latestDpiY = 1.0;
+
+    private DispatcherTimer HighFreqTopmostRecheckTimer { get; } = new()
+    {
+        Interval = TimeSpan.FromMilliseconds(1)
+    };
 
     private DispatcherTimer TouchInFadingTimer { get; set; } = new();
 
@@ -222,8 +228,28 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
         IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
         TaskBarIconService.MoreOptionsMenu = MoreOptionsMenu;
+        WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
+        HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
         PointerStateAssist.SetIsTouchMode(this, true);  // DEBUG
+    }
+
+    private void HighFreqTopmostRecheckTimerOnTick(object? sender, EventArgs e)
+    {
+        if (ViewModel.Settings.WindowTopmostRecheckMode == 3)
+        {
+            ReCheckTopmostState();
+            SetBottom();
+        }
+    }
+
+    private void WindowRuleServiceOnForegroundWindowChanged(object? sender, ForegroundWindowChangedEventArgs e)
+    {
+        if (ViewModel.Settings.WindowTopmostRecheckMode == 1)
+        {
+            ReCheckTopmostState();
+            SetBottom();
+        }
     }
 
     private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
@@ -249,6 +275,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
+        if (ViewModel.Settings.WindowTopmostRecheckMode == 2)
+        {
+            ReCheckTopmostState();
+            SetBottom();
+        }
     }
 
     private void LessonsServiceOnPreMainTimerTicked(object? sender, EventArgs e)
@@ -477,7 +508,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             var pos = Marshal.PtrToStructure<NativeWindowHelper.WINDOWPOS>(lParam);
             Logger.LogTrace("WM_WINDOWPOSCHANGED {}", pos.flags);
-            if ((pos.flags & NativeWindowHelper.SWP_NOZORDER) == 0) // SWP_NOZORDER
+            if ((pos.flags & NativeWindowHelper.SWP_NOZORDER) == 0 && ViewModel.Settings.WindowTopmostRecheckMode == 0) // SWP_NOZORDER
             {
                 Logger.LogTrace("Z order changed");
                 if (pos.hwndInsertAfter != NativeWindowHelper.HWND_TOPMOST)
@@ -643,6 +674,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void UpdateTheme()
     {
+        HighFreqTopmostRecheckTimer.IsEnabled = ViewModel.Settings.WindowTopmostRecheckMode == 3;
+        
         UpdateWindowPos();
         UpdateWindowFeatures();
         UpdateWindowLayer();
