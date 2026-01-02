@@ -29,11 +29,16 @@ public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
 
     public bool IsEnabled(LogEventLevel level, string area)
     {
+        if (area == LogArea.Binding && level == LogEventLevel.Warning)
+            return false;
+
         return level >= Level;
     }
 
     public void Log(LogEventLevel level, string area, object? source, string messageTemplate)
     {
+        if (area == LogArea.Binding && level == LogEventLevel.Warning)
+            return;
         if (Logger == null)
         {
             return;
