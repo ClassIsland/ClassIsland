@@ -39,8 +39,6 @@ public class PluginService : IPluginService
 
     public static readonly string PluginConfigsFolderPath = Path.Combine(CommonDirectories.AppConfigPath, "Plugins");
 
-    public ILogger<PluginService> Logger { get; }
-
     internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
 
     internal static List<PluginManifest> InstalledPlugins { get; } = [];
