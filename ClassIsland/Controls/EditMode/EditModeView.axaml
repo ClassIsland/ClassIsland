@@ -142,8 +142,10 @@
                                            Click="SettingsExpanderNavigateAppearance_OnClick"/>
             </StackPanel>
         </ScrollViewer>
-        <Panel x:Key="ComponentsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}">
+        <Grid x:Key="ComponentsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}"
+              RowDefinitions="* Auto Auto">
             <ListBox ItemsSource="{Binding ViewModel.ComponentInfos}"
+                     SelectedItem="{Binding ViewModel.SelectedComponentInfo}"
                      Classes="drag-source">
                 <ListBox.Styles>
                     <Style Selector="ListBox.drag-source ListBoxItem">
@@ -206,7 +208,23 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
-        </Panel>
+            <Separator Grid.Row="1" Margin="0 4" />
+            <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Text="将组件拖动到主界面上即可添加组件。" Classes="l-instructive"
+                       TextWrapping="Wrap"
+                       Margin="0 8"
+                       IsVisible="{Binding ViewModel.TargetComponentsList, Converter={x:Static ObjectConverters.IsNull}}"/>
+            <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Text="选择要添加的组件，或将组件拖动到主界面上即可添加组件。" Classes="l-instructive"
+                       TextWrapping="Wrap"
+                       Margin="0 8"
+                       IsVisible="{Binding ViewModel.TargetComponentsList, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+            <Button Grid.Row="2" Content="添加" Margin="0 4 0 8"
+                    HorizontalAlignment="Right"
+                    Padding="16 6"
+                    Classes="accent" Click="ButtonAddComponentToTargetList_OnClick"
+                    IsVisible="{Binding ViewModel.TargetComponentsList, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+        </Grid>
         
         <Grid x:Key="ComponentSettingsDrawerTitle" ColumnDefinitions="Auto *">
             <StackPanel

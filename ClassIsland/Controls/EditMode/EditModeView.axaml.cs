@@ -20,6 +20,7 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Core.Services.Registry;
+using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels.EditMode;
@@ -83,9 +84,10 @@ public partial class EditModeView : UserControl
         ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Closed;
     }
 
-    public void OpenComponentsLibDrawer()
+    public void OpenComponentsLibDrawer(IList<ComponentSettings>? target = null)
     {
         OpenDrawer("ComponentsDrawer", "组件库");
+        ViewModel.TargetComponentsList = target;
         // 重载组件库列表项目，修复切换视图后无法拖拽的问题。
         ViewModel.ComponentInfos = [];
         ViewModel.ComponentInfos = ComponentRegistryService.Registered;
@@ -344,5 +346,18 @@ public partial class EditModeView : UserControl
         var d1 = Path.Combine(Services.ComponentsService.ComponentSettingsPath, $"{d}");
         File.Copy(raw, d1);
         ViewModel.ComponentsService.RefreshConfigs();
+    }
+
+    private void ButtonAddComponentToTargetList_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedComponentInfo == null)
+            return;
+        var componentSettings = new ComponentSettings()
+        {
+            Id = ViewModel.SelectedComponentInfo.Guid.ToString()
+        };
+        ComponentsService.LoadComponentSettings(componentSettings,
+            componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!);
+        ViewModel.TargetComponentsList?.Add(componentSettings);
     }
 }
