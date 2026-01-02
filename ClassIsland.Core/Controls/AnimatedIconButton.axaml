@@ -1,8 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
-        xmlns:controls="http://classisland.tech/schemas/xaml/core"
-        x:CompileBindings="True">
+        xmlns:controls="http://classisland.tech/schemas/xaml/core">
     <Style Selector="controls|AnimatedIconButton">
         <Setter Property="Template">
             <Setter.Value>

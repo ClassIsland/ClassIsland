@@ -10,8 +10,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
         xmlns:attributes="clr-namespace:ClassIsland.Core.Attributes;assembly=ClassIsland.Core"
-        mc:Ignorable="d"
-        x:DataType="controls1:EditableComponentsListBox">
+        mc:Ignorable="d">
     <Design.PreviewWith>
         <controls1:EditableComponentsListBox />
     </Design.PreviewWith>
@@ -48,8 +47,7 @@
         <Setter Property="ClipToBounds" Value="False"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
-            <ControlTemplate TargetType="controls1:EditableComponentsListBox"
-                             x:CompileBindings="True">
+            <ControlTemplate TargetType="controls1:EditableComponentsListBox">
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
                     <Button Height="32"
@@ -77,7 +75,6 @@
                             <controls2:AdornerAttachHostControl.Resources>
                                 <ci:BindingProxy x:TypeArguments="controls1:EditableComponentsListBox"
                                                  x:DataType="components:ComponentSettings"
-                                                 x:CompileBindings="True"
                                                  x:Key="ParentBindingProxy"
                                                  Data="{Binding $parent[controls1:EditableComponentsListBox]}"/>
                             </controls2:AdornerAttachHostControl.Resources>
@@ -194,7 +191,7 @@
                                                   IsHitTestVisible="False">
                                 </ContentPresenter>
                                 
-                                <Panel x:Name="ContainerIndicatorPanel" x:CompileBindings="False">
+                                <Panel x:Name="ContainerIndicatorPanel" x:DataType="components:ComponentSettings">
                                     <Panel.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                                             <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
@@ -269,7 +266,6 @@
                                                     PreviewTemplate="{StaticResource ComponentSettingsPreviewEffect}">
                             <ci:AdvancedManagedContextDragBehavior.Context>
                                 <controls1:EditableComponentsListBoxDragData
-                                    x:CompileBindings="True"
                                     x:DataType="components:ComponentSettings"
                                     ComponentSettings="{Binding}"
                                     SourceList="{Binding $parent[ListBoxItem].(controls1:EditableComponentsListBox.ItemsSourceInternal)}"/>
@@ -277,7 +273,6 @@
                         </ci:AdvancedManagedContextDragBehavior>
                         <ManagedContextDropBehavior OverClass="TargetHighlight"
                                                     x:DataType="components:ComponentSettings"
-                                                    x:CompileBindings="True"
                                                     Handler="{StaticResource DropHandler}"
                                                     Context="{Binding $parent[ListBoxItem].(controls1:EditableComponentsListBox.ItemsSourceInternal)}"/>
                     </BehaviorCollection>
