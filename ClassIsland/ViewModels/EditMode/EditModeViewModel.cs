@@ -29,6 +29,8 @@ public partial class EditModeViewModel(
     [ObservableProperty] private bool _isDrawerTempCollapsed;
     [ObservableProperty] private IReadOnlyList<ComponentInfo> _componentInfos = [];
     [ObservableProperty] private int _componentSettingsTabIndex = 0;
+    [ObservableProperty] private string _filterText = "";
+    [ObservableProperty] private string _createProfileName = "";
     
     [ObservableProperty] private object? _secondaryDrawerContent;
     [ObservableProperty] private object? _secondaryDrawerTitle;

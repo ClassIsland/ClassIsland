@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -13,10 +16,15 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.Ruleset;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels.EditMode;
+using CommunityToolkit.Mvvm.Input;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Controls.EditMode;
 
@@ -33,7 +41,14 @@ public partial class EditModeView : UserControl
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-        
+
+        ClearSelectedComponents();
+    }
+
+    private void ClearSelectedComponents()
+    {
+        ViewModel.MainWindow.ViewModel.SelectedComponentSettings = null;
+        ViewModel.MainWindow.ViewModel.SelectedMainWindowLineSettings = null;
         ViewModel.MainViewModel.ContainerComponents.Clear();
         ViewModel.ContainerComponentCache.Clear();
     }
@@ -178,5 +193,156 @@ public partial class EditModeView : UserControl
     {
         ViewModel.SelectedMainWindowLineSettings = settings;
         OpenDrawer("MainWindowLineSettingsDrawer", "主界面行设置");
+    }
+    
+    [RelayCommand]
+    private void ComponentLayoutSelectionRadioButtonToggled(string name)
+    {
+        ViewModel.SettingsService.Settings.CurrentComponentConfig = name;
+        ClearSelectedComponents();
+    }
+
+    private void ButtonOpenComponentLayoutsFolder_OnClick(object? sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath),
+            UseShellExecute = true
+        });
+    }
+
+    private async void ButtonCreateComponentLayout_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.CreateProfileName = "";
+
+        var textBox = new TextBox()
+        {
+            Text = ""
+        };
+        var dialogResult = await new ContentDialog()
+        {
+            Title = "创建组件配置",
+            DefaultButton = ContentDialogButton.Primary,
+            PrimaryButtonText = "创建",
+            SecondaryButtonText = "取消",
+            Content = new Field()
+            {
+                Content = textBox,
+                Label = "组件名",
+                Suffix = ".json"
+            }
+        }.ShowAsync();
+
+        ViewModel.CreateProfileName = textBox.Text;
+        var path = Path.Combine(ClassIsland.Services.ComponentsService.ComponentSettingsPath,
+            ViewModel.CreateProfileName + ".json");
+        if (dialogResult != ContentDialogResult.Primary || File.Exists(path))
+        {
+            return;
+        }
+        ConfigureFileHelper.SaveConfig(path, ClassIsland.Services.ComponentsService.DefaultComponentProfile);
+        ViewModel.ComponentsService.RefreshConfigs();
+        ViewModel.SettingsService.Settings.CurrentComponentConfig = ViewModel.CreateProfileName;
+        ClearSelectedComponents();
+    }
+
+    private void ButtonRefreshComponentLayouts_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.ComponentsService.RefreshConfigs();
+    }
+
+    public void OpenComponentLayoutsManagerDrawer()
+    {
+        ViewModel.SecondaryDrawerTitle = this.FindResource("ComponentLayoutsManagerDrawerTitle");
+        ViewModel.SecondaryDrawerContent = this.FindResource("ComponentLayoutsManagerDrawer");
+        ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Opened;
+    }
+
+    [RelayCommand]
+    private async Task DeleteComponentLayout(string name)
+    {
+        var path = Path.Combine(Services.ComponentsService.ComponentSettingsPath, $"{name}.json");
+        if (name == ViewModel.SettingsService.Settings.CurrentComponentConfig)
+        {
+            this.ShowToast(new ToastMessage("无法删除已加载或将要加载的组件配置。")
+            {
+                Severity = InfoBarSeverity.Warning
+            });
+            return;
+        }
+
+        var textBox = new TextBox();
+        var r = await new ContentDialog()
+        {
+            Title = "删除组件配置",
+            Content = $"您确定要删除组件配置 {name} 吗？此操作无法撤销，组件配置内的组件信息都将被删除！",
+            DefaultButton = ContentDialogButton.Primary,
+            PrimaryButtonText = "删除",
+            SecondaryButtonText = "取消"
+        }.ShowAsync();
+
+        if (r == ContentDialogResult.Primary)
+        {
+            File.Delete(path);
+        }
+
+        ViewModel.ComponentsService.RefreshConfigs();
+    }
+
+    [RelayCommand]
+    private async Task RenameComponentLayout(string name)
+    {
+        var textBox = new TextBox()
+        {
+            Text = name
+        };
+        var r = await new ContentDialog()
+        {
+            Title = "重命名组件配置方案",
+            Content = new Field()
+            {
+                Content = textBox,
+                Label = "组件配置方案名称",
+                Suffix = ".json"
+            },
+            DefaultButton = ContentDialogButton.Primary,
+            PrimaryButtonText = "重命名",
+            SecondaryButtonText = "取消"
+        }.ShowAsync();
+
+        var raw = Path.Combine(Services.ComponentsService.ComponentSettingsPath, $"{name}.json");
+        var path = Path.Combine(Services.ComponentsService.ComponentSettingsPath, $"{textBox.Text}.json");
+        if (r != ContentDialogResult.Primary || !File.Exists(raw))
+        {
+            return;
+        }
+
+        if (File.Exists(path))
+        {
+            this.ShowToast(new ToastMessage()
+            {
+                Message = "无法重命名组件配置，因为已存在一个相同名称的组件配置。",
+                Severity = InfoBarSeverity.Warning
+            });
+            return;
+        }
+
+        File.Move(raw, path);
+        if (ViewModel.SettingsService.Settings.CurrentComponentConfig == Path.GetFileNameWithoutExtension(raw))
+        {
+            ViewModel.SettingsService.Settings.CurrentComponentConfig = Path.GetFileNameWithoutExtension(path);
+        }
+
+        ViewModel.ComponentsService.RefreshConfigs();
+    }
+
+    [RelayCommand]
+    private void DuplicateComponentLayout(string name)
+    {
+        var raw = Path.Combine(Services.ComponentsService.ComponentSettingsPath, $"{name}.json");
+        var d = name + " - 副本.json";
+        var d1 = Path.Combine(Services.ComponentsService.ComponentSettingsPath, $"{d}");
+        File.Copy(raw, d1);
+        ViewModel.ComponentsService.RefreshConfigs();
     }
 }

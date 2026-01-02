@@ -520,15 +520,25 @@
                 BorderBrush="{DynamicResource CommandBarOverflowPresenterBorderBrush}"
                 BorderThickness="1">
             <StackPanel Orientation="Horizontal" Spacing="6">
-                <CheckBox Content="窗口模式" IsChecked="{Binding ViewModel.EditModeIsWindowMode}"/>
+                <ToggleButton IsChecked="{Binding !ViewModel.EditModeIsWindowMode}"
+                              Theme="{StaticResource TransparentToggleButton}">
+                    <ci:IconText Glyph="&#xE8D1;" Text="全屏"/>
+                </ToggleButton>
+                <Button Theme="{StaticResource TransparentButton}" Command="{Binding #ZoomBorder.ResetMatrix}">
+                    <ci:IconText Glyph="&#xE12F;" Text="重置视图"/>
+                </Button>
+                <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" StrokeThickness="1"
+                      HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" >
+                </Line>
                 <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}">
                     <ci:IconText Glyph="&#xE51E;" Text="外观"/>
                 </Button>
                 <Button Click="ButtonOpenComponentsLib_OnClick" Theme="{StaticResource TransparentButton}">
                     <ci:IconText Glyph="&#xE071;" Text="添加组件"/>
                 </Button>
-                <Button Theme="{StaticResource TransparentButton}" Command="{Binding #ZoomBorder.ResetMatrix}">
-                    <ci:IconText Glyph="&#xE12F;" Text="重置视图"/>
+                <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}">
+                    <ci:IconText Glyph="&#xE699;" Text="{Binding ViewModel.Settings.CurrentComponentConfig}"
+                                 MaxWidth="150"/>
                 </Button>
                 <Button Click="ButtonExitEditMode_OnClick" Classes="accent">
                     <ci:IconText Glyph="&#xE424;" Text="完成"/>

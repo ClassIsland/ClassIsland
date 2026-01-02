@@ -1295,8 +1295,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ComponentsService.CurrentComponents.Lines.Add(new MainWindowLineSettings());
     }
     
+    private void ButtonManageComponentLayouts_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.EditModeView?.OpenComponentLayoutsManagerDrawer();
+    }
     #endregion
 
 
-    
 }
