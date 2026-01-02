@@ -145,7 +145,7 @@
                 <Setter Property="Canvas.Top">
                     <Setter.Value>
                         <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeToCanvasPosConverter}">
-                            <Binding Path="$self"/>
+                            <Binding Path="StartTime" x:CompileBindings="False"/>
                             <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
                         </MultiBinding>
                     </Setter.Value>
@@ -154,8 +154,8 @@
                 <Setter Property="Height">
                     <Setter.Value>
                         <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeDeltaToCanvasPosConverter}">
-                            <Binding Path="$self" Mode="OneWay"/>
-                            <Binding Path="$self" Mode="OneWay"/>
+                            <Binding Path="StartTime" Mode="OneWay" x:CompileBindings="False"/>
+                            <Binding Path="EndTime" Mode="OneWay" x:CompileBindings="False"/>
                             <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
 
                         </MultiBinding>

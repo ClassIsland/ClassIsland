@@ -117,11 +117,11 @@
                                                             Opacity="0.25"
                                                             Background="{DynamicResource AccentFillColorDefaultBrush}">
                                                         <Border.IsVisible>
-                                                            <Binding Path="$self" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
-                                                                <Binding.ConverterParameter>
+                                                            <ReflectionBinding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                                                <ReflectionBindingExtension.ConverterParameter>
                                                                     <enums:AttachedSettingsControlState>Enabled</enums:AttachedSettingsControlState>
-                                                                </Binding.ConverterParameter>
-                                                            </Binding>
+                                                                </ReflectionBindingExtension.ConverterParameter>
+                                                            </ReflectionBinding>
                                                         </Border.IsVisible>
                                                     </Border>
                                                     <Border Grid.Column="0"
@@ -131,18 +131,18 @@
                                                           CornerRadius="4"
                                                           Classes="settings-node-state-indicator">
                                                         <Classes.Enabled>
-                                                            <Binding Path="$self" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
-                                                                <Binding.ConverterParameter>
+                                                            <ReflectionBinding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                                                <ReflectionBindingExtension.ConverterParameter>
                                                                     <enums:AttachedSettingsControlState>Enabled</enums:AttachedSettingsControlState>
-                                                                </Binding.ConverterParameter>
-                                                            </Binding>
+                                                                </ReflectionBindingExtension.ConverterParameter>
+                                                            </ReflectionBinding>
                                                         </Classes.Enabled>
                                                         <Classes.Override>
-                                                            <Binding Path="$self" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
-                                                                <Binding.ConverterParameter>
+                                                            <ReflectionBinding Path="State" Mode="OneWay" Converter="{x:Static ObjectConverters.Equal}">
+                                                                <ReflectionBindingExtension.ConverterParameter>
                                                                     <enums:AttachedSettingsControlState>Override</enums:AttachedSettingsControlState>
-                                                                </Binding.ConverterParameter>
-                                                            </Binding>
+                                                                </ReflectionBindingExtension.ConverterParameter>
+                                                            </ReflectionBinding>
                                                         </Classes.Override>
                                                         <Border.Styles>
                                                             <Style Selector="Border.settings-node-state-indicator">

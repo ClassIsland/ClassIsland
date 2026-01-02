@@ -194,11 +194,11 @@
                                                   IsHitTestVisible="False">
                                 </ContentPresenter>
                                 
-                                <Panel x:Name="ContainerIndicatorPanel">
+                                <Panel x:Name="ContainerIndicatorPanel" x:CompileBindings="False">
                                     <Panel.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                                             <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
-                                            <Binding Path="$self"/>
+                                            <Binding Path="AssociatedComponentInfo.IsComponentContainer"/>
                                             <TemplateBinding Property="IsSelected" Converter="{x:Static BoolConverters.Not}"/>
                                         </MultiBinding>
                                     </Panel.IsVisible>
