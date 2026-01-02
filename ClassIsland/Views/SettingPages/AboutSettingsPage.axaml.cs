@@ -268,7 +268,7 @@ public partial class AboutSettingsPage : SettingsPageBase
                 return;
             }
 
-            if (timesBlockClicked != 3 & textBox.Text != "我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈")
+            if (timesBlockClicked != 3 && textBox.Text != "我已知晓并同意，开发者不对以非开发用途使用此页面功能造成的任何后果负责，也不接受以非开发用途使用此页面功能产生的 Bug 的反馈")
             {
                 this.ShowWarningToast("验证结果不正确，请重新输入。");
                 return;
