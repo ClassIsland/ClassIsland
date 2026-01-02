@@ -656,9 +656,14 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         {
             MainWindow.ReleaseTopmostLock(TopmostLock);
         }
-        if (isMaskSpeechEnabled)
+        if (isMaskSpeechEnabled && !request.MaskSpeechPlayed && !_consumerCts.IsCancellationRequested)
         {
-            SpeechService.EnqueueSpeechQueue(request.MaskContent.SpeechContent);
+            request.MaskSpeechPlayed = true;
+            var speech = request.MaskContent.SpeechContent;
+            if (!string.IsNullOrWhiteSpace(speech))
+            {
+                SpeechService.EnqueueSpeechQueue(speech);
+            }
         }
         PseudoClasses.Set(":mask-anim", true);
         PseudoClasses.Set(":mask-in", true);
@@ -710,9 +715,14 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         EnsureOverlayStartTimes(request, overlay);
         OverlayContent = overlay;
-        if (isOverlaySpeechEnabled)
+        if (isOverlaySpeechEnabled && !request.OverlaySpeechPlayed && !_consumerCts.IsCancellationRequested)
         {
-            SpeechService.EnqueueSpeechQueue(overlay.SpeechContent);
+            request.OverlaySpeechPlayed = true;
+            var speech = overlay.SpeechContent;
+            if (!string.IsNullOrWhiteSpace(speech))
+            {
+                SpeechService.EnqueueSpeechQueue(speech);
+            }
         }
         PseudoClasses.Set(":mask-out", true);
         PseudoClasses.Set(":mask-in", false);
