@@ -232,8 +232,8 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         var compositor = compositionVisual.Compositor;
         var anim = compositor.CreateScalarKeyFrameAnimation();
         anim.InsertKeyFrame(0f, 0f);
-        anim.InsertKeyFrame(1f, 1f, Easing.Parse("0.25, 1, 0.5, 1"));
-        anim.Duration = TimeSpan.FromMilliseconds(250);
+        anim.InsertKeyFrame(1f, 1f, Easing.Parse(".65,0,.35,1.0"));
+        anim.Duration = TimeSpan.FromMilliseconds(300);
         anim.Target = nameof(compositionVisual.Opacity);
         compositionVisual.StartAnimation(nameof(compositionVisual.Opacity), anim);
     }

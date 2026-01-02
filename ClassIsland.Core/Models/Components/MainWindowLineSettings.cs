@@ -26,10 +26,10 @@ public partial class MainWindowLineSettings : ObservableObject, IMainWindowCusto
     [ObservableProperty] private bool _isNotificationEnabled = true;
     
     [ObservableProperty] private bool _isResourceOverridingEnabled;
-    [ObservableProperty] private double _mainWindowSecondaryFontSize;
-    [ObservableProperty] private double _mainWindowBodyFontSize;
-    [ObservableProperty] private double _mainWindowEmphasizedFontSize;
-    [ObservableProperty] private double _mainWindowLargeFontSize;
+    [ObservableProperty] private double _mainWindowSecondaryFontSize = 14;
+    [ObservableProperty] private double _mainWindowBodyFontSize = 16;
+    [ObservableProperty] private double _mainWindowEmphasizedFontSize = 18;
+    [ObservableProperty] private double _mainWindowLargeFontSize = 20;
     [ObservableProperty] private bool _isCustomForegroundColorEnabled;
     [ObservableProperty] private Color _foregroundColor = Colors.DodgerBlue;
     [ObservableProperty] private double _backgroundOpacity = 0.5;

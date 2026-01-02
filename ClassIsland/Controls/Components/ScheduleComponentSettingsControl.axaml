@@ -1,4 +1,4 @@
-﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.ScheduleComponentSettingsControl"
+<ci:ComponentBase x:Class="ClassIsland.Controls.Components.ScheduleComponentSettingsControl"
                   x:TypeArguments="componentSettings:LessonControlSettings"
                   xmlns="https://github.com/avaloniaui"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -207,6 +207,7 @@
                                 <ComboBoxItem>不显示</ComboBoxItem>
                                 <ComboBoxItem>放学后显示</ComboBoxItem>
                                 <ComboBoxItem>总是显示</ComboBoxItem>
+                                <ComboBoxItem>无展示课程时显示</ComboBoxItem>
                             </ComboBox>
                         </Grid>
                     </controls:SettingsExpander.Footer>

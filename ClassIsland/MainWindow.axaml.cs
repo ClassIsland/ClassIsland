@@ -11,6 +11,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Controls.Metadata;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data.Core;
 using Avalonia.Diagnostics;
 using Avalonia.Input;
@@ -206,7 +207,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
-
+        
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -330,6 +331,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());
+        UriNavigationService.HandleAppNavigation("edit", args => EnterEditMode());
 
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化输入");
         if (SettingsService.Settings.UseRawInput)
@@ -1096,12 +1098,23 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
     {
+        EnterEditMode();
+    }
+
+    private async void EnterEditMode()
+    {
+        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+        {
+            return;
+        }
+
         ViewModel.IsEditMode = true;
     }
 
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.IsEditMode = false;
+        ComponentsService.SaveConfig();
     }
 
     private void ButtonOpenComponentsLib_OnClick(object? sender, RoutedEventArgs e)
@@ -1226,6 +1239,67 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         return newPoint;
     }
     
+    private void ToggleButtonIsMainLine_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton button)
+        {
+            return;
+        }
+
+        foreach (var line in ComponentsService.CurrentComponents.Lines.Where(x => !Equals(button.DataContext, x)))
+        {
+            line.IsMainLine = false;
+        }
+
+        if (button.IsChecked == false)
+        {
+            var firstLine = ComponentsService.CurrentComponents.Lines.FirstOrDefault();
+            if (firstLine != null) 
+                firstLine.IsMainLine = true;
+            this.ShowToast("已将第一行设置为主要行。");
+        }
+    }
+
+    private void ToggleButtonIsNotificationEnabled_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
+    {
+        if (!ComponentsService.CurrentComponents.Lines.Any(x => x.IsNotificationEnabled))
+        {
+            this.ShowWarningToast("您已经禁用了所有主界面行的提醒显示功能。如果没有插件注册其它提醒消费者，提醒将不会显示，也不会播放提醒音效、特效和语音。");
+        }
+    }
+
+    [RelayCommand]
+    private void RemoveMainWindowLine(MainWindowLineSettings? settings)
+    {
+        if (settings == null)
+        {
+            return;
+        }
+        if (ComponentsService.CurrentComponents.Lines.Count <= 1)
+        {
+            this.ShowWarningToast("至少需要保留 1 个主界面行。");
+            return;
+        }
+
+        ComponentsService.CurrentComponents.Lines.Remove(settings);
+    }
+
+    [RelayCommand]
+    private void OpenMainWindowLineSettings(MainWindowLineSettings? settings)
+    {
+        if (settings != null) ViewModel.EditModeView?.OpenMainWindowLineSettings(settings);
+    }
+    
+    private void ButtonNewMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ComponentsService.CurrentComponents.Lines.Add(new MainWindowLineSettings());
+    }
+    
+    private void ButtonManageComponentLayouts_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.EditModeView?.OpenComponentLayoutsManagerDrawer();
+    }
     #endregion
+
 
 }

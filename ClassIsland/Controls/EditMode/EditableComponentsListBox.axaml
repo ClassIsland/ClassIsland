@@ -8,6 +8,8 @@
         xmlns:controls2="using:ClassIsland.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
+        xmlns:attributes="clr-namespace:ClassIsland.Core.Attributes;assembly=ClassIsland.Core"
         mc:Ignorable="d">
     <Design.PreviewWith>
         <controls1:EditableComponentsListBox />
@@ -85,7 +87,10 @@
                             <controls2:AdornerAttachHostControl.AdornerTemplate>
                                 <ControlTemplate>
                                     <Panel Margin="-9999 -46 -9999 46" 
-                                           d:DataContext="{d:DesignInstance components:ComponentSettings}">
+                                           d:DataContext="{d:DesignInstance components:ComponentSettings}"
+                                           x:DataType="components:ComponentSettings">
+                                        <Panel.Resources>
+                                        </Panel.Resources>
                                         <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 0"
                                                 Background="{DynamicResource CommandBarOverflowPresenterBackground}"
                                                 CornerRadius="6"
@@ -124,7 +129,35 @@
                                                 </Line>
                                                 <Button Theme="{StaticResource TransparentButton}"
                                                         Content="{ci:FluentIcon &#xEBAC;}"
-                                                        ToolTip.Tip="更多选项…"/>
+                                                        ToolTip.Tip="更多选项…">
+                                                    <Button.Flyout>
+                                                        <MenuFlyout >
+                                                            <MenuItem Header="包裹到新容器" Icon="{ci:FluentIcon &#xe27e;}"
+                                                                      ItemsSource="{Binding Data.ContainerComponents, Source={StaticResource ParentBindingProxy}}">
+                                                                <MenuItem.ItemContainerTheme>
+                                                                    <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                                        <Setter Property="Header" x:DataType="attributes:ComponentInfo" Value="{Binding Name}"/>
+                                                                        <Setter Property="Icon" x:DataType="attributes:ComponentInfo">
+                                                                            <Template>
+                                                                                <Border>
+                                                                                    <controls:IconSourceElement IconSource="{Binding IconSource}"
+                                                                                        Height="14" Width="14"
+                                                                                        TextElement.FontSize="14"
+                                                                                        Classes="repair-fontsize"/>
+                                                                                </Border>
+                                                                            </Template>
+                                                                        </Setter>
+                                                                        <Setter Property="Command" Value="{Binding Data.CreateContainerComponentCommand, Source={StaticResource ParentBindingProxy}}"/>
+                                                                        <Setter Property="CommandParameter" Value="{Binding}"/>
+                                                                    </ControlTheme>
+                                                                </MenuItem.ItemContainerTheme>
+                                                            </MenuItem>
+                                                            <MenuItem Header="创建副本" Icon="{ci:FluentIcon &#xeeb9;}"
+                                                                      CommandParameter="{Binding}"
+                                                                      Command="{Binding Data.DuplicateComponentCommand, Source={StaticResource ParentBindingProxy}}"/>
+                                                        </MenuFlyout>
+                                                    </Button.Flyout>
+                                                </Button>
                                             </StackPanel>
                                         </Border>
                                     </Panel>
@@ -155,8 +188,7 @@
                                                   HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                   CornerRadius="{TemplateBinding CornerRadius}"
                                                   Margin="0"
-                                                  IsHitTestVisible="False"
-                                                  Classes.comps-hidden="{Binding !IsVisible}">
+                                                  IsHitTestVisible="False">
                                 </ContentPresenter>
                                 
                                 <Panel x:Name="ContainerIndicatorPanel">
@@ -202,10 +234,9 @@
                                             <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
                                         </MultiBinding>
                                     </Panel.IsVisible>
-                                    <ci:TouchDragThumb HorizontalAlignment="Center"
-                                                       Width="20"
+                                    <ci:TouchDragThumb HorizontalAlignment="Stretch"
                                                        x:Name="TouchDragThumb"
-                                                       VerticalAlignment="Center"
+                                                       VerticalAlignment="Stretch"
                                                        Orientation="Vertical"
                                                        />
                                 </Panel>
@@ -213,21 +244,6 @@
                         </controls2:AdornerAttachHostControl>
                     </ControlTemplate>
                 </Setter>
-                    
-                <Style Selector="^[(ci|MainWindowStylesAssist.MainWindowInEditMode)=True] /template/ ContentPresenter#PART_ContentPresenter.comps-hidden">
-                    <Setter Property="OpacityMask">
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="10,0" 
-                                             SpreadMethod="Repeat" >
-                            <LinearGradientBrush.Transform>
-                                <RotateTransform Angle="45" />
-                            </LinearGradientBrush.Transform>
-                            <GradientStop Offset="0" Color="#afffffff" />
-                            <GradientStop Offset="0.5" Color="#afffffff" />
-                            <GradientStop Offset="0.5" Color="#50ffffff" />
-                            <GradientStop Offset="1" Color="#50ffffff" />
-                        </LinearGradientBrush>
-                    </Setter>
-                </Style>
             </ControlTheme>
         </Setter>
         <Setter Property="(Interaction.Behaviors)">
