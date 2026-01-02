@@ -38,11 +38,6 @@ public partial class GeneralSettingsPage : SettingsPageBase
         }
     }
 
-    private void ButtonSyncTimeNow_OnClick(object sender, RoutedEventArgs e)
-    {
-        _ = Task.Run(ViewModel.ExactTimeService.Sync);
-    }
-
     private void ButtonCloseMigrationTip_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.SettingsService.Settings.ShowComponentsMigrateTip = false;
@@ -65,10 +60,7 @@ public partial class GeneralSettingsPage : SettingsPageBase
     
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(ViewModel.RenderingModeSelectedIndex) or nameof(ViewModel.UseNativeTitlebar))
-        {
-            RequestRestart();
-        }
+        
     }
 
     private void GeneralSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
@@ -81,12 +73,6 @@ public partial class GeneralSettingsPage : SettingsPageBase
     {
         ViewModel.SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
-    }
-
-    private void ButtonAdjustTime_OnClick(object sender, RoutedEventArgs e)
-    {
-        var window = IAppHost.GetService<TimeAdjustmentWindow>();
-        window.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
     }
 }
 

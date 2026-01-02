@@ -53,28 +53,4 @@ public class GeneralSettingsViewModel(
             }
         }
     }
-
-    public int RenderingModeSelectedIndex
-    {
-        get => int.TryParse(GlobalStorageService.GetValue("Win32RenderingMode") ?? "", out var v1)
-            ? v1
-            : 0;
-        set
-        {
-            GlobalStorageService.SetValue("Win32RenderingMode", value.ToString());
-            OnPropertyChanged();
-        }
-    }
-    
-    public bool UseNativeTitlebar
-    {
-        get => bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var v)
-            ? v
-            : IThemeService.UseNativeTitlebar;
-        set
-        {
-            GlobalStorageService.SetValue("UseNativeTitlebar", value.ToString());
-            OnPropertyChanged();
-        } 
-    }
 }
