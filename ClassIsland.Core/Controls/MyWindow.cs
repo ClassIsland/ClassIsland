@@ -105,7 +105,7 @@ public class MyWindow : AppWindow
     
     private void OnPointerUpdated(object? sender, PointerEventArgs e)
     {
-        PointerStateAssist.SetIsTouchMode(this, _suppressTouchMode | e.Pointer.Type == PointerType.Touch);
+        PointerStateAssist.SetIsTouchMode(this, _suppressTouchMode || e.Pointer.Type == PointerType.Touch);
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)

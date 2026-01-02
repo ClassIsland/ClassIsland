@@ -1299,7 +1299,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         ViewModel.EditModeView?.OpenComponentLayoutsManagerDrawer();
     }
+    
+    private void EditableComponentsListBox_OnRequestAddComponent(object? sender, RequestAddComponentEventArgs e)
+    {
+        ViewModel.EditModeView?.OpenComponentsLibDrawer(e.ComponentList);
+    }
     #endregion
-
-
+    
 }

@@ -22,10 +22,7 @@
         xmlns:enums="clr-namespace:ClassIsland.Shared.Enums;assembly=ClassIsland.Shared"
         xmlns:editMode="clr-namespace:ClassIsland.Controls.EditMode"
         xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         d:DataContext="{d:DesignInstance local:MainWindow}"
-        FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
         ShowInTaskbar="{Binding ViewModel.IsWindowMode}"
         d:Width="600"
         SizeChanged="MainWindow_OnSizeChanged"
@@ -160,7 +157,9 @@
                     MinZoomX="0.1" MinZoomY="0.1"
                     Background="Transparent" 
                     VerticalAlignment="Stretch" 
-                    HorizontalAlignment="Stretch">
+                    HorizontalAlignment="Stretch"
+                    TextElement.FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
+                    TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}">
             <Canvas x:Name="LayoutContainerGrid">
                 <Panel x:Name="WorkingRoot"
                        Canvas.Left="{Binding ViewModel.ActualClientBound.X}"
@@ -269,7 +268,8 @@
                                 <Border.Resources>
 
                                 </Border.Resources>
-                                <Grid editMode:EditableComponentsListBox.RequestOpenChildComponents="EditableComponentsListBox_OnRequestOpenChildComponents">
+                                <Grid editMode:EditableComponentsListBox.RequestOpenChildComponents="EditableComponentsListBox_OnRequestOpenChildComponents"
+                                      editMode:EditableComponentsListBox.RequestAddComponent="EditableComponentsListBox_OnRequestAddComponent">
                                     <StackPanel>
                                         <ItemsControl Grid.Column="0"
                                                       x:Name="RootMainWindowLinesItemsControl"
