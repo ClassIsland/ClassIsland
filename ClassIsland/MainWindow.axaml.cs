@@ -675,6 +675,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private async void UpdateTheme()
     {
         HighFreqTopmostRecheckTimer.IsEnabled = ViewModel.Settings.WindowTopmostRecheckMode == 3;
+        if (ViewModel.Settings.IsMouseClickingEnabled)
+        {
+            ViewModel.Settings.IsMouseClickingEnabled = false;
+            await PlatformServices.DesktopToastService.ShowToastAsync("已禁用不支持的设置", "【启用鼠标点击】设置项目不再受到支持并已自动禁用，感谢您的支持与理解。");
+        }
         
         UpdateWindowPos();
         UpdateWindowFeatures();
@@ -722,14 +727,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void UpdateWindowFeatures()
     {
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, !ViewModel.IsWindowMode);
-        if (!ViewModel.Settings.IsMouseClickingEnabled && !ViewModel.IsEditMode)
-        {
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);
-        }
-        else
-        {
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, false);
-        }
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, !ViewModel.IsEditMode);
     }
 
     private void UpdateWindowLayer()
