@@ -141,8 +141,9 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     private void BuildNavigationMenuItems()
     {
         NavigationView.MenuItems.Clear();
+        ViewModel.FlattenNavigationItemsCache.Clear();
 
-        var infos = SettingsWindowRegistryService.Registered
+        var infosBase = SettingsWindowRegistryService.Registered
             .Where(x => !x.HideDefault)
             .Where(x => !(ManagementService.Policy.DisableSettingsEditing && x.Category == SettingsPageCategory.Internal))
             .Where(x => !(ManagementService.Policy.DisableSettingsEditing && x.Category == SettingsPageCategory.External))
@@ -150,16 +151,68 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             .Where(x => !(ManagementService.Policy.DisableDebugMenu && x.Category == SettingsPageCategory.Debug))
             .Where(x => !(!SettingsService.Settings.IsDebugOptionsEnabled && x.Category == SettingsPageCategory.Debug))
             .OrderBy(x => x.Category)
+            .ToList();
+        var infos = infosBase
             .GroupBy(x => x.Category)
             .ToList();
+        var groups = infosBase
+            .GroupBy(x => x.GroupId)
+            .ToList();
+        var addedGroups = new HashSet<string>();
         foreach (var info in infos)
         {
-            NavigationView.MenuItems.AddRange(info.Select(x => new NavigationViewItem()
+            foreach (var i in info)
             {
-                IconSource = new FluentIconSource(x.UnSelectedIconGlyph),
-                Content = x.Name,
-                Tag = x
-            }));
+                if (i.GroupId != null && (addedGroups.Contains(i.GroupId)))
+                {
+                    continue;
+                }
+
+                NavigationViewItem item;
+
+                if (i.GroupId != null && SettingsWindowRegistryService.Groups.TryGetValue(i.GroupId, out var group))
+                {
+                    
+                    item = new NavigationViewItem()
+                    {
+                        IconSource = group.IconSource,
+                        Content = group.Name,
+                        Tag = i,
+                        // IsExpanded = true
+                    };
+
+                    if (groups.FirstOrDefault(x => x.Key == i.GroupId) is {} groupItems)
+                    {
+                        List<NavigationViewItem> children =
+                        [
+                            ..groupItems.Select(x => new NavigationViewItem()
+                            {
+                                IconSource = new FluentIconSource(x.UnSelectedIconGlyph),
+                                Content = x.Name,
+                                Tag = x
+                            })
+                        ];
+                        ViewModel.FlattenNavigationItemsCache.AddRange(children);
+                        item.MenuItems.AddRange(children);
+                    }
+
+                    addedGroups.Add(i.GroupId);
+                }
+                else
+                {
+                    item = new NavigationViewItem()
+                    {
+                        IconSource = new FluentIconSource(i.UnSelectedIconGlyph),
+                        Content = i.Name,
+                        Tag = i
+                    };
+                    ViewModel.FlattenNavigationItemsCache.Add(item);
+                }
+                
+                NavigationView.MenuItems.Add(item);
+                
+            }
+            
             if (info == infos.Last())
             {
                 continue;
@@ -263,9 +316,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             var info = e.Content is SettingsPageBase spb
                 ? SettingsWindowRegistryService.Registered.FirstOrDefault(x => Equals(x.Id, spb.Tag))
                 : null;
-            NavigationView.SelectedItem = NavigationView.MenuItems
-                .OfType<NavigationViewItem>()
-                .FirstOrDefault(x => Equals(x.Tag, info));
+            if (info != null)
+            {
+                SelectNavigationItem(info);
+            }
             ViewModel.SelectedPageInfo = info;
         }
         ViewModel.IsNavigating = false;
@@ -309,9 +363,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         ViewModel.IsNavigating = true;
         try
         {
-            NavigationView.SelectedItem = NavigationView.MenuItems
-                .OfType<NavigationViewItem>()
-                .FirstOrDefault(x => Equals(x.Tag, info));
+            SelectNavigationItem(info);
 
             ViewModel.SelectedPageInfo = info;
 
@@ -785,5 +837,40 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     private void BackButton_OnClick(object? sender, RoutedEventArgs e)
     {
         NavigationFrame.GoBack();
+    }
+
+    private void SelectNavigationItem(SettingsPageInfo info)
+    {
+        var item = ViewModel.FlattenNavigationItemsCache
+            .FirstOrDefault(x => Equals(x.Tag, info));
+        if (NavigationView.MenuItems.Contains(item))
+        {
+            NavigationView.SelectedItem = item;
+        } else if (NavigationView.MenuItems
+                   .OfType<NavigationViewItem>()
+                   .FirstOrDefault(x => x.MenuItems.Contains(item))
+                   is {} parent)
+        {
+            parent.IsChildSelected = true;
+            var isFirstNavigated = _isFirstNavigated;
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (!isFirstNavigated)
+                {
+                    parent.IsExpanded = true;
+                }
+                NavigationView.SelectedItem = item;
+            });
+        }
+        
+        foreach (var i in ViewModel.FlattenNavigationItemsCache.Where(x => !Equals(x.Tag, info)))
+        {
+            i.IsSelected = false;
+        }
+    }
+
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {   
+        
     }
 }

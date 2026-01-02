@@ -14,6 +14,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// PrivacySettingsPage.xaml 的交互逻辑
 /// </summary>
+[Group("classisland.general")]
 [SettingsPageInfo("privacy", "隐私", "\uef65", "\uef64", SettingsPageCategory.Internal)]
 public partial class PrivacySettingsPage : SettingsPageBase
 {

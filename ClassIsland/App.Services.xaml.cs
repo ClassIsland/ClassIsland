@@ -138,6 +138,9 @@ public partial class App
         services.AddTransient<DataTransferWindow>();
         services.AddTransient<ScreenshotHelperWindow>();
         services.AddSingleton<EditModeView>();
+        // 设置页面分组
+        services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
+        services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
         // 设置页面
         services.AddSettingsPage<GeneralSettingsPage>();
         services.AddSettingsPage<ComponentsSettingsPage>();

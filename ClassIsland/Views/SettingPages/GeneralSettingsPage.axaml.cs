@@ -16,6 +16,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// GeneralSettingsPage.xaml 的交互逻辑
 /// </summary>
+[Group("classisland.general")]
 [SettingsPageInfo("general", "基本", SettingsPageCategory.Internal)]
 public partial class GeneralSettingsPage : SettingsPageBase
 {

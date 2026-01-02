@@ -15,6 +15,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// AppearanceSettingsPage.xaml 的交互逻辑
 /// </summary>
+[Group("classisland.mainwindow")]
 [SettingsPageInfo("appearance", "外观", "\ue51e", "\ue51d", SettingsPageCategory.Internal)]
 public partial class AppearanceSettingsPage : SettingsPageBase
 {
