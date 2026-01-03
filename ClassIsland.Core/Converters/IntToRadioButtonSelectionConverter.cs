@@ -13,7 +13,7 @@ public class IntToRadioButtonSelectionConverter : IValueConverter
         return r.ToString() == p;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if ((bool)value)
         {
