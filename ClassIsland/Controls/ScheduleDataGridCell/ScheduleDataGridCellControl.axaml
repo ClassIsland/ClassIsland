@@ -3,7 +3,8 @@
         xmlns:controls="using:ClassIsland.Controls.ScheduleDataGridCell"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared">
+        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+        x:DataType="controls:ScheduleDataGridCellControl">
     <Styles.Resources>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
                                               x:Key="SubjectIdToSubjectConverter"/>
@@ -27,7 +28,7 @@
                                          Mode="OneWay" />
                             </MultiBinding>
                         </Grid.DataContext>
-                        <TextBlock Text="{Binding Name}" FontSize="13"
+                        <TextBlock Text="{ReflectionBinding Name}" FontSize="13"
                                    VerticalAlignment="Center"/>
                     </Grid>
                     <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentFillColorDefaultBrush}"

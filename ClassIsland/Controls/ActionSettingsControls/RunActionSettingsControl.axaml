@@ -6,7 +6,8 @@
                               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                               xmlns:ci="http://classisland.tech/schemas/xaml/core"
                               xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
-                              xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions">
+                              xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions"
+                              x:DataType="local:RunActionSettingsControl">
     <Panel>
         <Grid ColumnDefinitions="Auto * Auto"
               RowDefinitions="Auto Auto">

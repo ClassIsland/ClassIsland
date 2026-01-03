@@ -26,7 +26,8 @@
         MinWidth="750"
         Width="1100" Height="600"
         Closing="Window_OnClosing"
-        Loaded="Control_OnLoaded">
+        Loaded="Control_OnLoaded"
+        x:DataType="views:ProfileSettingsWindow">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
                               Executed="CommandBindingRemoveTimePoint_OnExecuted"/>
@@ -351,7 +352,7 @@
                         <Border DataContext="{Binding ViewModel.ProfileService.Profile.TempClassPlanGroupId, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="当前：" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"
+                                <TextBlock Text="{ReflectionBinding Name}" TextTrimming="CharacterEllipsis"
                                            VerticalAlignment="Center" />
                                 <Button Theme="{StaticResource TransparentButton}"
                                         VerticalAlignment="Center"
@@ -588,7 +589,7 @@
                                                         
                                                         <TextBlock VerticalAlignment="Center"
                                                                    Margin="4 0 0 0"
-                                                                   Text="{Binding Name}"/>
+                                                                   Text="{ReflectionBinding Name}"/>
                                                     </StackPanel>
                                                 </Border>
                                                 

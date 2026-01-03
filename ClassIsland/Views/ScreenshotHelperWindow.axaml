@@ -7,7 +7,8 @@
           mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
           x:Class="ClassIsland.Views.ScreenshotHelperWindow"
           Title="截图"
-          d:DataContext="{d:DesignInstance views:ScreenshotHelperWindow}">
+          d:DataContext="{d:DesignInstance views:ScreenshotHelperWindow}"
+          x:DataType="views:ScreenshotHelperWindow">
     <StackPanel Spacing="4">
         <ci:Field Label="窗口">
             <ComboBox ItemsSource="{Binding ViewModel.Windows}"

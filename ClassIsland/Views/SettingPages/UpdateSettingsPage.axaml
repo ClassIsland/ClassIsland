@@ -14,7 +14,8 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.SettingPages.UpdateSettingsPage"
              d:DataContext="{d:DesignInstance settingPages:UpdateSettingsPage}"
-             Loaded="Control_OnLoaded" Unloaded="Control_OnUnloaded">
+             Loaded="Control_OnLoaded" Unloaded="Control_OnUnloaded"
+             x:DataType="settingPages:UpdateSettingsPage">
     <ci:SettingsPageBase.Resources>
         <converters:SizeLongToStringConverter x:Key="SizeLongToStringConverter" />
         <Grid x:Key="DownloadInfoDrawer" Margin="16" Width="450" RowDefinitions="Auto,*">

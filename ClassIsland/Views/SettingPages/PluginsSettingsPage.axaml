@@ -24,7 +24,8 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Loaded="PluginsSettingsPage_OnLoaded"
       Unloaded="PluginsSettingsPage_OnUnloaded"
-      d:DataContext="{d:DesignInstance local:PluginsSettingsPage}">
+      d:DataContext="{d:DesignInstance local:PluginsSettingsPage}"
+      x:DataType="local:PluginsSettingsPage">
 
     <ci:SettingsPageBase.Resources>
         <DataTemplate DataType="{x:Type plugin:PluginInfo}" x:Key="PluginDetailDataTemplate">

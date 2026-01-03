@@ -15,7 +15,8 @@
         Title="日志" Height="600" Width="1200"
         EnableMicaWindow="True"
         d:DataContext="{d:DesignInstance local:AppLogsWindow}"
-        Closing="AppLogsWindow_OnClosing">
+        Closing="AppLogsWindow_OnClosing"
+        x:DataType="local:AppLogsWindow">
     <Grid RowDefinitions="Auto,*,Auto">
         <Grid Grid.Row="0">
             <ListBox HorizontalAlignment="Left"

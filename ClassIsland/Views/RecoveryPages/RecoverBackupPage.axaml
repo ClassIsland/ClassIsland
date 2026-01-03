@@ -7,7 +7,8 @@
       xmlns:ci="http://classisland.tech/schemas/xaml/core"
       mc:Ignorable="d" 
       Loaded="RecoverBackupPage_OnLoaded"
-      d:DataContext="{d:DesignInstance local:RecoverBackupPage}">
+      d:DataContext="{d:DesignInstance local:RecoverBackupPage}"
+      x:DataType="local:RecoverBackupPage">
     <Control.Resources>
         <ci:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
     </Control.Resources>

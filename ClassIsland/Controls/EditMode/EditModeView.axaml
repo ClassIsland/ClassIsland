@@ -14,7 +14,8 @@
              x:Class="ClassIsland.Controls.EditMode.EditModeView"
              d:DataContext="{d:DesignInstance editMode:EditModeView}"
              Loaded="Control_OnLoaded"
-             Unloaded="Control_OnUnloaded">
+             Unloaded="Control_OnUnloaded"
+             x:DataType="editMode:EditModeView">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static ci:SettingsPageBase.OpenDrawerCommand}" Executed="CommandBindingOpenDrawer_OnExecuted"/>
         <input:CommandBinding Command="{x:Static ci:SettingsPageBase.CloseDrawerCommand}" Executed="CommandBindingCloseDrawer_OnExecuted"/>

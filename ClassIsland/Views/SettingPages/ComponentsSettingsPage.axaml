@@ -12,7 +12,8 @@
                   xmlns:models="clr-namespace:ClassIsland.Models"
                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                   x:Class="ClassIsland.Views.SettingPages.ComponentsSettingsPage"
-                  d:DataContext="{d:DesignInstance settingPages:ComponentsSettingsPage}">
+                  d:DataContext="{d:DesignInstance settingPages:ComponentsSettingsPage}"
+                  x:DataType="settingPages:ComponentsSettingsPage">
     <ci:SettingsPageBase.Styles>
         <Style Selector="ListBox.drag-source ListBoxItem">
             <Setter Property="Interaction.Behaviors">
@@ -52,7 +53,7 @@
                                 <Setter Property="Icon">
                                     <Template>
                                         <Border>
-                                            <controls:IconSourceElement IconSource="{Binding IconSource}"
+                                            <controls:IconSourceElement IconSource="{ReflectionBinding IconSource}"
                                                                         Height="14" Width="14"
                                                                         TextElement.FontSize="14"
                                                                         Classes="repair-fontsize"/>

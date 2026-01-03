@@ -58,7 +58,7 @@
         <Style.Resources>
             <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
         </Style.Resources>
-        <Setter Property="Background" Value="{Binding $self.(ci:MainWindowStylesAssist.BackgroundColor), Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+        <Setter Property="Background" Value="{ReflectionBinding $self.(ci:MainWindowStylesAssist.BackgroundColor), Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
     </Style>
     
     <Style Selector="controls|MainWindowLine">
@@ -226,7 +226,7 @@
             <Setter Property="ContentTemplate">
                 <DataTemplate>
                     <Panel>
-                        <ContentPresenter Content="{Binding}"/>
+                        <ContentPresenter Content="{ReflectionBinding}"/>
                     </Panel>
                 </DataTemplate>
             </Setter>
@@ -239,7 +239,7 @@
                         <Border ClipToBounds="True"
                                 MinWidth="40"
                                 CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}">
-                            <ContentPresenter Content="{Binding}"
+                            <ContentPresenter Content="{ReflectionBinding}"
                                               Margin="16 0" />
                         </Border>
                     </Panel>

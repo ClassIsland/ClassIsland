@@ -7,7 +7,8 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Views.SettingPages.ErrorSettingsPage"
              d:DataContext="{d:DesignInstance settingPages:ErrorSettingsPage}"
-             Loaded="Control_OnLoaded">
+             Loaded="Control_OnLoaded"
+             x:DataType="settingPages:ErrorSettingsPage">
     <ScrollViewer>
         <StackPanel VerticalAlignment="Center"
                     HorizontalAlignment="Center"

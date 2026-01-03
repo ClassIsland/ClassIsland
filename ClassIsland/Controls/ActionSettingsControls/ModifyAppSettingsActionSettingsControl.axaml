@@ -7,7 +7,8 @@
                               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                               xmlns:ci="http://classisland.tech/schemas/xaml/core"
                               xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
-                              xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions">
+                              xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions"
+                              x:DataType="local:ModifyAppSettingsActionSettingsControl">
     <ci:ActionSettingsControlBase.Resources>
         <Panel x:Key="Drawer"
                d:DataContext="{d:DesignInstance local:ModifyAppSettingsActionSettingsControl}"
@@ -29,9 +30,9 @@
                 <ListBox Grid.Row="2"
                          Margin="0 8 0 0"
                          AutoScrollToSelectedItem="True"
-                         ItemsSource="{Binding ViewModel.SettingsSearchResults}"
-                         SelectedValue="{Binding Settings.Name, Converter={StaticResource PreventNullConverter}}"
-                         SelectedValueBinding="{Binding PropertyName}"
+                         ItemsSource="{ReflectionBinding ViewModel.SettingsSearchResults}"
+                         SelectedValue="{ReflectionBinding Settings.Name, Converter={StaticResource PreventNullConverter}}"
+                         SelectedValueBinding="{ReflectionBinding PropertyName}"
                          SelectionMode="Single">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -43,11 +44,11 @@
                             <DockPanel LastChildFill="False">
                                 <ci:IconText Height="23"
                                              VerticalContentAlignment="Center"
-                                             Glyph="{Binding Glyph}"
-                                             Text="{Binding Name}" />
+                                             Glyph="{ReflectionBinding Glyph}"
+                                             Text="{ReflectionBinding Name}" />
                                 <TextBlock Margin="4 0 0 0"
                                            VerticalAlignment="Center"
-                                           Text="{Binding PreviewValue, Mode=OneTime}"
+                                           Text="{ReflectionBinding PreviewValue, Mode=OneTime}"
                                            DockPanel.Dock="Right"
                                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                                            MaxLines="3">
@@ -56,7 +57,7 @@
                                             <Setter Property="ToolTip.Tip">
                                                 <Setter.Value>
                                                     <Template>
-                                                        <TextBlock Text="{Binding PreviewValue, Mode=OneTime}"
+                                                        <TextBlock Text="{Binding $self, Mode=OneTime}"
                                                                    MaxLines="50" />
                                                     </Template>
                                                 </Setter.Value>
@@ -72,7 +73,7 @@
                             Margin="0 50"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            IsVisible="{Binding !!!ViewModel.SettingsSearchResults.Count}">
+                            IsVisible="{ReflectionBinding !!!ViewModel.SettingsSearchResults.Count}">
                     <ci:Empty Text="找不到应用设置。" />
                 </StackPanel>
             </Grid>

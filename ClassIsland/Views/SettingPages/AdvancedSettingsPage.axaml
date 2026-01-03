@@ -20,7 +20,7 @@
                                         Description="启用后，ClassIsland 将自动禁用导致应用崩溃的插件，以避免异常插件进一步影响后续使用。"
                                         >
                 <controls:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AutoDisableCorruptPlugins, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{ReflectionBinding ViewModel.SettingsService.Settings.AutoDisableCorruptPlugins, Mode=TwoWay}"/>
                 </controls:SettingsExpander.Footer>
             </controls:SettingsExpander>
             
@@ -35,7 +35,7 @@
                     </OnPlatform>
                 </controls:SettingsExpander.IsVisible>
                 <controls:SettingsExpander.Footer>
-                    <ComboBox SelectedIndex="{Binding ViewModel.RenderingModeSelectedIndex}">
+                    <ComboBox SelectedIndex="{ReflectionBinding ViewModel.RenderingModeSelectedIndex}">
                         <ComboBoxItem>默认</ComboBoxItem>
                         <ComboBoxItem>软件（不推荐）</ComboBoxItem>
                         <ComboBoxItem>AngleEgl</ComboBoxItem>
@@ -54,7 +54,7 @@
                     </OnPlatform>
                 </controls:SettingsExpander.IsVisible>
                 <controls:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding ViewModel.UseNativeTitlebar, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{ReflectionBinding ViewModel.UseNativeTitlebar, Mode=TwoWay}"/>
                 </controls:SettingsExpander.Footer>
             </controls:SettingsExpander>
         </StackPanel>

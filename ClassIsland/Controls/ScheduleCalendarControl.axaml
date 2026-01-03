@@ -5,7 +5,8 @@
                     xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
                     xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
-                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    x:DataType="controls:ScheduleCalendarControl">
     <Design.PreviewWith>
         <Border Padding="8" Width="600" Height="600">
             <controls:ScheduleCalendarControl/>
