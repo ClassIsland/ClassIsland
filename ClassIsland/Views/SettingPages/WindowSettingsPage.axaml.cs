@@ -20,6 +20,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// WindowSettingsPage.xaml 的交互逻辑
 /// </summary>
+[Group("classisland.mainwindow")]
 [SettingsPageInfo("window", "窗口", "\uf485", "\uf484", SettingsPageCategory.Internal)]
 public partial class WindowSettingsPage : SettingsPageBase
 {

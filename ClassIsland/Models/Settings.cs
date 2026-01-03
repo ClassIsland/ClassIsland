@@ -1730,6 +1730,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _debugPhainonRootUrlOverride = "";
     private bool _isPluginsAutoUpdateEnabled = true;
     private bool _isPluginsUpdateNotificationEnabled = true;
+    private int _windowTopmostRecheckMode = 0;
+    private bool _isScreenRecordingModeEnabled = false;
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -1779,6 +1781,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
                 throw new ArgumentException("选择不能为空。");
             }
             _windowDockingMonitorIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int WindowTopmostRecheckMode
+    {
+        get => _windowTopmostRecheckMode;
+        set
+        {
+            if (value == _windowTopmostRecheckMode) return;
+            _windowTopmostRecheckMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsScreenRecordingModeEnabled
+    {
+        get => _isScreenRecordingModeEnabled;
+        set
+        {
+            if (value == _isScreenRecordingModeEnabled) return;
+            _isScreenRecordingModeEnabled = value;
             OnPropertyChanged();
         }
     }

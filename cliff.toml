@@ -6,7 +6,7 @@ body = """
 {%- endmacro -%}
 
 {% macro print_commit(commit) -%}
-    - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
+    - {% if commit.scope %}【{{ commit.scope }}】{% endif %}\
         {% if commit.breaking %}[**破坏性更改**] {% endif %}\
         {{ commit.message | upper_first }}\
 {% endmacro -%}

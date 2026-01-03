@@ -106,6 +106,8 @@ public partial class App
         services.AddTransient<EditModeViewModel>();
         // ViewModels/SettingsPages
         services.AddTransient<GeneralSettingsViewModel>();
+        services.AddTransient<ClockSettingsViewModel>();
+        services.AddTransient<AdvancedSettingsViewModel>();
         services.AddTransient<AboutSettingsViewModel>();
         services.AddTransient<AppearanceSettingsViewModel>();
         services.AddTransient<ComponentsSettingsViewModel>();
@@ -138,8 +140,15 @@ public partial class App
         services.AddTransient<DataTransferWindow>();
         services.AddTransient<ScreenshotHelperWindow>();
         services.AddSingleton<EditModeView>();
+        // 设置页面分组
+        services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
+        services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
         // 设置页面
         services.AddSettingsPage<GeneralSettingsPage>();
+        services.AddSettingsPage<ClockSettingsPage>();
+        services.AddSettingsPage<StorageSettingsPage>();
+        services.AddSettingsPage<PrivacySettingsPage>();
+        services.AddSettingsPage<AdvancedSettingsPage>();
         services.AddSettingsPage<ComponentsSettingsPage>();
         services.AddSettingsPage<AppearanceSettingsPage>();
         services.AddSettingsPage<NotificationSettingsPage>();
@@ -150,8 +159,6 @@ public partial class App
         {
             services.AddSettingsPage<UpdateSettingsPage>();
         }
-        services.AddSettingsPage<StorageSettingsPage>();
-        services.AddSettingsPage<PrivacySettingsPage>();
         services.AddSettingsPage<PluginsSettingsPage>();
         services.AddSettingsPage<ThemesSettingsPage>();
         services.AddSettingsPage<TestSettingsPage>();

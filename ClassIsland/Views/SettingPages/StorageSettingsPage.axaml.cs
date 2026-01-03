@@ -20,6 +20,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// StorageSettingsPage.xaml 的交互逻辑
 /// </summary>
+[Group("classisland.general")]
 [SettingsPageInfo("storage", "存储", "\ue6b7", "\ue6b6", SettingsPageCategory.Internal)]
 public partial class StorageSettingsPage : SettingsPageBase
 {

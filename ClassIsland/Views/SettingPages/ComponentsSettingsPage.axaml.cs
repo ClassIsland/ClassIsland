@@ -33,6 +33,7 @@ using ReactiveUI;
 
 namespace ClassIsland.Views.SettingPages;
 
+[Group("classisland.mainwindow")]
 [SettingsPageInfo("components", "组件", "\ue06f", "\ue06f", SettingsPageCategory.Internal)]
 public partial class ComponentsSettingsPage : SettingsPageBase
 {

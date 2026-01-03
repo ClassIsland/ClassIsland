@@ -1,0 +1,95 @@
+<ci:SettingsPageBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Views.SettingPages.ClockSettingsPage"
+             Loaded="Control_OnLoaded"
+             Unloaded="Control_OnUnloaded"
+             d:DataContext="{d:DesignInstance local:ClockSettingsPage}">
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro">
+            <StackPanel>
+                <TextBlock Text="{Binding ViewModel.CurrentTime, StringFormat=HH:mm:ss}"
+                           FontSize="36" FontWeight="Medium"/>
+                <TextBlock Text="{Binding ViewModel.CurrentTime, StringFormat={}{0:D}}"
+                           Classes="l-instructive"/>
+            </StackPanel>
+            <Separator Margin="0 12 0 4" />
+            <ci:IconText Glyph="&#xE4C4;" Text="时钟" Margin="0 0 0 4" />
+            <!-- 使用精确时间 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE4C8;}" 
+                                        Header="使用精确时间"
+                                        Description="启用后，应用将使用从指定服务器同步的精确时间，而不是使用系统时间。"
+                                        IsExpanded="{Binding ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=OneWay}">
+                <controls:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+                <controls:SettingsExpanderItem Content="时间服务器">
+                    <controls:SettingsExpanderItem.Footer>
+                        <TextBox VerticalAlignment="Stretch"
+                              Text="{Binding ViewModel.SettingsService.Settings.ExactTimeServer}"
+                              HorizontalContentAlignment="Left"
+                              
+                              Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                        </TextBox>
+                    </controls:SettingsExpanderItem.Footer>
+                </controls:SettingsExpanderItem>
+                <controls:SettingsExpanderItem>
+                    <controls:SettingsExpanderItem.Footer>
+                        <Button Margin="0 6 0 0" 
+                                Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                                HorizontalAlignment="Left"
+                                Click="ButtonSyncTimeNow_OnClick">
+                            <ci:IconText Glyph="&#xE0B5;" Text="立即同步"/>
+                        </Button>
+                    </controls:SettingsExpanderItem.Footer>
+                    <TextBlock Margin="0 6 0 0" Text="{Binding ViewModel.ExactTimeService.SyncStatusMessage}"
+                               TextWrapping="Wrap"/>
+                </controls:SettingsExpanderItem>
+            </controls:SettingsExpander>
+            
+            <!-- 时间偏移 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE4C4;}" 
+                                        Header="时间偏移"
+                                        Description="设定课程时间与实际时间的偏移值。增大偏移以抵消铃声提前，减小偏移以抵消铃声滞后。"
+                                        IsExpanded="True">
+                <controls:SettingsExpander.Footer>
+                    <ci:Field Suffix="秒">
+                        <controls:NumberBox VerticalAlignment="Center"
+                                             MinWidth="147"
+                                             SpinButtonPlacementMode="Inline"
+                                             Value="{Binding ViewModel.SettingsService.Settings.TimeOffsetSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
+                    </ci:Field>
+                </controls:SettingsExpander.Footer>
+                <controls:SettingsExpanderItem Content="自动时间偏移"
+                                                Description="若启用，每天自动以设定的增量值调整时间偏移量。"
+                                                IconSource="{ci:FluentIconSource &#xE4D2;}">
+
+                    <controls:SettingsExpanderItem.Footer>
+                        <DockPanel>
+                            <ToggleSwitch DockPanel.Dock="Right"
+                                          Margin="8 -8 0 0"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"/>
+                            <ci:Field Suffix="秒" VerticalAlignment="Center">
+                                <controls:NumberBox
+                                    MinWidth="147"
+                                    SpinButtonPlacementMode="Inline"
+                                    IsEnabled="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"
+                                    Value="{Binding ViewModel.SettingsService.Settings.TimeAutoAdjustSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
+                            </ci:Field>
+                        </DockPanel>
+                    </controls:SettingsExpanderItem.Footer>
+                </controls:SettingsExpanderItem>
+                <controls:SettingsExpanderItem Content="对齐铃声"
+                                                IsClickEnabled="True"
+                                                Click="ButtonAdjustTime_OnClick"/>
+            </controls:SettingsExpander>
+            
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>
