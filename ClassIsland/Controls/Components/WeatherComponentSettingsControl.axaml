@@ -13,7 +13,7 @@
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
-        <StackPanel Classes="settings-container animated-intro" Margin="0">
+        <StackPanel Classes="component-settings-container animated-intro" Margin="0">
                 <controls1:InfoBar Message="本页面仅包含组件设置，要调整显示天气的城市，请转到【天气】选项卡"
                                    IsOpen="True" IsClosable="False"/>
                 
