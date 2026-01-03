@@ -243,6 +243,15 @@
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsIgnoreWorkAreaEnabled, Mode=TwoWay}"/>
                 </controls1:SettingsExpander.Footer>
             </controls1:SettingsExpander>
+            
+            <!-- 录制模式 -->
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF405;}"
+                                        Header="录制模式"
+                                        Description="启用后，ClassIsland 将调整窗口属性以便被录屏软件录制。这会导致主界面窗口显示在任务栏中且主界面窗口只会在一个虚拟桌面上显示，如您没有录制 ClassIsland 窗口的需求，请勿开启此选项。">
+                <controls1:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsScreenRecordingModeEnabled, Mode=TwoWay}"/>
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
 
             <!-- 指针穿透 --><!--
             <ci:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
