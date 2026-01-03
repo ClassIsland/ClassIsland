@@ -35,6 +35,7 @@ using ClassIsland.Helpers;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
+using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Interfaces;
@@ -124,6 +125,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private double _latestDpiX = 1.0;
     private double _latestDpiY = 1.0;
+
+    private DispatcherTimer HighFreqTopmostRecheckTimer { get; } = new()
+    {
+        Interval = TimeSpan.FromMilliseconds(1)
+    };
 
     private DispatcherTimer TouchInFadingTimer { get; set; } = new();
 
@@ -222,8 +228,28 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
         IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
         TaskBarIconService.MoreOptionsMenu = MoreOptionsMenu;
+        WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
+        HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
         PointerStateAssist.SetIsTouchMode(this, true);  // DEBUG
+    }
+
+    private void HighFreqTopmostRecheckTimerOnTick(object? sender, EventArgs e)
+    {
+        if (ViewModel.Settings.WindowTopmostRecheckMode == 3)
+        {
+            ReCheckTopmostState();
+            SetBottom();
+        }
+    }
+
+    private void WindowRuleServiceOnForegroundWindowChanged(object? sender, ForegroundWindowChangedEventArgs e)
+    {
+        if (ViewModel.Settings.WindowTopmostRecheckMode == 1)
+        {
+            ReCheckTopmostState();
+            SetBottom();
+        }
     }
 
     private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
@@ -249,6 +275,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
+        if (ViewModel.Settings.WindowTopmostRecheckMode == 2)
+        {
+            ReCheckTopmostState();
+            SetBottom();
+        }
     }
 
     private void LessonsServiceOnPreMainTimerTicked(object? sender, EventArgs e)
@@ -477,7 +508,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             var pos = Marshal.PtrToStructure<NativeWindowHelper.WINDOWPOS>(lParam);
             Logger.LogTrace("WM_WINDOWPOSCHANGED {}", pos.flags);
-            if ((pos.flags & NativeWindowHelper.SWP_NOZORDER) == 0) // SWP_NOZORDER
+            if ((pos.flags & NativeWindowHelper.SWP_NOZORDER) == 0 && ViewModel.Settings.WindowTopmostRecheckMode == 0) // SWP_NOZORDER
             {
                 Logger.LogTrace("Z order changed");
                 if (pos.hwndInsertAfter != NativeWindowHelper.HWND_TOPMOST)
@@ -643,6 +674,13 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void UpdateTheme()
     {
+        HighFreqTopmostRecheckTimer.IsEnabled = ViewModel.Settings.WindowTopmostRecheckMode == 3;
+        if (ViewModel.Settings.IsMouseClickingEnabled)
+        {
+            ViewModel.Settings.IsMouseClickingEnabled = false;
+            await PlatformServices.DesktopToastService.ShowToastAsync("已禁用不支持的设置", "【启用鼠标点击】设置项目不再受到支持并已自动禁用，感谢您的支持与理解。");
+        }
+        
         UpdateWindowPos();
         UpdateWindowFeatures();
         UpdateWindowLayer();
@@ -688,15 +726,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void UpdateWindowFeatures()
     {
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, !ViewModel.IsWindowMode);
-        if (!ViewModel.Settings.IsMouseClickingEnabled && !ViewModel.IsEditMode)
-        {
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);
-        }
-        else
-        {
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, false);
-        }
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, ViewModel is { IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false });
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, !ViewModel.IsEditMode);
     }
 
     private void UpdateWindowLayer()

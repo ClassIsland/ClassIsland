@@ -23,7 +23,6 @@
         xmlns:editMode="clr-namespace:ClassIsland.Controls.EditMode"
         xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         d:DataContext="{d:DesignInstance local:MainWindow}"
-        ShowInTaskbar="{Binding ViewModel.IsWindowMode}"
         d:Width="600"
         SizeChanged="MainWindow_OnSizeChanged"
         Activated="MainWindow_OnActivated"
@@ -34,6 +33,12 @@
         ShowActivated="False"
         TransparencyBackgroundFallback="Transparent"
         x:DataType="local:MainWindow">
+    <Window.ShowInTaskbar>
+        <MultiBinding Converter="{x:Static BoolConverters.Or}">
+            <Binding Path="ViewModel.IsWindowMode"/>
+            <Binding Path="ViewModel.Settings.IsScreenRecordingModeEnabled"/>
+        </MultiBinding>
+    </Window.ShowInTaskbar>
     <Window.Transitions>
         <Transitions>
             <BrushTransition Property="Background"
