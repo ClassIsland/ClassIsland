@@ -12,7 +12,7 @@ public class DoubleToPercentStringConverter : IValueConverter
         return v.ToString("P");
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         return null;
     }
