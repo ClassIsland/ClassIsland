@@ -246,7 +246,7 @@
                 </Setter>
             </ControlTheme>
         </Setter>
-        <Setter Property="(Interaction.Behaviors)">
+        <Setter Property="(Interaction.Behaviors)" x:DataType="controls1:EditableComponentsListBox">
             <BehaviorCollectionTemplate>
                 <BehaviorCollection>
                     <ManagedContextDropBehavior OverClass="TargetHighlight" 

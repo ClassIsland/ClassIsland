@@ -350,9 +350,9 @@
                         <Separator Margin="0 12 0 4" />
                         <ci:IconText Glyph="&#xE92F;" Text="临时课表群" Margin="0 0 0 4" />
                         <Border DataContext="{Binding ViewModel.ProfileService.Profile.TempClassPlanGroupId, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}}">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" x:DataType="profile:Profile">
                                 <TextBlock Text="当前：" VerticalAlignment="Center" />
-                                <TextBlock Text="{ReflectionBinding Name}" TextTrimming="CharacterEllipsis"
+                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"
                                            VerticalAlignment="Center" />
                                 <Button Theme="{StaticResource TransparentButton}"
                                         VerticalAlignment="Center"

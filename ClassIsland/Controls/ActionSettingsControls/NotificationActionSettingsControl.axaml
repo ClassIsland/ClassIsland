@@ -14,7 +14,8 @@
                       x:Shared="False"
                       d:DataContext="{d:DesignInstance local:NotificationActionSettingsControl}"
                       Width="400">
-            <StackPanel Classes="animated-intro">
+            <StackPanel Classes="animated-intro"
+                        x:DataType="local:NotificationActionSettingsControl">
                 <TextBlock Margin="0 0 0 8"
                            Text="提醒设置"
                            Theme="{StaticResource SubtitleTextBlockStyle}" />
@@ -22,7 +23,7 @@
 
                 <ci:Field Margin="0 0 0 8"
                           Label="标题内容">
-                    <TextBox Text="{ReflectionBinding Settings.Mask}"
+                    <TextBox Text="{Binding Settings.Mask}"
                              TextWrapping="Wrap" />
                 </ci:Field>
                 <ci:Field Margin="0 0 0 20"
@@ -30,13 +31,13 @@
                           Suffix="秒">
                     <NumericUpDown MinWidth="150"
                                    Minimum="0"
-                                   Value="{ReflectionBinding Settings.MaskDurationSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
+                                   Value="{Binding Settings.MaskDurationSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                 </ci:Field>
 
 
                 <ci:Field Margin="0 0 0 8"
                           Label="正文内容">
-                    <TextBox Text="{ReflectionBinding Settings.Content}"
+                    <TextBox Text="{Binding Settings.Content}"
                              TextWrapping="Wrap"
                              Watermark="选填" />
                 </ci:Field>
@@ -45,39 +46,39 @@
                           Suffix="秒">
                     <NumericUpDown MinWidth="150"
                                    Minimum="0"
-                                   Value="{ReflectionBinding Settings.ContentDurationSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
+                                   Value="{Binding Settings.ContentDurationSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                 </ci:Field>
 
 
                 <CheckBox Content="启用标题语音"
-                          IsChecked="{ReflectionBinding Settings.IsMaskSpeechEnabled}" />
+                          IsChecked="{Binding Settings.IsMaskSpeechEnabled}" />
                 <CheckBox Content="启用正文语音"
-                          IsChecked="{ReflectionBinding Settings.IsContentSpeechEnabled}" />
+                          IsChecked="{Binding Settings.IsContentSpeechEnabled}" />
                 <CheckBox Content="等待提醒结束"
-                          IsChecked="{ReflectionBinding Settings.IsWaitForCompleteEnabled}"
+                          IsChecked="{Binding Settings.IsWaitForCompleteEnabled}"
                           ToolTip.Tip="启用后，行动将等待此提醒直至提醒结束。"/>
 
                 <Separator Margin="0 8" />
 
                 <CheckBox Content="启用高级设置"
-                          IsChecked="{ReflectionBinding Settings.IsAdvancedSettingsEnabled}" />
-                <StackPanel IsVisible="{ReflectionBinding Settings.IsAdvancedSettingsEnabled}">
+                          IsChecked="{Binding Settings.IsAdvancedSettingsEnabled}" />
+                <StackPanel IsVisible="{Binding Settings.IsAdvancedSettingsEnabled}">
                     <CheckBox Content="置顶提醒"
-                              IsChecked="{ReflectionBinding Settings.IsTopmostEnabled}" />
+                              IsChecked="{Binding Settings.IsTopmostEnabled}" />
                     <CheckBox Content="启用提醒特效"
-                              IsChecked="{ReflectionBinding Settings.IsEffectEnabled}" />
+                              IsChecked="{Binding Settings.IsEffectEnabled}" />
                     <CheckBox Margin="0 0 0 4"
                               Content="启用提醒音效"
-                              IsChecked="{ReflectionBinding Settings.IsSoundEffectEnabled}" />
-                    <ci:Field IsVisible="{ReflectionBinding Settings.IsSoundEffectEnabled}"
+                              IsChecked="{Binding Settings.IsSoundEffectEnabled}" />
+                    <ci:Field IsVisible="{Binding Settings.IsSoundEffectEnabled}"
                               Label="自定义提醒音效">
                         <Grid ColumnDefinitions="*,Auto">
-                            <TextBox Text="{ReflectionBinding Settings.CustomSoundEffectPath}"
+                            <TextBox Text="{Binding Settings.CustomSoundEffectPath}"
                                      Watermark="（默认音效）" />
                             <controls:FileBrowserButton Grid.Column="1"
                                                         VerticalAlignment="Stretch"
                                                         Content="{ci:FluentIcon &#xE88D;}"
-                                                        CurrentPath="{ReflectionBinding Settings.CustomSoundEffectPath, Mode=TwoWay}"
+                                                        CurrentPath="{Binding Settings.CustomSoundEffectPath, Mode=TwoWay}"
                                                         Theme="{StaticResource TransparentButton}" />
                         </Grid>
                     </ci:Field>

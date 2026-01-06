@@ -9,13 +9,14 @@
              x:Class="ClassIsland.Views.SettingPages.ClockSettingsPage"
              Loaded="Control_OnLoaded"
              Unloaded="Control_OnUnloaded"
-             d:DataContext="{d:DesignInstance local:ClockSettingsPage}">
+             d:DataContext="{d:DesignInstance local:ClockSettingsPage}"
+             x:DataType="local:ClockSettingsPage">
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
             <StackPanel>
-                <TextBlock Text="{ReflectionBinding ViewModel.CurrentTime, StringFormat=HH:mm:ss}"
+                <TextBlock Text="{Binding ViewModel.CurrentTime, StringFormat=HH:mm:ss}"
                            FontSize="36" FontWeight="Medium"/>
-                <TextBlock Text="{ReflectionBinding ViewModel.CurrentTime, StringFormat={}{0:D}}"
+                <TextBlock Text="{Binding ViewModel.CurrentTime, StringFormat={}{0:D}}"
                            Classes="l-instructive"/>
             </StackPanel>
             <Separator Margin="0 12 0 4" />
@@ -24,14 +25,14 @@
             <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE4C8;}" 
                                         Header="使用精确时间"
                                         Description="启用后，应用将使用从指定服务器同步的精确时间，而不是使用系统时间。"
-                                        IsExpanded="{ReflectionBinding ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=OneWay}">
+                                        IsExpanded="{Binding ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=OneWay}">
                 <controls:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{ReflectionBinding ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"/>
                 </controls:SettingsExpander.Footer>
                 <controls:SettingsExpanderItem Content="时间服务器">
                     <controls:SettingsExpanderItem.Footer>
                         <TextBox VerticalAlignment="Stretch"
-                              Text="{ReflectionBinding ViewModel.SettingsService.Settings.ExactTimeServer}"
+                              Text="{Binding ViewModel.SettingsService.Settings.ExactTimeServer}"
                               HorizontalContentAlignment="Left"
                               
                               Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
@@ -47,7 +48,7 @@
                             <ci:IconText Glyph="&#xE0B5;" Text="立即同步"/>
                         </Button>
                     </controls:SettingsExpanderItem.Footer>
-                    <TextBlock Margin="0 6 0 0" Text="{ReflectionBinding ViewModel.ExactTimeService.SyncStatusMessage}"
+                    <TextBlock Margin="0 6 0 0" Text="{Binding ViewModel.ExactTimeService.SyncStatusMessage}"
                                TextWrapping="Wrap"/>
                 </controls:SettingsExpanderItem>
             </controls:SettingsExpander>
@@ -62,7 +63,7 @@
                         <controls:NumberBox VerticalAlignment="Center"
                                              MinWidth="147"
                                              SpinButtonPlacementMode="Inline"
-                                             Value="{ReflectionBinding ViewModel.SettingsService.Settings.TimeOffsetSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
+                                             Value="{Binding ViewModel.SettingsService.Settings.TimeOffsetSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                     </ci:Field>
                 </controls:SettingsExpander.Footer>
                 <controls:SettingsExpanderItem Content="自动时间偏移"
@@ -74,13 +75,13 @@
                             <ToggleSwitch DockPanel.Dock="Right"
                                           Margin="8 -8 0 0"
                                           VerticalAlignment="Center"
-                                          IsChecked="{ReflectionBinding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"/>
+                                          IsChecked="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"/>
                             <ci:Field Suffix="秒" VerticalAlignment="Center">
                                 <controls:NumberBox
                                     MinWidth="147"
                                     SpinButtonPlacementMode="Inline"
-                                    IsEnabled="{ReflectionBinding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"
-                                    Value="{ReflectionBinding ViewModel.SettingsService.Settings.TimeAutoAdjustSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
+                                    IsEnabled="{Binding ViewModel.SettingsService.Settings.IsTimeAutoAdjustEnabled}"
+                                    Value="{Binding ViewModel.SettingsService.Settings.TimeAutoAdjustSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                             </ci:Field>
                         </DockPanel>
                     </controls:SettingsExpanderItem.Footer>

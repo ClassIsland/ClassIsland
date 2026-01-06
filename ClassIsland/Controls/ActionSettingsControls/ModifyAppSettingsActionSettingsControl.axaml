@@ -19,7 +19,7 @@
             <!--     </Style> -->
             <!-- </Panel.Styles> -->
             <Grid Classes="animated-intro"
-                  RowDefinitions="Auto Auto *">
+                  RowDefinitions="Auto Auto *" x:DataType="local:ModifyAppSettingsActionSettingsControl">
                 <TextBlock Margin="0 0 0 8"
                            Text="选择应用设置"
                            Theme="{StaticResource SubtitleTextBlockStyle}" />
@@ -30,9 +30,9 @@
                 <ListBox Grid.Row="2"
                          Margin="0 8 0 0"
                          AutoScrollToSelectedItem="True"
-                         ItemsSource="{ReflectionBinding ViewModel.SettingsSearchResults}"
-                         SelectedValue="{ReflectionBinding Settings.Name, Converter={StaticResource PreventNullConverter}}"
-                         SelectedValueBinding="{ReflectionBinding PropertyName}"
+                         ItemsSource="{Binding ViewModel.SettingsSearchResults}"
+                         SelectedValue="{Binding Settings.Name, Converter={StaticResource PreventNullConverter}}"
+                         SelectedValueBinding="{Binding PropertyName}"
                          SelectionMode="Single">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -41,14 +41,14 @@
                     </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <DockPanel LastChildFill="False">
+                            <DockPanel LastChildFill="False" x:DataType="local:SettingsInfo">
                                 <ci:IconText Height="23"
                                              VerticalContentAlignment="Center"
-                                             Glyph="{ReflectionBinding Glyph}"
-                                             Text="{ReflectionBinding Name}" />
+                                             Glyph="{Binding Glyph}"
+                                             Text="{Binding Name}" />
                                 <TextBlock Margin="4 0 0 0"
                                            VerticalAlignment="Center"
-                                           Text="{ReflectionBinding PreviewValue, Mode=OneTime}"
+                                           Text="{Binding PreviewValue, Mode=OneTime}"
                                            DockPanel.Dock="Right"
                                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                                            MaxLines="3">
@@ -73,7 +73,7 @@
                             Margin="0 50"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            IsVisible="{ReflectionBinding !!!ViewModel.SettingsSearchResults.Count}">
+                            IsVisible="{Binding !!!ViewModel.SettingsSearchResults.Count}">
                     <ci:Empty Text="找不到应用设置。" />
                 </StackPanel>
             </Grid>

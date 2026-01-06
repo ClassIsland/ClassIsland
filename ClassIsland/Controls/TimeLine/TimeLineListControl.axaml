@@ -131,7 +131,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="ItemContainerTheme">
-            <ControlTheme TargetType="ListBoxItem" x:CompileBindings="False">
+            <ControlTheme TargetType="ListBoxItem" x:DataType="profile:TimeLayoutItem">
                 <ControlTheme.Resources>
                     <ci:TimeSpanToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
                     <ci:TimeSpanDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
@@ -165,20 +165,20 @@
                 <Setter Property="Interaction.Behaviors">
                     <BehaviorCollectionTemplate>
                         <BehaviorCollection>
-                            <DataTriggerBehavior Binding="{ReflectionBinding TimeType}" Value="2">
+                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="2">
                                 <AddClassAction ClassName="timeType-separator"/>
                             </DataTriggerBehavior>
-                            <DataTriggerBehavior Binding="{ReflectionBinding TimeType}" Value="3">
+                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="3">
                                 <AddClassAction ClassName="timeType-actions"/>
                             </DataTriggerBehavior>
-                            <DataTriggerBehavior Binding="{ReflectionBinding TimeType}" Value="2" ComparisonCondition="NotEqual">
+                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="2" ComparisonCondition="NotEqual">
                                 <RemoveClassAction ClassName="timeType-separator"/>
                             </DataTriggerBehavior>
-                            <DataTriggerBehavior Binding="{ReflectionBinding TimeType}" Value="3" ComparisonCondition="NotEqual">
+                            <DataTriggerBehavior Binding="{Binding TimeType}" Value="3" ComparisonCondition="NotEqual">
                                 <RemoveClassAction ClassName="timeType-actions"/>
                             </DataTriggerBehavior>
                             
-                            <behaviors:TimeLineListItemBehavior ParentListBox="{Binding Parent}">
+                            <behaviors:TimeLineListItemBehavior ParentListBox="{ReflectionBinding Parent}">
                                 <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                     
                                 </behaviors:TimeLineListItemBehavior.ThumbTemplate>
@@ -187,15 +187,16 @@
                     </BehaviorCollectionTemplate>
                 </Setter>
                 
-                <Setter Property="Template">
+                <Setter Property="Template" x:DataType="controls:TimeLineListControl">
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border Margin="-20" Padding="20">
                             <Interaction.Behaviors>
                                 <behaviors:TimeLineListItemBehavior ListBoxItem="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                                                                    ParentListBox="{Binding $parent[controls:TimeLineListControl]}">
+                                                                    ParentListBox="{Binding $parent[controls:TimeLineListControl]}"
+                                                                    x:DataType="controls:TimeLineListItemAdornerTemplateSelector">
                                     <behaviors:TimeLineListItemBehavior.ThumbTemplate>
-                                        <controls:TimeLineListItemAdornerTemplateSelector TimeType="{ReflectionBinding TimeType}">
-                                            <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.ExpandingTimePointAdornerKey}">
+                                        <controls:TimeLineListItemAdornerTemplateSelector TimeType="{Binding TimeType}">
+                                            <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.ExpandingTimePointAdornerKey}" x:DataType="controls:TimeLineListControl">
                                                 <Grid>
                                                     <controls:TimeLineListItemExpandingAdornerControl
                                                         Margin="20"
@@ -225,7 +226,7 @@
                                                 </Grid>
                                             </ControlTemplate>
                                             <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.LineTimePointAdornerKey}">
-                                                <Grid>
+                                                <Grid x:DataType="controls:TimeLineListControl">
                                                     <controls:TimeLineListItemSeparatorAdornerControl
                                                         Margin="20"
                                                         VerticalAlignment="Stretch"
