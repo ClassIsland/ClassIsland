@@ -11,7 +11,8 @@
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              d:DataContext="{d:DesignInstance local:ClassNotificationProviderControl}"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             x:DataType="local:ClassNotificationProviderControl">
     <UserControl.Resources>
         <converters1:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
 

@@ -14,7 +14,8 @@
         Title="课表详细信息"
         d:DataContext="{d:DesignInstance local:ClassPlanDetailsWindow}"
         EnableMicaWindow="True"
-        Height="500" Width="800">
+        Height="500" Width="800"
+        x:DataType="local:ClassPlanDetailsWindow">
     <Grid RowDefinitions="Auto,*">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500"/>
@@ -106,7 +107,8 @@
                                         <Setter.Value>
                                             <ControlTemplate>
                                                 <Grid ColumnDefinitions="4,*"
-                                                      d:DataContext="{d:DesignInstance models:AttachedSettingsNodeWithState}">
+                                                      d:DataContext="{d:DesignInstance models:AttachedSettingsNodeWithState}"
+                                                      x:DataType="models:AttachedSettingsNodeWithState">
                                                     <Border Grid.Column="0"
                                                             Grid.ColumnSpan="2"
                                                             HorizontalAlignment="Stretch"

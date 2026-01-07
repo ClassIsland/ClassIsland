@@ -7,13 +7,15 @@
                               xmlns:ci="http://classisland.tech/schemas/xaml/core"
                               xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
                               xmlns:actionSettings="clr-namespace:ClassIsland.Models.Actions"
-                              xmlns:controls="clr-namespace:ClassIsland.Controls">
+                              xmlns:controls="clr-namespace:ClassIsland.Controls"
+                              x:DataType="local:NotificationActionSettingsControl">
     <ci:ActionSettingsControlBase.Resources>
         <ScrollViewer x:Key="NotificationActionSettingsDrawer"
                       x:Shared="False"
                       d:DataContext="{d:DesignInstance local:NotificationActionSettingsControl}"
                       Width="400">
-            <StackPanel Classes="animated-intro">
+            <StackPanel Classes="animated-intro"
+                        x:DataType="local:NotificationActionSettingsControl">
                 <TextBlock Margin="0 0 0 8"
                            Text="提醒设置"
                            Theme="{StaticResource SubtitleTextBlockStyle}" />

@@ -12,7 +12,8 @@
         Loaded="WindowRuleDebugWindow_OnLoaded"
         Unloaded="WindowRuleDebugWindow_OnUnloaded"
         EnableMicaWindow="True"
-        d:DataContext="{d:DesignInstance local:WindowRuleDebugWindow}">
+        d:DataContext="{d:DesignInstance local:WindowRuleDebugWindow}"
+        x:DataType="local:WindowRuleDebugWindow">
     <StackPanel>
         <SelectableTextBlock TextWrapping="Wrap">
             <Run Text="窗口句柄："/><Run Text="{Binding ViewModel.ForegroundWindowHandle}"/>

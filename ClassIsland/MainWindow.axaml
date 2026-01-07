@@ -31,7 +31,8 @@
         X11Properties.WmClass="classisland_main"
         Closing="MainWindow_OnClosing"
         ShowActivated="False"
-        TransparencyBackgroundFallback="Transparent">
+        TransparencyBackgroundFallback="Transparent"
+        x:DataType="local:MainWindow">
     <Window.ShowInTaskbar>
         <MultiBinding Converter="{x:Static BoolConverters.Or}">
             <Binding Path="ViewModel.IsWindowMode"/>
@@ -115,9 +116,9 @@
     </Window.Resources>
     <Window.Styles>
         <Style Selector="Grid#GridRoot">
-            <Setter Property="IsVisible" Value="{Binding SettingsService.Settings.IsMainWindowVisible}"/>
+            <Setter Property="IsVisible" Value="{ReflectionBinding SettingsService.Settings.IsMainWindowVisible}"/>
             <Style Selector="^.ExplicitShowed.OverlayOpened">
-                <Setter Property="IsVisible" Value="{Binding SettingsService.Settings.IsMainWindowVisible}"/>
+                <Setter Property="IsVisible" Value="{ReflectionBinding SettingsService.Settings.IsMainWindowVisible}"/>
             </Style>
             <Style Selector="^.BasicHidingMode:not(.ExplicitShowed)">
                 <Style Selector="^.HideOnClass.StateOnClass">

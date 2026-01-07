@@ -22,7 +22,8 @@
                            d:DesignHeight="450" d:DesignWidth="800"
                            d:DataContext="{d:DesignInstance local:NotificationSettingsPage}"
                            Loaded="NotificationSettingsPage_OnLoaded"
-                           Unloaded="NotificationSettingsPage_OnUnloaded">
+                           Unloaded="NotificationSettingsPage_OnUnloaded"
+                           x:DataType="local:NotificationSettingsPage">
 
     <controls:SettingsPageBase.Resources>
         <converters:GuidToNotificationProviderConverter x:Key="GuidToNotificationProviderConverter" />
@@ -163,7 +164,8 @@
                                     <Grid DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
                                           d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}"
                                           Margin="-8 8"
-                                          Background="Transparent" RowDefinitions="*,*,Auto" ColumnDefinitions="Auto,Auto,*">
+                                          Background="Transparent" RowDefinitions="*,*,Auto" ColumnDefinitions="Auto,Auto,*"
+                                          x:DataType="notification:NotificationProviderRegisterInfo">
 
                                         <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
                                         <!-- 图标 -->
@@ -172,25 +174,25 @@
                                                           Width="24" Height="24"
                                                           VerticalAlignment="Center"
                                                           ClipToBounds="True" Margin="6 6 10 6"
-                                                          Content="{Binding ProviderInstance.IconElement}" />
+                                                          Content="{ReflectionBinding ProviderInstance.IconElement}" />
                                         
                                         <!-- 标题 -->
                                         <TextBlock Grid.Column="2" Grid.Row="0"
                                                    TextWrapping="Wrap"
                                                    Margin="0 0 0 2"
-                                                   Text="{Binding Name}"
+                                                   Text="{ReflectionBinding Name}"
                                                    FontSize="16" FontWeight="Bold" />
                                         
                                         <!-- 描述 -->
                                         <TextBlock Grid.Column="2" Grid.Row="1"
                                                    TextWrapping="Wrap"
-                                                   Text="{Binding Description}"
+                                                   Text="{ReflectionBinding Description}"
                                                    FontSize="12" />
 
                                         <Expander Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2"
                                                   Background="{x:Null}"
                                                   Collapsed="Expander_OnCollapsed"
-                                                  Padding="0"
+                                                  Padding="0" x:CompileBindings="False"
                                                   Header="提醒渠道">
                                             <Expander.IsVisible>
                                                 <MultiBinding Converter="{x:Static BoolConverters.And}">

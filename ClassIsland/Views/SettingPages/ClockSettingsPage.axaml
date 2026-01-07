@@ -9,7 +9,8 @@
              x:Class="ClassIsland.Views.SettingPages.ClockSettingsPage"
              Loaded="Control_OnLoaded"
              Unloaded="Control_OnUnloaded"
-             d:DataContext="{d:DesignInstance local:ClockSettingsPage}">
+             d:DataContext="{d:DesignInstance local:ClockSettingsPage}"
+             x:DataType="local:ClockSettingsPage">
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
             <StackPanel>

@@ -15,7 +15,8 @@
         Height="700" Width="1200"
         EnableMicaWindow="True"
         WindowStartupLocation="CenterScreen"
-        d:DataContext="{d:DesignInstance views:DevPortalWindow}">
+        d:DataContext="{d:DesignInstance views:DevPortalWindow}"
+        x:DataType="views:DevPortalWindow">
     <Grid RowDefinitions="48, *">
         <!-- Background Layer -->
         <Border Grid.Row="1" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
