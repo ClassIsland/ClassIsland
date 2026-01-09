@@ -246,7 +246,7 @@
                             </Binding.ConverterParameter>
                         </Binding>
                     </TabStrip.IsVisible>
-                    <TabStripItem Content="组件设置"/>
+                    <TabStripItem Content="组件设置" IsVisible="{Binding ViewModel.MainViewModel.SelectedComponentSettings.AssociatedComponentInfo.SettingsType, TargetNullValue={x:Null}, Converter={x:Static ObjectConverters.IsNotNull}}"/>
                     <TabStripItem Content="高级设置"/>
                 </TabStrip>
             </StackPanel>
@@ -265,7 +265,7 @@
             <TabControl SelectedIndex="{Binding ViewModel.ComponentSettingsTabIndex}">
                 <TabItem IsVisible="False">
                     <ci:ComponentPresenter Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings}"
-                                           IsPresentingSettings="True"/>
+                                           IsPresentingSettings="True" />
                 </TabItem>
                 <TabItem IsVisible="False">
                     <ci:ComponentAdvancedSettingsControl Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings, Mode=OneWay}"
