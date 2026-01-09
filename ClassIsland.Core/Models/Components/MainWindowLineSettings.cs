@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Models.Components;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -39,9 +40,50 @@ public partial class MainWindowLineSettings : ObservableObject, IMainWindowCusto
     [ObservableProperty] private double _customCornerRadius;
     [ObservableProperty] private bool _isCustomCornerRadiusEnabled;
     [ObservableProperty] private double _opacity = 1.0;
-
+    
+    private bool _isVisible = true;
+    private bool _hideOnRule = false;
+    private Ruleset.Ruleset _hidingRules = new();
+    /// <summary>
+    /// 行当前是否可见
+    /// </summary>
+    [JsonIgnore]
+    public bool IsVisible
+    {
+        get => _isVisible;
+        internal set
+        {
+            if (value == _isVisible) return;
+            _isVisible = value;
+            OnPropertyChanged();
+        }
+    }
     /// <summary>
     /// 0 - 默认;1 - 禁用;2 - 启用
     /// </summary>
     [ObservableProperty] private int _islandSeparationMode = 0;
+    public bool HideOnRule
+    {
+        get => _hideOnRule;
+        set
+        {
+            if (value == _hideOnRule) return;
+            _hideOnRule = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 隐藏规则
+    /// </summary>
+    public Ruleset.Ruleset HidingRules
+    {
+        get => _hidingRules;
+        set
+        {
+            if (Equals(value, _hidingRules)) return;
+            _hidingRules = value;
+            OnPropertyChanged();
+        }
+    }
 }

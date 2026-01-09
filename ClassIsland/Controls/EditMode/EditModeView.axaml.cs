@@ -185,7 +185,7 @@ public partial class EditModeView : UserControl
         
     }
     
-    private void ButtonOpenRuleset_OnClick(object? sender, RoutedEventArgs e)
+    private void ButtonOpenRulesetForComponent_OnClick(object? sender, RoutedEventArgs e)
     {
         if (this.FindResource("RulesetControl") is not RulesetControl control ||
             ViewModel.MainViewModel.SelectedComponentSettings == null) 
@@ -196,7 +196,17 @@ public partial class EditModeView : UserControl
         ViewModel.SecondaryDrawerTitle = "编辑规则集";
         ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Opened;
     }
-
+    private void ButtonOpenRulesetForMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (this.FindResource("RulesetControl") is not RulesetControl control ||
+            ViewModel.SelectedMainWindowLineSettings == null) 
+            return;
+        control.Ruleset = ViewModel.SelectedMainWindowLineSettings.HidingRules;
+        SettingsPageBase.OpenDrawerCommand.Execute(control);
+        ViewModel.SecondaryDrawerContent = control;
+        ViewModel.SecondaryDrawerTitle = "编辑规则集";
+        ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Opened;
+    }
 
     public void CloseContainerComponent(EditModeContainerComponentInfo? info)
     {
@@ -212,7 +222,7 @@ public partial class EditModeView : UserControl
     public void OpenMainWindowLineSettings(MainWindowLineSettings settings)
     {
         ViewModel.SelectedMainWindowLineSettings = settings;
-        OpenDrawer("MainWindowLineSettingsDrawer", "主界面行设置");
+        OpenDrawerCore(this.FindResource("MainWindowLineSettingsDrawer"), this.FindResource("MainWindowLineSettingsDrawerTitle"));
     }
     
     [RelayCommand]
