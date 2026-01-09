@@ -59,7 +59,13 @@
     </Style>
 
     <Style Selector="StackPanel.settings-container">
-        <Setter Property="Margin" Value="12 12 18 12" />
+        <Setter Property="Margin" Value="12 12 18 12"/>
+        <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}" />
+        <Setter Property="Spacing" Value="4"/>
+    </Style>
+    
+    <Style Selector="StackPanel.component-settings-container">
+        <Setter Property="Margin" Value="4 0 4 12"/>
         <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}" />
         <Setter Property="Spacing" Value="4"/>
     </Style>
