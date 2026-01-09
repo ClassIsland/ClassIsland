@@ -59,13 +59,13 @@ public class TimeLineBackgroundRulerControl : Control
                 goto done;
             }
 
-            drawingContext.DrawLine(c % p == 0 ? pen : penA, new Point(55, y), new Point(Bounds.Width, y));
+            drawingContext.DrawLine(c % p == 0 ? pen : penA, new Point(36, y), new Point(Bounds.Width, y));
             if (c % p != 0)
             {
                 goto done;
             }
 
-            var text = new FormattedText(ts.ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+            var text = new FormattedText(ts.ToString("hh\\:mm"), CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface(fontFamily), 12, body);
             drawingContext.DrawText(text, new Point(0, y - 8));
 

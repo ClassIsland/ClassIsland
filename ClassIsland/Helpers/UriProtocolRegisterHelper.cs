@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Versioning;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using Microsoft.Win32;
 
@@ -16,7 +17,7 @@ public static class UriProtocolRegisterHelper
         var openKey = shellKey.CreateSubKey("open");
         var commandKey = openKey.CreateSubKey("command");
         root.SetValue("URL Protocol", "");
-        var exePath = Process.GetCurrentProcess().MainModule?.FileName;
+        var exePath = AppBase.ExecutingEntrance;
         commandKey.SetValue("", $"\"{exePath}\" --uri \"%1\"");
     }
 

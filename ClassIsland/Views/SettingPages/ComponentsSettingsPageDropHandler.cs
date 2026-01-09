@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Controls;
@@ -5,6 +7,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
+using ClassIsland.Controls.EditMode;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;
@@ -24,6 +27,26 @@ public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewM
 
     private ListBoxItem? _sourceListBoxItem;
     
+    private static (int index, bool found) GetTargetIndex(ListBox listBox, DragEventArgs e, IList<ComponentSettings> items, ListBoxItem? explicitTarget)
+    {
+        var pos = e.GetPosition(listBox);
+        if (listBox.GetVisualAt(pos) is Control targetControl
+            && targetControl.FindAncestorOfType<ListBoxItem>() is {} listBoxItem
+            && listBoxItem.DataContext is ComponentSettings targetItem)
+        {
+            var rPos = e.GetPosition(listBoxItem);
+            // Console.WriteLine($"Pos {rPos.X} of width {listBoxItem.Bounds.Width}");
+            var index = items.IndexOf(targetItem);
+            if (index >= 0)
+            {
+                return (rPos.X <= listBoxItem.Bounds.Width / 2 ? index - 1 : index, true);
+            }
+        }
+
+        var half = pos.X > listBox.Bounds.Width / 2;
+        return (items.Count > 0 ? (half ? items.Count - 1 : -1) : -1, items.Count > 0);
+    }
+    
     public override void Enter(object? sender, DragEventArgs e, object? sourceContext, object? targetContext)
     {
         e.DragEffects = sourceContext switch
@@ -37,10 +60,13 @@ public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewM
 
     public override void Drop(object? sender, DragEventArgs e, object? sourceContext, object? targetContext)
     {
-        if (targetContext is not ObservableCollection<ComponentSettings> components)
+        if (targetContext is not ObservableCollection<ComponentSettings> components ||
+            sender is not ListBox listBox)
         {
             return;
         }
+        var (targetIndex, foundTargetIndex) = GetTargetIndex(listBox, e, components, null);
+        var insertIndex = foundTargetIndex ? targetIndex + 1 : components.Count;
         switch (sourceContext)
         {
             case ComponentInfo info:
@@ -48,23 +74,32 @@ public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewM
                 {
                     Id = info.Guid.ToString()
                 };
-                components.Add(componentSettings);
+                InsertItem(components, componentSettings, insertIndex);
                 ComponentsService.LoadComponentSettings(componentSettings,
                     componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!);
                 break;
-            case ComponentSettings settings:
+            case EditableComponentsListBoxDragData { ComponentSettings: {} settings, SourceList: {} sourceList }:
                 var oldIndex = components.IndexOf(settings);
                 if (settings == ViewModel.SelectedRootComponent && components == ViewModel.SelectedComponentContainerChildren)
                 {
                     return;
                 }
-                if (!components.Contains(settings))
+                var sourceIndex = sourceList.IndexOf(settings);
+                if (sourceIndex < 0)
                 {
-                    _sourceCollection?.Remove(settings);
-                    components.Add(settings);
-                    break;
+                    return ;
                 }
-                // 我们不处理列表内更换位置的拖动操作
+                    
+                if (ReferenceEquals(sourceList, components))
+                {
+                    var moveIndex = foundTargetIndex ? targetIndex : components.Count - 1;
+                    var newIndex = sourceIndex > moveIndex ? moveIndex + 1 : moveIndex;
+                    MoveItem(components, sourceIndex, Math.Clamp(newIndex, 0, components.Count - 1));
+                }
+                else
+                {
+                    MoveItem(sourceList, components, sourceIndex, insertIndex);
+                }
                 break;
         }
 

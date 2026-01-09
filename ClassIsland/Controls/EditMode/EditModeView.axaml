@@ -154,7 +154,6 @@
                                 <BehaviorCollection>
                                     <ci:AdvancedManagedContextDragBehavior 
                                         PreviewOpacity="0.5"
-                                        PreviewTemplate="{StaticResource ComponentInfoPreviewEffect}"
                                         HorizontalDragThreshold="3" VerticalDragThreshold="3" Context="{Binding }">
                                     </ci:AdvancedManagedContextDragBehavior>
                                 </BehaviorCollection>
@@ -247,18 +246,23 @@
                             </Binding.ConverterParameter>
                         </Binding>
                     </TabStrip.IsVisible>
-                    <TabStripItem Content="组件设置"/>
+                    <TabStripItem Content="组件设置" IsVisible="{Binding ViewModel.MainViewModel.SelectedComponentSettings.AssociatedComponentInfo.SettingsType, TargetNullValue={x:Null}, Converter={x:Static ObjectConverters.IsNotNull}}"/>
                     <TabStripItem Content="高级设置"/>
                 </TabStrip>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                        Spacing="4"
                         Margin="0 0 4 0">
+                <ci:AnimatedIconButton
+                    Theme="{StaticResource TransparentButton}"
+                    IsEnabled="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                    Classes.fade="{Binding !ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                    IsKeepingExpanded="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                    Glyph="&#xF17E;"
+                    Text="编辑…"
+                    Click="ButtonOpenRuleset_OnClick"
+                    ToolTip.Tip="编辑规则集…"/>
                 <CheckBox IsChecked="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}">按规则隐藏</CheckBox>
-                <Button Theme="{StaticResource TransparentButton}"
-                        IsEnabled="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
-                        Content="{ci:FluentIcon &#xF17E;}"
-                        Click="ButtonOpenRulesetForComponent_OnClick"
-                        ToolTip.Tip="编辑规则集…"/>
             </StackPanel>
         </Grid>
         
@@ -266,10 +270,11 @@
             <TabControl SelectedIndex="{Binding ViewModel.ComponentSettingsTabIndex}">
                 <TabItem IsVisible="False">
                     <ci:ComponentPresenter Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings}"
-                                           IsPresentingSettings="True"/>
+                                           IsPresentingSettings="True" />
                 </TabItem>
                 <TabItem IsVisible="False">
                     <ci:ComponentAdvancedSettingsControl Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings, Mode=OneWay}"
+                                                         RequestOpenHideRules="ButtonOpenRuleset_OnClick"
                                                          IsRootComponent="True"/>
                 </TabItem>
             </TabControl>

@@ -26,12 +26,15 @@ using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels.EditMode;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
+using ReactiveUI;
 
 namespace ClassIsland.Controls.EditMode;
 
 public partial class EditModeView : UserControl
 {
     public EditModeViewModel ViewModel { get; } = IAppHost.GetService<EditModeViewModel>();
+
+    private IDisposable? _selectedComponentObserver;
     
     public EditModeView()
     {
@@ -39,10 +42,25 @@ public partial class EditModeView : UserControl
         DataContext = this;
     }
 
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _selectedComponentObserver = ViewModel.MainViewModel.ObservableForProperty(x => x.SelectedComponentSettings)
+            .Subscribe(_ =>
+            {
+                if (ViewModel.MainViewModel.SelectedComponentSettings?.AssociatedComponentInfo.SettingsType == null
+                    && ViewModel.ComponentSettingsTabIndex == 0)
+                {
+                    ViewModel.ComponentSettingsTabIndex = 1;
+                }
+            });
+    }
+
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-
+        _selectedComponentObserver?.Dispose();
+        _selectedComponentObserver = null;
         ClearSelectedComponents();
     }
 
