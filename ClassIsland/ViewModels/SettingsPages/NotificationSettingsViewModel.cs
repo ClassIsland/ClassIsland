@@ -9,6 +9,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Models;
+using ClassIsland.Models.Notification;
 using ClassIsland.Services;
 using ClassIsland.Shared.Abstraction.Models.Notification;
 using ClassIsland.Shared.Interfaces;
@@ -23,7 +24,8 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
     public INotificationHostService NotificationHostService { get; }
     public ISpeechService SpeechService { get; }
     public IManagementService ManagementService { get; }
-    
+    public IComponentsService ComponentsService { get; }
+
     private bool _isNotificationSettingsPanelOpened = false;
     private string? _notificationSettingsSelectedProvider;
 
@@ -86,12 +88,14 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
     public NotificationSettingsViewModel(SettingsService settingsService,
         INotificationHostService notificationHostService,
         ISpeechService speechService,
-        IManagementService managementService)
+        IManagementService managementService,
+        IComponentsService componentsService)
     {
         SettingsService = settingsService;
         NotificationHostService = notificationHostService;
         SpeechService = speechService;
         ManagementService = managementService;
+        ComponentsService = componentsService;
 
         var filtered = SettingsService.Settings.NotificationProvidersPriority
             .Where(x => NotificationHostService.NotificationProviders.Any(y => y.ProviderGuid.ToString() == x));
@@ -126,4 +130,6 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    public bool HasValidMainWindowLine => ComponentsService.CurrentComponents.Lines.Any(x => x.IsNotificationEnabled);
 }
