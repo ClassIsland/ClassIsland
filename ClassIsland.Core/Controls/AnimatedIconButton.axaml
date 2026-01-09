@@ -78,5 +78,20 @@
             <Setter Property="Width" Value="{Binding FullWidth, RelativeSource={RelativeSource TemplatedParent}}"/>
         </Style>
         
+        <Style Selector="^ /template/ Button#PART_Button /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background"
+                                     Duration="0:0:0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="^.foreground-accent /template/ Button#PART_Button /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+        <Style Selector="^.fade /template/ Button#PART_Button /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
     </Style>
 </Styles>
