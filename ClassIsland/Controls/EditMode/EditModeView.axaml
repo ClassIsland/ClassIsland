@@ -154,7 +154,6 @@
                                 <BehaviorCollection>
                                     <ci:AdvancedManagedContextDragBehavior 
                                         PreviewOpacity="0.5"
-                                        PreviewTemplate="{StaticResource ComponentInfoPreviewEffect}"
                                         HorizontalDragThreshold="3" VerticalDragThreshold="3" Context="{Binding }">
                                     </ci:AdvancedManagedContextDragBehavior>
                                 </BehaviorCollection>

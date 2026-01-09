@@ -11,12 +11,15 @@ using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Media;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
 using Avalonia.Xaml.Interactivity;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
+using Point = Avalonia.Point;
 
 namespace ClassIsland.Core.Behaviors;
 
@@ -251,7 +254,16 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
             ? _calculatedPreviewOffset.Value
             : PreviewOffset;
 
-        DragPreviewService.Show(value, PreviewTemplate, tl, client, previewOffset, PreviewOpacity);
+        var actualValue = AssociatedObject != null && PreviewTemplate == null
+            ? new Border()
+            {
+                Height = (int)AssociatedObject.Bounds.Height,
+                Width = (int)AssociatedObject.Bounds.Width,
+                Background = new VisualBrush(AssociatedObject)
+            }
+            : value;
+
+        DragPreviewService.Show(actualValue, PreviewTemplate, tl, client, previewOffset, PreviewOpacity);
 
         try
         {
