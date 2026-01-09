@@ -458,7 +458,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void ReCheckTopmostState()
     {
-        if (ViewModel.IsWindowMode)
+        if (ViewModel.IsWindowMode || ViewModel.IsEditMode)
         {
             return;
         }
