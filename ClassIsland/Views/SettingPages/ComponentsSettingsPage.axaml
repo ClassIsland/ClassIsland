@@ -401,6 +401,7 @@
                 </TabItem>
                 <TabItem Header="高级设置" IsVisible="{Binding ViewModel.IsComponentAdvancedSettingsVisible}">
                     <ci:ComponentAdvancedSettingsControl Settings="{Binding ViewModel.SelectedComponentSettings}"
+                                                         RequestOpenHideRules="ButtonOpenRuleset_OnClick"
                                                          IsRootComponent="{Binding ViewModel.IsSelectedComponentOnRoot}"/>
                 </TabItem>
                 <TabItem Header="行设置" IsVisible="{Binding ViewModel.SelectedMainWindowLineSettings, Converter={x:Static ObjectConverters.IsNotNull}}">
@@ -596,6 +597,22 @@
                     </ScrollViewer>
                 </TabItem>
             </TabControl>
+            
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Spacing="4"
+                        IsVisible="{Binding ViewModel.SelectedComponentSettings, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        Margin="0 0 0 0">
+                <ci:AnimatedIconButton
+                        Theme="{StaticResource TransparentButton}"
+                        IsEnabled="{Binding ViewModel.SelectedComponentSettings.HideOnRule}"
+                        Classes.fade="{Binding !ViewModel.SelectedComponentSettings.HideOnRule}"
+                        IsKeepingExpanded="{Binding ViewModel.SelectedComponentSettings.HideOnRule}"
+                        Glyph="&#xF17E;"
+                        Text="编辑…"
+                        Click="ButtonOpenRuleset_OnClick"
+                        ToolTip.Tip="编辑规则集…"/>
+                <CheckBox IsChecked="{Binding ViewModel.SelectedComponentSettings.HideOnRule}">按规则隐藏</CheckBox>
+            </StackPanel>
         </Grid>
         
         <controls:InfoBar Grid.Row="5" Grid.Column="0" 

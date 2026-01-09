@@ -251,13 +251,18 @@
                 </TabStrip>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                        Spacing="4"
                         Margin="0 0 4 0">
+                <ci:AnimatedIconButton
+                    Theme="{StaticResource TransparentButton}"
+                    IsEnabled="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                    Classes.fade="{Binding !ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                    IsKeepingExpanded="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                    Glyph="&#xF17E;"
+                    Text="编辑…"
+                    Click="ButtonOpenRuleset_OnClick"
+                    ToolTip.Tip="编辑规则集…"/>
                 <CheckBox IsChecked="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}">按规则隐藏</CheckBox>
-                <Button Theme="{StaticResource TransparentButton}"
-                        IsEnabled="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
-                        Content="{ci:FluentIcon &#xF17E;}"
-                        Click="ButtonOpenRuleset_OnClick"
-                        ToolTip.Tip="编辑规则集…"/>
             </StackPanel>
         </Grid>
         
@@ -269,6 +274,7 @@
                 </TabItem>
                 <TabItem IsVisible="False">
                     <ci:ComponentAdvancedSettingsControl Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings, Mode=OneWay}"
+                                                         RequestOpenHideRules="ButtonOpenRuleset_OnClick"
                                                          IsRootComponent="True"/>
                 </TabItem>
             </TabControl>
