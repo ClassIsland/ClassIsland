@@ -339,14 +339,6 @@
                                                             HorizontalAlignment="Stretch"
                                                             Settings="{Binding}"
                                                             IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
-                                                            <!-- <controls:MainWindowLine.IsVisible> -->
-                                                            <!--     <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}"> -->
-                                                            <!--         <Binding Path="$self.!IsAllComponentsHid" RelativeSource="{RelativeSource Self}" /> -->
-                                                            <!--         <Binding Path="$self.IsOverlayOpen" RelativeSource="{RelativeSource Self}"/> -->
-                                                            <!--         <Binding Path="$self.IsVisibleInternal"/> -->
-                                                            <!--         <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/> -->
-                                                            <!--     </MultiBinding> -->
-                                                            <!-- </controls:MainWindowLine.IsVisible> -->
                                                             <editMode:EditableComponentsListBox
                                                                 ItemsSource="{Binding Children}"
                                                                 Classes="root-components-control"
