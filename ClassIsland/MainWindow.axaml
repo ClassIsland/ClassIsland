@@ -158,15 +158,12 @@
                     ZoomSpeed="1.2"
                     Focusable="True"
                     EnableConstrains="True"
-                    MaxZoomX="4" MaxZoomY="4"
-                    MinZoomX="0.1" MinZoomY="0.1"
+                    MaxZoomX="3" MaxZoomY="3"
+                    MinZoomX="0.5" MinZoomY="0.5"
                     Background="Transparent" 
                     VerticalAlignment="Stretch" 
                     HorizontalAlignment="Stretch"
-                    EnableAnimations="True"
-                    AnimationDuration="0:0:0.2"
                     ShowZoomIndicator="True"
-                    BoundsMode="KeepContentVisible"
                     EnableGestureZoom="False"
                     TextElement.FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
                     TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}">
@@ -543,14 +540,19 @@
                 <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}">
                     <ci:IconText Glyph="&#xE51E;" Text="外观"/>
                 </Button>
-                <Button Click="ButtonOpenComponentsLib_OnClick" Theme="{StaticResource TransparentButton}">
+                <Button Click="ButtonOpenComponentsLib_OnClick" Theme="{StaticResource TransparentButton}"
+                        x:Name="ButtonOpenComponentsLib">
                     <ci:IconText Glyph="&#xE071;" Text="添加组件"/>
                 </Button>
                 <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}">
                     <ci:IconText Glyph="&#xE699;" Text="{Binding ViewModel.Settings.CurrentComponentConfig}"
                                  MaxWidth="150"/>
                 </Button>
-                <Button Click="ButtonExitEditMode_OnClick" Classes="accent">
+                <Button Click="ButtonShowTutorial_OnClick" Theme="{StaticResource TransparentButton}"
+                        ToolTip.Tip="使用说明"
+                        Content="{ci:FluentIcon &#xEE31;}"/>
+                <Button Click="ButtonExitEditMode_OnClick" Classes="accent"
+                        x:Name="ButtonExitEditMode">
                     <ci:IconText Glyph="&#xE424;" Text="完成"/>
                 </Button>
             </StackPanel>
@@ -558,6 +560,85 @@
         
         <ContentPresenter x:Name="EditModeViewCp" />
         
+        <controls1:TeachingTip Title="移动视图"
+                               Subtitle="按住鼠标中键并拖动或用手指拖动以移动视图。"
+                               CloseButtonContent="下一条"
+                               CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}">
+            <controls1:TeachingTip.CloseButtonCommandParameter>
+                <x:Int32>1</x:Int32>
+            </controls1:TeachingTip.CloseButtonCommandParameter>
+            <controls1:TeachingTip.IsOpen>
+                <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <x:Int32>0</x:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </controls1:TeachingTip.IsOpen>
+        </controls1:TeachingTip>
+        <controls1:TeachingTip Title="缩放"
+                               Subtitle="滚动鼠标滚轮或双指捏合即可缩放视图。"
+                               ActionButtonContent="上一条"
+                               CloseButtonContent="下一条"
+                               ActionButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
+                               CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}">
+            <controls1:TeachingTip.ActionButtonCommandParameter>
+                <x:Int32>0</x:Int32>
+            </controls1:TeachingTip.ActionButtonCommandParameter>
+            <controls1:TeachingTip.CloseButtonCommandParameter>
+                <x:Int32>2</x:Int32>
+            </controls1:TeachingTip.CloseButtonCommandParameter>
+            <controls1:TeachingTip.IsOpen>
+                <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <x:Int32>1</x:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </controls1:TeachingTip.IsOpen>
+        </controls1:TeachingTip>
+        <controls1:TeachingTip Title="添加组件"
+                               Subtitle="点击此按钮打开组件库并将组件拖动到要添加的位置，或点击主界面行中的加号【+】组件库并选择组件以添加组件。"
+                               Target="{Binding #ButtonOpenComponentsLib}"
+                               ActionButtonContent="上一条"
+                               CloseButtonContent="下一条"
+                               ActionButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
+                               CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}">
+            <controls1:TeachingTip.ActionButtonCommandParameter>
+                <x:Int32>1</x:Int32>
+            </controls1:TeachingTip.ActionButtonCommandParameter>
+            <controls1:TeachingTip.CloseButtonCommandParameter>
+                <x:Int32>3</x:Int32>
+            </controls1:TeachingTip.CloseButtonCommandParameter>
+            <controls1:TeachingTip.IsOpen>
+                <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <x:Int32>2</x:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </controls1:TeachingTip.IsOpen>
+        </controls1:TeachingTip>
+        <controls1:TeachingTip Title="完成"
+                               Subtitle="当编辑完成时，点击【完成】按钮即可退出编辑模式。"
+                               Target="{Binding #ButtonExitEditMode}"
+                               ActionButtonContent="上一条"
+                               CloseButtonContent="结束教程"
+                               ActionButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
+                               CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
+                               CloseButtonClick="TeachingTipEditModeP4_OnCloseButtonClick">
+            <controls1:TeachingTip.ActionButtonCommandParameter>
+                <x:Int32>2</x:Int32>
+            </controls1:TeachingTip.ActionButtonCommandParameter>
+            <controls1:TeachingTip.CloseButtonCommandParameter>
+                <x:Int32>-1</x:Int32>
+            </controls1:TeachingTip.CloseButtonCommandParameter>
+            <controls1:TeachingTip.IsOpen>
+                <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <x:Int32>3</x:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </controls1:TeachingTip.IsOpen>
+        </controls1:TeachingTip>
+
         <!-- debug -->
         <StackPanel IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}"
                     HorizontalAlignment="Left"

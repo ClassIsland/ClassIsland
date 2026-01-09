@@ -1140,11 +1140,17 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         ViewModel.IsEditMode = true;
+
+        if (!ViewModel.Settings.HasEditModeTutorialShown)
+        {
+            ViewModel.EditModeTutorialPhase = 0;
+        }
     }
 
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.IsEditMode = false;
+        ViewModel.EditModeTutorialPhase = -1;
         ComponentsService.SaveConfig();
     }
 
@@ -1335,6 +1341,22 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         ViewModel.EditModeView?.OpenComponentsLibDrawer(e.ComponentList);
     }
-    #endregion
+
+    [RelayCommand]
+    private void SetEditModeTutorialPhase(int phase)
+    {
+        ViewModel.EditModeTutorialPhase = phase;
+    }
     
+    private void ButtonShowTutorial_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.EditModeTutorialPhase = 0;
+    }
+    
+    private void TeachingTipEditModeP4_OnCloseButtonClick(TeachingTip sender, EventArgs args)
+    {
+        ViewModel.Settings.HasEditModeTutorialShown = true;
+    }
+    #endregion
+
 }

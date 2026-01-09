@@ -1732,6 +1732,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isPluginsUpdateNotificationEnabled = true;
     private int _windowTopmostRecheckMode = 0;
     private bool _isScreenRecordingModeEnabled = false;
+    private bool _hasEditModeTutorialShown = false;
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -2465,6 +2466,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
                 IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 ShowSellingAnnouncement 启用状态。");
             }
 
+        }
+    }
+
+    public bool HasEditModeTutorialShown
+    {
+        get => _hasEditModeTutorialShown;
+        set
+        {
+            if (value == _hasEditModeTutorialShown) return;
+            _hasEditModeTutorialShown = value;
+            OnPropertyChanged();
         }
     }
 }

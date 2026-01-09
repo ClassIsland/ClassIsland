@@ -383,4 +383,5 @@ public partial class MainViewModel : ObservableRecipient
     [ObservableProperty] private Dictionary<EditModeContainerComponentInfo, EditableComponentsListBox> _containerComponentListBoxCache = new();
     [ObservableProperty] private Dictionary<EditableComponentsListBox, EditModeContainerComponentInfo> _containerComponentListBoxCacheReversed = new();
 
+    [ObservableProperty] private int _editModeTutorialPhase = -1;
 }
