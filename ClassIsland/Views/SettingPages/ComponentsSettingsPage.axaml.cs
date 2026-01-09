@@ -193,9 +193,9 @@ public partial class ComponentsSettingsPage : SettingsPageBase
     private void ButtonOpenRuleset_OnClick(object sender, RoutedEventArgs e)
     {
         if (this.FindResource("RulesetControl") is not RulesetControl control ||
-            ViewModel.SelectedComponentSettings == null) 
+            ViewModel.SelectedMainWindowLineSettings == null) 
             return;
-        control.Ruleset = ViewModel.SelectedComponentSettings.HidingRules;
+        control.Ruleset = ViewModel.SelectedMainWindowLineSettings.HidingRules;
         OpenDrawer("RulesetControl");
     }
     
