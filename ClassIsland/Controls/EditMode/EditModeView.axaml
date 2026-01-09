@@ -260,7 +260,7 @@
                     IsKeepingExpanded="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
                     Glyph="&#xF17E;"
                     Text="编辑…"
-                    Click="ButtonOpenRuleset_OnClick"
+                    Click="ButtonOpenRulesetForComponent_OnClick"
                     ToolTip.Tip="编辑规则集…"/>
                 <CheckBox IsChecked="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}">按规则隐藏</CheckBox>
             </StackPanel>
@@ -274,7 +274,7 @@
                 </TabItem>
                 <TabItem IsVisible="False">
                     <ci:ComponentAdvancedSettingsControl Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings, Mode=OneWay}"
-                                                         RequestOpenHideRules="ButtonOpenRuleset_OnClick"
+                                                         RequestOpenHideRules="ButtonOpenRulesetForComponent_OnClick"
                                                          IsRootComponent="True"/>
                 </TabItem>
             </TabControl>
@@ -283,12 +283,16 @@
             <TextBlock Grid.Column="0" Text="主界面行设置" VerticalAlignment="Center" Margin="0 1 0 0"/>
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
                         Margin="0 0 4 0">
+                <ci:AnimatedIconButton
+                    Theme="{StaticResource TransparentButton}"
+                    IsEnabled="{Binding ViewModel.SelectedMainWindowLineSettings.HideOnRule}"
+                    Classes.fade="{Binding !ViewModel.SelectedMainWindowLineSettings.HideOnRule}"
+                    IsKeepingExpanded="{Binding ViewModel.SelectedMainWindowLineSettings.HideOnRule}"
+                    Glyph="&#xF17E;"
+                    Text="编辑…"
+                    Click="ButtonOpenRulesetForMainWindowLine_OnClick"
+                    ToolTip.Tip="编辑规则集…"/>
                 <CheckBox IsChecked="{Binding ViewModel.SelectedMainWindowLineSettings.HideOnRule}">按规则隐藏</CheckBox>
-                <Button Theme="{StaticResource TransparentButton}"
-                        IsEnabled="{Binding ViewModel.SelectedMainWindowLineSettings.HideOnRule}"
-                        Content="{ci:FluentIcon &#xF17E;}"
-                        Click="ButtonOpenRulesetForMainWindowLine_OnClick"
-                        ToolTip.Tip="编辑规则集…"/>
             </StackPanel>
         </Grid>
         <ScrollViewer HorizontalAlignment="Stretch" 
