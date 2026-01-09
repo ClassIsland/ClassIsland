@@ -115,23 +115,33 @@
     </Window.Resources>
     <Window.Styles>
         <Style Selector="Grid#GridRoot">
-            <Setter Property="IsVisible" Value="{Binding SettingsService.Settings.IsMainWindowVisible}"/>
+            <Setter Property="IsVisible">
+                <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                    <Binding Path="SettingsService.Settings.IsMainWindowVisible"/>
+                    <Binding Path="ViewModel.IsEditMode"/>
+                </MultiBinding>
+            </Setter>
             <Style Selector="^.ExplicitShowed.OverlayOpened">
-                <Setter Property="IsVisible" Value="{Binding SettingsService.Settings.IsMainWindowVisible}"/>
+                <Setter Property="IsVisible">
+                    <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                        <Binding Path="SettingsService.Settings.IsMainWindowVisible"/>
+                        <Binding Path="ViewModel.IsEditMode"/>
+                    </MultiBinding>
+                </Setter>
             </Style>
             <Style Selector="^.BasicHidingMode:not(.ExplicitShowed)">
                 <Style Selector="^.HideOnClass.StateOnClass">
-                    <Setter Property="IsVisible" Value="False"/>
+                    <Setter Property="IsVisible" Value="{Binding ViewModel.IsEditMode}"/>
                 </Style>
                 <Style Selector="^.HideOnMaxWindow.ForegroundMaxWindow">
-                    <Setter Property="IsVisible" Value="False"/>
+                    <Setter Property="IsVisible" Value="{Binding ViewModel.IsEditMode}"/>
                 </Style>
                 <Style Selector="^.HideOnFullscreen.ForegroundFullscreen">
-                    <Setter Property="IsVisible" Value="False"/>
+                    <Setter Property="IsVisible" Value="{Binding ViewModel.IsEditMode}"/>
                 </Style>
             </Style>
             <Style Selector="^.AdvancedHidingMode.HideRuleSatisfied:not(.ExplicitShowed)">
-                <Setter Property="IsVisible" Value="False"/>
+                <Setter Property="IsVisible" Value="{Binding ViewModel.IsEditMode}"/>
             </Style>
         </Style>
         <Style Selector=":is(Window):not(:edit-mode) :is(Control)">
