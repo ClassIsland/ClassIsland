@@ -15,7 +15,7 @@ public class ExceptionToExceptionHeaderConverter : IValueConverter
         return $"{value.GetType()}: {((Exception)value).Message}";
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         return null;
     }

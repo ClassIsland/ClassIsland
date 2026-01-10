@@ -16,7 +16,7 @@ public class RippleEffectTranslationConverter : IValueConverter
         return -d / 2;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         return null;
     }
