@@ -149,6 +149,8 @@ public class PluginService : IPluginService
         var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
         Console.WriteLine($"Resolved load order: {string.Join(", ", loadOrder)}");
 
+        var suppressMacOsPluginLoadBehavior =
+            Environment.GetEnvironmentVariable("ClassIsland_DebugSuppressMacOSPluginLoadBehavior") == "1";
         // 加载插件
         foreach (var id in loadOrder)
         {
@@ -158,7 +160,7 @@ public class PluginService : IPluginService
             try
             {
                 var fullPath = Path.GetFullPath(Path.Combine(pluginDir, manifest.EntranceAssembly));
-                var loadContext = new PluginLoadContext(info, fullPath);
+                var loadContext = new PluginLoadContext(info, fullPath, suppressMacOsPluginLoadBehavior);
                 PluginLoadContexts[info.Manifest.Id] = loadContext;
                 var asm = loadContext.LoadFromAssemblyName(
                     new AssemblyName(Path.GetFileNameWithoutExtension(fullPath)));
