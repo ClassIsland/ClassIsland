@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Services;
 
@@ -84,6 +85,7 @@ public class PluginLoadContext : AssemblyLoadContext
     }
 }
 
+[SupportedOSPlatform("macos")]
 public class MacPluginAssemblyResolver(string componentAssemblyPath)
 {
     private readonly string _pluginDirectory = Path.GetDirectoryName(componentAssemblyPath) ?? "";
