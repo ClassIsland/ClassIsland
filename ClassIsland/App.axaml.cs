@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -43,6 +44,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Services;
@@ -570,6 +572,21 @@ public partial class App : AppBase, IAppHost
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.StartingOffline;
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
+        List<string> loadedPlugin = new();
+        foreach (var plugin in PluginService.PluginLoadedStatus)
+        {
+            switch (plugin.Key.LoadStatus)
+            {
+                case PluginLoadStatus.Error:
+                    Logger.LogWarning($"插件加载失败:{plugin.Value.Name}:{plugin.Key.Exception}");
+                    break;
+                case PluginLoadStatus.Loaded:
+                    loadedPlugin.Add(plugin.Value.Name);
+                    break;
+                default: break;
+            }
+        }
+        Logger.LogInformation($"此次会话已加载插件:{string.Join(", ",loadedPlugin)}");
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));
         lifetime.ApplicationStopping.Register(() =>

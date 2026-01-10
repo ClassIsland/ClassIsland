@@ -39,6 +39,8 @@ public class PluginService : IPluginService
 
     public static readonly string PluginConfigsFolderPath = Path.Combine(CommonDirectories.AppConfigPath, "Plugins");
 
+    public static Dictionary<PluginInfo,PluginManifest> PluginLoadedStatus { get; internal set; } =new();
+
     internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
 
     internal static List<PluginManifest> InstalledPlugins { get; } = [];
@@ -139,11 +141,13 @@ public class PluginService : IPluginService
             if (!info.IsEnabled)
             {
                 info.LoadStatus = PluginLoadStatus.Disabled;
+                PluginLoadedStatus.Add(info,manifest);
             }
             if (info.IsEnabled && Version.TryParse(info.Manifest.ApiVersion, out var apiVersion) && apiVersion < new Version(2, 0, 0, 0))
             {
                 info.LoadStatus = PluginLoadStatus.Error;
                 info.Exception = new InvalidOperationException($"不兼容的 API 版本 {apiVersion}。插件的 API 版本需要至少为 2.0.0.0 才能被当前版本的 ClassIsland 加载。");
+                PluginLoadedStatus.Add(info,manifest);
             }
         }
         var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
@@ -186,13 +190,15 @@ public class PluginService : IPluginService
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);
                 info.LoadStatus = PluginLoadStatus.Loaded;
-                Console.WriteLine($"Initialized plugin: {pluginDir} ({manifest.Version})");
+                // Console.WriteLine($"Initialized plugin: {pluginDir} ({manifest.Version})");
+                PluginLoadedStatus.Add(info,manifest);
             }
             catch (Exception ex)
             {
                 info.Exception = ex;
                 info.LoadStatus = PluginLoadStatus.Error;
-                Console.WriteLine($"Failed to initialize plugin {manifest.Name}:"+ex);
+                PluginLoadedStatus.Add(info,manifest);
+                // Console.WriteLine($"Failed to initialize plugin {manifest.Name}:"+ex);
             }
         }
         
