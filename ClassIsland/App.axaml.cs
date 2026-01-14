@@ -969,6 +969,9 @@ public partial class App : AppBase, IAppHost
         app.Mutex?.ReleaseMutex();
     }
 
+    /// <summary>
+    /// 停止主应用程序并进行必要的清理。
+    /// </summary>
     public override void Stop()
     {
         if (CurrentLifetime == ClassIsland.Core.Enums.ApplicationLifetime.Stopping)

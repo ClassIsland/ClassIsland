@@ -321,6 +321,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
     }
 
+    /// <summary>
+    /// 计算并返回主窗口内容区域的中心点坐标（相对于屏幕/窗口坐标系）。
+    /// 在无法定位 GridWrapper 时返回上一次缓存的中心点。
+    /// </summary>
     public Point GetCenter()
     {
         GetCurrentDpi(out var dpi, out _);
