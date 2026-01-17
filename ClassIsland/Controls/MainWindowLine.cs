@@ -94,7 +94,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         set => SetValue(IsVisibleInternalProperty, value);
     }
     public static readonly RoutedEvent<RoutedEventArgs> LineVisibilityChangedEvent =
-        RoutedEvent.Register<ComponentPresenter, RoutedEventArgs>(nameof(LineVisibilityChanged),
+        RoutedEvent.Register<MainWindowLine, RoutedEventArgs>(nameof(LineVisibilityChanged),
             RoutingStrategies.Bubble);
     public event EventHandler<RoutedEventArgs> LineVisibilityChanged
     {
