@@ -15,7 +15,7 @@ public class WidthDoubleToRectConverter : IMultiValueConverter
         return new RectangleGeometry(new Rect(new Point(0, 0), new Size(v, 40.0)));
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         return null;
     }
