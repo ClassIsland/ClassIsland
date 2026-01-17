@@ -120,7 +120,7 @@
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
 	</ItemGroup>
-    <PropertyGroup Condition="'$(SelfContained)'=='true'">
+    <PropertyGroup Condition="'$(ClassIsland_SelfContained)'=='true'">
         <DefineConstants>$(DefineConstants);SelfContained</DefineConstants>
     </PropertyGroup>
 	<PropertyGroup Condition="'$(PublishBuilding)' != 'true' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX')">
@@ -180,6 +180,7 @@
 		<Message Text="Constants: $(DefineConstants)" Importance="high" />
 		<Message Text="IsMsix: $(IsMsix)" Importance="high" />
 		<Message Text="TargetFramework: $(TargetFramework)" Importance="high" />
+		<Message Text="ClassIsland_SelfContained: $(ClassIsland_SelfContained)" Importance="high" />
     </Target>
 
 	<Import Project="..\Global.props" />

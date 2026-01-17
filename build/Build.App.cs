@@ -70,6 +70,7 @@ partial class Build
         .Executes(() =>
         {
             var createDeb = Package == "deb";
+            var isSelfContained = BuildType == "selfContained";
             DotNetPublish(s => s
                 .SetProject(DesktopAppEntryProject)
                 .SetConfiguration(Configuration)
@@ -77,7 +78,8 @@ partial class Build
                 .SetProperty("PublishPlatform", OsName)
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
-                .SetProperty("SelfContained", BuildType == "selfContained")
+                .SetProperty("SelfContained", isSelfContained)
+                .SetProperty("ClassIsland_SelfContained", isSelfContained)
                 .SetProperty("PublishDir", Package == "pkg" ? AppOutputPath : AppPublishPath)
                 .SetProperty("DebUOSOutputFilePath", AppOutputPath / PublishArtifactName + ".deb")
                 .SetProperty("UOSDebVersion", AppVersion)
