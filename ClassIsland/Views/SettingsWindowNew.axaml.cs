@@ -536,7 +536,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         {
             
             Title = "需要重启",
-            Content = "部分设置需要重启以应用",
+            Content = "部分设置需要重启以应用更改。",
             PrimaryButtonText = "重启",
             CloseButtonText = "取消",
             DefaultButton = ContentDialogButton.Primary,

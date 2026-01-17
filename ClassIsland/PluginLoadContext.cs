@@ -47,7 +47,7 @@ public class PluginLoadContext : AssemblyLoadContext
 
     /// <summary>
     /// 在需要加载程序集时被调用。优先从已加载的插件依赖项上下文中解析，如果在插件目录中找到对应的程序集则从路径加载。
-    /// 对某些 WinRT 相关依赖会返回 null 以使用宿主的实现。
+    /// 对 WinRT 相关依赖会使用宿主的实现。
     /// </summary>
     protected override Assembly? Load(AssemblyName assemblyName)
     {
@@ -101,10 +101,10 @@ public class PluginLoadContext : AssemblyLoadContext
     }
 }
 
-[SupportedOSPlatform("macos")]
 /// <summary>
-/// macOS 专用的插件程序集与本地库解析器。根据插件目录结构（包括 runtimes 子目录）查找真实文件路径。
+/// macOS 专用的插件程序集与本地库解析器。根据插件目录结构查找真实文件路径。
 /// </summary>
+[SupportedOSPlatform("macos")]
 public class MacPluginAssemblyResolver(string componentAssemblyPath)
 {
     private readonly string _pluginDirectory = Path.GetDirectoryName(componentAssemblyPath) ?? "";
