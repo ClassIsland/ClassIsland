@@ -77,4 +77,14 @@ public class GeneralSettingsViewModel(
             OnPropertyChanged();
         } 
     }
+    
+    public bool IgnoreQtScaling
+    {
+        get => GlobalStorageService.GetValue("IgnoreQtScaling") == "1";
+        set
+        {
+            GlobalStorageService.SetValue("IgnoreQtScaling", value ? "1" : "0");
+            OnPropertyChanged();
+        } 
+    }
 }

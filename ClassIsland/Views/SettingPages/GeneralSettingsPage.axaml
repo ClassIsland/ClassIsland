@@ -365,6 +365,19 @@
                     <ToggleSwitch IsChecked="{Binding ViewModel.UseNativeTitlebar, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
+            
+            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xF4D1;}" 
+                                        Header="兼容缩放模式"
+                                        Description="启用后应用将忽略 QT_SCREEN_SCALE_FACTORS、QT_SCALE_FACTORS 等环境变量提供的缩放设置，而转为自行通过显示信息等渠道获取缩放信息。可能有助于解决部分平台（如 UOS）下的缩放行为异常问题。">
+                <controls3:SettingsExpander.IsVisible>
+                    <OnPlatform Default="False">
+                        <On Options="Linux" Content="True"/>
+                    </OnPlatform>
+                </controls3:SettingsExpander.IsVisible>
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.IgnoreQtScaling, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

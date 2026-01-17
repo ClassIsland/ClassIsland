@@ -39,20 +39,6 @@ class Program
 #endif
         var stopTokenSource = new CancellationTokenSource();
         ActivatePlatforms(out var postInit, stopTokenSource.Token);
-        // 修复 QT_SCREEN_SCALE_FACTORS 和 QT_SCALE_FACTORS 环境变量只有其一时，无法正常 DPI 缩放的问题 https://github.com/ClassIsland/ClassIsland/issues/1580
-        if (OperatingSystem.IsLinux() && 
-            Environment.GetEnvironmentVariable("QT_SCREEN_SCALE_FACTORS") !=
-            Environment.GetEnvironmentVariable("QT_SCALE_FACTORS"))
-        {
-            if (Environment.GetEnvironmentVariable("QT_SCREEN_SCALE_FACTORS") != null)
-            {
-                Environment.SetEnvironmentVariable("QT_SCALE_FACTORS", Environment.GetEnvironmentVariable("QT_SCREEN_SCALE_FACTORS"));
-            }
-            else if (Environment.GetEnvironmentVariable("QT_SCALE_FACTORS") != null)
-            {
-                Environment.SetEnvironmentVariable("QT_SCREEN_SCALE_FACTORS", Environment.GetEnvironmentVariable("QT_SCALE_FACTORS"));
-            }
-        }
         var buildApp = ClassIsland.Program.AppEntry(args);
         var renderingMode = int.TryParse(GlobalStorageService.GetValue("Win32RenderingMode") ?? "", out var v1)
             ? v1
