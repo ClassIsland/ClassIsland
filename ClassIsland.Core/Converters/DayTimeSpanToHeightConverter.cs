@@ -12,7 +12,7 @@ public class DayTimeSpanToHeightConverter : IValueConverter
         return TimeSpan.FromDays(1).Ticks / 1000000000.0 * s;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         return null;
     }

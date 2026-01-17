@@ -22,7 +22,7 @@ public class GuidToNotificationProviderConverter : IValueConverter
         return l.FirstOrDefault();
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         return null;
     }
