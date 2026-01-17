@@ -34,7 +34,8 @@
         "GenerateSecrets",
         "PostCleanup",
         "PublishApp",
-        "PublishLauncher"
+        "PublishLauncher",
+        "RestoreDesktopApp"
       ]
     },
     "Verbosity": {

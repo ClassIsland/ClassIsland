@@ -16,9 +16,23 @@ partial class Build
     AbsolutePath AppPublishArtifactPath;
     bool IsSecretFilled = false;
     
+    Target RestoreDesktopApp => _ => _
+        .Before(CompileApp)
+        .DependsOn(GenerateMetadata)
+        .Executes(() =>
+        {
+            DotNetRestore(s => s
+                .SetProjectFile(DesktopAppEntryProject)
+                .SetProperty("PublishBuilding", true)
+                .SetProperty("PublishPlatform", OsName)
+                .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
+                .SetProperty("ClassIsland_PlatformTarget", Arch));
+        });
+    
     Target CleanDesktopApp => _ => _
         .Before(CompileApp)
         .DependsOn(GenerateMetadata)
+        .DependsOn(RestoreDesktopApp)
         .Executes(() =>
         {
             DotNetClean(s => s
