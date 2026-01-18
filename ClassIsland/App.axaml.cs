@@ -691,6 +691,29 @@ public partial class App : AppBase, IAppHost
             {
                 GetService<ISplashService>().EndSplash();
             }
+
+            if (System.OperatingSystem.IsLinux() && GlobalStorageService.GetValue("IgnoreQtScaling") != "1")
+            {
+                var dialog = new TaskDialog()
+                {
+                    Title = "ClassIsland",
+                    Header = "当前界面缩放是否正常？",
+                    Content = "如果您发现当前界面缩放相对系统缩放过小，可点击【不正常】按钮使应用启用兼容缩放模式，以缓解在部分平台上的缩放异常的问题。",
+                    XamlRoot = GetRootWindow(),
+                    Buttons =
+                    [
+                        new TaskDialogButton("正常", false),
+                        new TaskDialogButton("不正常", true)
+                    ],
+                };
+                var r = await dialog.ShowAsync();
+                if (Equals(r, true))
+                {
+                    GlobalStorageService.SetValue("IgnoreQtScaling", "1");
+                    Restart();
+                    return;
+                }
+            }
             var w = IAppHost.GetService<WelcomeWindow>();
             await w.ShowDialog(PhonyRootWindow);
             if (!w.ViewModel.IsWizardCompleted)
