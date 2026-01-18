@@ -600,7 +600,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             var r = await new TaskDialog()
             {
                 Header = "导出诊断信息",
-                Content = "您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。",
+                Content = "您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案、所使用的插件（如有）和集控设置（如有），可能包含敏感信息，请在导出后注意检查。",
                 XamlRoot = this,
                 Buttons =
                 {

@@ -31,21 +31,16 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
         Timer.Start();
         return Task.CompletedTask;
     }
-
-    private long GetMemoryUsage()
+    /// <summary>
+    /// 获取主应用程序所使用的内存占用大小
+    /// </summary>
+    /// <remarks>macOS平台上会返回<see cref="Process.WorkingSet64"/>字段，其他平台会返回<see cref="Process.PrivateMemorySize64"/>字段</remarks>
+    /// <returns>主应用程序所使用的内存占用大小(Bytes)</returns>
+    public static long GetMemoryUsage()
     {
-        if (OperatingSystem.IsMacOS())
-            {
-                // 在macOS平台上，不可使用PrivateMemorySize64字段，详见https://github.com/dotnet/runtime/issues/105665
-                // 使用WorkingSet64字段，**结果可能略大**
-                return Process.GetCurrentProcess().WorkingSet64;
-            }
-            else
-            {
-                return Process.GetCurrentProcess().PrivateMemorySize64;
-            }
-
-            return 0;
+        return OperatingSystem.IsMacOS()
+            ? Process.GetCurrentProcess().WorkingSet64
+            : Process.GetCurrentProcess().PrivateMemorySize64;
     }
 
     private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
