@@ -578,10 +578,10 @@ public partial class App : AppBase, IAppHost
             switch (plugin.Key.LoadStatus)
             {
                 case PluginLoadStatus.Error:
-                    Logger.LogWarning($"插件加载失败:{plugin.Value.Name}:{plugin.Key.Exception}");
+                    Logger.LogWarning($"插件加载失败:{plugin.Value.Name}({plugin.Value.Version}):{plugin.Key.Exception}");
                     break;
                 case PluginLoadStatus.Loaded:
-                    loadedPlugin.Add(plugin.Value.Name);
+                    loadedPlugin.Add(plugin.Value.Name+$"({plugin.Value.Version})");
                     break;
                 default: break;
             }

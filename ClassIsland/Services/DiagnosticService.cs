@@ -14,6 +14,7 @@ using System.Windows;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
@@ -43,6 +44,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     {
         var settings = SettingsService.Settings;
         GetDeviceInfo(out var name, out var vendor);
+        List<string> loadedPlugin = new();
+        foreach (var plugin in PluginService.PluginLoadedStatus)
+        {
+            if (plugin.Key.LoadStatus is PluginLoadStatus.Loaded) loadedPlugin.Add(plugin.Value.Name + $"({plugin.Value.Version})");
+        }
         var list = new Dictionary<string, string>
         {
             {"SystemOsVersion",  RuntimeInformation.OSDescription},
@@ -53,10 +59,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {"AppRoot", CommonDirectories.AppRootFolderPath},
             {"AppCurrentDirectory", Environment.CurrentDirectory},
             {"AppExecutingEntrance", AppBase.ExecutingEntrance},
-            {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},
+            {"AppCurrentMemoryUsage", Helpers.StorageSizeHelper.FormatSize((ulong)MemoryWatchDogService.GetMemoryUsage())+$"({MemoryWatchDogService.GetMemoryUsage()} Bytes)"},
             {"AppStartupDurationMs", StartupDurationMs.ToString()},
             {"AppVersion", App.AppVersionLong},
             {"AppSubChannel", AppBase.Current.AppSubChannel},
+            {"AppLoadedPlugin",string.Join(", ",loadedPlugin)},
             {"AppIsAssetsTrimmed", AppBase.Current.IsAssetsTrimmed().ToString()},
             {
                 nameof(settings.DiagnosticFirstLaunchTime),
