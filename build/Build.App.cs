@@ -16,9 +16,23 @@ partial class Build
     AbsolutePath AppPublishArtifactPath;
     bool IsSecretFilled = false;
     
+    Target RestoreDesktopApp => _ => _
+        .Before(CompileApp)
+        .DependsOn(GenerateMetadata)
+        .Executes(() =>
+        {
+            DotNetRestore(s => s
+                .SetProjectFile(DesktopAppEntryProject)
+                .SetProperty("PublishBuilding", true)
+                .SetProperty("PublishPlatform", OsName)
+                .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
+                .SetProperty("ClassIsland_PlatformTarget", Arch));
+        });
+    
     Target CleanDesktopApp => _ => _
         .Before(CompileApp)
         .DependsOn(GenerateMetadata)
+        .DependsOn(RestoreDesktopApp)
         .Executes(() =>
         {
             DotNetClean(s => s
@@ -70,6 +84,7 @@ partial class Build
         .Executes(() =>
         {
             var createDeb = Package == "deb";
+            var isSelfContained = BuildType == "selfContained";
             DotNetPublish(s => s
                 .SetProject(DesktopAppEntryProject)
                 .SetConfiguration(Configuration)
@@ -77,7 +92,8 @@ partial class Build
                 .SetProperty("PublishPlatform", OsName)
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch)
-                .SetProperty("SelfContained", BuildType == "selfContained")
+                .SetProperty("SelfContained", isSelfContained)
+                .SetProperty("ClassIsland_SelfContained", isSelfContained)
                 .SetProperty("PublishDir", Package == "pkg" ? AppOutputPath : AppPublishPath)
                 .SetProperty("DebUOSOutputFilePath", AppOutputPath / PublishArtifactName + ".deb")
                 .SetProperty("UOSDebVersion", AppVersion)

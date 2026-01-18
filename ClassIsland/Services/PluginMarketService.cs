@@ -208,7 +208,8 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
     public void UpdateAllPlugins(bool discardDisabled=false)
     {
         var toUpdate = MergedPlugins
-            .Where(x => x.Value is { IsUpdateAvailable: true, DownloadProgress.IsDownloading: false, RestartRequired: false }
+            .Where(x => x.Value is { IsUpdateAvailable: true, RestartRequired: false }
+                        && (x.Value.DownloadProgress == null || x.Value.DownloadProgress.IsDownloading == false)
                         && (discardDisabled || x.Value.IsEnabled))
             .ToImmutableDictionary();
         if (toUpdate.Count <= 0)

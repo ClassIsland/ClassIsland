@@ -137,7 +137,8 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             return;
         }
         
-        if (Settings.LastAppVersion < Version.Parse("2.0.0.2"))
+        if (Settings.LastAppVersion < Version.Parse("2.0.0.2") 
+            || (Settings.LastAppVersion >= Version.Parse("2.0.1.0") && Settings.LastAppVersion < Version.Parse("2.0.1.2")) )
         {
             if (PlatformServices.DesktopService.IsUrlSchemeRegistered)
             {

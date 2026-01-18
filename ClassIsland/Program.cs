@@ -69,6 +69,13 @@ public static class Program
             // AllocConsole();
         }
 
+        // 修复特定情况下无法正常 DPI 缩放的问题 https://github.com/ClassIsland/ClassIsland/issues/1580
+        if (OperatingSystem.IsLinux() && GlobalStorageService.GetValue("IgnoreQtScaling") == "1")
+        {
+            Environment.SetEnvironmentVariable("QT_SCREEN_SCALE_FACTORS", null);
+            Environment.SetEnvironmentVariable("QT_SCALE_FACTORS", null);
+        }
+
         var mutex = new Mutex(true, "Global\\ClassIsland.Lock", out var createNew);
 
         if (!createNew)

@@ -63,19 +63,21 @@
         <Grid x:Key="ClassOffOverlay" ColumnDefinitions="*,*">
             <!-- 课间时间 -->
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0">
-                <Run Text="{Binding LessonsService.CurrentTimeLayoutItem.BreakNameText, StringFormat=本节{0}长, Mode=OneWay}"/>
+                <Run Text="本节" Classes="l-instructive"/><Run Text="{Binding LessonsService.CurrentTimeLayoutItem.BreakNameText, Mode=OneWay}"/><Run Text="长" Classes="l-instructive"/>
                 <Run Text="{Binding NextTimeLayoutDurationHumanized, Mode=OneWay}" FontWeight="Bold"/>
             </TextBlock>
 
             <!-- 科目信息 -->
             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal"
                         Margin="12 0">
-                <TextBlock VerticalAlignment="Center" Text="下节课是："/>
+                <TextBlock VerticalAlignment="Center" Text="下节课是：" Classes="l-instructive"/>
                 <TextBlock Text="{Binding LessonsService.NextClassSubject.Name}" FontWeight="Bold" FontSize="{DynamicResource MainWindowLargeFontSize}" VerticalAlignment="Center"/>
                 <TextBlock Margin="6 0 0 0" FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom"
                            Text="{Binding LessonsService.NextClassSubject.TeacherName}"
+                           Classes="l-secondary"
                            IsVisible="{Binding ShowTeacherName}"/>
-                <TextBlock Margin="2 0 0 0" FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
+                <TextBlock Margin="2 0 0 0" FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom"
+                           Classes="l-secondary">
                     <Run Text="{Binding LessonsService.NextClassTimeLayoutItem.StartTime, StringFormat={}{0:hh\\:mm}}">
                     </Run><Run Text="-">
                     </Run><Run Text="{Binding LessonsService.NextClassTimeLayoutItem.EndTime, StringFormat={}{0:hh\\:mm}}"/>
