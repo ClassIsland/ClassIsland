@@ -35,74 +35,7 @@
                       x:Key="NotificationSettingsDrawer"
                       DataContext="{Binding ViewModel.SelectedRegisterInfo}"
                       Width="500">
-            <StackPanel Margin="16"
-                        IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
-                        Classes="animated-intro settings-container">
-                <TextBlock Text="提醒高级设置" Theme="{StaticResource SubtitleTextBlockStyle}"
-                           Margin="0 0 0 4"/>
-                <controls3:InfoBar Message="此处的设置将覆盖全局设置和提醒请求中要求的设置。"
-                                   IsClosable="False" IsOpen="True"
-                                   IsVisible="{Binding ProviderSettings.IsSettingsEnabled}"/>
-
-                <!-- 启用提醒语音 -->
-                <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xED53;}"
-                                            Header="启用提醒语音"
-                                            Description="在发出提醒时用语音播报提醒内容。">
-                    <controls3:SettingsExpander.Footer>
-                        <ToggleSwitch IsChecked="{Binding ProviderSettings.IsSpeechEnabled, Mode=TwoWay}"/>
-                    </controls3:SettingsExpander.Footer>
-                </controls3:SettingsExpander>
-
-                <!-- 启用提醒强调特效 -->
-                <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xEA2F;}"
-                                            Header="启用提醒强调特效"
-                                            Description="启用后，发出提醒时会播放全屏强调特效。">
-                    <controls3:SettingsExpander.Footer>
-                        <ToggleSwitch IsChecked="{Binding ProviderSettings.IsNotificationEffectEnabled, Mode=TwoWay}"/>
-                    </controls3:SettingsExpander.Footer>
-                </controls3:SettingsExpander>
-
-                <!-- 启用提醒音效 -->
-                <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xE649;}"
-                                            Header="启用提醒音效"
-                                            Description="启用后，发出提醒时会播放音效。"
-                                            IsExpanded="{Binding ProviderSettings.IsNotificationSoundEnabled, Mode=OneWay}">
-                    <controls3:SettingsExpander.Footer>
-                        <ToggleSwitch IsChecked="{Binding ProviderSettings.IsNotificationSoundEnabled, Mode=TwoWay}"/>
-                    </controls3:SettingsExpander.Footer>
-                    <!-- 自定义音效 -->
-                    <controls3:SettingsExpanderItem
-                        IconSource="{ci:FluentIconSource &#xE6A5;}" Content="自定义音效"
-                        Description="设置自定义音效，留空以禁用。如果音效长于提醒显示时间，多出来的部分会被截断。">
-                        <controls3:SettingsExpanderItem.Footer>
-                            <StackPanel Orientation="Horizontal"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center">
-                                <TextBox MinWidth="150"
-                                         MaxWidth="150"
-                                         Watermark="（默认音效）"
-                                         Text="{Binding ProviderSettings.NotificationSoundPath}"
-                                         VerticalAlignment="Center"
-                                         Margin="0 0 2 0" />
-                                <controls1:FileBrowserButton
-                                    FileTypes="{x:Static local:NotificationSettingsPage.AudioFileTypes}"
-                                    Theme="{StaticResource TransparentButton}" Content="{ci:FluentIcon &#xE88D;}"
-                                    CurrentPath="{Binding ProviderSettings.NotificationSoundPath, Mode=TwoWay}"
-                                    VerticalAlignment="Center" />
-                            </StackPanel>
-                        </controls3:SettingsExpanderItem.Footer>
-                    </controls3:SettingsExpanderItem>
-                </controls3:SettingsExpander>
-                
-                <!-- 置顶提醒 -->
-                <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xE1A1;}"
-                                            Header="置顶提醒"
-                                            Description="在发出提醒时强制显示并置顶主界面。">
-                    <controls3:SettingsExpander.Footer>
-                        <ToggleSwitch IsChecked="{Binding ProviderSettings.IsNotificationTopmostEnabled, Mode=TwoWay}"/>
-                    </controls3:SettingsExpander.Footer>
-                </controls3:SettingsExpander>
-            </StackPanel>
+            
         </ScrollViewer>
     </controls:SettingsPageBase.Resources>
 
@@ -174,7 +107,7 @@
                                     <Grid DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
                                           d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}"
                                           Margin="-8 8"
-                                          Background="Transparent" RowDefinitions="*,*,Auto" ColumnDefinitions="Auto,Auto,*">
+                                          Background="Transparent" RowDefinitions="*,*,Auto" ColumnDefinitions="Auto,Auto,*,Auto">
 
                                         <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
                                         <!-- 图标 -->
@@ -195,10 +128,20 @@
                                         <!-- 描述 -->
                                         <TextBlock Grid.Column="2" Grid.Row="1"
                                                    TextWrapping="Wrap"
+                                                   Margin="0 0 0 4"
+                                                   Classes="l-instructive"
                                                    Text="{Binding Description}"
                                                    FontSize="12" />
+                                        
+                                        <controls1:NotificationProviderSettingsIndicatorControl 
+                                            Grid.Row="0" Grid.Column="3" Grid.RowSpan="2"
+                                            VerticalAlignment="Center"
+                                            IsVisible="{Binding ProviderSettings.IsSettingsEnabled}"
+                                            IsSettingsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
+                                            GlobalSettings="{Binding $parent[local:NotificationSettingsPage].ViewModel.SettingsService.Settings}"
+                                            Settings="{Binding ProviderSettings}"/>
 
-                                        <Expander Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2"
+                                        <Expander Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="2"
                                                   Background="{x:Null}"
                                                   Collapsed="Expander_OnCollapsed"
                                                   Padding="0"
@@ -218,7 +161,7 @@
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate>
                                                         <Grid Background="Transparent" RowDefinitions="*,*,Auto"
-                                                              ColumnDefinitions="Auto,*"
+                                                              ColumnDefinitions="Auto,*,Auto"
                                                               Margin="-12 4">
                                                             <!-- 图标 -->
                                                             <ContentPresenter Grid.Column="0" Grid.Row="0"
@@ -237,20 +180,43 @@
                                                             <!-- 描述 -->
                                                             <TextBlock Grid.Column="1" Grid.Row="1"
                                                                        TextWrapping="Wrap"
+                                                                       Classes="l-instructive"
                                                                        Text="{Binding Description}"
                                                                        FontSize="12" />
+                                                            
+                                                            <controls1:NotificationProviderSettingsIndicatorControl 
+                                                                Grid.Row="0" Grid.Column="2" Grid.RowSpan="3"
+                                                                VerticalAlignment="Center"
+                                                                IsVisible="{Binding ProviderSettings.IsSettingsEnabled}"
+                                                                IsSettingsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
+                                                                GlobalSettings="{Binding $parent[local:NotificationSettingsPage].ViewModel.SettingsService.Settings}"
+                                                                Settings="{Binding ProviderSettings}"/>
 
                                                         </Grid>
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
-                                            </ListBox></Expander>
+                                            </ListBox>
+                                        </Expander>
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </TabItem>
 
-                    <TabItem Header="高级设置">
+                    <TabItem >
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal"
+                                        Classes="items-valign-center"
+                                        Spacing="6">
+                                <TextBlock>高级设置</TextBlock>
+                                <controls1:NotificationProviderSettingsIndicatorControl 
+                                    VerticalAlignment="Center"
+                                    IsSettingsEnabled="True"
+                                    Margin="0 -2 0 2"
+                                    GlobalSettings="{Binding ViewModel.SettingsService.Settings}"
+                                    Settings="{Binding ViewModel.SettingsService.Settings}"/>
+                            </StackPanel>
+                        </TabItem.Header>
                         <ScrollViewer>
                             <StackPanel Margin="0 0 0 0" Classes="settings-container animated-intro">
                                 <!-- 启用提醒语音 -->
@@ -408,34 +374,121 @@
             <ci:Emptiable Content="{Binding ViewModel.SelectedRegisterInfo}">
                 <ci:Emptiable.ContentTemplate>
                     <DataTemplate x:DataType="notification1:INotificationSenderRegisterInfo">
-                        <Grid RowDefinitions="Auto,*">
-                            <ContentPresenter Grid.Row="1" ClipToBounds="True"
-                                              Content="{Binding ProviderInstance.SettingsElement, Converter={x:Static ci:ElementConverters.ControlPreventNullConverter}}" />
-                            <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                        IsVisible="{Binding ProviderInstance.SettingsElement, Converter={x:Static ObjectConverters.IsNull}}">
-                                <ci:FluentIcon Glyph="&#xEF26;" Width="72" Height="72"
-                                               FontSize="72" HorizontalAlignment="Center" />
-                                <TextBlock Text="该提醒提供方没有设置。" TextWrapping="Wrap"
-                                           Margin="0 8 0 0" />
-                            </StackPanel>
-
-                            <Border Grid.Row="0" Height="36">
-                                <Grid Margin="12 0" ColumnDefinitions="Auto,Auto,*">
-                                    <ToggleSwitch Grid.Column="0" Margin="0 -12 0 0"
-                                                  VerticalAlignment="Center" OnContent="" OffContent=""
-                                                  IsChecked="{Binding ProviderSettings.IsSettingsEnabled}" />
-                                    <Button Grid.Column="1" Theme="{StaticResource TransparentButton}"
-                                            Content="{ci:FluentIcon &#xEF27;}"
-                                            VerticalAlignment="Center"
-                                            ToolTip.Tip="查看提醒高级设置…"
-                                            Margin="0 0 6 0"
-                                            Click="ButtonOpenAdvancedProviderSettings_OnClick"
-                                            IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}" />
-                                    <TextBlock Grid.Column="2" Text="对此提醒来源启用特殊高级设置" VerticalAlignment="Center" />
+                        <TabControl Classes="compact" Padding="0">
+                            <TabItem Header="基本设置">
+                                <Grid RowDefinitions="Auto,*">
+                                    <ContentPresenter Grid.Row="1" ClipToBounds="True"
+                                                      Content="{Binding ProviderInstance.SettingsElement, Converter={x:Static ci:ElementConverters.ControlPreventNullConverter}}" />
+                                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                IsVisible="{Binding ProviderInstance.SettingsElement, Converter={x:Static ObjectConverters.IsNull}}">
+                                        <ci:FluentIcon Glyph="&#xEF26;" Width="72" Height="72"
+                                                       FontSize="72" HorizontalAlignment="Center" />
+                                        <TextBlock Text="该提醒提供方没有设置。" TextWrapping="Wrap"
+                                                   Margin="0 8 0 0" />
+                                    </StackPanel>
                                 </Grid>
-                            </Border>
+                            </TabItem>
+                            <TabItem>
+                                <TabItem.Header>
+                                    <StackPanel Orientation="Horizontal"
+                                                Classes="items-valign-center"
+                                                Spacing="6">
+                                        <TextBlock>高级设置</TextBlock>
+                                        <controls1:NotificationProviderSettingsIndicatorControl 
+                                            Margin="0 -2 0 2"
+                                            IsSettingsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
+                                            GlobalSettings="{Binding ViewModel.SettingsService.Settings, RelativeSource={RelativeSource AncestorType=local:NotificationSettingsPage}}"
+                                            Settings="{Binding ProviderSettings}"/>
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <ScrollViewer>
+                                    <StackPanel Classes="animated-intro settings-container"
+                                                Margin="0">
+                                        <!-- 对此提醒来源启用特殊高级设置 -->
+                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xe02f;}"
+                                                                    Header="对此提醒来源启用特殊高级设置"
+                                                                    Description="启用后，此处的设置将覆盖全局设置和提醒请求中要求的设置。">
+                                            <controls3:SettingsExpander.Footer>
+                                                <ToggleSwitch
+                                                    IsChecked="{Binding ProviderSettings.IsSettingsEnabled, Mode=TwoWay}" />
+                                            </controls3:SettingsExpander.Footer>
+                                        </controls3:SettingsExpander>
+                                        <Separator Margin="0 4" />
+                                        <controls3:InfoBar Message="此处的设置将覆盖全局设置和提醒请求中要求的设置。"
+                                                           IsClosable="False" IsOpen="True"
+                                                           IsVisible="{Binding ProviderSettings.IsSettingsEnabled}" />
+                                        <!-- 启用提醒语音 -->
+                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xED53;}"
+                                                                    IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
+                                                                    Header="启用提醒语音"
+                                                                    Description="在发出提醒时用语音播报提醒内容。">
+                                            <controls3:SettingsExpander.Footer>
+                                                <ToggleSwitch
+                                                    IsChecked="{Binding ProviderSettings.IsSpeechEnabled, Mode=TwoWay}" />
+                                            </controls3:SettingsExpander.Footer>
+                                        </controls3:SettingsExpander>
 
-                        </Grid>
+                                        <!-- 启用提醒强调特效 -->
+                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xEA2F;}"
+                                                                    IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
+                                                                    Header="启用提醒强调特效"
+                                                                    Description="启用后，发出提醒时会播放全屏强调特效。">
+                                            <controls3:SettingsExpander.Footer>
+                                                <ToggleSwitch
+                                                    IsChecked="{Binding ProviderSettings.IsNotificationEffectEnabled, Mode=TwoWay}" />
+                                            </controls3:SettingsExpander.Footer>
+                                        </controls3:SettingsExpander>
+
+                                        <!-- 启用提醒音效 -->
+                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xE649;}"
+                                                                    IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
+                                                                    Header="启用提醒音效"
+                                                                    Description="启用后，发出提醒时会播放音效。"
+                                                                    IsExpanded="{Binding ProviderSettings.IsNotificationSoundEnabled, Mode=OneWay}">
+                                            <controls3:SettingsExpander.Footer>
+                                                <ToggleSwitch
+                                                    IsChecked="{Binding ProviderSettings.IsNotificationSoundEnabled, Mode=TwoWay}" />
+                                            </controls3:SettingsExpander.Footer>
+                                            <!-- 自定义音效 -->
+                                            <controls3:SettingsExpanderItem
+                                                IconSource="{ci:FluentIconSource &#xE6A5;}" Content="自定义音效"
+                                                Description="设置自定义音效，留空以禁用。如果音效长于提醒显示时间，多出来的部分会被截断。">
+                                                <controls3:SettingsExpanderItem.Footer>
+                                                    <StackPanel Orientation="Horizontal"
+                                                                HorizontalAlignment="Right"
+                                                                VerticalAlignment="Center">
+                                                        <TextBox MinWidth="150"
+                                                                 MaxWidth="150"
+                                                                 Watermark="（默认音效）"
+                                                                 Text="{Binding ProviderSettings.NotificationSoundPath}"
+                                                                 VerticalAlignment="Center"
+                                                                 Margin="0 0 2 0" />
+                                                        <controls1:FileBrowserButton
+                                                            FileTypes="{x:Static local:NotificationSettingsPage.AudioFileTypes}"
+                                                            Theme="{StaticResource TransparentButton}"
+                                                            Content="{ci:FluentIcon &#xE88D;}"
+                                                            CurrentPath="{Binding ProviderSettings.NotificationSoundPath, Mode=TwoWay}"
+                                                            VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                </controls3:SettingsExpanderItem.Footer>
+                                            </controls3:SettingsExpanderItem>
+                                        </controls3:SettingsExpander>
+
+                                        <!-- 置顶提醒 -->
+                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xE1A1;}"
+                                                                    IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
+                                                                    Header="置顶提醒"
+                                                                    Description="在发出提醒时强制显示并置顶主界面。">
+                                            <controls3:SettingsExpander.Footer>
+                                                <ToggleSwitch
+                                                    IsChecked="{Binding ProviderSettings.IsNotificationTopmostEnabled, Mode=TwoWay}" />
+                                            </controls3:SettingsExpander.Footer>
+                                        </controls3:SettingsExpander>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+                        </TabControl>
+                        
                     </DataTemplate>
                 </ci:Emptiable.ContentTemplate>
             </ci:Emptiable>

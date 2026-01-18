@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:controls="clr-namespace:ClassIsland.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Controls.NotificationProviderSettingsIndicatorControl">
+    <Border Classes="nsettings-indicator"
+            DataContext="{Binding RelativeSource={RelativeSource AncestorType=controls:NotificationProviderSettingsIndicatorControl}}"
+        Classes.nsettings-enabled="{Binding IsSettingsEnabled}"
+        Height="18" MinWidth="18" BorderThickness="1" 
+        CornerRadius="9">
+        <Border.Styles>
+            <Style Selector="Border.nsettings-indicator">
+                <Setter Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}"/>
+                
+                <Style Selector="^.nsettings-enabled">
+                    <Setter Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDefaultBrush}"/>
+                </Style>
+                <Style Selector="^:not(.nsettings-enabled) > StackPanel">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+                <Style Selector="^ > StackPanel > ci|FluentIcon.enabled">
+                    <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                </Style>
+                <Style Selector="^ > StackPanel > ci|FluentIcon:not(.enabled)">
+                    <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+                </Style>
+            </Style>
+        </Border.Styles>
+
+        <StackPanel Orientation="Horizontal" Classes="items-halign-center" Spacing="2"
+                    Margin="6 0"
+                    TextElement.FontSize="13">
+            <ci:FluentIcon Glyph="&#xED53;" Classes.enabled="{Binding Settings.IsSpeechEnabled}"
+                           IsVisible="{Binding GlobalSettings.AllowNotificationSpeech, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
+            <ci:FluentIcon Glyph="&#xEA2F;" Classes.enabled="{Binding Settings.IsNotificationTopmostEnabled}"
+                           IsVisible="{Binding GlobalSettings.AllowNotificationTopmost, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
+            <ci:FluentIcon Glyph="&#xE649;" Classes.enabled="{Binding Settings.IsNotificationSoundEnabled}"
+                           IsVisible="{Binding GlobalSettings.AllowNotificationSound, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
+            <ci:FluentIcon Glyph="&#xE1A1;" Classes.enabled="{Binding Settings.IsNotificationEffectEnabled}"
+                           IsVisible="{Binding GlobalSettings.AllowNotificationEffect, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
+        </StackPanel>
+    </Border>
+</UserControl>
