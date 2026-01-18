@@ -42,7 +42,7 @@
                             </Classes.timeType-breaking>
                             <Border.Styles>
                                 <Style Selector="Border.timeLineItem-root">
-                                    <Setter Property="BorderThickness" Value="4 0 0 0"/>
+                                    <Setter Property="BorderThickness" Value="4 0.5 0.5 0.5"/>
                                     <Style Selector="^.timeType-onClass">
                                         <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
                                         <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
