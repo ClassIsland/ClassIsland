@@ -224,12 +224,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private async void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(ViewModel.SelectedPageInfo))
-        {
-            if (!IsLoaded || !ViewModel.IsRendered)
-                return;
-            await CoreNavigate(ViewModel.SelectedPageInfo);
-        }
+        if (e.PropertyName != nameof(ViewModel.SelectedPageInfo)) return;
+        if (!IsLoaded || !ViewModel.IsRendered)
+            return;
+        await CoreNavigate(ViewModel.SelectedPageInfo);
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

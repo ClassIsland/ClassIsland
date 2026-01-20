@@ -145,7 +145,6 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(IndexerName));
 
-
         if (CollectionChanged != null)
         {
             var e = new NotifyCollectionChangedEventArgs(
@@ -245,7 +244,6 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs($"{IndexerName}[{key}]"));
-
 
         if (CollectionChanged != null)
         {

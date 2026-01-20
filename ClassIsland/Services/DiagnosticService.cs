@@ -252,8 +252,6 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                        如果您要反馈这个问题或求助，请不要只上传本窗口的截图。请查阅事件查看器和日志获取完整的错误信息，并附加在求助信息中。
                        """;
         
-        
-        
         // TODO: 实现对话框
         // var r = MessageBox.Show(message, "ClassIsland", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
         // if (r == DialogResult.Cancel)
