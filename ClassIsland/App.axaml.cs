@@ -575,21 +575,14 @@ public partial class App : AppBase, IAppHost
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.StartingOffline;
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
-        List<string> loadedPlugin = new();
-        foreach (var plugin in PluginService.PluginLoadedStatus)
+        foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Error))
         {
-            switch (plugin.Key.LoadStatus)
-            {
-                case PluginLoadStatus.Error:
-                    Logger.LogWarning("插件加载失败:{PluginName}({PluginVersion}):{PluginLoadException}", plugin.Value.Name, plugin.Value.Version, plugin.Key.Exception);
-                    break;
-                case PluginLoadStatus.Loaded:
-                    loadedPlugin.Add(plugin.Value.Name+$"({plugin.Value.Version})");
-                    break;
-                default: break;
-            }
+            Logger.LogWarning("插件加载失败:{PluginName}({PluginVersion}):{PluginLoadException}", plugin.Value.Name, plugin.Value.Version, plugin.Key.Exception);
         }
-        if(loadedPlugin.Count==0) Logger.LogInformation("此次会话没有加载插件。"); else Logger.LogInformation("此次会话已加载插件:{loadedPlugin}",string.Join(",",loadedPlugin));
+        Logger.LogInformation(
+            PluginService.PluginLoadedStatus.Any(p => p.Key.LoadStatus == PluginLoadStatus.Loaded) ? "此次会话已加载插件:{loadedPlugin}" : "此次会话没有加载插件。",
+            string.Join(",", PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Loaded).Select(p => $"{p.Value.Name}({p.Value.Version})"))
+        );
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));
         lifetime.ApplicationStopping.Register(() =>
