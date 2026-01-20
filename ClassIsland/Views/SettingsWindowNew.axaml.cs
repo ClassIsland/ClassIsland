@@ -534,7 +534,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         var r = await new ContentDialog()
         {
-            
             Title = "需要重启",
             Content = "部分设置需要重启以应用更改。",
             PrimaryButtonText = "重启",
