@@ -513,6 +513,7 @@ public partial class App : AppBase, IAppHost
             : 1;
         if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
+            Logger?.LogDebug("应用多次启动失败。startupCount={startupCount}",startupCount);
             var dialog = new TaskDialog()
             {
                 Title = "进入恢复模式",
@@ -533,8 +534,10 @@ public partial class App : AppBase, IAppHost
                 ApplicationCommand.Recovery = true;
             }
         }
+        // 恢复模式
         if (ApplicationCommand.Recovery)
         {
+            Logger?.LogInformation("进入恢复模式");
             if (File.Exists(startupCountFilePath))
             {
                 File.Delete(startupCountFilePath);
@@ -578,7 +581,7 @@ public partial class App : AppBase, IAppHost
             switch (plugin.Key.LoadStatus)
             {
                 case PluginLoadStatus.Error:
-                    Logger.LogWarning($"插件加载失败:{plugin.Value.Name}({plugin.Value.Version}):{plugin.Key.Exception}");
+                    Logger.LogWarning("插件加载失败:{PluginName}({PluginVersion}):{PluginLoadException}", plugin.Value.Name, plugin.Value.Version, plugin.Key.Exception);
                     break;
                 case PluginLoadStatus.Loaded:
                     loadedPlugin.Add(plugin.Value.Name+$"({plugin.Value.Version})");
@@ -586,7 +589,7 @@ public partial class App : AppBase, IAppHost
                 default: break;
             }
         }
-        Logger.LogInformation($"此次会话已加载插件:{string.Join(", ",loadedPlugin)}");
+        if(loadedPlugin.Count==0) Logger.LogInformation("此次会话没有加载插件。"); else Logger.LogInformation("此次会话已加载插件:{loadedPlugin}",string.Join(",",loadedPlugin));
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));
         lifetime.ApplicationStopping.Register(() =>
@@ -599,7 +602,7 @@ public partial class App : AppBase, IAppHost
         if (ApplicationCommand.Verbose)
         {
             AppDomain.CurrentDomain.FirstChanceException += (o, args) => Logger.LogTrace(args.Exception, "发生内部异常");
-            AppDomain.CurrentDomain.AssemblyLoad += (o, args) => Logger.LogTrace("加载程序集：{} ({})", args.LoadedAssembly.FullName, args.LoadedAssembly.Location);
+            AppDomain.CurrentDomain.AssemblyLoad += (o, args) => Logger.LogTrace("加载程序集：{AssemblyFullName} ({AssemblyLocation})", args.LoadedAssembly.FullName, args.LoadedAssembly.Location);
         }
 #if DEBUG
         MemoryProfiler.GetSnapshot("Host built");
