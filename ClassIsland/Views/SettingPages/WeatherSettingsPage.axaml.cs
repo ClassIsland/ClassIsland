@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Windows;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -6,6 +7,7 @@ using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Platforms.Abstraction.Services;
@@ -31,6 +33,8 @@ public partial class WeatherSettingsPage : SettingsPageBase
 
     // [搜索城市或地区] 防抖定时器
     private DispatcherTimer SearchDebounceTimer { get; set; } = null!;
+    
+    public SettingsService SettingsService { get; }
 
     public WeatherSettingsPage(SettingsService settingsService, IWeatherService weatherService, ILocationService locationService, ILogger<WeatherSettingsPage> logger)
     {
@@ -38,6 +42,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
         DataContext = this;
         // [搜索城市或地区] 初始化防抖定时器
         Loaded += WeatherSettingsPage_Loaded;
+        SettingsService = settingsService;
     }
 
     private async void ButtonRefreshWeather_OnClick(object sender, RoutedEventArgs e)
@@ -130,6 +135,23 @@ public partial class WeatherSettingsPage : SettingsPageBase
     private void ButtonShowPos_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.HideLocationPos = false;
+    }
+    
+    private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(SettingsService.Settings.NoTLSWeatherRequests))
+        {
+            RequestRestart();
+        }
+    }
+    private void WeatherSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
+    }
+
+    private void WeatherSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
     }
 }
 
