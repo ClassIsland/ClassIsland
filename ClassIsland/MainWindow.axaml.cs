@@ -142,6 +142,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     public IRulesetService RulesetService { get; }
     public IWindowRuleService WindowRuleService { get; }
     public IManagementService ManagementService { get; }
+    public TopmostEffectWindow TopmostEffectWindow { get; }
 
     public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
 
@@ -196,7 +197,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         IUriNavigationService uriNavigationService,
         IRulesetService rulesetService,
         IWindowRuleService windowRuleService,
-        IManagementService managementService)
+        IManagementService managementService,
+        TopmostEffectWindow topmostEffectWindow)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -212,6 +214,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         RulesetService = rulesetService;
         WindowRuleService = windowRuleService;
         ManagementService = managementService;
+        TopmostEffectWindow = topmostEffectWindow;
 
         DataContext = this;
         
@@ -705,6 +708,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Windowing
+    private void StackPanelRootContainer_OnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        UpdateWindowPos();
+    }
+    
     private void ReCheckTopmostState()
     {
         if (ViewModel.IsWindowMode || ViewModel.IsEditMode)
@@ -743,9 +751,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost, true);
     }
 
-
-    
-
     private void UpdateWindowFeatures()
     {
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, ViewModel is { IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false });
@@ -775,8 +780,70 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, Topmost);
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, Topmost);
     }
-    
-    private void UpdateWindowPos(bool updateEffectWindow=false)
+
+    private void OldWindowPosUpdateImpl(bool updateEffectWindow)
+    {
+        GetCurrentDpi(out var dpiX, out var dpiY);
+
+        var scale = ViewModel.Settings.Scale;
+        ViewModel.GridRootLeft = Width / 10 * (scale - 1);
+        ViewModel.GridRootTop = Height / 10 * (scale - 1);
+
+        var screen = GetSelectedScreenSafe();
+        if (screen == null)
+            return;
+        double offsetAreaTop = ViewModel.Settings.IsIgnoreWorkAreaEnabled ? screen.Bounds.Y : screen.WorkingArea.Y;
+        double offsetAreaBottom = ViewModel.Settings.IsIgnoreWorkAreaEnabled ? screen.Bounds.Bottom : screen.WorkingArea.Bottom;
+        var aw = Bounds.Width * dpiX;
+        var ah = Bounds.Height * dpiY;
+        var c = (double)(screen.WorkingArea.X + screen.WorkingArea.Right) / 2;
+        var ox = ViewModel.Settings.WindowDockingOffsetX;
+        var oy = ViewModel.Settings.WindowDockingOffsetY;
+        Width = screen.WorkingArea.Width / dpiX;
+        //Height = GridRoot.ActualHeight * scale;
+        LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
+        LayoutContainerGrid.Height = Height = RootLayoutTransformControl.Bounds.Height;
+        ViewModel.ActualRootOffsetX = 0;
+        ViewModel.ActualRootOffsetY = 0;
+        var clientBoundsRelative = new PixelRect(0, 0, (int)aw, (int)ah)
+            .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
+        ViewModel.ActualClientBound = clientBoundsRelative;
+        // 和 WPF 不同，Avalonia 定位窗口用的基于物理屏幕的像素坐标，而非逻辑坐标，无需 dpi 转换。
+        var x = screen.WorkingArea.X + ox;
+        var y = ViewModel.Settings.WindowDockingLocation switch
+        {
+            0 => //左上
+                //Left = (screen.WorkingArea.Left + ox) / dpiX;
+                (offsetAreaTop + oy),
+            1 => // 中上
+                //Left = (c - aw / 2 + ox) / dpiX;
+                (offsetAreaTop + oy),
+            2 => // 右上
+                //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
+                (offsetAreaTop + oy),
+            3 => // 左下
+                //Left = (screen.WorkingArea.Left + ox) / dpiX;
+                (offsetAreaBottom - ah + oy),
+            4 => // 中下
+                //Left = (c - aw / 2 + ox) / dpiX;
+                (offsetAreaBottom - ah + oy),
+            5 => // 右下
+                //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
+                (offsetAreaBottom - ah + oy),
+            _ => 0.0
+        };
+        var newPos = new PixelPoint((int)x, (int)y);
+        if (Position != newPos)
+        {
+            Position = newPos;
+        }
+        if (updateEffectWindow)
+        {
+            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
+        }
+    }
+
+    private void NewWindowPosUpdateImpl()
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
@@ -819,6 +886,18 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         if (Position != newPos)
         {
             Position = newPos;
+        }
+    }
+    
+    private void UpdateWindowPos(bool updateEffectWindow=false)
+    {
+        if (ViewModel.IsEditMode)
+        {
+            NewWindowPosUpdateImpl();
+        }
+        else
+        {
+            OldWindowPosUpdateImpl(updateEffectWindow);
         }
     }
     
@@ -1363,5 +1442,4 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel.Settings.HasEditModeTutorialShown = true;
     }
     #endregion
-
 }
