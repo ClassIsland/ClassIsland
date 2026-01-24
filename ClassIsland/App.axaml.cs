@@ -577,11 +577,11 @@ public partial class App : AppBase, IAppHost
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
         foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Error))
         {
-            Logger.LogWarning("插件加载失败:{PluginName}({PluginVersion}):{PluginLoadException}", plugin.Value.Name, plugin.Value.Version, plugin.Key.Exception);
+            Logger.LogWarning("插件加载失败:{PluginName}({PluginID},{PluginVersion}):{PluginLoadException}", plugin.Value.Name,plugin.Value.Id, plugin.Value.Version, plugin.Key.Exception);
         }
         Logger.LogInformation(
             PluginService.PluginLoadedStatus.Any(p => p.Key.LoadStatus == PluginLoadStatus.Loaded) ? "此次会话已加载插件:{loadedPlugin}" : "此次会话没有加载插件。",
-            string.Join(",", PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Loaded).Select(p => $"{p.Value.Name}({p.Value.Version})"))
+            string.Join(",", PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Loaded).Select(p => $"{p.Value.Name}({p.Value.Id},{p.Value.Version})"))
         );
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));

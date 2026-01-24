@@ -50,7 +50,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         List<string> loadedPlugin = new();
         foreach (var plugin in PluginService.PluginLoadedStatus)
         {
-            if (plugin.Key.LoadStatus is PluginLoadStatus.Loaded) loadedPlugin.Add(plugin.Value.Name + $"({plugin.Value.Version})");
+            if (plugin.Key.LoadStatus is PluginLoadStatus.Loaded) loadedPlugin.Add(plugin.Value.Name + $"({plugin.Value.Id},{plugin.Value.Version})");
         }
         var list = new Dictionary<string, string>
         {
