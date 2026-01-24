@@ -122,11 +122,11 @@ public partial class App
         services.AddTransient<UpdateSettingsPageViewModel>();
         services.AddTransient<DebugPageViewModel>();
         // Views
-        services.AddTransient<ITopmostEffectPlayer>(x => x.GetRequiredService<MainWindow>());
+        services.AddTransient<ITopmostEffectPlayer>(x => x.GetRequiredService<TopmostEffectWindow>());
         services.AddSingleton<MainWindow>();
         // services.AddTransient<SplashWindowBase, SplashWindow>();
         // services.AddTransient<FeatureDebugWindow>();
-        // services.AddSingleton<TopmostEffectWindow>();
+        services.AddSingleton<TopmostEffectWindow>();
         services.AddSingleton<AppLogsWindow>();
         services.AddSingleton<SettingsWindowNew>();
         services.AddSingleton<ProfileSettingsWindow>();
