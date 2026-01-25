@@ -1,21 +1,23 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:ClassIsland.Controls.ScheduleDataGridCell"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared">
+        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+        xmlns:scheduleDataGrid="using:ClassIsland.Controls.ScheduleDataGrid"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
     <Styles.Resources>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
                                               x:Key="SubjectIdToSubjectConverter"/>
     </Styles.Resources>
     <Design.PreviewWith>
-        <controls:ScheduleDataGridCellControl />
+        <scheduleDataGrid:ScheduleDataGridCellControl />
     </Design.PreviewWith>
 
-    <Style Selector="controls|ScheduleDataGridCellControl">
+    <Style Selector="scheduleDataGrid|ScheduleDataGridCellControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <StackPanel Orientation="Horizontal" Margin="6 4">
+                <StackPanel Orientation="Horizontal" Margin="6 4"
+                            Classes.hide-default="{Binding ClassInfo.CurrentTimeLayoutItem.IsHideDefault, RelativeSource={RelativeSource TemplatedParent}}">
                     <Grid VerticalAlignment="Center">
                         <Grid.DataContext>
                             <MultiBinding
@@ -24,10 +26,14 @@
                                 TargetNullValue="{x:Static profile:Subject.Empty}">
                                 <TemplateBinding Property="Subjects"/>
                                 <Binding Path="ClassInfo.SubjectId" RelativeSource="{RelativeSource TemplatedParent}"
+                                         TargetNullValue="{x:Static system:Guid.Empty}"
+                                         FallbackValue="{x:Static system:Guid.Empty}"
                                          Mode="OneWay" />
                             </MultiBinding>
                         </Grid.DataContext>
                         <TextBlock Text="{Binding Name}" FontSize="13"
+                                   d:DataContext="{d:DesignInstance profile:Subject}"
+                                   ClipToBounds="False"
                                    VerticalAlignment="Center"/>
                     </Grid>
                     <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentFillColorDefaultBrush}"
@@ -36,5 +42,16 @@
                 </StackPanel>
             </ControlTemplate>
         </Setter>
+        
+        <Style Selector="^ /template/ StackPanel.hide-default > Grid > TextBlock">
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Opacity" Value="0.75"/>
+        </Style>
+        
     </Style>
+    
+    <Style Selector=":current scheduleDataGrid|ScheduleDataGridCellControl">
+        <Setter Property="IsSelected" Value="True"/>
+    </Style>
+    
 </Styles>

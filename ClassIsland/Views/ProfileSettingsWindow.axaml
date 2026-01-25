@@ -13,10 +13,10 @@
         xmlns:timeLine="clr-namespace:ClassIsland.Controls.TimeLine"
         xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
         xmlns:data="clr-namespace:FluentAvalonia.UI.Data;assembly=FluentAvalonia"
-        xmlns:scheduleDataGridCell="clr-namespace:ClassIsland.Controls.ScheduleDataGridCell"
         xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
         xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
         xmlns:profile1="clr-namespace:ClassIsland.Core.Enums.Profile;assembly=ClassIsland.Core"
+        xmlns:scheduleDataGrid="clr-namespace:ClassIsland.Controls.ScheduleDataGrid"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
         Title="档案编辑"
@@ -1637,7 +1637,7 @@
                                               SelectedItem="{Binding ViewModel.SelectedWeekClassPlanRow}"
                                               PreparingCellForEdit="DataGridWeekSchedule_OnPreparingCellForEdit"
                                               BeginningEdit="DataGridWeekSchedule_OnBeginningEdit"
-                                              scheduleDataGridCell:ScheduleDataGridCellControl.Subjects="{Binding ViewModel.ProfileService.Profile.Subjects, Mode=OneWay}"
+                                              scheduleDataGrid:ScheduleDataGridCellControl.Subjects="{Binding ViewModel.ProfileService.Profile.Subjects, Mode=OneWay}"
                                               x:Name="DataGridWeekSchedule">
                                         <DataGrid.Styles>
                                             <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
@@ -1648,49 +1648,49 @@
                                             <DataGridTemplateColumn Header="周日" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Sunday}"/>
+                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Sunday}"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                             <DataGridTemplateColumn Header="周一" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Monday}"/>
+                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Monday}"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                             <DataGridTemplateColumn Header="周二" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Tuesday}"/>
+                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Tuesday}"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                             <DataGridTemplateColumn Header="周三" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Wednesday}"/>
+                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Wednesday}"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                             <DataGridTemplateColumn Header="周四" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Thursday}"/>
+                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Thursday}"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                             <DataGridTemplateColumn Header="周五" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Friday}"/>
+                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Friday}"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                             <DataGridTemplateColumn Header="周六" Width="*">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <scheduleDataGridCell:ScheduleDataGridCellControl ClassInfo="{Binding Saturday}"/>
+                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Saturday}"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>

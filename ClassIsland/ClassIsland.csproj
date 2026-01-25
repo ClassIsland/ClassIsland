@@ -143,6 +143,10 @@
 	  <Compile Update="App.Services.xaml.cs">
 	    <DependentUpon>App.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Controls\ScheduleDataGrid\ScheduleDataGridCellControl.axaml.cs">
+	    <DependentUpon>ScheduleDataGridCellControl.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.en.resx" />
