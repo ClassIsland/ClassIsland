@@ -47,6 +47,9 @@
                 <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
                     <Setter Property="Fill" Value="{DynamicResource DataGridRowHoveredBackgroundColor}"/>
                 </Style>
+                <Style Selector="DataGridColumnHeader /template/ Grid#PART_ColumnHeaderRoot > Grid > ContentPresenter">
+                    <Setter Property="Grid.ColumnSpan" Value="2"/>
+                </Style>
             </DataGrid.Styles>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="时间" Width="88">
@@ -68,7 +71,12 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="周日" Width="*">
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[0]}"
+                            ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[0], Mode=OneWay}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <scheduleDataGrid:ScheduleDataGridCellControl 
@@ -77,7 +85,12 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="周一" Width="*">
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[1]}"
+                            ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[1], Mode=OneWay}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <scheduleDataGrid:ScheduleDataGridCellControl 
@@ -86,7 +99,12 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="周二" Width="*">
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[2]}"
+                            ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[2], Mode=OneWay}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <scheduleDataGrid:ScheduleDataGridCellControl
@@ -95,7 +113,12 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="周三" Width="*">
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[3]}"
+                            ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[3], Mode=OneWay}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <scheduleDataGrid:ScheduleDataGridCellControl 
@@ -104,7 +127,12 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="周四" Width="*">
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[4]}"
+                            ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[4], Mode=OneWay}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <scheduleDataGrid:ScheduleDataGridCellControl 
@@ -113,7 +141,12 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="周五" Width="*">
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[5]}"
+                            ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[5], Mode=OneWay}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <scheduleDataGrid:ScheduleDataGridCellControl 
@@ -122,7 +155,12 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="周六" Width="*">
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[6]}"
+                            ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[6], Mode=OneWay}"/>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <scheduleDataGrid:ScheduleDataGridCellControl 

@@ -19,6 +19,11 @@ namespace ClassIsland.Controls.ScheduleDataGrid;
 
 public partial class ScheduleDataGrid : UserControl
 {
+    public static readonly ClassPlan EmptyClassPlan = new()
+    {
+        Name = ""
+    };
+    
     public static readonly StyledProperty<DateTime> SelectedDateProperty = AvaloniaProperty.Register<ScheduleDataGrid, DateTime>(
         nameof(SelectedDate), DateTime.Now);
 
@@ -94,7 +99,7 @@ public partial class ScheduleDataGrid : UserControl
     public ObservableCollection<WeekClassPlanRow> WeekClassPlanRows { get; } = [];
     public ObservableCollection<DateTime> WeekDayDates { get; } = [default, default, default, default, default, default, default];
 
-    private List<ClassPlan?> _classPlansCache = [null, null, null, null, null, null, null];
+    public ObservableCollection<ClassPlan> ClassPlansCache { get; } = [EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan];
 
     public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>(); 
     public ILessonsService LessonsService { get; } = IAppHost.GetService<ILessonsService>(); 
@@ -160,9 +165,8 @@ public partial class ScheduleDataGrid : UserControl
             WeekDayDates[i] = baseDate.AddDays(i);
             maxClasses = Math.Max(maxClasses, classPlan?.Classes.Count ?? 0);
             classPlans.Add(classPlan);
+            ClassPlansCache[i] = classPlan ?? EmptyClassPlan;
         }
-
-        _classPlansCache = classPlans;
 
         for (var i = 0; i < maxClasses; i++)
         {
@@ -203,8 +207,8 @@ public partial class ScheduleDataGrid : UserControl
             row.TimePoint = TimeLayoutItem.Empty;
         }
         var classPlan = SelectedClassPlan 
-                        ?? _classPlansCache[1] 
-                        ?? _classPlansCache.FirstOrDefault(x => x != null);
+                        ?? ClassPlansCache[1] 
+                        ?? ClassPlansCache.FirstOrDefault(x => x != null);
         if (classPlan == null)
         {
             return;
@@ -242,7 +246,7 @@ public partial class ScheduleDataGrid : UserControl
         SelectedClassInfo = e.ClassInfo;
         SelectedClassPlanDate = e.Date;
         var index = Math.Clamp((SelectedClassPlanDate - ScheduleWeekViewBaseDate).Days, 0, 6);
-        SelectedClassPlan = _classPlansCache.Count >= 7 ? _classPlansCache[index] : null;
+        SelectedClassPlan = ClassPlansCache.Count >= 7 ? ClassPlansCache[index] : null;
         UpdateTimePoints();
     }
 }
