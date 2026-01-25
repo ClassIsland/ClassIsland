@@ -10,6 +10,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.ComponentModels;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
@@ -95,7 +96,7 @@ public partial class ScheduleDataGrid : UserControl
         get => GetValue(SelectedClassPlanDateProperty);
         set => SetValue(SelectedClassPlanDateProperty, value);
     }
-
+    
     public ObservableCollection<WeekClassPlanRow> WeekClassPlanRows { get; } = [];
     public ObservableCollection<DateTime> WeekDayDates { get; } = [default, default, default, default, default, default, default];
 
@@ -109,6 +110,8 @@ public partial class ScheduleDataGrid : UserControl
     {
         InitializeComponent();
         AddHandler(ScheduleDataGridCellControl.ScheduleDataGridSelectionChangedEvent, DataGridWeekSchedule_OnScheduleDataGridSelectionChanged, RoutingStrategies.Bubble);
+        SetValue(ScheduleDataGridCellControl.SubjectsListProperty,
+            new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid));
     }
 
     private void DataGridWeekSchedule_OnPreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)

@@ -1,14 +1,21 @@
 using System;
+using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
+using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
+using ClassIsland.Core.ComponentModels;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls.ScheduleDataGrid;
 
+[TemplatePart("PART_InnerListBox", typeof(ListBox))]
 public class ScheduleDataGridCellControl : TemplatedControl
 {
     public static readonly StyledProperty<ClassInfo> ClassInfoProperty = AvaloniaProperty.Register<ScheduleDataGridCellControl, ClassInfo>(
@@ -38,11 +45,26 @@ public class ScheduleDataGridCellControl : TemplatedControl
         set => SetValue(DateProperty, value);
     }
 
+    public static readonly StyledProperty<bool> IsEditPopupOpenProperty = AvaloniaProperty.Register<ScheduleDataGridCellControl, bool>(
+        nameof(IsEditPopupOpen));
+
+    public bool IsEditPopupOpen
+    {
+        get => GetValue(IsEditPopupOpenProperty);
+        set => SetValue(IsEditPopupOpenProperty, value);
+    }
+
     public static readonly AttachedProperty<ObservableDictionary<Guid, Subject>> SubjectsProperty =
         AvaloniaProperty.RegisterAttached<ScheduleDataGridCellControl, Control, ObservableDictionary<Guid, Subject>>("Subjects", inherits: true);
 
     public static void SetSubjects(Control obj, ObservableDictionary<Guid, Subject> value) => obj.SetValue(SubjectsProperty, value);
     public static ObservableDictionary<Guid, Subject> GetSubjects(Control obj) => obj.GetValue(SubjectsProperty);
+
+    public static readonly AttachedProperty<SyncDictionaryList<Guid, Subject>> SubjectsListProperty =
+        AvaloniaProperty.RegisterAttached<ScheduleDataGridCellControl, Control, SyncDictionaryList<Guid, Subject>>("SubjectsList", inherits: true);
+
+    public static void SetSubjectsList(Control obj, SyncDictionaryList<Guid, Subject> value) => obj.SetValue(SubjectsListProperty, value);
+    public static SyncDictionaryList<Guid, Subject> GetSubjectsList(Control obj) => obj.GetValue(SubjectsListProperty);
 
     public static readonly RoutedEvent<ScheduleDataGridSelectionChangedEventArgs>
         ScheduleDataGridSelectionChangedEvent =
@@ -55,6 +77,49 @@ public class ScheduleDataGridCellControl : TemplatedControl
     }
 
     private IDisposable? _isSelectedPropertyObserver;
+    private ListBox? _innerListBox;
+
+    public ScheduleDataGridCellControl()
+    {
+        AddHandler(DoubleTappedEvent, OnDoubleTapped);
+    }
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        if (_innerListBox != null)
+        {
+            _innerListBox.Tapped -= InnerListBoxOnTapped;
+        }
+        base.OnApplyTemplate(e);
+
+        _innerListBox = e.NameScope.Find<ListBox>("PART_InnerListBox");
+        if (_innerListBox != null)
+        {
+            _innerListBox.Tapped += InnerListBoxOnTapped;
+        }
+    }
+
+    private void InnerListBoxOnTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Source is Visual source && source.FindAncestorOfType<ListBoxItem>() != null)
+        {
+            IsEditPopupOpen = false;
+            e.Handled = true;
+        }
+    }
+
+    private void OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is Control c && c.FindAncestorOfType<ListBox>() != null)
+        {
+            return;
+        }
+        Console.WriteLine("begin edit");
+        if (ClassInfo != ClassInfo.Empty && ClassInfo != null)
+        {
+            IsEditPopupOpen = true;
+        }
+    }
 
     protected override void OnLoaded(RoutedEventArgs e)
     {

@@ -16,30 +16,83 @@
     <Style Selector="scheduleDataGrid|ScheduleDataGridCellControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <StackPanel Orientation="Horizontal" Margin="6 4"
-                            Classes.hide-default="{Binding ClassInfo.CurrentTimeLayoutItem.IsHideDefault, RelativeSource={RelativeSource TemplatedParent}}">
-                    <Grid VerticalAlignment="Center">
-                        <Grid.DataContext>
-                            <MultiBinding
-                                Converter="{StaticResource SubjectIdToSubjectConverter}"
-                                FallbackValue="{x:Static profile:Subject.Empty}"
-                                TargetNullValue="{x:Static profile:Subject.Empty}">
-                                <TemplateBinding Property="Subjects"/>
-                                <Binding Path="ClassInfo.SubjectId" RelativeSource="{RelativeSource TemplatedParent}"
-                                         TargetNullValue="{x:Static system:Guid.Empty}"
-                                         FallbackValue="{x:Static system:Guid.Empty}"
-                                         Mode="OneWay" />
-                            </MultiBinding>
-                        </Grid.DataContext>
-                        <TextBlock Text="{Binding Name}" FontSize="13"
-                                   d:DataContext="{d:DesignInstance profile:Subject}"
-                                   ClipToBounds="False"
-                                   VerticalAlignment="Center"/>
-                    </Grid>
-                    <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentFillColorDefaultBrush}"
-                             VerticalAlignment="Center" Margin="4 0 0 0"
-                             IsVisible="{Binding ClassInfo.IsChangedClass, FallbackValue={x:False}, RelativeSource={RelativeSource TemplatedParent}}"/>
-                </StackPanel>
+                <Border Background="Transparent">
+                    <StackPanel Orientation="Horizontal" Margin="6 4"
+                                Classes.hide-default="{Binding ClassInfo.CurrentTimeLayoutItem.IsHideDefault, RelativeSource={RelativeSource TemplatedParent}}">
+                        <Grid VerticalAlignment="Center">
+                            <Grid.DataContext>
+                                <MultiBinding
+                                    Converter="{StaticResource SubjectIdToSubjectConverter}"
+                                    FallbackValue="{x:Static profile:Subject.Empty}"
+                                    TargetNullValue="{x:Static profile:Subject.Empty}">
+                                    <TemplateBinding Property="Subjects" />
+                                    <Binding Path="ClassInfo.SubjectId"
+                                             RelativeSource="{RelativeSource TemplatedParent}"
+                                             TargetNullValue="{x:Static system:Guid.Empty}"
+                                             FallbackValue="{x:Static system:Guid.Empty}"
+                                             Mode="OneWay" />
+                                </MultiBinding>
+                            </Grid.DataContext>
+                            <TextBlock Text="{Binding Name}" FontSize="13"
+                                       d:DataContext="{d:DesignInstance profile:Subject}"
+                                       ClipToBounds="False"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentFillColorDefaultBrush}"
+                                 VerticalAlignment="Center" Margin="4 0 0 0"
+                                 IsVisible="{Binding ClassInfo.IsChangedClass, FallbackValue={x:False}, RelativeSource={RelativeSource TemplatedParent}}" />
+                        <Popup IsOpen="{TemplateBinding IsEditPopupOpen, Mode=TwoWay}"
+                               Placement="Right"
+                               x:Name="Popup"
+                               IsLightDismissEnabled="True">
+                            <Popup.Styles>
+                                <Style Selector="Popup[IsOpen=True] ListBox#PART_InnerListBox">
+                                    <Setter Property="ItemsSource">
+                                        <Binding
+                                            Path="$self.(scheduleDataGrid:ScheduleDataGridCellControl.SubjectsList).List"
+                                            x:CompileBindings="True"
+                                            RelativeSource="{RelativeSource TemplatedParent}" />
+                                    </Setter>
+                                    <Setter Property="SelectedValue" Value="{Binding ClassInfo.SubjectId, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                </Style>
+                            </Popup.Styles>
+                            <Border Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                    BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
+                                    BorderThickness="1"
+                                    Padding="6"
+                                    CornerRadius="6">
+                                <ListBox
+                                    x:Name="PART_InnerListBox"
+                                    Grid.Row="0" MaxHeight="400" MaxWidth="250"
+                                    SelectedValueBinding="{Binding Key}">
+                                    <ListBox.Styles>
+                                        <Style Selector="ListBoxItem">
+                                            <Setter Property="MinWidth" Value="0" />
+                                            <Setter Property="Padding" Value="0" />
+                                        </Style>
+                                    </ListBox.Styles>
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Classes="animated-resize" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="Transparent"
+                                                    Padding="8">
+                                                <TextBlock Text="{Binding Value.Initial}"
+                                                           ToolTip.Tip="{Binding Value.Name}"
+                                                           FontSize="16"
+                                                           IsHitTestVisible="False"
+                                                           Margin="2 0 0 0" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Border>
+                        </Popup>
+                    </StackPanel>
+                </Border>
             </ControlTemplate>
         </Setter>
         

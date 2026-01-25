@@ -459,414 +459,463 @@
                         x:Name="MasterTabControl"
                         SelectedIndex="{Binding ViewModel.MasterPageTabSelectIndex}">
                 <TabItem Header="课表" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500" />
-                            <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="2*" />
-                        </Grid.ColumnDefinitions>
-                        <!-- 课表选择区域 -->
-                        <Grid Grid.Column="0" RowDefinitions="Auto, *">
-                            <controls:CommandBar Grid.Row="0"
-                                                 DefaultLabelPosition="Right"
-                                                 IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}">
-                                <controls:CommandBar.PrimaryCommands>
-                                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe00d;}"
-                                                               Label="添加" ToolTip.Tip="新建一个课表。"
-                                                               Click="ButtonAddClassPlan_OnClick"/>
-                                    <controls:CommandBarSeparator />
-                                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe58d;}" 
-                                                               Label="复制" ToolTip.Tip="复制一个当前选中的课表的副本。"
-                                                               Click="ButtonDuplicateClassPlan_OnClick"/>
-                                </controls:CommandBar.PrimaryCommands>
-                            </controls:CommandBar>
-                            
-                            <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.ClassPlans.List, Mode=OneWay}"
-                                     SelectedValue="{Binding ViewModel.SelectedClassPlan}"
-                                     SelectedValueBinding="{Binding Value}"
-                                     SelectionChanged="SelectingItemsControlClassPlans_OnSelectionChanged">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <WrapPanel Orientation="Horizontal" Classes="animated-resize =">
-                                            <WrapPanel.Styles>
-                                                <Style Selector="Border.ClassTableTag">
-                                                    <Setter Property="BorderThickness" Value="1" />
-                                                    <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
-                                                    <Setter Property="Background" Value="{DynamicResource ControlFillColorTransparentBrush}" />
-                                                    
-                                                    <Style Selector="^.IsTagActivated">
-                                                        <Setter Property="BorderThickness" Value="0" />
-                                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
-                                                        <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                                                    </Style>
-                                                    
-                                                    <Style Selector="^.IsWrong">
-                                                        <Setter Property="BorderBrush" Value="IndianRed" />
-                                                        <Setter Property="TextElement.Foreground" Value="IndianRed"/>
-                                                    </Style>
-                                                </Style>
-                                            </WrapPanel.Styles>
-                                            
-                                            <WrapPanel Orientation="Horizontal">
-                                                <!-- 名称 -->
-                                                <ci:FluentIcon Glyph="&#xE6B1;" Margin="0 0 4 0" />
-                                                <TextBlock Text="{Binding Value.Name}" VerticalAlignment="Center" />
-                                                
-                                                <!-- 触发规则 -->
-                                                <Border MinWidth="20" Height="24" CornerRadius="12"
-                                                        Margin="4 0 2 0" Padding="8 0"
-                                                        VerticalAlignment="Center"
-                                                        ToolTip.Tip="触发规则"
-                                                        Classes="ClassTableTag l-secondary"
-                                                        Classes.IsTagActivated="{Binding Value.IsActivated}">
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <ci:FluentIcon Classes="ClassTableTagIcon"
-                                                                       Classes.IsEnabled="{Binding Value.IsEnabled}"
-                                                                       Classes.IsOverlay="{Binding Value.IsOverlay}">
-                                                            <ci:FluentIcon.Styles>
-                                                                <Style Selector="ci|FluentIcon.ClassTableTagIcon">
-                                                                    <Setter Property="Glyph" Value="&#xF180;" />
-                                                                    <Style Selector="^.IsEnabled">
-                                                                        <Setter Property="Glyph" Value="&#xF17E;" />
-                                                                    </Style>
-                                                                    <Style Selector="^.IsOverlay">
-                                                                        <Setter Property="Glyph" Value="&#xEA2F;" />
-                                                                    </Style>
-                                                                </Style>
-                                                            </ci:FluentIcon.Styles>
-                                                        </ci:FluentIcon>
-                                                        
-                                                        <TextBlock Margin="2 0 0 0"
-                                                                   Text="{Binding Value.TimeRule.WeekDay, Converter={StaticResource WeekIndexToWeekStringConverter}}">
-                                                            <TextBlock.IsVisible>
-                                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                                    <Binding Path="Value.IsEnabled" />
-                                                                    <Binding Path="!Value.IsOverlay" />
-                                                                </MultiBinding>
-                                                            </TextBlock.IsVisible>
-                                                        </TextBlock>
-                                                        
-                                                        <TextBlock Margin="2 0 0 0">
-                                                            <TextBlock.Resources>
-                                                                <system:Int32 x:Key="Zero">0</system:Int32>
-                                                            </TextBlock.Resources>
-                                                            
-                                                            <TextBlock.IsVisible>
-                                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                                    <Binding Path="Value.TimeRule.WeekCountDiv"
-                                                                             Converter="{x:Static ObjectConverters.NotEqual}"
-                                                                             ConverterParameter="{StaticResource Zero}" />
-                                                                    <Binding Path="Value.IsEnabled" />
-                                                                    <Binding Path="!Value.IsOverlay" />
-                                                                </MultiBinding>
-                                                            </TextBlock.IsVisible>
-                                                            
-                                                            <Run Text="{Binding Value.TimeRule.WeekCountDiv}" />
-                                                            <Run Text="/" />
-                                                            <Run Text="{Binding Value.TimeRule.WeekCountDivTotal}" />
-                                                            <Run Text="周" />
-                                                        </TextBlock>
-                                                        
-                                                        <TextBlock Margin="2 0 0 0" Padding="0 0 4 0"
-                                                                   Text="临时层" IsVisible="{Binding Value.IsOverlay}"
-                                                                   FontWeight="Bold" FontStyle="Italic"/>
-                                                    </StackPanel>
-                                                </Border>
-                                            </WrapPanel>
-                                            
-                                            <WrapPanel Orientation="Horizontal">
-                                                <!-- 课表群 -->
-                                                <Border MinWidth="20" Height="24" CornerRadius="12"
-                                                        Margin="2 0" Padding="8 0"
-                                                        VerticalAlignment="Center"
-                                                        Classes="ClassTableTag l-secondary"
-                                                        ToolTip.Tip="课表群"
-                                                        DataContext="{Binding Value.AssociatedGroup, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}}">
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <ci:FluentIcon Glyph="&#xE92F;" />
-                                                        
-                                                        <TextBlock VerticalAlignment="Center"
-                                                                   Margin="4 0 0 0"
-                                                                   Text="{Binding Name}"/>
-                                                    </StackPanel>
-                                                </Border>
-                                                
-                                                <!-- 时间表 -->
-                                                <Border MinWidth="20" Height="24" CornerRadius="12"
-                                                        Margin="2 0" Padding="8 0"
-                                                        VerticalAlignment="Center"
-                                                        ToolTip.Tip="时间表"
-                                                        Classes="ClassTableTag l-secondary"
-                                                        Classes.IsWrong="{Binding Value.TimeLayoutId, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static system:Guid.Empty}}">
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <ci:FluentIcon Glyph="&#xF0EB;" />
-                                                        
-                                                        <TextBlock VerticalAlignment="Center"
-                                                                   Margin="4 0 0 0"
-                                                                   Classes="ClassTableTimeLayoutTagText"
-                                                                   Classes.IsWrong="{Binding Value.TimeLayoutId, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static system:Guid.Empty}}">
-                                                            <TextBlock.Styles>
-                                                                <Style Selector="TextBlock.ClassTableTimeLayoutTagText">
-                                                                    <Setter Property="Text" Value="{Binding Value.TimeLayout.Name}" />
-                                                                    <Style Selector="^.IsWrong">
-                                                                        <Setter Property="Text" Value="？？？" />
-                                                                    </Style>
-                                                                </Style>
-                                                            </TextBlock.Styles>
-                                                        </TextBlock>
-                                                    </StackPanel>
-                                                </Border>
-                                            </WrapPanel>
-                                        </WrapPanel>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Grid>
-                        <GridSplitter Grid.Column="1" Margin="2 0" />
-                        <!-- 课表编辑区域 -->
-                        
-                        <ci:Emptiable Grid.Column="2" Data="{Binding ViewModel.SelectedClassPlan}"
-                                      IsDirectContentMode="True"
-                                      IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}">
-                            <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto">
-                                <controls:CommandBar Grid.Row="0" DefaultLabelPosition="Right" Classes="hide-popup-indicator">
-                                    <controls:CommandBar.PrimaryCommands>
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe9e4;}"
-                                                                   Label="详细信息"
-                                                                   Click="ButtonOpenClassPlanDetails_OnClick"
-                                                                   ToolTip.Tip="查看并编辑课表的基本信息。" />
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe077;}"
-                                                                   Label="详细看板"
-                                                                   ToolTip.Tip="查看课表的所有时间点的附加设置继承情况。" 
-                                                                   Click="ButtonOpenClassPlanDetailsWindow_OnClick"/>
-                                        <controls:CommandBarSeparator />
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xea2f;}"
-                                                                   Label="创建临时层"
-                                                                   ToolTip.Tip="创建临时课表层。"
-                                                                   Click="ButtonOpenCreateOverlayClassPlanFlyout_OnClick"
-                                                                   IsEnabled="{Binding ViewModel.SelectedClassPlan.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                            <controls:CommandBarButton.Flyout>
-                                                <Flyout>
-                                                    <StackPanel Spacing="12" Width="250">
-                                                        <TextBlock Text="创建临时层" FontWeight="Bold" />
-                                                        <ci:Field Label="时间表">
-                                                            <ComboBox
-                                                                HorizontalAlignment="Stretch"
-                                                                ItemsSource="{Binding ViewModel.TimeLayouts.List}"
-                                                                SelectedValueBinding="{Binding Key}"
-                                                                SelectedValue="{Binding ViewModel.TempOverlayClassPlanTimeLayoutId}">
-                                                                <ComboBox.ItemTemplate>
-                                                                    <DataTemplate>
-                                                                        <TextBlock Text="{Binding Value.Name}" />
-                                                                    </DataTemplate>
-                                                                </ComboBox.ItemTemplate>
-                                                            </ComboBox>
-                                                        </ci:Field>
-                                                        <ci:Field Label="启用日期">
-                                                            <CalendarDatePicker
-                                                                HorizontalAlignment="Stretch"
-                                                                SelectedDate="{Binding ViewModel.OverlayEnableDateTime}" />
-                                                        </ci:Field>
-                                                        <Button HorizontalAlignment="Right"
-                                                                Click="ButtonCreateTempOverlayClassPlan_OnClick"
-                                                                Classes="accent">
-                                                            <ci:IconText Glyph="&#xE424;" Text="创建" />
-                                                        </Button>
-                                                    </StackPanel>
-                                                </Flyout>
-                                            </controls:CommandBarButton.Flyout>
-                                        </controls:CommandBarButton>
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe61d;}"
-                                                                   Label="删除"
-                                                                   ToolTip.Tip="删除该课表。">
-                                            <controls:CommandBarButton.Flyout>
-                                                <Flyout>
-                                                    <StackPanel Spacing="8">
-                                                        <TextBlock FontWeight="Bold">
-                                                            <Run Text="要删除课表" />
-                                                            <Run Text="{Binding ViewModel.SelectedClassPlan.Name}" />
-                                                            <Run Text="吗？" />
-                                                        </TextBlock>
-                                                        <TextBlock Text="此操作无法撤销。" />
-                                                        <Button Content="删除" Classes="accent" Click="ButtonDeleteSelectedClassPlan_OnClick"/>
-                                                    </StackPanel>
-                                                </Flyout>
-                                            </controls:CommandBarButton.Flyout>
-                                        </controls:CommandBarButton>
-                                    </controls:CommandBar.PrimaryCommands>
+                    <TabControl TabStripPlacement="Bottom" Classes="compact" Padding="0">
+                        <TabItem Header="{ci:FluentIcon &#xE075;}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500" />
+                                    <ColumnDefinition Width="5" />
+                                    <ColumnDefinition Width="2*" />
+                                </Grid.ColumnDefinitions>
+                                <!-- 课表选择区域 -->
+                                <Grid Grid.Column="0" RowDefinitions="Auto, *">
+                                    <controls:CommandBar Grid.Row="0"
+                                                         DefaultLabelPosition="Right"
+                                                         IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}">
+                                        <controls:CommandBar.PrimaryCommands>
+                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe00d;}"
+                                                                       Label="添加" ToolTip.Tip="新建一个课表。"
+                                                                       Click="ButtonAddClassPlan_OnClick" />
+                                            <controls:CommandBarSeparator />
+                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe58d;}"
+                                                                       Label="复制" ToolTip.Tip="复制一个当前选中的课表的副本。"
+                                                                       Click="ButtonDuplicateClassPlan_OnClick" />
+                                        </controls:CommandBar.PrimaryCommands>
+                                    </controls:CommandBar>
 
-                                </controls:CommandBar>
+                                    <ListBox Grid.Row="1"
+                                             ItemsSource="{Binding ViewModel.ClassPlans.List, Mode=OneWay}"
+                                             SelectedValue="{Binding ViewModel.SelectedClassPlan}"
+                                             SelectedValueBinding="{Binding Value}"
+                                             SelectionChanged="SelectingItemsControlClassPlans_OnSelectionChanged">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <WrapPanel Orientation="Horizontal" Classes="animated-resize =">
+                                                    <WrapPanel.Styles>
+                                                        <Style Selector="Border.ClassTableTag">
+                                                            <Setter Property="BorderThickness" Value="1" />
+                                                            <Setter Property="BorderBrush"
+                                                                    Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                                                            <Setter Property="Background"
+                                                                    Value="{DynamicResource ControlFillColorTransparentBrush}" />
 
-                                <!-- 课表编辑 -->
-                                <Grid Grid.Row="1"
-                                      RowDefinitions="Auto,*"
-                                      DataContext="{Binding ViewModel.SelectedClassPlan}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="5" />
-                                        <ColumnDefinition Width="350" MinWidth="300" MaxWidth="450" />
-                                    </Grid.ColumnDefinitions>
+                                                            <Style Selector="^.IsTagActivated">
+                                                                <Setter Property="BorderThickness" Value="0" />
+                                                                <Setter Property="BorderBrush"
+                                                                        Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                                <Setter Property="TextElement.Foreground"
+                                                                        Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                                                                <Setter Property="Background"
+                                                                        Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                                                            </Style>
 
-                                    <!-- Warnings -->
-                                    <StackPanel Grid.Row="0" Grid.Column="0">
-                                        <StackPanel.Styles>
-                                            <Style Selector="StackPanel">
-                                                <Style Selector="^ controls|InfoBar#InfoBarNoTimeLayoutWarning">
-                                                    <Setter Property="IsVisible" Value="False"/>
-                                                </Style>
-                                                <Style Selector="^ controls|InfoBar#InfoBarEmptyTimeLayoutIdWarning">
-                                                    <Setter Property="IsVisible" Value="{Binding TimeLayout, Converter={x:Static ObjectConverters.IsNull}}"/>
-                                                </Style>
-                                            </Style>
-                                            <Style Selector="StackPanel.no-timeLayouts">
-                                                <Style Selector="^ controls|InfoBar#InfoBarNoTimeLayoutWarning">
-                                                    <Setter Property="IsVisible" Value="True"/>
-                                                </Style>
-                                                <Style Selector="^ controls|InfoBar#InfoBarEmptyTimeLayoutIdWarning">
-                                                    <Setter Property="IsVisible" Value="False"/>
-                                                </Style>
-                                            </Style>
-                                        </StackPanel.Styles>
-                                        <Interaction.Behaviors>
-                                            <DataTriggerBehavior Binding="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.TimeLayouts.Count}"
-                                                                 Value="0">
-                                                <AddClassAction ClassName="no-timeLayouts"/>
-                                            </DataTriggerBehavior>
-                                            <DataTriggerBehavior Binding="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.TimeLayouts.Count}"
-                                                                 Value="0"
-                                                                 ComparisonCondition="NotEqual">
-                                                <RemoveClassAction ClassName="no-timeLayouts"/>
-                                            </DataTriggerBehavior>
-                                        </Interaction.Behaviors>
-                                        <controls:InfoBar Message="在设置课表之前，您需要在【时间表】页面中根据学校的作息安排编排时间表。"
-                                                          Severity="Warning"
-                                                          IsOpen="True"
-                                                          IsClosable="False"
-                                                          x:Name="InfoBarNoTimeLayoutWarning">
-                                            <controls:InfoBar.ActionButton>
-                                                <Button Content="前往编排时间表" Click="ButtonGoToTimeLayoutsPage_OnClick"/>
-                                            </controls:InfoBar.ActionButton>
-                                        </controls:InfoBar>
-                                        <controls:InfoBar Message="您还没有为此课表设置时间表。在编排课程之前，您需要在【课表信息】中为本课表设置一个时间表。"
-                                                          Severity="Warning"
-                                                          IsOpen="True"
-                                                          IsClosable="False"
-                                                          x:Name="InfoBarEmptyTimeLayoutIdWarning">
-                                            <controls:InfoBar.ActionButton>
-                                                <Button Content="前往设置时间表" Click="ButtonOpenClassPlanDetails_OnClick"/>
-                                            </controls:InfoBar.ActionButton>
-                                        </controls:InfoBar>
-                                    </StackPanel>
-
-                                    <DataGrid Grid.Column="0" Grid.Row="1"
-                                              Margin="0 0 4 0"
-                                              AutoGenerateColumns="False"
-                                              ItemsSource="{Binding Classes}"
-                                              CanUserSortColumns="False"
-                                              RowHeaderWidth="150"
-                                              x:Name="DataGridClassPlans"
-                                              GridLinesVisibility="Horizontal"
-                                              SelectedIndex="{Binding ViewModel.SelectedClassIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}, Mode=TwoWay}"
-                                              SelectedItem="{Binding ViewModel.SelectedClassInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}">
-                                        <DataGrid.Columns>
-                                            <DataGridCheckBoxColumn Header="启用"
-                                                                    Binding="{Binding IsEnabled}" />
-                                            <DataGridTemplateColumn Header="时间" IsReadOnly="True">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock VerticalAlignment="Center"
-                                                                   FontSize="13"
-                                                                   Margin="6 0">
-                                                            <Run Text="{Binding CurrentTimeLayoutItem.StartTime, Mode=OneWay}" /><Run Text="-" /><Run
-                                                                Text="{Binding CurrentTimeLayoutItem.EndTime, Mode=OneWay}" />
-                                                        </TextBlock>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn Header="科目">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <Grid>
-                                                            <Grid.Styles>
-                                                                <Style Selector="ComboBox /template/ Border#Background">
-                                                                    <Setter Property="IsVisible" Value="False" />
-                                                                </Style>
-                                                            </Grid.Styles>
-                                                            <ComboBox
-                                                                ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}"
-                                                                SelectedValue="{Binding SubjectId}"
-                                                                HorizontalAlignment="Stretch"
-                                                                SelectedValueBinding="{Binding Key}"
-                                                                FontSize="13">
-                                                                <Interaction.Behaviors>
-                                                                    <BehaviorCollection>
-                                                                        <behaviors:ComboBoxEmptyFixBehavior/>
-                                                                    </BehaviorCollection>
-                                                                </Interaction.Behaviors>
-                                                                <ComboBox.ItemTemplate>
-                                                                    <DataTemplate>
-                                                                        <TextBlock Text="{Binding Value.Name}"
-                                                                            Margin="0 4 0 0" />
-                                                                    </DataTemplate>
-                                                                </ComboBox.ItemTemplate>
-                                                            </ComboBox>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-
-                                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
-                                                  Grid.Row="0" Grid.RowSpan="2"
-                                                  VerticalAlignment="Stretch" />
-
-                                    <TabControl Grid.Row="0" Grid.Column="2" Classes="compact"
-                                                Grid.RowSpan="2"
-                                                Padding="0">
-                                        <TabItem Header="编辑科目">
-                                            <Grid RowDefinitions="*, Auto">
-                                                <ListBox
-                                                    Grid.Row="0"
-                                                    SelectedValue="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.SubjectId, Mode=OneWay}"
-                                                    SelectedValueBinding="{Binding Key}"
-                                                    ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}">
-                                                    <ListBox.Styles>
-                                                        <Style Selector="ListBoxItem">
-                                                            <Setter Property="MinWidth" Value="0"/>
-                                                            <Setter Property="Padding" Value="0"/>
+                                                            <Style Selector="^.IsWrong">
+                                                                <Setter Property="BorderBrush" Value="IndianRed" />
+                                                                <Setter Property="TextElement.Foreground"
+                                                                        Value="IndianRed" />
+                                                            </Style>
                                                         </Style>
-                                                    </ListBox.Styles>
-                                                    <ListBox.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <WrapPanel Classes="animated-resize"/>
-                                                        </ItemsPanelTemplate>
-                                                    </ListBox.ItemsPanel>
-                                                    <ListBox.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <Border Background="Transparent"
-                                                                    PointerReleased="InputElementSubjectItem_OnTapped"
-                                                                    PointerPressed="InputElementSubjectItem_OnPointerPressed"
-                                                                    Padding="8">
-                                                                <TextBlock Text="{Binding Value.Initial}"
-                                                                           ToolTip.Tip="{Binding Value.Name}"
-                                                                           FontSize="16"
-                                                                           IsHitTestVisible="False"
-                                                                           Margin="2 0 0 0" />
-                                                            </Border>
-                                                        </DataTemplate>
-                                                    </ListBox.ItemTemplate>
-                                                </ListBox>
-                                                <CheckBox Margin="8" Grid.Row="1"
-                                                          IsChecked="{Binding ViewModel.SettingsService.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}"  Content="选完科目自动移动到下一个课程"/>
-                                            </Grid>
-                                        </TabItem>
-                                    </TabControl>
+                                                    </WrapPanel.Styles>
+
+                                                    <WrapPanel Orientation="Horizontal">
+                                                        <!-- 名称 -->
+                                                        <ci:FluentIcon Glyph="&#xE6B1;" Margin="0 0 4 0" />
+                                                        <TextBlock Text="{Binding Value.Name}"
+                                                                   VerticalAlignment="Center" />
+
+                                                        <!-- 触发规则 -->
+                                                        <Border MinWidth="20" Height="24" CornerRadius="12"
+                                                                Margin="4 0 2 0" Padding="8 0"
+                                                                VerticalAlignment="Center"
+                                                                ToolTip.Tip="触发规则"
+                                                                Classes="ClassTableTag l-secondary"
+                                                                Classes.IsTagActivated="{Binding Value.IsActivated}">
+                                                            <StackPanel Orientation="Horizontal"
+                                                                        VerticalAlignment="Center">
+                                                                <ci:FluentIcon Classes="ClassTableTagIcon"
+                                                                               Classes.IsEnabled="{Binding Value.IsEnabled}"
+                                                                               Classes.IsOverlay="{Binding Value.IsOverlay}">
+                                                                    <ci:FluentIcon.Styles>
+                                                                        <Style
+                                                                            Selector="ci|FluentIcon.ClassTableTagIcon">
+                                                                            <Setter Property="Glyph" Value="&#xF180;" />
+                                                                            <Style Selector="^.IsEnabled">
+                                                                                <Setter Property="Glyph"
+                                                                                    Value="&#xF17E;" />
+                                                                            </Style>
+                                                                            <Style Selector="^.IsOverlay">
+                                                                                <Setter Property="Glyph"
+                                                                                    Value="&#xEA2F;" />
+                                                                            </Style>
+                                                                        </Style>
+                                                                    </ci:FluentIcon.Styles>
+                                                                </ci:FluentIcon>
+
+                                                                <TextBlock Margin="2 0 0 0"
+                                                                           Text="{Binding Value.TimeRule.WeekDay, Converter={StaticResource WeekIndexToWeekStringConverter}}">
+                                                                    <TextBlock.IsVisible>
+                                                                        <MultiBinding
+                                                                            Converter="{x:Static BoolConverters.And}">
+                                                                            <Binding Path="Value.IsEnabled" />
+                                                                            <Binding Path="!Value.IsOverlay" />
+                                                                        </MultiBinding>
+                                                                    </TextBlock.IsVisible>
+                                                                </TextBlock>
+
+                                                                <TextBlock Margin="2 0 0 0">
+                                                                    <TextBlock.Resources>
+                                                                        <system:Int32 x:Key="Zero">0</system:Int32>
+                                                                    </TextBlock.Resources>
+
+                                                                    <TextBlock.IsVisible>
+                                                                        <MultiBinding
+                                                                            Converter="{x:Static BoolConverters.And}">
+                                                                            <Binding Path="Value.TimeRule.WeekCountDiv"
+                                                                                Converter="{x:Static ObjectConverters.NotEqual}"
+                                                                                ConverterParameter="{StaticResource Zero}" />
+                                                                            <Binding Path="Value.IsEnabled" />
+                                                                            <Binding Path="!Value.IsOverlay" />
+                                                                        </MultiBinding>
+                                                                    </TextBlock.IsVisible>
+
+                                                                    <Run Text="{Binding Value.TimeRule.WeekCountDiv}" />
+                                                                    <Run Text="/" />
+                                                                    <Run
+                                                                        Text="{Binding Value.TimeRule.WeekCountDivTotal}" />
+                                                                    <Run Text="周" />
+                                                                </TextBlock>
+
+                                                                <TextBlock Margin="2 0 0 0" Padding="0 0 4 0"
+                                                                           Text="临时层"
+                                                                           IsVisible="{Binding Value.IsOverlay}"
+                                                                           FontWeight="Bold" FontStyle="Italic" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </WrapPanel>
+
+                                                    <WrapPanel Orientation="Horizontal">
+                                                        <!-- 课表群 -->
+                                                        <Border MinWidth="20" Height="24" CornerRadius="12"
+                                                                Margin="2 0" Padding="8 0"
+                                                                VerticalAlignment="Center"
+                                                                Classes="ClassTableTag l-secondary"
+                                                                ToolTip.Tip="课表群"
+                                                                DataContext="{Binding Value.AssociatedGroup, Converter={StaticResource ClassPlanGroupIdToClassPlanGroupConverter}}">
+                                                            <StackPanel Orientation="Horizontal"
+                                                                        VerticalAlignment="Center">
+                                                                <ci:FluentIcon Glyph="&#xE92F;" />
+
+                                                                <TextBlock VerticalAlignment="Center"
+                                                                           Margin="4 0 0 0"
+                                                                           Text="{Binding Name}" />
+                                                            </StackPanel>
+                                                        </Border>
+
+                                                        <!-- 时间表 -->
+                                                        <Border MinWidth="20" Height="24" CornerRadius="12"
+                                                                Margin="2 0" Padding="8 0"
+                                                                VerticalAlignment="Center"
+                                                                ToolTip.Tip="时间表"
+                                                                Classes="ClassTableTag l-secondary"
+                                                                Classes.IsWrong="{Binding Value.TimeLayoutId, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static system:Guid.Empty}}">
+                                                            <StackPanel Orientation="Horizontal"
+                                                                        VerticalAlignment="Center">
+                                                                <ci:FluentIcon Glyph="&#xF0EB;" />
+
+                                                                <TextBlock VerticalAlignment="Center"
+                                                                           Margin="4 0 0 0"
+                                                                           Classes="ClassTableTimeLayoutTagText"
+                                                                           Classes.IsWrong="{Binding Value.TimeLayoutId, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static system:Guid.Empty}}">
+                                                                    <TextBlock.Styles>
+                                                                        <Style
+                                                                            Selector="TextBlock.ClassTableTimeLayoutTagText">
+                                                                            <Setter Property="Text"
+                                                                                Value="{Binding Value.TimeLayout.Name}" />
+                                                                            <Style Selector="^.IsWrong">
+                                                                                <Setter Property="Text" Value="？？？" />
+                                                                            </Style>
+                                                                        </Style>
+                                                                    </TextBlock.Styles>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </WrapPanel>
+                                                </WrapPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
                                 </Grid>
+                                <GridSplitter Grid.Column="1" Margin="2 0" />
+                                <!-- 课表编辑区域 -->
+
+                                <ci:Emptiable Grid.Column="2" Data="{Binding ViewModel.SelectedClassPlan}"
+                                              IsDirectContentMode="True"
+                                              IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}">
+                                    <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto">
+                                        <controls:CommandBar Grid.Row="0" DefaultLabelPosition="Right"
+                                                             Classes="hide-popup-indicator">
+                                            <controls:CommandBar.PrimaryCommands>
+                                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe9e4;}"
+                                                                           Label="详细信息"
+                                                                           Click="ButtonOpenClassPlanDetails_OnClick"
+                                                                           ToolTip.Tip="查看并编辑课表的基本信息。" />
+                                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe077;}"
+                                                                           Label="详细看板"
+                                                                           ToolTip.Tip="查看课表的所有时间点的附加设置继承情况。"
+                                                                           Click="ButtonOpenClassPlanDetailsWindow_OnClick" />
+                                                <controls:CommandBarSeparator />
+                                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xea2f;}"
+                                                                           Label="创建临时层"
+                                                                           ToolTip.Tip="创建临时课表层。"
+                                                                           Click="ButtonOpenCreateOverlayClassPlanFlyout_OnClick"
+                                                                           IsEnabled="{Binding ViewModel.SelectedClassPlan.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                                    <controls:CommandBarButton.Flyout>
+                                                        <Flyout>
+                                                            <StackPanel Spacing="12" Width="250">
+                                                                <TextBlock Text="创建临时层" FontWeight="Bold" />
+                                                                <ci:Field Label="时间表">
+                                                                    <ComboBox
+                                                                        HorizontalAlignment="Stretch"
+                                                                        ItemsSource="{Binding ViewModel.TimeLayouts.List}"
+                                                                        SelectedValueBinding="{Binding Key}"
+                                                                        SelectedValue="{Binding ViewModel.TempOverlayClassPlanTimeLayoutId}">
+                                                                        <ComboBox.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <TextBlock Text="{Binding Value.Name}" />
+                                                                            </DataTemplate>
+                                                                        </ComboBox.ItemTemplate>
+                                                                    </ComboBox>
+                                                                </ci:Field>
+                                                                <ci:Field Label="启用日期">
+                                                                    <CalendarDatePicker
+                                                                        HorizontalAlignment="Stretch"
+                                                                        SelectedDate="{Binding ViewModel.OverlayEnableDateTime}" />
+                                                                </ci:Field>
+                                                                <Button HorizontalAlignment="Right"
+                                                                        Click="ButtonCreateTempOverlayClassPlan_OnClick"
+                                                                        Classes="accent">
+                                                                    <ci:IconText Glyph="&#xE424;" Text="创建" />
+                                                                </Button>
+                                                            </StackPanel>
+                                                        </Flyout>
+                                                    </controls:CommandBarButton.Flyout>
+                                                </controls:CommandBarButton>
+                                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe61d;}"
+                                                                           Label="删除"
+                                                                           ToolTip.Tip="删除该课表。">
+                                                    <controls:CommandBarButton.Flyout>
+                                                        <Flyout>
+                                                            <StackPanel Spacing="8">
+                                                                <TextBlock FontWeight="Bold">
+                                                                    <Run Text="要删除课表" />
+                                                                    <Run
+                                                                        Text="{Binding ViewModel.SelectedClassPlan.Name}" />
+                                                                    <Run Text="吗？" />
+                                                                </TextBlock>
+                                                                <TextBlock Text="此操作无法撤销。" />
+                                                                <Button Content="删除" Classes="accent"
+                                                                        Click="ButtonDeleteSelectedClassPlan_OnClick" />
+                                                            </StackPanel>
+                                                        </Flyout>
+                                                    </controls:CommandBarButton.Flyout>
+                                                </controls:CommandBarButton>
+                                            </controls:CommandBar.PrimaryCommands>
+
+                                        </controls:CommandBar>
+
+                                        <!-- 课表编辑 -->
+                                        <Grid Grid.Row="1"
+                                              RowDefinitions="Auto,*"
+                                              DataContext="{Binding ViewModel.SelectedClassPlan}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="5" />
+                                                <ColumnDefinition Width="350" MinWidth="300" MaxWidth="450" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Warnings -->
+                                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                                <StackPanel.Styles>
+                                                    <Style Selector="StackPanel">
+                                                        <Style Selector="^ controls|InfoBar#InfoBarNoTimeLayoutWarning">
+                                                            <Setter Property="IsVisible" Value="False" />
+                                                        </Style>
+                                                        <Style
+                                                            Selector="^ controls|InfoBar#InfoBarEmptyTimeLayoutIdWarning">
+                                                            <Setter Property="IsVisible"
+                                                                    Value="{Binding TimeLayout, Converter={x:Static ObjectConverters.IsNull}}" />
+                                                        </Style>
+                                                    </Style>
+                                                    <Style Selector="StackPanel.no-timeLayouts">
+                                                        <Style Selector="^ controls|InfoBar#InfoBarNoTimeLayoutWarning">
+                                                            <Setter Property="IsVisible" Value="True" />
+                                                        </Style>
+                                                        <Style
+                                                            Selector="^ controls|InfoBar#InfoBarEmptyTimeLayoutIdWarning">
+                                                            <Setter Property="IsVisible" Value="False" />
+                                                        </Style>
+                                                    </Style>
+                                                </StackPanel.Styles>
+                                                <Interaction.Behaviors>
+                                                    <DataTriggerBehavior
+                                                        Binding="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.TimeLayouts.Count}"
+                                                        Value="0">
+                                                        <AddClassAction ClassName="no-timeLayouts" />
+                                                    </DataTriggerBehavior>
+                                                    <DataTriggerBehavior
+                                                        Binding="{Binding $parent[views:ProfileSettingsWindow].ViewModel.ProfileService.Profile.TimeLayouts.Count}"
+                                                        Value="0"
+                                                        ComparisonCondition="NotEqual">
+                                                        <RemoveClassAction ClassName="no-timeLayouts" />
+                                                    </DataTriggerBehavior>
+                                                </Interaction.Behaviors>
+                                                <controls:InfoBar Message="在设置课表之前，您需要在【时间表】页面中根据学校的作息安排编排时间表。"
+                                                                  Severity="Warning"
+                                                                  IsOpen="True"
+                                                                  IsClosable="False"
+                                                                  x:Name="InfoBarNoTimeLayoutWarning">
+                                                    <controls:InfoBar.ActionButton>
+                                                        <Button Content="前往编排时间表"
+                                                                Click="ButtonGoToTimeLayoutsPage_OnClick" />
+                                                    </controls:InfoBar.ActionButton>
+                                                </controls:InfoBar>
+                                                <controls:InfoBar
+                                                    Message="您还没有为此课表设置时间表。在编排课程之前，您需要在【课表信息】中为本课表设置一个时间表。"
+                                                    Severity="Warning"
+                                                    IsOpen="True"
+                                                    IsClosable="False"
+                                                    x:Name="InfoBarEmptyTimeLayoutIdWarning">
+                                                    <controls:InfoBar.ActionButton>
+                                                        <Button Content="前往设置时间表"
+                                                                Click="ButtonOpenClassPlanDetails_OnClick" />
+                                                    </controls:InfoBar.ActionButton>
+                                                </controls:InfoBar>
+                                            </StackPanel>
+
+                                            <DataGrid Grid.Column="0" Grid.Row="1"
+                                                      Margin="0 0 4 0"
+                                                      AutoGenerateColumns="False"
+                                                      ItemsSource="{Binding Classes}"
+                                                      CanUserSortColumns="False"
+                                                      RowHeaderWidth="150"
+                                                      x:Name="DataGridClassPlans"
+                                                      GridLinesVisibility="Horizontal"
+                                                      SelectedIndex="{Binding ViewModel.SelectedClassIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}, Mode=TwoWay}"
+                                                      SelectedItem="{Binding ViewModel.SelectedClassInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}">
+                                                <DataGrid.Columns>
+                                                    <DataGridCheckBoxColumn Header="启用"
+                                                                            Binding="{Binding IsEnabled}" />
+                                                    <DataGridTemplateColumn Header="时间" IsReadOnly="True">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock VerticalAlignment="Center"
+                                                                           FontSize="13"
+                                                                           Margin="6 0">
+                                                                    <Run
+                                                                        Text="{Binding CurrentTimeLayoutItem.StartTime, Mode=OneWay}" />
+                                                                    <Run Text="-" />
+                                                                    <Run
+                                                                        Text="{Binding CurrentTimeLayoutItem.EndTime, Mode=OneWay}" />
+                                                                </TextBlock>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="科目">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Grid>
+                                                                    <Grid.Styles>
+                                                                        <Style
+                                                                            Selector="ComboBox /template/ Border#Background">
+                                                                            <Setter Property="IsVisible" Value="False" />
+                                                                        </Style>
+                                                                    </Grid.Styles>
+                                                                    <ComboBox
+                                                                        ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}"
+                                                                        SelectedValue="{Binding SubjectId}"
+                                                                        HorizontalAlignment="Stretch"
+                                                                        SelectedValueBinding="{Binding Key}"
+                                                                        FontSize="13">
+                                                                        <Interaction.Behaviors>
+                                                                            <BehaviorCollection>
+                                                                                <behaviors:ComboBoxEmptyFixBehavior />
+                                                                            </BehaviorCollection>
+                                                                        </Interaction.Behaviors>
+                                                                        <ComboBox.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <TextBlock Text="{Binding Value.Name}"
+                                                                                    Margin="0 4 0 0" />
+                                                                            </DataTemplate>
+                                                                        </ComboBox.ItemTemplate>
+                                                                    </ComboBox>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+
+                                            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
+                                                          Grid.Row="0" Grid.RowSpan="2"
+                                                          VerticalAlignment="Stretch" />
+
+                                            <TabControl Grid.Row="0" Grid.Column="2" Classes="compact"
+                                                        Grid.RowSpan="2"
+                                                        Padding="0">
+                                                <TabItem Header="编辑科目">
+                                                    <Grid RowDefinitions="*, Auto">
+                                                        <ListBox
+                                                            Grid.Row="0"
+                                                            SelectedValue="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedClassInfo.SubjectId, Mode=OneWay}"
+                                                            SelectedValueBinding="{Binding Key}"
+                                                            ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.Subjects.List}">
+                                                            <ListBox.Styles>
+                                                                <Style Selector="ListBoxItem">
+                                                                    <Setter Property="MinWidth" Value="0" />
+                                                                    <Setter Property="Padding" Value="0" />
+                                                                </Style>
+                                                            </ListBox.Styles>
+                                                            <ListBox.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <WrapPanel Classes="animated-resize" />
+                                                                </ItemsPanelTemplate>
+                                                            </ListBox.ItemsPanel>
+                                                            <ListBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Border Background="Transparent"
+                                                                            PointerReleased="InputElementSubjectItem_OnTapped"
+                                                                            PointerPressed="InputElementSubjectItem_OnPointerPressed"
+                                                                            Padding="8">
+                                                                        <TextBlock Text="{Binding Value.Initial}"
+                                                                            ToolTip.Tip="{Binding Value.Name}"
+                                                                            FontSize="16"
+                                                                            IsHitTestVisible="False"
+                                                                            Margin="2 0 0 0" />
+                                                                    </Border>
+                                                                </DataTemplate>
+                                                            </ListBox.ItemTemplate>
+                                                        </ListBox>
+                                                        <CheckBox Margin="8" Grid.Row="1"
+                                                                  IsChecked="{Binding ViewModel.SettingsService.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}"
+                                                                  Content="选完科目自动移动到下一个课程" />
+                                                    </Grid>
+                                                </TabItem>
+                                            </TabControl>
+                                        </Grid>
+                                    </Grid>
+                                </ci:Emptiable>
                             </Grid>
-                        </ci:Emptiable>
-                    </Grid>
+                        </TabItem>
+                        <TabItem Header="{ci:FluentIcon &#xF0EB;}">
+                            <Grid>
+                                <scheduleDataGrid:ScheduleDataGrid/>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="{ci:FluentIcon &#xE304;}">
+                            <TextBlock Text="Coming s∞n"/>
+                        </TabItem>
+                    </TabControl>
+                    
                 </TabItem>
                 <TabItem Header="时间表" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <Grid>
