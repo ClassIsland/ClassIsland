@@ -1,4 +1,4 @@
-﻿<ci:AppBase x:Class="ClassIsland.App"
+<ci:AppBase x:Class="ClassIsland.App"
          xmlns="https://github.com/avaloniaui"
          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
          xmlns:ci="http://classisland.tech/schemas/xaml/core"
@@ -20,6 +20,7 @@
         <StyleInclude Source="avares://ClassIsland.Core/StylesBase.axaml"/>
         <StyleInclude Source="/Controls/ScheduleDataGrid/ScheduleDataGridCellControl.axaml"/>
         <StyleInclude Source="/Controls/ScheduleDataGrid/ScheduleDataGridColHeaderControl.axaml"/>
+        <StyleInclude Source="/Controls/ScheduleDataGrid/ScheduleDataGrid.axaml"/>
         <StyleInclude Source="/Controls/MainWindowLine.axaml"/>
         <StyleInclude Source="/Controls/WorkflowProgressIndicatorControl.axaml"/>
         <StyleInclude Source="/Controls/WorkflowProgressIndicatorItemControl.axaml"/>

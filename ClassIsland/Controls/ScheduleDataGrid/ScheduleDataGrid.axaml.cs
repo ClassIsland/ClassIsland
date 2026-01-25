@@ -18,7 +18,7 @@ using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls.ScheduleDataGrid;
 
-public partial class ScheduleDataGrid : UserControl
+public partial class ScheduleDataGrid : TemplatedControl
 {
     public static readonly ClassPlan EmptyClassPlan = new()
     {
@@ -108,10 +108,25 @@ public partial class ScheduleDataGrid : UserControl
     
     public ScheduleDataGrid()
     {
-        InitializeComponent();
         AddHandler(ScheduleDataGridCellControl.ScheduleDataGridSelectionChangedEvent, DataGridWeekSchedule_OnScheduleDataGridSelectionChanged, RoutingStrategies.Bubble);
         SetValue(ScheduleDataGridCellControl.SubjectsListProperty,
             new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid));
+        Loaded += Control_OnLoaded;
+    }
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        base.OnApplyTemplate(e);
+        var prevBtn = e.NameScope.Find<Button>("PART_ButtonPreviousWeek");
+        if (prevBtn != null)
+        {
+            prevBtn.Click += ButtonPreviousWeek_OnClick;
+        }
+        var nextBtn = e.NameScope.Find<Button>("PART_ButtonNextWeek");
+        if (nextBtn != null)
+        {
+            nextBtn.Click += ButtonNextWeek_OnClick;
+        }
     }
 
     private void DataGridWeekSchedule_OnPreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)
@@ -124,13 +139,13 @@ public partial class ScheduleDataGrid : UserControl
         
     }
 
-    private void ButtonNextWeek_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonNextWeek_OnClick(object? sender, RoutedEventArgs e)
     {
         SelectedDate += TimeSpan.FromDays(7);
         RefreshWeekScheduleRows();
     }
 
-    private void ButtonPreviousWeek_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonPreviousWeek_OnClick(object? sender, RoutedEventArgs e)
     {
         SelectedDate -= TimeSpan.FromDays(7);
         RefreshWeekScheduleRows();
