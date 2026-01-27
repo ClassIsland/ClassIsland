@@ -106,4 +106,17 @@ public class ClassInfo : AttachableSettingsObject
             OnPropertyChanged();
         }
     }
+    
+    /// <summary>
+    /// 当前<see cref="ClassInfo"/>是否为空
+    /// </summary>
+    [JsonIgnore] public bool IsEmpty { get; private set; } = false;
+
+    /// <summary>
+    /// 代表一个空的<see cref="ClassInfo"/>
+    /// </summary>
+    public static ClassInfo Empty { get; } = new()
+    {
+        IsEmpty = true
+    };
 }

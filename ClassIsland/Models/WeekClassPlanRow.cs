@@ -5,11 +5,12 @@ namespace ClassIsland.Models;
 
 public partial class WeekClassPlanRow : ObservableObject
 {
-    [ObservableProperty] private ClassInfo? _monday;
-    [ObservableProperty] private ClassInfo? _tuesday;
-    [ObservableProperty] private ClassInfo? _wednesday;
-    [ObservableProperty] private ClassInfo? _thursday;
-    [ObservableProperty] private ClassInfo? _friday;
-    [ObservableProperty] private ClassInfo? _saturday;
-    [ObservableProperty] private ClassInfo? _sunday;
+    [ObservableProperty] private TimeLayoutItem _timePoint = TimeLayoutItem.Empty;
+    [ObservableProperty] private ClassInfo _monday = ClassInfo.Empty;
+    [ObservableProperty] private ClassInfo _tuesday = ClassInfo.Empty;
+    [ObservableProperty] private ClassInfo _wednesday = ClassInfo.Empty;
+    [ObservableProperty] private ClassInfo _thursday = ClassInfo.Empty;
+    [ObservableProperty] private ClassInfo _friday = ClassInfo.Empty;
+    [ObservableProperty] private ClassInfo _saturday = ClassInfo.Empty;
+    [ObservableProperty] private ClassInfo _sunday = ClassInfo.Empty;
 }
