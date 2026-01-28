@@ -907,8 +907,66 @@
                             </Grid>
                         </TabItem>
                         <TabItem Header="{ci:FluentIcon &#xF0EB;}">
-                            <Grid>
-                                <scheduleDataGrid:ScheduleDataGrid/>
+                            <Grid >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="5" />
+                                    <ColumnDefinition Width="300" MinWidth="300" MaxWidth="450" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <scheduleDataGrid:ScheduleDataGrid Grid.Column="0"
+                                                                   SelectedClassInfo="{Binding ViewModel.SelectedClassInfo, Mode=TwoWay}"
+                                                                   SelectedClassInfoIndex="{Binding ViewModel.SelectedClassIndex, Mode=TwoWay}"
+                                                                   SelectedClassPlan="{Binding ViewModel.SelectedClassPlan, Mode=TwoWay}"
+                                                                   SelectedClassPlanDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"/>
+                                
+                                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
+                                                          Grid.Row="0" Grid.RowSpan="2"
+                                                          VerticalAlignment="Stretch" />
+
+                                <TabControl Grid.Row="0" Grid.Column="2" Classes="compact"
+                                            Grid.RowSpan="2"
+                                            Padding="0">
+                                    <TabItem Header="编辑科目">
+                                        <Grid RowDefinitions="*, Auto">
+                                            <ListBox
+                                                Grid.Row="0"
+                                                IsEnabled="{Binding !ViewModel.SelectedClassInfo.IsEmpty}"
+                                                SelectedValue="{Binding ViewModel.SelectedClassInfo.SubjectId, Mode=OneWay}"
+                                                SelectedValueBinding="{Binding Key}"
+                                                ItemsSource="{Binding ViewModel.Subjects.List}">
+                                                <ListBox.Styles>
+                                                    <Style Selector="ListBoxItem">
+                                                        <Setter Property="MinWidth" Value="0" />
+                                                        <Setter Property="Padding" Value="0" />
+                                                    </Style>
+                                                </ListBox.Styles>
+                                                <ListBox.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel Classes="animated-resize" />
+                                                    </ItemsPanelTemplate>
+                                                </ListBox.ItemsPanel>
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="Transparent"
+                                                                PointerReleased="InputElementSubjectItem_OnTapped"
+                                                                PointerPressed="InputElementSubjectItem_OnPointerPressed"
+                                                                Padding="8">
+                                                            <TextBlock Text="{Binding Value.Initial}"
+                                                                ToolTip.Tip="{Binding Value.Name}"
+                                                                FontSize="16"
+                                                                IsHitTestVisible="False"
+                                                                Margin="2 0 0 0" />
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                            <CheckBox Margin="8" Grid.Row="1"
+                                                      IsChecked="{Binding ViewModel.SettingsService.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}"
+                                                      Content="选完科目自动移动到下一个课程" />
+                                        </Grid>
+                                    </TabItem>
+                                </TabControl>
                             </Grid>
                         </TabItem>
                         <TabItem Header="{ci:FluentIcon &#xE304;}">

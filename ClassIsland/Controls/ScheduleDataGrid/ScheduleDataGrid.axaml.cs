@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -15,6 +16,8 @@ using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
+using DynamicData.Binding;
+using ReactiveUI;
 
 namespace ClassIsland.Controls.ScheduleDataGrid;
 
@@ -58,7 +61,7 @@ public partial class ScheduleDataGrid : TemplatedControl
     public DateTime ScheduleWeekViewBaseDate
     {
         get => GetValue(ScheduleWeekViewBaseDateProperty);
-        private set => SetValue(ScheduleWeekViewBaseDateProperty, value);
+        set => SetValue(ScheduleWeekViewBaseDateProperty, value);
     }
 
     public static readonly StyledProperty<ClassPlan?> SelectedClassPlanProperty = AvaloniaProperty.Register<ScheduleDataGrid, ClassPlan?>(
@@ -67,7 +70,7 @@ public partial class ScheduleDataGrid : TemplatedControl
     public ClassPlan? SelectedClassPlan
     {
         get => GetValue(SelectedClassPlanProperty);
-        private set => SetValue(SelectedClassPlanProperty, value);
+        set => SetValue(SelectedClassPlanProperty, value);
     }
 
     public static readonly StyledProperty<ClassInfo?> SelectedClassInfoProperty = AvaloniaProperty.Register<ScheduleDataGrid, ClassInfo?>(
@@ -76,8 +79,14 @@ public partial class ScheduleDataGrid : TemplatedControl
     public ClassInfo? SelectedClassInfo
     {
         get => GetValue(SelectedClassInfoProperty);
-        private set => SetValue(SelectedClassInfoProperty, value);
+        set => SetValue(SelectedClassInfoProperty, value);
     }
+
+    public static readonly AttachedProperty<SyncDictionaryList<Guid, TimeLayout>> TimeLayoutsProperty =
+        AvaloniaProperty.RegisterAttached<ScheduleDataGrid, Control, SyncDictionaryList<Guid, TimeLayout>>("TimeLayouts", inherits: true);
+
+    public static void SetTimeLayouts(Control obj, SyncDictionaryList<Guid, TimeLayout> value) => obj.SetValue(TimeLayoutsProperty, value);
+    public static SyncDictionaryList<Guid, TimeLayout> GetTimeLayouts(Control obj) => obj.GetValue(TimeLayoutsProperty);
 
     public static readonly StyledProperty<int> SelectedClassInfoIndexProperty = AvaloniaProperty.Register<ScheduleDataGrid, int>(
         nameof(SelectedClassInfoIndex));
@@ -96,12 +105,25 @@ public partial class ScheduleDataGrid : TemplatedControl
         get => GetValue(SelectedClassPlanDateProperty);
         set => SetValue(SelectedClassPlanDateProperty, value);
     }
+
+    public static readonly RoutedEvent<ScheduleDataGridClassPlanEventArgs>
+        OpenClassPlanSettingsRequestedEvent =
+            RoutedEvent.Register<ScheduleDataGrid, ScheduleDataGridClassPlanEventArgs>(nameof(OpenClassPlanSettingsRequested), RoutingStrategies.Bubble);
+
+    public event EventHandler<ScheduleDataGridClassPlanEventArgs> OpenClassPlanSettingsRequested
+    {
+        add => AddHandler(OpenClassPlanSettingsRequestedEvent, value);
+        remove => RemoveHandler(OpenClassPlanSettingsRequestedEvent, value);
+    }
+    
     
     public ObservableCollection<WeekClassPlanRow> WeekClassPlanRows { get; } = [];
     public ObservableCollection<DateTime> WeekDayDates { get; } = [default, default, default, default, default, default, default];
 
     public ObservableCollection<ClassPlan> ClassPlansCache { get; } = [EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan];
 
+    private List<IDisposable> _updateObservers = [];
+    
     public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>(); 
     public ILessonsService LessonsService { get; } = IAppHost.GetService<ILessonsService>(); 
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>(); 
@@ -111,7 +133,16 @@ public partial class ScheduleDataGrid : TemplatedControl
         AddHandler(ScheduleDataGridCellControl.ScheduleDataGridSelectionChangedEvent, DataGridWeekSchedule_OnScheduleDataGridSelectionChanged, RoutingStrategies.Bubble);
         SetValue(ScheduleDataGridCellControl.SubjectsListProperty,
             new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid));
+        SetValue(TimeLayoutsProperty,
+            new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid));
+        this.GetObservable(SelectedDateProperty).Skip(1).Subscribe(_ => RefreshWeekScheduleRows());
         Loaded += Control_OnLoaded;
+        Unloaded += OnUnloaded;
+    }
+
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        UnsubscribeAllObservers();
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -204,6 +235,7 @@ public partial class ScheduleDataGrid : TemplatedControl
         WeekIndex =
             (int)Math.Ceiling((baseDate.AddDays(6) - SettingsService.Settings.SingleWeekStartTime).TotalDays / 7);
         UpdateTimePoints();
+        UpdateObservers();
 
         return;
 
@@ -264,7 +296,42 @@ public partial class ScheduleDataGrid : TemplatedControl
         SelectedClassInfo = e.ClassInfo;
         SelectedClassPlanDate = e.Date;
         var index = Math.Clamp((SelectedClassPlanDate - ScheduleWeekViewBaseDate).Days, 0, 6);
-        SelectedClassPlan = ClassPlansCache.Count >= 7 ? ClassPlansCache[index] : null;
+        SelectedClassPlan = ClassPlansCache.Count >= 7
+            ? (ClassPlansCache[index] == EmptyClassPlan ? null : ClassPlansCache[index])
+            : null;
         UpdateTimePoints();
+    }
+
+    private void UpdateObservers()
+    {
+        UnsubscribeAllObservers();
+        foreach (var classPlan in ClassPlansCache)
+        {
+            var observer = classPlan.Classes.ObserveCollectionChanges()
+                .Subscribe(_ => RefreshWeekScheduleRows());
+            _updateObservers.Add(observer);
+        }
+        foreach (var (_, classPlan) in ProfileService.Profile.ClassPlans)
+        {
+            var observer = classPlan.TimeRule.WhenAnyPropertyChanged()
+                .Subscribe(x => RefreshWeekScheduleRows());
+            _updateObservers.Add(observer);
+        }
+
+        var globalObserver = ProfileService.Profile.ClassPlans.ObserveCollectionChanges()
+            .Subscribe(_ => RefreshWeekScheduleRows());
+        _updateObservers.Add(globalObserver);
+        var profileObserver = ProfileService.Profile.WhenAnyPropertyChanged()
+            .Subscribe(_ => RefreshWeekScheduleRows());
+        _updateObservers.Add(profileObserver);
+    }
+
+    private void UnsubscribeAllObservers()
+    {
+        foreach (var observer in _updateObservers)
+        {
+            observer.Dispose();
+        }
+        _updateObservers.Clear();
     }
 }

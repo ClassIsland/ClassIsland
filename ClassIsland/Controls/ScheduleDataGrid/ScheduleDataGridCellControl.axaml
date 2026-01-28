@@ -4,7 +4,8 @@
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         xmlns:scheduleDataGrid="using:ClassIsland.Controls.ScheduleDataGrid"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:controls="using:ClassIsland.Controls">
     <Styles.Resources>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
                                               x:Key="SubjectIdToSubjectConverter"/>
@@ -16,7 +17,9 @@
     <Style Selector="scheduleDataGrid|ScheduleDataGridCellControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="Transparent">
+                <Panel Background="Transparent">
+                    <Rectangle Name="BackgroundRectangle"
+                               Fill="{DynamicResource DataGridRowBackgroundBrush}"/>
                     <StackPanel Orientation="Horizontal" Margin="6 4"
                                 VerticalAlignment="Center"
                                 Classes.hide-default="{Binding ClassInfo.CurrentTimeLayoutItem.IsHideDefault, RelativeSource={RelativeSource TemplatedParent}}">
@@ -39,7 +42,7 @@
                                        x:Name="PART_MainTextBlock"
                                        ClipToBounds="False"
                                        VerticalAlignment="Center" />
-                            
+
                         </StackPanel>
                         <TextBlock Text="（无）" FontSize="13"
                                    x:Name="PART_EmptyTextBlock"
@@ -49,9 +52,12 @@
                                    VerticalAlignment="Center">
                             <TextBlock.IsVisible>
                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                    <Binding Path="ClassInfo.SubjectId" Converter="{x:Static ObjectConverters.Equal}"
-                                             ConverterParameter="{x:Static system:Guid.Empty}" RelativeSource="{RelativeSource TemplatedParent}"/>
-                                    <Binding Path="!ClassInfo.IsEmpty" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                    <Binding Path="ClassInfo.SubjectId"
+                                             Converter="{x:Static ObjectConverters.Equal}"
+                                             ConverterParameter="{x:Static system:Guid.Empty}"
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                    <Binding Path="!ClassInfo.IsEmpty"
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
                                 </MultiBinding>
                             </TextBlock.IsVisible>
                         </TextBlock>
@@ -70,7 +76,8 @@
                                             x:CompileBindings="True"
                                             RelativeSource="{RelativeSource TemplatedParent}" />
                                     </Setter>
-                                    <Setter Property="SelectedValue" Value="{Binding ClassInfo.SubjectId, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                    <Setter Property="SelectedValue"
+                                            Value="{Binding ClassInfo.SubjectId, RelativeSource={RelativeSource TemplatedParent}}" />
                                 </Style>
                             </Popup.Styles>
                             <Border Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
@@ -109,13 +116,32 @@
                             </Border>
                         </Popup>
                     </StackPanel>
-                </Border>
+                </Panel>
             </ControlTemplate>
         </Setter>
         
-        <Style Selector="^ /template/ StackPanel.hide-default > Panel > Grid > TextBlock">
+        <Style Selector="^ /template/ StackPanel.hide-default > StackPanel > TextBlock">
             <Setter Property="FontStyle" Value="Italic"/>
             <Setter Property="Opacity" Value="0.75"/>
+        </Style>
+        
+        <Style Selector="^[IsSelected=True]">
+            <Style Selector="^ /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="Fill" Value="{DynamicResource DataGridRowSelectedUnfocusedBackgroundBrush}" />
+                <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedUnfocusedBackgroundOpacity}" />
+            </Style>
+            <Style Selector="^:pointerover /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="Fill" Value="{DynamicResource DataGridRowSelectedHoveredUnfocusedBackgroundBrush}" />
+                <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedHoveredUnfocusedBackgroundOpacity}" />
+            </Style>
+            <Style Selector="^:focus /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="Fill" Value="{DynamicResource DataGridRowSelectedBackgroundBrush}" />
+                <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedBackgroundOpacity}" />
+            </Style>
+            <Style Selector="^:pointerover:focus /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="Fill" Value="{DynamicResource DataGridRowSelectedHoveredBackgroundBrush}" />
+                <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedHoveredBackgroundOpacity}" />
+            </Style>
         </Style>
         
     </Style>

@@ -627,8 +627,11 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         ViewModel.SelectedClassIndex++;
-        
-        DataGridClassPlans.ScrollIntoView(DataGridClassPlans.SelectedItem, DataGridClassPlans.Columns.LastOrDefault());
+
+        if (DataGridClassPlans.IsLoaded)
+        {
+            DataGridClassPlans.ScrollIntoView(DataGridClassPlans.SelectedItem, DataGridClassPlans.Columns.LastOrDefault());
+        }
     }
 
     #endregion

@@ -2,26 +2,31 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="using:ClassIsland.Controls.ScheduleDataGrid"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime">
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:controls1="using:ClassIsland.Controls">
     <Design.PreviewWith>
         <controls:ScheduleDataGridColHeaderControl />
     </Design.PreviewWith>
 
     <Style Selector="controls|ScheduleDataGridColHeaderControl">
         <!-- Set Defaults -->
-        <Setter Property="Margin" Value="0 4 8 4"/>
+        <Setter Property="Margin" Value="-4 4 4 4"/>
+        <Setter Property="Height" Value="48"/>
         <Setter Property="ClipToBounds" Value="False"/>
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid RowDefinitions="Auto Auto" >
-                    <TextBlock Grid.Row="0" Text="{Binding Date, RelativeSource={RelativeSource TemplatedParent}, StringFormat='ddd'}"/>
-                    <TextBlock Grid.Row="0" Text="{Binding Date, RelativeSource={RelativeSource TemplatedParent}, StringFormat='MM/dd'}"
+                <Grid RowDefinitions="Auto Auto Auto" ColumnDefinitions="* Auto">
+                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+                               Text="{Binding Date, RelativeSource={RelativeSource TemplatedParent}, StringFormat='ddd'}"/>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Date, RelativeSource={RelativeSource TemplatedParent}, StringFormat='MM/dd'}"
                                HorizontalAlignment="Right"/>
-                    <TextBlock Grid.Row="1" 
+                    <TextBlock Grid.Column="0" Grid.Row="1" 
+                               Grid.ColumnSpan="2"
                                FontSize="14" Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                Text="{Binding ClassPlan.Name, RelativeSource={RelativeSource TemplatedParent}, FallbackValue='', Mode=OneWay}"/>
-                    <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                        <TextBlock Margin="2 0 0 0" VerticalAlignment="Center">
+                    <StackPanel Grid.Column="0" Grid.Row="2" 
+                                HorizontalAlignment="Left" Orientation="Horizontal">
+                        <TextBlock Margin="0 0 0 0" VerticalAlignment="Center">
                             <TextBlock.Resources>
                                 <system:Int32 x:Key="Zero">0</system:Int32>
                             </TextBlock.Resources>
@@ -41,10 +46,26 @@
                         </TextBlock>
                         <TextBlock Text="临时层" IsVisible="{Binding ClassPlan.IsOverlay, RelativeSource={RelativeSource TemplatedParent}}"
                                    FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center"/>
-                        
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Grid.Row="2" Margin="0 -4 -4 -4" Orientation="Horizontal">
                         <Button Theme="{StaticResource TransparentButton}"
                                 Content="{ci:FluentIcon &#xEF27;}"
-                                Padding="8 4" Margin="0 -4 -4 -4" />
+                                x:Name="PART_ButtonOpenClassPlanSettings"
+                                ToolTip.Tip="课表信息…"
+                                Padding="8 4"  />
+                        <Button Theme="{StaticResource TransparentButton}"
+                                Content="{ci:FluentIcon &#xEBAC;}"
+                                ToolTip.Tip="更多选项"
+                                Padding="8 4">
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem Icon="{ci:FluentIcon &#xE077;}" Header="详细看板…"/>
+                                    <MenuItem Icon="{ci:FluentIcon &#xEA2F;}" Header="创建临时层"/>
+                                    <Separator/>
+                                    <MenuItem Icon="{ci:FluentIcon &#xE61D;}" Header="删除" Foreground="IndianRed"/>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </ControlTemplate>
@@ -52,12 +73,47 @@
         <Style Selector="^[IsClassPlanEmpty=True]">
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Grid RowDefinitions="Auto Auto">
+                    <Grid RowDefinitions="Auto *">
                         <TextBlock Grid.Row="0" Text="{Binding Date, RelativeSource={RelativeSource TemplatedParent}, StringFormat='ddd'}"/>
                         <TextBlock Grid.Row="0" Text="{Binding Date, RelativeSource={RelativeSource TemplatedParent}, StringFormat='MM/dd'}"
                                    HorizontalAlignment="Right"/>
-                        <TextBlock Grid.Row="1" Text="无课表" FontStyle="Italic"
-                                   FontSize="14"/>
+                        <Button Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                x:Name="PART_ButtonCreateClassPlan">
+                            <Button.Flyout>
+                                <Flyout>
+                                    <StackPanel Spacing="4" DataContext="{Binding ViewModel, RelativeSource={RelativeSource TemplatedParent}}">
+                                        <TextBlock Text="新建课表" FontWeight="Bold"/>
+                                        <ci:Field Label="时间表">
+                                            <ComboBox
+                                                SelectedValueBinding="{Binding Key}"
+                                                SelectedValue="{Binding ClassPlanTimeLayoutId, Mode=TwoWay}">
+                                                <ComboBox.ItemsSource>
+                                                    <Binding Path="$self.(controls:ScheduleDataGrid.TimeLayouts).List"
+                                                             x:CompileBindings="True"/>
+                                                </ComboBox.ItemsSource>
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Value.Name}"/>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </ci:Field>
+                                        <ci:Field Label="名称">
+                                            <TextBox Text="{Binding ClassPlanName, Mode=TwoWay}"
+                                                     Watermark="{Binding SuggestedClassPlanName, Mode=OneWay}"/>
+                                        </ci:Field>
+                                        <controls1:TimeRuleEditControl TimeRule="{Binding ClassPlanTimeRule, Mode=TwoWay}"/>
+                                        <Separator/>
+                                        <Button Classes="accent" Margin="0 2 0 0"
+                                                Command="{Binding CompleteCreateClassPlanCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                                                CommandParameter="{Binding $self}">
+                                            <ci:IconText Glyph="&#xE424;" Text="创建"/>
+                                        </Button>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                            <ci:IconText Glyph="&#xE00D;" Text="新课表"/>
+                        </Button>
                         
                     </Grid>
                 </ControlTemplate>
