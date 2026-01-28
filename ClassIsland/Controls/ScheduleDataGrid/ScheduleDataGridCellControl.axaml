@@ -18,30 +18,31 @@
             <ControlTemplate>
                 <Border Background="Transparent">
                     <StackPanel Orientation="Horizontal" Margin="6 4"
+                                VerticalAlignment="Center"
                                 Classes.hide-default="{Binding ClassInfo.CurrentTimeLayoutItem.IsHideDefault, RelativeSource={RelativeSource TemplatedParent}}">
-                        <Panel IsVisible="{Binding ClassInfo.SubjectId, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter={x:Static system:Guid.Empty}}">
-                            <Grid VerticalAlignment="Center">
-                                <Grid.DataContext>
-                                    <MultiBinding
-                                        Converter="{StaticResource SubjectIdToSubjectConverter}"
-                                        FallbackValue="{x:Static profile:Subject.Empty}"
-                                        TargetNullValue="{x:Static profile:Subject.Empty}">
-                                        <TemplateBinding Property="Subjects" />
-                                        <Binding Path="ClassInfo.SubjectId"
-                                                 RelativeSource="{RelativeSource TemplatedParent}"
-                                                 TargetNullValue="{x:Static system:Guid.Empty}"
-                                                 FallbackValue="{x:Static system:Guid.Empty}"
-                                                 Mode="OneWay" />
-                                    </MultiBinding>
-                                </Grid.DataContext>
-                                <TextBlock Text="{Binding Name}" FontSize="13"
-                                           d:DataContext="{d:DesignInstance profile:Subject}"
-                                           ClipToBounds="False"
-                                           VerticalAlignment="Center" />
+                        <StackPanel VerticalAlignment="Center">
+                            <StackPanel.DataContext>
+                                <MultiBinding
+                                    Converter="{StaticResource SubjectIdToSubjectConverter}"
+                                    FallbackValue="{x:Static profile:Subject.Empty}"
+                                    TargetNullValue="{x:Static profile:Subject.Empty}">
+                                    <TemplateBinding Property="Subjects" />
+                                    <Binding Path="ClassInfo.SubjectId"
+                                             RelativeSource="{RelativeSource TemplatedParent}"
+                                             TargetNullValue="{x:Static system:Guid.Empty}"
+                                             FallbackValue="{x:Static system:Guid.Empty}"
+                                             Mode="OneWay" />
+                                </MultiBinding>
+                            </StackPanel.DataContext>
+                            <TextBlock Text="{Binding Name}" FontSize="13"
+                                       d:DataContext="{d:DesignInstance profile:Subject}"
+                                       x:Name="PART_MainTextBlock"
+                                       ClipToBounds="False"
+                                       VerticalAlignment="Center" />
                             
-                            </Grid>
-                        </Panel>
+                        </StackPanel>
                         <TextBlock Text="（无）" FontSize="13"
+                                   x:Name="PART_EmptyTextBlock"
                                    Opacity="0.25"
                                    ClipToBounds="False"
                                    FontStyle="Italic"

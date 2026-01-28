@@ -16,6 +16,8 @@ using ClassIsland.Shared.Models.Profile;
 namespace ClassIsland.Controls.ScheduleDataGrid;
 
 [TemplatePart("PART_InnerListBox", typeof(ListBox))]
+[TemplatePart("PART_MainTextBlock", typeof(TextBlock))]
+[TemplatePart("PART_EmptyTextBlock", typeof(TextBlock))]
 public class ScheduleDataGridCellControl : TemplatedControl
 {
     public static readonly StyledProperty<ClassInfo> ClassInfoProperty = AvaloniaProperty.Register<ScheduleDataGridCellControl, ClassInfo>(
@@ -78,6 +80,8 @@ public class ScheduleDataGridCellControl : TemplatedControl
 
     private IDisposable? _isSelectedPropertyObserver;
     private ListBox? _innerListBox;
+    private TextBlock? _mainTextBlock;
+    private TextBlock? _emptyTextBlock;
 
     public ScheduleDataGridCellControl()
     {
@@ -97,6 +101,9 @@ public class ScheduleDataGridCellControl : TemplatedControl
         {
             _innerListBox.Tapped += InnerListBoxOnTapped;
         }
+
+        _mainTextBlock = e.NameScope.Find<TextBlock>("PART_MainTextBlock");
+        _emptyTextBlock = e.NameScope.Find<TextBlock>("PART_EmptyTextBlock");
     }
 
     private void InnerListBoxOnTapped(object? sender, TappedEventArgs e)
@@ -145,5 +152,10 @@ public class ScheduleDataGridCellControl : TemplatedControl
         base.OnUnloaded(e);
         _isSelectedPropertyObserver?.Dispose();
         _isSelectedPropertyObserver = null;
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
     }
 }
