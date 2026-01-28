@@ -161,7 +161,7 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
                 PrevDateTime = prev;
             }
 
-            Logger.LogInformation("成功地同步了时间，现在是 {}", nowBase);
+            Logger.LogInformation("成功地同步了时间，现在是 {}", nowBase.ToString());
             SyncStatusMessage = $"成功地在{nowBase}同步了时间";
         }
         catch (Exception ex)

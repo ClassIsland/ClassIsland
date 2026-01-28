@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -43,6 +44,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Services;
@@ -511,6 +513,7 @@ public partial class App : AppBase, IAppHost
             : 1;
         if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
+            Logger?.LogDebug("应用多次启动失败。startupCount={startupCount}",startupCount);
             var dialog = new TaskDialog()
             {
                 Title = "进入恢复模式",
@@ -531,8 +534,10 @@ public partial class App : AppBase, IAppHost
                 ApplicationCommand.Recovery = true;
             }
         }
+        // 恢复模式
         if (ApplicationCommand.Recovery)
         {
+            Logger?.LogInformation("进入恢复模式");
             if (File.Exists(startupCountFilePath))
             {
                 File.Delete(startupCountFilePath);
@@ -570,6 +575,14 @@ public partial class App : AppBase, IAppHost
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.StartingOffline;
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
+        foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Error))
+        {
+            Logger.LogWarning("插件加载失败:{PluginName}({PluginID},{PluginVersion}):{PluginLoadException}", plugin.Value.Name,plugin.Value.Id, plugin.Value.Version, plugin.Key.Exception);
+        }
+        Logger.LogInformation(
+            PluginService.PluginLoadedStatus.Any(p => p.Key.LoadStatus == PluginLoadStatus.Loaded) ? "此次会话已加载插件:{loadedPlugin}" : "此次会话没有加载插件。",
+            string.Join(",", PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Loaded).Select(p => $"{p.Value.Name}({p.Value.Id},{p.Value.Version})"))
+        );
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));
         lifetime.ApplicationStopping.Register(() =>
@@ -582,7 +595,7 @@ public partial class App : AppBase, IAppHost
         if (ApplicationCommand.Verbose)
         {
             AppDomain.CurrentDomain.FirstChanceException += (o, args) => Logger.LogTrace(args.Exception, "发生内部异常");
-            AppDomain.CurrentDomain.AssemblyLoad += (o, args) => Logger.LogTrace("加载程序集：{} ({})", args.LoadedAssembly.FullName, args.LoadedAssembly.Location);
+            AppDomain.CurrentDomain.AssemblyLoad += (o, args) => Logger.LogTrace("加载程序集：{AssemblyFullName} ({AssemblyLocation})", args.LoadedAssembly.FullName, args.LoadedAssembly.Location);
         }
 #if DEBUG
         MemoryProfiler.GetSnapshot("Host built");
@@ -975,6 +988,9 @@ public partial class App : AppBase, IAppHost
         app.Mutex?.ReleaseMutex();
     }
 
+    /// <summary>
+    /// 停止主应用程序并进行必要的清理。
+    /// </summary>
     public override void Stop()
     {
         if (CurrentLifetime == ClassIsland.Core.Enums.ApplicationLifetime.Stopping)

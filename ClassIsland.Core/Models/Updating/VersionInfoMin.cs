@@ -2,6 +2,9 @@
 
 namespace ClassIsland.Core.Models.Updating;
 
+/// <summary>
+/// 用于更新服务的简略版本信息模型
+/// </summary>
 public class VersionInfoMin : ObservableRecipient
 {
     private string _version = "";
@@ -10,6 +13,9 @@ public class VersionInfoMin : ObservableRecipient
     private DateTime _releaseTime = DateTime.MinValue;
     private string _versionInfoUrl = "";
 
+    /// <summary>
+    /// 版本号
+    /// </summary>
     public string Version
     {
         get => _version;
@@ -21,6 +27,9 @@ public class VersionInfoMin : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 版本标题
+    /// </summary>
     public string Title
     {
         get => _title;
@@ -32,6 +41,9 @@ public class VersionInfoMin : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 该版本的更新频道
+    /// </summary>
     public List<string> Channels
     {
         get => _channels;
@@ -43,6 +55,9 @@ public class VersionInfoMin : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 该版本的发布时间
+    /// </summary>
     public DateTime ReleaseTime
     {
         get => _releaseTime;
@@ -54,6 +69,9 @@ public class VersionInfoMin : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 指向该版本更详细更新信息的URL
+    /// </summary>
     public string VersionInfoUrl
     {
         get => _versionInfoUrl;

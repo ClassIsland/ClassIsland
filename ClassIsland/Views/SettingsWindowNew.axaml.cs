@@ -224,12 +224,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private async void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(ViewModel.SelectedPageInfo))
-        {
-            if (!IsLoaded || !ViewModel.IsRendered)
-                return;
-            await CoreNavigate(ViewModel.SelectedPageInfo);
-        }
+        if (e.PropertyName != nameof(ViewModel.SelectedPageInfo)) return;
+        if (!IsLoaded || !ViewModel.IsRendered)
+            return;
+        await CoreNavigate(ViewModel.SelectedPageInfo);
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -534,9 +532,8 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         var r = await new ContentDialog()
         {
-            
             Title = "需要重启",
-            Content = "部分设置需要重启以应用",
+            Content = "部分设置需要重启以应用更改。",
             PrimaryButtonText = "重启",
             CloseButtonText = "取消",
             DefaultButton = ContentDialogButton.Primary,
@@ -600,7 +597,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             var r = await new TaskDialog()
             {
                 Header = "导出诊断信息",
-                Content = "您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。",
+                Content = "您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案、所使用的插件（如有）和集控设置（如有），可能包含敏感信息，请在导出后注意检查。",
                 XamlRoot = this,
                 Buttons =
                 {

@@ -21,7 +21,7 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     private Dictionary<TKey, TValue> _inner;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AvaloniaDictionary{TKey, TValue}"/> class.
+    /// Initializes a new instance of the <see cref="ObservableDictionary{TKey, TValue}"/> class.
     /// </summary>
     public ObservableDictionary()
     {
@@ -29,7 +29,7 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AvaloniaDictionary{TKey, TValue}"/> class.
+    /// Initializes a new instance of the <see cref="ObservableDictionary{TKey, TValue}"/> class.
     /// </summary>
     public ObservableDictionary(int capacity)
     {
@@ -37,7 +37,7 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AvaloniaDictionary{TKey, TValue}"/> class using an IDictionary.
+    /// Initializes a new instance of the <see cref="ObservableDictionary{TKey, TValue}"/> class using an IDictionary.
     /// </summary>
     public ObservableDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey>? comparer = null)
     {
@@ -145,7 +145,6 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(IndexerName));
 
-
         if (CollectionChanged != null)
         {
             var e = new NotifyCollectionChangedEventArgs(
@@ -245,7 +244,6 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs($"{IndexerName}[{key}]"));
-
 
         if (CollectionChanged != null)
         {
