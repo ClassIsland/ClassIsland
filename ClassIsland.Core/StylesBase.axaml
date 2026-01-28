@@ -277,6 +277,14 @@
         </Style>
         <Setter Property="Theme" Value="{StaticResource TransparentButton}"/>
     </Style>
+    
+    <Style Selector="Border.popup-bg">
+        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="12"/>
+        <Setter Property="CornerRadius" Value="6"/>
+    </Style>
 
     <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>

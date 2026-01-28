@@ -45,7 +45,8 @@
                             <Run Text="{Binding ClassPlan.TimeRule.WeekCountDiv, RelativeSource={RelativeSource TemplatedParent}}" /><Run Text="/" /><Run Text="{Binding ClassPlan.TimeRule.WeekCountDivTotal, RelativeSource={RelativeSource TemplatedParent}}" /><Run Text="周" />
                         </TextBlock>
                         <TextBlock Text="临时层" IsVisible="{Binding ClassPlan.IsOverlay, RelativeSource={RelativeSource TemplatedParent}}"
-                                   FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center"/>
+                                   FontWeight="Bold" FontStyle="Italic" VerticalAlignment="Center"
+                                   ClipToBounds="False"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Grid.Row="2" Margin="0 -4 -4 -4" Orientation="Horizontal">
                         <Button Theme="{StaticResource TransparentButton}"
@@ -53,19 +54,6 @@
                                 x:Name="PART_ButtonOpenClassPlanSettings"
                                 ToolTip.Tip="课表信息…"
                                 Padding="8 4"  />
-                        <Button Theme="{StaticResource TransparentButton}"
-                                Content="{ci:FluentIcon &#xEBAC;}"
-                                ToolTip.Tip="更多选项"
-                                Padding="8 4">
-                            <Button.Flyout>
-                                <MenuFlyout>
-                                    <MenuItem Icon="{ci:FluentIcon &#xE077;}" Header="详细看板…"/>
-                                    <MenuItem Icon="{ci:FluentIcon &#xEA2F;}" Header="创建临时层"/>
-                                    <Separator/>
-                                    <MenuItem Icon="{ci:FluentIcon &#xE61D;}" Header="删除" Foreground="IndianRed"/>
-                                </MenuFlyout>
-                            </Button.Flyout>
-                        </Button>
                     </StackPanel>
                 </Grid>
             </ControlTemplate>

@@ -17,6 +17,7 @@ using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.VisualTree;
+using ClassIsland.Controls.ScheduleDataGrid;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -632,6 +633,19 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             DataGridClassPlans.ScrollIntoView(DataGridClassPlans.SelectedItem, DataGridClassPlans.Columns.LastOrDefault());
         }
+    }
+    
+    private void ButtonRefreshScheduleDataGrid_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ScheduleDataGrid.RefreshWeekScheduleRows();
+    }
+    
+    private void ScheduleDataGrid_OnOpenClassPlanSettingsRequested(object? sender, ScheduleDataGridClassPlanEventArgs e)
+    {
+        ViewModel.SelectedClassPlan = e.ClassPlan;
+        // ViewModel.ScheduleCalendarSelectedDate = e.Date;
+        UpdateClassPlanInfoEditorTimeLayoutComboBox();
+        OpenDrawer("ClassPlansInfoEditor");
     }
 
     #endregion
@@ -1411,4 +1425,7 @@ public partial class ProfileSettingsWindow : MyWindow
     }
     
     #endregion
+
+
+    
 }

@@ -80,14 +80,11 @@
                                             Value="{Binding ClassInfo.SubjectId, RelativeSource={RelativeSource TemplatedParent}}" />
                                 </Style>
                             </Popup.Styles>
-                            <Border Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
-                                    BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
-                                    BorderThickness="1"
-                                    Padding="6"
-                                    CornerRadius="6">
+                            <Border Classes="popup-bg">
                                 <ListBox
                                     x:Name="PART_InnerListBox"
                                     Grid.Row="0" MaxHeight="400" MaxWidth="250"
+                                    Margin="-8"
                                     SelectedValueBinding="{Binding Key}">
                                     <ListBox.Styles>
                                         <Style Selector="ListBoxItem">

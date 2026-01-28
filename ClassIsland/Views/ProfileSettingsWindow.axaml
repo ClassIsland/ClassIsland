@@ -443,6 +443,49 @@
                 </Button>
             </StackPanel>
         </Flyout>
+        
+        <Flyout x:Key="CreateOverlayFlyout">
+            <StackPanel Spacing="12" Width="250">
+                <TextBlock Text="创建临时层" FontWeight="Bold" />
+                <ci:Field Label="时间表">
+                    <ComboBox
+                        HorizontalAlignment="Stretch"
+                        ItemsSource="{Binding ViewModel.TimeLayouts.List}"
+                        SelectedValueBinding="{Binding Key}"
+                        SelectedValue="{Binding ViewModel.TempOverlayClassPlanTimeLayoutId}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Value.Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </ci:Field>
+                <ci:Field Label="启用日期">
+                    <CalendarDatePicker
+                        HorizontalAlignment="Stretch"
+                        SelectedDate="{Binding ViewModel.OverlayEnableDateTime}" />
+                </ci:Field>
+                <Button HorizontalAlignment="Right"
+                        Click="ButtonCreateTempOverlayClassPlan_OnClick"
+                        Classes="accent">
+                    <ci:IconText Glyph="&#xE424;" Text="创建" />
+                </Button>
+            </StackPanel>
+        </Flyout>
+        
+        <Flyout x:Key="DeleteClassPlanConfirmFlyout">
+            <StackPanel Spacing="8">
+                <TextBlock FontWeight="Bold">
+                    <Run Text="要删除课表" />
+                    <Run
+                        Text="{Binding ViewModel.SelectedClassPlan.Name}" />
+                    <Run Text="吗？" />
+                </TextBlock>
+                <TextBlock Text="此操作无法撤销。" />
+                <Button Content="删除" Classes="accent"
+                        Click="ButtonDeleteSelectedClassPlan_OnClick" />
+            </StackPanel>
+        </Flyout>
     </ci:MyWindow.Resources>
     <ci:DrawerHost DrawerPlacement="Right"
                IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
@@ -663,62 +706,16 @@
                                                                            Label="详细看板"
                                                                            ToolTip.Tip="查看课表的所有时间点的附加设置继承情况。"
                                                                            Click="ButtonOpenClassPlanDetailsWindow_OnClick" />
-                                                <controls:CommandBarSeparator />
                                                 <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xea2f;}"
                                                                            Label="创建临时层"
                                                                            ToolTip.Tip="创建临时课表层。"
                                                                            Click="ButtonOpenCreateOverlayClassPlanFlyout_OnClick"
-                                                                           IsEnabled="{Binding ViewModel.SelectedClassPlan.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                                    <controls:CommandBarButton.Flyout>
-                                                        <Flyout>
-                                                            <StackPanel Spacing="12" Width="250">
-                                                                <TextBlock Text="创建临时层" FontWeight="Bold" />
-                                                                <ci:Field Label="时间表">
-                                                                    <ComboBox
-                                                                        HorizontalAlignment="Stretch"
-                                                                        ItemsSource="{Binding ViewModel.TimeLayouts.List}"
-                                                                        SelectedValueBinding="{Binding Key}"
-                                                                        SelectedValue="{Binding ViewModel.TempOverlayClassPlanTimeLayoutId}">
-                                                                        <ComboBox.ItemTemplate>
-                                                                            <DataTemplate>
-                                                                                <TextBlock Text="{Binding Value.Name}" />
-                                                                            </DataTemplate>
-                                                                        </ComboBox.ItemTemplate>
-                                                                    </ComboBox>
-                                                                </ci:Field>
-                                                                <ci:Field Label="启用日期">
-                                                                    <CalendarDatePicker
-                                                                        HorizontalAlignment="Stretch"
-                                                                        SelectedDate="{Binding ViewModel.OverlayEnableDateTime}" />
-                                                                </ci:Field>
-                                                                <Button HorizontalAlignment="Right"
-                                                                        Click="ButtonCreateTempOverlayClassPlan_OnClick"
-                                                                        Classes="accent">
-                                                                    <ci:IconText Glyph="&#xE424;" Text="创建" />
-                                                                </Button>
-                                                            </StackPanel>
-                                                        </Flyout>
-                                                    </controls:CommandBarButton.Flyout>
-                                                </controls:CommandBarButton>
+                                                                           IsEnabled="{Binding ViewModel.SelectedClassPlan.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}"
+                                                                           Flyout="{StaticResource CreateOverlayFlyout}"/>
                                                 <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe61d;}"
                                                                            Label="删除"
-                                                                           ToolTip.Tip="删除该课表。">
-                                                    <controls:CommandBarButton.Flyout>
-                                                        <Flyout>
-                                                            <StackPanel Spacing="8">
-                                                                <TextBlock FontWeight="Bold">
-                                                                    <Run Text="要删除课表" />
-                                                                    <Run
-                                                                        Text="{Binding ViewModel.SelectedClassPlan.Name}" />
-                                                                    <Run Text="吗？" />
-                                                                </TextBlock>
-                                                                <TextBlock Text="此操作无法撤销。" />
-                                                                <Button Content="删除" Classes="accent"
-                                                                        Click="ButtonDeleteSelectedClassPlan_OnClick" />
-                                                            </StackPanel>
-                                                        </Flyout>
-                                                    </controls:CommandBarButton.Flyout>
-                                                </controls:CommandBarButton>
+                                                                           ToolTip.Tip="删除该课表。"
+                                                                           Flyout="{StaticResource DeleteClassPlanConfirmFlyout}"/>
                                             </controls:CommandBar.PrimaryCommands>
 
                                         </controls:CommandBar>
@@ -907,25 +904,83 @@
                             </Grid>
                         </TabItem>
                         <TabItem Header="{ci:FluentIcon &#xF0EB;}">
-                            <Grid >
+                            <Grid RowDefinitions="Auto *">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="5" />
                                     <ColumnDefinition Width="300" MinWidth="300" MaxWidth="450" />
                                 </Grid.ColumnDefinitions>
                                 
-                                <scheduleDataGrid:ScheduleDataGrid Grid.Column="0"
+                                <controls:CommandBar Grid.Column="0" Grid.ColumnSpan="3"
+                                                     Grid.Row="0" DefaultLabelPosition="Right"
+                                                     Margin="0 -4 0 -4"
+                                                     Classes="hide-popup-indicator">
+                                    <controls:CommandBar.PrimaryCommands>
+                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE0B5;}"
+                                                                   Label="刷新"
+                                                                   Click="ButtonRefreshScheduleDataGrid_OnClick"
+                                                                   ToolTip.Tip="刷新当前视图。" />
+                                        <controls:CommandBarSeparator/>
+                                        <controls:CommandBarElementContainer IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                            <StackPanel VerticalAlignment="Center" Classes="items-valign-center"
+                                                        Margin="8 0"
+                                                        Orientation="Horizontal"
+                                                        Opacity="0.8"
+                                                        Spacing="6">
+                                                <ci:FluentIcon Glyph="&#xE6B1;" FontSize="16"/>
+                                                <TextBlock FontSize="13"
+                                                           Text="{Binding ViewModel.SelectedClassPlan.Name, FallbackValue=''}"/>
+                                            </StackPanel>
+                                        </controls:CommandBarElementContainer>
+                                        <controls:CommandBarElementContainer IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNull}}">
+                                            <StackPanel VerticalAlignment="Center" Classes="items-valign-center"
+                                                        Margin="8 0"
+                                                        Orientation="Horizontal"
+                                                        Opacity="0.8"
+                                                        Spacing="6">
+                                                <TextBlock FontSize="13"
+                                                           Text="未选择课表"/>
+                                            </StackPanel>
+                                        </controls:CommandBarElementContainer>
+                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe9e4;}"
+                                                                   Label="详细信息"
+                                                                   Click="ButtonOpenClassPlanDetails_OnClick"
+                                                                   IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                                   ToolTip.Tip="查看并编辑课表的基本信息。" />
+                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe077;}"
+                                                                   Label="详细看板"
+                                                                   ToolTip.Tip="查看课表的所有时间点的附加设置继承情况。"
+                                                                   Click="ButtonOpenClassPlanDetailsWindow_OnClick" 
+                                                                   IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xea2f;}"
+                                                                   Label="创建临时层"
+                                                                   ToolTip.Tip="创建临时课表层。"
+                                                                   Click="ButtonOpenCreateOverlayClassPlanFlyout_OnClick"
+                                                                   IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                                   IsEnabled="{Binding ViewModel.SelectedClassPlan.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}, FallbackValue={x:False}}"
+                                                                   Flyout="{StaticResource CreateOverlayFlyout}"/>
+                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe61d;}"
+                                                                   Label="删除"
+                                                                   ToolTip.Tip="删除该课表。"
+                                                                   Flyout="{StaticResource DeleteClassPlanConfirmFlyout}"
+                                                                   IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                    </controls:CommandBar.PrimaryCommands>
+
+                                </controls:CommandBar>
+                                
+                                <scheduleDataGrid:ScheduleDataGrid Grid.Row="1" Grid.Column="0"
+                                                                   x:Name="ScheduleDataGrid"
+                                                                   OpenClassPlanSettingsRequested="ScheduleDataGrid_OnOpenClassPlanSettingsRequested"
                                                                    SelectedClassInfo="{Binding ViewModel.SelectedClassInfo, Mode=TwoWay}"
                                                                    SelectedClassInfoIndex="{Binding ViewModel.SelectedClassIndex, Mode=TwoWay}"
                                                                    SelectedClassPlan="{Binding ViewModel.SelectedClassPlan, Mode=TwoWay}"
                                                                    SelectedClassPlanDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"/>
                                 
                                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
-                                                          Grid.Row="0" Grid.RowSpan="2"
-                                                          VerticalAlignment="Stretch" />
+                                              Grid.Row="1" 
+                                              VerticalAlignment="Stretch" />
 
-                                <TabControl Grid.Row="0" Grid.Column="2" Classes="compact"
-                                            Grid.RowSpan="2"
+                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact"
                                             Padding="0">
                                     <TabItem Header="编辑科目">
                                         <Grid RowDefinitions="*, Auto">

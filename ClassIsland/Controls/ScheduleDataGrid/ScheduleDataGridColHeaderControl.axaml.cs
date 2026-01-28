@@ -83,7 +83,8 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
     {
         RaiseEvent(new ScheduleDataGridClassPlanEventArgs(ScheduleDataGrid.OpenClassPlanSettingsRequestedEvent)
         {
-            ClassPlan = ClassPlan
+            ClassPlan = ClassPlan,
+            Date = Date
         });
     }
 
@@ -169,5 +170,17 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         _classPlanObserver = null;
         _timeRuleObserver?.Dispose();
         _timeRuleObserver = null;
+    }
+
+    [RelayCommand]
+    private void OpenCreateOverlayPopup()
+    {
+        ViewModel.IsOverlayCreatingPopupOpen = true;
+    }
+    
+    [RelayCommand]
+    private void CompleteCreateOverlay(object o)
+    {
+        ViewModel.IsOverlayCreatingPopupOpen = false;
     }
 }
