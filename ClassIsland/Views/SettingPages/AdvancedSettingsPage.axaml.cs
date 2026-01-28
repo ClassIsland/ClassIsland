@@ -25,7 +25,7 @@ public partial class AdvancedSettingsPage : SettingsPageBase
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(ViewModel.RenderingModeSelectedIndex) or nameof(ViewModel.UseNativeTitlebar))
+        if (e.PropertyName is nameof(ViewModel.RenderingModeSelectedIndex) or nameof(ViewModel.UseNativeTitlebar) or nameof(ViewModel.IgnoreQtScaling))
         {
             RequestRestart();
         }
