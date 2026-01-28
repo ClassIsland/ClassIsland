@@ -29,9 +29,20 @@
     <Style Selector="controls|MainWindowLine">
         <Setter Property="IsVisible">
             <Setter.Value>
-                <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
-                    <Binding Path="!IsAllComponentsHid" RelativeSource="{RelativeSource Self}" />
-                    <Binding Path="IsOverlayOpen" RelativeSource="{RelativeSource Self}"/>
+                <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
+                            <Binding Path="!IsAllComponentsHid" RelativeSource="{RelativeSource Self}" />
+                            <Binding Path="IsOverlayOpen" RelativeSource="{RelativeSource Self}"/>
+                        </MultiBinding>
+                        <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="Settings.HideOnRule" RelativeSource="{RelativeSource Self}"/>
+                                <Binding Path="Settings.IsVisible" RelativeSource="{RelativeSource Self}"/>
+                            </MultiBinding>
+                            <Binding Path="!Settings.HideOnRule" RelativeSource="{RelativeSource Self}"/>
+                        </MultiBinding>
+                    </MultiBinding>
                     <Binding Path="(ci:MainWindowStylesAssist.MainWindowInEditMode)" RelativeSource="{RelativeSource Self}" />
                 </MultiBinding>
             </Setter.Value>

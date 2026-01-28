@@ -25,7 +25,8 @@
             <!-- 按规则隐藏 -->
             <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}"
                                        Header="按规则隐藏"
-                                       Description="在指定规则满足时，自动隐藏此组件。注意此处的隐藏不会释放组件资源。">
+                                       Description="在指定规则满足时，自动隐藏此组件。注意此处的隐藏不会释放组件资源。"
+                                       IsVisible="{Binding !(ci:MainWindowStylesAssist.MainWindowInEditMode), RelativeSource='{RelativeSource Self}'}">
                 <controls:SettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                         <Button HorizontalAlignment="Left"
@@ -39,8 +40,7 @@
                     </StackPanel>
                 </controls:SettingsExpander.Footer>
             </controls:SettingsExpander>
-            
-            <Separator Margin="0 12 0 4" />
+            <Separator Margin="0 12 0 4" IsVisible="{Binding !(ci:MainWindowStylesAssist.MainWindowInEditMode), RelativeSource='{RelativeSource Self}'}"/>
             <ci:IconText Glyph="&#xec4a;" Text="外观" Margin="0 0 0 4" />
             
             <!-- 不透明度 -->

@@ -325,6 +325,8 @@
                                                                 IsMainLine="{Binding IsMainLine}"
                                                                 IsNotificationEnabled="{Binding IsNotificationEnabled}"
                                                                 LineNumber="0"
+                                                                HidingRules="{Binding HidingRules,Mode=OneWay}"
+                                                                HideOnRule="{Binding HideOnRule,Mode=OneWay}"
                                                                 HorizontalAlignment="Stretch"
                                                                 Settings="{Binding}"
                                                                 IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
