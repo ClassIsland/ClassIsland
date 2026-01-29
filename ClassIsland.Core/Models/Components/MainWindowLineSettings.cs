@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Models.Components;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -39,7 +40,10 @@ public partial class MainWindowLineSettings : ObservableObject, IMainWindowCusto
     [ObservableProperty] private double _customCornerRadius;
     [ObservableProperty] private bool _isCustomCornerRadiusEnabled;
     [ObservableProperty] private double _opacity = 1.0;
-
+    
+    [ObservableProperty] private bool _isVisible = true;
+    [ObservableProperty] private bool _hideOnRule = false;
+    [ObservableProperty] private Ruleset.Ruleset _hidingRules = new();
     /// <summary>
     /// 0 - 默认;1 - 禁用;2 - 启用
     /// </summary>
