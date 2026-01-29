@@ -14,6 +14,7 @@ using System.Windows;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
@@ -22,6 +23,9 @@ using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
+/// <summary>
+/// 应用诊断服务
+/// </summary>
 public class DiagnosticService(SettingsService settingsService, FileFolderService fileFolderService, 
     ILogger<DiagnosticService> logger,
     AppLogService appLogService)
@@ -43,6 +47,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     {
         var settings = SettingsService.Settings;
         GetDeviceInfo(out var name, out var vendor);
+        List<string> loadedPlugin = new();
+        foreach (var plugin in PluginService.PluginLoadedStatus)
+        {
+            if (plugin.Key.LoadStatus is PluginLoadStatus.Loaded) loadedPlugin.Add(plugin.Value.Name + $"({plugin.Value.Id},{plugin.Value.Version})");
+        }
         var list = new Dictionary<string, string>
         {
             {"SystemOsVersion",  RuntimeInformation.OSDescription},
@@ -53,10 +62,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {"AppRoot", CommonDirectories.AppRootFolderPath},
             {"AppCurrentDirectory", Environment.CurrentDirectory},
             {"AppExecutingEntrance", AppBase.ExecutingEntrance},
-            {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},
+            {"AppCurrentMemoryUsage", Helpers.StorageSizeHelper.FormatSize((ulong)MemoryWatchDogService.GetMemoryUsage())+$"({MemoryWatchDogService.GetMemoryUsage()} Bytes)"},
             {"AppStartupDurationMs", StartupDurationMs.ToString()},
             {"AppVersion", App.AppVersionLong},
             {"AppSubChannel", AppBase.Current.AppSubChannel},
+            {"AppLoadedPlugin",string.Join(", ",loadedPlugin)},
             {"AppIsAssetsTrimmed", AppBase.Current.IsAssetsTrimmed().ToString()},
             {
                 nameof(settings.DiagnosticFirstLaunchTime),
@@ -91,6 +101,10 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         App.GetService<ILogger<DiagnosticService>>().LogInformation("启动共花费 {}ms, {}", StartupDurationMs, text);
     }
 
+    /// <summary>
+    /// 导出诊断信息到文件
+    /// </summary>
+    /// <param name="path">保存位置</param>
     public async Task ExportDiagnosticData(string path)
     {
         try
@@ -131,7 +145,16 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             throw;
         }
     }
-    
+
+    /// <summary>
+    /// 获取设备信息
+    /// </summary>
+    /// <param name="name">输出设备名称</param>
+    /// <param name="vendor">输出设备提供商</param>
+    /// <remarks>对于Windows平台，返回WMI中Win32_ComputerSystemProduct定义的信息<para/>
+    /// 对于Linux平台，返回/sys/devices/virtual/dmi/id/下的product_name和sys_vendor文件内容<para/>
+    /// 对于macOS平台，返回固定值"Macintosh"和"Apple Inc."<para/>
+    /// </remarks>
     public static void GetDeviceInfo(out string name, out string vendor)
     {
         name = "???";
@@ -166,6 +189,9 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         }
     }
 
+    /// <summary>
+    /// 处理全局未捕获的域异常
+    /// </summary>
     public static void ProcessDomainUnhandledException(object sender, UnhandledExceptionEventArgs eventArgs)
     {
         App.IsCrashed = true;
@@ -195,6 +221,10 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         }
     }
 
+    /// <summary>
+    /// 处理严重异常
+    /// </summary>
+    /// <param name="ex">异常信息</param>
     public static void ProcessCriticalException(Exception? ex)
     {
         if (App._isCriticalSafeModeEnabled)  // 教学安全模式
@@ -222,8 +252,6 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                        如果您要反馈这个问题或求助，请不要只上传本窗口的截图。请查阅事件查看器和日志获取完整的错误信息，并附加在求助信息中。
                        """;
         
-        
-        
         // TODO: 实现对话框
         // var r = MessageBox.Show(message, "ClassIsland", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
         // if (r == DialogResult.Cancel)
@@ -245,6 +273,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         // }
     }
 
+    /// <summary>
+    /// 通过堆栈跟踪获取相关插件
+    /// </summary>
+    /// <param name="exception">堆栈信息</param>
+    /// <returns>获取到的插件列表</returns>
     public static List<PluginInfo> GetPluginsByStacktrace(Exception exception)
     {
         var stack = new StackTrace(exception);
@@ -277,6 +310,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         return plugins;
     }
 
+    /// <summary>
+    /// 禁用损坏的插件
+    /// </summary>
+    /// <param name="plugins">插件列表</param>
+    /// <returns>是否禁用成功</returns>
     public static bool DisableCorruptPlugins(List<PluginInfo> plugins)
     {
         var isPluginAutoDisabled = false;

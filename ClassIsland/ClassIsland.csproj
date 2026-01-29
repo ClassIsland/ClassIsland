@@ -87,7 +87,7 @@
         <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
         <PackageReference Include="ColorHelper" Version="1.8.1" />
         <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
-        <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0"/>
+        <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
 	</ItemGroup>
     <ItemGroup>
         <Folder Include="Assets\Localization\SettingsPage\Component\" />
@@ -113,10 +113,16 @@
     </ItemGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.resx" />
+        <AvaloniaResource Remove="Assets\Localization\SettingsPage\Localization.SettingsPage.resx" />
+        <AvaloniaResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
         <None Include="Assets\AppLogo.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
     </ItemGroup>
     <ItemGroup>
         <None Include="Assets\AppLogo_Monochrome.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+        <None Include="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.resx" />
+        <None Include="Assets\Localization\SettingsPage\Localization.SettingsPage.resx" />
+        <None Include="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
@@ -164,8 +170,6 @@
         <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
         <ProjectReference Include="..\vendors\PhainonDistributionCenter.Shared\PhainonDistributionCenter.Shared.csproj" />
     </ItemGroup>
-	<ItemGroup>
-	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Controls\TimeLine\TimeLineListItemControl.axaml.cs">
 	    <DependentUpon>TimeLineListItemControl.axaml</DependentUpon>

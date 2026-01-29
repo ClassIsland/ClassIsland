@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
@@ -20,11 +13,22 @@ using ClassIsland.Shared.Protobuf.Enum;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace ClassIsland.Services;
 
+/// <summary>
+/// 插件服务
+/// </summary>
 public class PluginService : IPluginService
 {
     public static readonly string PluginsRootPath = Path.Combine(CommonDirectories.AppRootFolderPath, "Plugins");
@@ -38,12 +42,17 @@ public class PluginService : IPluginService
 
     public static readonly string PluginConfigsFolderPath = Path.Combine(CommonDirectories.AppConfigPath, "Plugins");
 
+    public static Dictionary<PluginInfo,PluginManifest> PluginLoadedStatus { get; internal set; } =new();
+
     internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
 
     internal static List<PluginManifest> InstalledPlugins { get; } = [];
     
     internal static List<PluginManifest> UninstalledPlugins { get; } = [];
 
+    /// <summary>
+    /// 处理插件安装
+    /// </summary>
     public static void ProcessPluginsInstall()
     {
         if (!Directory.Exists(PluginsPkgRootPath))
@@ -87,6 +96,9 @@ public class PluginService : IPluginService
         }
     }
 
+    /// <summary>
+    /// 初始化插件
+    /// </summary>
     public static void InitializePlugins(HostBuilderContext context, IServiceCollection services)
     {
         if (!Directory.Exists(PluginsRootPath))
@@ -138,11 +150,13 @@ public class PluginService : IPluginService
             if (!info.IsEnabled)
             {
                 info.LoadStatus = PluginLoadStatus.Disabled;
+                PluginLoadedStatus.Add(info,manifest);
             }
             if (info.IsEnabled && Version.TryParse(info.Manifest.ApiVersion, out var apiVersion) && apiVersion < new Version(2, 0, 0, 0))
             {
                 info.LoadStatus = PluginLoadStatus.Error;
                 info.Exception = new InvalidOperationException($"不兼容的 API 版本 {apiVersion}。插件的 API 版本需要至少为 2.0.0.0 才能被当前版本的 ClassIsland 加载。");
+                PluginLoadedStatus.Add(info,manifest);
             }
         }
         var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
@@ -185,12 +199,15 @@ public class PluginService : IPluginService
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);
                 info.LoadStatus = PluginLoadStatus.Loaded;
-                Console.WriteLine($"Initialize plugin: {pluginDir} ({manifest.Version})");
+                // Console.WriteLine($"Initialized plugin: {pluginDir} ({manifest.Version})");
+                PluginLoadedStatus.Add(info,manifest);
             }
             catch (Exception ex)
             {
                 info.Exception = ex;
                 info.LoadStatus = PluginLoadStatus.Error;
+                PluginLoadedStatus.Add(info,manifest);
+                // Console.WriteLine($"Failed to initialize plugin {manifest.Name}:"+ex);
             }
         }
         
@@ -223,6 +240,12 @@ public class PluginService : IPluginService
         }
     }
 
+    /// <summary>
+    /// 异步导出指定插件为插件包
+    /// </summary>
+    /// <param name="id">插件ID</param>
+    /// <param name="outputPath">输出文件位置</param>
+    /// <exception cref="ArgumentException">当找不到指定插件时抛出此异常</exception>
     public static async Task PackagePluginAsync(string id, string outputPath)
     {
         var plugin = IPluginService.LoadedPlugins.FirstOrDefault(x => x.Manifest.Id == id);
