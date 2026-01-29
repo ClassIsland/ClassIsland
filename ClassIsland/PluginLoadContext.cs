@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.Loader;
 using System;
 using System.Collections.Generic;
@@ -46,6 +46,30 @@ public class PluginLoadContext : AssemblyLoadContext
     ];
 
     /// <summary>
+    /// 宿主应用程序的核心程序集前缀列表，用于版本无关的程序集解析。
+    /// 这些程序集在版本不匹配时将从默认上下文加载，以解决插件编译版本与运行时版本不一致的问题。
+    /// </summary>
+    private static IReadOnlyList<string> HostAssemblyPrefixes { get; } = [
+        "ClassIsland."
+    ];
+
+    /// <summary>
+    /// 检查程序集名称是否为宿主应用程序的核心程序集。
+    /// </summary>
+    private static bool IsHostAssembly(string? assemblyName)
+    {
+        if (string.IsNullOrEmpty(assemblyName))
+            return false;
+        
+        foreach (var prefix in HostAssemblyPrefixes)
+        {
+            if (assemblyName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// 在需要加载程序集时被调用。优先从已加载的插件依赖项上下文中解析，如果在插件目录中找到对应的程序集则从路径加载。
     /// 对 WinRT 相关依赖会使用宿主的实现。
     /// </summary>
@@ -78,6 +102,18 @@ public class PluginLoadContext : AssemblyLoadContext
         if (assemblyPath != null)
         {
             return LoadFromAssemblyPath(assemblyPath);
+        }
+
+        // 如果在插件目录中找不到程序集，且该程序集是宿主应用程序的核心程序集，
+        // 尝试从宿主应用程序的默认上下文中加载（忽略版本号）
+        if (IsHostAssembly(assemblyName.Name))
+        {
+            var defaultContextAssembly = Default.Assemblies
+                .FirstOrDefault(a => string.Equals(a.GetName().Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase));
+            if (defaultContextAssembly != null)
+            {
+                return defaultContextAssembly;
+            }
         }
 
         return null;
