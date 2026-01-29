@@ -137,7 +137,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
     }
 
-    public async void Open()
+    public async void Open(Uri? uri = null)
     {
         if (!_isOpen)
         {
@@ -160,6 +160,23 @@ public partial class ProfileSettingsWindow : MyWindow
 
             Activate();
         }
+
+        if (uri == null || uri.Segments.Length < 3)
+        {
+            return;
+        }
+
+        var page = uri.Segments[2];
+        ViewModel.MasterPageTabSelectIndex = page.ToLower() switch 
+        {
+            "classplans" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 0,
+            "timelayouts" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 1,
+            "subjects" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 2,
+            "forbidden" => 3,
+            "adjustment" => 4,
+            "transfer" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 5,
+            _ => ViewModel.MasterPageTabSelectIndex
+        };
     }
 
     private void Window_OnClosing(object? sender, WindowClosingEventArgs e)

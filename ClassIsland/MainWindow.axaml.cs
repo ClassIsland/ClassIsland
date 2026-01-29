@@ -1145,9 +1145,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     #region Gateways
     
-    public void OpenProfileSettingsWindow()
+    public void OpenProfileSettingsWindow(Uri? uri = null)
     {
-        App.GetService<ProfileSettingsWindow>().Open();
+        App.GetService<ProfileSettingsWindow>().Open(uri);
     }
 
     private async void OpenClassSwapWindow()
