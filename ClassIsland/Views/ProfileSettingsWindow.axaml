@@ -502,7 +502,8 @@
                         x:Name="MasterTabControl"
                         SelectedIndex="{Binding ViewModel.MasterPageTabSelectIndex}">
                 <TabItem Header="课表" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
-                    <TabControl TabStripPlacement="Bottom" Classes="compact" Padding="0">
+                    <TabControl TabStripPlacement="Bottom" Classes="compact" Padding="0" 
+                                SelectedIndex="{Binding ViewModel.SettingsService.Settings.ClassPlanEditModeIndex}">
                         <TabItem Header="{ci:FluentIcon &#xE075;}">
                             <Grid>
                                 <Grid.ColumnDefinitions>

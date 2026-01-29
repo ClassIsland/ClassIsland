@@ -1733,6 +1733,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _windowTopmostRecheckMode = 0;
     private bool _isScreenRecordingModeEnabled = false;
     private bool _hasEditModeTutorialShown = false;
+    private int _classPlanEditModeIndex = 1;
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -2476,6 +2477,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _hasEditModeTutorialShown) return;
             _hasEditModeTutorialShown = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ClassPlanEditModeIndex
+    {
+        get => _classPlanEditModeIndex;
+        set
+        {
+            if (value == _classPlanEditModeIndex) return;
+            _classPlanEditModeIndex = value;
             OnPropertyChanged();
         }
     }
