@@ -313,7 +313,16 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-
+    public bool NoTLSWeatherRequests
+    {
+        get => _noTLSWeatherRequests;
+        set
+        {
+            if (value == _noTLSWeatherRequests) return;
+            _noTLSWeatherRequests = value;
+            OnPropertyChanged();
+        }
+    }
     #region Gerneral
 
     public DateTime SingleWeekStartTime
@@ -1713,6 +1722,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _weatherLatitude = 0.0;
     private int _weatherLocationSource = 0;
     private bool _autoRefreshWeatherLocation = false;
+    private bool _noTLSWeatherRequests = false;
     private bool _useExperimentColorPickingMethod = false;
     private bool _autoDisableCorruptPlugins = true;
     private bool _corruptPluginsDisabledLastSession = false;
