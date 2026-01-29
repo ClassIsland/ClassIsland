@@ -1,17 +1,22 @@
 using System;
 using System.Reactive.Linq;
 using System.Text;
+using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Services;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.Input;
 using DynamicData.Binding;
+using ReactiveUI;
 
 namespace ClassIsland.Controls.ScheduleDataGrid;
 
@@ -48,6 +53,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
 
     private IDisposable? _classPlanObserver;
     private IDisposable? _timeRuleObserver;
+    private IDisposable? _timeRuleWeekDivSuggestObserver;
     private Button? _buttonOpenClassPlanSettings;
     private Button? _buttonCreateClassPlan;
 
@@ -90,8 +96,18 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
 
     private void ButtonCreateClassPlanOnClick(object? sender, RoutedEventArgs e)
     {
+        _timeRuleObserver?.Dispose();
+        _timeRuleObserver = null;
+        _timeRuleWeekDivSuggestObserver?.Dispose();
+        _timeRuleWeekDivSuggestObserver = null;
         ViewModel.ClassPlanTimeRule.WeekDay = (int)Date.DayOfWeek;
+        Console.WriteLine(JsonSerializer.Serialize(ViewModel.ClassPlanTimeRule));
+        _timeRuleObserver ??= ViewModel.ClassPlanTimeRule.WhenAnyPropertyChanged()
+            .Subscribe(x => UpdateSuggestedClassPlanName());
+        _timeRuleWeekDivSuggestObserver ??= ViewModel.ClassPlanTimeRule.ObservableForProperty(x => x.WeekCountDivTotal)
+            .Subscribe(x => UpdateSuggestedWeekDiv());
         UpdateSuggestedClassPlanName();
+        UpdateSuggestedWeekDiv();
     }
 
     private void UpdateSuggestedClassPlanName()
@@ -130,26 +146,45 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         };
     }
 
+    private void UpdateSuggestedWeekDiv()
+    {
+        if (ViewModel.ClassPlanTimeRule.WeekCountDiv == 0 && ViewModel.ClassPlanTimeRule.WeekCountDivTotal <= 2)
+        {
+            return;            
+        }
+        var baseDate = Date.AddDays(-(int)Date.DayOfWeek);
+        var weekIndex =
+            (int)Math.Ceiling((baseDate.AddDays(6) - IAppHost.GetService<SettingsService>().Settings.SingleWeekStartTime).TotalDays / 7);
+        ViewModel.ClassPlanTimeRule.WeekCountDiv = weekIndex % ViewModel.ClassPlanTimeRule.WeekCountDivTotal;
+        ViewModel.ClassPlanTimeRule.WeekCountDiv = ViewModel.ClassPlanTimeRule.WeekCountDiv == 0
+            ? ViewModel.ClassPlanTimeRule.WeekCountDivTotal
+            : ViewModel.ClassPlanTimeRule.WeekCountDiv;
+    }
+
     [RelayCommand]
     private void CompleteCreateClassPlan(object o)
     {
         var profileService = IAppHost.GetService<IProfileService>();
-        if (ViewModel.ClassPlanTimeLayoutId == Guid.Empty ||
-            !profileService.Profile.TimeLayouts.ContainsKey(ViewModel.ClassPlanTimeLayoutId))
+        var timeLayoutId = ScheduleDataGrid.GetSelectedNewTimeLayoutId(this);
+        if (timeLayoutId == Guid.Empty ||
+            !profileService.Profile.TimeLayouts.ContainsKey(timeLayoutId))
         {
             this.ShowWarningToast("请选择一个有效的时间表");
             return;
         }
-
+        
         var cp = new ClassPlan()
         {
             Name = string.IsNullOrEmpty(ViewModel.ClassPlanName)
                 ? ViewModel.SuggestedClassPlanName
                 : ViewModel.ClassPlanName,
-            TimeLayoutId = ViewModel.ClassPlanTimeLayoutId,
+            TimeLayoutId = timeLayoutId,
             AssociatedGroup = profileService.Profile.SelectedClassPlanGroupId,
             TimeRule = ViewModel.ClassPlanTimeRule
         };
+        _timeRuleWeekDivSuggestObserver?.Dispose();
+        _timeRuleWeekDivSuggestObserver = null;
+        ViewModel.ClassPlanTimeRule = ConfigureFileHelper.CopyObject(ViewModel.ClassPlanTimeRule);
         profileService.Profile.ClassPlans.Add(Guid.NewGuid(), cp);
         FlyoutHelper.CloseAncestorFlyout(o);
     }
@@ -170,6 +205,8 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         _classPlanObserver = null;
         _timeRuleObserver?.Dispose();
         _timeRuleObserver = null;
+        _timeRuleWeekDivSuggestObserver?.Dispose();
+        _timeRuleWeekDivSuggestObserver = null;
     }
 
     [RelayCommand]

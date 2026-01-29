@@ -73,8 +73,11 @@
                                         <TextBlock Text="新建课表" FontWeight="Bold"/>
                                         <ci:Field Label="时间表">
                                             <ComboBox
-                                                SelectedValueBinding="{Binding Key}"
-                                                SelectedValue="{Binding ClassPlanTimeLayoutId, Mode=TwoWay}">
+                                                SelectedValueBinding="{Binding Key}">
+                                                <ComboBox.SelectedValue>
+                                                    <Binding Path="$parent[controls:ScheduleDataGrid].(controls:ScheduleDataGrid.SelectedNewTimeLayoutId)"
+                                                             x:CompileBindings="True"/>
+                                                </ComboBox.SelectedValue>
                                                 <ComboBox.ItemsSource>
                                                     <Binding Path="$self.(controls:ScheduleDataGrid.TimeLayouts).List"
                                                              x:CompileBindings="True"/>

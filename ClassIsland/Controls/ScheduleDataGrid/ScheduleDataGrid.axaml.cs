@@ -106,6 +106,12 @@ public partial class ScheduleDataGrid : TemplatedControl
         set => SetValue(SelectedClassPlanDateProperty, value);
     }
 
+    public static readonly AttachedProperty<Guid> SelectedNewTimeLayoutIdProperty =
+        AvaloniaProperty.RegisterAttached<ScheduleDataGrid, Control, Guid>("SelectedNewTimeLayoutId", inherits: true);
+
+    public static void SetSelectedNewTimeLayoutId(Control obj, Guid value) => obj.SetValue(SelectedNewTimeLayoutIdProperty, value);
+    public static Guid GetSelectedNewTimeLayoutId(Control obj) => obj.GetValue(SelectedNewTimeLayoutIdProperty);
+
     public static readonly RoutedEvent<ScheduleDataGridClassPlanEventArgs>
         OpenClassPlanSettingsRequestedEvent =
             RoutedEvent.Register<ScheduleDataGrid, ScheduleDataGridClassPlanEventArgs>(nameof(OpenClassPlanSettingsRequested), RoutingStrategies.Bubble);
