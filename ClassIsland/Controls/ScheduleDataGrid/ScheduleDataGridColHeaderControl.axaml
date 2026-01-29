@@ -67,6 +67,10 @@
                                    HorizontalAlignment="Right"/>
                         <Button Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
                                 x:Name="PART_ButtonCreateClassPlan">
+                            <Button.IsEnabled>
+                                <Binding Path="!!$self.(controls:ScheduleDataGrid.TimeLayouts).List.Count"
+                                         x:CompileBindings="True"/>
+                            </Button.IsEnabled>
                             <Button.Flyout>
                                 <Flyout>
                                     <StackPanel Spacing="4" DataContext="{Binding ViewModel, RelativeSource={RelativeSource TemplatedParent}}">

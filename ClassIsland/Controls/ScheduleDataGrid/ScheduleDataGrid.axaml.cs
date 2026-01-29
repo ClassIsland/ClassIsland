@@ -9,6 +9,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.ComponentModels;
@@ -122,6 +123,15 @@ public partial class ScheduleDataGrid : TemplatedControl
         OpenClassPlanSettingsRequestedEvent =
             RoutedEvent.Register<ScheduleDataGrid, ScheduleDataGridClassPlanEventArgs>(nameof(OpenClassPlanSettingsRequested), RoutingStrategies.Bubble);
 
+    public static readonly StyledProperty<bool> IsLoadingProperty = AvaloniaProperty.Register<ScheduleDataGrid, bool>(
+        nameof(IsLoading), true);
+
+    public bool IsLoading
+    {
+        get => GetValue(IsLoadingProperty);
+        private set => SetValue(IsLoadingProperty, value);
+    }
+    
     public event EventHandler<ScheduleDataGridClassPlanEventArgs> OpenClassPlanSettingsRequested
     {
         add => AddHandler(OpenClassPlanSettingsRequestedEvent, value);
@@ -199,6 +209,7 @@ public partial class ScheduleDataGrid : TemplatedControl
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
         RefreshWeekScheduleRows();
+        Dispatcher.UIThread.Post(() => IsLoading = false);
     }
     
     private (DataGridCell?, int) GetDataGridSelectedCell(DataGrid dataGrid)
