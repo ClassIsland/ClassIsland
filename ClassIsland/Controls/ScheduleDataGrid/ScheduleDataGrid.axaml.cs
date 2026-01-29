@@ -88,6 +88,12 @@ public partial class ScheduleDataGrid : TemplatedControl
     public static void SetTimeLayouts(Control obj, SyncDictionaryList<Guid, TimeLayout> value) => obj.SetValue(TimeLayoutsProperty, value);
     public static SyncDictionaryList<Guid, TimeLayout> GetTimeLayouts(Control obj) => obj.GetValue(TimeLayoutsProperty);
 
+    public static readonly AttachedProperty<SyncDictionaryList<Guid, ClassPlan>> ClassPlansProperty =
+        AvaloniaProperty.RegisterAttached<ScheduleDataGrid, Control, SyncDictionaryList<Guid, ClassPlan>>("ClassPlans", inherits: true);
+
+    public static void SetClassPlans(Control obj, SyncDictionaryList<Guid, ClassPlan> value) => obj.SetValue(ClassPlansProperty, value);
+    public static SyncDictionaryList<Guid, ClassPlan> GetClassPlans(Control obj) => obj.GetValue(ClassPlansProperty);
+
     public static readonly StyledProperty<int> SelectedClassInfoIndexProperty = AvaloniaProperty.Register<ScheduleDataGrid, int>(
         nameof(SelectedClassInfoIndex));
 
@@ -141,6 +147,8 @@ public partial class ScheduleDataGrid : TemplatedControl
             new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid));
         SetValue(TimeLayoutsProperty,
             new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid));
+        SetValue(ClassPlansProperty,
+            new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid));
         this.GetObservable(SelectedDateProperty).Skip(1).Subscribe(_ => RefreshWeekScheduleRows());
         Loaded += Control_OnLoaded;
         Unloaded += OnUnloaded;

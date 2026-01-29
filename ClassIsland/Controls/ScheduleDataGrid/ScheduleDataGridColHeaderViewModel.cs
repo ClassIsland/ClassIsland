@@ -10,6 +10,8 @@ public partial class ScheduleDataGridColHeaderViewModel : ObservableObject
     [ObservableProperty] private string _suggestedClassPlanName = "";
     [ObservableProperty] private Guid _classPlanTimeLayoutId = Guid.Empty;
     [ObservableProperty] private TimeRule _classPlanTimeRule = new();
+    [ObservableProperty] private bool _copyFromClassPlan = false;
+    [ObservableProperty] private Guid _copyClassPlanSource = Guid.Empty;
 
     [ObservableProperty] private bool _isOverlayCreatingPopupOpen = false;
     [ObservableProperty] private bool _isDeleteConfirmPopupOpen = false;

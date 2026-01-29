@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Text;
 using System.Text.Json;
@@ -8,6 +9,7 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Services;
@@ -54,6 +56,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
     private IDisposable? _classPlanObserver;
     private IDisposable? _timeRuleObserver;
     private IDisposable? _timeRuleWeekDivSuggestObserver;
+    private IDisposable? _copyClassPlanSourceObserver;
     private Button? _buttonOpenClassPlanSettings;
     private Button? _buttonCreateClassPlan;
 
@@ -101,13 +104,19 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         _timeRuleWeekDivSuggestObserver?.Dispose();
         _timeRuleWeekDivSuggestObserver = null;
         ViewModel.ClassPlanTimeRule.WeekDay = (int)Date.DayOfWeek;
-        Console.WriteLine(JsonSerializer.Serialize(ViewModel.ClassPlanTimeRule));
+        // Console.WriteLine(JsonSerializer.Serialize(ViewModel.ClassPlanTimeRule));
         _timeRuleObserver ??= ViewModel.ClassPlanTimeRule.WhenAnyPropertyChanged()
             .Subscribe(x => UpdateSuggestedClassPlanName());
         _timeRuleWeekDivSuggestObserver ??= ViewModel.ClassPlanTimeRule.ObservableForProperty(x => x.WeekCountDivTotal)
             .Subscribe(x => UpdateSuggestedWeekDiv());
-        UpdateSuggestedClassPlanName();
+        var source = ViewModel.CopyClassPlanSource;
+        Dispatcher.UIThread.Post(() =>  // 强制刷新 ComboBox 内容
+        {
+            ViewModel.CopyClassPlanSource = Guid.Empty;
+            ViewModel.CopyClassPlanSource = source;
+        });
         UpdateSuggestedWeekDiv();
+        UpdateSuggestedClassPlanName();
     }
 
     private void UpdateSuggestedClassPlanName()
@@ -169,19 +178,25 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         if (timeLayoutId == Guid.Empty ||
             !profileService.Profile.TimeLayouts.ContainsKey(timeLayoutId))
         {
-            this.ShowWarningToast("请选择一个有效的时间表");
+            this.ShowWarningToast("请选择一个有效的时间表。");
+            return;
+        }
+        if (ViewModel.CopyFromClassPlan && (ViewModel.CopyClassPlanSource == Guid.Empty ||
+             !profileService.Profile.ClassPlans.ContainsKey(ViewModel.CopyClassPlanSource)))
+        {
+            this.ShowWarningToast("请选择一个有效要复制的课表。");
             return;
         }
         
-        var cp = new ClassPlan()
-        {
-            Name = string.IsNullOrEmpty(ViewModel.ClassPlanName)
-                ? ViewModel.SuggestedClassPlanName
-                : ViewModel.ClassPlanName,
-            TimeLayoutId = timeLayoutId,
-            AssociatedGroup = profileService.Profile.SelectedClassPlanGroupId,
-            TimeRule = ViewModel.ClassPlanTimeRule
-        };
+        var cp = ViewModel.CopyFromClassPlan
+            ? ConfigureFileHelper.CopyObject(profileService.Profile.ClassPlans[ViewModel.CopyClassPlanSource])
+            : new ClassPlan();
+        cp.Name = string.IsNullOrEmpty(ViewModel.ClassPlanName)
+            ? ViewModel.SuggestedClassPlanName
+            : ViewModel.ClassPlanName;
+        cp.TimeLayoutId = timeLayoutId;
+        cp.AssociatedGroup = profileService.Profile.SelectedClassPlanGroupId;
+        cp.TimeRule = ViewModel.ClassPlanTimeRule;
         _timeRuleWeekDivSuggestObserver?.Dispose();
         _timeRuleWeekDivSuggestObserver = null;
         ViewModel.ClassPlanTimeRule = ConfigureFileHelper.CopyObject(ViewModel.ClassPlanTimeRule);
@@ -196,6 +211,18 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
             .Subscribe(x => IsClassPlanEmpty = ClassPlan == ScheduleDataGrid.EmptyClassPlan);
         _timeRuleObserver ??= ViewModel.ClassPlanTimeRule.WhenAnyPropertyChanged()
             .Subscribe(x => UpdateSuggestedClassPlanName());
+        _copyClassPlanSourceObserver ??= ViewModel.ObservableForProperty(x => x.CopyClassPlanSource)
+            .Subscribe(_ =>
+            {
+                var profileService = IAppHost.GetService<IProfileService>();
+                var id = profileService.Profile.ClassPlans.GetValueOrDefault(ViewModel.CopyClassPlanSource)
+                    ?.TimeLayoutId;
+                if (id != null)
+                {
+                    this.FindAncestorOfType<ScheduleDataGrid>()
+                        ?.SetValue(ScheduleDataGrid.SelectedNewTimeLayoutIdProperty, id);
+                }
+            });
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)
@@ -207,6 +234,8 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         _timeRuleObserver = null;
         _timeRuleWeekDivSuggestObserver?.Dispose();
         _timeRuleWeekDivSuggestObserver = null;
+        _copyClassPlanSourceObserver?.Dispose();
+        _copyClassPlanSourceObserver = null;
     }
 
     [RelayCommand]

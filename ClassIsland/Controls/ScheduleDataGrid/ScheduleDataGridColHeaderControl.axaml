@@ -93,6 +93,24 @@
                                             <TextBox Text="{Binding ClassPlanName, Mode=TwoWay}"
                                                      Watermark="{Binding SuggestedClassPlanName, Mode=OneWay}"/>
                                         </ci:Field>
+                                        <DockPanel Dock="Left">
+                                            <CheckBox Content="复制自" DockPanel.Dock="Left"
+                                                      IsChecked="{Binding CopyFromClassPlan}"/>
+                                            <ComboBox HorizontalAlignment="Stretch"
+                                                      SelectedValue="{Binding CopyClassPlanSource}"
+                                                      SelectedValueBinding="{Binding Key}"
+                                                      IsVisible="{Binding CopyFromClassPlan}">
+                                                <ComboBox.ItemsSource>
+                                                    <Binding Path="$self.(controls:ScheduleDataGrid.ClassPlans).List"
+                                                             x:CompileBindings="True"/>
+                                                </ComboBox.ItemsSource>
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Value.Name}"/>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </DockPanel>
                                         <controls1:TimeRuleEditControl TimeRule="{Binding ClassPlanTimeRule, Mode=TwoWay}"/>
                                         <Separator/>
                                         <Button Classes="accent" Margin="0 2 0 0"
