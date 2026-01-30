@@ -181,7 +181,7 @@
                 <Panel x:Name="WorkingRoot"
                        Canvas.Left="{Binding ViewModel.ActualClientBound.X}"
                        Canvas.Top="{Binding ViewModel.ActualClientBound.Y}"
-                       ClipToBounds="{Binding !ViewModel.IsEditMode}">
+                       ClipToBounds="False">
                     <Panel.Styles>
                         <Style Selector="Panel#WorkingRoot[(ci|MainWindowStylesAssist.MainWindowInEditMode)=False]">
                             <Setter Property="Width" Value="{Binding ViewModel.ActualClientBound.Width}"/>

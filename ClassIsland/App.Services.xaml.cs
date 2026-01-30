@@ -293,7 +293,8 @@ if (System.OperatingSystem.IsWindows()) {
             Description = "焕然一新的 ClassIsland 外观。",
             Banner = "avares://ClassIsland/Assets/XamlThemePreviews/classisland.fluent.png",
             Author = "ClassIsland",
-            Url = "https://github.com/ClassIsland/ClassIsland"
+            Url = "https://github.com/ClassIsland/ClassIsland",
+            VerticalSafeAreaPx = 20
         });
         // Plugins
         if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1))

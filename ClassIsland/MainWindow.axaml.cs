@@ -143,6 +143,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     public IWindowRuleService WindowRuleService { get; }
     public IManagementService ManagementService { get; }
     public TopmostEffectWindow TopmostEffectWindow { get; }
+    
+    public IXamlThemeService XamlThemeService { get; }
 
     public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
 
@@ -198,7 +200,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         IRulesetService rulesetService,
         IWindowRuleService windowRuleService,
         IManagementService managementService,
-        TopmostEffectWindow topmostEffectWindow)
+        TopmostEffectWindow topmostEffectWindow,
+        IXamlThemeService xamlThemeService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -215,6 +218,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         WindowRuleService = windowRuleService;
         ManagementService = managementService;
         TopmostEffectWindow = topmostEffectWindow;
+        XamlThemeService = xamlThemeService;
 
         DataContext = this;
         
@@ -222,6 +226,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
         
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
+        XamlThemeService.MainWindow = this;
         SettingsService.PropertyChanged += (sender, args) =>
         {
             LoadSettings();
@@ -310,7 +315,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     public override void Show()
     {
-        IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
+        XamlThemeService.LoadAllThemes();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（2）");
         UpdateTheme();
         base.Show();
@@ -788,7 +793,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var scale = ViewModel.Settings.Scale;
         ViewModel.GridRootLeft = Width / 10 * (scale - 1);
         ViewModel.GridRootTop = Height / 10 * (scale - 1);
-
+        
         var screen = GetSelectedScreenSafe();
         if (screen == null)
             return;
@@ -801,37 +806,23 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var oy = ViewModel.Settings.WindowDockingOffsetY;
         Width = screen.WorkingArea.Width / dpiX;
         //Height = GridRoot.ActualHeight * scale;
-        LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
-        LayoutContainerGrid.Height = Height = RootLayoutTransformControl.Bounds.Height;
-        ViewModel.ActualRootOffsetX = 0;
-        ViewModel.ActualRootOffsetY = 0;
-        var clientBoundsRelative = new PixelRect(0, 0, (int)aw, (int)ah)
+        
+        var dockingTop = ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2;
+        var verticalSafeAreaPx = XamlThemeService.ActualVerticalSafeAreaPx;
+        var safeT = Math.Max(dockingTop ? Math.Min(verticalSafeAreaPx, oy) : verticalSafeAreaPx, 0) * scale;
+        var safeB = Math.Max(dockingTop ? verticalSafeAreaPx : Math.Min(verticalSafeAreaPx, -oy), 0) * scale;
+        var x = screen.WorkingArea.X + ox;
+        // 和 WPF 不同，Avalonia 定位窗口用的基于物理屏幕的像素坐标，而非逻辑坐标，无需 dpi 转换。
+        var y = dockingTop 
+            ? offsetAreaTop + oy - safeT
+            : offsetAreaBottom - ah + oy + safeB;
+        var clientBoundsRelative = new PixelRect(0, (int)safeT, (int)aw, (int)ah)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
-        // 和 WPF 不同，Avalonia 定位窗口用的基于物理屏幕的像素坐标，而非逻辑坐标，无需 dpi 转换。
-        var x = screen.WorkingArea.X + ox;
-        var y = ViewModel.Settings.WindowDockingLocation switch
-        {
-            0 => //左上
-                //Left = (screen.WorkingArea.Left + ox) / dpiX;
-                (offsetAreaTop + oy),
-            1 => // 中上
-                //Left = (c - aw / 2 + ox) / dpiX;
-                (offsetAreaTop + oy),
-            2 => // 右上
-                //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
-                (offsetAreaTop + oy),
-            3 => // 左下
-                //Left = (screen.WorkingArea.Left + ox) / dpiX;
-                (offsetAreaBottom - ah + oy),
-            4 => // 中下
-                //Left = (c - aw / 2 + ox) / dpiX;
-                (offsetAreaBottom - ah + oy),
-            5 => // 右下
-                //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
-                (offsetAreaBottom - ah + oy),
-            _ => 0.0
-        };
+        LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
+        LayoutContainerGrid.Height = Height = RootLayoutTransformControl.Bounds.Height + safeT + safeB;
+        ViewModel.ActualRootOffsetX = 0;
+        ViewModel.ActualRootOffsetY = 0;
         var newPos = new PixelPoint((int)x, (int)y);
         if (Position != newPos)
         {

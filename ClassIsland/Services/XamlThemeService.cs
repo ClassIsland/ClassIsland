@@ -40,9 +40,9 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
     private IComponentsService ComponentsService { get; }
     private Styles RootStyles { get; set; } = [];
 
-    private Window MainWindow { get; } = AppBase.Current.MainWindow!;
+    public Window? MainWindow { get; set; }
     
-    private Border? ResourceLoaderBorder { get; }
+    private Border? ResourceLoaderBorder { get; set; }
 
     public static readonly string ThemesPath = Path.Combine(CommonDirectories.AppConfigPath, "Themes");
     public static readonly string EnabledThemesPath = Path.Combine(CommonDirectories.AppConfigPath, "EnabledThemes.json");
@@ -67,6 +67,8 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     public event EventHandler? RestartRequested;
 
+    public double ActualVerticalSafeAreaPx { get; set; } = 0.0;
+
 
     public XamlThemeService(ILogger<XamlThemeService> logger, IPluginMarketService pluginMarketService,
         SettingsService settingsService, IComponentsService componentsService)
@@ -86,11 +88,9 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         {
             return;
         }
-
-        ResourceLoaderBorder = MainWindow.FindControl<Border>("ResourceLoaderBorder");
-
+        
         ProcessThemeInstall();
-        LoadAllThemes();
+        // LoadAllThemes();
         //LoadThemeSource();
     }
 
@@ -102,11 +102,13 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         {
             return;
         }
+        ResourceLoaderBorder ??= MainWindow?.FindControl<Border>("ResourceLoaderBorder");
         RootStyles.Clear();
         ResourceLoaderBorder?.Styles.Remove(RootStyles);
         s_stylesAppliedField?.SetValue(ResourceLoaderBorder, false); 
         RootStyles = [];
         ResourceLoaderBorder?.Styles.Add(RootStyles);
+        var actualSafeAreaPx = 0.0;
         foreach (var themeInfo in EnabledThemes.Select(x => Themes.FirstOrDefault(y => y.Manifest.Id == x))
                      .OfType<ThemeInfo>())
         {
@@ -120,6 +122,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
                 {
                     LoadThemeFromResource(themeInfo.ThemeUri ?? throw new InvalidOperationException("资源主题必须指定主题 Uri"));
                 }
+                actualSafeAreaPx = Math.Max(themeInfo.Manifest.VerticalSafeAreaPx, actualSafeAreaPx);
                 themeInfo.IsLoaded = true;
             }
             catch (Exception e)
@@ -128,6 +131,8 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
                 themeInfo.Error = e;
             }
         }
+
+        ActualVerticalSafeAreaPx = actualSafeAreaPx;
     }
 
     private void LoadThemeFromFile(string themePath)

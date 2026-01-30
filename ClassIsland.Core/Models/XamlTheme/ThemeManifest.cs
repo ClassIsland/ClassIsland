@@ -17,6 +17,7 @@ public class ThemeManifest : ObservableRecipient, IMarketplaceItemManifest
     private string _description = "";
     private string _version = "0.0.0.0";
     private string _banner = "banner.png";
+    private double _verticalSafeAreaPx = 0;
 
     /// <summary>
     /// 主题 ID
@@ -112,6 +113,20 @@ public class ThemeManifest : ObservableRecipient, IMarketplaceItemManifest
         {
             if (value == _banner) return;
             _banner = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 竖直安全区大小（px）
+    /// </summary>
+    public double VerticalSafeAreaPx
+    {
+        get => _verticalSafeAreaPx;
+        set
+        {
+            if (value.Equals(_verticalSafeAreaPx)) return;
+            _verticalSafeAreaPx = value;
             OnPropertyChanged();
         }
     }
