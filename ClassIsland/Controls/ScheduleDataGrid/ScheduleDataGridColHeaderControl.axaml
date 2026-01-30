@@ -1,9 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:ClassIsland.Controls.ScheduleDataGrid"
+        xmlns:controls="clr-namespace:ClassIsland.Controls.ScheduleDataGrid;assembly=ClassIsland"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        xmlns:controls1="using:ClassIsland.Controls">
+        xmlns:controls1="clr-namespace:ClassIsland.Controls;assembly=ClassIsland">
     <Design.PreviewWith>
         <controls:ScheduleDataGridColHeaderControl />
     </Design.PreviewWith>
@@ -50,6 +50,7 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1" Grid.Row="2" Margin="0 -4 -4 -4" Orientation="Horizontal">
                         <Button Theme="{StaticResource TransparentButton}"
+                                IsVisible="{Binding !$parent[controls:ScheduleDataGrid].IsReadonly}"
                                 Content="{ci:FluentIcon &#xEF27;}"
                                 x:Name="PART_ButtonOpenClassPlanSettings"
                                 ToolTip.Tip="课表信息…"
@@ -66,7 +67,8 @@
                         <TextBlock Grid.Row="0" Text="{Binding Date, RelativeSource={RelativeSource TemplatedParent}, StringFormat='MM/dd'}"
                                    HorizontalAlignment="Right"/>
                         <Button Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                                x:Name="PART_ButtonCreateClassPlan">
+                                x:Name="PART_ButtonCreateClassPlan"
+                                IsVisible="{Binding !$parent[controls:ScheduleDataGrid].IsReadonly}">
                             <Button.IsEnabled>
                                 <Binding Path="!!$self.(controls:ScheduleDataGrid.TimeLayouts).List.Count"
                                          x:CompileBindings="True"/>

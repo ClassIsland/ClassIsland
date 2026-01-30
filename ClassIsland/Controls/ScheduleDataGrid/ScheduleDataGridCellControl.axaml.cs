@@ -82,6 +82,7 @@ public class ScheduleDataGridCellControl : TemplatedControl
     private ListBox? _innerListBox;
     private TextBlock? _mainTextBlock;
     private TextBlock? _emptyTextBlock;
+    private ScheduleDataGrid? _scheduleDataGrid;
 
     public ScheduleDataGridCellControl()
     {
@@ -117,6 +118,10 @@ public class ScheduleDataGridCellControl : TemplatedControl
 
     private void OnDoubleTapped(object? sender, TappedEventArgs e)
     {
+        if (_scheduleDataGrid?.IsReadonly == true)
+        {
+            return;
+        }
         if (sender is Control c && c.FindAncestorOfType<ListBox>() != null)
         {
             return;
@@ -145,6 +150,7 @@ public class ScheduleDataGridCellControl : TemplatedControl
                     Date = Date
                 });
             });
+        _scheduleDataGrid = this.FindAncestorOfType<ScheduleDataGrid>();
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)
@@ -152,6 +158,7 @@ public class ScheduleDataGridCellControl : TemplatedControl
         base.OnUnloaded(e);
         _isSelectedPropertyObserver?.Dispose();
         _isSelectedPropertyObserver = null;
+        _scheduleDataGrid = null;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

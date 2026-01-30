@@ -131,6 +131,15 @@ public partial class ScheduleDataGrid : TemplatedControl
         get => GetValue(IsLoadingProperty);
         private set => SetValue(IsLoadingProperty, value);
     }
+
+    public static readonly StyledProperty<bool> IsReadonlyProperty = AvaloniaProperty.Register<ScheduleDataGrid, bool>(
+        nameof(IsReadonly));
+
+    public bool IsReadonly
+    {
+        get => GetValue(IsReadonlyProperty);
+        set => SetValue(IsReadonlyProperty, value);
+    }
     
     public event EventHandler<ScheduleDataGridClassPlanEventArgs> OpenClassPlanSettingsRequested
     {

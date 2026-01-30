@@ -915,6 +915,7 @@
                                 <controls:CommandBar Grid.Column="0" Grid.ColumnSpan="3"
                                                      Grid.Row="0" DefaultLabelPosition="Right"
                                                      Margin="0 -4 0 -4"
+                                                     IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                                      Classes="hide-popup-indicator">
                                     <controls:CommandBar.PrimaryCommands>
                                         <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE0B5;}"
@@ -971,6 +972,7 @@
                                  
                                 <scheduleDataGrid:ScheduleDataGrid Grid.Row="1" Grid.Column="0"
                                                                    x:Name="ScheduleDataGrid"
+                                                                   IsReadonly="{Binding ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                                                    OpenClassPlanSettingsRequested="ScheduleDataGrid_OnOpenClassPlanSettingsRequested"
                                                                    SelectedClassInfo="{Binding ViewModel.SelectedClassInfo, Mode=TwoWay}"
                                                                    SelectedClassInfoIndex="{Binding ViewModel.SelectedClassIndex, Mode=TwoWay}"
@@ -982,6 +984,7 @@
                                               VerticalAlignment="Stretch" />
 
                                 <TabControl Grid.Row="1" Grid.Column="2" Classes="compact"
+                                            IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                             Padding="0">
                                     <TabItem Header="编辑科目">
                                         <Grid RowDefinitions="*, Auto">

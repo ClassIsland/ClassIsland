@@ -178,6 +178,8 @@
                               Margin="0 60 0 0">
                         <ci:Empty.IsVisible>
                             <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="!IsReadonly"
+                                         RelativeSource="{RelativeSource TemplatedParent}" />
                                 <Binding Path="!!!WeekClassPlanRows.Count" RelativeSource="{RelativeSource TemplatedParent}"/>
                                 <Binding Path="!!ProfileService.Profile.TimeLayouts.Count"
                                          RelativeSource="{RelativeSource TemplatedParent}" />
@@ -189,6 +191,8 @@
                                 Spacing="8" Margin="0 60 0 0">
                         <StackPanel.IsVisible>
                             <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="!IsReadonly"
+                                         RelativeSource="{RelativeSource TemplatedParent}" />
                                 <Binding Path="!!!WeekClassPlanRows.Count"
                                          RelativeSource="{RelativeSource TemplatedParent}" />
                                 <Binding Path="!!!ProfileService.Profile.TimeLayouts.Count"
@@ -201,6 +205,17 @@
                                 Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
                                 CommandParameter="classisland://app/profile/timelayouts">前往创建</Button>
                     </StackPanel>
+                    <ci:Empty Grid.Row="1"
+                              Margin="0 60 0 0">
+                        <ci:Empty.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="IsReadonly"
+                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                <Binding Path="!!!WeekClassPlanRows.Count" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                <Binding Path="!IsLoading" RelativeSource="{RelativeSource TemplatedParent}"/>
+                            </MultiBinding>
+                        </ci:Empty.IsVisible>
+                    </ci:Empty>
                 </Grid>
             </ControlTemplate>
         </Setter>
