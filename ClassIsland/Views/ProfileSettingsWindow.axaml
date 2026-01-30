@@ -968,14 +968,14 @@
                                     </controls:CommandBar.PrimaryCommands>
 
                                 </controls:CommandBar>
-                                
+                                 
                                 <scheduleDataGrid:ScheduleDataGrid Grid.Row="1" Grid.Column="0"
                                                                    x:Name="ScheduleDataGrid"
                                                                    OpenClassPlanSettingsRequested="ScheduleDataGrid_OnOpenClassPlanSettingsRequested"
                                                                    SelectedClassInfo="{Binding ViewModel.SelectedClassInfo, Mode=TwoWay}"
                                                                    SelectedClassInfoIndex="{Binding ViewModel.SelectedClassIndex, Mode=TwoWay}"
                                                                    SelectedClassPlan="{Binding ViewModel.SelectedClassPlan, Mode=TwoWay}"
-                                                                   SelectedClassPlanDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"/>
+                                                                   SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"/>
                                 
                                 <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
                                               Grid.Row="1" 

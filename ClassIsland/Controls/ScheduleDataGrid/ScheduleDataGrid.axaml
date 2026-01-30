@@ -38,7 +38,7 @@
                               AutoGenerateColumns="False"
                               CanUserResizeColumns="False"
                               SelectionMode="Single"
-                              GridLinesVisibility="Horizontal"
+                              GridLinesVisibility="All"
                               SelectedItem="{Binding SelectedWeekClassPlanRow}"
                               SelectedIndex="{Binding SelectedClassInfoIndex}"
                               scheduleDataGrid:ScheduleDataGridCellControl.Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"

@@ -619,6 +619,23 @@ public partial class ProfileSettingsWindow : MyWindow
         if (ViewModel.SelectedClassIndex + 1 >= ViewModel.SelectedClassPlan?.Classes.Count)
         {
             ViewModel.IsClassPlanEditComplete = true;
+            var targetDate = ViewModel.ScheduleCalendarSelectedDate.AddDays(1);
+            if (ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 1)
+            {
+                if (targetDate.DayOfWeek < ViewModel.ScheduleCalendarSelectedDate.DayOfWeek)
+                {
+                    this.ShowSuccessToast("已完成本周课表的录入。");
+                    return;
+                }
+                if (ViewModel.LessonsService.GetClassPlanByDate(targetDate) != null)
+                {
+                    ViewModel.ScheduleCalendarSelectedDate = targetDate;
+                    ViewModel.SelectedClassIndex = 0;
+                    ScheduleDataGrid.ScrollIntoCurrentView();
+                    this.ShowToast("已跳转到次日课表。");
+                    return;
+                }
+            }
             if (ViewModel.CurrentClassPlanEditDoneToast != null)
             {
                 return;
@@ -637,7 +654,15 @@ public partial class ProfileSettingsWindow : MyWindow
             actionButton.Click += (o, args) =>
             {
                 ViewModel.CurrentClassPlanEditDoneToast?.Close();
-                CreateClassPlan();
+                if (ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 0)
+                {
+                    CreateClassPlan();
+                }
+                else
+                {
+                    ScheduleDataGrid.CreateClassPlanByDate(targetDate);
+                    ScheduleDataGrid.ScrollIntoCurrentView();
+                }
             };
             ViewModel.CurrentClassPlanEditDoneToast.ClosedCancellationTokenSource.Token.Register(() =>
                 ViewModel.CurrentClassPlanEditDoneToast = null);
@@ -646,9 +671,12 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         ViewModel.SelectedClassIndex++;
 
-        if (DataGridClassPlans.IsLoaded)
+        if (DataGridClassPlans.IsLoaded && ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 0)
         {
             DataGridClassPlans.ScrollIntoView(DataGridClassPlans.SelectedItem, DataGridClassPlans.Columns.LastOrDefault());
+        } else if (ScheduleDataGrid.IsLoaded && ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 1)
+        {
+            ScheduleDataGrid.ScrollIntoCurrentView();
         }
     }
     

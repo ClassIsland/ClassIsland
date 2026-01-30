@@ -137,7 +137,8 @@ public partial class ScheduleDataGrid : TemplatedControl
         add => AddHandler(OpenClassPlanSettingsRequestedEvent, value);
         remove => RemoveHandler(OpenClassPlanSettingsRequestedEvent, value);
     }
-    
+
+    public event EventHandler<CreateClassPlanEventArgs>? CreateClassPlanEvent;
     
     public ObservableCollection<WeekClassPlanRow> WeekClassPlanRows { get; } = [];
     public ObservableCollection<DateTime> WeekDayDates { get; } = [default, default, default, default, default, default, default];
@@ -148,7 +149,9 @@ public partial class ScheduleDataGrid : TemplatedControl
     
     public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>(); 
     public ILessonsService LessonsService { get; } = IAppHost.GetService<ILessonsService>(); 
-    public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>(); 
+    public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
+
+    private DataGrid? _mainDataGrid;
     
     public ScheduleDataGrid()
     {
@@ -159,9 +162,11 @@ public partial class ScheduleDataGrid : TemplatedControl
             new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid));
         SetValue(ClassPlansProperty,
             new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid));
-        this.GetObservable(SelectedDateProperty).Skip(1).Subscribe(_ => RefreshWeekScheduleRows());
+        this.GetObservable(SelectedDateProperty).Skip(1).Subscribe(_ => RefreshWeekScheduleRows(true));
+        this.GetObservable(SelectedClassInfoIndexProperty).Skip(1).Subscribe(_ => UpdateSelectedClassInfoByIndex());
         Loaded += Control_OnLoaded;
         Unloaded += OnUnloaded;
+        
     }
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
@@ -182,28 +187,20 @@ public partial class ScheduleDataGrid : TemplatedControl
         {
             nextBtn.Click += ButtonNextWeek_OnClick;
         }
-    }
 
-    private void DataGridWeekSchedule_OnPreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)
-    {
-        
-    }
-
-    private void DataGridWeekSchedule_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
-    {
-        
+        _mainDataGrid = e.NameScope.Find<DataGrid>("PART_DataGridWeekSchedule");
     }
 
     private void ButtonNextWeek_OnClick(object? sender, RoutedEventArgs e)
     {
         SelectedDate += TimeSpan.FromDays(7);
-        RefreshWeekScheduleRows();
+        RefreshWeekScheduleRows(true);
     }
 
     private void ButtonPreviousWeek_OnClick(object? sender, RoutedEventArgs e)
     {
         SelectedDate -= TimeSpan.FromDays(7);
-        RefreshWeekScheduleRows();
+        RefreshWeekScheduleRows(true);
     }
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
@@ -225,42 +222,47 @@ public partial class ScheduleDataGrid : TemplatedControl
         return (currentCell, currentCell != null ? children?.IndexOf(currentCell) ?? 0 : 0);
     }
 
-    public void RefreshWeekScheduleRows()
+    public void RefreshWeekScheduleRows(bool changeFromDate = false)
     {
         var selectedDate = SelectedDate.Date;
         var baseDate = selectedDate.AddDays(-(int)selectedDate.DayOfWeek);
-        ScheduleWeekViewBaseDate = baseDate;
-        List<ClassPlan?> classPlans = [];
-        WeekClassPlanRows.Clear();
-        var maxClasses = 0;
-        for (var i = 0; i < 7; i++)
+        if (!changeFromDate || baseDate != ScheduleWeekViewBaseDate)
         {
-            var classPlan = LessonsService.GetClassPlanByDate(baseDate.AddDays(i));
-            WeekDayDates[i] = baseDate.AddDays(i);
-            maxClasses = Math.Max(maxClasses, classPlan?.Classes.Count ?? 0);
-            classPlans.Add(classPlan);
-            ClassPlansCache[i] = classPlan ?? EmptyClassPlan;
-        }
-
-        for (var i = 0; i < maxClasses; i++)
-        {
-            var row = new WeekClassPlanRow()
+            ScheduleWeekViewBaseDate = baseDate;
+            List<ClassPlan?> classPlans = [];
+            WeekClassPlanRows.Clear();
+            var maxClasses = 0;
+            for (var i = 0; i < 7; i++)
             {
-                Sunday = TryGetClassInfo(classPlans[0], i),
-                Monday = TryGetClassInfo(classPlans[1], i),
-                Tuesday = TryGetClassInfo(classPlans[2], i),
-                Wednesday = TryGetClassInfo(classPlans[3], i),
-                Thursday = TryGetClassInfo(classPlans[4], i),
-                Friday = TryGetClassInfo(classPlans[5], i),
-                Saturday = TryGetClassInfo(classPlans[6], i),
-            };
-            WeekClassPlanRows.Add(row);
-        }
+                var classPlan = LessonsService.GetClassPlanByDate(baseDate.AddDays(i));
+                WeekDayDates[i] = baseDate.AddDays(i);
+                maxClasses = Math.Max(maxClasses, classPlan?.Classes.Count ?? 0);
+                classPlans.Add(classPlan);
+                ClassPlansCache[i] = classPlan ?? EmptyClassPlan;
+            }
 
-        WeekIndex =
-            (int)Math.Ceiling((baseDate.AddDays(6) - SettingsService.Settings.SingleWeekStartTime).TotalDays / 7);
-        UpdateTimePoints();
-        UpdateObservers();
+            for (var i = 0; i < maxClasses; i++)
+            {
+                var row = new WeekClassPlanRow()
+                {
+                    Sunday = TryGetClassInfo(classPlans[0], i),
+                    Monday = TryGetClassInfo(classPlans[1], i),
+                    Tuesday = TryGetClassInfo(classPlans[2], i),
+                    Wednesday = TryGetClassInfo(classPlans[3], i),
+                    Thursday = TryGetClassInfo(classPlans[4], i),
+                    Friday = TryGetClassInfo(classPlans[5], i),
+                    Saturday = TryGetClassInfo(classPlans[6], i),
+                };
+                WeekClassPlanRows.Add(row);
+            }
+
+            WeekIndex =
+                (int)Math.Ceiling((baseDate.AddDays(6) - SettingsService.Settings.SingleWeekStartTime).TotalDays / 7);
+            UpdateTimePoints();
+            UpdateObservers();
+        }
+        
+        UpdateUiSelection();
 
         return;
 
@@ -273,6 +275,21 @@ public partial class ScheduleDataGrid : TemplatedControl
 
             return ClassInfo.Empty;
         }
+    }
+
+    public void UpdateUiSelection()
+    {
+        if (_mainDataGrid == null)
+        {
+            return;
+        }
+
+        var currentColumn = _mainDataGrid.CurrentColumn;
+        if (currentColumn == _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 1] || _mainDataGrid.SelectedItem == null)
+        {
+            return;
+        }
+        _mainDataGrid.CurrentColumn = _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 1];
     }
 
     private void UpdateTimePoints()
@@ -319,11 +336,33 @@ public partial class ScheduleDataGrid : TemplatedControl
     {
         Console.WriteLine($"sel changed, {e.Date}, {e.ClassInfo.SubjectId}");
         SelectedClassInfo = e.ClassInfo;
-        SelectedClassPlanDate = e.Date;
-        var index = Math.Clamp((SelectedClassPlanDate - ScheduleWeekViewBaseDate).Days, 0, 6);
+        SelectedDate = e.Date;
+        var index = Math.Clamp((SelectedDate - ScheduleWeekViewBaseDate).Days, 0, 6);
         SelectedClassPlan = ClassPlansCache.Count >= 7
             ? (ClassPlansCache[index] == EmptyClassPlan ? null : ClassPlansCache[index])
             : null;
+        UpdateTimePoints();
+    }
+
+    private void UpdateSelectedClassInfoByIndex()
+    {
+        if (SelectedClassInfoIndex < 0 || SelectedClassInfoIndex >= WeekClassPlanRows.Count)
+        {
+            return;
+        }
+
+        var row = WeekClassPlanRows[SelectedClassInfoIndex];
+        SelectedClassInfo = SelectedDate.DayOfWeek switch
+        {
+            DayOfWeek.Sunday => row.Sunday,
+            DayOfWeek.Monday => row.Monday,
+            DayOfWeek.Tuesday => row.Tuesday,
+            DayOfWeek.Wednesday => row.Wednesday,
+            DayOfWeek.Thursday => row.Thursday,
+            DayOfWeek.Friday => row.Friday,
+            DayOfWeek.Saturday => row.Saturday,
+            _ => throw new ArgumentOutOfRangeException()
+        };
         UpdateTimePoints();
     }
 
@@ -358,5 +397,24 @@ public partial class ScheduleDataGrid : TemplatedControl
             observer.Dispose();
         }
         _updateObservers.Clear();
+    }
+
+    public void ScrollIntoCurrentView()
+    {
+        if (SelectedClassInfoIndex < 0 || SelectedClassInfoIndex >= WeekClassPlanRows.Count)
+        {
+            return;
+        }
+        _mainDataGrid?.ScrollIntoView(WeekClassPlanRows[SelectedClassInfoIndex], _mainDataGrid.Columns[(int)SelectedDate.DayOfWeek + 1]);
+    }
+
+    public void CreateClassPlanByDate(DateTime date)
+    {
+        SelectedDate = date;
+        SelectedClassInfoIndex = 0;
+        CreateClassPlanEvent?.Invoke(this, new CreateClassPlanEventArgs()
+        {
+            Date = date
+        });
     }
 }

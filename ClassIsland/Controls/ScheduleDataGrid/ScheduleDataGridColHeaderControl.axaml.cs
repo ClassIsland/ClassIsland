@@ -59,6 +59,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
     private IDisposable? _copyClassPlanSourceObserver;
     private Button? _buttonOpenClassPlanSettings;
     private Button? _buttonCreateClassPlan;
+    private ScheduleDataGrid? _scheduleDataGrid;
 
     public ScheduleDataGridColHeaderViewModel ViewModel { get; } = new();
 
@@ -98,6 +99,11 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
     }
 
     private void ButtonCreateClassPlanOnClick(object? sender, RoutedEventArgs e)
+    {
+        InitClassPlanCreationExp();
+    }
+
+    private void InitClassPlanCreationExp()
     {
         _timeRuleObserver?.Dispose();
         _timeRuleObserver = null;
@@ -202,6 +208,28 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         ViewModel.ClassPlanTimeRule = ConfigureFileHelper.CopyObject(ViewModel.ClassPlanTimeRule);
         profileService.Profile.ClassPlans.Add(Guid.NewGuid(), cp);
         FlyoutHelper.CloseAncestorFlyout(o);
+
+        if (_scheduleDataGrid == null) 
+            return;
+        _scheduleDataGrid.SelectedDate = Date;
+        _scheduleDataGrid.SelectedClassInfoIndex = 0;
+        _scheduleDataGrid.UpdateUiSelection();
+    }
+    
+    private void ScheduleDataGridOnOpenClassPlanSettingsRequested(object? sender, CreateClassPlanEventArgs e)
+    {
+        if (e.Date != Date)
+        {
+            return;
+        }
+
+        if (_buttonCreateClassPlan != null)
+        {
+            InitClassPlanCreationExp();
+            var flyout = _buttonCreateClassPlan.Flyout;
+            flyout?.ShowAt(_buttonCreateClassPlan);
+            
+        }
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -223,6 +251,11 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
                         ?.SetValue(ScheduleDataGrid.SelectedNewTimeLayoutIdProperty, id);
                 }
             });
+        _scheduleDataGrid = this.FindAncestorOfType<ScheduleDataGrid>();
+        if (_scheduleDataGrid != null)
+        {
+            _scheduleDataGrid.CreateClassPlanEvent += ScheduleDataGridOnOpenClassPlanSettingsRequested;
+        }
     }
 
     protected override void OnUnloaded(RoutedEventArgs e)
@@ -236,6 +269,11 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         _timeRuleWeekDivSuggestObserver = null;
         _copyClassPlanSourceObserver?.Dispose();
         _copyClassPlanSourceObserver = null;
+        if (_scheduleDataGrid != null)
+        {
+            _scheduleDataGrid.CreateClassPlanEvent -= ScheduleDataGridOnOpenClassPlanSettingsRequested;
+        }
+        _scheduleDataGrid = null;
     }
 
     [RelayCommand]
