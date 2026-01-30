@@ -22,7 +22,8 @@
                                Fill="{DynamicResource DataGridRowBackgroundBrush}"/>
                     <StackPanel Orientation="Horizontal" Margin="6 4"
                                 VerticalAlignment="Center"
-                                Classes.hide-default="{Binding ClassInfo.CurrentTimeLayoutItem.IsHideDefault, RelativeSource={RelativeSource TemplatedParent}}">
+                                Classes.hide-default="{Binding ClassInfo.CurrentTimeLayoutItem.IsHideDefault, RelativeSource={RelativeSource TemplatedParent}}"
+                                Classes.disabled="{Binding !ClassInfo.IsEnabled, RelativeSource={RelativeSource TemplatedParent}}">
                         <StackPanel VerticalAlignment="Center">
                             <StackPanel.DataContext>
                                 <MultiBinding
@@ -120,6 +121,11 @@
         <Style Selector="^ /template/ StackPanel.hide-default > StackPanel > TextBlock">
             <Setter Property="FontStyle" Value="Italic"/>
             <Setter Property="Opacity" Value="0.75"/>
+        </Style>
+        <Style Selector="^ /template/ StackPanel.disabled > StackPanel > TextBlock">
+            <Setter Property="TextDecorations" Value="{x:Static TextDecorations.Strikethrough}"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Opacity" Value="0.5"/>
         </Style>
         
         <Style Selector="^[IsSelected=True]">
