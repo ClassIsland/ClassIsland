@@ -1753,26 +1753,6 @@
                                     Classes="compact">
                             <TabItem Header="{ci:FluentIcon &#xF0EB;}">
                                 <Grid RowDefinitions="Auto,*,Auto">
-                                    <StackPanel Grid.Row="0" Orientation="Horizontal"
-                                                Spacing="4">
-                                        <CalendarDatePicker
-                                            SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate}"
-                                            Width="150"/>
-                                        <Button Theme="{StaticResource TransparentButton}"
-                                                Content="{ci:FluentIcon &#xE109;}"
-                                                ToolTip.Tip="上一周"
-                                                Click="ButtonPreviousWeek_OnClick"/>
-                                        <Button Theme="{StaticResource TransparentButton}"
-                                                Content="{ci:FluentIcon &#xE131;}"
-                                                ToolTip.Tip="下一周"
-                                                Click="ButtonNextWeek_OnClick"/>
-                                        <TextBlock VerticalAlignment="Center"
-                                                   Margin="4 0 0 0">
-                                            <Run Text="第"/><Run Text="{Binding ViewModel.DataGridWeekRowsWeekIndex}"/><Run Text="周"/>
-                                        </TextBlock>
-                                    </StackPanel>
-                                    
-                                    
                                     <Border Background="#204169e1" 
                                             Grid.Row="2"
                                             IsVisible="{Binding ViewModel.IsInScheduleSwappingMode}">
@@ -1791,77 +1771,13 @@
                                         </Grid>
                                     </Border>
 
-                                    <DataGrid Grid.Row="1"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                              ItemsSource="{Binding ViewModel.WeekClassPlanRows, Mode=TwoWay}"
-                                              CanUserSortColumns="False"
-                                              CanUserReorderColumns="False"
-                                              AutoGenerateColumns="False"
-                                              CanUserResizeColumns="False"
-                                              SelectionMode="Single"
-                                              GridLinesVisibility="Horizontal"
-                                              SelectedItem="{Binding ViewModel.SelectedWeekClassPlanRow}"
-                                              PreparingCellForEdit="DataGridWeekSchedule_OnPreparingCellForEdit"
-                                              BeginningEdit="DataGridWeekSchedule_OnBeginningEdit"
-                                              scheduleDataGrid:ScheduleDataGridCellControl.Subjects="{Binding ViewModel.ProfileService.Profile.Subjects, Mode=OneWay}"
-                                              x:Name="DataGridWeekSchedule">
-                                        <DataGrid.Styles>
-                                            <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
-                                                <Setter Property="Fill" Value="{DynamicResource DataGridRowHoveredBackgroundColor}"/>
-                                            </Style>
-                                        </DataGrid.Styles>
-                                        <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="周日" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Sunday}"/>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn Header="周一" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Monday}"/>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn Header="周二" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Tuesday}"/>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn Header="周三" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Wednesday}"/>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn Header="周四" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Thursday}"/>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn Header="周五" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Friday}"/>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn Header="周六" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <scheduleDataGrid:ScheduleDataGridCellControl ClassInfo="{Binding Saturday}"/>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                    <scheduleDataGrid:ScheduleDataGrid Grid.Row="1" Grid.Column="0"
+                                                                       x:Name="ScheduleDataGridAdjustment"
+                                                                       IsReadonly="True"
+                                                                       SelectedClassInfo="{Binding ViewModel.SelectedClassInfo, Mode=TwoWay}"
+                                                                       SelectedClassInfoIndex="{Binding ViewModel.SelectedClassIndex2, Mode=TwoWay}"
+                                                                       SelectedClassPlan="{Binding ViewModel.SelectedClassPlan, Mode=TwoWay}"
+                                                                       SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"/>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="{ci:FluentIcon &#xE304;}">

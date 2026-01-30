@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -22,6 +23,7 @@ using ReactiveUI;
 
 namespace ClassIsland.Controls.ScheduleDataGrid;
 
+[PseudoClasses(":loaded")]
 public partial class ScheduleDataGrid : TemplatedControl
 {
     public static readonly ClassPlan EmptyClassPlan = new()
@@ -161,6 +163,8 @@ public partial class ScheduleDataGrid : TemplatedControl
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
 
     private DataGrid? _mainDataGrid;
+
+    private int _rowIndexPrev = -1;
     
     public ScheduleDataGrid()
     {
@@ -180,6 +184,7 @@ public partial class ScheduleDataGrid : TemplatedControl
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
+        PseudoClasses.Set(":loaded", false);
         UnsubscribeAllObservers();
     }
 
@@ -214,6 +219,7 @@ public partial class ScheduleDataGrid : TemplatedControl
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
+        PseudoClasses.Set(":loaded", true);
         RefreshWeekScheduleRows();
         Dispatcher.UIThread.Post(() => IsLoading = false);
     }
@@ -235,6 +241,7 @@ public partial class ScheduleDataGrid : TemplatedControl
     {
         var selectedDate = SelectedDate.Date;
         var baseDate = selectedDate.AddDays(-(int)selectedDate.DayOfWeek);
+        var rowIndex = SelectedClassInfoIndex;
         if (!changeFromDate || baseDate != ScheduleWeekViewBaseDate)
         {
             ScheduleWeekViewBaseDate = baseDate;
@@ -269,6 +276,10 @@ public partial class ScheduleDataGrid : TemplatedControl
                 (int)Math.Ceiling((baseDate.AddDays(6) - SettingsService.Settings.SingleWeekStartTime).TotalDays / 7);
             UpdateTimePoints();
             UpdateObservers();
+            if (SelectedClassInfoIndex >= 0 && SelectedClassInfoIndex < WeekClassPlanRows.Count)
+            {
+                if (_mainDataGrid != null) _mainDataGrid.SelectedIndex = SelectedClassInfoIndex;
+            }
         }
         
         UpdateUiSelection();

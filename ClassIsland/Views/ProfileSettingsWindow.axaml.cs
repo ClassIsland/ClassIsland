@@ -192,10 +192,7 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void MasterTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (MasterTabControl?.SelectedIndex == 4)
-        {
-            RefreshWeekScheduleRows();
-        }
+        
     }
     
     private void ButtonHelp_OnClick(object? sender, RoutedEventArgs e)
@@ -1107,82 +1104,11 @@ public partial class ProfileSettingsWindow : MyWindow
     #endregion
 
     #region ClassPlanAdjustment
-
-    private (DataGridCell?, int) GetDataGridSelectedCell(DataGrid dataGrid)
-    {
-        var currentRow = dataGrid.FindDescendantOfType<DataGridRowsPresenter>()?
-            .Children.OfType<DataGridRow>()
-            .FirstOrDefault(r => r.FindDescendantOfType<DataGridCellsPresenter>()?
-                .Children.Any(p => p.Classes.Contains(":current")) ?? false);
-        var item = currentRow?.DataContext;
-
-        var children = currentRow?.FindDescendantOfType<DataGridCellsPresenter>()?.Children;
-        var currentCell = children?.OfType<DataGridCell>().FirstOrDefault(p => p.Classes.Contains(":current"));
-        return (currentCell, currentCell != null ? children?.IndexOf(currentCell) ?? 0 : 0);
-    }
-
-    private void RefreshWeekScheduleRows()
-    {
-        var selectedDate = ViewModel.ScheduleCalendarSelectedDate.Date;
-        var baseDate = selectedDate.AddDays(-(int)selectedDate.DayOfWeek);
-        ViewModel.ScheduleWeekViewBaseDate = baseDate;
-        List<ClassPlan?> classPlans = [];
-        ViewModel.WeekClassPlanRows.Clear();
-        var maxClasses = 0;
-        for (var i = 0; i < 7; i++)
-        {
-            var classPlan = ViewModel.LessonsService.GetClassPlanByDate(baseDate.AddDays(i));
-            maxClasses = Math.Max(maxClasses, classPlan?.Classes.Count ?? 0);
-            classPlans.Add(classPlan);
-        }
-
-        for (var i = 0; i < maxClasses; i++)
-        {
-            var row = new WeekClassPlanRow()
-            {
-                Sunday = TryGetClassInfo(classPlans[0], i),
-                Monday = TryGetClassInfo(classPlans[1], i),
-                Tuesday = TryGetClassInfo(classPlans[2], i),
-                Wednesday = TryGetClassInfo(classPlans[3], i),
-                Thursday = TryGetClassInfo(classPlans[4], i),
-                Friday = TryGetClassInfo(classPlans[5], i),
-                Saturday = TryGetClassInfo(classPlans[6], i),
-            };
-            ViewModel.WeekClassPlanRows.Add(row);
-        }
-
-        ViewModel.DataGridWeekRowsWeekIndex =
-            (int)Math.Ceiling((baseDate.AddDays(6) - ViewModel.SettingsService.Settings.SingleWeekStartTime).TotalDays / 7);
-
-        return;
-
-        ClassInfo? TryGetClassInfo(ClassPlan? classPlan, int index)
-        {
-            if (classPlan != null && classPlan.Classes.Count > index)
-            {
-                return classPlan.Classes[index];
-            }
-
-            return null;
-        }
-    }
+    
     private void ButtonRefreshScheduleAdjustmentView_OnClick(object sender, RoutedEventArgs e)
     {
-        RefreshWeekScheduleRows();
+        ScheduleDataGridAdjustment.RefreshWeekScheduleRows();
         ScheduleCalendarControl.UpdateSchedule();
-    }
-
-    private void DataGridWeekSchedule_OnPreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)
-    {
-    }
-
-    private void DataGridWeekSchedule_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
-    {
-        // if (e.Row.Item is WeekClassPlanRow row &&
-        //     GetClassInfoFromRow(row, e.Column.DisplayIndex) == null)
-        // {
-        //     e.Cancel = true;
-        // }
     }
 
     private ClassInfo? GetClassInfoFromRow(WeekClassPlanRow row, int index)
@@ -1202,15 +1128,9 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonSwapSchedule_OnClick(object sender, RoutedEventArgs e)
     {
-        var (cell, colIndex) = GetDataGridSelectedCell(DataGridWeekSchedule);
-        if (cell?.DataContext is not WeekClassPlanRow row)
-        {
-            this.ShowWarningToast("请先选择要交换的课程。");
-            return;
-        }
-        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(colIndex);
-        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
-        if (GetClassInfoFromRow(row, colIndex) == null)
+        var date = ViewModel.ScheduleCalendarSelectedDate;
+        var index = ViewModel.SelectedClassIndex2;
+        if (ViewModel.SelectedClassInfo == null || ViewModel.SelectedClassInfo.IsEmpty)
         {
             this.ShowWarningToast("选择课程区域无效。");
             return;
@@ -1219,29 +1139,12 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.IsInScheduleSwappingMode = true;
     }
 
-    private void ButtonNextWeek_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.ScheduleCalendarSelectedDate += TimeSpan.FromDays(7);
-        RefreshWeekScheduleRows();
-    }
-
-    private void ButtonPreviousWeek_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.ScheduleCalendarSelectedDate -= TimeSpan.FromDays(7);
-        RefreshWeekScheduleRows();
-    }
-
     private void ButtonSwapScheduleComplete_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsInScheduleSwappingMode = false;
-        var (cell, colIndex) = GetDataGridSelectedCell(DataGridWeekSchedule);
-        if (cell?.DataContext is not WeekClassPlanRow row)
-        {
-            return;
-        }
-        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(colIndex);
-        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
-        if (GetClassInfoFromRow(row, colIndex) == null)
+        var date = ViewModel.ScheduleCalendarSelectedDate;
+        var index = ViewModel.SelectedClassIndex2;
+        if (ViewModel.SelectedClassInfo == null || ViewModel.SelectedClassInfo.IsEmpty)
         {
             this.ShowWarningToast("选择课程区域无效。");
             return;
@@ -1264,7 +1167,6 @@ public partial class ProfileSettingsWindow : MyWindow
             endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].IsChangedClass = true;
         }
 
-        RefreshWeekScheduleRows();
         ScheduleCalendarControl.UpdateSchedule();
     }
 
@@ -1305,13 +1207,9 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonEditClassInfoTemp_OnClick(object sender, RoutedEventArgs e)
     {
         e.Handled = true;
-        var (cell, colIndex) = GetDataGridSelectedCell(DataGridWeekSchedule);
-        if (cell?.DataContext is not WeekClassPlanRow row)
-        {
-            this.ShowWarningToast("请先选择要修改的课程。");
-            return;
-        }
-        if (GetClassInfoFromRow(row, colIndex) == null)
+        var date = ViewModel.ScheduleCalendarSelectedDate;
+        var index = ViewModel.SelectedClassIndex2;
+        if (ViewModel.SelectedClassInfo == null || ViewModel.SelectedClassInfo.IsEmpty)
         {
             this.ShowWarningToast("选择课程区域无效。");
             return;
@@ -1327,13 +1225,8 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonEditClassInfoTempConfirm_OnClick(object sender, RoutedEventArgs e)
     {
         FlyoutHelper.CloseAncestorFlyout(sender);
-        var (cell, colIndex) = GetDataGridSelectedCell(DataGridWeekSchedule);
-        if (cell?.DataContext is not WeekClassPlanRow row)
-        {
-            return;
-        }
-        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(colIndex);
-        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+        var date = ViewModel.ScheduleCalendarSelectedDate;
+        var index = ViewModel.SelectedClassIndex2;
 
         var targetClassPlan = GetTargetClassPlan(date, ViewModel.IsTempSwapMode, out var guid);
         if (targetClassPlan == null || targetClassPlan.Classes.Count <= index)
@@ -1346,7 +1239,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             targetClassPlan.Classes[index].IsChangedClass = true;
         }
-        RefreshWeekScheduleRows();
+        
         ScheduleCalendarControl.UpdateSchedule();
     }
 
@@ -1356,7 +1249,6 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             return;
         }
-        RefreshWeekScheduleRows();
     }
 
     #endregion
