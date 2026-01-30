@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:ClassIsland.Controls"
+                    xmlns:controls="clr-namespace:ClassIsland.Controls;assembly=ClassIsland"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
@@ -64,7 +64,8 @@
                                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                         FontSize="{TemplateBinding FontSize}"
-                                        Margin="{TemplateBinding Padding}"/>
+                                        Margin="{TemplateBinding Padding}"
+                                        Classes="l-secondary"/>
 
                         <!-- Drawn Border should render on top of background to preserve the 1px
                         margin between items-->

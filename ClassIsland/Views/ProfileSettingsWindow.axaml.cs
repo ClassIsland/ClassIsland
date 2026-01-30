@@ -680,6 +680,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonRefreshScheduleDataGrid_OnClick(object? sender, RoutedEventArgs e)
     {
         ScheduleDataGrid.RefreshWeekScheduleRows();
+        ScheduleCalendarControl2.UpdateSchedule();
     }
     
     private void ScheduleDataGrid_OnOpenClassPlanSettingsRequested(object? sender, ScheduleDataGridClassPlanEventArgs e)

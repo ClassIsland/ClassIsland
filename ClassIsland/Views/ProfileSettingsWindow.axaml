@@ -504,7 +504,7 @@
                 <TabItem Header="课表" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <TabControl TabStripPlacement="Bottom" Classes="compact" Padding="0" 
                                 SelectedIndex="{Binding ViewModel.SettingsService.Settings.ClassPlanEditModeIndex}">
-                        <TabItem Header="{ci:FluentIcon &#xE075;}">
+                        <TabItem Header="{ci:FluentIcon &#xE075;}" ToolTip.Tip="列表视图">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500" />
@@ -904,7 +904,7 @@
                                 </ci:Emptiable>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="{ci:FluentIcon &#xF0EB;}">
+                        <TabItem Header="{ci:FluentIcon &#xF0EB;}" ToolTip.Tip="周视图">
                             <Grid RowDefinitions="Auto *">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -1028,8 +1028,26 @@
                                 </TabControl>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="{ci:FluentIcon &#xE304;}">
-                            <TextBlock Text="Coming s∞n"/>
+                        <TabItem Header="{ci:FluentIcon &#xE304;}" ToolTip.Tip="月视图">
+                            <Grid RowDefinitions="Auto *">
+                                <controls:CommandBar Grid.Column="0"
+                                                     Grid.Row="0" DefaultLabelPosition="Right"
+                                                     Margin="0 -4 0 -4"
+                                                     IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
+                                                     Classes="hide-popup-indicator">
+                                    <controls:CommandBar.PrimaryCommands>
+                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE0B5;}"
+                                                                   Label="刷新"
+                                                                   Click="ButtonRefreshScheduleDataGrid_OnClick"
+                                                                   ToolTip.Tip="刷新当前视图。" />
+                                    </controls:CommandBar.PrimaryCommands>
+
+                                </controls:CommandBar>
+                                <controls1:ScheduleCalendarControl x:Name="ScheduleCalendarControl2"
+                                                                   Grid.Row="1"
+                                                                   DisplayDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"
+                                                                   SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}" />
+                            </Grid>
                         </TabItem>
                     </TabControl>
                     

@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.ComponentModels;
 using ClassIsland.Core.Helpers.UI;
@@ -132,14 +133,14 @@ public partial class ScheduleDayControl : UserControl
         UpdateData();
     }
 
-    // private void ScheduleDayControl_OnLoaded(object sender, RoutedEventArgs e)
-    // {
-    //     _parentScheduleCalendarControl = VisualTreeUtils.FindParentVisuals<ScheduleCalendarControl>(this).FirstOrDefault();
-    //     if (_parentScheduleCalendarControl != null)
-    //     {
-    //         _parentScheduleCalendarControl.ScheduleUpdated += ParentScheduleCalendarControlOnScheduleUpdated;
-    //     }
-    // }
+    private void ScheduleDayControl_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        _parentScheduleCalendarControl = this.FindAncestorOfType<ScheduleCalendarControl>();
+        if (_parentScheduleCalendarControl != null)
+        {
+            _parentScheduleCalendarControl.ScheduleUpdated += ParentScheduleCalendarControlOnScheduleUpdated;
+        }
+    }
 
     private void ParentScheduleCalendarControlOnScheduleUpdated(object? sender, EventArgs e)
     {
