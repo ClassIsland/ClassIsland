@@ -69,6 +69,13 @@ public static class Program
             // AllocConsole();
         }
 
+        // 修复特定情况下无法正常 DPI 缩放的问题 https://github.com/ClassIsland/ClassIsland/issues/1580
+        if (OperatingSystem.IsLinux() && GlobalStorageService.GetValue("IgnoreQtScaling") == "1")
+        {
+            Environment.SetEnvironmentVariable("QT_SCREEN_SCALE_FACTORS", null);
+            Environment.SetEnvironmentVariable("QT_SCALE_FACTORS", null);
+        }
+
         var mutex = new Mutex(true, "Global\\ClassIsland.Lock", out var createNew);
 
         if (!createNew)
@@ -118,6 +125,10 @@ public static class Program
         };
     }
     
+    /// <summary>
+    /// 用于在发现另一个实例正在运行时，将启动 URI 通过 IPC 发送给已运行实例并退出当前进程。
+    /// 此方法在启动参数包含 URI 时被调用以支持单实例的 URI 导航。
+    /// </summary>
     private static async Task ProcessUriNavigationAsync()
     {
         try
@@ -134,6 +145,10 @@ public static class Program
         }
     }
     
+    /// <summary>
+    /// 配置 Sentry SDK 的运行时选项。
+    /// 在启用 Sentry 时由 <see cref="AppEntry"/> 调用以初始化全局监控参数。
+    /// </summary>
     private static void ConfigureSentry(SentryOptions options)
     {
         // A Sentry Data Source Name (DSN) is required.
@@ -166,6 +181,10 @@ public static class Program
         options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
     }
     
+    /// <summary>
+    /// 设置应用程序的 <see cref="ProcessPriorityClass"/>。
+    /// 无效值将回退到 <see cref="ProcessPriorityClass.Normal"/>。
+    /// </summary>
     static void SetProcessPriority(uint priority)
     {
         Process.GetCurrentProcess().PriorityClass = priority switch

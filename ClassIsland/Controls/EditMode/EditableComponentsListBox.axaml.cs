@@ -47,6 +47,16 @@ public partial class EditableComponentsListBox : ListBox
         add => AddHandler(RequestOpenChildComponentsEvent, value);
         remove => RemoveHandler(RequestOpenChildComponentsEvent, value);
     }
+    
+    public static readonly RoutedEvent<RequestAddComponentEventArgs> RequestAddComponentEvent =
+        RoutedEvent.Register<RequestAddComponentEventArgs>(
+            nameof(RequestAddComponent), RoutingStrategies.Bubble, typeof(EditableComponentsListBox));
+     
+    public event EventHandler<RequestAddComponentEventArgs> RequestAddComponent
+    {
+        add => AddHandler(RequestAddComponentEvent, value);
+        remove => RemoveHandler(RequestAddComponentEvent, value);
+    }
 
     public static readonly AttachedProperty<IEnumerable?> ItemsSourceInternalProperty =
         AvaloniaProperty.RegisterAttached<EditableComponentsListBox, Control, IEnumerable?>("ItemsSourceInternal", inherits: true);
@@ -158,5 +168,19 @@ public partial class EditableComponentsListBox : ListBox
         var newSettings = ConfigureFileHelper.CopyObject(settings);
         list.Insert(index, newSettings);
         SelectedItem = newSettings;
+    }
+
+    [RelayCommand]
+    private void InvokeRequestAddComponent()
+    {
+        if (ItemsSource is not IList<ComponentSettings> list)
+        {
+            return;
+        }
+
+        RaiseEvent(new RequestAddComponentEventArgs(RequestAddComponentEvent)
+        {
+            ComponentList = list
+        });
     }
 }

@@ -1,11 +1,12 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:ClassIsland.Controls.TimeLine"
-                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+                    xmlns:controls="using:ClassIsland.Controls.TimeLine"
+                    xmlns:profile="using:ClassIsland.Shared.Models.Profile"
                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
-                    xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
-                    xmlns:views="clr-namespace:ClassIsland.Views"
-                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                    xmlns:behaviors="using:ClassIsland.Behaviors"
+                    xmlns:views="using:ClassIsland.Views"
+                    xmlns:system="using:System"
+                    x:CompileBindings="True">
     <ControlTheme TargetType="{x:Type controls:TimeLineListControl}" x:Key="{x:Type controls:TimeLineListControl}">
         <ControlTheme.Resources>
             <ci:DayTimeSpanToHeightConverter x:Key="DayTimeSpanToHeightConverter" />
@@ -14,13 +15,17 @@
             <controls:TimeLineListControlDataTemplateSelector>
                 <!-- 档案编辑 > 时间线视图 > 上课/课间休息时间块 -->
                 <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
-                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                         <Grid.Resources>
                             <ci:TimeSpanToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
                             <ci:TimeSpanDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                         </Grid.Resources>
                         <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
-                        <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Classes="timeLineItem-root">
+                        <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Classes="timeLineItem-root"
+                                ClipToBounds="True"
+                                Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
+                                BackgroundSizing="OuterBorderEdge"
+                                CornerRadius="4"> 
                             <Classes.timeType-onClass>
                                 <Binding Path="TimeType" Converter="{x:Static ObjectConverters.Equal}">
                                     <Binding.ConverterParameter>
@@ -37,24 +42,30 @@
                             </Classes.timeType-breaking>
                             <Border.Styles>
                                 <Style Selector="Border.timeLineItem-root">
-                                    <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorSecondaryBrush}"/>
-                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="BorderThickness" Value="4 0.5 0.5 0.5"/>
                                     <Style Selector="^.timeType-onClass">
-                                        <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
-                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
                                     </Style>
                                     <Style Selector="^.timeType-breaking">
-                                        <Setter Property="Background" Value="{DynamicResource AccentFillColorTertiaryBrush}"/>
-                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextOnAccentFillColorSecondaryBrush}"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    </Style>
+                                    <Style Selector="^.timeType-onClass Border#InnerBorder">
+                                        <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                                    </Style>
+                                    
+                                    <Style Selector="^.timeType-breaking Border#InnerBorder">
+                                        <Setter Property="Background" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
                                     </Style>
                                 </Style>
                             </Border.Styles>
                             <ToolTip.Tip>
                                 <controls:TimeLineListItemControl TimePoint="{Binding}" IsAlwaysExpanded="True"/>
                             </ToolTip.Tip>
-                            <Grid>
-                                <controls:TimeLineListItemControl TimePoint="{Binding}"/>
-                            </Grid>
+                            <Panel>
+                                <Border x:Name="InnerBorder" Opacity="0.45"/>
+                                <controls:TimeLineListItemControl TimePoint="{Binding}" />
+                            </Panel>
                         </Border>
                     </Grid>
                 </DataTemplate>
@@ -71,7 +82,16 @@
                                 <controls:TimeLineListItemControl TimePoint="{Binding}"/>
                             </ToolTip.Tip>
                             <Rectangle.Fill>
-                                <SolidColorBrush Color="DarkGray"/>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="20,0" 
+                                                     SpreadMethod="Repeat" >
+                                    <LinearGradientBrush.Transform>
+                                        <RotateTransform Angle="45" />
+                                    </LinearGradientBrush.Transform>
+                                    <GradientStop Offset="0" Color="DarkGray" />
+                                    <GradientStop Offset="0.5" Color="DarkGray" />
+                                    <GradientStop Offset="0.5" Color="Gray" />
+                                    <GradientStop Offset="1" Color="Gray" />
+                                </LinearGradientBrush>
                             </Rectangle.Fill>
                         </Rectangle>
                     </Grid>
@@ -89,7 +109,16 @@
                                 <controls:TimeLineListItemControl TimePoint="{Binding}"/>
                             </ToolTip.Tip>
                             <Rectangle.Fill>
-                                <SolidColorBrush Color="Green"/>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="20,0" 
+                                                     SpreadMethod="Repeat" >
+                                    <LinearGradientBrush.Transform>
+                                        <RotateTransform Angle="45" />
+                                    </LinearGradientBrush.Transform>
+                                    <GradientStop Offset="0" Color="Green" />
+                                    <GradientStop Offset="0.5" Color="Green" />
+                                    <GradientStop Offset="0.5" Color="LimeGreen" />
+                                    <GradientStop Offset="1" Color="LimeGreen" />
+                                </LinearGradientBrush>
                             </Rectangle.Fill>
                         </Rectangle>
                     </Grid>
@@ -100,7 +129,7 @@
             <Setter.Value>
                 <ItemsPanelTemplate>
                     <Canvas HorizontalAlignment="Stretch"
-                            Margin="60 0 0 0"
+                            Margin="40 0 0 0"
                             Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
@@ -130,7 +159,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="ItemContainerTheme">
-            <ControlTheme TargetType="ListBoxItem" >
+            <ControlTheme TargetType="ListBoxItem" x:DataType="profile:TimeLayoutItem">
                 <ControlTheme.Resources>
                     <ci:TimeSpanToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
                     <ci:TimeSpanDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
@@ -177,11 +206,11 @@
                                 <RemoveClassAction ClassName="timeType-actions"/>
                             </DataTriggerBehavior>
                             
-                            <behaviors:TimeLineListItemBehavior ParentListBox="{Binding Parent}">
-                                <behaviors:TimeLineListItemBehavior.ThumbTemplate>
-                                    
-                                </behaviors:TimeLineListItemBehavior.ThumbTemplate>
-                            </behaviors:TimeLineListItemBehavior>
+                            <!-- <behaviors:TimeLineListItemBehavior  ParentListBox="{Binding Parent}"> -->
+                            <!--     <behaviors:TimeLineListItemBehavior.ThumbTemplate> -->
+                            <!--          -->
+                            <!--     </behaviors:TimeLineListItemBehavior.ThumbTemplate> -->
+                            <!-- </behaviors:TimeLineListItemBehavior> -->
                         </BehaviorCollection>
                     </BehaviorCollectionTemplate>
                 </Setter>
@@ -194,7 +223,8 @@
                                                                     ParentListBox="{Binding $parent[controls:TimeLineListControl]}">
                                     <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                         <controls:TimeLineListItemAdornerTemplateSelector TimeType="{Binding TimeType}">
-                                            <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.ExpandingTimePointAdornerKey}">
+                                            <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.ExpandingTimePointAdornerKey}"
+                                                             x:DataType="controls:TimeLineListControl">
                                                 <Grid>
                                                     <controls:TimeLineListItemExpandingAdornerControl
                                                         Margin="20"
@@ -224,7 +254,7 @@
                                                 </Grid>
                                             </ControlTemplate>
                                             <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.LineTimePointAdornerKey}">
-                                                <Grid>
+                                                <Grid x:DataType="controls:TimeLineListControl">
                                                     <controls:TimeLineListItemSeparatorAdornerControl
                                                         Margin="20"
                                                         VerticalAlignment="Stretch"

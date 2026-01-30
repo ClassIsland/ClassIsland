@@ -23,6 +23,7 @@ public class SettingsNewViewModel : ObservableRecipient
     private List<string> _echoCaveTexts = [];
     private List<string> _echoCaveTextsAll = [];
     private bool _isCoverVisible = true;
+    private ObservableCollection<NavigationViewItemBase> _flattenNavigationItemsCache = [];
 
     public object? FrameContent
     {
@@ -189,6 +190,17 @@ public class SettingsNewViewModel : ObservableRecipient
         {
             if (value == _isCoverVisible) return;
             _isCoverVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<NavigationViewItemBase> FlattenNavigationItemsCache
+    {
+        get => _flattenNavigationItemsCache;
+        set
+        {
+            if (Equals(value, _flattenNavigationItemsCache)) return;
+            _flattenNavigationItemsCache = value;
             OnPropertyChanged();
         }
     }

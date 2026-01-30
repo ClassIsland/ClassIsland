@@ -66,13 +66,10 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private TimeLayoutItem? _previousTrackedTimeLayoutItem;
     [ObservableProperty] private DateTime _scheduleCalendarSelectedDate = DateTime.Today;
     [ObservableProperty] private DateTime _overlayEnableDateTime = DateTime.Today;
-    [ObservableProperty] private ObservableCollection<WeekClassPlanRow> _weekClassPlanRows = [];
     [ObservableProperty] private bool _isProfileImportMenuOpened = false;
     [ObservableProperty] private bool _isInScheduleSwappingMode = false;
-    [ObservableProperty] private WeekClassPlanRow? _selectedWeekClassPlanRow;
     [ObservableProperty] private ScheduleClassPosition _classSwapEndPosition = ScheduleClassPosition.Zero;
     [ObservableProperty] private ScheduleClassPosition _classSwapStartPosition = ScheduleClassPosition.Zero;
-    [ObservableProperty] private DateTime _scheduleWeekViewBaseDate = DateTime.Now;
     [ObservableProperty] private bool _isTempSwapMode = true;
     [ObservableProperty] private int _dataGridWeekRowsWeekIndex = 0;
     [ObservableProperty] private bool _isClassPlanTempEditPopupOpen = false;
@@ -90,6 +87,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isProfileTransferInvoked;
     [ObservableProperty] private ProfileTransferProviderInfo? _selectedTransferInfo;
     [ObservableProperty] private bool _isTransferring;
+    [ObservableProperty] private int _selectedClassIndex2 = -1;
 
 /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,

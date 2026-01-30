@@ -10,6 +10,7 @@
                   xmlns:converters="clr-namespace:ClassIsland.Converters"
                   xmlns:settingsPages="clr-namespace:ClassIsland.ViewModels.SettingsPages"
                   xmlns:models="clr-namespace:ClassIsland.Models"
+                  xmlns:editMode="clr-namespace:ClassIsland.Controls.EditMode"
                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                   x:Class="ClassIsland.Views.SettingPages.ComponentsSettingsPage"
                   d:DataContext="{d:DesignInstance settingPages:ComponentsSettingsPage}">
@@ -18,7 +19,7 @@
             <Setter Property="Interaction.Behaviors">
                 <BehaviorCollectionTemplate>
                     <BehaviorCollection>
-                        <ci:AdvancedContextDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3" Handler=""/>
+                        <ci:AdvancedManagedContextDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"/>
                     </BehaviorCollection>
                 </BehaviorCollectionTemplate>
             </Setter>
@@ -121,17 +122,6 @@
             </Setter>
             <Setter Property="ItemContainerTheme">
                 <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="Interaction.Behaviors">
-                        <BehaviorCollectionTemplate>
-                            <BehaviorCollection>
-                                <ci:AdvancedItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3"
-                                                             Orientation="Horizontal"/>
-                                <ci:AdvancedContextDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="45"
-                                                             Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}">
-                                </ci:AdvancedContextDragBehavior>
-                            </BehaviorCollection>
-                        </BehaviorCollectionTemplate>
-                    </Setter>
                     <Setter Property="Padding" Value="8 0"/>
                     <Setter Property="MinWidth" Value="0"/>
                     <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -145,6 +135,22 @@
             </Style>
             <Style Selector="^:not(#ListBoxComponentsChildren) MenuItem.children-only">
                 <Setter Property="IsVisible" Value="False"/>
+            </Style>
+            <Style Selector="^ ListBoxItem">
+                <Setter Property="Interaction.Behaviors">
+                    <BehaviorCollectionTemplate>
+                        <BehaviorCollection>
+                            <ci:AdvancedManagedContextDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3">
+                                <ci:AdvancedManagedContextDragBehavior.Context>
+                                    <MultiBinding Converter="{x:Static editMode:EditableComponentsListBoxDragData.Create}">
+                                        <Binding />
+                                        <Binding  Path="$parent[ListBox].ItemsSource"/>
+                                    </MultiBinding>
+                                </ci:AdvancedManagedContextDragBehavior.Context>
+                            </ci:AdvancedManagedContextDragBehavior>
+                        </BehaviorCollection>
+                    </BehaviorCollectionTemplate>
+                </Setter>
             </Style>
         </Style>
     </ci:SettingsPageBase.Styles>
@@ -230,8 +236,9 @@
                                  Classes="component-listBox">
                             <Interaction.Behaviors>
                                 <BehaviorCollection>
-                                    <ContextDropBehavior Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
-                                                         Context="{Binding Children}"/>
+                                    <ManagedContextDropBehavior 
+                                        Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
+                                        Context="{Binding Children}"/>
                                 </BehaviorCollection>
                             </Interaction.Behaviors>
                         </ListBox> 
@@ -324,7 +331,7 @@
                              SelectionChanged="SelectorComponentsChildren_OnSelectionChanged">
                         <Interaction.Behaviors>
                             <BehaviorCollection>
-                                <ContextDropBehavior Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
+                                <ManagedContextDropBehavior Handler="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.DropHandler}"
                                                      Context="{Binding ViewModel.SelectedComponentContainerChildren}"/>
                             </BehaviorCollection>
                         </Interaction.Behaviors>
@@ -345,6 +352,9 @@
                             <DataTemplate>
                                 <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
                                       Margin="0 8" Height="50">
+                                    <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                                       Width="24"/>
+                                    
                                     <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
                                                                 Grid.RowSpan="2"
                                                                 Width="32" Height="32"
@@ -369,23 +379,6 @@
                                                HorizontalAlignment="Stretch"
                                                TextAlignment="Left"
                                                TextTrimming="CharacterEllipsis"/>
-                                    
-                                    <Button Grid.Row="0" Grid.Column="3" Grid.RowSpan="2"
-                                            IsVisible="{Binding $self.(ci:PointerStateAssist.IsTouchMode)}"
-                                            VerticalAlignment="Center" HorizontalAlignment="Right"
-                                            Content="{ci:FluentIcon &#xe00d;}"
-                                            Margin="2 0 0 0"
-                                            Width="32" Height="32" CornerRadius="16"
-                                            Padding="0"
-                                            ToolTip.Tip="添加到主界面"
-                                            Command="{Binding $parent[settingPages:ComponentsSettingsPage].AddSelectedComponentToMainLinesCommand}"
-                                            CommandParameter="{Binding}">
-                                        <Button.Styles>
-                                            <Style Selector="Button:not(.invert-foreground-accent) /template/ ContentPresenter#PART_ContentPresenter">
-                                                <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
-                                            </Style>
-                                        </Button.Styles>
-                                    </Button>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -408,29 +401,30 @@
                 </TabItem>
                 <TabItem Header="高级设置" IsVisible="{Binding ViewModel.IsComponentAdvancedSettingsVisible}">
                     <ci:ComponentAdvancedSettingsControl Settings="{Binding ViewModel.SelectedComponentSettings}"
+                                                         RequestOpenHideRules="ButtonOpenRuleset_OnClick"
                                                          IsRootComponent="{Binding ViewModel.IsSelectedComponentOnRoot}"/>
                 </TabItem>
                 <TabItem Header="行设置" IsVisible="{Binding ViewModel.SelectedMainWindowLineSettings, Converter={x:Static ObjectConverters.IsNotNull}}">
                     <ScrollViewer HorizontalAlignment="Stretch" 
                                   DataContext="{Binding ViewModel.SelectedMainWindowLineSettings}">
                         <StackPanel Classes="settings-container animated-intro" Margin="0">
-                            <!-- ~1~ 按规则隐藏 @1@ -->
-                            <!-- <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}" -->
-                            <!--                            Header="按规则隐藏" -->
-                            <!--                            Description="在指定规则满足时，自动隐藏此组件。注意此处的隐藏不会释放组件资源。"> -->
-                            <!--     <controls:SettingsExpander.Footer> -->
-                            <!--         <StackPanel Orientation="Horizontal"> -->
-                            <!--             <Button HorizontalAlignment="Left" -->
-                            <!--                     Theme="{StaticResource TransparentButton}" -->
-                            <!--                     Click="ButtonOpenRuleset_OnClick" -->
-                            <!--                     IsVisible="{Binding HideOnRule}"> -->
-                            <!--                 <ci:IconText Glyph="&#xF17E;" Text="编辑规则集…" /> -->
-                            <!--             </Button> -->
-                            <!--             <ToggleSwitch VerticalAlignment="Center" -->
-                            <!--                           IsChecked="{Binding HideOnRule}" /> -->
-                            <!--         </StackPanel> -->
-                            <!--     </controls:SettingsExpander.Footer> -->
-                            <!-- </controls:SettingsExpander> -->
+                            <!-- 按规则隐藏 -->
+                            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}"
+                                                       Header="按规则隐藏"
+                                                       Description="在指定规则满足时，自动隐藏此组件。注意此处的隐藏不会释放组件资源。">
+                                <controls:SettingsExpander.Footer>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button HorizontalAlignment="Left"
+                                                Theme="{StaticResource TransparentButton}"
+                                                Click="ButtonOpenRuleset_OnClick"
+                                                IsVisible="{Binding HideOnRule}">
+                                            <ci:IconText Glyph="&#xF17E;" Text="编辑规则集…" />
+                                        </Button>
+                                        <ToggleSwitch VerticalAlignment="Center"
+                                                      IsChecked="{Binding HideOnRule}" />
+                                    </StackPanel>
+                                </controls:SettingsExpander.Footer>
+                            </controls:SettingsExpander>
                             <!-- 不透明度 -->
                             <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf023;}"
                                                        Header="分体主界面"
@@ -603,6 +597,22 @@
                     </ScrollViewer>
                 </TabItem>
             </TabControl>
+            
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Spacing="4"
+                        IsVisible="{Binding ViewModel.SelectedComponentSettings, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        Margin="0 0 0 0">
+                <ci:AnimatedIconButton
+                        Theme="{StaticResource TransparentButton}"
+                        IsEnabled="{Binding ViewModel.SelectedComponentSettings.HideOnRule}"
+                        Classes.fade="{Binding !ViewModel.SelectedComponentSettings.HideOnRule}"
+                        IsKeepingExpanded="{Binding ViewModel.SelectedComponentSettings.HideOnRule}"
+                        Glyph="&#xF17E;"
+                        Text="编辑…"
+                        Click="ButtonOpenRuleset_OnClick"
+                        ToolTip.Tip="编辑规则集…"/>
+                <CheckBox IsChecked="{Binding ViewModel.SelectedComponentSettings.HideOnRule}">按规则隐藏</CheckBox>
+            </StackPanel>
         </Grid>
         
         <controls:InfoBar Grid.Row="5" Grid.Column="0" 

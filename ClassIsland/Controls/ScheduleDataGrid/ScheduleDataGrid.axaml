@@ -1,0 +1,223 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:scheduleDataGrid="clr-namespace:ClassIsland.Controls.ScheduleDataGrid;assembly=ClassIsland"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Style Selector="scheduleDataGrid|ScheduleDataGrid">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="Auto *" DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal"
+                                Spacing="4">
+                        <CalendarDatePicker
+                            SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
+                            Width="150"/>
+                        <Button Theme="{StaticResource TransparentButton}"
+                                Content="{ci:FluentIcon &#xE109;}"
+                                ToolTip.Tip="上一周"
+                                Name="PART_ButtonPreviousWeek"/>
+                        <Button Theme="{StaticResource TransparentButton}"
+                                Content="{ci:FluentIcon &#xE131;}"
+                                ToolTip.Tip="下一周"
+                                Name="PART_ButtonNextWeek"/>
+                        <TextBlock VerticalAlignment="Center"
+                                   Margin="4 0 0 0">
+                            <Run Text="第"/><Run Text="{Binding WeekIndex}"/><Run Text="周"/>
+                        </TextBlock>
+                    </StackPanel>
+                    
+                    <DataGrid Grid.Row="1"
+                              Margin="0 2 0 0"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              ItemsSource="{Binding WeekClassPlanRows, Mode=TwoWay}"
+                              CanUserSortColumns="False"
+                              CanUserReorderColumns="False"
+                              AutoGenerateColumns="False"
+                              CanUserResizeColumns="False"
+                              SelectionMode="Single"
+                              GridLinesVisibility="All"
+                              SelectedItem="{Binding SelectedWeekClassPlanRow, Mode=TwoWay}"
+                              SelectedIndex="{Binding SelectedClassInfoIndex, Converter={x:Static ci:PreventNullConverter.Instance}, Mode=TwoWay}"
+                              scheduleDataGrid:ScheduleDataGridCellControl.Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
+                              x:Name="PART_DataGridWeekSchedule">
+                        <DataGrid.Styles>
+                            <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+                                <Setter Property="Fill" Value="{DynamicResource DataGridRowHoveredBackgroundColor}"/>
+                            </Style>
+                            <Style Selector="DataGridColumnHeader /template/ Grid#PART_ColumnHeaderRoot > Grid > ContentPresenter">
+                                <Setter Property="Grid.ColumnSpan" Value="2"/>
+                            </Style>
+                        </DataGrid.Styles>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="时间" Width="88">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Panel IsVisible="{Binding TimePoint, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter={x:Static profile:TimeLayoutItem.Empty}}"
+                                               Classes.hide-default="{Binding TimePoint.IsHideDefault}">
+                                            <Panel.Styles>
+                                                <Style Selector="Panel.hide-default > TextBlock">
+                                                    <Setter Property="FontStyle" Value="Italic"/>
+                                                    <Setter Property="Opacity" Value="0.75"/>
+                                                </Style>
+                                            </Panel.Styles>
+                                            <TextBlock VerticalAlignment="Center" FontSize="13"
+                                                       Margin="4 0 0 0">
+                                                <Run Text="{Binding TimePoint.StartTime, StringFormat='{}{0:hh\\:mm}', Mode=OneWay}"/><Run Text="-"/><Run Text="{Binding TimePoint.EndTime, StringFormat='{}{0:hh\\:mm}', Mode=OneWay}"/>
+                                            </TextBlock>
+                                        </Panel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="*">
+                                <DataGridTemplateColumn.Header>
+                                    <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                                        Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[0]}"
+                                        ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[0], Mode=OneWay}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <scheduleDataGrid:ScheduleDataGridCellControl 
+                                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[0]}"
+                                            ClassInfo="{Binding Sunday, TargetNullValue={x:Static profile:ClassInfo.Empty}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="*">
+                                <DataGridTemplateColumn.Header>
+                                    <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                                        Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[1]}"
+                                        ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[1], Mode=OneWay}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <scheduleDataGrid:ScheduleDataGridCellControl 
+                                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[1]}"
+                                            ClassInfo="{Binding Monday, TargetNullValue={x:Static profile:ClassInfo.Empty}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="*">
+                                <DataGridTemplateColumn.Header>
+                                    <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                                        Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[2]}"
+                                        ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[2], Mode=OneWay}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <scheduleDataGrid:ScheduleDataGridCellControl
+                                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[2]}"
+                                            ClassInfo="{Binding Tuesday, TargetNullValue={x:Static profile:ClassInfo.Empty}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="*">
+                                <DataGridTemplateColumn.Header>
+                                    <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                                        Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[3]}"
+                                        ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[3], Mode=OneWay}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <scheduleDataGrid:ScheduleDataGridCellControl 
+                                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[3]}"
+                                            ClassInfo="{Binding Wednesday, TargetNullValue={x:Static profile:ClassInfo.Empty}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="*">
+                                <DataGridTemplateColumn.Header>
+                                    <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                                        Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[4]}"
+                                        ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[4], Mode=OneWay}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <scheduleDataGrid:ScheduleDataGridCellControl 
+                                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[4]}"
+                                            ClassInfo="{Binding Thursday, TargetNullValue={x:Static profile:ClassInfo.Empty}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="*">
+                                <DataGridTemplateColumn.Header>
+                                    <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                                        Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[5]}"
+                                        ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[5], Mode=OneWay}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <scheduleDataGrid:ScheduleDataGridCellControl 
+                                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[5]}"
+                                            ClassInfo="{Binding Friday, TargetNullValue={x:Static profile:ClassInfo.Empty}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="*">
+                                <DataGridTemplateColumn.Header>
+                                    <scheduleDataGrid:ScheduleDataGridColHeaderControl
+                                        Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[6]}"
+                                        ClassPlan="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].ClassPlansCache[6], Mode=OneWay}"/>
+                                </DataGridTemplateColumn.Header>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <scheduleDataGrid:ScheduleDataGridCellControl 
+                                            Date="{Binding $parent[scheduleDataGrid:ScheduleDataGrid].WeekDayDates[6]}"
+                                            ClassInfo="{Binding Saturday, TargetNullValue={x:Static profile:ClassInfo.Empty}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <controls:ProgressRing Grid.Row="1" Width="48" Height="48"
+                                           IsVisible="{TemplateBinding IsLoading}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <ci:Empty Grid.Row="1" Text="这里还没有课表，不妨先点击上方的【新课表】按钮创建课表吧"
+                              Margin="0 60 0 0">
+                        <ci:Empty.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="!IsReadonly"
+                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                <Binding Path="!!!WeekClassPlanRows.Count" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                <Binding Path="!!ProfileService.Profile.TimeLayouts.Count"
+                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                <Binding Path="!IsLoading" RelativeSource="{RelativeSource TemplatedParent}"/>
+                            </MultiBinding>
+                        </ci:Empty.IsVisible>
+                    </ci:Empty>
+                    <StackPanel Grid.Row="1" Classes="items-halign-center" VerticalAlignment="Center"
+                                Spacing="8" Margin="0 60 0 0">
+                        <StackPanel.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="!IsReadonly"
+                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                <Binding Path="!!!WeekClassPlanRows.Count"
+                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                <Binding Path="!!!ProfileService.Profile.TimeLayouts.Count"
+                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                <Binding Path="!IsLoading" RelativeSource="{RelativeSource TemplatedParent}" />
+                            </MultiBinding>
+                        </StackPanel.IsVisible>
+                        <ci:Empty Text="您需要先设置时间表才能创建课表" Icon="{ci:FluentIconSource &#xF0ED;, FontSize=64}"/>
+                        <Button Classes="accent"
+                                Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                CommandParameter="classisland://app/profile/timelayouts">前往创建</Button>
+                    </StackPanel>
+                    <ci:Empty Grid.Row="1"
+                              Margin="0 60 0 0">
+                        <ci:Empty.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="IsReadonly"
+                                         RelativeSource="{RelativeSource TemplatedParent}" />
+                                <Binding Path="!!!WeekClassPlanRows.Count" RelativeSource="{RelativeSource TemplatedParent}"/>
+                                <Binding Path="!IsLoading" RelativeSource="{RelativeSource TemplatedParent}"/>
+                            </MultiBinding>
+                        </ci:Empty.IsVisible>
+                    </ci:Empty>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

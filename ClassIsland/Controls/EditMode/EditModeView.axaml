@@ -142,8 +142,10 @@
                                            Click="SettingsExpanderNavigateAppearance_OnClick"/>
             </StackPanel>
         </ScrollViewer>
-        <Panel x:Key="ComponentsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}">
+        <Grid x:Key="ComponentsDrawer" MaxWidth="{StaticResource SettingsContainerWidth}"
+              RowDefinitions="* Auto Auto">
             <ListBox ItemsSource="{Binding ViewModel.ComponentInfos}"
+                     SelectedItem="{Binding ViewModel.SelectedComponentInfo}"
                      Classes="drag-source">
                 <ListBox.Styles>
                     <Style Selector="ListBox.drag-source ListBoxItem">
@@ -152,7 +154,6 @@
                                 <BehaviorCollection>
                                     <ci:AdvancedManagedContextDragBehavior 
                                         PreviewOpacity="0.5"
-                                        PreviewTemplate="{StaticResource ComponentInfoPreviewEffect}"
                                         HorizontalDragThreshold="3" VerticalDragThreshold="3" Context="{Binding }">
                                     </ci:AdvancedManagedContextDragBehavior>
                                 </BehaviorCollection>
@@ -206,7 +207,23 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
-        </Panel>
+            <Separator Grid.Row="1" Margin="0 4" />
+            <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Text="将组件拖动到主界面上即可添加组件。" Classes="l-instructive"
+                       TextWrapping="Wrap"
+                       Margin="0 8"
+                       IsVisible="{Binding ViewModel.TargetComponentsList, Converter={x:Static ObjectConverters.IsNull}}"/>
+            <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Text="选择要添加的组件，或将组件拖动到主界面上即可添加组件。" Classes="l-instructive"
+                       TextWrapping="Wrap"
+                       Margin="0 8"
+                       IsVisible="{Binding ViewModel.TargetComponentsList, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+            <Button Grid.Row="2" Content="添加" Margin="0 4 0 8"
+                    HorizontalAlignment="Right"
+                    Padding="16 6"
+                    Classes="accent" Click="ButtonAddComponentToTargetList_OnClick"
+                    IsVisible="{Binding ViewModel.TargetComponentsList, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+        </Grid>
         
         <Grid x:Key="ComponentSettingsDrawerTitle" ColumnDefinitions="Auto *">
             <StackPanel
@@ -229,18 +246,23 @@
                             </Binding.ConverterParameter>
                         </Binding>
                     </TabStrip.IsVisible>
-                    <TabStripItem Content="组件设置"/>
+                    <TabStripItem Content="组件设置" IsVisible="{Binding ViewModel.MainViewModel.SelectedComponentSettings.AssociatedComponentInfo.SettingsType, TargetNullValue={x:Null}, Converter={x:Static ObjectConverters.IsNotNull}}"/>
                     <TabStripItem Content="高级设置"/>
                 </TabStrip>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                        Spacing="4"
                         Margin="0 0 4 0">
+                <ci:AnimatedIconButton
+                    Theme="{StaticResource TransparentButton}"
+                    IsEnabled="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                    Classes.fade="{Binding !ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                    IsKeepingExpanded="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
+                    Glyph="&#xF17E;"
+                    Text="编辑…"
+                    Click="ButtonOpenRulesetForComponent_OnClick"
+                    ToolTip.Tip="编辑规则集…"/>
                 <CheckBox IsChecked="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}">按规则隐藏</CheckBox>
-                <Button Theme="{StaticResource TransparentButton}"
-                        IsEnabled="{Binding ViewModel.MainViewModel.SelectedComponentSettings.HideOnRule}"
-                        Content="{ci:FluentIcon &#xF17E;}"
-                        Click="ButtonOpenRuleset_OnClick"
-                        ToolTip.Tip="编辑规则集…"/>
             </StackPanel>
         </Grid>
         
@@ -248,36 +270,35 @@
             <TabControl SelectedIndex="{Binding ViewModel.ComponentSettingsTabIndex}">
                 <TabItem IsVisible="False">
                     <ci:ComponentPresenter Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings}"
-                                           IsPresentingSettings="True"/>
+                                           IsPresentingSettings="True" />
                 </TabItem>
                 <TabItem IsVisible="False">
                     <ci:ComponentAdvancedSettingsControl Settings="{Binding ViewModel.MainViewModel.SelectedComponentSettings, Mode=OneWay}"
+                                                         RequestOpenHideRules="ButtonOpenRulesetForComponent_OnClick"
                                                          IsRootComponent="True"/>
                 </TabItem>
             </TabControl>
         </Panel>
-        
+        <Grid x:Key="MainWindowLineSettingsDrawerTitle" ColumnDefinitions="Auto *">
+            <TextBlock Grid.Column="0" Text="主界面行设置" VerticalAlignment="Center" Margin="0 1 0 0"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                        Margin="0 0 4 0">
+                <ci:AnimatedIconButton
+                    Theme="{StaticResource TransparentButton}"
+                    IsEnabled="{Binding ViewModel.SelectedMainWindowLineSettings.HideOnRule}"
+                    Classes.fade="{Binding !ViewModel.SelectedMainWindowLineSettings.HideOnRule}"
+                    IsKeepingExpanded="{Binding ViewModel.SelectedMainWindowLineSettings.HideOnRule}"
+                    Glyph="&#xF17E;"
+                    Text="编辑…"
+                    Click="ButtonOpenRulesetForMainWindowLine_OnClick"
+                    ToolTip.Tip="编辑规则集…"/>
+                <CheckBox IsChecked="{Binding ViewModel.SelectedMainWindowLineSettings.HideOnRule}">按规则隐藏</CheckBox>
+            </StackPanel>
+        </Grid>
         <ScrollViewer HorizontalAlignment="Stretch" 
                       x:Key="MainWindowLineSettingsDrawer"
                       DataContext="{Binding ViewModel.SelectedMainWindowLineSettings}">
             <StackPanel Classes="settings-container animated-intro" >
-                <!-- ~1~ 按规则隐藏 @1@ -->
-                <!-- <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}" -->
-                <!--                            Header="按规则隐藏" -->
-                <!--                            Description="在指定规则满足时，自动隐藏此组件。注意此处的隐藏不会释放组件资源。"> -->
-                <!--     <controls:SettingsExpander.Footer> -->
-                <!--         <StackPanel Orientation="Horizontal"> -->
-                <!--             <Button HorizontalAlignment="Left" -->
-                <!--                     Theme="{StaticResource TransparentButton}" -->
-                <!--                     Click="ButtonOpenRuleset_OnClick" -->
-                <!--                     IsVisible="{Binding HideOnRule}"> -->
-                <!--                 <ci:IconText Glyph="&#xF17E;" Text="编辑规则集…" /> -->
-                <!--             </Button> -->
-                <!--             <ToggleSwitch VerticalAlignment="Center" -->
-                <!--                           IsChecked="{Binding HideOnRule}" /> -->
-                <!--         </StackPanel> -->
-                <!--     </controls:SettingsExpander.Footer> -->
-                <!-- </controls:SettingsExpander> -->
                 <!-- 不透明度 -->
                 <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf023;}"
                                            Header="分体主界面"

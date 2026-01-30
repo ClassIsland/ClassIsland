@@ -122,7 +122,7 @@ public partial class ActionSet : ObservableRecipient
     internal CancellationTokenSource? InterruptCts = null;
 
     /// <summary>
-    /// 用于通知行动组运行生命周期结束的 <see cref="TaskCompletionSource"/>。
+    /// 用于通知行动组运行生命周期结束的 <see cref="TaskCompletionSource{TResult}"/>。
     /// </summary>
     internal TaskCompletionSource<object?>? RunningTcs = null;
 }

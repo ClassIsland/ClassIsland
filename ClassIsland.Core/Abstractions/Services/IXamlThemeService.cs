@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Avalonia.Controls;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Shared;
@@ -63,4 +64,11 @@ public interface IXamlThemeService
     /// 已启用的主题。主题将按照此列表的顺序加载，靠后的主题会覆盖前面的主题样式。
     /// </summary>
     ObservableCollection<string> EnabledThemes { get; }
+    
+    /// <summary>
+    /// 当前竖直方向的安全区大小（PX）
+    /// </summary>
+    double ActualVerticalSafeAreaPx { get; }
+    
+    internal Window? MainWindow { get; set; }
 }

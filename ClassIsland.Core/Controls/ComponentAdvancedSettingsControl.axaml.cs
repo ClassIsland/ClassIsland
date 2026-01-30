@@ -33,12 +33,18 @@ public partial class ComponentAdvancedSettingsControl : UserControl
         InitializeComponent();
     }
     
+    public static readonly RoutedEvent<RoutedEventArgs> RequestOpenHideRulesEvent =
+        RoutedEvent.Register<RoutedEventArgs>(
+            nameof(RequestOpenHideRules), RoutingStrategies.Bubble, typeof(ComponentAdvancedSettingsControl));
+     
+    public event EventHandler<RoutedEventArgs> RequestOpenHideRules
+    {
+        add => AddHandler(RequestOpenHideRulesEvent, value);
+        remove => RemoveHandler(RequestOpenHideRulesEvent, value);
+    }
+    
     private void ButtonOpenRuleset_OnClick(object sender, RoutedEventArgs e)
     {
-        if (this.FindResource("RulesetControl") is not RulesetControl control ||
-            Settings == null) 
-            return;
-        control.Ruleset = Settings.HidingRules;
-        SettingsPageBase.OpenDrawerCommand.Execute(control);
+        RaiseEvent(new RoutedEventArgs(RequestOpenHideRulesEvent));
     }
 }

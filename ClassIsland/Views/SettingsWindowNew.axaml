@@ -56,6 +56,7 @@
                   MenuItems="{Binding ViewModel.NavigationViewItems, Mode=OneWay}"
                   ItemInvoked="NavigationView_OnItemInvoked"
                   BackRequested="NavigationView_OnBackRequested"
+                  Loaded="Control_OnLoaded"
                   OpenPaneLength="283">
                 <controls3:NavigationView.Styles>
                     <Style Selector="controls3|NavigationView#NavigationView:minimal">

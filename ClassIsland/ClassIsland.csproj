@@ -72,7 +72,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.6" />
-        <PackageReference Include="PanAndZoom" Version="11.3.6" />
+        <PackageReference Include="PanAndZoom" Version="11.3.9" />
         <PackageReference Include="Pastel" Version="4.2.0" />
         <PackageReference Include="PgpCore" Version="6.5.1" />
         <PackageReference Include="RawInput.Sharp" Version="0.1.3" />
@@ -87,7 +87,7 @@
         <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
         <PackageReference Include="ColorHelper" Version="1.8.1" />
         <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
-        <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0"/>
+        <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
 	</ItemGroup>
     <ItemGroup>
         <Folder Include="Assets\Localization\SettingsPage\Component\" />
@@ -113,15 +113,21 @@
     </ItemGroup>
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.resx" />
+        <AvaloniaResource Remove="Assets\Localization\SettingsPage\Localization.SettingsPage.resx" />
+        <AvaloniaResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
         <None Include="Assets\AppLogo.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
     </ItemGroup>
     <ItemGroup>
         <None Include="Assets\AppLogo_Monochrome.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+        <None Include="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.resx" />
+        <None Include="Assets\Localization\SettingsPage\Localization.SettingsPage.resx" />
+        <None Include="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
 	</ItemGroup>
-    <PropertyGroup Condition="'$(SelfContained)'=='true'">
+    <PropertyGroup Condition="'$(ClassIsland_SelfContained)'=='true'">
         <DefineConstants>$(DefineConstants);SelfContained</DefineConstants>
     </PropertyGroup>
 	<PropertyGroup Condition="'$(PublishBuilding)' != 'true' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX')">
@@ -143,6 +149,10 @@
 	  <Compile Update="App.Services.xaml.cs">
 	    <DependentUpon>App.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Controls\ScheduleDataGrid\ScheduleDataGridCellControl.axaml.cs">
+	    <DependentUpon>ScheduleDataGridCellControl.axaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.en.resx" />
@@ -160,8 +170,6 @@
         <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
         <ProjectReference Include="..\vendors\PhainonDistributionCenter.Shared\PhainonDistributionCenter.Shared.csproj" />
     </ItemGroup>
-	<ItemGroup>
-	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Controls\TimeLine\TimeLineListItemControl.axaml.cs">
 	    <DependentUpon>TimeLineListItemControl.axaml</DependentUpon>
@@ -181,6 +189,7 @@
 		<Message Text="Constants: $(DefineConstants)" Importance="high" />
 		<Message Text="IsMsix: $(IsMsix)" Importance="high" />
 		<Message Text="TargetFramework: $(TargetFramework)" Importance="high" />
+		<Message Text="ClassIsland_SelfContained: $(ClassIsland_SelfContained)" Importance="high" />
     </Target>
 
 	<Import Project="..\Global.props" />

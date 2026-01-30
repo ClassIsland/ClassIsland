@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -43,6 +44,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Services;
@@ -511,6 +513,7 @@ public partial class App : AppBase, IAppHost
             : 1;
         if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
+            Logger?.LogDebug("应用多次启动失败。startupCount={startupCount}",startupCount);
             var dialog = new TaskDialog()
             {
                 Title = "进入恢复模式",
@@ -531,8 +534,10 @@ public partial class App : AppBase, IAppHost
                 ApplicationCommand.Recovery = true;
             }
         }
+        // 恢复模式
         if (ApplicationCommand.Recovery)
         {
+            Logger?.LogInformation("进入恢复模式");
             if (File.Exists(startupCountFilePath))
             {
                 File.Delete(startupCountFilePath);
@@ -570,6 +575,14 @@ public partial class App : AppBase, IAppHost
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.StartingOffline;
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
+        foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Error))
+        {
+            Logger.LogWarning("插件加载失败:{PluginName}({PluginID},{PluginVersion}):{PluginLoadException}", plugin.Value.Name,plugin.Value.Id, plugin.Value.Version, plugin.Key.Exception);
+        }
+        Logger.LogInformation(
+            PluginService.PluginLoadedStatus.Any(p => p.Key.LoadStatus == PluginLoadStatus.Loaded) ? "此次会话已加载插件:{loadedPlugin}" : "此次会话没有加载插件。",
+            string.Join(",", PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Loaded).Select(p => $"{p.Value.Name}({p.Value.Id},{p.Value.Version})"))
+        );
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));
         lifetime.ApplicationStopping.Register(() =>
@@ -582,7 +595,7 @@ public partial class App : AppBase, IAppHost
         if (ApplicationCommand.Verbose)
         {
             AppDomain.CurrentDomain.FirstChanceException += (o, args) => Logger.LogTrace(args.Exception, "发生内部异常");
-            AppDomain.CurrentDomain.AssemblyLoad += (o, args) => Logger.LogTrace("加载程序集：{} ({})", args.LoadedAssembly.FullName, args.LoadedAssembly.Location);
+            AppDomain.CurrentDomain.AssemblyLoad += (o, args) => Logger.LogTrace("加载程序集：{AssemblyFullName} ({AssemblyLocation})", args.LoadedAssembly.FullName, args.LoadedAssembly.Location);
         }
 #if DEBUG
         MemoryProfiler.GetSnapshot("Host built");
@@ -673,6 +686,29 @@ public partial class App : AppBase, IAppHost
             if (Settings.IsSplashEnabled)
             {
                 GetService<ISplashService>().EndSplash();
+            }
+
+            if (System.OperatingSystem.IsLinux() && GlobalStorageService.GetValue("IgnoreQtScaling") != "1")
+            {
+                var dialog = new TaskDialog()
+                {
+                    Title = "ClassIsland",
+                    Header = "当前界面缩放是否正常？",
+                    Content = "如果您发现当前界面缩放相对系统缩放过小，可点击【不正常】按钮使应用启用兼容缩放模式，以缓解在部分平台上的缩放异常的问题。",
+                    XamlRoot = GetRootWindow(),
+                    Buttons =
+                    [
+                        new TaskDialogButton("正常", false),
+                        new TaskDialogButton("不正常", true)
+                    ],
+                };
+                var r = await dialog.ShowAsync();
+                if (Equals(r, true))
+                {
+                    GlobalStorageService.SetValue("IgnoreQtScaling", "1");
+                    Restart();
+                    return;
+                }
             }
             var w = IAppHost.GetService<WelcomeWindow>();
             await w.ShowDialog(PhonyRootWindow);
@@ -791,7 +827,7 @@ public partial class App : AppBase, IAppHost
         var uriNavigationService = GetService<IUriNavigationService>();
         uriNavigationService.HandleAppNavigation("test", args => _ = CommonTaskDialogs.ShowDialog("测试导航", $"{args.Uri}"));
         uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
-        uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
+        uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow(args.Uri));
         uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/")));
         // uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
         // uriNavigationService.HandleAppNavigation("config-errors", args => GetService<ConfigErrorsWindow>().ShowDialog());
@@ -952,6 +988,9 @@ public partial class App : AppBase, IAppHost
         app.Mutex?.ReleaseMutex();
     }
 
+    /// <summary>
+    /// 停止主应用程序并进行必要的清理。
+    /// </summary>
     public override void Stop()
     {
         if (CurrentLifetime == ClassIsland.Core.Enums.ApplicationLifetime.Stopping)

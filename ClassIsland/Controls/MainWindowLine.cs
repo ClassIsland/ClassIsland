@@ -67,6 +67,40 @@ namespace ClassIsland.Controls;
     ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out")]
 public class MainWindowLine : ContentControl, INotificationConsumer
 {
+    public static readonly StyledProperty<bool> HideOnRuleProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
+        nameof(HideOnRule));
+
+    public bool HideOnRule
+    {
+        get => GetValue(HideOnRuleProperty);
+        set => SetValue(HideOnRuleProperty, value);
+    }
+    
+    public static readonly StyledProperty<Core.Models.Ruleset.Ruleset?> HidingRulesProperty = AvaloniaProperty.Register<MainWindowLine, Core.Models.Ruleset.Ruleset?>(
+        nameof(HidingRules));
+
+    public Core.Models.Ruleset.Ruleset? HidingRules
+    {
+        get => GetValue(HidingRulesProperty);
+        set => SetValue(HidingRulesProperty, value);
+    }
+    private IRulesetService RulesetService { get; } = IAppHost.GetService<IRulesetService>();
+    public static readonly StyledProperty<bool> IsVisibleInternalProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
+        nameof(IsVisibleInternal));
+
+    public bool IsVisibleInternal
+    {
+        get => GetValue(IsVisibleInternalProperty);
+        set => SetValue(IsVisibleInternalProperty, value);
+    }
+    public static readonly RoutedEvent<RoutedEventArgs> LineVisibilityChangedEvent =
+        RoutedEvent.Register<MainWindowLine, RoutedEventArgs>(nameof(LineVisibilityChanged),
+            RoutingStrategies.Bubble);
+    public event EventHandler<RoutedEventArgs> LineVisibilityChanged
+    {
+        add { AddHandler(LineVisibilityChangedEvent, value); }
+        remove { RemoveHandler(LineVisibilityChangedEvent, value); }
+    }
     public static readonly StyledProperty<bool> PointerOverProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(PointerOver));
 
@@ -256,7 +290,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         Unloaded += OnUnloaded;
         ComponentPresenter.ComponentVisibilityChangedEvent.AddClassHandler(typeof(MainWindowLine), 
             UpdateVisibilityState, RoutingStrategies.Bubble);
-
+        this.GetObservable(HidingRulesProperty).Subscribe(new AnonymousObserver<Core.Models.Ruleset.Ruleset?>(_ => UpdateRuleState()));
+        this.GetObservable(HideOnRuleProperty).Subscribe(new AnonymousObserver<bool>(_ => UpdateRuleState()));
         this.GetObservable(WindowDockingLocationProperty)
             .Skip(1)
             .Subscribe(_ => UpdateStyleStates());
@@ -293,7 +328,41 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         });
         UpdateStyleStates();
     }
-    
+    private void UpdateRuleState()
+    {
+        if (HideOnRule)
+        {
+            CheckHideRule();
+            RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
+        }
+        else
+        {
+            RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
+            IsVisibleInternal = true;
+        }
+        UpdateHiddenState();
+    }
+    private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
+    {
+        CheckHideRule();
+        UpdateHiddenState();
+    }
+
+    private void CheckHideRule()
+    {
+        if (!HideOnRule)
+        {
+            return;
+        }
+        if (HidingRules != null && RulesetService.IsRulesetSatisfied(HidingRules))
+        {
+            IsVisibleInternal = false;
+        }
+        else
+        {
+            IsVisibleInternal = true;
+        }
+    }
     private static void PlayFadeInAnimation(Control control)
     {
         if (IThemeService.AnimationLevel < 2)
@@ -324,6 +393,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         IsAllComponentsHid = Settings?.Children
             .Any(x => x.IsVisible) == false;
+        if (Settings != null) Settings.IsVisible = IsVisibleInternal;
     }
 
     private void UpdateStyleStates()
@@ -337,8 +407,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private void UpdateVisibilityState(object? sender, RoutedEventArgs args)
     {
-        Logger.LogTrace("ComponentVisibilityChangedEvent handled");
         UpdateHiddenState();
+        RaiseEvent(new RoutedEventArgs(LineVisibilityChangedEvent));
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)

@@ -47,11 +47,13 @@
         <Setter Property="ClipToBounds" Value="False"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
-            <ControlTemplate TargetType="controls1:EditableComponentsListBox">
+            <ControlTemplate TargetType="controls1:EditableComponentsListBox"
+                             x:CompileBindings="True">
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
                     <Button Height="32"
                             IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
+                            Command="{Binding $parent[controls1:EditableComponentsListBox].InvokeRequestAddComponentCommand}"
                             Content="{ci:FluentIcon &#xE00D;, FontSize=20}">
                     </Button>
                 </StackPanel>
@@ -262,8 +264,7 @@
                     <BehaviorCollection>
                         <ci:AdvancedManagedContextDragBehavior HorizontalDragThreshold="3"
                                                     VerticalDragThreshold="3"
-                                                    PreviewOpacity="0.75"
-                                                    PreviewTemplate="{StaticResource ComponentSettingsPreviewEffect}">
+                                                    PreviewOpacity="0.5">
                             <ci:AdvancedManagedContextDragBehavior.Context>
                                 <controls1:EditableComponentsListBoxDragData
                                     x:CompileBindings="True"

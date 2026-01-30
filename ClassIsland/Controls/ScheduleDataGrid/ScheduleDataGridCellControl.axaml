@@ -1,0 +1,150 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+        xmlns:scheduleDataGrid="using:ClassIsland.Controls.ScheduleDataGrid"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:controls="using:ClassIsland.Controls">
+    <Styles.Resources>
+        <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
+                                              x:Key="SubjectIdToSubjectConverter"/>
+    </Styles.Resources>
+    <Design.PreviewWith>
+        <scheduleDataGrid:ScheduleDataGridCellControl />
+    </Design.PreviewWith>
+
+    <Style Selector="scheduleDataGrid|ScheduleDataGridCellControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Background="Transparent">
+                    <Rectangle Name="BackgroundRectangle"
+                               Fill="{DynamicResource DataGridRowBackgroundBrush}"/>
+                    <StackPanel Orientation="Horizontal" Margin="6 4"
+                                VerticalAlignment="Center"
+                                Classes.hide-default="{Binding ClassInfo.CurrentTimeLayoutItem.IsHideDefault, RelativeSource={RelativeSource TemplatedParent}}">
+                        <StackPanel VerticalAlignment="Center">
+                            <StackPanel.DataContext>
+                                <MultiBinding
+                                    Converter="{StaticResource SubjectIdToSubjectConverter}"
+                                    FallbackValue="{x:Static profile:Subject.Empty}"
+                                    TargetNullValue="{x:Static profile:Subject.Empty}">
+                                    <TemplateBinding Property="Subjects" />
+                                    <Binding Path="ClassInfo.SubjectId"
+                                             RelativeSource="{RelativeSource TemplatedParent}"
+                                             TargetNullValue="{x:Static system:Guid.Empty}"
+                                             FallbackValue="{x:Static system:Guid.Empty}"
+                                             Mode="OneWay" />
+                                </MultiBinding>
+                            </StackPanel.DataContext>
+                            <TextBlock Text="{Binding Name}" FontSize="13"
+                                       d:DataContext="{d:DesignInstance profile:Subject}"
+                                       x:Name="PART_MainTextBlock"
+                                       ClipToBounds="False"
+                                       VerticalAlignment="Center" />
+
+                        </StackPanel>
+                        <TextBlock Text="（无）" FontSize="13"
+                                   x:Name="PART_EmptyTextBlock"
+                                   Opacity="0.25"
+                                   ClipToBounds="False"
+                                   FontStyle="Italic"
+                                   VerticalAlignment="Center">
+                            <TextBlock.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="ClassInfo.SubjectId"
+                                             Converter="{x:Static ObjectConverters.Equal}"
+                                             ConverterParameter="{x:Static system:Guid.Empty}"
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                    <Binding Path="!ClassInfo.IsEmpty"
+                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </TextBlock.IsVisible>
+                        </TextBlock>
+                        <Ellipse Width="8" Height="8" Fill="{DynamicResource AccentFillColorDefaultBrush}"
+                                 VerticalAlignment="Center" Margin="4 0 0 0"
+                                 IsVisible="{Binding ClassInfo.IsChangedClass, FallbackValue={x:False}, RelativeSource={RelativeSource TemplatedParent}}" />
+                        <Popup IsOpen="{TemplateBinding IsEditPopupOpen, Mode=TwoWay}"
+                               Placement="Right"
+                               x:Name="Popup"
+                               IsLightDismissEnabled="True">
+                            <Popup.Styles>
+                                <Style Selector="Popup[IsOpen=True] ListBox#PART_InnerListBox">
+                                    <Setter Property="ItemsSource">
+                                        <Binding
+                                            Path="$self.(scheduleDataGrid:ScheduleDataGridCellControl.SubjectsList).List"
+                                            x:CompileBindings="True"
+                                            RelativeSource="{RelativeSource TemplatedParent}" />
+                                    </Setter>
+                                    <Setter Property="SelectedValue"
+                                            Value="{Binding ClassInfo.SubjectId, RelativeSource={RelativeSource TemplatedParent}}" />
+                                </Style>
+                            </Popup.Styles>
+                            <Border Classes="popup-bg">
+                                <ListBox
+                                    x:Name="PART_InnerListBox"
+                                    Grid.Row="0" MaxHeight="400" MaxWidth="250"
+                                    Margin="-8"
+                                    SelectedValueBinding="{Binding Key}">
+                                    <ListBox.Styles>
+                                        <Style Selector="ListBoxItem">
+                                            <Setter Property="MinWidth" Value="0" />
+                                            <Setter Property="Padding" Value="0" />
+                                        </Style>
+                                    </ListBox.Styles>
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Classes="animated-resize" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="Transparent"
+                                                    Padding="8">
+                                                <TextBlock Text="{Binding Value.Initial}"
+                                                           ToolTip.Tip="{Binding Value.Name}"
+                                                           FontSize="16"
+                                                           IsHitTestVisible="False"
+                                                           Margin="2 0 0 0" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Border>
+                        </Popup>
+                    </StackPanel>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^ /template/ StackPanel.hide-default > StackPanel > TextBlock">
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Opacity" Value="0.75"/>
+        </Style>
+        
+        <Style Selector="^[IsSelected=True]">
+            <Style Selector="^ /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="Fill" Value="{DynamicResource DataGridRowSelectedUnfocusedBackgroundBrush}" />
+                <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedUnfocusedBackgroundOpacity}" />
+            </Style>
+            <Style Selector="^:pointerover /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="Fill" Value="{DynamicResource DataGridRowSelectedHoveredUnfocusedBackgroundBrush}" />
+                <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedHoveredUnfocusedBackgroundOpacity}" />
+            </Style>
+            <Style Selector="^:focus /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="Fill" Value="{DynamicResource DataGridRowSelectedBackgroundBrush}" />
+                <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedBackgroundOpacity}" />
+            </Style>
+            <Style Selector="^:pointerover:focus /template/ Rectangle#BackgroundRectangle">
+                <Setter Property="Fill" Value="{DynamicResource DataGridRowSelectedHoveredBackgroundBrush}" />
+                <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedHoveredBackgroundOpacity}" />
+            </Style>
+        </Style>
+        
+    </Style>
+    
+    <Style Selector=":current scheduleDataGrid|ScheduleDataGridCellControl">
+        <Setter Property="IsSelected" Value="True"/>
+    </Style>
+    
+</Styles>

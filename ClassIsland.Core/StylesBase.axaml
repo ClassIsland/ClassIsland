@@ -59,7 +59,13 @@
     </Style>
 
     <Style Selector="StackPanel.settings-container">
-        <Setter Property="Margin" Value="12 12 18 12" />
+        <Setter Property="Margin" Value="12 12 18 12"/>
+        <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}" />
+        <Setter Property="Spacing" Value="4"/>
+    </Style>
+    
+    <Style Selector="StackPanel.component-settings-container">
+        <Setter Property="Margin" Value="4 0 4 12"/>
         <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}" />
         <Setter Property="Spacing" Value="4"/>
     </Style>
@@ -270,6 +276,14 @@
             <Setter Property="IsHitTestVisible" Value="False"/>
         </Style>
         <Setter Property="Theme" Value="{StaticResource TransparentButton}"/>
+    </Style>
+    
+    <Style Selector="Border.popup-bg">
+        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="12"/>
+        <Setter Property="CornerRadius" Value="6"/>
     </Style>
 
     <!-- 修复字体飞上去的问题 -->

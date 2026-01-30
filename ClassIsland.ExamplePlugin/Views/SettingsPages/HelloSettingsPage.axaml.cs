@@ -1,4 +1,3 @@
-using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 

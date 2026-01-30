@@ -8,6 +8,8 @@ using ClassIsland.Core.Extensions;
 using ClassIsland.Services;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
+using DynamicData.Binding;
+
 namespace ClassIsland.Controls;
 
 /// <summary>
@@ -29,17 +31,26 @@ public partial class TimeRuleEditControl : UserControl
         var newValue = TimeRule;
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
         SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        _timeRuleObserver?.Dispose();
+        _timeRuleObserver = null;
         if (newValue != null)
         {
-            UpdateWeekCountDivTotalOptions();
-            UpdateWeekCountDivOptions();
+            UpdateViewModel(newValue);
 
-            ViewModel.WeekCountDivIndex = newValue.WeekCountDiv;
-            ViewModel.WeekCountDivTotalIndex = newValue.WeekCountDivTotal - 2;
-            
             ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
             SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+            _timeRuleObserver = newValue.WhenAnyPropertyChanged()
+                .Subscribe(_ => UpdateViewModel(newValue));
         }
+    }
+
+    private void UpdateViewModel(TimeRule timeRule)
+    {
+        ViewModel.WeekCountDivIndex = timeRule.WeekCountDiv;
+        ViewModel.WeekCountDivTotalIndex = timeRule.WeekCountDivTotal - 2;
+        
+        UpdateWeekCountDivTotalOptions();
+        UpdateWeekCountDivOptions();
     }
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -57,7 +68,12 @@ public partial class TimeRuleEditControl : UserControl
                 _updatingDiv = true;
                 ViewModel.WeekCountDivIndex = -1;
                 Dispatcher.UIThread.Post(() =>
-                    ViewModel.WeekCountDivIndex = 0,
+                    {
+                        if (TimeRule.WeekCountDivTotal < TimeRule.WeekCountDiv)
+                        {
+                            ViewModel.WeekCountDivIndex = 0;
+                        }
+                    },
                     DispatcherPriority.Background);
                 _updatingDiv = false;
             }
@@ -129,6 +145,7 @@ public partial class TimeRuleEditControl : UserControl
     
     private bool _updatingDiv;
     private bool _updatingDivTotal;
+    private IDisposable? _timeRuleObserver;
     
     private int MaxCycle => Math.Max(SettingsService.Settings.MultiWeekRotationMaxCycle, TimeRule?.WeekCountDivTotal ?? 0);
     public TimeRule? TimeRule

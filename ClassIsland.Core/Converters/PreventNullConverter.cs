@@ -7,6 +7,8 @@ namespace ClassIsland.Core.Converters;
 
 public class PreventNullConverter : IValueConverter
 {
+    public static PreventNullConverter Instance { get; } = new();
+    
     public object? Convert(object? value, Type targetType, object parameter, CultureInfo culture)
     {
         return value;

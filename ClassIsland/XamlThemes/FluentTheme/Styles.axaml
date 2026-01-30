@@ -17,12 +17,6 @@
     <Style Selector="ItemsControl#RootMainWindowLinesItemsControl">
         <Setter Property="ClipToBounds" Value="False"/>
     </Style>
-    <Style Selector=":dock-top ItemsControl#RootMainWindowLinesItemsControl">
-        <Setter Property="Margin" Value="0 0 0 16"/>
-    </Style>
-    <Style Selector=":dock-bottom ItemsControl#RootMainWindowLinesItemsControl">
-        <Setter Property="Margin" Value="0 16 0 0"/>
-    </Style>
     
     <Style Selector=":is(Control).clip-host[(ci|MainWindowStylesAssist.IsIslandSeperated)=False], :is(Control).clip-host.clip-enforcing">
         <Setter Property="Clip">

@@ -16,7 +16,7 @@
                          xmlns:ci="http://classisland.tech/schemas/xaml/core"
                          mc:Ignorable="d">
     <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=components:CountDownComponentSettingsControl}}">
-        <StackPanel Classes="settings-container animated-intro" Margin="0">
+        <StackPanel Classes="component-settings-container animated-intro">
             <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xEE7D;}"
                                         Header="倒计时名称"
                                         Description="会作为设定日期事件名称显示。">

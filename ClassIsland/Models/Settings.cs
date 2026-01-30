@@ -313,7 +313,16 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-
+    public bool NoTLSWeatherRequests
+    {
+        get => _noTLSWeatherRequests;
+        set
+        {
+            if (value == _noTLSWeatherRequests) return;
+            _noTLSWeatherRequests = value;
+            OnPropertyChanged();
+        }
+    }
     #region Gerneral
 
     public DateTime SingleWeekStartTime
@@ -1713,6 +1722,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _weatherLatitude = 0.0;
     private int _weatherLocationSource = 0;
     private bool _autoRefreshWeatherLocation = false;
+    private bool _noTLSWeatherRequests = false;
     private bool _useExperimentColorPickingMethod = false;
     private bool _autoDisableCorruptPlugins = true;
     private bool _corruptPluginsDisabledLastSession = false;
@@ -1730,6 +1740,10 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _debugPhainonRootUrlOverride = "";
     private bool _isPluginsAutoUpdateEnabled = true;
     private bool _isPluginsUpdateNotificationEnabled = true;
+    private int _windowTopmostRecheckMode = 0;
+    private bool _isScreenRecordingModeEnabled = false;
+    private bool _hasEditModeTutorialShown = false;
+    private int _classPlanEditModeIndex = 1;
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -1779,6 +1793,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
                 throw new ArgumentException("选择不能为空。");
             }
             _windowDockingMonitorIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int WindowTopmostRecheckMode
+    {
+        get => _windowTopmostRecheckMode;
+        set
+        {
+            if (value == _windowTopmostRecheckMode) return;
+            _windowTopmostRecheckMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsScreenRecordingModeEnabled
+    {
+        get => _isScreenRecordingModeEnabled;
+        set
+        {
+            if (value == _isScreenRecordingModeEnabled) return;
+            _isScreenRecordingModeEnabled = value;
             OnPropertyChanged();
         }
     }
@@ -2441,6 +2477,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
                 IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 ShowSellingAnnouncement 启用状态。");
             }
 
+        }
+    }
+
+    public bool HasEditModeTutorialShown
+    {
+        get => _hasEditModeTutorialShown;
+        set
+        {
+            if (value == _hasEditModeTutorialShown) return;
+            _hasEditModeTutorialShown = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ClassPlanEditModeIndex
+    {
+        get => _classPlanEditModeIndex;
+        set
+        {
+            if (value == _classPlanEditModeIndex) return;
+            _classPlanEditModeIndex = value;
+            OnPropertyChanged();
         }
     }
 }

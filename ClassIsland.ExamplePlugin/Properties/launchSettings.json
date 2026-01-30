@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ClassIsland 插件": {
+      "commandName": "Executable",
+      "executablePath": "$(ClassIsland_DebugBinaryFile)",
+      "commandLineArgs": "-epp $(TargetDir)",
+      "workingDirectory": "$(ClassIsland_DebugBinaryDirectory)"
+    }
+  }
+}

@@ -180,7 +180,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-34-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-39-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -236,6 +236,13 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://www.pizero.top/"><img src="https://avatars.githubusercontent.com/u/71167373?v=4?s=100" width="100px;" alt="Pizero"/><br /><sub><b>Pizero</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=pizeroLOL" title="Code">💻</a> <a href="#platform-pizeroLOL" title="Packaging/porting to new platform">📦</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/lrsgzs"><img src="https://avatars.githubusercontent.com/u/99574908?v=4?s=100" width="100px;" alt="lrs2187"/><br /><sub><b>lrs2187</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=lrsgzs" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://im.baiyao105.top/"><img src="https://avatars.githubusercontent.com/u/121741105?v=4?s=100" width="100px;" alt="白杳"/><br /><sub><b>白杳</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=baiyao105" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Pulsar33550336"><img src="https://avatars.githubusercontent.com/u/226428598?v=4?s=100" width="100px;" alt="Pulsar"/><br /><sub><b>Pulsar</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Pulsar33550336" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://blog.lao-shui.top/"><img src="https://avatars.githubusercontent.com/u/79132480?v=4?s=100" width="100px;" alt="LaoShui"/><br /><sub><b>LaoShui</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=laoshuikaixue" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/windflag-studio"><img src="https://avatars.githubusercontent.com/u/143715287?v=4?s=100" width="100px;" alt="Ivan"/><br /><sub><b>Ivan</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=windflag-studio" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/denglihong2007"><img src="https://avatars.githubusercontent.com/u/98096191?v=4?s=100" width="100px;" alt="denglihong2007"/><br /><sub><b>denglihong2007</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=denglihong2007" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/unDefFtr"><img src="https://avatars.githubusercontent.com/u/83688818?v=4?s=100" width="100px;" alt="谭麒峰"/><br /><sub><b>谭麒峰</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=unDefFtr" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

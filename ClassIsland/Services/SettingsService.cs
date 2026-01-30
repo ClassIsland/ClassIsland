@@ -15,6 +15,8 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Helpers;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services.Automation.Actions;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared.Protobuf.AuditEvent;
@@ -133,6 +135,16 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse("1.4.1.0"))
         {
             return;
+        }
+        
+        if (Settings.LastAppVersion < Version.Parse("2.0.0.2") 
+            || (Settings.LastAppVersion >= Version.Parse("2.0.1.0") && Settings.LastAppVersion < Version.Parse("2.0.1.2")) )
+        {
+            if (PlatformServices.DesktopService.IsUrlSchemeRegistered)
+            {
+                PlatformServices.DesktopService.IsUrlSchemeRegistered = true;
+            }
+            Logger.LogInformation("成功迁移了 2.0.0.2 以前的设置。");
         }
         
     }

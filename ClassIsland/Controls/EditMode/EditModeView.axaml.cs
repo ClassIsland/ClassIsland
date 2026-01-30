@@ -20,17 +20,21 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Core.Services.Registry;
+using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels.EditMode;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
+using ReactiveUI;
 
 namespace ClassIsland.Controls.EditMode;
 
 public partial class EditModeView : UserControl
 {
     public EditModeViewModel ViewModel { get; } = IAppHost.GetService<EditModeViewModel>();
+
+    private IDisposable? _selectedComponentObserver;
     
     public EditModeView()
     {
@@ -38,10 +42,25 @@ public partial class EditModeView : UserControl
         DataContext = this;
     }
 
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _selectedComponentObserver = ViewModel.MainViewModel.ObservableForProperty(x => x.SelectedComponentSettings)
+            .Subscribe(_ =>
+            {
+                if (ViewModel.MainViewModel.SelectedComponentSettings?.AssociatedComponentInfo.SettingsType == null
+                    && ViewModel.ComponentSettingsTabIndex == 0)
+                {
+                    ViewModel.ComponentSettingsTabIndex = 1;
+                }
+            });
+    }
+
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-
+        _selectedComponentObserver?.Dispose();
+        _selectedComponentObserver = null;
         ClearSelectedComponents();
     }
 
@@ -83,9 +102,10 @@ public partial class EditModeView : UserControl
         ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Closed;
     }
 
-    public void OpenComponentsLibDrawer()
+    public void OpenComponentsLibDrawer(IList<ComponentSettings>? target = null)
     {
         OpenDrawer("ComponentsDrawer", "组件库");
+        ViewModel.TargetComponentsList = target;
         // 重载组件库列表项目，修复切换视图后无法拖拽的问题。
         ViewModel.ComponentInfos = [];
         ViewModel.ComponentInfos = ComponentRegistryService.Registered;
@@ -165,7 +185,7 @@ public partial class EditModeView : UserControl
         
     }
     
-    private void ButtonOpenRuleset_OnClick(object? sender, RoutedEventArgs e)
+    private void ButtonOpenRulesetForComponent_OnClick(object? sender, RoutedEventArgs e)
     {
         if (this.FindResource("RulesetControl") is not RulesetControl control ||
             ViewModel.MainViewModel.SelectedComponentSettings == null) 
@@ -176,7 +196,17 @@ public partial class EditModeView : UserControl
         ViewModel.SecondaryDrawerTitle = "编辑规则集";
         ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Opened;
     }
-
+    private void ButtonOpenRulesetForMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (this.FindResource("RulesetControl") is not RulesetControl control ||
+            ViewModel.SelectedMainWindowLineSettings == null) 
+            return;
+        control.Ruleset = ViewModel.SelectedMainWindowLineSettings.HidingRules;
+        SettingsPageBase.OpenDrawerCommand.Execute(control);
+        ViewModel.SecondaryDrawerContent = control;
+        ViewModel.SecondaryDrawerTitle = "编辑规则集";
+        ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Opened;
+    }
 
     public void CloseContainerComponent(EditModeContainerComponentInfo? info)
     {
@@ -192,7 +222,7 @@ public partial class EditModeView : UserControl
     public void OpenMainWindowLineSettings(MainWindowLineSettings settings)
     {
         ViewModel.SelectedMainWindowLineSettings = settings;
-        OpenDrawer("MainWindowLineSettingsDrawer", "主界面行设置");
+        OpenDrawerCore(this.FindResource("MainWindowLineSettingsDrawer"), this.FindResource("MainWindowLineSettingsDrawerTitle"));
     }
     
     [RelayCommand]
@@ -344,5 +374,18 @@ public partial class EditModeView : UserControl
         var d1 = Path.Combine(Services.ComponentsService.ComponentSettingsPath, $"{d}");
         File.Copy(raw, d1);
         ViewModel.ComponentsService.RefreshConfigs();
+    }
+
+    private void ButtonAddComponentToTargetList_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedComponentInfo == null)
+            return;
+        var componentSettings = new ComponentSettings()
+        {
+            Id = ViewModel.SelectedComponentInfo.Guid.ToString()
+        };
+        ComponentsService.LoadComponentSettings(componentSettings,
+            componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!);
+        ViewModel.TargetComponentsList?.Add(componentSettings);
     }
 }
