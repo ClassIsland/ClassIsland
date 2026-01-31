@@ -1,3 +1,4 @@
+using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
@@ -17,5 +18,13 @@ public partial class ClassNotificationAttachedSettingsControl : AttachedSettings
     public ClassNotificationAttachedSettingsControl()
     {
         InitializeComponent();
+    }
+
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (AttachedTimePointTimeType == 1)
+        {
+            MasterTabControl.SelectedIndex = 2;
+        }
     }
 }
