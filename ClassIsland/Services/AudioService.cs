@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using Microsoft.Extensions.Logging;
 using SoundFlow.Abstracts;
@@ -15,10 +17,14 @@ using SoundFlow.Structs;
 
 namespace ClassIsland.Services;
 
-public class AudioService(ILogger<AudioDevice> logger) : IAudioService
+public class AudioService(ILogger<AudioService> logger) : IAudioService
 {
     private readonly AudioEngine _audioEngine = Task.Run((() => new MiniAudioEngine())).Result;
-    private ILogger<AudioDevice> Logger { get; } = logger;
+    private ILogger<AudioService> Logger { get; } = logger;
+
+    private RefCounted<AudioPlaybackDevice>? _sharedAudioPlaybackDevice;
+
+    private object _audioPlaybackDeviceInitializeLock = new();
 
     public AudioEngine AudioEngine
     {
@@ -36,7 +42,32 @@ public class AudioService(ILogger<AudioDevice> logger) : IAudioService
     public AudioPlaybackDevice? TryInitializeDefaultPlaybackDevice() =>
         TryInitializeDefaultPlaybackDeviceAsync().Result;
 
-    public Task<AudioPlaybackDevice?> TryInitializeDefaultPlaybackDeviceAsync() => Task.Run(() =>
+    public Task<AudioPlaybackDevice?> TryInitializeDefaultPlaybackDeviceAsync() => 
+        Task.Run(TryInitializeDefaultPlaybackDeviceInternal);
+
+    public Task<RefCounted<AudioPlaybackDevice>.Lease?> TryInitializeDefaultPlaybackDeviceSafeAsync() => Task.Run(() =>
+    {
+        lock (_audioPlaybackDeviceInitializeLock)
+        {
+            if (_sharedAudioPlaybackDevice?.IsValueDisposed == false)
+            {
+                var lease = _sharedAudioPlaybackDevice.Rent();
+                Logger.LogDebug("使用了缓存的音频设备 {} (Id={})", lease.Value.Info?.Name, lease.Value.Info?.Id);
+                return lease;
+            }
+
+            if (TryInitializeDefaultPlaybackDeviceInternal() is not { } device)
+            {
+                return null;
+            }
+            _sharedAudioPlaybackDevice = new RefCounted<AudioPlaybackDevice>(device);
+            var lease2 = _sharedAudioPlaybackDevice.Rent();
+            _sharedAudioPlaybackDevice.Dispose();
+            return lease2;
+        }
+    });
+
+    private AudioPlaybackDevice? TryInitializeDefaultPlaybackDeviceInternal()
     {
         try
         {
@@ -46,9 +77,11 @@ public class AudioService(ILogger<AudioDevice> logger) : IAudioService
                 Logger.LogDebug("找不到可用的音频设备");
                 return null;
             }
+
             Logger.LogDebug("初始化音频设备 {} (Id={})", deviceInfo.Name, deviceInfo.Id);
             var device = AudioEngine.InitializePlaybackDevice(deviceInfo, IAudioService.DefaultAudioFormat);
             device.MasterMixer.Volume = 1.0f;
+            device.Start();
             return device;
         }
         catch (Exception ex)
@@ -56,22 +89,24 @@ public class AudioService(ILogger<AudioDevice> logger) : IAudioService
             Logger.LogError(ex, "初始化音频设备失败");
             return null;
         }
-    });
+        
+    }
 
     public Task PlayAudioAsync(Stream audio, float volume, CancellationToken? cancellationToken = null) => Task.Run(async () =>
     {
         cancellationToken ??= CancellationToken.None;
-        using var device = await TryInitializeDefaultPlaybackDeviceAsync();
-        if (device == null)
+        using var lease = await TryInitializeDefaultPlaybackDeviceSafeAsync();
+        if (lease == null)
         {
             return;
         }
-        device.Start();
+
+        var device = lease.Value;
         using var player = new SoundPlayer(AudioEngine, IAudioService.DefaultAudioFormat,
             new StreamDataProvider(AudioEngine, IAudioService.DefaultAudioFormat, audio));
         player.Volume = volume;
         Logger.LogDebug("开始播放音频 {}", audio.GetHashCode());
-        device?.MasterMixer.AddComponent(player);
+        device.MasterMixer.AddComponent(player);
         var tcs = new TaskCompletionSource<bool>();
 
         player.PlaybackEnded += OnPlayerOnPlaybackEnded;
