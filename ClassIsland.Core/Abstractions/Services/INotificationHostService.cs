@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
@@ -81,7 +82,7 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     /// 此方法一般情况下只会返回一个要显示的提醒。如果有成链的提醒，会将这些提醒一并返回。请在显示完上次显示的提醒后再调用此方法。
     /// </remarks>
     /// <returns>获得的提醒</returns>
-    public IList<NotificationRequest> PullNotificationRequests();
+    public IList<NotificationPlayingTicket> PullNotificationRequests();
     
     /// <summary>
     /// 当前是否正在播放提醒

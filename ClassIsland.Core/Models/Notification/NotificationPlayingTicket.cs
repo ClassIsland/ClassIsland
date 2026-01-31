@@ -13,6 +13,9 @@ public class NotificationPlayingTicket : ObservableRecipient
         
     }
 
+    /// <summary>
+    /// 控制当前提醒播放票据的 <see cref="CancellationTokenSource"/>
+    /// </summary>
     public required CancellationTokenSource CancellationTokenSource { get; init; }
 
     /// <summary>

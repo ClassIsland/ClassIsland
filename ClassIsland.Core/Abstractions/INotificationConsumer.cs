@@ -17,7 +17,7 @@ public interface INotificationConsumer
     /// <see cref="INotificationHostService.PullNotificationRequests"/> 手动拉取后续提醒。
     /// </remarks>
     /// <param name="notificationRequests">推送的提醒</param>
-    public void ReceiveNotifications(IReadOnlyList<NotificationRequest> notificationRequests);
+    public void ReceiveNotifications(IReadOnlyList<NotificationPlayingTicket> notificationRequests);
     
     /// <summary>
     /// 待处理的提醒数量

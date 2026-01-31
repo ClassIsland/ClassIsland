@@ -12,6 +12,7 @@ using Avalonia.Threading;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
@@ -28,11 +29,12 @@ namespace ClassIsland.Services;
 /// <summary>
 /// 提醒主机服务。
 /// </summary>
-public class NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger)
+public class NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger, INotificationWorkerService notificationWorkerService)
     : IHostedService, INotifyPropertyChanged, INotificationHostService
 {
     private SettingsService SettingsService { get; } = settingsService;
     private ILogger<NotificationHostService> Logger { get; } = logger;
+    private INotificationWorkerService NotificationWorkerService { get; } = notificationWorkerService;
     private Settings Settings => SettingsService.Settings;
 
     public PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; } = new();
@@ -152,7 +154,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         SetupNotificationRequest(request, providerGuid, channelGuid);
         UpdateNotificationPlayingState();
         request.CompletedToken.Register(() => FinishNotificationPlaying(request));
-        if (pushNotifications && PushNotificationRequests([request]))
+        if (pushNotifications && PushNotificationRequests([NotificationWorkerService.CreateTicket(request)]))
         {
             return;
         }
@@ -210,7 +212,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             request.CompletedToken.Register(() => FinishNotificationPlaying(request));
         }
 
-        if (PushNotificationRequests(requests.ToList()))
+        if (PushNotificationRequests(requests.Select(x => NotificationWorkerService.CreateTicket(x)).ToList()))
         {
             return;
         }
@@ -302,7 +304,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
     }
 
-    private bool PushNotificationRequests(List<NotificationRequest> requests)
+    private bool PushNotificationRequests(List<NotificationPlayingTicket> requests)
     {
         Logger.LogTrace("开始推送提醒 ({})", requests.Count);
 
@@ -313,7 +315,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             Logger.LogTrace("将推送的提醒消费者：{}(#{})", consumer.Consumer, consumer.Consumer.GetHashCode());
             foreach (var request in requests)
             {
-                PlayingNotifications.Add(request);
+                PlayingNotifications.Add(request.Request);
             }
             UpdateNotificationPlayingState();
             consumer.Consumer.ReceiveNotifications(requests);
@@ -324,7 +326,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         return false;
     }
 
-    private List<NotificationRequest> PopRequests()
+    private List<NotificationPlayingTicket> PopRequests()
     {
         NotificationRequest? head;
         do
@@ -346,7 +348,9 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
         
         UpdateNotificationPlayingState();
-        return requests;
+        return requests
+            .Select(x => NotificationWorkerService.CreateTicket(x))
+            .ToList();
     }
 
     private void PopRequestsToConsumers()
@@ -385,7 +389,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         RegisteredConsumers.Remove(registerInfo);
     }
 
-    public IList<NotificationRequest> PullNotificationRequests()
+    public IList<NotificationPlayingTicket> PullNotificationRequests()
     {
         return PopRequests();
     }

@@ -73,5 +73,7 @@
         <Style Selector="^[IsLineFaded=True][(ci|MainWindowStylesAssist.MainWindowInEditMode)=False]">
             <Setter Property="Opacity" Value="0.05"/>
         </Style>
+        
+        <Setter Property="CountdownProgressValue" Value="{Binding $self.CurrentNotificationRequest.LeftProgress}"/>
     </Style>
 </Styles>

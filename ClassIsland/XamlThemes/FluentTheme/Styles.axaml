@@ -128,6 +128,15 @@
                                                          Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
                                                          x:Name="OverlayTimeProgressBar"
                                                          MinWidth="0">
+                                                <ProgressBar.Transitions>
+                                                    <Transitions>
+                                                        <DoubleTransition Property="Value" Duration="0:0:0.05">
+                                                            <DoubleTransition.Easing>
+                                                                <LinearEasing/>
+                                                            </DoubleTransition.Easing>
+                                                        </DoubleTransition>
+                                                    </Transitions>
+                                                </ProgressBar.Transitions>
                                             </ProgressBar>
                                             <ContentPresenter
                                                 MaxHeight="{DynamicResource IslandContainerHeight}"

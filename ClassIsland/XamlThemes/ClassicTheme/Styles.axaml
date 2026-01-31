@@ -1,9 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:ClassIsland.Controls"
+        xmlns:controls="clr-namespace:ClassIsland.Controls;assembly=ClassIsland"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        xmlns:classIsland="clr-namespace:ClassIsland">
+        xmlns:classIsland="clr-namespace:ClassIsland;assembly=ClassIsland">
     <Styles.Resources>
         <!--#region StoryBoards-->
         <ci:IntToStringConverter x:Key="IntToStringConverter" />
@@ -113,6 +113,15 @@
                                              Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
                                              x:Name="OverlayTimeProgressBar"
                                              MinWidth="0">
+                                    <ProgressBar.Transitions>
+                                        <Transitions>
+                                            <DoubleTransition Property="Value" Duration="0:0:0.05">
+                                                <DoubleTransition.Easing>
+                                                    <LinearEasing/>
+                                                </DoubleTransition.Easing>
+                                            </DoubleTransition>
+                                        </Transitions>
+                                    </ProgressBar.Transitions>
                                 </ProgressBar>
                             </Border>
                             <ContentPresenter

@@ -155,10 +155,8 @@ public class NotificationWorkerService : INotificationWorkerService
         var duration = SetupNotificationSessionTiming(content, session);
         request.State = NotificationState.Playing;
         var tuple = (request, !isMask);
-        await Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            PlayingRequests.Add(tuple);
-        });
+        PlayingRequests.Add(tuple);
+        using var soundsCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         try
         {
             var isSpeechEnabled = settings.IsSpeechEnabled && content.IsSpeechEnabled && SettingsService.Settings.AllowNotificationSpeech;
@@ -175,7 +173,7 @@ public class NotificationWorkerService : INotificationWorkerService
                     _ = AudioService.PlayAudioAsync(string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
                             ? AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri)
                             : File.OpenRead(settings.NotificationSoundPath),
-                        (float)SettingsService.Settings.NotificationSoundVolume, cancellationToken);
+                        (float)SettingsService.Settings.NotificationSoundVolume, soundsCts.Token);
                 }
                 catch (Exception e)
                 {
@@ -205,10 +203,8 @@ public class NotificationWorkerService : INotificationWorkerService
         }
         finally
         {
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                PlayingRequests.Remove(tuple);
-            });
+            await soundsCts.CancelAsync();
+            PlayingRequests.Remove(tuple);
         }
     }
     
