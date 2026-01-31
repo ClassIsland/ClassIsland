@@ -59,6 +59,7 @@ public partial class App
         services.AddSingleton<ITaskBarIconService, TaskBarIconService>();
         // services.AddSingleton<WallpaperPickingService>();
         services.AddSingleton<INotificationHostService, NotificationHostService>();
+        services.AddSingleton<INotificationWorkerService, NotificationWorkerService>();
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<MiniInfoProviderHostService>();
         services.AddSingleton<IWeatherService, WeatherService>();

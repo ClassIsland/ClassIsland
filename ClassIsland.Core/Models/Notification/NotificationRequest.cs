@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Shared.Models.Notification;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -15,6 +16,7 @@ public class NotificationRequest : ObservableRecipient
     private CancellationTokenSource _completedTokenSource = new();
     private NotificationContent? _overlayContent;
     private NotificationContent _maskContent = NotificationContent.Empty;
+    private double _leftProgress = 1.0;
 
     /// <summary>
     /// 初始化一个 <see cref="NotificationRequest"/> 实例。
@@ -119,6 +121,25 @@ public class NotificationRequest : ObservableRecipient
     /// </summary>
     public Guid ChannelId { get; set; }
 
+    /// <summary>
+    /// 提醒播放状态
+    /// </summary>
+    public NotificationState State { get; internal set; } = NotificationState.None;
+    
+    /// <summary>
+    /// 提醒播放剩余进度
+    /// </summary>
+    public double LeftProgress
+    {
+        get => _leftProgress;
+        internal set
+        {
+            if (value.Equals(_leftProgress)) return;
+            _leftProgress = value;
+            OnPropertyChanged();
+        }
+    }
+
     internal NotificationRequest? ChainedNextRequest { get; set; }
 
     internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;
@@ -137,6 +158,16 @@ public class NotificationRequest : ObservableRecipient
     internal CancellationTokenSource? RootCompletedTokenSource { get; set; }
     
     internal bool NotificationSetupCompleted { get; set; }
+
+    /// <summary>
+    /// 提醒遮罩播放会话
+    /// </summary>
+    public NotificationPlayingSessionInfo MaskSession { get; } = new();
+    
+    /// <summary>
+    /// 提醒正文播放会话
+    /// </summary>
+    public NotificationPlayingSessionInfo OverlaySession { get; } = new();
 
     /// <summary>
     /// 取消当前提醒。

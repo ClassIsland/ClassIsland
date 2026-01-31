@@ -125,6 +125,8 @@ public class NotificationContent : ObservableRecipient
         Content = content;
     }
 
+    internal bool IsTimingInit { get; set; } = false;
+
     #region Templates
 
     /// <summary>

@@ -401,6 +401,10 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
     }
 
+    
+
+    #region PropertyChanged
+    
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -415,4 +419,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         OnPropertyChanged(propertyName);
         return true;
     }
+
+    #endregion
 }
