@@ -2,9 +2,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-
+using Avalonia;
 using Avalonia.Controls;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,30 @@ namespace ClassIsland.Core.Abstractions.Controls;
 /// </summary>
 public abstract class AttachedSettingsControlBase : UserControl, INotifyPropertyChanged
 {
+    public static readonly StyledProperty<AttachedSettingsTargets> TargetProperty = AvaloniaProperty.Register<AttachedSettingsControlBase, AttachedSettingsTargets>(
+        nameof(Target));
+
+    /// <summary>
+    /// 该设置附加到的对象类型
+    /// </summary>
+    public AttachedSettingsTargets Target
+    {
+        get => GetValue(TargetProperty);
+        set => SetValue(TargetProperty, value);
+    }
+
+    public static readonly StyledProperty<int> AttachedTimePointTimeTypeProperty = AvaloniaProperty.Register<AttachedSettingsControlBase, int>(
+        nameof(AttachedTimePointTimeType), -1);
+
+    /// <summary>
+    /// 该设置附加到的时间点的时间类型
+    /// </summary>
+    public int AttachedTimePointTimeType
+    {
+        get => GetValue(AttachedTimePointTimeTypeProperty);
+        set => SetValue(AttachedTimePointTimeTypeProperty, value);
+    }
+    
     [NotNull]
     internal object? SettingsInternal { get; set; }
 

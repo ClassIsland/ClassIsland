@@ -16,6 +16,7 @@ using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Profile;
+using ReactiveUI;
 
 
 namespace ClassIsland.Core.Controls;
@@ -89,6 +90,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     private char _dependencyItemPackIconKind = '\0';
     private string _dependencyItemTitle = "";
     private bool _isLoading = false;
+    private IDisposable? _timePointTimeTypeObserver;
 
     public static readonly StyledProperty<bool> IsPopupOpenedProperty = AvaloniaProperty.Register<AttachedSettingsControlPresenter, bool>(
         nameof(IsPopupOpened));
@@ -233,9 +235,25 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         {
             return;
         }
+        _timePointTimeTypeObserver?.Dispose();
+        _timePointTimeTypeObserver = null;
 
         TargetObject.AttachedObjects.TryGetValue(ControlInfo.Guid, out var settings);
-        ContentObject = AttachedSettingsControlBase.GetInstance(ControlInfo, ref settings);
+        var control = AttachedSettingsControlBase.GetInstance(ControlInfo, ref settings);
+        if (control != null)
+        {
+            control.Target = TargetObject switch
+            {
+                ClassPlan => AttachedSettingsTargets.ClassPlan,
+                ClassInfo => AttachedSettingsTargets.Lesson,
+                TimeLayoutItem => AttachedSettingsTargets.TimePoint,
+                TimeLayout => AttachedSettingsTargets.TimeLayout,
+                Subject => AttachedSettingsTargets.Subject,
+                _ => AttachedSettingsTargets.None
+            };
+        }
+        
+        ContentObject = control;
         //if (ContentObject is IAttachedSettingsControlBase c)
         //{
         //    c.AttachedSettingsControlHelper.AttachedTarget = TargetObject;
@@ -243,6 +261,8 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         MainContentPresenter.Content = ContentObject;
         AssociatedAttachedSettings = settings as IAttachedSettings;
         UpdateSourceSettings(AssociatedAttachedSettings);
+        UpdateContentAttachedTimePointTimeType();
+        RegisterTimePointTimeTypeObserver();
 
         if (!IsDependencyMode || ProfileAnalyzeService == null || !ProfileAnalyzeService.Nodes.TryGetValue(new AttachableObjectAddress(ContentId, ContentIndex), out var node))
         {
@@ -321,6 +341,16 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         }
     }
 
+    private void RegisterTimePointTimeTypeObserver()
+    {
+        if (TargetObject is TimeLayoutItem timePoint)
+        {
+            _timePointTimeTypeObserver ??= timePoint.ObservableForProperty(x => x.TimeType)
+                .Subscribe(_ => UpdateContentAttachedTimePointTimeType());
+            UpdateContentAttachedTimePointTimeType();
+        }
+    }
+
     private void UpdateSourceSettings(IAttachedSettings? settings)
     {
         if (settings?.IsAttachSettingsEnabled != true && ControlInfo.HasEnabledState)
@@ -329,6 +359,19 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
             return;
         }
         TargetObject.AttachedObjects[ControlInfo.Guid] = settings;
+    }
+
+    private void UpdateContentAttachedTimePointTimeType()
+    {
+        if (ContentObject is not AttachedSettingsControlBase control)
+        {
+            return;
+        }
+
+        control.AttachedTimePointTimeType =
+            TargetObject is TimeLayoutItem timePoint
+                ? timePoint.TimeType
+                : -1;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -363,5 +406,16 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     private void ButtonIsSettingsEnabled_OnClick(object? sender, RoutedEventArgs e)
     {
         UpdateSourceSettings(AssociatedAttachedSettings);
+    }
+
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        RegisterTimePointTimeTypeObserver();
+    }
+
+    private void Control_OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        _timePointTimeTypeObserver?.Dispose();
+        _timePointTimeTypeObserver = null;
     }
 }
