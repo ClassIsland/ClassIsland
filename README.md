@@ -127,7 +127,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
   
 [^1]: 仅适用于 1.7.105.1 及更高版本的 ClassIsland
 
-对于 Windows PC ，您需要安装 [.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
+对于 Windows PC，您需要安装 [.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
 
 ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类修改窗口材质的工具）**不兼容**，与这些工具同时使用 ClassIsland 时请将 ClassIsland 添加到这些工具的排除列表中。
 
@@ -155,7 +155,8 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 [![GitHub Issues](https://img.shields.io/github/issues-search/ClassIsland/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Issues&color=%233fb950)](https://github.com/ClassIsland/ClassIsland/issues)
 [![GitHub Discussions](https://img.shields.io/github/discussions/ClassIsland/ClassIsland?style=flat-square&logo=Github&label=Discussions)](https://github.com/ClassIsland/ClassIsland/discussions)
 [![加入 QQ 频道](https://img.shields.io/badge/QQ_%E9%A2%91%E9%81%93-classisland-%230066cc?style=flat-square&logo=TencentQQ)](https://pd.qq.com/s/scb3wzia)
-[![加入 QQ 群](https://img.shields.io/badge/QQ_%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
+[![加入 QQ 群](https://img.shields.io/badge/QQ_%E7%BE%A4_1-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
+[![加入 QQ 群](https://img.shields.io/badge/QQ_%E7%BE%A4_2-769582982-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/MhWCvrk7mu)
 
 如果您确定您遇到的问题是一个 **Bug**，或者您要提出一项**新的功能**，请[提交 Issue](https://github.com/ClassIsland/ClassIsland/issues/new/choose)。
 
