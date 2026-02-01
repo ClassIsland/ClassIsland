@@ -108,21 +108,28 @@
                             <Border ClipToBounds="True"
                                     IsHitTestVisible="False">
 
-                                <ProgressBar VerticalAlignment="Bottom"
-                                             Maximum="1"
-                                             Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
-                                             x:Name="OverlayTimeProgressBar"
-                                             MinWidth="0">
-                                    <ProgressBar.Transitions>
-                                        <Transitions>
-                                            <DoubleTransition Property="Value" Duration="0:0:0.05">
-                                                <DoubleTransition.Easing>
-                                                    <LinearEasing/>
-                                                </DoubleTransition.Easing>
-                                            </DoubleTransition>
-                                        </Transitions>
-                                    </ProgressBar.Transitions>
-                                </ProgressBar>
+                                <!-- HACK: 为什么进度条拉伸了就缩不回去了😰 -->
+                                <Canvas VerticalAlignment="Bottom"
+                                        HorizontalAlignment="Stretch"
+                                        x:Name="ProgressContainer"
+                                        Height="{Binding #OverlayTimeProgressBar.Bounds.Height}">
+                                    <ProgressBar VerticalAlignment="Bottom"
+                                                 Maximum="1"
+                                                 Value="{Binding CountdownProgressValue, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
+                                                 x:Name="OverlayTimeProgressBar"
+                                                 Width="{Binding #ProgressContainer.Bounds.Width, Mode=OneWay}"
+                                                 MinWidth="0">
+                                        <ProgressBar.Transitions>
+                                            <Transitions>
+                                                <DoubleTransition Property="Value" Duration="0:0:0.05">
+                                                    <DoubleTransition.Easing>
+                                                        <LinearEasing/>
+                                                    </DoubleTransition.Easing>
+                                                </DoubleTransition>
+                                            </Transitions>
+                                        </ProgressBar.Transitions>
+                                    </ProgressBar>
+                                </Canvas>
                             </Border>
                             <ContentPresenter
                                 Content="{Binding OverlayContent.Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}"
