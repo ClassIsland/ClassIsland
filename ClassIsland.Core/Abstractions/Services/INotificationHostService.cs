@@ -34,7 +34,7 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     /// </example>
     void RegisterNotificationProvider(INotificationProvider provider);
 
-    internal void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications);
+    internal void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications, bool isPlayed);
 
     internal Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid);
 

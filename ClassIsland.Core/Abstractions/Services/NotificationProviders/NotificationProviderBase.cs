@@ -126,7 +126,7 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
     /// <inheritdoc />
     public void ShowNotification(NotificationRequest request)
     {
-        __NotificationHostService.ShowNotification(request, ProviderGuid, Guid.Empty, true);
+        __NotificationHostService.ShowNotification(request, ProviderGuid, Guid.Empty, true, false);
     }
 
     /// <inheritdoc />

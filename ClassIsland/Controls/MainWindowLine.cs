@@ -257,6 +257,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private Queue<NotificationPlayingTicket> _notificationQueue = new();
 
+    private List<NotificationPlayingTicket> _notificationPlayingTickets = [];
+
     private bool _isLoadCompleted = false;
 
     private bool _isTemplateApplied = false;
@@ -450,6 +452,11 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         {
             Settings.PropertyChanged -= MySettingsOnPropertyChanged;
         }
+        foreach (var ticket in _notificationPlayingTickets)
+        {
+            ticket.Cancel();
+            Logger.LogTrace("Cancelled ticket id={}", ticket.GetHashCode());
+        }
     }
     
     private void MySettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -623,6 +630,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         foreach (var newRequest in notificationRequests)
         {
             _notificationQueue.Enqueue(newRequest);
+            _notificationPlayingTickets.Add(newRequest);
         }
 
         ProcessNotification();
@@ -678,7 +686,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             var ticket = _notificationQueue.Dequeue();
             var request = CurrentNotificationRequest = ticket.Request;
             var settings = ticket.Settings;
-            Logger.LogTrace("nid = {}", request.GetHashCode());
+            Logger.LogTrace("nid = {notificationId}, tid={ticketId}", request.GetHashCode(), ticket.GetHashCode());
             
             var mask = request.MaskContent;
             var overlay = request.OverlayContent;
@@ -742,22 +750,24 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             }
             catch (TaskCanceledException)
             {
-                
+                Logger.LogTrace("CANCELLED! nid = {notificationId}, tid={ticketId}", request.GetHashCode(), ticket.GetHashCode());
             }
 
             if (NotificationHostService.RequestQueue.Count + _notificationQueue.Count < 1 && notificationsShowed)
             {
                 PseudoClasses.Set(":overlay-anim", true);
                 PseudoClasses.Set(":mask-out", true);
+                PseudoClasses.Set(":mask-in", false);
                 PseudoClasses.Set(":overlay-out", true);
                 PseudoClasses.Set(":overlay-in", false);
             }
-            await request.CompletedTokenSource.CancelAsync();
-
+            
+            _notificationPlayingTickets.Remove(ticket);
             var notifications = NotificationHostService.PullNotificationRequests();
             foreach (var newRequest in notifications)
             {
                 _notificationQueue.Enqueue(newRequest);
+                _notificationPlayingTickets.Add(newRequest);
             }
         }
 

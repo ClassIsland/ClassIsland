@@ -12,6 +12,7 @@ using Avalonia.Threading;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared.Enums;
@@ -49,6 +50,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     private List<NotificationRequest> PlayingNotifications { get; } = [];
 
     private HashSet<NotificationRequest> PoppedRequests { get; } = [];
+
+    private List<NotificationPlayingTicket> PlayingTickets { get; } = [];
 
     public NotificationRequest? CurrentRequest { get; set; }
 
@@ -141,32 +144,36 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         var channel =
             request.NotificationSource?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid == channelGuid);
         request.ChannelSettings = channel?.ProviderSettings;
+        request.State = NotificationState.Queued;
         request.NotificationSetupCompleted = true;
     }
 
-    public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications)
+    public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid, bool pushNotifications, bool isPlayed)
     {
         if (!Settings.IsNotificationEnabled)
         {
             request.CompletedTokenSource.Cancel();
             return;
         }
-        SetupNotificationRequest(request, providerGuid, channelGuid);
         UpdateNotificationPlayingState();
-        request.CompletedToken.Register(() => FinishNotificationPlaying(request));
-        if (pushNotifications && PushNotificationRequests([NotificationWorkerService.CreateTicket(request)]))
+        if (!isPlayed)
+        {
+            SetupNotificationRequest(request, providerGuid, channelGuid);
+            request.CompletedToken.Register(() => FinishNotificationPlaying(request));
+        }
+        if (pushNotifications && PushNotificationRequests([CreateTicket(request)]))
         {
             return;
         }
         // 如果没有消费者接收推送的提醒，则会加入提醒队列。
-        RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
+        RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride, isPlayed));
     }
 
     public async Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid)
     {
         _ = Dispatcher.UIThread.InvokeAsync(() =>
         {
-            ShowNotification(request, providerGuid, channelGuid, true);
+            ShowNotification(request, providerGuid, channelGuid, true, false);
         });
         await Task.Run(() =>
         {
@@ -212,14 +219,14 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             request.CompletedToken.Register(() => FinishNotificationPlaying(request));
         }
 
-        if (PushNotificationRequests(requests.Select(x => NotificationWorkerService.CreateTicket(x)).ToList()))
+        if (PushNotificationRequests(requests.Select(CreateTicket).ToList()))
         {
             return;
         }
         // 如果没有消费者接收推送的提醒，则会加入提醒队列。
         foreach (var request in requests)
         {
-            ShowNotification(request, providerGuid, channelGuid, false);
+            ShowNotification(request, providerGuid, channelGuid, false, false);
         }
     }
 
@@ -349,7 +356,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         
         UpdateNotificationPlayingState();
         return requests
-            .Select(x => NotificationWorkerService.CreateTicket(x))
+            .Select(CreateTicket)
             .ToList();
     }
 
@@ -405,8 +412,26 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
     }
 
+    private NotificationPlayingTicket CreateTicket(NotificationRequest request)
+    {
+        var ticket = NotificationWorkerService.CreateTicket(request);
+        PlayingTickets.Add(ticket);
+        ticket.CancellationToken.Register(async () =>
+        {
+            PlayingTickets.Remove(ticket);
+            Logger.LogTrace("票据 {} 已取消，准备重新加入提醒队列", ticket.GetHashCode());
+            if (request.CancellationToken.IsCancellationRequested || request.CompletedToken.IsCancellationRequested)
+            {
+                return;
+            }
+            await ticket.CancellationCompletedCompletionSource.Task;
+            Logger.LogTrace("重新加入提醒队列，nid = {}", request.GetHashCode());
+            ShowNotification(request, request.NotificationSourceGuid, request.ChannelId, true, false);
+        });
+        request.CompletedToken.Register(() => PlayingTickets.Remove(ticket));
+        return ticket;
+    }
     
-
     #region PropertyChanged
     
     public event PropertyChangedEventHandler? PropertyChanged;

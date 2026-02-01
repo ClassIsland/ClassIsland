@@ -79,7 +79,7 @@ public class NotificationWorkerService : INotificationWorkerService
         }
     }
     
-    private TimeSpan SetupNotificationSessionTiming(NotificationContent content, NotificationPlayingSessionInfo session)
+    private TimeSpan SetupNotificationSessionTiming(Guid sid, NotificationContent content, NotificationPlayingSessionInfo session)
     {
         var now = ExactTimeService.GetCurrentLocalDateTime();
         var explicitEndTime = content.EndTime != null;
@@ -102,6 +102,7 @@ public class NotificationWorkerService : INotificationWorkerService
         var duration = explicitEndTime
             ? content.EndTime!.Value - now
             : content.Duration - session.SessionPlayedTime;
+        Logger.LogTrace("[{sid}] 计算当前票据会话持续时间，now={now}, playedTime={playedTime}, duration={duration}", sid, now, session.SessionPlayedTime, duration);
         return duration > TimeSpan.Zero ? duration : TimeSpan.Zero;
     }
 
@@ -120,29 +121,31 @@ public class NotificationWorkerService : INotificationWorkerService
             break;
         }
 
+        var cancellationCompletedSource = new TaskCompletionSource();
         var ticket = new NotificationPlayingTicket()
         {
-            ProcessMask = CreateMaskProcessor(request, cancellationTokenSource.Token, settings),
-            ProcessOverlay = CreateOverlayProcessor(request, cancellationTokenSource.Token, settings),
+            ProcessMask = CreateMaskProcessor(request, cancellationTokenSource.Token, settings, cancellationCompletedSource),
+            ProcessOverlay = CreateOverlayProcessor(request, cancellationTokenSource.Token, settings, cancellationCompletedSource),
             Request = request,
             Settings = settings,
-            CancellationTokenSource = cancellationTokenSource
+            CancellationTokenSource = cancellationTokenSource,
+            CancellationCompletedCompletionSource = cancellationCompletedSource
         };
         return ticket;
     }
 
-    private Func<Task> CreateMaskProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings) => async () =>
+    private Func<Task> CreateMaskProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings, TaskCompletionSource cancellationCompletedSource) => async () =>
     {
-        await ProcessNotificationSessionCore(request, request.MaskContent, request.MaskSession, true, cancellationToken, settings);
+        await ProcessNotificationSessionCore(request, request.MaskContent, request.MaskSession, true, cancellationToken, settings, cancellationCompletedSource);
     };
     
-    private Func<Task> CreateOverlayProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings) => async () =>
+    private Func<Task> CreateOverlayProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings, TaskCompletionSource cancellationCompletedSource) => async () =>
     {
         if (request.OverlayContent == null)
         {
             return;
         }
-        await ProcessNotificationSessionCore(request, request.OverlayContent, request.OverlaySession, false, cancellationToken, settings);
+        await ProcessNotificationSessionCore(request, request.OverlayContent, request.OverlaySession, false, cancellationToken, settings, cancellationCompletedSource);
     };
 
     private async Task ProcessNotificationSessionCore(NotificationRequest request,
@@ -150,22 +153,26 @@ public class NotificationWorkerService : INotificationWorkerService
         NotificationPlayingSessionInfo session,
         bool isMask,
         CancellationToken cancellationToken, 
-        INotificationSettings settings)
+        INotificationSettings settings,
+        TaskCompletionSource cancellationCompletedSource)
     {
-        var duration = SetupNotificationSessionTiming(content, session);
+        var id = Guid.NewGuid();
+        var duration = SetupNotificationSessionTiming(id, content, session);
         request.State = NotificationState.Playing;
         var tuple = (request, !isMask);
         PlayingRequests.Add(tuple);
+        Logger.LogTrace("[{id}] Start session, isMask={isMask}, duration={duration}", id, isMask, duration);
+        // cancellationToken.Register(() => Logger.LogTrace("Cancelled by \n {}", new StackTrace()));
         using var soundsCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         try
         {
             var isSpeechEnabled = settings.IsSpeechEnabled && content.IsSpeechEnabled && SettingsService.Settings.AllowNotificationSpeech;
-            if (isSpeechEnabled)
+            if (!session.HasSoundsPlayed && isSpeechEnabled)
             {
                 SpeechService.EnqueueSpeechQueue(content.SpeechContent);
             }
             
-            if (isMask && settings.IsNotificationSoundEnabled && SettingsService.Settings.AllowNotificationSound)
+            if (!session.HasSoundsPlayed && isMask && settings.IsNotificationSoundEnabled && SettingsService.Settings.AllowNotificationSound)
             {
                 try
                 {
@@ -186,11 +193,14 @@ public class NotificationWorkerService : INotificationWorkerService
             if (request.OverlayContent == null || !isMask)
             {
                 request.State = NotificationState.Completed;
+                await request.CompletedTokenSource.CancelAsync();
             }
+
+            session.IsCompleted = true;
         }
         catch (TaskCanceledException)
         {
-            Logger.LogInformation("提醒请求 {request} 取消遮罩播放", request.GetHashCode());
+            Logger.LogInformation("提醒请求 {request} 取消播放", request.GetHashCode());
             request.State = request.CancellationToken.IsCancellationRequested
                 ? NotificationState.Cancelled
                 : NotificationState.Paused;
@@ -204,7 +214,15 @@ public class NotificationWorkerService : INotificationWorkerService
         finally
         {
             await soundsCts.CancelAsync();
+            var playedTime = session.TimingStopwatch.Elapsed;
+            session.TimingStopwatch.Reset();
+            session.SessionPlayedTime += playedTime;
+            Logger.LogTrace("[{id}] END session, isMask={isMask}, playedTime={playedTime}", id, isMask, playedTime);
             PlayingRequests.Remove(tuple);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                cancellationCompletedSource.TrySetResult();
+            }
         }
     }
     

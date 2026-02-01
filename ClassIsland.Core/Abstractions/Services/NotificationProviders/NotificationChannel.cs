@@ -81,7 +81,7 @@ public class NotificationChannel : INotificationSender, INotificationProvider
     /// <inheritdoc />
     public void ShowNotification(NotificationRequest request)
     {
-        __NotificationHostService.ShowNotification(request, ProviderGuid, ChannelGuid, true);
+        __NotificationHostService.ShowNotification(request, ProviderGuid, ChannelGuid, true, false);
     }
 
     /// <inheritdoc />

@@ -37,4 +37,9 @@ public class NotificationPlayingSessionInfo
     /// </summary>
     public bool IsExplicitEndTime { get; internal set; } = false;
 
+    /// <summary>
+    /// 此部分的会话是否已经完成
+    /// </summary>
+    public bool IsCompleted { get; internal set; } = false;
+
 }

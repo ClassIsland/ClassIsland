@@ -35,7 +35,7 @@ public partial class DevPortalWindow : MyWindow
                 // x.Duration = TimeSpan.FromSeconds(15);
             }),
             OverlayContent = NotificationContent.CreateSimpleTextContent(ViewModel.NotificationOverlayText)
-        }, new Guid("4B12F124-8585-43C7-AFC5-7BBB7CBE60D6"), Guid.Empty, true);
+        }, new Guid("4B12F124-8585-43C7-AFC5-7BBB7CBE60D6"), Guid.Empty, true, false);
     }
 
     private void ButtonRunChain_OnClick(object? sender, RoutedEventArgs e)
