@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core;
@@ -21,7 +22,17 @@ public partial class HomePage : UserControl
     public HomePage()
     {
         InitializeComponent();
+        DataContext = this;
     }
+
+    public bool HasMultipleInstallations => Directory.GetDirectories(string.Concat(Path.GetDirectoryName((Environment.ProcessPath) ?? ""),@"/.."))
+                  .Where(dir =>
+                    Path.GetFileName(dir).StartsWith("app", StringComparison.OrdinalIgnoreCase) &&
+                    !File.Exists(Path.Combine(dir, ".destroy")) &&
+                    !File.Exists(Path.Combine(dir, ".partial")) &&
+                    File.Exists(Path.Combine(dir, OperatingSystem.IsWindows() ? "ClassIsland.Desktop.exe" : "ClassIsland.Desktop")))
+                  .ToList().Count > 1;
+
 
     private void ButtonContinue_OnClick(object sender, RoutedEventArgs e)
     {
@@ -190,5 +201,10 @@ public partial class HomePage : UserControl
                 LastPage = this
             };
         }
+    }
+
+    private void ButtonRollBack_Onclick(object sender, RoutedEventArgs e)
+    {
+        this.ShowToast("此功能仍在开发中");
     }
 }

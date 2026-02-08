@@ -51,7 +51,9 @@
                 <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe135;}"
                                                Content="回滚"
                                                Description="回滚到之前的 ClassIsland 版本"
-                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"/>
+                                               ActionIconSource="{ci:FluentIconSource &#xe44e;}"
+			                                   Click="ButtonRollBack_Onclick"
+                                               IsEnabled="{Binding HasMultipleInstallations}"/>
             </StackPanel>
             
             <StackPanel Classes="cardContainer">
