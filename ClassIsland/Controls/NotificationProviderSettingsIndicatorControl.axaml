@@ -35,12 +35,12 @@
                     TextElement.FontSize="13">
             <ci:FluentIcon Glyph="&#xED53;" Classes.enabled="{Binding Settings.IsSpeechEnabled}"
                            IsVisible="{Binding GlobalSettings.AllowNotificationSpeech, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
-            <ci:FluentIcon Glyph="&#xEA2F;" Classes.enabled="{Binding Settings.IsNotificationTopmostEnabled}"
-                           IsVisible="{Binding GlobalSettings.AllowNotificationTopmost, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
+            <ci:FluentIcon Glyph="&#xEA2F;" Classes.enabled="{Binding Settings.IsNotificationEffectEnabled}"
+                           IsVisible="{Binding GlobalSettings.AllowNotificationEffect, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
             <ci:FluentIcon Glyph="&#xE649;" Classes.enabled="{Binding Settings.IsNotificationSoundEnabled}"
                            IsVisible="{Binding GlobalSettings.AllowNotificationSound, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
-            <ci:FluentIcon Glyph="&#xE1A1;" Classes.enabled="{Binding Settings.IsNotificationEffectEnabled}"
-                           IsVisible="{Binding GlobalSettings.AllowNotificationEffect, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
+            <ci:FluentIcon Glyph="&#xE1A1;" Classes.enabled="{Binding Settings.IsNotificationTopmostEnabled}"
+                           IsVisible="{Binding GlobalSettings.AllowNotificationTopmost, TargetNullValue={x:False}, FallbackValue={x:False}}"/>
         </StackPanel>
     </Border>
 </UserControl>

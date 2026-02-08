@@ -127,6 +127,12 @@ public class NotificationContent : ObservableRecipient
 
     internal bool IsTimingInit { get; set; } = false;
 
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"NotificationContent{{{Content}({SpeechContent})}}";
+    }
+
     #region Templates
 
     /// <summary>

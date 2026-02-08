@@ -44,10 +44,15 @@ public class NotificationPriority : IComparable
             return -1;
         }
         
-        if (IsPriorityOverride || IsNotificationPlayed)
+        if (IsPriorityOverride)
         {
             return 1;
         }
+
+        // if (IsNotificationPlayed && !priority.IsNotificationPlayed)
+        // {
+        //     return 1;
+        // }
         if (Priority != priority.Priority)
         {
             return Priority - priority.Priority;

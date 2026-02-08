@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 
@@ -72,6 +73,8 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         }
     }
 
+    private string _key = "";
+
     public ILessonsService LessonsService { get; } = App.GetService<ILessonsService>();
 
     private DispatcherTimer Timer { get; } = new()
@@ -84,23 +87,33 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         InitializeComponent();
         var visual = this.FindResource(key) as Control;
         Element = visual;
-        Timer.Tick += TimerOnTick;
-        if (key is "ClassPrepareNotifyOverlay" or "ClassOffOverlay")
+        _key = key;
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
+        MainListBox.SelectedIndex = 0;
+    }
+
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        if (_key is "ClassPrepareNotifyOverlay" or "ClassOffOverlay")
         {
             Timer.Start();
-        }
-        
-        Unloaded += (_, _) => {
-            Timer.Stop();
-            Timer.Tick -= TimerOnTick;
-        };
+        }        
+        Timer.Tick += TimerOnTick;
+        MainListBox.SelectedIndex = SlideIndex;
+    }
+
+    private void OnUnloaded(object? o, RoutedEventArgs routedEventArgs)
+    {
+        Timer.Stop();
+        Timer.Tick -= TimerOnTick;
     }
 
     private void TimerOnTick(object? sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(Message))
             return;
-        SlideIndex = SlideIndex == 1 ? 0 : 1;
+        MainListBox.SelectedIndex = SlideIndex = SlideIndex == 1 ? 0 : 1;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
