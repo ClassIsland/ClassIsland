@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,15 +24,26 @@ public partial class HomePage : UserControl
     {
         InitializeComponent();
         DataContext = this;
-    }
-
-    public bool HasMultipleInstallations => Directory.GetDirectories(string.Concat(Path.GetDirectoryName((Environment.ProcessPath) ?? ""),@"/.."))
-                  .Where(dir =>
+        List<string> validInstallations;
+        try
+        {
+            validInstallations = Directory.GetDirectories(Path.GetDirectoryName(Environment.ProcessPath) ?? "")
+                .Where(dir =>
                     Path.GetFileName(dir).StartsWith("app", StringComparison.OrdinalIgnoreCase) &&
                     !File.Exists(Path.Combine(dir, ".destroy")) &&
                     !File.Exists(Path.Combine(dir, ".partial")) &&
                     File.Exists(Path.Combine(dir, OperatingSystem.IsWindows() ? "ClassIsland.Desktop.exe" : "ClassIsland.Desktop")))
-                  .ToList().Count > 1;
+                .ToList();
+        }catch(Exception ex)
+        {
+            this.ShowErrorToast($"无法检测其他安装实例的状态:{ex.Message}"+Environment.NewLine+"\"回滚\"选项将不可用。");
+            validInstallations = new List<string>();
+        }
+
+        HasMultipleInstallations =validInstallations.Count>1;
+    }
+
+    public bool HasMultipleInstallations = false;
     private void ButtonContinue_OnClick(object sender, RoutedEventArgs e)
     {
         AppBase.Current.Restart(["-m"]);
