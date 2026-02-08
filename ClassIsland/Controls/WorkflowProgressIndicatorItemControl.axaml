@@ -12,8 +12,7 @@
                 <Panel Classes.inProgress="{Binding Action.IsWorking, RelativeSource={RelativeSource TemplatedParent}}"
                        Classes.isCompleted="{Binding Action.IsCompleted, RelativeSource={RelativeSource TemplatedParent}}"
                        Classes.isProgressDetermined="{Binding Action.Progress, Converter={x:Static ObjectConverters.IsNotNull}, RelativeSource={RelativeSource TemplatedParent}}">
-                    <Border Height="4"
-                            CornerRadius="2">
+                    <Border Height="4">
                         <Border.Transitions>
                             <Transitions>
                                 <BrushTransition Property="Background"
@@ -54,7 +53,7 @@
                             </Style>
                         </Border.Styles>
                     </Border>
-                    <Border ClipToBounds="True" CornerRadius="2">
+                    <Border ClipToBounds="True" >
                         <ProgressBar x:Name="ProgressBar">
                             <ProgressBar.Transitions>
                                 <Transitions>
@@ -82,7 +81,8 @@
                                     <Setter Property="Minimum" Value="0" />
                                 </Style>
                             </ProgressBar.Styles>
-                        </ProgressBar></Border>
+                        </ProgressBar>
+                    </Border>
                 </Panel>
             </ControlTemplate>
         </Setter>
@@ -90,7 +90,7 @@
         <Style Selector="^ /template/ ProgressBar#ProgressBar:horizontal">
             <Setter Property="Height" Value="4"/>
             <Setter Property="MinWidth" Value="0"/>
-            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="CornerRadius" Value="0"/>
         </Style>
     </Style>
 </Styles>
