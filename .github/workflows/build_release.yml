@@ -324,7 +324,7 @@ jobs:
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls
-          ./build.ps1 PublishApp --isRelease $env:is_release
+          ./build.ps1 BuildNupkg --isRelease $env:is_release
       
       - name: Upload Nuget packages to GitHub registry
         if: ${{ github.event_name != 'pull_request' }} 
