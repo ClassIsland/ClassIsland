@@ -87,8 +87,8 @@
     </UserControl.Resources>
     <Grid Margin="16 0" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}">
         <ListBox
-            Classes="sliding"
-            SelectedIndex="{Binding SlideIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}, Mode=OneWay}">
+            x:Name="MainListBox"
+            Classes="sliding">
             <ListBoxItem FontSize="{DynamicResource MainWindowBodyFontSize}">
                 <ContentPresenter Content="{Binding Element, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}"/>
             </ListBoxItem>

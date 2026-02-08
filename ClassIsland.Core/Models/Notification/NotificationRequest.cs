@@ -159,6 +159,10 @@ public class NotificationRequest : ObservableRecipient
     
     internal bool NotificationSetupCompleted { get; set; }
 
+    internal NotificationRequest? ChainedHeadRequest { get; set; }
+
+    internal int InitialQueueIndex { get; set; } = -1;
+
     /// <summary>
     /// 提醒遮罩播放会话
     /// </summary>
@@ -175,6 +179,12 @@ public class NotificationRequest : ObservableRecipient
     public void Cancel()
     {
         CancellationTokenSource.Cancel();
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"NotificationRequest{{ Mask = {MaskContent}, Overlay = {OverlayContent} }}(#{GetHashCode()})";
     }
 
     /// <summary>

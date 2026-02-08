@@ -122,6 +122,13 @@ public class NotificationWorkerService : INotificationWorkerService
         }
 
         var cancellationCompletedSource = new TaskCompletionSource();
+        cancellationTokenSource.Token.Register(() =>
+        {
+            if (request.State != NotificationState.Playing)
+            {
+                cancellationCompletedSource.TrySetResult();
+            }
+        });
         var ticket = new NotificationPlayingTicket()
         {
             ProcessMask = CreateMaskProcessor(request, cancellationTokenSource.Token, settings, cancellationCompletedSource),
@@ -193,6 +200,7 @@ public class NotificationWorkerService : INotificationWorkerService
             if (request.OverlayContent == null || !isMask)
             {
                 request.State = NotificationState.Completed;
+                SpeechService.ClearSpeechQueue();
                 await request.CompletedTokenSource.CancelAsync();
             }
 
