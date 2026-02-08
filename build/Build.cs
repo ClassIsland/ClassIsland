@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nuke.Common;
 using Nuke.Common.CI;
@@ -26,6 +27,8 @@ partial class Build : NukeBuild
     
     [Solution] readonly Solution Solution;
     
+    [PathVariable] readonly Tool Git;
+    
     [Parameter("Arch")] readonly string Arch;
     [Parameter("OsName")] readonly string OsName;
     [Parameter("Package")] readonly string Package;
@@ -39,6 +42,7 @@ partial class Build : NukeBuild
 
     readonly AbsolutePath DesktopAppEntryProject = RootDirectory / "ClassIsland.Desktop" / "ClassIsland.Desktop.csproj";
     readonly AbsolutePath LauncherEntryProject = RootDirectory / "ClassIsland.Launcher" / "ClassIsland.Launcher.csproj";
+    readonly AbsolutePath NupkgEntryProject = RootDirectory / "ClassIsland.Filter.Linux.slnf";
     readonly AbsolutePath AppOutputPath = RootDirectory / "out";
     readonly AbsolutePath AppPublishPath = RootDirectory / "out" / "ClassIsland";
     readonly AbsolutePath LauncherPublishPath = RootDirectory / "out" / "Launcher";

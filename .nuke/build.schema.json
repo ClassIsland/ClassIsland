@@ -24,14 +24,18 @@
     "ExecutableTarget": {
       "type": "string",
       "enum": [
+        "BuildNupkg",
         "CleanDesktopApp",
         "CleanLauncher",
+        "CleanNupkg",
         "CompileApp",
         "CompileLauncher",
+        "CopyNupkg",
         "GenerateAppZipArchive",
         "GenerateLauncherZipArchive",
         "GenerateMetadata",
         "GenerateSecrets",
+        "PopulateNupkgVersion",
         "PostCleanup",
         "PublishApp",
         "PublishLauncher",
@@ -139,6 +143,10 @@
             "Debug",
             "Release"
           ]
+        },
+        "IsRelease": {
+          "type": "boolean",
+          "description": "IsRelease"
         },
         "OsName": {
           "type": "string",

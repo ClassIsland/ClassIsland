@@ -324,7 +324,7 @@ jobs:
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls
-          pwsh -ep Bypass -c ./tools/release-gen/publish-nupkg.ps1 $env:is_release
+          ./build.ps1 PublishApp --isRelease $env:is_release
       
       - name: Upload Nuget packages to GitHub registry
         if: ${{ github.event_name != 'pull_request' }} 
@@ -332,14 +332,14 @@ jobs:
           GHPKG_KEY: ${{ secrets.GITHUB_TOKEN }}
         run: |
           dotnet nuget add source --username github-actions --password $env:GHPKG_KEY --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
-          dotnet nuget push .\out\*.nupkg -k $env:GHPKG_KEY --source "github" --skip-duplicate
+          dotnet nuget push .\out\package\release\*.nupkg -k $env:GHPKG_KEY --source "github" --skip-duplicate
 
       - name: Upload Nuget Packages to artifacts
         if: ${{ !matrix.trim_assets }}
         uses: actions/upload-artifact@v4
         with:
           name: out_nupkgs
-          path: ./out/*.nupkg
+          path: ./out/package/release/*.nupkg
 
   publish:
     runs-on: windows-2022
