@@ -32,8 +32,6 @@ public partial class HomePage : UserControl
                     !File.Exists(Path.Combine(dir, ".partial")) &&
                     File.Exists(Path.Combine(dir, OperatingSystem.IsWindows() ? "ClassIsland.Desktop.exe" : "ClassIsland.Desktop")))
                   .ToList().Count > 1;
-
-
     private void ButtonContinue_OnClick(object sender, RoutedEventArgs e)
     {
         AppBase.Current.Restart(["-m"]);
