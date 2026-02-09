@@ -28,18 +28,25 @@
         "CleanDesktopApp",
         "CleanLauncher",
         "CleanNupkg",
+        "CleanOutputDir",
+        "CleanPluginDevDesktopApp",
         "CompileApp",
         "CompileLauncher",
+        "CompilePluginDevDesktopApp",
         "CopyNupkg",
         "GenerateAppZipArchive",
         "GenerateLauncherZipArchive",
         "GenerateMetadata",
         "GenerateSecrets",
+        "InitPluginDevEnv",
+        "PopulateGitVersion",
         "PopulateNupkgVersion",
         "PostCleanup",
         "PublishApp",
         "PublishLauncher",
-        "RestoreDesktopApp"
+        "RestoreDesktopApp",
+        "RestorePluginDevDesktopApp",
+        "SetupPluginDevEnvEnvironmentVariables"
       ]
     },
     "Verbosity": {
@@ -155,6 +162,9 @@
         "Package": {
           "type": "string",
           "description": "Package"
+        },
+        "Quiet": {
+          "type": "boolean"
         },
         "Solution": {
           "type": "string",

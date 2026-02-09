@@ -13,36 +13,24 @@ partial class Build
 {
     [Parameter("IsRelease")] readonly bool IsRelease;
     string NupkgVersion;
-    Version GitVersion;
     
     Target CleanNupkg => _ => _
+        .DependsOn(CleanOutputDir)
         .Executes(() =>
         {
             DotNetClean(s => s
                 .SetProject(NupkgEntryProject));
-            if (Directory.Exists(AppOutputPath))
-            {
-                Directory.Delete(AppOutputPath, true);
-            }
         });
     
     
     Target PopulateNupkgVersion => _ => _
+        .DependsOn(PopulateGitVersion)
         .Executes(() =>
         {
-            var gitVersion = GitVersion = Version.TryParse(Git("describe --tags --abbrev=0").StdToText() ?? "0.0.0.0",
-                out var v)
-                ? v
-                : new Version(0, 0, 0, 0);
-            var gitCommitCount = int.TryParse(Git("rev-list --count HEAD").StdToText(), out var count)
-                ? count
-                : 0;
-            Log.Information("GitVersion = {gitVersion}", gitVersion);
-            Log.Information("GitCommitCount = {gitCommitCount}", gitCommitCount);
-            var version = gitVersion.ToString();
+            var version = GitVersion.ToString();
             if (!IsRelease)
             {
-                version += $"-dev{gitCommitCount}";
+                version += $"-dev{GitCommitCount}";
             }
 
             NupkgVersion = version;

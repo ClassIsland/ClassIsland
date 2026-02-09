@@ -31,6 +31,7 @@ partial class Build
     
     Target CleanDesktopApp => _ => _
         .Before(CompileApp)
+        .DependsOn(CleanOutputDir)
         .DependsOn(GenerateMetadata)
         .DependsOn(RestoreDesktopApp)
         .Executes(() =>
@@ -41,14 +42,6 @@ partial class Build
                 .SetProperty("PublishPlatform", OsName)
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch));
-            if (Directory.Exists(AppOutputPath))
-            {
-                Directory.Delete(AppOutputPath, true);
-            }
-            if (File.Exists(AppPublishArtifactPath))
-            {
-                File.Delete(AppPublishArtifactPath);
-            }
         });
 
 
