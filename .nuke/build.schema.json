@@ -24,18 +24,29 @@
     "ExecutableTarget": {
       "type": "string",
       "enum": [
+        "BuildNupkg",
         "CleanDesktopApp",
         "CleanLauncher",
+        "CleanNupkg",
+        "CleanOutputDir",
+        "CleanPluginDevDesktopApp",
         "CompileApp",
         "CompileLauncher",
+        "CompilePluginDevDesktopApp",
+        "CopyNupkg",
         "GenerateAppZipArchive",
         "GenerateLauncherZipArchive",
         "GenerateMetadata",
         "GenerateSecrets",
+        "InitPluginDevEnv",
+        "PopulateGitVersion",
+        "PopulateNupkgVersion",
         "PostCleanup",
         "PublishApp",
         "PublishLauncher",
-        "RestoreDesktopApp"
+        "RestoreDesktopApp",
+        "RestorePluginDevDesktopApp",
+        "SetupPluginDevEnvEnvironmentVariables"
       ]
     },
     "Verbosity": {
@@ -140,6 +151,10 @@
             "Release"
           ]
         },
+        "IsRelease": {
+          "type": "boolean",
+          "description": "IsRelease"
+        },
         "OsName": {
           "type": "string",
           "description": "OsName"
@@ -147,6 +162,9 @@
         "Package": {
           "type": "string",
           "description": "Package"
+        },
+        "Quiet": {
+          "type": "boolean"
         },
         "Solution": {
           "type": "string",

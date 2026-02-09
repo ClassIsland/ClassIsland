@@ -22,7 +22,7 @@ on:
         type: boolean
 
 env:
-  PDC_CLIENT_VERSION: 1.0.0.2
+  PDC_CLIENT_VERSION: 1.0.1.0
 
 jobs:
   build_app:
@@ -324,7 +324,7 @@ jobs:
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls
-          pwsh -ep Bypass -c ./tools/release-gen/publish-nupkg.ps1 $env:is_release
+          ./build.ps1 BuildNupkg --isRelease $env:is_release
       
       - name: Upload Nuget packages to GitHub registry
         if: ${{ github.event_name != 'pull_request' }} 
@@ -332,14 +332,14 @@ jobs:
           GHPKG_KEY: ${{ secrets.GITHUB_TOKEN }}
         run: |
           dotnet nuget add source --username github-actions --password $env:GHPKG_KEY --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
-          dotnet nuget push .\out\*.nupkg -k $env:GHPKG_KEY --source "github" --skip-duplicate
+          dotnet nuget push .\out\package\release\*.nupkg -k $env:GHPKG_KEY --source "github" --skip-duplicate
 
       - name: Upload Nuget Packages to artifacts
         if: ${{ !matrix.trim_assets }}
         uses: actions/upload-artifact@v4
         with:
           name: out_nupkgs
-          path: ./out/*.nupkg
+          path: ./out/package/release/*.nupkg
 
   publish:
     runs-on: windows-2022
@@ -369,19 +369,6 @@ jobs:
         with:
           key: ${{ secrets.METADATA_DEPLOY_KEY }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-      
-      - name: Upload APP GitHub
-        env:
-          GHAPP_PRIVATE_KEY: ${{ secrets.GHAPP_PRIVATE_KEY }}
-          GHAPP_ID: 998668
-          GHAPP_INSTALLATION_ID: 54893567
-          ALIST_HOST: ${{ secrets.ALIST_HOST }}
-          ALIST_KEY: ${{ secrets.ALIST_KEY }}
-          primaryVersion: ${{ github.event.inputs.primary_version }}
-          channels: ${{ github.event.inputs.channels }}
-        run: |
-          pwsh -ep Bypass -c ./tools/release-gen/login-github.ps1
-          pwsh -ep Bypass -c ./tools/release-gen/upload.ps1
           
       - name: Publish App
         env:
