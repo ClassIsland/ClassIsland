@@ -61,6 +61,16 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
+        <Grid x:Key="ChangeLogDrawer" Width="500">
+            <mdxaml:MarkdownScrollViewer
+                Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
+                Margin="12"
+                Markdown="{Binding ViewModel.ChangeLogDocument}">
+                <mdxaml:MarkdownScrollViewer.Styles>
+                    <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml" />
+                </mdxaml:MarkdownScrollViewer.Styles>
+            </mdxaml:MarkdownScrollViewer>
+        </Grid>
     </ci:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro" Spacing="6">
@@ -269,7 +279,7 @@
                     <Grid >
                         <mdxaml:MarkdownScrollViewer
                             Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
-                            Markdown="{Binding ViewModel.UpdateService.DistributionInfo.ChangeLog}">
+                            Markdown="{Binding ViewModel.NewVersionChangeLogDocument}">
                             <mdxaml:MarkdownScrollViewer.IsVisible>
                                 <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
                                          Converter="{x:Static ObjectConverters.NotEqual}">
@@ -283,6 +293,8 @@
                             </mdxaml:MarkdownScrollViewer.Styles>
                         </mdxaml:MarkdownScrollViewer>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    Spacing="8"
+                                    Classes="items-halign-center"
                                     Margin="0 50">
                             <StackPanel.IsVisible>
                                 <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
@@ -293,7 +305,6 @@
                                 </Binding>
                             </StackPanel.IsVisible>
                             <ci:StickerControl Height="81" Width="81"
-                                               Margin="0 0 0 8" 
                                                StickerSource="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_遨游.png"
                                                StickerToolTip="光辉矢愿_遨游"
                                                FallbackIcon="{ci:FluentIconSource &#xE262;, FontSize=81}"/>
@@ -309,6 +320,9 @@
                                     </Style>
                                 </TextBlock.Styles>
                             </TextBlock>
+                            <Button Click="ButtonShowChangeLogs_OnClick">
+                                查看更新日志
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </TabItem>

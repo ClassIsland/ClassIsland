@@ -15,4 +15,6 @@ public partial class UpdateSettingsPageViewModel(ILogger<UpdateSettingsPage> log
     public SettingsService SettingsService { get; } = settingsService;
 
     [ObservableProperty] private DistributionMetadata.DistributionChannel _selectedChannel = new();
+    [ObservableProperty] private string _changeLogDocument = "";
+    [ObservableProperty] private string _newVersionChangeLogDocument = "";
 }
