@@ -27,7 +27,7 @@ public partial class HomePage : UserControl
         List<string> validInstallations;
         try
         {
-            validInstallations = Directory.GetDirectories(Path.GetDirectoryName(Environment.ProcessPath) ?? "")
+            validInstallations = Directory.GetDirectories(CommonDirectories.AppPackageRoot)
                 .Where(dir =>
                     Path.GetFileName(dir).StartsWith("app", StringComparison.OrdinalIgnoreCase) &&
                     !File.Exists(Path.Combine(dir, ".destroy")) &&
