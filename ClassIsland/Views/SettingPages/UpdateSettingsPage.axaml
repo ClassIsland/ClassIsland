@@ -61,6 +61,16 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
+        <Grid x:Key="ChangeLogDrawer" Width="500">
+            <mdxaml:MarkdownScrollViewer
+                Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
+                Margin="12"
+                Markdown="{Binding ViewModel.ChangeLogDocument}">
+                <mdxaml:MarkdownScrollViewer.Styles>
+                    <StyleInclude Source="avares://ClassIsland.Core/Themes/RichTextStyles.axaml" />
+                </mdxaml:MarkdownScrollViewer.Styles>
+            </mdxaml:MarkdownScrollViewer>
+        </Grid>
     </ci:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro" Spacing="6">
@@ -69,7 +79,7 @@
                                Grid.RowSpan="2" Grid.Row="0"
                                Margin="0 0 4 0"
                                VerticalAlignment="Center"
-                               RenderTransformOrigin="50%, 46%"
+                               RenderTransformOrigin="50%, 50%"
                                Glyph="{Binding ViewModel.SettingsService.Settings.LastUpdateStatus, Converter={x:Static settingPages:UpdateSettingsPage.UpdateStatusToIconGlyphConverter}}">
                     <ci:FluentIcon.RenderTransform>
                         <RotateTransform/>
@@ -122,7 +132,7 @@
                     <Run Text="{Binding ViewModel.UpdateService.DistributionInfo.Version, Mode=OneWay}" />
                 </TextBlock>
             </Grid>
-            <controls:InfoBar Severity="Error" Title="出错了" Message="更新时发生网络错误，请检查您的网络连接。"
+            <controls:InfoBar Severity="Error" Title="更新时发生错误，请检查您的网络连接并重试。" Message="{Binding ViewModel.UpdateService.NetworkErrorException.Message, FallbackValue=''}"
                               IsOpen="{Binding ViewModel.UpdateService.NetworkErrorException, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneWay}"
                               CloseButtonClick="InfoBarError_OnCloseButtonClick"/>
             <controls:InfoBar Severity="Informational" Title="更新将在重启后应用" Message="已成功部署更新，下次启动应用时将启动新版本。您也可以现在重启以立即使用新版本的 ClassIsland。">
@@ -269,7 +279,7 @@
                     <Grid >
                         <mdxaml:MarkdownScrollViewer
                             Engine="{x:Static helpers:MarkdownConvertHelper.Engine}"
-                            Markdown="{Binding ViewModel.UpdateService.DistributionInfo.ChangeLog}">
+                            Markdown="{Binding ViewModel.NewVersionChangeLogDocument}">
                             <mdxaml:MarkdownScrollViewer.IsVisible>
                                 <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
                                          Converter="{x:Static ObjectConverters.NotEqual}">
@@ -283,6 +293,8 @@
                             </mdxaml:MarkdownScrollViewer.Styles>
                         </mdxaml:MarkdownScrollViewer>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    Spacing="8"
+                                    Classes="items-halign-center"
                                     Margin="0 50">
                             <StackPanel.IsVisible>
                                 <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
@@ -293,7 +305,6 @@
                                 </Binding>
                             </StackPanel.IsVisible>
                             <ci:StickerControl Height="81" Width="81"
-                                               Margin="0 0 0 8" 
                                                StickerSource="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_遨游.png"
                                                StickerToolTip="光辉矢愿_遨游"
                                                FallbackIcon="{ci:FluentIconSource &#xE262;, FontSize=81}"/>
@@ -309,6 +320,9 @@
                                     </Style>
                                 </TextBlock.Styles>
                             </TextBlock>
+                            <Button Click="ButtonShowChangeLogs_OnClick">
+                                查看更新日志
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </TabItem>

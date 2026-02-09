@@ -248,7 +248,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             return;
         }
         var transaction = SentrySdk.StartTransaction("Get Update Info", "appUpdating.getMetadata");
-        NetworkErrorException = null;
+        if (!isCancel)
+        {
+            NetworkErrorException = null;
+        }
         try
         {
             var spanGetIndex = transaction.StartChild("getIndex");

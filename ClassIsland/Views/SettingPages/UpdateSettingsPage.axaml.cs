@@ -1,6 +1,9 @@
 using System;
+using System.IO;
+using System.Net.Mime;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
+using Avalonia.Platform;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
@@ -10,6 +13,7 @@ using ClassIsland.Services.AppUpdating;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using ClassIsland.ViewModels.SettingsPages;
+using DynamicData.Binding;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
 
@@ -19,6 +23,7 @@ namespace ClassIsland.Views.SettingPages;
 public partial class UpdateSettingsPage : SettingsPageBase
 {
     private IDisposable? _updateSettingsObserver;
+    private IDisposable? _newVersionChangeLogObserver;
     
     public UpdateSettingsPageViewModel ViewModel { get; } = IAppHost.GetService<UpdateSettingsPageViewModel>();
 
@@ -88,12 +93,25 @@ public partial class UpdateSettingsPage : SettingsPageBase
                 : ViewModel.SelectedChannel;
     }
 
+    private void UpdateNewVersionChangeLog()
+    {
+        ViewModel.NewVersionChangeLogDocument =
+            ViewModel.SettingsService.Settings.LastUpdateStatus != UpdateStatus.UpToDate
+                ? ViewModel.UpdateService.DistributionInfo.ChangeLog
+                : "";
+    }
+
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
         UpdateChannelInfo();
+        UpdateNewVersionChangeLog();
         _updateSettingsObserver ??= ViewModel.SettingsService.Settings
             .ObservableForProperty(x => x.SelectedUpdateChannelV3)
             .Subscribe(_ => UpdateChannelInfo());
+        _newVersionChangeLogObserver ??= ViewModel.UpdateService
+            .WhenAnyPropertyChanged()
+            .Subscribe(_ => UpdateNewVersionChangeLog());
+        
     }
 
 
@@ -101,6 +119,8 @@ public partial class UpdateSettingsPage : SettingsPageBase
     {
         _updateSettingsObserver?.Dispose();
         _updateSettingsObserver = null;
+        _newVersionChangeLogObserver?.Dispose();
+        _newVersionChangeLogObserver = null;
     }
 
     private void ButtonOpenDownloadTasks_OnClick(object? sender, RoutedEventArgs e)
@@ -131,5 +151,13 @@ public partial class UpdateSettingsPage : SettingsPageBase
     private async void SettingsExpanderItemCheckUpdateForce_OnClick(object? sender, RoutedEventArgs e)
     {
         await ViewModel.UpdateService.CheckUpdateAsync(true);
+    }
+
+    private void ButtonShowChangeLogs_OnClick(object? sender, RoutedEventArgs e)
+    {
+        using var sr =
+            new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/Documents/ChangeLog.md")));
+        ViewModel.ChangeLogDocument = sr.ReadToEnd();
+        OpenDrawer("ChangeLogDrawer");
     }
 }
