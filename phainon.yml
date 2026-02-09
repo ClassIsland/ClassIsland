@@ -20,3 +20,18 @@ fileRepoRoot: "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/
 archiveRoot: "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/distribution-v2/$(primaryVersion)/$(version)/"
 bucketKeyRoot: "classisland/distribution-v2/repo/"
 archiveBucketKeyRoot: "classisland/distribution-v2/$(primaryVersion)/$(version)/"
+appChangeLogPath: "$(thisFileDir)/doc/ChangeLogs/$(primaryVersion)/$(version)/App.md"
+appChangeLogTemplate: |
+  $(changeLog)
+
+  ---
+
+  ## 校验和与下载链接
+
+  > [!tip]
+  > 内地用户建议前往[ClassIsland 官网](https://www.classisland.tech/download)，或通过下方表格中的高速下载链接下载 ClassIsland，以获得更好的下载体验。
+
+  > [!important]
+  > 下载时请注意核对文件 SHA512 是否正确。
+
+  $(hashes)

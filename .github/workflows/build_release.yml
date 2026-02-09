@@ -22,7 +22,7 @@ on:
         type: boolean
 
 env:
-  PDC_CLIENT_VERSION: 1.0.0.2
+  PDC_CLIENT_VERSION: 1.0.1.0
 
 jobs:
   build_app:
@@ -369,19 +369,6 @@ jobs:
         with:
           key: ${{ secrets.METADATA_DEPLOY_KEY }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-      
-      - name: Upload APP GitHub
-        env:
-          GHAPP_PRIVATE_KEY: ${{ secrets.GHAPP_PRIVATE_KEY }}
-          GHAPP_ID: 998668
-          GHAPP_INSTALLATION_ID: 54893567
-          ALIST_HOST: ${{ secrets.ALIST_HOST }}
-          ALIST_KEY: ${{ secrets.ALIST_KEY }}
-          primaryVersion: ${{ github.event.inputs.primary_version }}
-          channels: ${{ github.event.inputs.channels }}
-        run: |
-          pwsh -ep Bypass -c ./tools/release-gen/login-github.ps1
-          pwsh -ep Bypass -c ./tools/release-gen/upload.ps1
           
       - name: Publish App
         env:
