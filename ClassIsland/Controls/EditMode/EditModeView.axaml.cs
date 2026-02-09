@@ -35,6 +35,7 @@ public partial class EditModeView : UserControl
     public EditModeViewModel ViewModel { get; } = IAppHost.GetService<EditModeViewModel>();
 
     private IDisposable? _selectedComponentObserver;
+    private IDisposable? _mainDrawerStateObserver;
     
     public EditModeView()
     {
@@ -45,15 +46,20 @@ public partial class EditModeView : UserControl
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        _selectedComponentObserver = ViewModel.MainViewModel.ObservableForProperty(x => x.SelectedComponentSettings)
-            .Subscribe(_ =>
-            {
-                if (ViewModel.MainViewModel.SelectedComponentSettings?.AssociatedComponentInfo.SettingsType == null
-                    && ViewModel.ComponentSettingsTabIndex == 0)
-                {
-                    ViewModel.ComponentSettingsTabIndex = 1;
-                }
-            });
+        UpdateComponentSettingsTabIndex();
+        _selectedComponentObserver ??= ViewModel.MainViewModel.ObservableForProperty(x => x.SelectedComponentSettings)
+            .Subscribe(_ => UpdateComponentSettingsTabIndex());
+        _mainDrawerStateObserver ??= ViewModel.ObservableForProperty(x => x.MainDrawerState)
+            .Subscribe(_ => UpdateComponentSettingsTabIndex());
+    }
+
+    private void UpdateComponentSettingsTabIndex()
+    {
+        if (ViewModel.MainViewModel.SelectedComponentSettings?.AssociatedComponentInfo.SettingsType == null
+            && ViewModel.ComponentSettingsTabIndex == 0 && ViewModel.MainDrawerState == VerticalDrawerOpenState.Opened)
+        {
+            ViewModel.ComponentSettingsTabIndex = 1;
+        }
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -61,6 +67,8 @@ public partial class EditModeView : UserControl
         base.OnDetachedFromVisualTree(e);
         _selectedComponentObserver?.Dispose();
         _selectedComponentObserver = null;
+        _mainDrawerStateObserver?.Dispose();
+        _mainDrawerStateObserver = null;
         ClearSelectedComponents();
     }
 
@@ -163,6 +171,7 @@ public partial class EditModeView : UserControl
     {
         OpenDrawerCore(this.FindResource("ComponentSettingsDrawer"), 
             this.FindResource("ComponentSettingsDrawerTitle"));
+        UpdateComponentSettingsTabIndex();
     }
     
     public void OpenChildComponents(ComponentSettings? settings, IReadOnlyList<ComponentSettings> stack, Point pos)
