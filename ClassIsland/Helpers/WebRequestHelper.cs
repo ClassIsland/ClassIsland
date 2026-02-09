@@ -81,7 +81,7 @@ public class WebRequestHelper(Uri? baseUri = null, bool phainon = false)
             }
         }
 
-        throw new Exception($"在 {retries} 次重试后无法完成对 {uri} 的GET请求。", innerException);
+        throw new Exception($"在 {retries} 次重试后无法完成对 {uri} 的GET请求：{innerException?.Message}", innerException);
     }
 
     public async Task<T> SaveJson<T>(Uri uri, string path, int retries = 3, CancellationToken? cancellationToken = null,

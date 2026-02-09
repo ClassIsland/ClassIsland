@@ -132,7 +132,7 @@
                     <Run Text="{Binding ViewModel.UpdateService.DistributionInfo.Version, Mode=OneWay}" />
                 </TextBlock>
             </Grid>
-            <controls:InfoBar Severity="Error" Title="出错了" Message="更新时发生网络错误，请检查您的网络连接。"
+            <controls:InfoBar Severity="Error" Title="更新时发生错误，请检查您的网络连接并重试。" Message="{Binding ViewModel.UpdateService.NetworkErrorException.Message, FallbackValue=''}"
                               IsOpen="{Binding ViewModel.UpdateService.NetworkErrorException, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneWay}"
                               CloseButtonClick="InfoBarError_OnCloseButtonClick"/>
             <controls:InfoBar Severity="Informational" Title="更新将在重启后应用" Message="已成功部署更新，下次启动应用时将启动新版本。您也可以现在重启以立即使用新版本的 ClassIsland。">
