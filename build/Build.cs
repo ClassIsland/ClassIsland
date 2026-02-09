@@ -103,6 +103,10 @@ partial class Build : NukeBuild
     Target CleanOutputDir => _ => _
         .Executes(() =>
         {
+            if (!Directory.Exists(AppOutputPath))
+            {
+                return;
+            }
             foreach (var dir in Directory.EnumerateDirectories(AppOutputPath))
             {
                 if (Path.GetFullPath(dir) == PluginDevAppPath)
