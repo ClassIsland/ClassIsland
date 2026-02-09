@@ -32,7 +32,7 @@ public partial class HomePage : UserControl
                     Path.GetFileName(dir).StartsWith("app", StringComparison.OrdinalIgnoreCase) &&
                     !File.Exists(Path.Combine(dir, ".destroy")) &&
                     !File.Exists(Path.Combine(dir, ".partial")) &&
-                    File.Exists(Path.Combine(dir, OperatingSystem.IsWindows() ? "ClassIsland.Desktop.exe" : "ClassIsland.Desktop")))
+                    File.Exists(Path.Combine(dir, "ClassIsland.Desktop" + AppBase.PlatformExecutableExtension)))
                 .ToList();
         }catch(Exception ex)
         {
