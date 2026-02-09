@@ -12,10 +12,6 @@ on:
         description: '主发布版本'
         required: true
         type: string
-      channels:
-        description: '发布通道'
-        required: true
-        type: string
       is_test_mode:
         description: '是否处于测试发布模式'
         required: false
@@ -369,7 +365,7 @@ jobs:
         with:
           key: ${{ secrets.METADATA_DEPLOY_KEY }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-          
+
       - name: Publish App
         env:
           S3_Bucket: ${{ vars.S3_BUCKET }}
@@ -384,6 +380,7 @@ jobs:
           PDCC_version: ${{ github.event.inputs.release_tag }}
           PDCC_primaryVersion: ${{ github.event.inputs.primary_version }}
         run: |
+          pwsh -ep Bypass -c ./tools/release-gen/init-artifacts.ps1
           pwsh -ep Bypass -c ./tools/release-gen/install-pdcc.ps1 win
           ./pdcc/PhainonDistributionCenter.Client.exe ./phainon.yml Publish ${{ github.event.inputs.primary_version }} ${{ github.event.inputs.release_tag }} ./out
           
