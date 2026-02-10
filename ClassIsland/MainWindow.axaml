@@ -206,6 +206,15 @@
                             <Style Selector=":edit-mode StackPanel#StackPanelRootContainer">
                                 <Setter Property="VerticalAlignment" Value="Center" />
                             </Style>
+                            <Style Selector=":dock-left StackPanel#StackPanelRootContainer">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                            </Style>
+                            <Style Selector=":dock-center StackPanel#StackPanelRootContainer">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                            <Style Selector=":dock-right StackPanel#StackPanelRootContainer">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                            </Style>
                         </StackPanel.Styles>
                         <LayoutTransformControl x:Name="RootLayoutTransformControl"
                                                 ClipToBounds="False">
@@ -223,10 +232,11 @@
                                     <TranslateTransform />
                                 </TransformGroup>
                             </LayoutTransformControl.LayoutTransform>
-                            <Grid ClipToBounds="False"
-                                  HorizontalAlignment="Stretch"
-                                  x:Name="GridRoot"
-                                  RenderTransformOrigin="0,0"
+                            <controls:AniScalingDecorator IsAutoScalingEnabled="{Binding ViewModel.Settings.IsAutoScalingEnabled}">
+                                <Grid ClipToBounds="False"
+                                      HorizontalAlignment="Stretch"
+                                      x:Name="GridRoot"
+                                      RenderTransformOrigin="0,0"
 
                                   Classes.ExplicitShowed="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
                                   Classes.OverlayOpened="{Binding ViewModel.IsOverlayOpened, Mode=OneWay}"
@@ -528,6 +538,7 @@
                                 </Border>
 
                             </Grid>
+                            </controls:AniScalingDecorator>
                         </LayoutTransformControl>
                     </StackPanel>
                 </Panel>

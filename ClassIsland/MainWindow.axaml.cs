@@ -64,7 +64,7 @@ namespace ClassIsland;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-[PseudoClasses(":dock-top", ":dock-bottom", ":edit-mode", ":windowed")]
+[PseudoClasses(":dock-top", ":dock-bottom", ":edit-mode", ":windowed", ":dock-left", ":dock-center", ":dock-right")]
 public partial class MainWindow : Window, ITopmostEffectPlayer
 {
     #region Fields & Properties
@@ -657,6 +657,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         PseudoClasses.Set(":dock-top", ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2);
         PseudoClasses.Set(":dock-bottom", ViewModel.Settings.WindowDockingLocation is 3 or 4 or 5);
+        PseudoClasses.Set(":dock-left", ViewModel.Settings.WindowDockingLocation is 0 or 3);
+        PseudoClasses.Set(":dock-center", ViewModel.Settings.WindowDockingLocation is 1 or 4);
+        PseudoClasses.Set(":dock-right", ViewModel.Settings.WindowDockingLocation is 2 or 5);
     }
 
     private async void UpdateTheme()

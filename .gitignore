@@ -371,3 +371,7 @@ cipx/
 
 **/.idea/avalonia.xml
 **/.idea/copilot.*
+
+# NUKE build system
+.nuke/
+

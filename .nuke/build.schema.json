@@ -163,9 +163,6 @@
           "type": "string",
           "description": "Package"
         },
-        "Quiet": {
-          "type": "boolean"
-        },
         "Solution": {
           "type": "string",
           "description": "Path to a solution file that is automatically loaded"

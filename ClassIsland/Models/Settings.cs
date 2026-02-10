@@ -217,6 +217,10 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private ObservableCollection<Guid> _trustedProfileIds = [];
     private bool _isNonExactCountdownEnabled = false;
     private bool _showDetailedStatusOnSplash = false;
+    private bool _isAutoScalingEnabled = true;
+
+    private int _autoScalingBufferFrameCount = 30;
+    private double _autoScalingBufferTimeWindow = 5.0;
 
 
     public void NotifyPropertyChanged(string propertyName)
@@ -795,6 +799,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isCriticalSafeMode) return;
             _isCriticalSafeMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAutoScalingEnabled
+    {
+        get => _isAutoScalingEnabled;
+        set
+        {
+            if (value == _isAutoScalingEnabled) return;
+            _isAutoScalingEnabled = value;
             OnPropertyChanged();
         }
     }
