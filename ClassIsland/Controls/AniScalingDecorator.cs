@@ -9,6 +9,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Services;
+using ClassIsland.Models;
 
 namespace ClassIsland.Controls;
 
@@ -29,6 +30,8 @@ public class AniScalingDecorator : Decorator
         get => GetValue(IsAutoScalingEnabledProperty);
         set => SetValue(IsAutoScalingEnabledProperty, value);
     }
+    
+    private Settings? Settings => (Avalonia.Application.Current as App)?.Settings;
 
     public AniScalingDecorator()
     {
@@ -51,23 +54,38 @@ public class AniScalingDecorator : Decorator
         Child.Measure(new Size(double.PositiveInfinity, availableSize.Height));
         var desired = Child.DesiredSize;
         
+        // Safety margin on both sides (e.g. 6.0 on left, 6.0 on right = 12.0 total)
+        // User requested "keep a little safety area on left and right".
+        double safetyMargin = 12.0; 
+        double workableWidth = availableSize.Width - safetyMargin;
+
         // Calculate required scale
-        double scale = 1.0;
-        if (availableSize.Width < desired.Width && availableSize.Width > 0 && IsAutoScalingEnabled && desired.Width > 0)
+        // We use Settings.Scale if available, otherwise 1.0 as base? 
+        // Actually, LayoutTransform should handle Settings.Scale.
+        // We calculate scale relative to the space we have (which is already transformed if inside LayoutTransform).
+        double instantScale = 1.0;
+        
+        if (workableWidth > 0 && desired.Width > 0 && IsAutoScalingEnabled && desired.Width > workableWidth)
         {
-            scale = availableSize.Width / desired.Width;
+            instantScale = workableWidth / desired.Width;
         }
 
         // Apply buffer
-        var bufferSize = (Avalonia.Application.Current as App)?.Settings?.AutoScalingBufferFrameCount ?? 30;
-        _scaleBuffer.Enqueue(scale);
+        var bufferSize = Settings?.AutoScalingBufferFrameCount ?? 30;
+        _scaleBuffer.Enqueue(instantScale);
         while (_scaleBuffer.Count > bufferSize)
         {
             _scaleBuffer.Dequeue();
         }
-        scale = _scaleBuffer.Average();
         
-        UpdateScale(scale);
+        var averageScale = _scaleBuffer.Average();
+        // If instant scale is significantly smaller (overflow), we strictly prefer it (Min hold).
+        var targetScale = Math.Min(instantScale, averageScale);
+
+        // Force immediate shrink if instant scale is smaller than current target
+        if (instantScale < targetScale) targetScale = instantScale;
+        
+        UpdateScale(targetScale);
 
         // We report that we occupy the available width (or desired width if smaller)
         return new Size(Math.Min(availableSize.Width, desired.Width), desired.Height);
@@ -81,17 +99,68 @@ public class AniScalingDecorator : Decorator
         if (Child.RenderTransform != _scaleTransform)
         {
             Child.RenderTransform = _scaleTransform;
-            Child.RenderTransformOrigin = new RelativePoint(0, 0, RelativeUnit.Relative);
+        }
+
+        // Determine alignment
+        // 0, 3: Left; 1, 4: Center; 2, 5: Right
+        var dockingLocation = Settings?.WindowDockingLocation ?? 1;
+        int alignment = dockingLocation % 3; // 0=Left, 1=Center, 2=Right
+        
+        // Y Origin: 0-2 Top (0), 3-5 Bottom (1)
+        double originY = dockingLocation >= 3 ? 1.0 : 0.0;
+        
+        double safetyMarginTotal = 12.0;
+        double safetyMarginSide = safetyMarginTotal / 2.0;
+        
+        double x = 0.0;
+        double originX = 0.0;
+
+        // Logic:
+        // finalSize is likely the constrained size (availableSize from Measure).
+        // scaleTransform scales the Child VISUALLY around RenderTransformOrigin.
+        // layout slot of Child remains Child.DesiredSize (or whatever we pass to Arrange).
+        // but we should pass Child.DesiredSize to Arrange so it renders correctly internally.
+        
+        // If we want to align the SCALED content.
+        
+        switch (alignment)
+        {
+            case 0: // Left
+                originX = 0.0;
+                // Align left with safety margin
+                x = safetyMarginSide;
+                break;
+            case 1: // Center
+                originX = 0.5;
+                // Align center in finalSize
+                x = (finalSize.Width - Child.DesiredSize.Width) / 2.0;
+                break;
+            case 2: // Right
+                originX = 1.0;
+                // Align right with safety margin
+                // We want Visual Right Edge to be at finalSize.Width - safetyMarginSide.
+                // Child.DesiredSize.Width is the layout Width.
+                // Pivot at 1.0 (Right Edge of Child).
+                // Arrange at X such that Child.Right maps to Visual Right.
+                // Child.Right = x + Child.DesiredSize.Width.
+                // Visual Right (at Scale 1.0) = Child.Right.
+                // Visual Right (at Scale < 1.0, Pivot Right) = Child.Right.
+                // So if we align the Layout Right Edge to (FinalWidth - Margin), the Visual Right Edge will be there too.
+                x = finalSize.Width - Child.DesiredSize.Width - safetyMarginSide;
+                break;
         }
         
-        // Arrange the child at its desired size
-        Child.Arrange(new Rect(0, 0, Child.DesiredSize.Width, finalSize.Height));
+        Child.RenderTransformOrigin = new RelativePoint(originX, originY, RelativeUnit.Relative);
+        
+        // Arrange the child
+        Child.Arrange(new Rect(new Point(x, 0), Child.DesiredSize));
+        
         return finalSize;
     }
     
     private void UpdateScale(double targetScale)
     {
-        // Round to avoid jitter
+        // Round to avoid jitter on HIDPI or floating errors
         targetScale = Math.Round(targetScale, 4);
 
         if (Math.Abs(targetScale - _pendingScale) < 0.0001) return;
@@ -99,38 +168,36 @@ public class AniScalingDecorator : Decorator
         var oldTarget = _pendingScale;
         _pendingScale = targetScale;
         
-        // Update hysteresis timer interval based on settings
         _hysteresisTimer.Interval = TimeSpan.FromSeconds(
-            (Avalonia.Application.Current as App)?.Settings?.AutoScalingBufferTimeWindow ?? 5.0
+            Settings?.AutoScalingBufferTimeWindow ?? 5.0
         );
 
         // Logic
         if (targetScale < _currentScale)
         {
-            // Shrinking (Content growing) - Immediate
+            // Shrinking (Content growing or Window shrinking) - Immediate
             _hysteresisTimer.Stop();
              AnimateTo(targetScale);
         }
         else
         {
-            // Expanding (Content shrinking)
-            // If the change is large (e.g. > 10% change towards 1.0, or huge jump), animate immediately
-            if (targetScale - _currentScale > 0.1 || (oldTarget < 1.0 && targetScale >= 0.99)) 
+            // Expanding (Content shrinking or Window growing)
+            // If the change is significant or restoring to full, do it immediately?
+            // User requirement: "if shrink amount (scale increase) < threshold, wait delay"
+            // "If shrink amount > threshold, direct scale".
+            
+            bool isSignificantChange = (targetScale - _currentScale > 0.05);
+            bool isRestoringToFull = (oldTarget < 1.0 && targetScale >= 0.99);
+            
+            if (isSignificantChange || isRestoringToFull) 
             {
-                 // If returning to full size or significant change, do it.
-                 // User said "5s buffer ... unless change is large".
-                 if (targetScale - _currentScale > 0.05) 
-                 {
-                     _hysteresisTimer.Stop();
-                     AnimateTo(targetScale);
-                 }
-                 else
-                 {
-                     if (!_hysteresisTimer.IsEnabled) _hysteresisTimer.Start();
-                 }
+                 // Significant change -> Immediate
+                 _hysteresisTimer.Stop();
+                 AnimateTo(targetScale);
             }
             else
             {
+                // Small change -> Buffer
                 if (!_hysteresisTimer.IsEnabled) _hysteresisTimer.Start();
             }
         }
@@ -139,12 +206,7 @@ public class AniScalingDecorator : Decorator
     private void AnimateTo(double target)
     {
         _currentScale = target;
-        // Simple linear interpolation animation or Avalonia animation
-        // Since we are not in a visual tree suitable for standard Transitions sometimes,
-        // manually animating properties is fine.
-        // Or we can use Avalonia's animation system.
         
-        // Cancel previous animation
         _animationCts?.Cancel();
         _animationCts = new CancellationTokenSource();
         var token = _animationCts.Token;
@@ -152,15 +214,13 @@ public class AniScalingDecorator : Decorator
         var start = _scaleTransform.ScaleX;
         var end = target;
         
-        // if diff is small, just set
         if (Math.Abs(start - end) < 0.001)
         {
             _scaleTransform.ScaleX = _scaleTransform.ScaleY = end;
             return;
         }
 
-        // Animation loop
-        // 300ms duration
+        // Animation loop - 300ms
         var duration = TimeSpan.FromMilliseconds(300);
         var startTime = DateTime.Now;
         
@@ -178,8 +238,7 @@ public class AniScalingDecorator : Decorator
                 return false;
             }
             
-            // Cubic Ease Out
-            var easing = 1 - Math.Pow(1 - progress, 3);
+            var easing = 1 - Math.Pow(1 - progress, 3); // CubicEaseOut
             var current = start + (end - start) * easing;
             
             _scaleTransform.ScaleX = _scaleTransform.ScaleY = current;
