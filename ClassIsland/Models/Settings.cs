@@ -814,6 +814,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public int AutoScalingBufferFrameCount
+    {
+        get => _autoScalingBufferFrameCount;
+        set
+        {
+            if (value == _autoScalingBufferFrameCount) return;
+            _autoScalingBufferFrameCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double AutoScalingBufferTimeWindow
+    {
+        get => _autoScalingBufferTimeWindow;
+        set
+        {
+            if (value == _autoScalingBufferTimeWindow) return;
+            _autoScalingBufferTimeWindow = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool ShowDetailedStatusOnSplash
     {
         get => _showDetailedStatusOnSplash;

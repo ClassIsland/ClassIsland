@@ -46,7 +46,7 @@
                 
                 <controls2:SettingsExpanderItem Content="自动缩放缓冲区大小"
                                                 Description="参与计算平均缩放比例的帧数，值越大通过平滑消除抖动的效果越好。（默认：30）"
-                                                Visibility="{Binding ViewModel.SettingsService.Settings.IsAutoScalingEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                IsVisible="{Binding ViewModel.SettingsService.Settings.IsAutoScalingEnabled}">
                     <controls2:SettingsExpanderItem.Footer>
                         <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.AutoScalingBufferFrameCount}" 
                                              Minimum="1" Maximum="120" SpinButtonPlacementMode="Inline" Width="150" />
@@ -55,7 +55,7 @@
 
                 <controls2:SettingsExpanderItem Content="自动缩放缓冲时间窗口"
                                                 Description="缩放变化超过阈值后应用更改的延迟时间。（默认：5.0秒）"
-                                                Visibility="{Binding ViewModel.SettingsService.Settings.IsAutoScalingEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                IsVisible="{Binding ViewModel.SettingsService.Settings.IsAutoScalingEnabled}">
                     <controls2:SettingsExpanderItem.Footer>
                         <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.AutoScalingBufferTimeWindow}" 
                                              Minimum="0.1" Maximum="60.0" SpinButtonPlacementMode="Inline" Width="150" />

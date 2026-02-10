@@ -1,15 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Avalonia;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
-using System.Threading;
-using System.Linq;
-using System.Collections.Generic;
-
 using ClassIsland.Core;
 using ClassIsland.Services;
+
 namespace ClassIsland.Controls;
 
 public class AniScalingDecorator : Decorator
