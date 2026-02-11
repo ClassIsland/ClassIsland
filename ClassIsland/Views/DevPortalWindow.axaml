@@ -38,6 +38,14 @@
                             <Button Content="重置" Click="ButtonReset_OnClick"/>
                         </StackPanel>
                     </ci:Field>
+                    <ci:Field Label="测试选择器解析">
+                        <StackPanel Orientation="Horizontal" Spacing="4" Loaded="TargetTime_OnLoaded">
+                            <TextBox Text="{Binding ViewModel.StyleSelector}"/>
+                            <Button Content="解析" Click="ButtonParseSelector_OnClick"/>
+                        </StackPanel>
+                    </ci:Field>
+                    
+                    <Button Content="测试教程" Click="ButtonTestTutorial_OnClick"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="控件">
