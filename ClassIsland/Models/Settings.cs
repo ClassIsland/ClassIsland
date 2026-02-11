@@ -221,6 +221,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     private int _autoScalingBufferFrameCount = 30;
     private double _autoScalingBufferTimeWindow = 5.0;
+    private double _autoScalingSafetyMargin = 12.0;
 
 
     public void NotifyPropertyChanged(string propertyName)
@@ -814,6 +815,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("自动缩放缓冲帧数", "\uE415", order: -1)]
     public int AutoScalingBufferFrameCount
     {
         get => _autoScalingBufferFrameCount;
@@ -825,6 +827,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [SettingsInfo("自动缩放延迟 (秒)", "\uE916", order: -1)]
     public double AutoScalingBufferTimeWindow
     {
         get => _autoScalingBufferTimeWindow;
@@ -832,6 +835,18 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _autoScalingBufferTimeWindow) return;
             _autoScalingBufferTimeWindow = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [SettingsInfo("自动缩放安全边距", "\uE73F", order: -1)]
+    public double AutoScalingSafetyMargin
+    {
+        get => _autoScalingSafetyMargin;
+        set
+        {
+            if (value.Equals(_autoScalingSafetyMargin)) return;
+            _autoScalingSafetyMargin = value;
             OnPropertyChanged();
         }
     }

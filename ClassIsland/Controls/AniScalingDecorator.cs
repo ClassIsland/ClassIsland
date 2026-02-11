@@ -50,19 +50,15 @@ public class AniScalingDecorator : Decorator
     {
         if (Child == null) return base.MeasureOverride(availableSize);
         
-        // Measure child with infinite width to get desired size
+        // 测量子元素理想宽度
         Child.Measure(new Size(double.PositiveInfinity, availableSize.Height));
         var desired = Child.DesiredSize;
         
-        // Safety margin on both sides (e.g. 6.0 on left, 6.0 on right = 12.0 total)
-        // User requested "keep a little safety area on left and right".
-        double safetyMargin = 12.0; 
+        // 获取安全边距
+        double safetyMargin = Settings?.AutoScalingSafetyMargin ?? 12.0; 
         double workableWidth = availableSize.Width - safetyMargin;
 
-        // Calculate required scale
-        // We use Settings.Scale if available, otherwise 1.0 as base? 
-        // Actually, LayoutTransform should handle Settings.Scale.
-        // We calculate scale relative to the space we have (which is already transformed if inside LayoutTransform).
+        // 计算所需缩放
         double instantScale = 1.0;
         
         if (workableWidth > 0 && desired.Width > 0 && IsAutoScalingEnabled && desired.Width > workableWidth)
@@ -70,7 +66,7 @@ public class AniScalingDecorator : Decorator
             instantScale = workableWidth / desired.Width;
         }
 
-        // Apply buffer
+        // 应用缓冲
         var bufferSize = Settings?.AutoScalingBufferFrameCount ?? 30;
         _scaleBuffer.Enqueue(instantScale);
         while (_scaleBuffer.Count > bufferSize)
@@ -79,15 +75,15 @@ public class AniScalingDecorator : Decorator
         }
         
         var averageScale = _scaleBuffer.Average();
-        // If instant scale is significantly smaller (overflow), we strictly prefer it (Min hold).
+        // 发生溢出时优先使用瞬时值（Min-Hold），确保立刻响应
         var targetScale = Math.Min(instantScale, averageScale);
 
-        // Force immediate shrink if instant scale is smaller than current target
+        // 如果瞬时值小于当前目标值，强制立即缩小
         if (instantScale < targetScale) targetScale = instantScale;
         
         UpdateScale(targetScale);
 
-        // We report that we occupy the available width (or desired width if smaller)
+        // 报告占用宽度（可用宽度或理想宽度）
         return new Size(Math.Min(availableSize.Width, desired.Width), desired.Height);
     }
 
@@ -95,64 +91,46 @@ public class AniScalingDecorator : Decorator
     {
         if (Child == null) return base.ArrangeOverride(finalSize);
         
-        // Ensure the scale transform is applied
+        // 确保应用 ScaleTransform
         if (Child.RenderTransform != _scaleTransform)
         {
             Child.RenderTransform = _scaleTransform;
         }
 
-        // Determine alignment
-        // 0, 3: Left; 1, 4: Center; 2, 5: Right
+        // 确定对齐方式：0=左, 1=中, 2=右
         var dockingLocation = Settings?.WindowDockingLocation ?? 1;
-        int alignment = dockingLocation % 3; // 0=Left, 1=Center, 2=Right
+        int alignment = dockingLocation % 3; 
         
-        // Y Origin: 0-2 Top (0), 3-5 Bottom (1)
+        // 垂直原点：0-2 顶部(0), 3-5 底部(1)
         double originY = dockingLocation >= 3 ? 1.0 : 0.0;
         
-        double safetyMarginTotal = 12.0;
+        double safetyMarginTotal = Settings?.AutoScalingSafetyMargin ?? 12.0;
         double safetyMarginSide = safetyMarginTotal / 2.0;
         
         double x = 0.0;
         double originX = 0.0;
 
-        // Logic:
-        // finalSize is likely the constrained size (availableSize from Measure).
-        // scaleTransform scales the Child VISUALLY around RenderTransformOrigin.
-        // layout slot of Child remains Child.DesiredSize (or whatever we pass to Arrange).
-        // but we should pass Child.DesiredSize to Arrange so it renders correctly internally.
-        
-        // If we want to align the SCALED content.
-        
+        // 根据对齐方式计算排列位置
         switch (alignment)
         {
-            case 0: // Left
+            case 0: // 左对齐
                 originX = 0.0;
-                // Align left with safety margin
                 x = safetyMarginSide;
                 break;
-            case 1: // Center
+            case 1: // 居中
                 originX = 0.5;
-                // Align center in finalSize
                 x = (finalSize.Width - Child.DesiredSize.Width) / 2.0;
                 break;
-            case 2: // Right
+            case 2: // 右对齐
                 originX = 1.0;
-                // Align right with safety margin
-                // We want Visual Right Edge to be at finalSize.Width - safetyMarginSide.
-                // Child.DesiredSize.Width is the layout Width.
-                // Pivot at 1.0 (Right Edge of Child).
-                // Arrange at X such that Child.Right maps to Visual Right.
-                // Child.Right = x + Child.DesiredSize.Width.
-                // Visual Right (at Scale 1.0) = Child.Right.
-                // Visual Right (at Scale < 1.0, Pivot Right) = Child.Right.
-                // So if we align the Layout Right Edge to (FinalWidth - Margin), the Visual Right Edge will be there too.
+                // 确保缩放后的视觉右边缘位于 finalSize.Width - Margin
                 x = finalSize.Width - Child.DesiredSize.Width - safetyMarginSide;
                 break;
         }
         
         Child.RenderTransformOrigin = new RelativePoint(originX, originY, RelativeUnit.Relative);
         
-        // Arrange the child
+        // 排列子元素
         Child.Arrange(new Rect(new Point(x, 0), Child.DesiredSize));
         
         return finalSize;
@@ -160,7 +138,7 @@ public class AniScalingDecorator : Decorator
     
     private void UpdateScale(double targetScale)
     {
-        // Round to avoid jitter on HIDPI or floating errors
+        // 避免微小抖动
         targetScale = Math.Round(targetScale, 4);
 
         if (Math.Abs(targetScale - _pendingScale) < 0.0001) return;
@@ -172,32 +150,28 @@ public class AniScalingDecorator : Decorator
             Settings?.AutoScalingBufferTimeWindow ?? 5.0
         );
 
-        // Logic
+        // 逻辑处理
         if (targetScale < _currentScale)
         {
-            // Shrinking (Content growing or Window shrinking) - Immediate
+            // 缩小（内容变宽）：立即执行
             _hysteresisTimer.Stop();
              AnimateTo(targetScale);
         }
         else
         {
-            // Expanding (Content shrinking or Window growing)
-            // If the change is significant or restoring to full, do it immediately?
-            // User requirement: "if shrink amount (scale increase) < threshold, wait delay"
-            // "If shrink amount > threshold, direct scale".
-            
+            // 放大（内容变窄或恢复）：
+            // 如果变化显著 (>0.05) 或即将恢复到原状 (>=0.99)，立即执行
             bool isSignificantChange = (targetScale - _currentScale > 0.05);
             bool isRestoringToFull = (oldTarget < 1.0 && targetScale >= 0.99);
             
             if (isSignificantChange || isRestoringToFull) 
             {
-                 // Significant change -> Immediate
                  _hysteresisTimer.Stop();
                  AnimateTo(targetScale);
             }
             else
             {
-                // Small change -> Buffer
+                // 微小变化：进入缓冲延迟
                 if (!_hysteresisTimer.IsEnabled) _hysteresisTimer.Start();
             }
         }
@@ -220,7 +194,7 @@ public class AniScalingDecorator : Decorator
             return;
         }
 
-        // Animation loop - 300ms
+        // 动画循环：300ms cubic-ease-out
         var duration = TimeSpan.FromMilliseconds(300);
         var startTime = DateTime.Now;
         
@@ -238,7 +212,7 @@ public class AniScalingDecorator : Decorator
                 return false;
             }
             
-            var easing = 1 - Math.Pow(1 - progress, 3); // CubicEaseOut
+            var easing = 1 - Math.Pow(1 - progress, 3);
             var current = start + (end - start) * easing;
             
             _scaleTransform.ScaleX = _scaleTransform.ScaleY = current;

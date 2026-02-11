@@ -61,6 +61,15 @@
                                              Minimum="0.1" Maximum="60.0" SpinButtonPlacementMode="Inline" Width="150" />
                     </controls2:SettingsExpanderItem.Footer>
                 </controls2:SettingsExpanderItem>
+
+                <controls2:SettingsExpanderItem Content="自动缩放安全边距"
+                                                Description="缩放时保留的左右边距总和。（默认：12.0）"
+                                                IsVisible="{Binding ViewModel.SettingsService.Settings.IsAutoScalingEnabled}">
+                    <controls2:SettingsExpanderItem.Footer>
+                        <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.AutoScalingSafetyMargin}" 
+                                             Minimum="0.0" Maximum="100.0" SpinButtonPlacementMode="Inline" Width="150" />
+                    </controls2:SettingsExpanderItem.Footer>
+                </controls2:SettingsExpanderItem>
             </controls2:SettingsExpander>
             
             <!--背景颜色-->
