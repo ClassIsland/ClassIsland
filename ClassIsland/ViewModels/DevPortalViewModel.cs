@@ -10,12 +10,14 @@ public partial class DevPortalViewModel(
     INotificationHostService notificationHostService,
     SettingsService settingsService,
     IExactTimeService exactTimeService,
-    IWeatherService weatherService) : ObservableObject
+    IWeatherService weatherService,
+    ITutorialService tutorialService) : ObservableObject
 {
     public INotificationHostService NotificationHostService { get; } = notificationHostService;
     public SettingsService SettingsService { get; } = settingsService;
     public IExactTimeService ExactTimeService { get; } = exactTimeService;
     public IWeatherService WeatherService { get; } = weatherService;
+    public ITutorialService TutorialService { get; } = tutorialService;
 
     [ObservableProperty] private string _notificationMaskText = "";
     
@@ -42,4 +44,6 @@ public partial class DevPortalViewModel(
         """;
 
     public bool IsTargetDateTimeLoaded => IsTargetDateLoaded && IsTargetTimeLoaded;
+
+    [ObservableProperty] private string _styleSelector = "Control";
 }
