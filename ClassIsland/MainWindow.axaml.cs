@@ -1127,6 +1127,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         AppBase.Current.Restart();
     }
     
+    private void NativeMenuItemOpenTutorialEditor_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<TutorialEditorWindow>().Show();
+    }
 
     private void NativeMenuItemDebugOpenScreenshotWindow_OnClick(object? sender, EventArgs e)
     {

@@ -1,0 +1,286 @@
+<ci:MyWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:views="clr-namespace:ClassIsland.Views"
+        xmlns:tutorial="clr-namespace:ClassIsland.Core.Models.Tutorial;assembly=ClassIsland.Core"
+        xmlns:tutorial1="clr-namespace:ClassIsland.Core.Enums.Tutorial;assembly=ClassIsland.Core"
+        xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
+        xmlns:tutorialEditor="clr-namespace:ClassIsland.Controls.TutorialEditor"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ClassIsland.Views.TutorialEditorWindow"
+        d:DataContext="{d:DesignInstance views:TutorialEditorWindow}"
+        WindowState="Maximized"
+        Title="教程编辑器">
+    <ci:MyWindow.Styles>
+        <Style Selector="ci|AnimatedIconButton">
+            <Setter Property="Theme" Value="{StaticResource TransparentButton}"/>
+        </Style>
+        <Style Selector="ListBox.item-sort ListBoxItem">
+            <Setter Property="Interaction.Behaviors">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <ci:AdvancedItemDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="3"
+                                                     Orientation="Vertical"/>
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="DataGrid.item-sort DataGridRow">
+            <Setter Property="Interaction.Behaviors">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <ci:AdvancedItemDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="3"
+                                                     Orientation="Vertical"/>
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="DataGrid.item-sort DataGridRowHeader">
+            <Setter Property="Content">
+                <Template>
+                    <ci:TouchDragThumb IsExplicitVisible="True"/>
+                </Template>
+            </Setter>
+        </Style>
+    </ci:MyWindow.Styles>
+    <ci:MyWindow.DataTemplates>
+        <DataTemplate x:DataType="tutorial:Tutorial">
+            <ScrollViewer>
+                <StackPanel Spacing="6" Margin="8">
+                    <ci:IconText Glyph="&#xE959;" Text="教程"/>
+                    
+                    <ci:Field Label="ID">
+                        <TextBox Text="{Binding Id}"/>
+                    </ci:Field>
+                    
+                    <ci:Field Label="标题">
+                        <TextBox Text="{Binding Title}"/>
+                    </ci:Field>
+                    
+                    <ci:Field Label="描述">
+                        <TextBox Text="{Binding Description}" AcceptsReturn="True"/>
+                    </ci:Field>
+                </StackPanel>
+            </ScrollViewer>
+        </DataTemplate>
+        
+        <DataTemplate x:DataType="tutorial:TutorialParagraph">
+            <TabControl Classes="compact" Padding="0">
+                <TabItem Header="基本">
+                    <ScrollViewer>
+                        <StackPanel Spacing="6" Margin="8">
+                            <ci:IconText Glyph="&#xF2ED;" Text="段落"/>
+                    
+                            <ci:Field Label="ID">
+                                <TextBox Text="{Binding Id}"/>
+                            </ci:Field>
+                    
+                            <ci:Field Label="标题">
+                                <TextBox Text="{Binding Title}"/>
+                            </ci:Field>
+                    
+                            <ci:Field Label="描述">
+                                <TextBox Text="{Binding Description}" AcceptsReturn="True"/>
+                            </ci:Field>
+                    
+                            <ci:Field Label="TopLevel 类名">
+                                <TextBox Text="{Binding TopLevelClassName}" AcceptsReturn="True"/>
+                            </ci:Field>
+                    
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="进入事件">
+                    <tutorialEditor:TutorialActionsEditControl TutorialActions="{Binding InitializeActions}"/>
+                </TabItem>
+            </TabControl>
+        </DataTemplate>
+        
+        <DataTemplate x:DataType="tutorial:TutorialSentence">
+            <TabControl Classes="compact" Padding="0">
+                <TabItem Header="基本">
+                    <ScrollViewer>
+                        <StackPanel Spacing="6" Margin="8">
+                            <ci:IconText Glyph="&#xF31B;" Text="语句" />
+
+                            <ci:Field Label="标题">
+                                <TextBox Text="{Binding Title}" />
+                            </ci:Field>
+
+                            <ci:Field Label="内容">
+                                <TextBox Text="{Binding Content}" AcceptsReturn="True" />
+                            </ci:Field>
+
+                            <ci:Field Label="头图">
+                                <TextBox Text="{Binding HeroImage}" Watermark="（禁用）" />
+                            </ci:Field>
+
+                            <Separator />
+
+                            <ci:Field Label="目标控件选择器">
+                                <TextBox Text="{Binding TargetSelector}" Watermark="（禁用）" />
+                            </ci:Field>
+                            <CheckBox IsChecked="{Binding HighlightTarget}" Content="高亮目标" />
+                            <CheckBox IsChecked="{Binding ModalTarget}" Content="使目标具有模态" />
+
+                            <Separator />
+
+                            <ci:Field Label="右侧按钮">
+                                <TextBox Text="{Binding RightButtonText}" Watermark="（禁用）" />
+                            </ci:Field>
+                            <ci:Field Label="左侧按钮">
+                                <TextBox Text="{Binding LeftButtonText}" Watermark="（禁用）" />
+                            </ci:Field>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="进入事件">
+                    <tutorialEditor:TutorialActionsEditControl TutorialActions="{Binding InitializeActions}"/>
+                </TabItem>
+                <TabItem Header="左按钮事件">
+                    <tutorialEditor:TutorialActionsEditControl TutorialActions="{Binding LeftButtonActions}"/>
+                </TabItem>
+                <TabItem Header="右按钮事件">
+                    <tutorialEditor:TutorialActionsEditControl TutorialActions="{Binding RightButtonActions}"/>
+                </TabItem>
+            </TabControl>
+        </DataTemplate>
+    </ci:MyWindow.DataTemplates>
+    <Grid RowDefinitions="Auto Auto * Auto" ColumnDefinitions="220 Auto * Auto 328">
+        <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+            <MenuItem Header="文件">
+                <MenuItem Header="打开…" HotKey="Ctrl+O" InputGesture="Ctrl+O"/>
+                <MenuItem Header="保存…" HotKey="Ctrl+S" InputGesture="Ctrl+S"/>
+                <MenuItem Header="另存为…" HotKey="Ctrl+Shift+S" InputGesture="Ctrl+Shift+S"/>
+                <Separator/>
+                <MenuItem Header="教程章节信息…" HotKey="Ctrl+I" InputGesture="Ctrl+I"/>
+                
+            </MenuItem>
+            <MenuItem Header="运行">
+                <MenuItem Header="运行当前教程" HotKey="F5" InputGesture="F5"
+                          Click="MenuItemRunCurrentTutorial_OnClick"/>
+                <MenuItem Header="从当前段落开始运行" HotKey="Ctrl+F5" InputGesture="Ctrl+F5"
+                          Click="MenuItemRunCurrentParagraph_OnClick"/>
+                <Separator/>
+                <MenuItem Header="停止运行" HotKey="Shift+F5" InputGesture="Shift+F5"
+                          Click="MenuItemStopTutorial_OnClick"/>
+            </MenuItem>
+        </Menu>
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal"
+                    Classes="items-valign-center"
+                    Spacing="4">
+            <ci:AnimatedIconButton Glyph="&#xE00D;"
+                                   Text="添加"
+                                   Click="ButtonAddTutorial_OnClick"/>
+            <ci:AnimatedIconButton Glyph="&#xE58B;"
+                                   Text="复制"
+                                   Click="ButtonDuplicateTutorial_OnClick"/>
+            <ci:AnimatedIconButton Glyph="&#xE61D;"
+                                   Text="删除"
+                                   Foreground="IndianRed"
+                                   Click="ButtonDeleteTutorial_OnClick"/>
+        </StackPanel>
+        
+        <ListBox Grid.Row="2" Grid.Column="0" ItemsSource="{Binding ViewModel.CurrentTutorialGroup.Tutorials}"
+                 SelectedItem="{Binding ViewModel.CurrentTutorial}"
+                 x:Name="ListBoxTutorials"
+                 Classes="item-sort">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <ci:IconText Glyph="&#xE959;" Text="{Binding Title}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
+        <GridSplitter Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"
+                      ResizeDirection="Columns"/>
+        
+        <ci:Emptiable Grid.Row="1" Grid.Column="2" Grid.RowSpan="2"
+                      IsDirectContentMode="True"
+                      Data="{Binding ViewModel.CurrentTutorial}">
+            <Grid RowDefinitions="Auto *" ColumnDefinitions="220 Auto *"
+                  DataContext="{Binding ViewModel.CurrentTutorial}">
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"
+                            Classes="items-valign-center"
+                            Spacing="4">
+                    <ci:AnimatedIconButton Glyph="&#xE00D;"
+                                           Text="添加"
+                                           Click="ButtonAddParagraph_OnClick"/>
+                    <ci:AnimatedIconButton Glyph="&#xE58B;"
+                                           Text="复制"
+                                           Click="ButtonDuplicateParagraph_OnClick"/>
+                    <ci:AnimatedIconButton Glyph="&#xE61D;"
+                                           Text="删除"
+                                           Foreground="IndianRed"
+                                           Click="ButtonDeleteParagraph_OnClick"/>
+                </StackPanel>
+        
+                <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Paragraphs}"
+                         SelectedItem="{Binding $parent[views:TutorialEditorWindow].ViewModel.CurrentParagraph}"
+                         x:Name="ListBoxParagraphs"
+                         Classes="item-sort">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <ci:IconText Glyph="&#xF2ED;" Text="{Binding Title}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+        
+                <GridSplitter Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                              ResizeDirection="Columns"/>
+                
+                <ci:Emptiable Grid.Row="0" Grid.Column="2" Grid.RowSpan="2"
+                              IsDirectContentMode="True"
+                              Data="{Binding $parent[views:TutorialEditorWindow].ViewModel.CurrentParagraph}">
+                    <Grid RowDefinitions="Auto *" 
+                          DataContext="{Binding $parent[views:TutorialEditorWindow].ViewModel.CurrentParagraph}">
+                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"
+                                    Classes="items-valign-center"
+                                    Spacing="4">
+                            <ci:AnimatedIconButton Glyph="&#xE00D;"
+                                                   Text="添加"
+                                                   Click="ButtonAddSentence_OnClick"/>
+                            <ci:AnimatedIconButton Glyph="&#xE58B;"
+                                                   Text="复制"
+                                                   Click="ButtonDuplicateSentence_OnClick"/>
+                            <ci:AnimatedIconButton Glyph="&#xE61D;"
+                                                   Text="删除"
+                                                   Foreground="IndianRed"
+                                                   Click="ButtonDeleteSentence_OnClick"/>
+                        </StackPanel>
+                        
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding Content}"
+                                  x:Name="DataGridParagraphContent"
+                                  CanUserSortColumns="False"
+                                  HeadersVisibility="All"
+                                  SelectedItem="{Binding $parent[views:TutorialEditorWindow].ViewModel.CurrentSentence}"
+                                  GridLinesVisibility="Horizontal"
+                                  AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Title}"
+                                                    Header="标题"
+                                                    Width="*"/>
+                                <DataGridTextColumn Binding="{Binding Content}"
+                                                    Header="内容"
+                                                    Width="3*"/>
+                                <DataGridTextColumn Binding="{Binding TargetSelector}"
+                                                    Header="目标选择器"
+                                                    Width="2*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </ci:Emptiable>
+            </Grid>
+        </ci:Emptiable>
+        
+        <GridSplitter Grid.Row="1" Grid.Column="3" Grid.RowSpan="2"
+                      ResizeDirection="Columns"/>
+        
+        <ci:Emptiable Grid.Row="1" Grid.Column="4" Grid.RowSpan="2"
+                      Content="{Binding ViewModel.SelectedDetailObject, Mode=OneWay}"/>
+    </Grid>
+</ci:MyWindow>

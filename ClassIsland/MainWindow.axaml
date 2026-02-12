@@ -104,6 +104,7 @@
                     <NativeMenuItem Header="DevTools" Click="NativeMenuItemDebugDevTools_OnClick"/>
                     <NativeMenuItem Header="DevPortal" Click="NativeMenuItemDebugDevPortal_OnClick"/>
                     <NativeMenuItem Header="截图工具" Click="NativeMenuItemDebugOpenScreenshotWindow_OnClick"/>
+                    <NativeMenuItem Header="教程编辑器" Click="NativeMenuItemOpenTutorialEditor_OnClick"/>
                     <NativeMenuItemSeparator/>
                     <NativeMenuItem  Header="启用课表" Click="NativeMenuItemDebugEnableTempClassPlan_OnClick"/>
                     <NativeMenuItem  Header="显示崩溃窗口" Click="NativeMenuItemDebugCrashTest_OnClick"/>
