@@ -27,15 +27,20 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
 
     [ObservableProperty] private Tutorial? _currentTutorial;
     [ObservableProperty] private TutorialParagraph? _currentParagraph;
-    [ObservableProperty] private TutorialSentence? _currentSentence;
+    
+    [ObservableProperty] 
+    [NotifyPropertyChangedFor(nameof(IsTutorialRunning))]
+    private TutorialSentence? _currentSentence;
 
     private int SentenceIndex { get; set; } = -1;
     private int ParagraphIndex { get; set; } = -1;
     
     private TeachingTip? CurrentTeachingTip { get; set; }
+
+    [ObservableProperty] private TopLevel? _attachedToplevel;
     
-    private TopLevel? AttachedToplevel { get; set; }
-    
+    public bool IsTutorialRunning => CurrentSentence != null;
+
     public void BeginTutorial(Tutorial tutorial)
     {
         // if (CurrentTutorial != null)

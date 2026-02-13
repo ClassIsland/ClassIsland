@@ -13,7 +13,9 @@
         x:Class="ClassIsland.Views.TutorialEditorWindow"
         d:DataContext="{d:DesignInstance views:TutorialEditorWindow}"
         WindowState="Maximized"
-        Title="教程编辑器">
+        Title="教程编辑器"
+        Closing="TopLevel_OnClosing"
+        Deactivated="WindowBase_OnDeactivated">
     <ci:MyWindow.Styles>
         <Style Selector="ci|AnimatedIconButton">
             <Setter Property="Theme" Value="{StaticResource TransparentButton}"/>
@@ -47,6 +49,26 @@
         </Style>
     </ci:MyWindow.Styles>
     <ci:MyWindow.DataTemplates>
+        <DataTemplate x:DataType="tutorial:TutorialGroup">
+            <ScrollViewer>
+                <StackPanel Spacing="6" Margin="8">
+                    <ci:IconText Glyph="&#xE92F;" Text="教程组"/>
+                    
+                    <ci:Field Label="ID">
+                        <TextBox Text="{Binding Id}"/>
+                    </ci:Field>
+                    
+                    <ci:Field Label="标题">
+                        <TextBox Text="{Binding Title}"/>
+                    </ci:Field>
+                    
+                    <ci:Field Label="描述">
+                        <TextBox Text="{Binding Description}" AcceptsReturn="True"/>
+                    </ci:Field>
+                </StackPanel>
+            </ScrollViewer>
+        </DataTemplate>
+        
         <DataTemplate x:DataType="tutorial:Tutorial">
             <ScrollViewer>
                 <StackPanel Spacing="6" Margin="8">
@@ -152,11 +174,15 @@
     <Grid RowDefinitions="Auto Auto * Auto" ColumnDefinitions="220 Auto * Auto 328">
         <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
             <MenuItem Header="文件">
-                <MenuItem Header="打开…" HotKey="Ctrl+O" InputGesture="Ctrl+O"/>
-                <MenuItem Header="保存…" HotKey="Ctrl+S" InputGesture="Ctrl+S"/>
-                <MenuItem Header="另存为…" HotKey="Ctrl+Shift+S" InputGesture="Ctrl+Shift+S"/>
+                <MenuItem Header="打开…" HotKey="Ctrl+O" InputGesture="Ctrl+O"
+                          Click="MenuItemOpen_OnClick"/>
+                <MenuItem Header="保存…" HotKey="Ctrl+S" InputGesture="Ctrl+S"
+                          Click="MenuItemSave_OnClick"/>
+                <MenuItem Header="另存为…" HotKey="Ctrl+Shift+S" InputGesture="Ctrl+Shift+S"
+                          Click="MenuItemSaveAs_OnClick"/>
                 <Separator/>
-                <MenuItem Header="教程章节信息…" HotKey="Ctrl+I" InputGesture="Ctrl+I"/>
+                <MenuItem Header="教程章节信息…" HotKey="Ctrl+I" InputGesture="Ctrl+I"
+                          Click="MenuItemTutorialGroupInfo_OnClick"/>
                 
             </MenuItem>
             <MenuItem Header="运行">

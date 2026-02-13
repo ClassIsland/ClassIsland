@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Avalonia.Controls;
 using ClassIsland.Core.Models.Tutorial;
 
 namespace ClassIsland.Core.Abstractions.Services;
@@ -28,6 +29,16 @@ public interface ITutorialService : INotifyPropertyChanged
     /// 当前正在进行的教程句
     /// </summary>
     TutorialSentence? CurrentSentence { get; }
+    
+    /// <summary>
+    /// 当前是否有教程正在运行
+    /// </summary>
+    bool IsTutorialRunning { get; }
+    
+    /// <summary>
+    /// 当前附加到的 <see cref="TopLevel"/>
+    /// </summary>
+    public TopLevel? AttachedToplevel { get; }
 
     /// <summary>
     /// 开始指定的教学。

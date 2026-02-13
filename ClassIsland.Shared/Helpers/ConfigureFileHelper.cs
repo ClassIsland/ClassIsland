@@ -29,6 +29,12 @@ public class ConfigureFileHelper
 
     internal static JsonSerializerOptions SerializerOptions { get; set; } = new();
 
+    private static Lazy<JsonSerializerOptions> WriteIndentedSerializerOptions { get; } =
+        new(() => new JsonSerializerOptions(SerializerOptions)
+        {
+            WriteIndented = true
+        });
+
     /// <summary>
     /// 配置在默认情况下，是否启用配置文件备份
     /// </summary>
@@ -119,9 +125,22 @@ public class ConfigureFileHelper
     /// <param name="o">要写入到配置的对象</param>
     public static void SaveConfig<T>(string path, T o)
     {
+        SaveConfig(path, o, false);
+    }
+
+    /// <summary>
+    /// 保存配置文件，并自动创建备份
+    /// </summary>
+    /// <typeparam name="T">配置文件类型</typeparam>
+    /// <param name="path">配置文件路径</param>
+    /// <param name="o">要写入到配置的对象</param>
+    /// <param name="writeIndented">是否在保存时格式化 JSON</param>
+    public static void SaveConfig<T>(string path, T o, bool writeIndented)
+    {
         Logger?.LogInformation("写入 JSON 文件：{}", path);
+        var options = writeIndented ? WriteIndentedSerializerOptions.Value : SerializerOptions;
         // 在保存时不对备份文件进行操作，以防止在保存时发生意外断电时，备份文件也受到损坏。
-        WriteAllTextSafe(path, JsonSerializer.Serialize<T>(o, SerializerOptions));
+        WriteAllTextSafe(path, JsonSerializer.Serialize<T>(o, options));
     }
 
     /// <summary>

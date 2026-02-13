@@ -9,6 +9,9 @@ public partial class TutorialEditorViewModel(
 {
     public ITutorialService TutorialService { get; } = tutorialService;
 
+    [ObservableProperty] private string _openedFilePath = "";
+    [ObservableProperty] private bool _isClosing = false;
+
     [ObservableProperty] private TutorialGroup _currentTutorialGroup = new();
     [ObservableProperty] private Tutorial? _currentTutorial;
     [ObservableProperty] private TutorialParagraph? _currentParagraph;

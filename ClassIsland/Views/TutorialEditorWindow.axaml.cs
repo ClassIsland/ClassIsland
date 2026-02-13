@@ -1,16 +1,28 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform.Storage;
+using Avalonia.Threading;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.Tutorial;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Tutorial;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels;
+using DynamicData;
+using FluentAvalonia.UI.Controls;
 using HotAvalonia;
+using Mono.Unix;
 
 namespace ClassIsland.Views;
 
@@ -136,4 +148,134 @@ public partial class TutorialEditorWindow : MyWindow
         ViewModel.TutorialService.StopTutorial();
     }
 
+    private async void MenuItemOpen_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var paths = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions
+        {
+            FileTypeFilter = [FilePickerFileTypes.Json],
+            AllowMultiple = false
+        }, this);
+        if (paths.Count <= 0)
+        {
+            return;
+        }
+
+        var path = ViewModel.OpenedFilePath = paths[0];
+        ViewModel.CurrentTutorialGroup = ConfigureFileHelper.LoadConfig<TutorialGroup>(path, false);
+        this.ShowToast($"已打开 {path}");
+        var id = ViewModel.CurrentTutorialGroup.Id;
+        if (ITutorialService.RegisteredTutorialGroups.FirstOrDefault(x => x.Id == id) is not {} existed)
+        {
+            return;
+        }
+        ViewModel.TutorialService.StopTutorial();
+        ITutorialService.RegisteredTutorialGroups.Replace(existed, ViewModel.CurrentTutorialGroup);
+        this.ShowToast($"已替换 ID 为 {id} 的教程组并启用热重载。");
+    }
+
+    private async void MenuItemSave_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await SaveTutorialGroupFull();
+    }
+
+    private async Task SaveTutorialGroupFull(bool saveAs=false)
+    {
+        if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath) || saveAs)
+        {
+            var paths = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions()
+            {
+                FileTypeChoices = [FilePickerFileTypes.Json],
+            }, this);
+            if (paths == null)
+            {
+                return;
+            }
+
+            ViewModel.OpenedFilePath = paths;
+        }
+
+        SaveTutorialGroupToFile();
+    }
+
+    private void SaveTutorialGroupToFile()
+    {
+        if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath))
+        {
+            return;
+        }
+        ConfigureFileHelper.SaveConfig(ViewModel.OpenedFilePath, ViewModel.CurrentTutorialGroup, true);
+        this.ShowToast($"已保存 {ViewModel.OpenedFilePath}");
+    }
+
+    private async void TopLevel_OnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown || ViewModel.IsClosing)
+        {
+            return;
+        }
+        e.Cancel = true;
+        Dispatcher.UIThread.Post(async () => await ClosingCore());
+    }
+
+    private async Task ClosingCore()
+    {
+        if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath))
+        {
+            var dialog = new TaskDialog()
+            {
+                XamlRoot = this,
+                Header = "更改尚未保存",
+                Content = "更改尚未保存，您要在退出前保存更改吗？",
+                Buttons =
+                [
+                    new TaskDialogButton("保存", 0)
+                    {
+                        IsDefault = true,
+                    },
+                    new TaskDialogButton("不保存", 1),
+                    new TaskDialogButton("取消", 2)
+                ]
+            };
+            var result = await dialog.ShowAsync();
+            if (result is not int choice)
+            {
+                return;
+            }
+
+            switch (choice)
+            {
+                case 0:
+                    await SaveTutorialGroupFull();
+                    if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath))
+                    {
+                        return;
+                    }
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    return;
+                default:
+                    break;
+            }
+        }
+        SaveTutorialGroupToFile();
+        ViewModel.IsClosing = true;
+        Close();
+    }
+
+    private void WindowBase_OnDeactivated(object? sender, EventArgs e)
+    {
+        SaveTutorialGroupToFile();
+    }
+
+    private async void MenuItemSaveAs_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await SaveTutorialGroupFull(true);
+    }
+
+    private void MenuItemTutorialGroupInfo_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.SelectedDetailObject = ViewModel.CurrentTutorialGroup;
+    }
 }

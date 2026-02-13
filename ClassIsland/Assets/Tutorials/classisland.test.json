@@ -1,0 +1,183 @@
+{
+  "Id": "classisland.test",
+  "Title": "\u6D4B\u8BD5\u6559\u7A0B\u7EC4",
+  "Description": "114514",
+  "Tutorials": [
+    {
+      "Id": "classisland.test.welcome",
+      "Title": "\u6B22\u8FCE",
+      "Description": "",
+      "Ordinary": 0,
+      "Paragraphs": [
+        {
+          "Id": "test1",
+          "Title": "\u6D4B\u8BD51",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.MainWindow",
+          "InitializeActions": [],
+          "Content": [
+            {
+              "IconSource": null,
+              "Title": "\u8FD9\u662F\u4E3B\u754C\u9762",
+              "Content": "ClassIsland \u7684\u8BFE\u8868\u7B49\u4FE1\u606F\u90FD\u4F1A\u663E\u793A\u5728\u8FD9\u91CC\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "Xmlns": {}
+            },
+            {
+              "IconSource": null,
+              "Title": "\u70B9\u51FB\u7A7F\u900F",
+              "Content": "\u60A8\u53EF\u4EE5\u900F\u8FC7\u4E3B\u754C\u9762\u70B9\u51FB\u5230\u4E3B\u754C\u9762\u540E\u9762\u7684\u754C\u9762\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "Xmlns": {}
+            },
+            {
+              "IconSource": null,
+              "Title": "\u6307\u9488\u79FB\u5165\u6DE1\u5316",
+              "Content": "\u5F53\u9F20\u6807\u79FB\u5165\u6216\u89E6\u5C4F\u70B9\u51FB\u4E3B\u754C\u9762\u8303\u56F4\u65F6\uFF0C\u4E3B\u754C\u9762\u4F1A\u6DE1\u5316\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "Xmlns": {}
+            },
+            {
+              "IconSource": null,
+              "Title": "\u63D0\u9192",
+              "Content": "\u5F53\u5230\u8FBE\u4E0A\u8BFE\u7B49\u91CD\u8981\u65F6\u95F4\u70B9\u65F6\uFF0C\u5E94\u7528\u5C31\u4F1A\u50CF\u8FD9\u6837\u53D1\u51FA\u63D0\u9192\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [
+                {
+                  "Kind": 7,
+                  "StringParameter": "",
+                  "ActionSet": {
+                    "IsWorking": false,
+                    "Guid": "779339f1-3cb1-4e95-beee-dff953c7bbcf",
+                    "Name": "\u65B0\u884C\u52A8\u7EC4",
+                    "Actions": [
+                      {
+                        "IsCompleted": true,
+                        "Id": "classisland.showNotification",
+                        "Settings": {
+                          "Content": "\u8FD9\u662F\u63D0\u9192\u5185\u5BB9",
+                          "Mask": "\u8FD9\u662F\u4E00\u6761\u63D0\u9192",
+                          "IsContentSpeechEnabled": true,
+                          "IsMaskSpeechEnabled": true,
+                          "IsAdvancedSettingsEnabled": false,
+                          "IsSoundEffectEnabled": true,
+                          "IsTopmostEnabled": true,
+                          "CustomSoundEffectPath": "",
+                          "IsEffectEnabled": true,
+                          "MaskDurationSeconds": 5,
+                          "ContentDurationSeconds": 10,
+                          "IsWaitForCompleteEnabled": false,
+                          "IsActive": false
+                        },
+                        "IsActive": false
+                      }
+                    ],
+                    "IsEnabled": true,
+                    "IsRevertEnabled": false,
+                    "Status": 0,
+                    "IsActive": false
+                  }
+                }
+              ],
+              "Xmlns": {}
+            },
+            {
+              "IconSource": null,
+              "Title": "\u63A5\u4E0B\u6765\u2026",
+              "Content": "\u4E86\u89E3\u5B8C\u4E3B\u754C\u9762\u7684\u57FA\u672C\u64CD\u4F5C\uFF0C\u6211\u4EEC\u5C31\u53EF\u4EE5\u51C6\u5907\u5F00\u59CB\u4E86\u89E3\u5982\u4F55\u7F16\u8F91\u8BFE\u8868\u7B49\u57FA\u672C\u64CD\u4F5C\u4E86\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "RightButtonText": "\u5B8C\u6210",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        }
+      ],
+      "Xmlns": {}
+    }
+  ],
+  "Xmlns": {}
+}
