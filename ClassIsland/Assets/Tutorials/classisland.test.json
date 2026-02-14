@@ -22,7 +22,9 @@
               "Content": "ClassIsland \u7684\u8BFE\u8868\u7B49\u4FE1\u606F\u90FD\u4F1A\u663E\u793A\u5728\u8FD9\u91CC\u3002",
               "IconExpression": "",
               "HeroImage": "",
-              "TargetSelector": "",
+              "TargetSelector": "Grid#PART_GridWrapper",
+              "HighlightTarget": true,
+              "PointToTarget": false,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
@@ -47,6 +49,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
@@ -71,6 +74,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
@@ -95,6 +99,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
@@ -155,7 +160,81 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "PointToTarget": true,
               "RightButtonText": "\u5B8C\u6210",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        },
+        {
+          "Id": "",
+          "Title": "\u6D4B\u8BD52",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.Views.TutorialEditorWindow",
+          "InitializeActions": [],
+          "Content": [
+            {
+              "IconSource": null,
+              "Title": "Hello",
+              "Content": "",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "TabItem",
+              "HighlightTarget": true,
+              "PointToTarget": false,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        },
+        {
+          "Id": "",
+          "Title": "\u65B0\u6BB5\u843D",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.Views.ProfileSettingsWindow",
+          "InitializeActions": [],
+          "Content": [
+            {
+              "IconSource": null,
+              "Title": "\u521B\u5EFA\u65F6\u95F4\u8868",
+              "Content": "\u5728\u521B\u5EFA\u8BFE\u8868\u524D\uFF0C\u6211\u4EEC\u9700\u8981\u5148\u521B\u5EFA\u65F6\u95F4\u8868\uFF0C\u544A\u8BC9\u5E94\u7528\u4E00\u5929\u7684\u65F6\u95F4\u5B89\u6392\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "TabItem.tag-TimeLayouts",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": false,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
                   "Kind": 1,

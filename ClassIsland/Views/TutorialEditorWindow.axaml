@@ -30,17 +30,32 @@
                 </BehaviorCollectionTemplate>
             </Setter>
         </Style>
-        <Style Selector="DataGrid.item-sort DataGridRow">
-            <Setter Property="Interaction.Behaviors">
+        <Style Selector="DataGrid.DragAndDrop">
+            <Style.Resources>
+                <views:TutorialEditorDragDropHandler x:Key="ItemsDataGridDropHandler" />
+            </Style.Resources>
+            <Setter
+                Property="RowHeaderWidth"
+                Value="24" />
+            <Setter Property="(Interaction.Behaviors)">
                 <BehaviorCollectionTemplate>
                     <BehaviorCollection>
-                        <ci:AdvancedItemDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="3"
-                                                     Orientation="Vertical"/>
+                        <ContextDropBehavior Handler="{StaticResource ItemsDataGridDropHandler}" />
                     </BehaviorCollection>
                 </BehaviorCollectionTemplate>
             </Setter>
         </Style>
-        <Style Selector="DataGrid.item-sort DataGridRowHeader">
+
+        <!-- This makes only the DataGridRowHeader available for dragging, instead of making the entire row draggable -->
+        <!-- Which prevents a conflict between text selection in a cell and drag-and-drop -->
+        <Style Selector="DataGrid.DragAndDrop DataGridRowHeader">
+            <Setter Property="(Interaction.Behaviors)">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <ContextDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3" />
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
             <Setter Property="Content">
                 <Template>
                     <ci:TouchDragThumb IsExplicitVisible="True"/>
@@ -63,7 +78,8 @@
                     </ci:Field>
                     
                     <ci:Field Label="描述">
-                        <TextBox Text="{Binding Description}" AcceptsReturn="True"/>
+                        <TextBox Text="{Binding Description}" 
+                                 AcceptsReturn="True" TextWrapping="Wrap"/>
                     </ci:Field>
                 </StackPanel>
             </ScrollViewer>
@@ -83,7 +99,8 @@
                     </ci:Field>
                     
                     <ci:Field Label="描述">
-                        <TextBox Text="{Binding Description}" AcceptsReturn="True"/>
+                        <TextBox Text="{Binding Description}" 
+                                 AcceptsReturn="True" TextWrapping="Wrap"/>
                     </ci:Field>
                 </StackPanel>
             </ScrollViewer>
@@ -105,11 +122,13 @@
                             </ci:Field>
                     
                             <ci:Field Label="描述">
-                                <TextBox Text="{Binding Description}" AcceptsReturn="True"/>
+                                <TextBox Text="{Binding Description}" 
+                                         AcceptsReturn="True" TextWrapping="Wrap"/>
                             </ci:Field>
                     
                             <ci:Field Label="TopLevel 类名">
-                                <TextBox Text="{Binding TopLevelClassName}" AcceptsReturn="True"/>
+                                <TextBox Text="{Binding TopLevelClassName}" 
+                                         AcceptsReturn="True" TextWrapping="Wrap"/>
                             </ci:Field>
                     
                         </StackPanel>
@@ -133,7 +152,8 @@
                             </ci:Field>
 
                             <ci:Field Label="内容">
-                                <TextBox Text="{Binding Content}" AcceptsReturn="True" />
+                                <TextBox Text="{Binding Content}"
+                                         AcceptsReturn="True" TextWrapping="Wrap" />
                             </ci:Field>
 
                             <ci:Field Label="头图">
@@ -145,6 +165,7 @@
                             <ci:Field Label="目标控件选择器">
                                 <TextBox Text="{Binding TargetSelector}" Watermark="（禁用）" />
                             </ci:Field>
+                            <CheckBox IsChecked="{Binding PointToTarget}" Content="指向目标" />
                             <CheckBox IsChecked="{Binding HighlightTarget}" Content="高亮目标" />
                             <CheckBox IsChecked="{Binding ModalTarget}" Content="使目标具有模态" />
 
@@ -285,7 +306,8 @@
                                   HeadersVisibility="All"
                                   SelectedItem="{Binding $parent[views:TutorialEditorWindow].ViewModel.CurrentSentence}"
                                   GridLinesVisibility="Horizontal"
-                                  AutoGenerateColumns="False">
+                                  AutoGenerateColumns="False"
+                                  Classes="DragAndDrop">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Title}"
                                                     Header="标题"

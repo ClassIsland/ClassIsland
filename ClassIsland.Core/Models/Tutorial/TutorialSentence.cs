@@ -55,6 +55,11 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// </summary>
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [ObservableProperty] private bool _modalTarget;
+
+    /// <summary>
+    /// 教程提示框会指向目标控件
+    /// </summary>
+    [ObservableProperty] private bool _pointToTarget = true;
     
     /// <summary>
     /// 右侧按钮文字，留空代表没有这个按钮

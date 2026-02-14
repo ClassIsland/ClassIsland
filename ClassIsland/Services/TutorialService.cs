@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Threading;
+using ClassIsland.Controls.Tutorial;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums.Tutorial;
@@ -34,6 +35,8 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
 
     private int SentenceIndex { get; set; } = -1;
     private int ParagraphIndex { get; set; } = -1;
+
+    private List<Control> AttachedAdorners { get; } = [];
     
     private TeachingTip? CurrentTeachingTip { get; set; }
 
@@ -83,18 +86,35 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
 
     private void CleanupPrevSentence()
     {
-        
-        if (CurrentTeachingTip != null)
+        if (AttachedToplevel != null && AttachedToplevel.Content is Visual visual)
         {
-            if (AttachedToplevel != null && AttachedToplevel.Content is Visual visual)
+            var layer = AdornerLayer.GetAdornerLayer(visual);
+            if (CurrentTeachingTip != null)
             {
-                var layer = AdornerLayer.GetAdornerLayer(visual);
-                layer?.Children.Remove(CurrentTeachingTip);
+                CurrentTeachingTip.IsOpen = false;
             }
-            CurrentTeachingTip.IsOpen = false;
+
+            foreach (var adorner in AttachedAdorners)
+            {
+                layer?.Children.Remove(adorner);
+            }
         }
 
         CurrentTeachingTip = null;
+        AttachedAdorners.Clear();
+    }
+
+    private void AttachAdorner(Control adorner, Control target)
+    {
+        if (AttachedToplevel?.Content is not Visual visual)
+        {
+            return;
+        }
+        var layer = AdornerLayer.GetAdornerLayer(visual);
+        AdornerLayer.SetIsClipEnabled(adorner, false);
+        layer?.Children.Add(adorner);
+        AdornerLayer.SetAdornedElement(adorner, target);
+        AttachedAdorners.Add(adorner);
     }
 
     private void StartSentence(TutorialSentence sentence)
@@ -107,6 +127,10 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
         }
         CurrentSentence = sentence;
         InvokeActions(sentence.InitializeActions, true);
+        var targetControl = !string.IsNullOrWhiteSpace(sentence.TargetSelector)
+            ? AttachedToplevel.FindDescendantBySelector(SelectorHelpers.Parse(sentence.TargetSelector,
+                new Dict<string, string>())) as Control
+            : null;
         var teachingTip = CurrentTeachingTip = new TeachingTip()
         {
             HeroContent = !string.IsNullOrWhiteSpace(sentence.HeroImage) ? new AdvancedImage(new Uri("avares://ClassIsland/"))
@@ -117,10 +141,7 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
             IconSource = sentence.IconSource,
             Title = sentence.Title,
             Subtitle = sentence.Content,
-            Target = !string.IsNullOrWhiteSpace(sentence.TargetSelector)
-                ? AttachedToplevel.FindDescendantBySelector(SelectorHelpers.Parse(sentence.TargetSelector,
-                    new Dict<string, string>())) as Control
-                : null
+            Target = sentence.PointToTarget ? targetControl : null
         };
         if (!string.IsNullOrEmpty(sentence.LeftButtonText))
         {
@@ -134,11 +155,18 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
         }
 
         teachingTip.ActionButtonCommand = teachingTip.CloseButtonCommand = InvokeActionsCommand;
-        
-        var layer = AdornerLayer.GetAdornerLayer(visual);
-        AdornerLayer.SetIsClipEnabled(teachingTip, false);
-        layer?.Children.Add(teachingTip);
-        AdornerLayer.SetAdornedElement(teachingTip, AttachedToplevel);
+
+        AttachAdorner(teachingTip, AttachedToplevel);
+        if (sentence.ModalTarget && targetControl != null)
+        {
+            var spotlight = new TutorialSpotlightControl();
+            AttachAdorner(spotlight, targetControl);
+        }
+        if (sentence.HighlightTarget && targetControl != null)
+        {
+            var highlightControl = new TutorialHighlightControl();
+            AttachAdorner(highlightControl, targetControl);
+        }
         (AttachedToplevel as Window)?.Activate();
         Dispatcher.UIThread.Post(() => teachingTip.IsOpen = true);
     }
