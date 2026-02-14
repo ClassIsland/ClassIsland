@@ -165,11 +165,31 @@
                             <ci:Field Label="目标控件选择器">
                                 <TextBox Text="{Binding TargetSelector}" Watermark="（禁用）" />
                             </ci:Field>
+                            <ci:Field Label="教学提示摆放模式">
+                                <ComboBox SelectedIndex="{Binding PlacementMode, Converter={x:Static views:TutorialEditorWindow.TeachingTipPlacementModeToIntConverter}}">
+                                    <ComboBoxItem>Auto</ComboBoxItem>
+                                    <ComboBoxItem>Top</ComboBoxItem>
+                                    <ComboBoxItem>Bottom</ComboBoxItem>
+                                    <ComboBoxItem>Left</ComboBoxItem>
+                                    <ComboBoxItem>Right</ComboBoxItem>
+                                    <ComboBoxItem>TopRight</ComboBoxItem>
+                                    <ComboBoxItem>TopLeft</ComboBoxItem>
+                                    <ComboBoxItem>BottomRight</ComboBoxItem>
+                                    <ComboBoxItem>BottomLeft</ComboBoxItem>
+                                    <ComboBoxItem>LeftTop</ComboBoxItem>
+                                    <ComboBoxItem>LeftBottom</ComboBoxItem>
+                                    <ComboBoxItem>RightTop</ComboBoxItem>
+                                    <ComboBoxItem>RightBottom</ComboBoxItem>
+                                    <ComboBoxItem>Center</ComboBoxItem>
+                                </ComboBox>
+                            </ci:Field>
                             <CheckBox IsChecked="{Binding PointToTarget}" Content="指向目标" />
                             <CheckBox IsChecked="{Binding HighlightTarget}" Content="高亮目标" />
                             <CheckBox IsChecked="{Binding ModalTarget}" Content="使目标具有模态" />
 
                             <Separator />
+                            
+                            <CheckBox IsChecked="{Binding ModalTarget}" Content="可等待被外部推动" />
 
                             <ci:Field Label="右侧按钮">
                                 <TextBox Text="{Binding RightButtonText}" Watermark="（禁用）" />

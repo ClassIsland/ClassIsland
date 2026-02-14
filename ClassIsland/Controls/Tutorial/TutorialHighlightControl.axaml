@@ -22,6 +22,26 @@
                 </Animation>
             </Style.Animations>
         </Style>
+        <Style Selector="Grid#GridEdgesLoop">
+            <Style.Animations>
+                <Animation Delay="0:0:1.75" 
+                           Duration="0:0:1.75"
+                           IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Margin" Value="-64"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame KeyTime="0:0:0.75" KeySpline="0.16, 1, 0.3, 1">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Opacity" Value="1.0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Opacity" Value="1.0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
         <Style Selector="Border#BorderMain">
             <Style.Animations>
                 <Animation Duration="0:0:0.75" FillMode="Both" Easing="0.16, 1, 0.3, 1">
@@ -32,6 +52,26 @@
                     <KeyFrame Cue="100%">
                         <Setter Property="Margin" Value="0"/>
                         <Setter Property="Opacity" Value="0.75"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border#BorderMainLoop">
+            <Style.Animations>
+                <Animation Delay="0:0:1.75" 
+                           Duration="0:0:1.75"
+                           IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Margin" Value="-32"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame KeyTime="0:0:0.75" KeySpline="0.16, 1, 0.3, 1">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Opacity" Value="0.75"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%" KeySpline="0.16, 1, 0.3, 1">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
                     </KeyFrame>
                 </Animation>
             </Style.Animations>
@@ -57,9 +97,21 @@
                 BorderThickness="2.5"
                 Opacity="0"
                 x:Name="BorderMain"/>
+        <Border BorderBrush="{DynamicResource AccentFillColorDefaultBrush}"
+                BorderThickness="2.5"
+                Opacity="0"
+                x:Name="BorderMainLoop"/>
         <Grid ColumnDefinitions="16 * 16" RowDefinitions="16 * 16"
               Opacity="0"
               x:Name="GridEdges">
+            <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="3 3 0 0"/>
+            <Border Grid.Row="0" Grid.Column="2" BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="0 3 3 0"/>
+            <Border Grid.Row="2" Grid.Column="0" BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="3 0 0 3"/>
+            <Border Grid.Row="2" Grid.Column="2" BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="0 0 3 3"/>
+        </Grid>
+        <Grid ColumnDefinitions="16 * 16" RowDefinitions="16 * 16"
+              Opacity="0"
+              x:Name="GridEdgesLoop">
             <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="3 3 0 0"/>
             <Border Grid.Row="0" Grid.Column="2" BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="0 3 3 0"/>
             <Border Grid.Row="2" Grid.Column="0" BorderBrush="{DynamicResource AccentFillColorDefaultBrush}" BorderThickness="3 0 0 3"/>

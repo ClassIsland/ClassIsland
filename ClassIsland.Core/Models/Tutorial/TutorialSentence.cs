@@ -95,6 +95,17 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// 初始化动作
     /// </summary>
     [ObservableProperty] private ObservableCollection<TutorialAction> _initializeActions = [];
+
+    /// <summary>
+    /// 是否等待外部手动推进教程进度
+    /// </summary>
+    [ObservableProperty] private bool _waitForNextCommand = false;
+
+    /// <summary>
+    /// 教学提示拜访位置
+    /// </summary>
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [ObservableProperty] private TeachingTipPlacementMode _placementMode;
     
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
 }

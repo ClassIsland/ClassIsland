@@ -31,6 +31,9 @@ public partial class TutorialEditorWindow : MyWindow
     public static FuncValueConverter<TutorialActionKind, int> TutorialActionKindToIntConverter { get; } =
         new(x => (int)x, x => (TutorialActionKind)x);
     
+    public static FuncValueConverter<TeachingTipPlacementMode, int> TeachingTipPlacementModeToIntConverter { get; } =
+        new(x => (int)x, x => (TeachingTipPlacementMode)x);
+    
     public TutorialEditorViewModel ViewModel { get; } = IAppHost.GetService<TutorialEditorViewModel>();
     
     public TutorialEditorWindow()

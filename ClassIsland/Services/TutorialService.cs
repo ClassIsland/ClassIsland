@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AsyncImageLoader;
 using Avalonia;
@@ -13,18 +14,23 @@ using ClassIsland.Core.Enums.Tutorial;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Tutorial;
+using ClassIsland.Models.Tutorial;
+using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
+using ReactiveUI;
 using Tmds.DBus.Protocol;
 
 namespace ClassIsland.Services;
 
-public partial class TutorialService(SettingsService settingsService, IActionService actionService, IUriNavigationService uriNavigationService) : ObservableObject, ITutorialService
+public partial class TutorialService : ObservableObject, ITutorialService
 {
-    private SettingsService SettingsService { get; } = settingsService;
-    private IActionService ActionService { get; } = actionService;
-    private IUriNavigationService UriNavigationService { get; } = uriNavigationService;
+    private SettingsService SettingsService { get; }
+    private IActionService ActionService { get; }
+    private IUriNavigationService UriNavigationService { get; }
+    
+    private TutorialSettings Settings { get; }
 
     [ObservableProperty] private Tutorial? _currentTutorial;
     [ObservableProperty] private TutorialParagraph? _currentParagraph;
@@ -42,7 +48,30 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
 
     [ObservableProperty] private TopLevel? _attachedToplevel;
     
+    public event EventHandler? TutorialStateChanged;
+
+    /// <inheritdoc/>
+    public TutorialService(SettingsService settingsService, IActionService actionService, IUriNavigationService uriNavigationService)
+    {
+        SettingsService = settingsService;
+        ActionService = actionService;
+        UriNavigationService = uriNavigationService;
+
+        Settings = ConfigureFileHelper.LoadConfig<TutorialSettings>(Path.Combine(CommonDirectories.AppConfigPath,
+            "Tutorial.json"));
+        Settings.PropertyChanged += (_, _) => SaveConfig();
+        TutorialStateChanged += (_, _) => SaveConfig();
+        AppBase.Current.AppStopping += (_, _) => SaveConfig();
+        this.ObservableForProperty(x => x.IsTutorialRunning)
+            .Subscribe(_ => TutorialStateChanged?.Invoke(this, EventArgs.Empty));
+    }
+
     public bool IsTutorialRunning => CurrentSentence != null;
+
+    private void SaveConfig()
+    {
+        ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppConfigPath, "Tutorial.json"), Settings);
+    }
 
     public void BeginTutorial(Tutorial tutorial)
     {
@@ -52,6 +81,22 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
         // }
         
         JumpToParagraph(tutorial, null);
+    }
+
+    public void BeginTutorial(string path, bool requiresNotCompleted = false)
+    {
+        if (requiresNotCompleted && Settings.CompletedTutorials.Contains(path))
+        {
+            return;
+        }
+
+        var result = ParseParagraphPath(path, false);
+        if (result is not {} v)
+        {
+            return;
+        }
+        var (tutorial, paragraph) = v;
+        JumpToParagraph(tutorial, paragraph);
     }
 
     public void JumpToParagraph(Tutorial tutorial, TutorialParagraph? paragraph)
@@ -64,6 +109,21 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
         paragraph ??= tutorial.Paragraphs[0];
         ParagraphIndex = tutorial.Paragraphs.IndexOf(paragraph);
         StartParagraph(tutorial, paragraph);
+    }
+
+    public void PushToNextSentence(string? paragraphPath = null)
+    {
+        if (paragraphPath != null && GetCurrentParagraphPath() is {} currentPath && paragraphPath != currentPath)
+        {
+            return;
+        }
+
+        if (CurrentSentence is not { WaitForNextCommand: true })
+        {
+            return;
+        }
+        
+        TryStartNextSentence();
     }
 
     private void StartParagraph(Tutorial tutorial, TutorialParagraph paragraph)
@@ -141,7 +201,8 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
             IconSource = sentence.IconSource,
             Title = sentence.Title,
             Subtitle = sentence.Content,
-            Target = sentence.PointToTarget ? targetControl : null
+            Target = sentence.PointToTarget ? targetControl : null,
+            PreferredPlacement = sentence.PlacementMode
         };
         if (!string.IsNullOrEmpty(sentence.LeftButtonText))
         {
@@ -171,9 +232,63 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
         Dispatcher.UIThread.Post(() => teachingTip.IsOpen = true);
     }
 
+    private void TrySetCurrentParagraphCompleted()
+    {
+        if (CurrentParagraph != null && SentenceIndex + 1 >= CurrentParagraph.Content.Count && GetCurrentParagraphPath() is {} path) 
+            Settings.CompletedTutorials.Add(path);
+    }
+
+    private (Tutorial, TutorialParagraph?)? ParseParagraphPath(string? paragraphPath, bool useCurrentContext)
+    {
+        if (paragraphPath == null)
+        {
+            return null;
+        }
+
+        var paths = paragraphPath.Split('/');
+        if (useCurrentContext && paths.Length < 2)
+        {
+            if (CurrentTutorial == null)
+            {
+                return null;
+            }
+            var paragraph = CurrentTutorial.Paragraphs.FirstOrDefault(x => x.Id == paragraphPath);
+            return (CurrentTutorial, paragraph);
+        }
+        if (paths.Length < 1)
+        {
+            return null;
+        }
+        var tutorial = ITutorialService.RegisteredTutorialGroups
+            .SelectMany(x => x.Tutorials)
+            .FirstOrDefault(x => x.Id == paths[0]);
+        if (tutorial == null)
+        {
+            return null;
+        }
+        if (paths.Length < 2)
+        {
+            return (tutorial, null);
+        }
+        var paragraph1 = tutorial.Paragraphs.FirstOrDefault(x => x.Id == paths[1]);
+        return (tutorial, paragraph1);
+    }
+
+    private string? GetCurrentParagraphPath()
+    {
+        if (CurrentTutorial != null && CurrentParagraph != null )
+        {
+            return $"{CurrentTutorial.Id}/{CurrentParagraph.Id}";
+        }
+
+        return null;
+    }
+
     public void StopTutorial()
     {
         CleanupPrevSentence();
+        TrySetCurrentParagraphCompleted();
+        TutorialStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     [RelayCommand]
@@ -197,17 +312,7 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
             case TutorialActionKind.None:
                 break;
             case TutorialActionKind.NextSentence when CurrentParagraph != null && !isInit:
-                if (SentenceIndex + 1 < CurrentParagraph.Content.Count)
-                {
-                    StartSentence(CurrentParagraph.Content[++SentenceIndex]);
-                    break;
-                }
-                if (TryStartNextParagraph())
-                {
-                    break;
-                }
-
-                StopTutorial();
+                TryStartNextSentence();
                 break;
             case TutorialActionKind.NextParagraph when !isInit:
                 if (TryStartNextParagraph())
@@ -239,6 +344,12 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
                 StopTutorial();
                 break;
             case TutorialActionKind.JumpParagraph when !isInit:
+                var result = ParseParagraphPath(action.StringParameter, true);
+                if (result != null)
+                {
+                    var (tutorial, paragraph) = result.Value;
+                    JumpToParagraph(tutorial, paragraph);
+                }
                 break;
             case TutorialActionKind.Stop:
                 StopTutorial();
@@ -254,6 +365,21 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
         }
     }
 
+    private void TryStartNextSentence()
+    {
+        if (CurrentParagraph != null && SentenceIndex + 1 < CurrentParagraph.Content.Count)
+        {
+            StartSentence(CurrentParagraph.Content[++SentenceIndex]);
+            return;
+        }
+        if (TryStartNextParagraph())
+        {
+            return;
+        }
+
+        StopTutorial();
+    }
+
     private bool TryStartNextParagraph()
     {
         if (CurrentTutorial == null)
@@ -265,6 +391,7 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
             return false;
         }
         
+        TrySetCurrentParagraphCompleted();
         StartParagraph(CurrentTutorial, CurrentTutorial.Paragraphs[++ParagraphIndex]);
         return true;
     }
@@ -280,6 +407,7 @@ public partial class TutorialService(SettingsService settingsService, IActionSer
             return false;
         }
         
+        TrySetCurrentParagraphCompleted();
         StartParagraph(CurrentTutorial, CurrentTutorial.Paragraphs[--ParagraphIndex]);
         return true;
     }
