@@ -16,6 +16,7 @@ using Avalonia.Metadata;
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.Ruleset")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Commands")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Controls")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Behaviors")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.StickerControl")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Views")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Behaviors")]

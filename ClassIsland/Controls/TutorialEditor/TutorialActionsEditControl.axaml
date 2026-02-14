@@ -1,0 +1,95 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tutorialEditor="clr-namespace:ClassIsland.Controls.TutorialEditor"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:tutorial="clr-namespace:ClassIsland.Core.Enums.Tutorial;assembly=ClassIsland.Core"
+             xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
+             xmlns:tutorial1="clr-namespace:ClassIsland.Core.Models.Tutorial;assembly=ClassIsland.Core"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Controls.TutorialEditor.TutorialActionsEditControl">
+    <UserControl.Styles>
+        <Style Selector="ListBox.item-sort ListBoxItem">
+            <Setter Property="Interaction.Behaviors">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <ci:AdvancedItemDragBehavior HorizontalDragThreshold="33550336" VerticalDragThreshold="3"
+                                                     AllowDragFromDragThumbOnly="True"
+                                                     Orientation="Vertical"/>
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="Auto *" 
+          DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=tutorialEditor:TutorialActionsEditControl}}">
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal"
+                    Classes="items-valign-center"
+                    Spacing="4">
+            <ci:AnimatedIconButton Glyph="&#xE00D;"
+                                   Text="添加"
+                                   Click="ButtonAdd_OnClick"/>
+            <ci:AnimatedIconButton Glyph="&#xE58B;"
+                                   Text="复制"
+                                   Click="ButtonDuplicate_OnClick"/>
+            <ci:AnimatedIconButton Glyph="&#xE61D;"
+                                   Text="删除"
+                                   Foreground="IndianRed"
+                                   Click="ButtonDelete_OnClick"/>
+        </StackPanel>
+        <ListBox Grid.Row="1" 
+                 ItemsSource="{Binding TutorialActions}"
+                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                 Classes="item-sort">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="tutorial1:TutorialAction">
+                    <Grid ColumnDefinitions="Auto Auto *" RowDefinitions="Auto Auto"
+                          Margin="-12 4">
+                        <ci:TouchDragThumb Grid.Row="0" Grid.Column="0" IsExplicitVisible="True"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1"
+                                  SelectionChanged="SelectingItemsControl_OnSelectionChanged"
+                                  SelectedIndex="{Binding Kind, Converter={x:Static views:TutorialEditorWindow.TutorialActionKindToIntConverter}}">
+                            <ComboBoxItem>无</ComboBoxItem>
+                            <ComboBoxItem>下一句</ComboBoxItem>
+                            <ComboBoxItem>上一句</ComboBoxItem>
+                            <ComboBoxItem>下一段</ComboBoxItem>
+                            <ComboBoxItem>上一段</ComboBoxItem>
+                            <ComboBoxItem>跳转到段落</ComboBoxItem>
+                            <ComboBoxItem>停止</ComboBoxItem>
+                            <ComboBoxItem>执行行动</ComboBoxItem>
+                            <ComboBoxItem>执行 Uri</ComboBoxItem>
+                        </ComboBox>
+                        <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding StringParameter}">
+                            <TextBox.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                    <Binding Path="Kind" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <tutorial:TutorialActionKind>InvokeUri</tutorial:TutorialActionKind>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                    <Binding Path="Kind" Converter="{x:Static ObjectConverters.Equal}">
+                                        <Binding.ConverterParameter>
+                                            <tutorial:TutorialActionKind>JumpParagraph</tutorial:TutorialActionKind>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </MultiBinding>
+                            </TextBox.IsVisible>
+                        </TextBox>
+                        <automation:ActionControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                                                  ActionSet="{Binding ActionSet}">
+                            <automation:ActionControl.IsVisible>
+                                <Binding Path="Kind" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <tutorial:TutorialActionKind>InvokeActionSet</tutorial:TutorialActionKind>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </automation:ActionControl.IsVisible>
+                        </automation:ActionControl>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>

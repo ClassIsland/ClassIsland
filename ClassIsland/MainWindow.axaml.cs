@@ -145,6 +145,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     public TopmostEffectWindow TopmostEffectWindow { get; }
     
     public IXamlThemeService XamlThemeService { get; }
+    private ITutorialService TutorialService { get; }
 
     public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
 
@@ -201,7 +202,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         IWindowRuleService windowRuleService,
         IManagementService managementService,
         TopmostEffectWindow topmostEffectWindow,
-        IXamlThemeService xamlThemeService)
+        IXamlThemeService xamlThemeService,
+        ITutorialService tutorialService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -219,6 +221,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ManagementService = managementService;
         TopmostEffectWindow = topmostEffectWindow;
         XamlThemeService = xamlThemeService;
+        TutorialService = tutorialService;
 
         DataContext = this;
         
@@ -809,6 +812,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         var dockingTop = ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2;
         var verticalSafeAreaPx = XamlThemeService.ActualVerticalSafeAreaPx;
+        if (TutorialService.IsTutorialRunning && TutorialService.AttachedToplevel == this)
+        {
+            verticalSafeAreaPx = Math.Max(verticalSafeAreaPx, 150);
+        }
         var safeT = Math.Max(dockingTop ? Math.Min(verticalSafeAreaPx, oy) : verticalSafeAreaPx, 0) * scale;
         var safeB = Math.Max(dockingTop ? verticalSafeAreaPx : Math.Min(verticalSafeAreaPx, -oy), 0) * scale;
         var x = screen.WorkingArea.X + ox;
@@ -1127,6 +1134,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         AppBase.Current.Restart();
     }
     
+    private void NativeMenuItemOpenTutorialEditor_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<TutorialEditorWindow>().Show();
+    }
 
     private void NativeMenuItemDebugOpenScreenshotWindow_OnClick(object? sender, EventArgs e)
     {
