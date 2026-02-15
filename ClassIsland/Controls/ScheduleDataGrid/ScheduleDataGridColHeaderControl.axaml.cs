@@ -101,6 +101,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
     private void ButtonCreateClassPlanOnClick(object? sender, RoutedEventArgs e)
     {
         InitClassPlanCreationExp();
+        Dispatcher.UIThread.Post(() => IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("classisland.sdg.header.creationPopup.open"));
     }
 
     private void InitClassPlanCreationExp()
@@ -208,6 +209,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         ViewModel.ClassPlanTimeRule = ConfigureFileHelper.CopyObject(ViewModel.ClassPlanTimeRule);
         profileService.Profile.ClassPlans.Add(Guid.NewGuid(), cp);
         FlyoutHelper.CloseAncestorFlyout(o);
+        Dispatcher.UIThread.Post(() => IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("classisland.sdg.header.creationPopup.complete"));
 
         if (_scheduleDataGrid == null) 
             return;

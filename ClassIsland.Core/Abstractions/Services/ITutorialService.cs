@@ -71,6 +71,12 @@ public interface ITutorialService : INotifyPropertyChanged
     /// </summary>
     /// <param name="paragraphPath">限定生效的教程段落路径。设置此参数后，仅在教程段落路径为这个值时此方法才起作用</param>
     void PushToNextSentence(string? paragraphPath = null);
+    
+    /// <summary>
+    /// 手动按标签将当前教程向前推动一个语句。仅在当前语句设置了 <see cref="TutorialSentence.WaitForNextCommand"/> 为 true 时生效。
+    /// </summary>
+    /// <param name="tag">限定生效的教学语句标签。此方法只会推动具有相同标签的语句。</param>
+    void PushToNextSentenceByTag(string tag);
 
     /// <summary>
     /// 停止当前教学。

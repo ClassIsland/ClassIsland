@@ -302,6 +302,8 @@ public partial class App
         });
         // 教程
         services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.test.json"));
+        services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.sp.json"));
+        services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.getStarted.json"));
         // Plugins
         if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1))
         {

@@ -202,7 +202,7 @@
               "HeroImage": "",
               "TargetSelector": "TabItem",
               "HighlightTarget": true,
-              "PointToTarget": false,
+              "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
@@ -219,6 +219,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
+              "PlacementMode": 8,
               "Xmlns": {}
             }
           ],

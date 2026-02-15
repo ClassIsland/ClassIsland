@@ -501,6 +501,11 @@
                         SelectionChanged="MasterTabControl_OnSelectionChanged"
                         x:Name="MasterTabControl"
                         SelectedIndex="{Binding ViewModel.MasterPageTabSelectIndex}">
+                <TabControl.Styles>
+                    <Style Selector="TabControl#MasterTabControl /template/ ItemsPresenter#PART_ItemsPresenter">
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                    </Style>
+                </TabControl.Styles>
                 <TabItem Header="课表" Classes="tag-ClassPlans"
                          IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <TabControl TabStripPlacement="Bottom" Classes="compact" Padding="0" 
@@ -984,7 +989,7 @@
                                               Grid.Row="1" 
                                               VerticalAlignment="Stretch" />
 
-                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact"
+                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact tag-SubjectsInput"
                                             IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                             Padding="0">
                                     <TabItem Header="编辑科目">
@@ -1366,7 +1371,7 @@
                                                     <AddClassAction ClassName="line-timePoint" />
                                                 </DataTriggerBehavior>
                                             </Interaction.Behaviors>
-                                            <StackPanel Spacing="8">
+                                            <StackPanel Spacing="8" Classes="tag-TimePointEditing">
                                                 <TextBlock Text="编辑时间点"
                                                            Theme="{StaticResource SubtitleTextBlockStyle}" />
                                                 <!--<TextBlock Text="{Binding}"/>-->
@@ -1869,7 +1874,8 @@
             </TabControl>
 
             <!-- 信息栏 -->
-            <controls:CommandBar Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" DefaultLabelPosition="Right">
+            <controls:CommandBar Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" DefaultLabelPosition="Right"
+                                 Classes="tag-InfoBar">
                 <controls:CommandBar.SecondaryCommands>
                     
                 </controls:CommandBar.SecondaryCommands>

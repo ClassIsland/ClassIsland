@@ -30,6 +30,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public IExactTimeService ExactTimeService { get; }
     public IActionService ActionService { get; }
     public ILogger<ProfileSettingsWindow> Logger { get; }
+    public ITutorialService TutorialService { get; }
 
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
     public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
@@ -93,7 +94,8 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
         SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
         IActionService actionService,
-        ILogger<ProfileSettingsWindow> logger)
+        ILogger<ProfileSettingsWindow> logger,
+        ITutorialService tutorialService)
     {
         ProfileService = profileService;
         ManagementService = managementService;
@@ -102,6 +104,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         ExactTimeService = exactTimeService;
         ActionService = actionService;
         Logger = logger;
+        TutorialService = tutorialService;
 
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
         TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);
