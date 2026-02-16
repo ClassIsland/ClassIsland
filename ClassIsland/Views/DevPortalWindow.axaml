@@ -11,6 +11,7 @@
         xmlns:helpers="clr-namespace:ClassIsland.Core.Helpers;assembly=ClassIsland.Core"
         xmlns:scheduleDataGrid="clr-namespace:ClassIsland.Controls.ScheduleDataGrid"
         xmlns:tutorial="clr-namespace:ClassIsland.Controls.Tutorial;assembly=ClassIsland"
+        xmlns:iconSources="clr-namespace:ClassIsland.Core.Controls.IconSources;assembly=ClassIsland.Core"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.DevPortalWindow"
         Title="DevPortal"
@@ -105,6 +106,11 @@
                                            StickerSource="/Assets/HoYoStickers/昔涟_收到.png"
                                            StickerToolTip="昔涟_收到"
                                            FallbackIcon="{ci:LucideIconSource &#xE1E7;, FontSize=81}"/>
+                        <iconSources:AdvancedImageIcon>
+                            <iconSources:AdvancedImageIcon.IconSource>
+                                <iconSources:AdvancedImageIconSource Uri="avares://ClassIsland/Assets/HoYoStickers/昔涟_收到.png"/>
+                            </iconSources:AdvancedImageIcon.IconSource>
+                        </iconSources:AdvancedImageIcon>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

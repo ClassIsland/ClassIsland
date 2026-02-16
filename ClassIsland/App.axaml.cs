@@ -44,6 +44,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Controls.IconSources;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
@@ -251,6 +252,13 @@ public partial class App : AppBase, IAppHost
             UriSource = new Uri(args[0]),
             ShowAsMonochrome = args.Length >= 2  && bool.TryParse(args[2], out var r1) && r1
         });
+        IconExpressionHelper.RegisterHandler("sticker", args => 
+            IAppHost.TryGetService<IManagementService>()?.Policy.DisableEasterEggs == true
+            ? args.Length >= 2 ? IconExpressionHelper.TryParseOrNull(args[1]) : new FontIconSource()
+            : new AdvancedImageIconSource()
+            {
+                Uri = Uri.TryCreate(args[0], UriKind.Absolute, out var uri) ? uri.ToString() : $"avares://ClassIsland/Assets/HoYoStickers/{args[0]}.png"
+            });
         base.Initialize();
     }
 

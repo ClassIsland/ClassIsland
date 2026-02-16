@@ -17,10 +17,12 @@
           "InitializeActions": [],
           "Content": [
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "\u6B22\u8FCE\u4F7F\u7528 ClassIsland",
-              "Content": "\u8981\u901A\u8FC7\u6559\u7A0B\u624B\u628A\u624B\u5730\u5FEB\u901F\u4E0A\u624B ClassIsland \u5417\uFF1F",
-              "IconExpression": "",
+              "Content": "\u8981\u901A\u8FC7\u6559\u7A0B\u5FEB\u901F\u4E0A\u624B ClassIsland \u5417\uFF1F",
+              "IconExpression": "sticker(\u5E15\u59C6_\u55E8)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -348,10 +350,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u7CFB\u7EDF\u6258\u76D8\u4E2D\u5982\u56FE\u6240\u793A\u7684 ClassIsland \u56FE\u6807\uFF0C\u6253\u5F00\u5E94\u7528\u4E3B\u83DC\u5355\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u5E94\u7528\u8BBE\u7F6E\u2026\u3011\u6253\u5F00\u5E94\u7528\u8BBE\u7F6E\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -471,10 +475,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u60A8\u53EF\u4EE5\u6309\u9700\u6C42\u8C03\u6574\u5B66\u671F\u5F00\u59CB\u65F6\u95F4",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|SettingsExpander[Header=\u5B66\u671F\u5F00\u59CB\u65F6\u95F4] :is(TextBox)",
               "PointToTarget": true,
@@ -587,10 +593,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u6253\u5F00\u4E3B\u83DC\u5355\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u7F16\u8F91\u6863\u6848\u2026\u3011\u6253\u5F00\u8BFE\u8868\u7F16\u8F91\u754C\u9762\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -724,8 +732,8 @@
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
-                  "StringParameter": ""
+                  "Kind": 5,
+                  "StringParameter": "classisland.getStarted.profileEditing/conecpts"
                 }
               ],
               "LeftButtonText": "",
@@ -740,34 +748,6 @@
               "UseLightDismiss": true,
               "Tag": "",
               "PlacementMode": 8,
-              "Xmlns": {}
-            },
-            {
-              "IconSource": null,
-              "Title": "",
-              "Content": "\u6211\u4EEC\u63A5\u4E0B\u6765\u6765\u4E86\u89E3\u8BFE\u8868\u7684\u57FA\u672C\u7F16\u8F91\u65B9\u6CD5\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u597D",
-              "RightButtonActions": [
-                {
-                  "Kind": 5,
-                  "StringParameter": "classisland.getStarted.profileEditing/basic-concepts"
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
               "Xmlns": {}
             }
           ],
@@ -795,10 +775,12 @@
           ],
           "Content": [
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\u63A5\u4E0B\u6765\u6211\u4EEC\u6765\u4E86\u89E3\u6709\u5173\u8BFE\u8868\u7CFB\u7EDF\u7684\u57FA\u672C\u6982\u5FF5\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -929,7 +911,7 @@
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonText": "\u5B8C\u6210",
               "RightButtonActions": [
                 {
                   "Kind": 1,
@@ -1026,10 +1008,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "\u521B\u5EFA\u65F6\u95F4\u8868",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u6DFB\u52A0\u3011\u6309\u94AE\uFF0C\u521B\u5EFA\u4E00\u4EFD\u65F6\u95F4\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|CommandBarButton[Label=\u6DFB\u52A0]",
               "HighlightTarget": true,
@@ -1057,10 +1041,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\u60A8\u53EF\u4EE5\u5728\u8FD9\u4E2A\u9875\u9762\u5C06\u65F6\u95F4\u8868\u547D\u540D\u4E3A\u60A8\u5BB9\u6613\u8BB0\u4F4F\u7684\u540D\u79F0\u3002\u5728\u7F16\u8F91\u5B8C\u65F6\u95F4\u8868\u7684\u57FA\u672C\u4FE1\u606F\u540E\uFF0C\u70B9\u51FB\u7A7A\u767D\u5904\u5173\u95ED\u62BD\u5C49\u5373\u53EF\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": false,
@@ -1141,10 +1127,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "\u521B\u5EFA\u4E0A\u8BFE\u65F6\u95F4\u70B9",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u4E0A\u8BFE\u3011\u6309\u94AE\uFF0C\u521B\u5EFA\u4E00\u4E2A\u4EE3\u8868\u4E0A\u8BFE\u7684\u65F6\u95F4\u70B9\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|CommandBarButton[Label=\u4E0A\u8BFE]",
               "HighlightTarget": true,
@@ -1202,10 +1190,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "\u7F16\u8F91\u65F6\u95F4\u70B9",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u6309\u7167\u60A8\u7684\u5B9E\u9645\u4F5C\u606F\u5B89\u6392\uFF0C\u8BD5\u8BD5\u770B\u901A\u8FC7\u62D6\u52A8\u8FD9\u4E2A\u65F6\u95F4\u70B9\u6216\u62D6\u62FD\u5176\u9876\u90E8\u6216\u5E95\u90E8\u7684\u624B\u67C4\u6765\u8C03\u6574\u5176\u8D77\u59CB\u65F6\u95F4\u5427\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": ":is(ListBox)#TimeLineListControl ListBoxItem",
               "HighlightTarget": true,
@@ -1290,10 +1280,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u8BFE\u95F4\u3011\u6309\u94AE\uFF0C\u521B\u5EFA\u4E00\u4E2A\u4EE3\u8868\u8BFE\u95F4\u4F11\u606F\u7684\u65F6\u95F4\u70B9\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|CommandBarButton[Label=\u8BFE\u95F4]",
               "HighlightTarget": true,
@@ -1534,10 +1526,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u60A8\u60F3\u521B\u5EFA\u8BFE\u8868\u7684\u90A3\u4E00\u5929\uFF08\u4F8B\u5982\u5468\u4E00\uFF09\u4E0B\u7684\u3010\u65B0\u8BFE\u8868\u3011\u6309\u94AE\u4EE5\u521B\u5EFA\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "DataGridColumnHeadersPresenter#PART_ColumnHeadersPresenter",
               "HighlightTarget": true,
@@ -1565,10 +1559,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u5728\u3010\u65F6\u95F4\u8868\u3011\u4E2D\u9009\u62E9\u521A\u521A\u521B\u5EFA\u7684\u65F6\u95F4\u8868\uFF0C\u7136\u540E\u6682\u65F6\u4E0D\u7528\u7BA1\u5176\u5B83\u7684\u53C2\u6570\uFF0C\u76F4\u63A5\u70B9\u51FB\u3010\u521B\u5EFA\u3011\u5373\u53EF\u521B\u5EFA\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": false,
@@ -1593,9 +1589,41 @@
               "Xmlns": {}
             },
             {
+              "IconSource": {
+                "Foreground": null
+              },
+              "Title": "",
+              "Content": "\uD83C\uDF89\u606D\u559C\uFF01\u60A8\u73B0\u5728\u5DF2\u7ECF\u521B\u5EFA\u597D\u4E86\u60A8\u7684\u7B2C\u4E00\u4E2A\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u70B9\u8D5E)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 1,
+              "Xmlns": {}
+            },
+            {
               "IconSource": null,
               "Title": "",
-              "Content": "\uD83C\uDF89\u606D\u559C\uFF01\u60A8\u73B0\u5728\u5DF2\u7ECF\u521B\u5EFA\u597D\u4E86\u60A8\u7684\u7B2C\u4E00\u4E2A\u8BFE\u8868\u3002\u53EF\u4EE5\u770B\u5230\u6211\u4EEC\u65B0\u5EFA\u7684\u8BFE\u8868\u5DF2\u7ECF\u663E\u793A\u5728\u8FD9\u91CC\u4E86\u3002\u5728\u8868\u683C\u8BFE\u8868\u7F16\u8F91\u5668\u4E2D\uFF0C\u6BCF\u4E00\u5217\u4EE3\u8868\u5728\u8FD9\u4E00\u5929\u542F\u7528\u7684\u8BFE\u8868\u3002",
+              "Content": "\u53EF\u4EE5\u770B\u5230\u6211\u4EEC\u65B0\u5EFA\u7684\u8BFE\u8868\u5DF2\u7ECF\u663E\u793A\u5728\u8FD9\u91CC\u4E86\u3002\u5728\u8868\u683C\u8BFE\u8868\u7F16\u8F91\u5668\u4E2D\uFF0C\u6BCF\u4E00\u5217\u4EE3\u8868\u5728\u8FD9\u4E00\u5929\u542F\u7528\u7684\u8BFE\u8868\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "DataGridRowsPresenter#PART_RowsPresenter",
@@ -1653,10 +1681,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u53CC\u51FB\u6807\u4E3A\u201C\uFF08\u7A7A\uFF09\u201D\u7684\u683C\u5B50\uFF0C\u5373\u53EF\u7F16\u8F91\u8FD9\u4E2A\u8BFE\u7A0B\u7684\u79D1\u76EE\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "sdg|ScheduleDataGridCellControl[IsNullClassPlan=False]",
               "HighlightTarget": true,
@@ -1684,10 +1714,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u5728\u5F39\u51FA\u7684\u754C\u9762\u4E2D\u9009\u62E9\u8981\u8BBE\u7F6E\u7684\u79D1\u76EE\uFF0C\u5373\u53EF\u5B8C\u6210\u79D1\u76EE\u8BBE\u7F6E\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": false,
@@ -1772,10 +1804,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u6309\u7167\u60A8\u7684\u8BFE\u7A0B\u5B89\u6392\u5F55\u5165\u8FD9\u4E2A\u8BFE\u8868\u7684\u79D1\u76EE\u5427\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -1931,7 +1965,7 @@
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonText": "\u5B8C\u6210",
               "RightButtonActions": [
                 {
                   "Kind": 1,
@@ -1952,10 +1986,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u8BFE\u8868\u4FE1\u606F\u2026\u3011\u6309\u94AE\u6253\u5F00\u4E00\u4E2A\u8BFE\u8868\u7684\u8BE6\u7EC6\u4FE1\u606F\u754C\u9762\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "Button#PART_ButtonOpenClassPlanSettings",
               "HighlightTarget": true,
@@ -2073,10 +2109,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u7A7A\u767D\u533A\u57DF\u5173\u95ED\u8BFE\u8868\u8BE6\u7EC6\u4FE1\u606F\u9875\u9762\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -2129,10 +2167,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u60A8\u60F3\u521B\u5EFA\u8BFE\u8868\u7684\u90A3\u4E00\u5929\uFF08\u4F8B\u5982\u5468\u4E00\uFF09\u4E0B\u7684\u3010\u65B0\u8BFE\u8868\u3011\u6309\u94AE\u4EE5\u521B\u5EFA\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "DataGridColumnHeadersPresenter#PART_ColumnHeadersPresenter",
               "HighlightTarget": true,
@@ -2160,10 +2200,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u5728\u3010\u65F6\u95F4\u8868\u3011\u4E2D\u9009\u62E9\u4E00\u4E2A\u65F6\u95F4\u8868\uFF0C\u7136\u540E\u5728\u3010\u89E6\u53D1\u89C4\u5219\u3011\u5904\u542F\u7528\u591A\u5468\u8F6E\u6362\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u521B\u5EFA\u3011\u521B\u5EFA\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -2216,10 +2258,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
-              "Content": "\u70B9\u51FB\u3010\u4E0B\u4E00\u5468\u3011\u6309\u94AE\uFF0C\u5207\u6362\u5230\u4E0B\u4E00\u5468\u7684\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u4E0B\u4E00\u5468\u3011\u6309\u94AE\uFF0C\u5207\u6362\u5230\u4E0B\u4E00\u5468\u7684\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "sdg|ScheduleDataGrid#ScheduleDataGrid /template/ Button#PART_ButtonNextWeek",
               "HighlightTarget": true,
@@ -2275,10 +2319,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u60A8\u521A\u521A\u521B\u5EFA\u4E86\u6709\u591A\u5468\u8F6E\u6362\u7684\u8BFE\u8868\u7684\u90A3\u4E00\u5929\u4E0B\u7684\u3010\u65B0\u8BFE\u8868\u3011\u6309\u94AE\u4EE5\u521B\u5EFA\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "DataGridColumnHeadersPresenter#PART_ColumnHeadersPresenter",
               "HighlightTarget": true,
@@ -2362,10 +2408,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83D\uDC49\u4E00\u5207\u8BBE\u7F6E\u59A5\u5F53\u540E\uFF0C\u70B9\u51FB\u3010\u521B\u5EFA\u3011\u521B\u5EFA\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -2390,10 +2438,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "",
               "Content": "\uD83C\uDF89\u606D\u559C\uFF01\u60A8\u6210\u529F\u521B\u5EFA\u4E86\u5177\u6709\u591A\u5468\u8F6E\u6362\u7684\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u70B9\u8D5E)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,

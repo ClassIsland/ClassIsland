@@ -41,6 +41,8 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -68,6 +70,8 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
               "Xmlns": {}
             },
             {
@@ -94,6 +98,8 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
               "Xmlns": {}
             },
             {
@@ -156,6 +162,8 @@
                 }
               ],
               "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
               "Xmlns": {}
             },
             {
@@ -182,6 +190,8 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
               "Xmlns": {}
             }
           ],
@@ -195,10 +205,12 @@
           "InitializeActions": [],
           "Content": [
             {
-              "IconSource": null,
+              "IconSource": {
+                "Foreground": null
+              },
               "Title": "Hello",
               "Content": "",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u6614\u6D9F_\u7231)",
               "HeroImage": "",
               "TargetSelector": "TabItem",
               "HighlightTarget": true,
@@ -219,7 +231,37 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
               "PlacementMode": 8,
+              "Xmlns": {}
+            },
+            {
+              "IconSource": null,
+              "Title": "",
+              "Content": "",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
               "Xmlns": {}
             }
           ],
@@ -258,6 +300,8 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
               "PlacementMode": 7,
               "Xmlns": {}
             }
