@@ -134,7 +134,7 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         if (!ViewModel.IsDrawerOpen)
         {
-            ViewModel.TutorialService.PushToNextSentence();
+            ViewModel.TutorialService.PushToNextSentenceByTag("classisland.profileSettingsWindow.drawer.close");
         }
     }
 
