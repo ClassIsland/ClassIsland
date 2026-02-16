@@ -387,6 +387,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Event Handlers
+    
     private void HighFreqTopmostRecheckTimerOnTick(object? sender, EventArgs e)
     {
         if (ViewModel.Settings.WindowTopmostRecheckMode == 3)

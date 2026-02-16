@@ -9,6 +9,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Threading;
 using ClassIsland.Controls.Tutorial;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums.Tutorial;
 using ClassIsland.Core.Extensions.UI;
@@ -45,6 +46,8 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private List<Control> AttachedAdorners { get; } = [];
     
     private TeachingTip? CurrentTeachingTip { get; set; }
+
+    private IDisposable? _currentTeachingTipIsOpenObserver;
 
     [ObservableProperty] private TopLevel? _attachedToplevel;
     
@@ -126,6 +129,16 @@ public partial class TutorialService : ObservableObject, ITutorialService
         TryStartNextSentence();
     }
 
+    public void PushToNextSentenceByTag(string tag)
+    {
+        if (CurrentSentence is not { WaitForNextCommand: true } sentence || sentence.Tag != tag)
+        {
+            return;
+        }
+        
+        TryStartNextSentence();
+    }
+
     private void StartParagraph(Tutorial tutorial, TutorialParagraph paragraph)
     {
         CleanupPrevSentence();
@@ -146,12 +159,13 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     private void CleanupPrevSentence()
     {
-        if (AttachedToplevel != null && AttachedToplevel.Content is Visual visual)
+        if (AttachedToplevel is { Content: Visual visual })
         {
             var layer = AdornerLayer.GetAdornerLayer(visual);
             if (CurrentTeachingTip != null)
             {
                 CurrentTeachingTip.IsOpen = false;
+                CurrentTeachingTip.Closed -= TeachingTipOnClosed;
             }
 
             foreach (var adorner in AttachedAdorners)
@@ -181,15 +195,16 @@ public partial class TutorialService : ObservableObject, ITutorialService
     {
         CleanupPrevSentence();
 
-        if (AttachedToplevel == null || AttachedToplevel.Content is not Visual visual)
+        if (CurrentTutorial == null || CurrentParagraph == null)
         {
             return;
         }
+        
         CurrentSentence = sentence;
         InvokeActions(sentence.InitializeActions, true);
         var targetControl = !string.IsNullOrWhiteSpace(sentence.TargetSelector)
             ? AttachedToplevel.FindDescendantBySelector(SelectorHelpers.Parse(sentence.TargetSelector,
-                new Dict<string, string>())) as Control
+                IXmlnsAttached.Combine([CurrentTutorial, CurrentParagraph, CurrentSentence]))) as Control
             : null;
         var teachingTip = CurrentTeachingTip = new TeachingTip()
         {
@@ -202,17 +217,23 @@ public partial class TutorialService : ObservableObject, ITutorialService
             Title = sentence.Title,
             Subtitle = sentence.Content,
             Target = sentence.PointToTarget ? targetControl : null,
-            PreferredPlacement = sentence.PlacementMode
+            PreferredPlacement = sentence.PlacementMode,
+            IsLightDismissEnabled = sentence.UseLightDismiss
         };
-        if (!string.IsNullOrEmpty(sentence.LeftButtonText))
+        if (!string.IsNullOrEmpty(sentence.LeftButtonText) && !sentence.UseLightDismiss)
         {
             teachingTip.ActionButtonContent = sentence.LeftButtonText;
             teachingTip.ActionButtonCommandParameter = sentence.LeftButtonActions;
         }
-        if (!string.IsNullOrEmpty(sentence.RightButtonText))
+        if (!string.IsNullOrEmpty(sentence.RightButtonText) && !sentence.UseLightDismiss)
         {
             teachingTip.CloseButtonContent = sentence.RightButtonText;
             teachingTip.CloseButtonCommandParameter = sentence.RightButtonActions;
+        }
+
+        if (sentence.UseLightDismiss)
+        {
+            teachingTip.Closed += TeachingTipOnClosed;
         }
 
         teachingTip.ActionButtonCommand = teachingTip.CloseButtonCommand = InvokeActionsCommand;
@@ -230,6 +251,15 @@ public partial class TutorialService : ObservableObject, ITutorialService
         }
         (AttachedToplevel as Window)?.Activate();
         Dispatcher.UIThread.Post(() => teachingTip.IsOpen = true);
+    }
+
+    private void TeachingTipOnClosed(TeachingTip sender, TeachingTipClosedEventArgs args)
+    {
+        if (CurrentSentence == null)
+        {
+            return;
+        }
+        InvokeActions(CurrentSentence.RightButtonActions);
     }
 
     private void TrySetCurrentParagraphCompleted()

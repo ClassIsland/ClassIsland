@@ -100,6 +100,16 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// 是否等待外部手动推进教程进度
     /// </summary>
     [ObservableProperty] private bool _waitForNextCommand = false;
+    
+    /// <summary>
+    /// 使用 LightDismiss 代替右侧按钮的行为
+    /// </summary>
+    [ObservableProperty] private bool _useLightDismiss = true;
+
+    /// <summary>
+    /// 语句标签
+    /// </summary>
+    [ObservableProperty] private string _tag = "";
 
     /// <summary>
     /// 教学提示拜访位置
