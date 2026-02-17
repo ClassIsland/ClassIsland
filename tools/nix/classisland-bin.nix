@@ -51,7 +51,7 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/share/applications/cn.classisland.app.desktop \
       --replace-fail "/opt/apps/cn.classisland.app/files/bin/ClassIsland.Desktop" "classisland-bin"
     makeShellWrapper $out/opt/cn.classisland.app/files/bin/ClassIsland.Desktop $out/bin/classisland-bin \
-      --prefix ClassIsland_PackageRoot : "$out/opt/cn.classisland.app" \
+      --set ClassIsland_PackageRoot "$out/opt/cn.classisland.app" \
       --prefix LD_LIBRARY_PATH : "${
         lib.makeLibraryPath [
           icu
