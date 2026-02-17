@@ -17,7 +17,7 @@ let
     name = "cn.classisland.app";
     desktopName = "ClassIsland";
     icon = "cn.classisland.app";
-    exec = "/bin/classisland";
+    exec = "classisland";
     terminal = false;
     startupNotify = true;
     comment = "功能强大、可定制、跨平台的大屏课表显示工具。";
