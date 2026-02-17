@@ -72,6 +72,8 @@ public partial class ProfileSettingsWindow : MyWindow
         TimeLineListControl.SelectionChanged += TimeLineListControl_OnSelectionChanged;
         TimeLineListControl.KeyDown += OnKeyDown;
         ListViewTimePoints.KeyDown += OnKeyDown;
+        ViewModel.ObservableForProperty(x => x.IsDrawerOpen)
+            .Subscribe(_ => OnDrawerStateChanged());
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -128,6 +130,14 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region Misc
 
+    private void OnDrawerStateChanged()
+    {
+        if (!ViewModel.IsDrawerOpen)
+        {
+            ViewModel.TutorialService.PushToNextSentence();
+        }
+    }
+
     public void OpenDrawer(string key)
     {
         ViewModel.IsDrawerOpen = true;
@@ -160,6 +170,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
             Activate();
         }
+        
+        ViewModel.TutorialService.PushToNextSentence("classisland.getStarted.welcome/settings");
 
         if (uri == null || uri.Segments.Length < 3)
         {
@@ -719,6 +731,7 @@ public partial class ProfileSettingsWindow : MyWindow
         OpenDrawer("TimeLayoutInfoEditor");
         ViewModel.SelectedTimeLayout = timeLayout;
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.create");
+        ViewModel.TutorialService.PushToNextSentence("classisland.getStarted.profileEditing/setup-timeLayout");
     }
     
     private void ButtonDuplicateTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -872,6 +885,7 @@ public partial class ProfileSettingsWindow : MyWindow
             {"Type", timeType.ToString()},
             {"Auto", "False"}
         });
+        ViewModel.TutorialService.PushToNextSentence();
     }
 
     

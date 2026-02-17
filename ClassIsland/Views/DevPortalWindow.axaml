@@ -10,6 +10,7 @@
         xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
         xmlns:helpers="clr-namespace:ClassIsland.Core.Helpers;assembly=ClassIsland.Core"
         xmlns:scheduleDataGrid="clr-namespace:ClassIsland.Controls.ScheduleDataGrid"
+        xmlns:tutorial="clr-namespace:ClassIsland.Controls.Tutorial;assembly=ClassIsland"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.DevPortalWindow"
         Title="DevPortal"
@@ -46,6 +47,12 @@
                     </ci:Field>
                     
                     <Button Content="测试教程" Click="ButtonTestTutorial_OnClick"/>
+                    <Separator/>
+                    
+                    <Panel Margin="16" Width="328" Height="60">
+                        <Border Background="MediumVioletRed"/>
+                        <tutorial:TutorialHighlightControl/>
+                    </Panel>
                 </StackPanel>
             </TabItem>
             <TabItem Header="控件">

@@ -55,6 +55,11 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// </summary>
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [ObservableProperty] private bool _modalTarget;
+
+    /// <summary>
+    /// 教程提示框会指向目标控件
+    /// </summary>
+    [ObservableProperty] private bool _pointToTarget = true;
     
     /// <summary>
     /// 右侧按钮文字，留空代表没有这个按钮
@@ -90,6 +95,27 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// 初始化动作
     /// </summary>
     [ObservableProperty] private ObservableCollection<TutorialAction> _initializeActions = [];
+
+    /// <summary>
+    /// 是否等待外部手动推进教程进度
+    /// </summary>
+    [ObservableProperty] private bool _waitForNextCommand = false;
+    
+    /// <summary>
+    /// 使用 LightDismiss 代替右侧按钮的行为
+    /// </summary>
+    [ObservableProperty] private bool _useLightDismiss = true;
+
+    /// <summary>
+    /// 语句标签
+    /// </summary>
+    [ObservableProperty] private string _tag = "";
+
+    /// <summary>
+    /// 教学提示拜访位置
+    /// </summary>
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [ObservableProperty] private TeachingTipPlacementMode _placementMode;
     
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
 }

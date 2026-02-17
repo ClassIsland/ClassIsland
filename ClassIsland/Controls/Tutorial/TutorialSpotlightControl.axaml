@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Controls.Tutorial.TutorialSpotlightControl"
+             ClipToBounds="False">
+    <UserControl.Styles>
+        <Style Selector="Border#CenterBorder">
+            <Style.Animations>
+                <Animation Duration="0:0:0.75" FillMode="Both" Easing="0.16, 1, 0.3, 1">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Margin" Value="64"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Opacity" Value="0.75"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Grid#RootGrid">
+            <Style.Animations>
+                <Animation Duration="0:0:0.75" FillMode="Both" Easing="0.16, 1, 0.3, 1">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+    <Panel x:Name="RootPanel" Margin="-8">
+        <Grid Margin="-33550336"
+              ColumnDefinitions="* Auto *"
+              x:Name="RootGrid"
+              RowDefinitions="* Auto *">
+            <Border Grid.Row="0" Grid.Column="0" Background="#99000000" />
+            <Border Grid.Row="0" Grid.Column="1" Background="#99000000" />
+            <Border Grid.Row="0" Grid.Column="2" Background="#99000000" />
+            <Border Grid.Row="1" Grid.Column="0" Background="#99000000" />
+            <Border Grid.Row="1" Grid.Column="2" Background="#99000000" />
+            <Border Grid.Row="2" Grid.Column="0" Background="#99000000" />
+            <Border Grid.Row="2" Grid.Column="1" Background="#99000000" />
+            <Border Grid.Row="2" Grid.Column="2" Background="#99000000" />
+
+            <Border Grid.Row="1" Grid.Column="1"
+                    IsHitTestVisible="False"
+                    x:Name="CenterBorder" 
+                    Height="{Binding #RootPanel.Bounds.Height}"
+                    Width="{Binding #RootPanel.Bounds.Width}"/>
+        </Grid>
+    </Panel>
+</UserControl>
