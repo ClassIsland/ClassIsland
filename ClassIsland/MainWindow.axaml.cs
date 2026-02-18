@@ -522,7 +522,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             e.Cancel = true;
             if (ViewModel.IsEditMode)
             {
-                ViewModel.IsEditMode = false;
+                ExitEditMode();
             }
             return;
         }
@@ -1227,18 +1227,24 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         ViewModel.IsEditMode = true;
-
-        if (!ViewModel.Settings.HasEditModeTutorialShown)
-        {
-            ViewModel.EditModeTutorialPhase = 0;
-        }
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.enter");
+        // if (!ViewModel.Settings.HasEditModeTutorialShown)
+        // {
+        //     ViewModel.EditModeTutorialPhase = 0;
+        // }
     }
 
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
     {
+        ExitEditMode();
+    }
+
+    private void ExitEditMode()
+    {
         ViewModel.IsEditMode = false;
         ViewModel.EditModeTutorialPhase = -1;
         ComponentsService.SaveConfig();
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.exit");
     }
 
     private void ButtonOpenComponentsLib_OnClick(object? sender, RoutedEventArgs e)
@@ -1333,7 +1339,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             listBox.SelectedItem = null;
         }
         ViewModel.SelectedComponentSettings = settings;
-        
+        Dispatcher.UIThread.Post(() =>
+        {
+            TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.selection.changed");
+        });
     }
 
     [RelayCommand]
@@ -1417,6 +1426,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void ButtonNewMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
     {
         ComponentsService.CurrentComponents.Lines.Add(new MainWindowLineSettings());
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.mainWindowLine.create");
     }
     
     private void ButtonManageComponentLayouts_OnClick(object? sender, RoutedEventArgs e)

@@ -32,7 +32,7 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// <summary>
     /// 语句图标
     /// </summary>
-    public IconSource? IconSource => IconExpressionHelper.TryParseOrNull(IconExpression);
+    [JsonIgnore] public IconSource? IconSource => IconExpressionHelper.TryParseOrNull(IconExpression);
 
     /// <summary>
     /// 语句头图

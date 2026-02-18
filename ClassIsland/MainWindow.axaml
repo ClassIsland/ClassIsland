@@ -362,6 +362,7 @@
                                                                     Command="{Binding $parent[local:MainWindow].OpenMainWindowLineSettingsCommand}"
                                                                     CommandParameter="{Binding}"
                                                                     VerticalAlignment="Center"
+                                                                    x:Name="ButtonMainWindowLineSettings"
                                                                     ToolTip.Tip="设置…"
                                                                     Background="Transparent"
                                                                     BorderThickness="0"
@@ -370,6 +371,7 @@
                                                                     IsChecked="{Binding IsMainLine}"
                                                                     Click="ToggleButtonIsMainLine_OnIsCheckedChanged"
                                                                     VerticalAlignment="Center"
+                                                                    x:Name="ButtonMainWindowLineIsMainLine"
                                                                     ToolTip.Tip="此行是主要行"
                                                                     Background="Transparent"
                                                                     BorderThickness="0"
@@ -377,6 +379,7 @@
                                                                 <ToggleButton
                                                                     IsChecked="{Binding IsNotificationEnabled}"
                                                                     VerticalAlignment="Center"
+                                                                    x:Name="ButtonMainWindowLineIsNotificationEnabled"
                                                                     ToolTip.Tip="此行可以显示提醒"
                                                                     Click="ToggleButtonIsNotificationEnabled_OnIsCheckedChanged"
                                                                     Background="Transparent"
@@ -385,6 +388,7 @@
                                                                 <Button
                                                                     Foreground="IndianRed"
                                                                     VerticalAlignment="Center"
+                                                                    x:Name="ButtonMainWindowLineDelete"
                                                                     ToolTip.Tip="删除"
                                                                     Command="{Binding $parent[local:MainWindow].RemoveMainWindowLineCommand}"
                                                                     CommandParameter="{Binding}"
@@ -396,6 +400,7 @@
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
                                             <Button HorizontalAlignment="Center"
+                                                    x:Name="ButtonMainWindowLineNew"
                                                     IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
                                                     TextElement.FontSize="14"
                                                     Click="ButtonNewMainWindowLine_OnClick">
@@ -537,6 +542,7 @@
         
         <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 64"
                 IsVisible="{Binding ViewModel.IsEditMode}"
+                x:Name="OperateArea"
                 Background="{DynamicResource CommandBarOverflowPresenterBackground}"
                 CornerRadius="6"
                 Padding="4"
@@ -547,7 +553,9 @@
                               Theme="{StaticResource TransparentToggleButton}">
                     <ci:IconText Glyph="&#xE8D1;" Text="全屏"/>
                 </ToggleButton>
-                <Button Theme="{StaticResource TransparentButton}" Command="{Binding #ZoomBorder.ResetMatrix}">
+                <Button Theme="{StaticResource TransparentButton}" 
+                        x:Name="ButtonResetView"
+                        Command="{Binding #ZoomBorder.ResetMatrix}">
                     <ci:IconText Glyph="&#xE12F;" Text="重置视图"/>
                 </Button>
                 <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" StrokeThickness="1"

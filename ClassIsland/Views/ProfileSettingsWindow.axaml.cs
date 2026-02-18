@@ -171,7 +171,7 @@ public partial class ProfileSettingsWindow : MyWindow
             Activate();
         }
         
-        ViewModel.TutorialService.PushToNextSentence("classisland.getStarted.welcome/settings");
+        ViewModel.TutorialService.PushToNextSentenceByTag("classisland.profileSettingsWindow.open");
 
         if (uri == null || uri.Segments.Length < 3)
         {
