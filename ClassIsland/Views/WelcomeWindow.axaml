@@ -16,6 +16,7 @@
         WindowStartupLocation="CenterScreen"
         X11Properties.NetWmWindowType="Normal"
         Closing="Window_OnClosing"
+        ShowAsDialog="True"
         CanResize="False">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static views:WelcomeWindow.WelcomeNavigateForwardCommand}"

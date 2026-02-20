@@ -14,6 +14,7 @@
         ShowInTaskbar="True"
         X11Properties.NetWmWindowType="Normal"
         CanResize="False"
-        Loaded="Control_OnLoaded">
+        Loaded="Control_OnLoaded"
+        ShowAsDialog="True">
     
 </ci:MyWindow>
