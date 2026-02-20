@@ -837,6 +837,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             Position = newPos;
         }
+        WindowState = WindowState.Normal;
+        
         if (updateEffectWindow)
         {
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);

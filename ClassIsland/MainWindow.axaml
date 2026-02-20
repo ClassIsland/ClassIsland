@@ -152,6 +152,9 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="TransparencyLevelHint" Value="Transparent"/>
             <Setter Property="SystemDecorations" Value="None"/>
+            <Setter Property="CanResize" Value="False"/>
+            <Setter Property="CanMaximize" Value="False"/>
+            <Setter Property="CanMinimize" Value="False"/>
         </Style>
         <Style Selector=":is(Window):edit-mode">
             <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefaultBrush}"/>
@@ -159,6 +162,9 @@
         </Style>
         <Style Selector=":is(Window):windowed">
             <Setter Property="SystemDecorations" Value="Full"/>
+            <Setter Property="CanResize" Value="True"/>
+            <Setter Property="CanMaximize" Value="True"/>
+            <Setter Property="CanMinimize" Value="True"/>
         </Style>
     </Window.Styles>
     <Grid ci:MainWindowStylesAssist.MainWindowInEditMode="{Binding ViewModel.IsEditMode}"
