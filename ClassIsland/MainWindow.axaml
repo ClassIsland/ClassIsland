@@ -181,7 +181,7 @@
                     VerticalAlignment="Stretch" 
                     HorizontalAlignment="Stretch"
                     ShowZoomIndicator="True"
-                    EnableGestureZoom="False"
+                    EnableGestureRotation="False"
                     TextElement.FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay, Converter={StaticResource StringToFontFamilyConverter}}"
                     TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}">
             <Canvas x:Name="LayoutContainerGrid">
