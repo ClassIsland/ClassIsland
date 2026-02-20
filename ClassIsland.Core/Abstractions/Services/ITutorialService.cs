@@ -60,6 +60,15 @@ public interface ITutorialService : INotifyPropertyChanged
     void BeginTutorial(string path, bool requiresNotCompleted = false);
 
     /// <summary>
+    /// 开始指定的未完成的教学。此方法会依次尝试传入的教程，直到找到未完成的教学为止。
+    /// </summary>
+    /// <remarks>
+    /// 仅在当前没有教学进行时生效。当当前有教学进行时，调用此方法不会有任何作用。
+    /// </remarks>
+    /// <param name="paths">要开始的教学的路径</param>
+    void BeginNotCompletedTutorials(params string[] paths);
+
+    /// <summary>
     /// 跳转到指定教学的特定段落。当没有指定段落时，将从第一段开始。当当前没有教学进行时，将从指定的位置开始。
     /// </summary>
     /// <param name="tutorial">要跳转的段落所属的教学</param>

@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.3.0" />
-    <PackageReference Condition="'$(Configuration)'=='Debug'" Include="AvaloniaUI.DiagnosticsSupport" Version="2.1.0" />
+    <PackageReference Condition="'$(Configuration)'=='Debug'" Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.0-beta2" />
     <PackageReference Include="ClassIsland.Markdown.Avalonia" Version="11.0.3.4" />
     <PackageReference Include="Lib.Harmony.Thin" Version="2.4.2" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">

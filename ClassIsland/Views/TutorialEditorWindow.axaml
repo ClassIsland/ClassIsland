@@ -159,6 +159,10 @@
                             <ci:Field Label="头图">
                                 <TextBox Text="{Binding HeroImage}" Watermark="（禁用）" />
                             </ci:Field>
+                            
+                            <ci:Field Label="图标">
+                                <TextBox Text="{Binding IconExpression}" Watermark="（禁用）" />
+                            </ci:Field>
 
                             <Separator />
 
@@ -197,7 +201,7 @@
                             <CheckBox IsChecked="{Binding UseLightDismiss}" Content="使用 LightDismiss 代替右侧按钮" />
 
                             <ci:Field Label="右侧按钮" IsVisible="{Binding !UseLightDismiss}">
-                                <TextBox Text="{Binding RightButtonText}" Watermark="（禁用）" />
+                                <TextBox Text="{Binding RightButtonText}" Watermark="（禁用）"/>
                             </ci:Field>
                             <ci:Field Label="左侧按钮" IsVisible="{Binding !UseLightDismiss}">
                                 <TextBox Text="{Binding LeftButtonText}" Watermark="（禁用）" />

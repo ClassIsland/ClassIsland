@@ -78,16 +78,20 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     public void BeginTutorial(Tutorial tutorial)
     {
-        // if (CurrentTutorial != null)
-        // {
-        //     return;
-        // }
+        if (IsTutorialRunning)
+        {
+            return;
+        }
         
         JumpToParagraph(tutorial, null);
     }
 
     public void BeginTutorial(string path, bool requiresNotCompleted = false)
     {
+        if (IsTutorialRunning)
+        {
+            return;
+        }
         if (requiresNotCompleted && Settings.CompletedTutorials.Contains(path))
         {
             return;
@@ -102,6 +106,16 @@ public partial class TutorialService : ObservableObject, ITutorialService
         JumpToParagraph(tutorial, paragraph);
     }
 
+    public void BeginNotCompletedTutorials(params string[] paths)
+    {
+        var target = paths.FirstOrDefault(x => !Settings.CompletedTutorials.Contains(x));
+        if (target == null)
+        {
+            return;
+        }
+        BeginTutorial(target);
+    }
+
     public void JumpToParagraph(Tutorial tutorial, TutorialParagraph? paragraph)
     {
         if (tutorial.Paragraphs.Count <= 0)
@@ -109,6 +123,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
             return;
         }
 
+        TrySetCurrentParagraphCompleted();
         paragraph ??= tutorial.Paragraphs[0];
         ParagraphIndex = tutorial.Paragraphs.IndexOf(paragraph);
         StartParagraph(tutorial, paragraph);
@@ -250,7 +265,8 @@ public partial class TutorialService : ObservableObject, ITutorialService
             AttachAdorner(highlightControl, targetControl);
         }
         (AttachedToplevel as Window)?.Activate();
-        Dispatcher.UIThread.Post(() => teachingTip.IsOpen = true);
+        teachingTip.IsOpen = true;
+        
     }
 
     private void TeachingTipOnClosed(TeachingTip sender, TeachingTipClosedEventArgs args)
@@ -318,6 +334,9 @@ public partial class TutorialService : ObservableObject, ITutorialService
     {
         CleanupPrevSentence();
         TrySetCurrentParagraphCompleted();
+        CurrentSentence = null;
+        CurrentParagraph = null;
+        CurrentTutorial = null;
         TutorialStateChanged?.Invoke(this, EventArgs.Empty);
     }
 

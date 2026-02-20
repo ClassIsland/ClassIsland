@@ -17,10 +17,9 @@
           "InitializeActions": [],
           "Content": [
             {
-              "IconSource": null,
               "Title": "\u6B22\u8FCE\u4F7F\u7528 ClassIsland",
-              "Content": "\u8981\u901A\u8FC7\u6559\u7A0B\u624B\u628A\u624B\u5730\u5FEB\u901F\u4E0A\u624B ClassIsland \u5417\uFF1F",
-              "IconExpression": "",
+              "Content": "\u8981\u901A\u8FC7\u6559\u7A0B\u5FEB\u901F\u4E0A\u624B ClassIsland \u5417\uFF1F",
+              "IconExpression": "sticker(\u5E15\u59C6_\u55E8)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -55,7 +54,6 @@
           "InitializeActions": [],
           "Content": [
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u60A8\u968F\u65F6\u53EF\u4EE5\u901A\u8FC7\u70B9\u51FB\u5E94\u7528\u4E3B\u83DC\u5355\u7684\u3010\u6559\u7A0B\u2026\u3011\u9009\u9879\u6765\u5B66\u4E60 ClassIsland \u7684\u7528\u6CD5\u3002",
               "IconExpression": "",
@@ -93,7 +91,6 @@
           "InitializeActions": [],
           "Content": [
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u60A8\u968F\u65F6\u53EF\u4EE5\u901A\u8FC7\u70B9\u51FB\u5E94\u7528\u4E3B\u83DC\u5355\u7684\u3010\u6559\u7A0B\u2026\u3011\u9009\u9879\u6765\u5B66\u4E60 ClassIsland \u7684\u7528\u6CD5\u3002",
               "IconExpression": "",
@@ -131,7 +128,6 @@
           "InitializeActions": [],
           "Content": [
             {
-              "IconSource": null,
               "Title": "\u8FD9\u662F\u4E3B\u754C\u9762",
               "Content": "ClassIsland \u7684\u8BFE\u8868\u7B49\u4FE1\u606F\u90FD\u4F1A\u663E\u793A\u5728\u8FD9\u91CC\u3002",
               "IconExpression": "",
@@ -161,7 +157,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u4E3B\u754C\u9762\u4E0D\u4F1A\u5F71\u54CD\u60A8\u70B9\u51FB\u540E\u9762\u7684\u5185\u5BB9",
               "Content": "\u60A8\u53EF\u4EE5\u900F\u8FC7\u4E3B\u754C\u9762\uFF0C\u70B9\u51FB\u4E3B\u754C\u9762\u540E\u65B9\u7684\u5185\u5BB9\u3002\u8BD5\u8BD5\u770B\u5427\uFF01",
               "IconExpression": "",
@@ -189,7 +184,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u6307\u9488\u79FB\u5165\u6DE1\u5316",
               "Content": "\u5F53\u9F20\u6807\u79FB\u5165\u4E3B\u754C\u9762\u6216\u89E6\u5C4F\u70B9\u51FB\u4E3B\u754C\u9762\u65F6\uFF0C\u4E3B\u754C\u9762\u4F1A\u6DE1\u5316\u3002",
               "IconExpression": "",
@@ -217,7 +211,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u63D0\u9192",
               "Content": "\u5F53\u9047\u5230\u51C6\u5907\u4E0A\u8BFE\u7B49\u91CD\u8981\u65F6\u95F4\u70B9\u65F6\uFF0C\u5E94\u7528\u5C31\u4F1A\u50CF\u8FD9\u6837\u53D1\u51FA\u63D0\u9192\u3002\u6709\u5173\u63D0\u9192\u7684\u8BE6\u7EC6\u7528\u6CD5\uFF0C\u6211\u4EEC\u4F1A\u5728\u540E\u9762\u4ECB\u7ECD\u3002",
               "IconExpression": "",
@@ -292,9 +285,8 @@
           "InitializeActions": [],
           "Content": [
             {
-              "IconSource": null,
               "Title": "",
-              "Content": "\u5728\u8BA4\u8BC6\u5B8C\u4E3B\u754C\u9762\u540E\uFF0C\u6211\u4EEC\u6765\u4E86\u89E3\u4E00\u4E0B\u5E94\u7528\u7684\u5404\u79CD\u529F\u80FD\u3002",
+              "Content": "\u5728\u8BA4\u8BC6\u5B8C\u4E3B\u754C\u9762\u540E\uFF0C\u6211\u4EEC\u6765\u5FEB\u901F\u4E86\u89E3\u4E00\u4E0B\u5E94\u7528\u7684\u5404\u79CD\u529F\u80FD\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
@@ -320,7 +312,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u4E3B\u83DC\u5355",
               "Content": "\u3010\u4E3B\u83DC\u5355\u3011\u662F\u8BBF\u95EE\u5E94\u7528\u5404\u4E2A\u529F\u80FD\u7684\u5165\u53E3\uFF0C\u6211\u4EEC\u53EF\u4EE5\u4ECE\u4E3B\u83DC\u5355\u8BBF\u95EE\u5230\u5E94\u7528\u7684\u5404\u4E2A\u529F\u80FD\u3002",
               "IconExpression": "",
@@ -348,10 +339,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u7CFB\u7EDF\u6258\u76D8\u4E2D\u5982\u56FE\u6240\u793A\u7684 ClassIsland \u56FE\u6807\uFF0C\u6253\u5F00\u5E94\u7528\u4E3B\u83DC\u5355\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u5E94\u7528\u8BBE\u7F6E\u2026\u3011\u6253\u5F00\u5E94\u7528\u8BBE\u7F6E\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -386,7 +376,6 @@
           "InitializeActions": [],
           "Content": [
             {
-              "IconSource": null,
               "Title": "\u5E94\u7528\u8BBE\u7F6E",
               "Content": "\u8FD9\u5C31\u662F\u5E94\u7528\u8BBE\u7F6E\u7A97\u53E3\u4E86\u3002\u60A8\u53EF\u4EE5\u5728\u6B64\u5904\u8C03\u6574\u9664\u8BFE\u8868\u5B89\u6392\u5916\u7684\u5E94\u7528\u8BBE\u7F6E\u3002",
               "IconExpression": "",
@@ -414,7 +403,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u63A5\u4E0B\u6765\u6211\u4EEC\u6765\u5FEB\u901F\u4E86\u89E3\u4E00\u4E9B\u57FA\u672C\u7684\u8BBE\u7F6E\u3002",
               "IconExpression": "",
@@ -442,7 +430,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u5B66\u671F\u5F00\u59CB\u65F6\u95F4",
               "Content": "\u8FD9\u4E2A\u65E5\u671F\u4EE3\u8868\u8FD9\u4E2A\u5B66\u671F\u7684\u7B2C\u4E00\u5929\uFF0C\u4F1A\u88AB\u7528\u4E8E\u8BFE\u8868\u7684\u5355\u53CC\u5468\u8BA1\u7B97\u3002\u8FD9\u4E00\u5929\u6240\u5728\u7684\u90A3\u5468\u4F1A\u88AB\u8BA4\u4E3A\u662F\u7B2C\u4E00\u5468\u3002",
               "IconExpression": "",
@@ -471,10 +458,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u60A8\u53EF\u4EE5\u6309\u9700\u6C42\u8C03\u6574\u5B66\u671F\u5F00\u59CB\u65F6\u95F4",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|SettingsExpander[Header=\u5B66\u671F\u5F00\u59CB\u65F6\u95F4] :is(TextBox)",
               "PointToTarget": true,
@@ -499,7 +485,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u66F4\u591A\u9009\u9879",
               "Content": "\u8FD9\u4E2A\u662F\u3010\u66F4\u591A\u9009\u9879\u2026\u3011\uFF0C\u70B9\u51FB\u53EF\u4EE5\u5C55\u5F00\u5982\u3010\u5BFC\u51FA\u8BCA\u65AD\u6570\u636E\u3011\u3001\u3010\u65E5\u5FD7\u2026\u3011\u7B49\u9009\u9879\u3002",
               "IconExpression": "",
@@ -529,7 +514,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u8C03\u6574\u5176\u5B83\u8BBE\u7F6E",
               "Content": "\u60A8\u4E5F\u53EF\u4EE5\u70B9\u51FB\u8FD9\u4E9B\u5BFC\u822A\u9009\u7EBF\u5207\u6362\u5230\u5176\u5B83\u7684\u8BBE\u7F6E\u9875\u9762\uFF0C\u8C03\u6574\u66F4\u591A\u7684\u8BBE\u7F6E\u3002\u8FD9\u4E9B\u9875\u9762\u7684\u5177\u4F53\u7528\u6CD5\u6211\u4EEC\u4F1A\u5728\u540E\u9762\u4ECB\u7ECD\u3002",
               "IconExpression": "",
@@ -559,9 +543,8 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
-              "Content": "\u4E86\u89E3\u5B8C\u5E94\u7528\u8BBE\u7F6E\u540E\uFF0C\u6211\u4EEC\u63A5\u4E0B\u6765\u6765\u4E86\u89E3\u8BFE\u8868\u7684\u57FA\u672C\u7F16\u8F91\u65B9\u6CD5\uFF0C\u5E76\u5EFA\u7ACB\u60A8\u7684\u7B2C\u4E00\u4EFD\u8BFE\u8868\u3002",
+              "Content": "\u4E86\u89E3\u5B8C\u5E94\u7528\u8BBE\u7F6E\u540E\uFF0C\u6211\u4EEC\u63A5\u4E0B\u6765\u6765\u4E86\u89E3\u4E3B\u754C\u9762\u7F16\u8F91\u529F\u80FD\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
@@ -587,10 +570,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
-              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u6253\u5F00\u4E3B\u83DC\u5355\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u7F16\u8F91\u6863\u6848\u2026\u3011\u6253\u5F00\u8BFE\u8868\u7F16\u8F91\u754C\u9762\u3002",
-              "IconExpression": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u6253\u5F00\u4E3B\u83DC\u5355\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u7F16\u8F91\u4E3B\u754C\u9762\u2026\u3011\uFF0C\u8FDB\u5165\u7F16\u8F91\u6A21\u5F0F\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -611,7 +593,127 @@
               "InitializeActions": [],
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.enter",
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        },
+        {
+          "Id": "edit-mode",
+          "Title": "\u8BA4\u8BC6\u7F16\u8F91\u6A21\u5F0F",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.MainWindow",
+          "InitializeActions": [],
+          "Content": [
+            {
+              "Title": "\u7F16\u8F91\u6A21\u5F0F",
+              "Content": "\u8FD9\u5C31\u662F\u4E3B\u754C\u9762\u7F16\u8F91\u754C\u9762\u4E86\uFF0C\u6211\u4EEC\u53EF\u4EE5\u5728\u8FD9\u91CC\u7F16\u8F91\u4E3B\u754C\u9762\u4E0A\u663E\u793A\u7684\u5185\u5BB9\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
               "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u7F16\u8F91\u6A21\u5F0F\u7684\u8BE6\u7EC6\u7528\u6CD5\u6211\u4EEC\u4F1A\u5728\u540E\u9762\u4ECB\u7ECD\u3002\u6211\u4EEC\u63A5\u4E0B\u6765\u6765\u4E86\u89E3\u8BFE\u8868\u7F16\u8F91\u529F\u80FD\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u597D",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "\u4E0D\u7528\u4E86",
+              "LeftButtonActions": [
+                {
+                  "Kind": 5,
+                  "StringParameter": "rejected"
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u5B8C\u6210\u3011\u9000\u51FA\u7F16\u8F91\u6A21\u5F0F\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonExitEditMode",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.exit",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u6253\u5F00\u4E3B\u83DC\u5355\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u7F16\u8F91\u6863\u6848\u2026\u3011\uFF0C\u6253\u5F00\u6863\u6848\u7F16\u8F91\u5668\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.profileSettingsWindow.open",
               "Xmlns": {}
             }
           ],
@@ -625,7 +727,6 @@
           "InitializeActions": [],
           "Content": [
             {
-              "IconSource": null,
               "Title": "\u6863\u6848\u7F16\u8F91",
               "Content": "\u8FD9\u5C31\u662F\u3010\u6863\u6848\u7F16\u8F91\u3011\u7A97\u53E3\u4E86\uFF0C\u4E5F\u5C31\u662F\u7F16\u8F91\u548C\u7BA1\u7406\u8BFE\u7A0B\u5B89\u6392\u7684\u5730\u65B9\u3002",
               "IconExpression": "",
@@ -653,7 +754,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u8FD9\u4E2A\u754C\u9762\u53EF\u80FD\u770B\u8D77\u6765\u6709\u4E9B\u590D\u6742\uFF0C\u4F46\u4E0D\u8981\u7D27\uFF0C\u6211\u4EEC\u6765\u4E00\u6B65\u4E00\u6B65\u4E86\u89E3\u5982\u4F55\u4F7F\u7528\u5B83\u3002",
               "IconExpression": "",
@@ -681,14 +781,12 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u9875\u7B7E",
               "Content": "\u8FD9\u662F\u7528\u6765\u5728\u6863\u6848\u7F16\u8F91\u5668\u4E0D\u540C\u533A\u57DF\u5207\u6362\u7684\u9875\u7B7E\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "TabControl#MasterTabControl /template/ ItemsPresenter#PART_ItemsPresenter",
               "HighlightTarget": true,
-              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -712,20 +810,18 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u4FE1\u606F\u680F",
               "Content": "\u60A8\u53EF\u4EE5\u5728\u8FD9\u91CC\u67E5\u770B\u5F53\u524D\u542F\u7528\u7684\u8BFE\u8868\u7B49\u4FE1\u606F\uFF0C\u5E76\u8FDB\u884C\u3010\u4FDD\u5B58\u3011\u7B49\u64CD\u4F5C\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "fa|CommandBar.tag-InfoBar",
               "HighlightTarget": true,
-              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
-                  "StringParameter": ""
+                  "Kind": 5,
+                  "StringParameter": "classisland.getStarted.profileEditing/conecpts"
                 }
               ],
               "LeftButtonText": "",
@@ -740,34 +836,6 @@
               "UseLightDismiss": true,
               "Tag": "",
               "PlacementMode": 8,
-              "Xmlns": {}
-            },
-            {
-              "IconSource": null,
-              "Title": "",
-              "Content": "\u6211\u4EEC\u63A5\u4E0B\u6765\u6765\u4E86\u89E3\u8BFE\u8868\u7684\u57FA\u672C\u7F16\u8F91\u65B9\u6CD5\u3002",
-              "IconExpression": "",
-              "HeroImage": "",
-              "TargetSelector": "",
-              "PointToTarget": true,
-              "RightButtonText": "\u597D",
-              "RightButtonActions": [
-                {
-                  "Kind": 5,
-                  "StringParameter": "classisland.getStarted.profileEditing/basic-concepts"
-                }
-              ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
-              "InitializeActions": [],
-              "WaitForNextCommand": false,
-              "UseLightDismiss": true,
-              "Tag": "",
               "Xmlns": {}
             }
           ],
@@ -795,10 +863,9 @@
           ],
           "Content": [
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u63A5\u4E0B\u6765\u6211\u4EEC\u6765\u4E86\u89E3\u6709\u5173\u8BFE\u8868\u7CFB\u7EDF\u7684\u57FA\u672C\u6982\u5FF5\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u55E8)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -823,7 +890,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u8BFE\u8868",
               "Content": "\u5982\u73B0\u5B9E\u4E16\u754C\u7684\u8BFE\u8868\u4E00\u6837\uFF0CClassIsland \u4E2D\u7684\u6BCF\u4E2A\u3010\u8BFE\u8868\u3011\u5B58\u50A8\u4E86\u4E00\u5929\u7684\u8BFE\u7A0B\u5B89\u6392\uFF0C\u5E76\u4F1A\u5728\u8FD9\u4E2A\u8BFE\u8868\u6EE1\u8DB3\u542F\u7528\u89C4\u5219\u65F6\u81EA\u52A8\u5C06\u8BFE\u7A0B\u663E\u793A\u5728\u4E3B\u754C\u9762\u4E0A\u3002",
               "IconExpression": "",
@@ -856,7 +922,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u65F6\u95F4\u8868",
               "Content": "\u8981\u663E\u793A\u4E00\u5929\u7684\u8BFE\u7A0B\u5B89\u6392\u4E0D\u4EC5\u8981\u77E5\u9053\u6709\u54EA\u4E9B\u8BFE\u7A0B\uFF0C\u8FD8\u8981\u77E5\u9053\u4E00\u5929\u7684\u65F6\u95F4\u5B89\u6392\u3002\u5982\u73B0\u5B9E\u4E16\u754C\u7684\u4F5C\u606F\u5B89\u6392\u8868\u4E00\u6837\uFF0C\u3010\u65F6\u95F4\u8868\u3011\u5B58\u50A8\u4E86\u4E00\u5929\u7684\u65F6\u95F4\u5B89\u6392\uFF0C\u4F9B\u3010\u8BFE\u8868\u3011\u4F7F\u7528\u3002",
               "IconExpression": "",
@@ -889,7 +954,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u8BFE\u8868\u4E0E\u65F6\u95F4\u8868\u7684\u5173\u7CFB",
               "Content": "\u5982\u56FE\uFF0C\u591A\u4E2A\u8BFE\u8868\u53EF\u4EE5\u5171\u7528\u4E00\u4E2A\u65F6\u95F4\u8868\uFF0C\u6B63\u5982\u5728\u73B0\u5B9E\u4E2D\u4E00\u4EFD\u4F5C\u606F\u65F6\u95F4\u8868\u4E5F\u4F1A\u88AB\u5E94\u7528\u4E8E\u591A\u5929\u4E00\u6837\u3002",
               "IconExpression": "",
@@ -922,14 +986,13 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u79D1\u76EE",
               "Content": "\u6B63\u5982\u73B0\u5B9E\u4E16\u754C\u7684\u79D1\u76EE\uFF0C\u8FD9\u91CC\u7684\u3010\u79D1\u76EE\u3011\u8868\u793A\u5728\u3010\u8BFE\u8868\u3011\u4E2D\u67D0\u4E2A\u8BFE\u7A0B\u7684\u79D1\u76EE\u3002\u5E94\u7528\u5DF2\u7ECF\u9884\u5148\u8BBE\u7F6E\u597D\u4E86\u4E00\u4E9B\u79D1\u76EE\uFF0C\u60A8\u4E5F\u53EF\u4EE5\u6839\u636E\u9700\u6C42\u81EA\u884C\u6DFB\u52A0\u4E00\u4E9B\u79D1\u76EE\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonText": "\u5B8C\u6210",
               "RightButtonActions": [
                 {
                   "Kind": 1,
@@ -955,7 +1018,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u5728\u4E86\u89E3\u5B8C\u8BFE\u8868\u7CFB\u7EDF\u7684\u57FA\u672C\u6982\u5FF5\u540E\uFF0C\u6211\u4EEC\u63A5\u4E0B\u6765\u4ECE\u5934\u5F00\u59CB\uFF0C\u5EFA\u7ACB\u60A8\u7684\u7B2C\u4E00\u4E2A\u8BFE\u8868\u3002",
               "IconExpression": "",
@@ -998,7 +1060,6 @@
           ],
           "Content": [
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u5728\u5EFA\u7ACB\u8BFE\u8868\u524D\uFF0C\u6211\u4EEC\u8981\u5148\u5EFA\u7ACB\u4E00\u4EFD\u65F6\u95F4\u8868\uFF0C\u544A\u8BC9\u5E94\u7528\u6211\u4EEC\u7684\u65F6\u95F4\u5B89\u6392\u3002",
               "IconExpression": "",
@@ -1026,10 +1087,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u521B\u5EFA\u65F6\u95F4\u8868",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u6DFB\u52A0\u3011\u6309\u94AE\uFF0C\u521B\u5EFA\u4E00\u4EFD\u65F6\u95F4\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|CommandBarButton[Label=\u6DFB\u52A0]",
               "HighlightTarget": true,
@@ -1057,10 +1117,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u60A8\u53EF\u4EE5\u5728\u8FD9\u4E2A\u9875\u9762\u5C06\u65F6\u95F4\u8868\u547D\u540D\u4E3A\u60A8\u5BB9\u6613\u8BB0\u4F4F\u7684\u540D\u79F0\u3002\u5728\u7F16\u8F91\u5B8C\u65F6\u95F4\u8868\u7684\u57FA\u672C\u4FE1\u606F\u540E\uFF0C\u70B9\u51FB\u7A7A\u767D\u5904\u5173\u95ED\u62BD\u5C49\u5373\u53EF\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": false,
@@ -1081,11 +1140,10 @@
               "InitializeActions": [],
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
-              "Tag": "",
+              "Tag": "classisland.profileSettingsWindow.drawer.close",
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u65F6\u95F4\u70B9",
               "Content": "\u4E00\u4EFD\u65F6\u95F4\u8868\u7531\u591A\u4E2A\u65F6\u95F4\u70B9\u7EC4\u6210\uFF0C\u6BCF\u4E2A\u65F6\u95F4\u70B9\u4EE3\u8868\u4E86\u4E00\u6BB5\u65F6\u95F4\u8282\u70B9\u3002",
               "IconExpression": "",
@@ -1113,7 +1171,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u65F6\u95F4\u70B9\u7C7B\u578B",
               "Content": "\u65F6\u95F4\u70B9\u5927\u81F4\u5206\u4E3A\u201C\u4E0A\u8BFE\u201D\u548C\u201C\u8BFE\u95F4\u4F11\u606F\u201D\u4E24\u79CD\u7C7B\u578B\uFF0C\u5176\u4E2D\u201C\u4E0A\u8BFE\u201D\u65F6\u95F4\u70B9\u5BF9\u5E94\u7740\u5176\u5BF9\u5E94\u7684\u8BFE\u8868\u4E2D\u7684\u4E00\u8282\u8BFE\u7A0B\u3002",
               "IconExpression": "",
@@ -1141,10 +1198,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u521B\u5EFA\u4E0A\u8BFE\u65F6\u95F4\u70B9",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u4E0A\u8BFE\u3011\u6309\u94AE\uFF0C\u521B\u5EFA\u4E00\u4E2A\u4EE3\u8868\u4E0A\u8BFE\u7684\u65F6\u95F4\u70B9\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|CommandBarButton[Label=\u4E0A\u8BFE]",
               "HighlightTarget": true,
@@ -1172,7 +1228,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u6211\u4EEC\u521B\u5EFA\u4E86\u4E00\u4E2A\u4E0A\u8BFE\u65F6\u95F4\u70B9\uFF0C\u73B0\u5728\u8FD9\u4E2A\u65F6\u95F4\u70B9\u5DF2\u7ECF\u51FA\u73B0\u5728\u4E86\u7F16\u8F91\u89C6\u56FE\u4E2D\u3002\r\n\u4E0A\u8BFE\u7C7B\u578B\u7684\u65F6\u95F4\u70B9\u5728\u8BFE\u8868\u4E2D\u5BF9\u5E94\u4E86\u4E00\u8282\u8BFE\u7A0B\u3002",
               "IconExpression": "",
@@ -1202,10 +1257,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u7F16\u8F91\u65F6\u95F4\u70B9",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u6309\u7167\u60A8\u7684\u5B9E\u9645\u4F5C\u606F\u5B89\u6392\uFF0C\u8BD5\u8BD5\u770B\u901A\u8FC7\u62D6\u52A8\u8FD9\u4E2A\u65F6\u95F4\u70B9\u6216\u62D6\u62FD\u5176\u9876\u90E8\u6216\u5E95\u90E8\u7684\u624B\u67C4\u6765\u8C03\u6574\u5176\u8D77\u59CB\u65F6\u95F4\u5427\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": ":is(ListBox)#TimeLineListControl ListBoxItem",
               "HighlightTarget": true,
@@ -1232,7 +1286,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u7F16\u8F91\u65F6\u95F4\u70B9",
               "Content": "\u60A8\u4E5F\u53EF\u4EE5\u901A\u8FC7\u6B64\u5904\u6765\u66F4\u7EC6\u81F4\u5730\u4FEE\u6539\u65F6\u95F4\u70B9\u7684\u4FE1\u606F\u3002",
               "IconExpression": "",
@@ -1262,7 +1315,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u540C\u7406\uFF0C\u6211\u4EEC\u4E5F\u53EF\u4EE5\u6309\u7167\u4E0A\u9762\u7684\u65B9\u5F0F\u6DFB\u52A0\u4E00\u4E2A\u8BFE\u95F4\u4F11\u606F\u65F6\u95F4\u70B9\u3002",
               "IconExpression": "",
@@ -1290,10 +1342,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u8BFE\u95F4\u3011\u6309\u94AE\uFF0C\u521B\u5EFA\u4E00\u4E2A\u4EE3\u8868\u8BFE\u95F4\u4F11\u606F\u7684\u65F6\u95F4\u70B9\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|CommandBarButton[Label=\u8BFE\u95F4]",
               "HighlightTarget": true,
@@ -1321,7 +1372,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u6211\u4EEC\u5DF2\u7ECF\u6309\u7167\u521A\u521A\u521B\u5EFA\u4E0A\u8BFE\u65F6\u95F4\u70B9\u7684\u65B9\u6CD5\u521B\u5EFA\u4E86\u8BFE\u95F4\u4F11\u606F\u65F6\u95F4\u70B9\u3002\r\n\u4E0E\u4E0A\u8BFE\u65F6\u95F4\u70B9\u4E0D\u540C\uFF0C\u8BFE\u95F4\u4F11\u606F\u65F6\u95F4\u70B9\u5728\u8BFE\u8868\u4E2D\u6CA1\u6709\u5BF9\u5E94\u4F4D\u7F6E\uFF0C\u5E76\u4E14\u5728\u4E3B\u754C\u9762\u4E0A\u4E5F\u662F\u9ED8\u8BA4\u9690\u85CF\u7684\u3002",
               "IconExpression": "",
@@ -1350,7 +1400,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u7EE7\u7EED\u521B\u5EFA\u65F6\u95F4\u70B9\u2026",
               "Content": "\u63A5\u4E0B\u6765\uFF0C\u60A8\u53EF\u4EE5\u6309\u7167\u521A\u521A\u7684\u65B9\u6CD5\uFF0C\u6839\u636E\u60A8\u7684\u5B9E\u9645\u4F5C\u606F\u5B89\u6392\uFF0C\u7F16\u6392\u597D\u4E00\u5929\u7684\u4F5C\u606F\u5B89\u6392\u3002",
               "IconExpression": "",
@@ -1378,7 +1427,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u5982\u679C\u60A8\u521B\u5EFA\u7684\u591A\u4E2A\u65F6\u95F4\u8868\u7684\u65F6\u95F4\u5B89\u6392\u7C7B\u4F3C\uFF0C\u60A8\u53EF\u4EE5\u70B9\u51FB\u3010\u590D\u5236\u3011\u6309\u94AE\u590D\u5236\u9009\u4E2D\u7684\u65F6\u95F4\u8868\uFF0C\u5E76\u57FA\u4E8E\u8FD9\u4E2A\u65F6\u95F4\u8868\u8FDB\u884C\u4FEE\u6539\u3002",
               "IconExpression": "",
@@ -1408,7 +1456,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u5F53\u60A8\u7F16\u6392\u5B8C\u65F6\u95F4\u8868\u540E\uFF0C\u5C31\u53EF\u4EE5\u5207\u6362\u5230\u3010\u8BFE\u8868\u3011\u9875\u9762\uFF0C\u8FDB\u884C\u8BFE\u8868\u7684\u7F16\u6392\u4E86\u3002",
               "IconExpression": "",
@@ -1478,10 +1525,9 @@
           ],
           "Content": [
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u63A5\u4E0B\u6765\u6211\u4EEC\u6765\u4E86\u89E3\u5982\u4F55\u5EFA\u7ACB\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u55E8)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
@@ -1506,7 +1552,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u8868\u683C\u8BFE\u8868\u7F16\u8F91\u754C\u9762",
               "Content": "\u60A8\u770B\u89C1\u7684\u662F\u8BFE\u8868\u7684\u8868\u683C\u7F16\u8F91\u754C\u9762\uFF0C\u53EF\u4EE5\u5728\u8FD9\u91CC\u5FEB\u901F\u5730\u67E5\u770B\u4E00\u5468\u4E2D\u7684\u8BFE\u8868\u3002",
               "IconExpression": "",
@@ -1534,10 +1579,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u60A8\u60F3\u521B\u5EFA\u8BFE\u8868\u7684\u90A3\u4E00\u5929\uFF08\u4F8B\u5982\u5468\u4E00\uFF09\u4E0B\u7684\u3010\u65B0\u8BFE\u8868\u3011\u6309\u94AE\u4EE5\u521B\u5EFA\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "DataGridColumnHeadersPresenter#PART_ColumnHeadersPresenter",
               "HighlightTarget": true,
@@ -1565,10 +1609,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
-              "Content": "\uD83D\uDC49\u5728\u3010\u65F6\u95F4\u8868\u3011\u4E2D\u9009\u62E9\u521A\u521A\u521B\u5EFA\u7684\u65F6\u95F4\u8868\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u521B\u5EFA\u3011\u5373\u53EF\u521B\u5EFA\u8BFE\u8868\u3002",
-              "IconExpression": "",
+              "Content": "\uD83D\uDC49\u5728\u3010\u65F6\u95F4\u8868\u3011\u4E2D\u9009\u62E9\u521A\u521A\u521B\u5EFA\u7684\u65F6\u95F4\u8868\uFF0C\u7136\u540E\u6682\u65F6\u4E0D\u7528\u7BA1\u5176\u5B83\u7684\u53C2\u6570\uFF0C\u76F4\u63A5\u70B9\u51FB\u3010\u521B\u5EFA\u3011\u5373\u53EF\u521B\u5EFA\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": false,
@@ -1593,9 +1636,37 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
-              "Content": "\u6211\u4EEC\u73B0\u5728\u5DF2\u7ECF\u521B\u5EFA\u597D\u4E86\u8BFE\u8868\uFF0C\u53EF\u4EE5\u770B\u5230\u6211\u4EEC\u65B0\u5EFA\u7684\u8BFE\u8868\u5DF2\u7ECF\u663E\u793A\u5728\u8FD9\u91CC\u4E86\u3002\u5728\u8868\u683C\u8BFE\u8868\u7F16\u8F91\u5668\u4E2D\uFF0C\u6BCF\u4E00\u5217\u4EE3\u8868\u5728\u8FD9\u4E00\u5929\u542F\u7528\u7684\u8BFE\u8868\u3002",
+              "Content": "\uD83C\uDF89\u606D\u559C\uFF01\u60A8\u73B0\u5728\u5DF2\u7ECF\u521B\u5EFA\u597D\u4E86\u60A8\u7684\u7B2C\u4E00\u4E2A\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u70B9\u8D5E)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 1,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u53EF\u4EE5\u770B\u5230\u6211\u4EEC\u65B0\u5EFA\u7684\u8BFE\u8868\u5DF2\u7ECF\u663E\u793A\u5728\u8FD9\u91CC\u4E86\u3002\u5728\u8868\u683C\u8BFE\u8868\u7F16\u8F91\u5668\u4E2D\uFF0C\u6BCF\u4E00\u5217\u4EE3\u8868\u5728\u8FD9\u4E00\u5929\u542F\u7528\u7684\u8BFE\u8868\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "DataGridRowsPresenter#PART_RowsPresenter",
@@ -1623,7 +1694,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u800C\u6BCF\u4E00\u884C\u4EE3\u8868\u4E86\u4E00\u4E2A\u65F6\u95F4\u70B9\u5BF9\u5E94\u7684\u8BFE\u7A0B\uFF0C\u884C\u9996\u662F\u9009\u4E2D\u8BFE\u8868\u4E2D\u5BF9\u5E94\u7684\u65F6\u95F4\u70B9\u3002\u8FD9\u4E00\u884C\u91CC\u7684\u6BCF\u4E2A\u683C\u5B50\u5C31\u4EE3\u8868\u4E86\u5BF9\u5E94\u8BFE\u8868\u7684\u5BF9\u5E94\u65F6\u95F4\u70B9\u7684\u4E00\u4E2A\u8BFE\u7A0B\u3002",
               "IconExpression": "",
@@ -1653,10 +1723,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u53CC\u51FB\u6807\u4E3A\u201C\uFF08\u7A7A\uFF09\u201D\u7684\u683C\u5B50\uFF0C\u5373\u53EF\u7F16\u8F91\u8FD9\u4E2A\u8BFE\u7A0B\u7684\u79D1\u76EE\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "sdg|ScheduleDataGridCellControl[IsNullClassPlan=False]",
               "HighlightTarget": true,
@@ -1684,10 +1753,9 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\uD83D\uDC49\u5728\u5F39\u51FA\u7684\u754C\u9762\u4E2D\u9009\u62E9\u8981\u8BBE\u7F6E\u7684\u79D1\u76EE\uFF0C\u5373\u53EF\u5B8C\u6210\u79D1\u76EE\u8BBE\u7F6E\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": false,
@@ -1713,7 +1781,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "\u5FEB\u6377\u79D1\u76EE\u5F55\u5165",
               "Content": "\u9664\u4E86\u53CC\u51FB\u5BF9\u5E94\u8BFE\u7A0B\u4FEE\u6539\u5355\u4E2A\u8BFE\u7A0B\u7684\u79D1\u76EE\u5916\uFF0C\u60A8\u4E5F\u53EF\u4EE5\u901A\u8FC7\u6B64\u5904\u7684\u5FEB\u6377\u79D1\u76EE\u5F55\u5165\u529F\u80FD\u6765\u5FEB\u901F\u5F55\u5165\u8BFE\u8868\u7684\u79D1\u76EE\u3002",
               "IconExpression": "",
@@ -1743,7 +1810,6 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\u53EA\u9700\u70B9\u51FB\u8981\u8BBE\u7F6E\u7684\u79D1\u76EE\uFF0C\u5C31\u53EF\u4EE5\u5C06\u9009\u4E2D\u7684\u8BFE\u7A0B\u8BBE\u7F6E\u4E3A\u5BF9\u5E94\u7684\u79D1\u76EE\uFF0C\u5E76\u81EA\u52A8\u79FB\u52A8\u5230\u4E0B\u4E00\u4E2A\u8BFE\u7A0B\u3002\u8BD5\u8BD5\u770B\u5427\u3002",
               "IconExpression": "",
@@ -1772,14 +1838,13 @@
               "Xmlns": {}
             },
             {
-              "IconSource": null,
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u6309\u7167\u60A8\u7684\u8BFE\u7A0B\u5B89\u6392\u5F55\u5165\u8FD9\u4E2A\u8BFE\u8868\u7684\u79D1\u76EE\u5427\u3002",
-              "IconExpression": "",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
-              "RightButtonText": "\u5F55\u5165\u597D\u4E86",
+              "RightButtonText": "\u6211\u5F55\u5165\u597D\u4E86",
               "RightButtonActions": [
                 {
                   "Kind": 1,
@@ -1806,14 +1871,1874 @@
           "Id": "multiweek-classplans",
           "Title": "\u591A\u5468\u8F6E\u6362",
           "Description": "",
-          "TopLevelClassName": "",
-          "InitializeActions": [],
-          "Content": [],
+          "TopLevelClassName": "ClassIsland.Views.ProfileSettingsWindow",
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/profile/classplans"
+            },
+            {
+              "Kind": 7,
+              "StringParameter": "",
+              "ActionSet": {
+                "IsWorking": false,
+                "Guid": "fe440188-3157-4a18-8c22-15cbd2baa718",
+                "Name": "\u65B0\u884C\u52A8\u7EC4",
+                "Actions": [
+                  {
+                    "IsCompleted": true,
+                    "Id": "classisland.settings",
+                    "Settings": {
+                      "Name": "ClassPlanEditModeIndex",
+                      "Value": 1,
+                      "IsActive": false
+                    },
+                    "IsActive": false
+                  }
+                ],
+                "IsEnabled": true,
+                "IsRevertEnabled": false,
+                "Status": 0,
+                "IsActive": false
+              }
+            }
+          ],
+          "Content": [
+            {
+              "Title": "",
+              "Content": "\u63A5\u4E0B\u6765\u6211\u4EEC\u6765\u4E86\u89E3\u8BFE\u8868\u542F\u7528\u89C4\u5219\u548C\u591A\u5468\u8F6E\u6362\u6709\u5173\u7684\u6982\u5FF5\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u55E8)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u8BFE\u8868\u542F\u7528\u89C4\u5219",
+              "Content": "\u987E\u540D\u601D\u4E49\uFF0C\u8BFE\u8868\u542F\u7528\u89C4\u5219\u5C31\u662F\u7528\u6765\u89C4\u5B9A\u4E00\u4E2A\u8BFE\u8868\u5728\u4EC0\u4E48\u65F6\u5019\u542F\u7528\u7684\u89C4\u5219\uFF0C\u6BD4\u5982\u5728\u5468\u4E00\u7684\u5355\u5468\u542F\u7528\u7B49\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u591A\u5468\u8F6E\u6362",
+              "Content": "\u5728 ClassIsland \u4E2D\uFF0C\u4E00\u4EFD\u8BFE\u8868\u53EF\u4EE5\u5728\u542F\u7528\u89C4\u5219\u4E2D\u88AB\u8BBE\u7F6E\u591A\u5468\u8F6E\u6362\uFF0C\u6BD4\u5982\u53EA\u5728\u5355\u5468\u6216\u8005\u5728\u6BCF\u4E09\u5468\u7684\u7B2C\u4E00\u5468\u542F\u7528\u7B49\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "\u4E0A\u4E00\u6761",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u800C\u591A\u5468\u8F6E\u6362\u6B63\u662F\u57FA\u4E8E\u4F60\u5728\u8BBE\u7F6E\u4E2D\u8BBE\u7F6E\u7684\u3010\u5B66\u671F\u5F00\u59CB\u65F6\u95F4\u3011\u8BA1\u7B97\u7684\uFF0C\u5373\u89C6\u3010\u5B66\u671F\u5F00\u59CB\u65F6\u95F4\u3011\u53CA\u5305\u542B\u90A3\u4E00\u5929\u5728\u5185\u7684\u540E\u4E03\u5929\u4E3A\u5B66\u671F\u7684\u7B2C\u4E00\u5468\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u5B8C\u6210",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "\u4E0A\u4E00\u6761",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u8BFE\u8868\u4FE1\u606F\u2026\u3011\u6309\u94AE\u6253\u5F00\u4E00\u4E2A\u8BFE\u8868\u7684\u8BE6\u7EC6\u4FE1\u606F\u754C\u9762\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "Button#PART_ButtonOpenClassPlanSettings",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.sdg.header.settings.open",
+              "PlacementMode": 7,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u8FD9\u91CC\u5C31\u662F\u8C03\u6574\u8BFE\u8868\u542F\u7528\u89C4\u5219\u7684\u5730\u65B9\u3002\u5728\u901A\u8FC7\u8868\u683C\u8BFE\u8868\u7F16\u8F91\u5668\u521B\u5EFA\u8BFE\u8868\u65F6\uFF0C\u4E5F\u53EF\u4EE5\u901A\u8FC7\u8FD9\u6837\u7684\u754C\u9762\u8C03\u6574\u8981\u521B\u5EFA\u7684\u8BFE\u8868\u7684\u542F\u7528\u89C4\u5219\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "controls|TimeRuleEditControl",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 6,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u8FD9\u91CC\u53EF\u4EE5\u8C03\u6574\u8BFE\u8868\u5728\u661F\u671F\u51E0\u542F\u7528\u3002\u4E0D\u8FC7\u5728\u901A\u8FC7\u8868\u683C\u8BFE\u8868\u7F16\u8F91\u5668\u521B\u5EFA\u8BFE\u8868\u65F6\uFF0C\u8FD9\u91CC\u5DF2\u7ECF\u81EA\u52A8\u586B\u5199\u597D\u4E86\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "controls|TimeRuleEditControl ListBox",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 3,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u8FD9\u91CC\u53EF\u4EE5\u8C03\u6574\u8BFE\u8868\u5728\u54EA\u4E00\u5468\u542F\u7528\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "controls|TimeRuleEditControl StackPanel#StackPanelWeekDivSettings",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 3,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u7A7A\u767D\u533A\u57DF\u5173\u95ED\u8BFE\u8868\u8BE6\u7EC6\u4FE1\u606F\u9875\u9762\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.profileSettingsWindow.drawer.close",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u6211\u4EEC\u63A5\u4E0B\u6765\u7ED3\u5408\u4EE5\u4E0A\u7684\u77E5\u8BC6\uFF0C\u521B\u5EFA\u5177\u6709\u591A\u5468\u8F6E\u6362\u7684\u8BFE\u8868\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u60A8\u60F3\u521B\u5EFA\u8BFE\u8868\u7684\u90A3\u4E00\u5929\uFF08\u4F8B\u5982\u5468\u4E00\uFF09\u4E0B\u7684\u3010\u65B0\u8BFE\u8868\u3011\u6309\u94AE\u4EE5\u521B\u5EFA\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "DataGridColumnHeadersPresenter#PART_ColumnHeadersPresenter",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.sdg.header.creationPopup.open",
+              "PlacementMode": 2,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u5728\u3010\u65F6\u95F4\u8868\u3011\u4E2D\u9009\u62E9\u4E00\u4E2A\u65F6\u95F4\u8868\uFF0C\u7136\u540E\u5728\u3010\u89E6\u53D1\u89C4\u5219\u3011\u5904\u542F\u7528\u591A\u5468\u8F6E\u6362\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u521B\u5EFA\u3011\u521B\u5EFA\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.sdg.header.creationPopup.complete",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u6211\u4EEC\u73B0\u5728\u521B\u5EFA\u4E86\u4E00\u4E2A\u5177\u6709\u591A\u5468\u8F6E\u6362\u7684\u8BFE\u8868\uFF0C\u73B0\u5728\u8BF7\u6309\u5B9E\u9645\u5B89\u6392\u7F16\u6392\u597D\u8FD9\u4E2A\u8BFE\u8868\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u6211\u7F16\u6392\u597D\u4E86",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u3010\u4E0B\u4E00\u5468\u3011\u6309\u94AE\uFF0C\u5207\u6362\u5230\u4E0B\u4E00\u5468\u7684\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "sdg|ScheduleDataGrid#ScheduleDataGrid /template/ Button#PART_ButtonNextWeek",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.sdg.weekSwitcher.next",
+              "PlacementMode": 7,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u5728\u5207\u6362\u5230\u4E0B\u4E00\u5468\u540E\uFF0C\u6211\u4EEC\u53EF\u4EE5\u53D1\u73B0\u6211\u4EEC\u770B\u4E0D\u5230\u521A\u521A\u521B\u5EFA\u7684\u8BFE\u8868\u4E86\uFF0C\u56E0\u4E3A\u5B83\u5728\u8FD9\u4E00\u5468\u4E0D\u6EE1\u8DB3\u521A\u521A\u8BBE\u7F6E\u7684\u542F\u7528\u89C4\u5219\uFF0C\u5728\u8FD9\u4E00\u5468\u4E0D\u4F1A\u542F\u7528\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u60A8\u521A\u521A\u521B\u5EFA\u4E86\u6709\u591A\u5468\u8F6E\u6362\u7684\u8BFE\u8868\u7684\u90A3\u4E00\u5929\u4E0B\u7684\u3010\u65B0\u8BFE\u8868\u3011\u6309\u94AE\u4EE5\u521B\u5EFA\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "DataGridColumnHeadersPresenter#PART_ColumnHeadersPresenter",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.sdg.header.creationPopup.open",
+              "PlacementMode": 2,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u6211\u4EEC\u53EF\u4EE5\u770B\u5230\uFF0C\u65B0\u5EFA\u8BFE\u8868\u754C\u9762\u5DF2\u7ECF\u81EA\u52A8\u586B\u5199\u4E86\u6211\u4EEC\u5728\u4E0A\u4E00\u5468\u7684\u8FD9\u4E00\u5929\u586B\u5199\u7684\u4FE1\u606F\uFF0C\u5E76\u81EA\u52A8\u8BBE\u7F6E\u4E86\u5BF9\u5E94\u7684\u8F6E\u6362\u4FE1\u606F\uFF0C\u6211\u4EEC\u53EA\u9700\u586B\u5199\u6211\u4EEC\u9700\u8981\u4FEE\u6539\u7684\u4FE1\u606F\u5373\u53EF\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u6B64\u5916\uFF0C\u60A8\u4E5F\u53EF\u4EE5\u901A\u8FC7\u52FE\u9009\u3010\u590D\u5236\u81EA\u3011\u6765\u4ECE\u539F\u6765\u7684\u8BFE\u8868\u590D\u5236\u8BFE\u7A0B\uFF0C\u8FD9\u6837\u60A8\u53EA\u9700\u4FEE\u6539\u4E0E\u539F\u8BFE\u8868\u4E0D\u540C\u7684\u8BFE\u7A0B\u5373\u53EF\u5B8C\u6210\u8FD9\u4E2A\u8BFE\u8868\u7684\u8BFE\u7A0B\u5F55\u5165\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u4E00\u5207\u8BBE\u7F6E\u59A5\u5F53\u540E\uFF0C\u70B9\u51FB\u3010\u521B\u5EFA\u3011\u521B\u5EFA\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.sdg.header.creationPopup.complete",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83C\uDF89\u606D\u559C\uFF01\u60A8\u6210\u529F\u521B\u5EFA\u4E86\u5177\u6709\u591A\u5468\u8F6E\u6362\u7684\u8BFE\u8868\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u70B9\u8D5E)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u73B0\u5728\u60A8\u53EF\u4EE5\u7ED3\u5408\u524D\u9762\u5B66\u5230\u7684\u5185\u5BB9\uFF0C\u6309\u5B9E\u9645\u8BFE\u7A0B\u5B89\u6392\u5F55\u5165\u8BFE\u8868\u4E86\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            }
+          ],
           "Xmlns": {}
         }
       ],
       "Xmlns": {
         "sdg": "clr-namespace:ClassIsland.Controls.ScheduleDataGrid;assembly=ClassIsland",
+        "controls": "clr-namespace:ClassIsland.Controls;assembly=ClassIsland"
+      }
+    },
+    {
+      "Id": "classisland.getStarted.componentsEditing",
+      "Title": "\u7EC4\u4EF6\u7F16\u8F91\u00B7\u5165\u95E8",
+      "Description": "\u521D\u6B65\u4E86\u89E3\u5982\u4F55\u81EA\u5B9A\u4E49\u4E3B\u754C\u9762\u4E0A\u663E\u793A\u7684\u5185\u5BB9\u3002",
+      "Ordinary": 0,
+      "Paragraphs": [
+        {
+          "Id": "introduction",
+          "Title": "\u5165\u95E8",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.MainWindow",
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
+          "Content": [
+            {
+              "Title": "",
+              "Content": "\u6B22\u8FCE\u4F7F\u7528\u3010\u7F16\u8F91\u6A21\u5F0F\u3011\uFF0C\u63A5\u4E0B\u6765\u6211\u4EEC\u6765\u4E86\u89E3\u5982\u4F55\u4F7F\u7528\u3010\u7F16\u8F91\u6A21\u5F0F\u3011\u7F16\u8F91\u4E3B\u754C\u9762\u4E0A\u7684\u7EC4\u4EF6\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u55E8)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u64CD\u4F5C\u533A",
+              "Content": "\u8FD9\u662F\u64CD\u4F5C\u533A\uFF0C\u60A8\u53EF\u4EE5\u70B9\u51FB\u8FD9\u91CC\u7684\u6309\u94AE\u6765\u8BBF\u95EE\u7F16\u8F91\u6A21\u5F0F\u7684\u5404\u4E2A\u529F\u80FD\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "Border#OperateArea",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 1,
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u4E3B\u754C\u9762",
+              "Content": "\u8FD9\u662F\u4E3B\u754C\u9762\uFF0C\u6211\u4EEC\u53EF\u4EE5\u76F4\u63A5\u901A\u8FC7\u9009\u4E2D\u5E76\u62D6\u62FD\u7684\u65B9\u5F0F\u7F16\u8F91\u4E0A\u9762\u7684\u7EC4\u4EF6\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "ItemsControl#RootMainWindowLinesItemsControl",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 2,
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u79FB\u52A8\u89C6\u56FE",
+              "Content": "\u6309\u4F4F\u9F20\u6807\u4E2D\u952E\u5E76\u62D6\u52A8\u6216\u7528\u624B\u6307\u62D6\u52A8\u7A7A\u767D\u533A\u57DF\u4EE5\u79FB\u52A8\u89C6\u56FE\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u7F29\u653E",
+              "Content": "\u6EDA\u52A8\u9F20\u6807\u6EDA\u8F6E\u6216\u53CC\u6307\u634F\u5408\u7A7A\u767D\u533A\u57DF\u5373\u53EF\u7F29\u653E\u89C6\u56FE\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u91CD\u7F6E\u89C6\u56FE",
+              "Content": "\u60A8\u4E5F\u53EF\u4EE5\u70B9\u51FB\u8FD9\u4E2A\u6309\u94AE\u5C06\u89C6\u56FE\u6062\u590D\u81F3\u9ED8\u8BA4\u89C6\u56FE\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonResetView",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u5B8C\u6210",
+              "Content": "\u5F53\u7F16\u8F91\u5B8C\u6210\u65F6\uFF0C\u70B9\u51FB\u3010\u5B8C\u6210\u3011\u6309\u94AE\u5373\u53EF\u9000\u51FA\u7F16\u8F91\u6A21\u5F0F\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonExitEditMode",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u5728\u4E86\u89E3\u5B8C\u3010\u7F16\u8F91\u6A21\u5F0F\u3011\u7684\u57FA\u672C\u7528\u6CD5\u540E\uFF0C\u6211\u4EEC\u6765\u4E86\u89E3\u5982\u4F55\u5C06\u4E00\u4E2A\u7EC4\u4EF6\u6DFB\u52A0\u5230\u4E3B\u754C\u9762\u4E0A\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u597D",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "\u4E0D\u7528\u4E86",
+              "LeftButtonActions": [
+                {
+                  "Kind": 6,
+                  "StringParameter": "",
+                  "ActionSet": {
+                    "IsWorking": false,
+                    "Guid": "175d2c00-a222-495d-9285-f7958e18a0bd",
+                    "Name": "\u65B0\u884C\u52A8\u7EC4",
+                    "Actions": [],
+                    "IsEnabled": true,
+                    "IsRevertEnabled": false,
+                    "Status": 0,
+                    "IsActive": false
+                  }
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        },
+        {
+          "Id": "addComponent",
+          "Title": "\u6DFB\u52A0\u7EC4\u4EF6",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.MainWindow",
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
+          "Content": [
+            {
+              "Title": "",
+              "Content": "\u6211\u4EEC\u63A5\u4E0B\u6765\u6765\u4E86\u89E3\u5982\u4F55\u5411\u4E3B\u754C\u9762\u4E0A\u6DFB\u52A0\u7EC4\u4EF6\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u70B9\u51FB\u3010\u6DFB\u52A0\u7EC4\u4EF6\u3011\u6309\u94AE\uFF0C\u6253\u5F00\u7EC4\u4EF6\u5E93\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonOpenComponentsLib",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.componentsLib.open",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u8FD9\u5C31\u662F\u7EC4\u4EF6\u5E93\u4E86\uFF0C\u6211\u4EEC\u53EF\u4EE5\u76F4\u63A5\u5C06\u7EC4\u4EF6\u4ECE\u5176\u4E2D\u62D6\u52A8\u5230\u4E3B\u754C\u9762\u4E0A\u60A8\u60F3\u63D2\u5165\u6B64\u7EC4\u4EF6\u7684\u4F4D\u7F6E\uFF0C\u5373\u53EF\u5BF9\u5E94\u7684\u4F4D\u7F6E\u6DFB\u52A0\u7EC4\u4EF6\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u8BD5\u8BD5\u62D6\u52A8\u60A8\u60F3\u6DFB\u52A0\u7684\u7EC4\u4EF6\u5230\u4E3B\u754C\u9762\u4E0A\u5427\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6B65",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "PlacementMode": 8,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u9664\u4E86\u901A\u8FC7\u62D6\u62FD\u7684\u65B9\u5F0F\u6DFB\u52A0\u7EC4\u4EF6\uFF0C\u6211\u4EEC\u4E5F\u53EF\u4EE5\u70B9\u51FB\u7EC4\u4EF6\u884C\u540E\u9762\u7684\u52A0\u53F7\u3010\u002B\u3011\u6765\u6DFB\u52A0\u7EC4\u4EF6\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u7A7A\u767D\u533A\u57DF\u6536\u8D77\u7EC4\u4EF6\u5E93\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u6211\u5DF2\u5173\u95ED",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.componentsLib.closed",
+              "PlacementMode": 2,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u70B9\u51FB\u4E3B\u754C\u9762\u884C\u540E\u7684\u52A0\u53F7\u3010\u002B\u3011\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonAddComponent",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.componentsLib.open",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u5728\u7EC4\u4EF6\u5E93\u4E2D\u9009\u62E9\u7EC4\u4EF6\uFF0C\u7136\u540E\u70B9\u51FB\u53F3\u4E0B\u89D2\u7684\u3010\u6DFB\u52A0\u3011\u5373\u53EF\u628A\u9009\u4E2D\u7684\u7EC4\u4EF6\u6DFB\u52A0\u5230\u5BF9\u5E94\u7684\u4E3B\u754C\u9762\u884C\u4E0A\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6B65",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "PlacementMode": 8,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83C\uDF89\u606D\u559C\uFF01\u60A8\u5DF2\u7ECF\u638C\u63E1\u4E86\u5411\u4E3B\u754C\u9762\u6DFB\u52A0\u7EC4\u4EF6\u7684\u65B9\u6CD5\uFF01",
+              "IconExpression": "sticker(\u5E15\u59C6_\u70B9\u8D5E)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 6,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        },
+        {
+          "Id": "componentSettings",
+          "Title": "\u7EC4\u4EF6\u8BBE\u7F6E",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.MainWindow",
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
+          "Content": [
+            {
+              "Title": "",
+              "Content": "\u6709\u4E9B\u7EC4\u4EF6\uFF08\u6BD4\u5982\u8BFE\u7A0B\u8868\u7EC4\u4EF6\uFF09\u5177\u6709\u81EA\u5DF1\u7684\u8BBE\u7F6E\uFF0C\u6211\u4EEC\u53EF\u4EE5\u901A\u8FC7\u8C03\u6574\u8FD9\u4E9B\u7EC4\u4EF6\u7684\u8BBE\u7F6E\u6765\u8FDB\u4E00\u6B65\u5B9A\u5236\u8FD9\u4E9B\u7EC4\u4EF6\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "ci|ComponentPresenter[IsOnMainWindow=True]:has-settings",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u9009\u4E2D\u8FD9\u4E2A\u7EC4\u4EF6\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "ci|ComponentPresenter[IsOnMainWindow=True]:has-settings",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u6211\u5DF2\u9009\u4E2D\u6B64\u7EC4\u4EF6",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.selection.changed",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u70B9\u51FB\u9F7F\u8F6E\u56FE\u6807\u6253\u5F00\u7EC4\u4EF6\u8BBE\u7F6E\u754C\u9762\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonComponentSettings",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": false,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.componentSettings.open",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u8FD9\u5C31\u662F\u7EC4\u4EF6\u7684\u8BBE\u7F6E\u9875\u9762\u4E86\uFF0C\u60A8\u53EF\u4EE5\u5728\u8FD9\u91CC\u8C03\u6574\u5BF9\u5E94\u7EC4\u4EF6\u7684\u8BBE\u7F6E\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u5404\u4E2A\u7EC4\u4EF6\u95F4\u7684\u8BBE\u7F6E\u4E00\u822C\u662F\u4E92\u76F8\u72EC\u7ACB\uFF0C\u4E92\u4E0D\u5F71\u54CD\u7684\u3002\u56E0\u6B64\u60A8\u53EF\u4EE5\u5728\u4E3B\u754C\u9762\u4E0A\u6DFB\u52A0\u591A\u4E2A\u76F8\u540C\u7684\u7EC4\u4EF6\uFF0C\u4F46\u4F7F\u7528\u4E0D\u540C\u7684\u8BBE\u7F6E\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u8BD5\u8BD5\u8C03\u6574\u8FD9\u4E2A\u7EC4\u4EF6\u7684\u8BBE\u7F6E\uFF0C\u770B\u770B\u4F1A\u6709\u4EC0\u4E48\u53D8\u5316\u5427\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u8C03\u6574\u597D\u4E86",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "PlacementMode": 8,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u6B64\u5916\uFF0C\u60A8\u4E5F\u53EF\u4EE5\u70B9\u51FB\u6B64\u5904\u4E3A\u6B64\u7EC4\u4EF6\u6DFB\u52A0\u9690\u85CF\u89C4\u5219\uFF0C\u4F7F\u5176\u5728\u7279\u5B9A\u60C5\u51B5\u4E0B\u81EA\u52A8\u9690\u85CF\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "StackPanel#StackPanelComponentHideRules",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83C\uDF89\u606D\u559C\uFF01\u60A8\u5DF2\u7ECF\u638C\u63E1\u4E86\u8C03\u6574\u7EC4\u4EF6\u8BBE\u7F6E\u7684\u65B9\u6CD5\uFF01",
+              "IconExpression": "sticker(\u5E15\u59C6_\u70B9\u8D5E)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 6,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        },
+        {
+          "Id": "containerComponent",
+          "Title": "\u5BB9\u5668\u7EC4\u4EF6",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.MainWindow",
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
+          "Content": [
+            {
+              "Title": "",
+              "Content": "\u8FD9\u662F\u4E00\u4E2A\u5BB9\u5668\u7EC4\u4EF6\uFF0C\u53EF\u4EE5\u5728\u5176\u4E2D\u5305\u542B\u5176\u5B83\u7EC4\u4EF6\uFF0C\u5B9E\u73B0\u8F6E\u64AD\u3001\u5206\u7EC4\u7B49\u6548\u679C\u3002\u63A5\u4E0B\u6765\u6211\u4EEC\u5C06\u4E86\u89E3\u5982\u4F55\u7F16\u8F91\u5BB9\u5668\u7EC4\u4EF6\u4E2D\u7684\u7EC4\u4EF6\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u9009\u4E2D\u8FD9\u4E2A\u7EC4\u4EF6\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "ci|ComponentPresenter[IsOnMainWindow=True]:container",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u6211\u5DF2\u9009\u4E2D\u6B64\u7EC4\u4EF6",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.selection.changed",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u70B9\u51FB\u5C55\u5F00\u56FE\u6807\u5C55\u5F00\u5BB9\u5668\u7EC4\u4EF6\u7684\u5B50\u7EC4\u4EF6\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonChildren",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": false,
+              "RightButtonText": "\u6211\u5DF2\u5C55\u5F00\u5BB9\u5668\u7EC4\u4EF6",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.childrenComponent.open",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u6211\u4EEC\u53EF\u4EE5\u770B\u5230\uFF0C\u8FD9\u4E2A\u5BB9\u5668\u7EC4\u4EF6\u91CC\u7684\u5B50\u7EC4\u4EF6\u5C31\u88AB\u663E\u793A\u5728\u4E86\u8FD9\u91CC\u3002\u6211\u4EEC\u53EF\u4EE5\u50CF\u7F16\u8F91\u4E3B\u754C\u9762\u884C\u4E0A\u7684\u7EC4\u4EF6\u90A3\u6837\uFF0C\u901A\u8FC7\u62D6\u62FD\u7684\u65B9\u5F0F\u7F16\u8F91\u5176\u4E2D\u7684\u7EC4\u4EF6\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "ItemsControl#ContainerComponentsEditHost ContentPresenter",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u8BD5\u8BD5\u770B\u6309\u7167\u5148\u524D\u5411\u4E3B\u754C\u9762\u4E0A\u6DFB\u52A0\u7EC4\u4EF6\u7684\u65B9\u6CD5\uFF0C\u5411\u5BB9\u5668\u7EC4\u4EF6\u4E2D\u6DFB\u52A0\u7EC4\u4EF6\u5427\u3002\u5F53\u60A8\u5C1D\u8BD5\u5B8C\u540E\uFF0C\u70B9\u51FB\u3010\u4E0B\u4E00\u6B65\u3011\u4EE5\u7EE7\u7EED\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6B65",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "PlacementMode": 8,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83C\uDF89\u606D\u559C\uFF01\u60A8\u5DF2\u7ECF\u638C\u63E1\u4E86\u8C03\u6574\u5BB9\u5668\u7EC4\u4EF6\u5185\u7684\u7EC4\u4EF6\u7684\u65B9\u6CD5\uFF01",
+              "IconExpression": "sticker(\u5E15\u59C6_\u70B9\u8D5E)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 6,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        },
+        {
+          "Id": "mainWindowLine",
+          "Title": "\u4E3B\u754C\u9762\u884C",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.MainWindow",
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
+          "Content": [
+            {
+              "Title": "",
+              "Content": "\u5E94\u7528\u7684\u4E3B\u754C\u9762\u7531\u591A\u4E2A\u4E3B\u754C\u9762\u884C\u7EC4\u6210\uFF0C\u63A5\u4E0B\u6765\u6211\u4EEC\u6765\u4ECB\u7ECD\u5982\u4F55\u7F16\u8F91\u4E3B\u754C\u9762\u884C\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u6DFB\u52A0\u4E3B\u754C\u9762\u884C",
+              "Content": "\uD83D\uDC49\u70B9\u51FB\u3010\u65B0\u4E3B\u754C\u9762\u884C\u3011\u6309\u94AE\uFF0C\u6DFB\u52A0\u4E00\u4E2A\u4E3B\u754C\u9762\u884C\u3002",
+              "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonMainWindowLineNew",
+              "HighlightTarget": true,
+              "ModalTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": true,
+              "UseLightDismiss": false,
+              "Tag": "classisland.mainwindow.editMode.mainWindowLine.create",
+              "PlacementMode": 2,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u6211\u4EEC\u53EF\u4EE5\u770B\u5230\u6211\u4EEC\u8FD9\u91CC\u51FA\u73B0\u4E86\u6211\u4EEC\u521A\u521A\u521B\u5EFA\u7684\u4E3B\u754C\u9762\u884C\uFF0C\u6B64\u65F6\u6211\u4EEC\u5C31\u53EF\u4EE5\u6309\u7167\u4E4B\u524D\u7684\u65B9\u6CD5\uFF0C\u5411\u4E0A\u9762\u6DFB\u52A0\u7EC4\u4EF6\u4E86\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u8C03\u6574\u4E3B\u754C\u9762\u884C\u987A\u5E8F",
+              "Content": "\u62D6\u52A8\u5DE6\u4FA7\u7684\u62D6\u62FD\u56FE\u6807\u53EF\u4EE5\u8C03\u6574\u4E3B\u754C\u9762\u884C\u987A\u5E8F\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "ci|TouchDragThumb",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 4,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\u5F53\u6709\u591A\u4E2A\u4E3B\u754C\u9762\u884C\u65F6\uFF0C\u6BCF\u4E2A\u4E3B\u754C\u9762\u884C\u53EF\u4EE5\u5206\u522B\u663E\u793A\u63D0\u9192\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u4E3B\u754C\u9762\u884C\u63D0\u9192",
+              "Content": "\u60A8\u53EF\u4EE5\u901A\u8FC7\u70B9\u51FB\u8FD9\u4E2A\u94C3\u94DB\u56FE\u6807\u7684\u6309\u94AE\u6765\u5F00\u5173\u4E00\u4E2A\u4E3B\u754C\u9762\u7684\u63D0\u9192\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "ToggleButton#ButtonMainWindowLineIsNotificationEnabled",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 8,
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u4E3B\u754C\u9762\u884C\u8BBE\u7F6E",
+              "Content": "\u70B9\u51FB\u8FD9\u4E2A\u9F7F\u8F6E\u56FE\u6807\u7684\u6309\u94AE\u53EF\u4EE5\u5C55\u5F00\u4E3B\u754C\u9762\u884C\u8BBE\u7F6E\uFF0C\u60A8\u53EF\u4EE5\u5728\u6B64\u5904\u8C03\u6574\u4E3B\u754C\u9762\u884C\u8303\u56F4\u7684\u9690\u85CF\u89C4\u5219\u548C\u4E3B\u754C\u9762\u884C\u8303\u56F4\u7684\u5916\u89C2\u8BBE\u7F6E\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonMainWindowLineSettings",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 8,
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u4E3B\u8981\u884C",
+              "Content": "\u70B9\u51FB\u8FD9\u4E2A\u6309\u94AE\u53EF\u4EE5\u5C06\u8FD9\u4E2A\u4E3B\u754C\u9762\u884C\u8BBE\u4E3A\u4E3B\u8981\u884C\uFF0C\u8FD9\u6837\u63D0\u9192\u4F1A\u4F18\u5148\u5728\u8FD9\u4E00\u884C\u4E0A\u663E\u793A\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "ToggleButton#ButtonMainWindowLineIsMainLine",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 8,
+              "Xmlns": {}
+            },
+            {
+              "Title": "\u5220\u9664\u4E3B\u754C\u9762\u884C",
+              "Content": "\u70B9\u51FB\u8FD9\u4E2A\u6309\u94AE\u53EF\u4EE5\u5220\u9664\u8FD9\u4E2A\u4E3B\u754C\u9762\u884C\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonMainWindowLineDelete",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 8,
+              "Xmlns": {}
+            },
+            {
+              "Title": "",
+              "Content": "\uD83C\uDF89\u606D\u559C\uFF01\u60A8\u5DF2\u7ECF\u638C\u63E1\u4E86\u8C03\u6574\u4E3B\u754C\u9762\u884C\u7684\u65B9\u6CD5\uFF01",
+              "IconExpression": "sticker(\u5E15\u59C6_\u70B9\u8D5E)",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        }
+      ],
+      "Xmlns": {
+        "em": "clr-namespace:ClassIsland.Controls.EditMode;assembly=ClassIsland",
         "controls": "clr-namespace:ClassIsland.Controls;assembly=ClassIsland"
       }
     }

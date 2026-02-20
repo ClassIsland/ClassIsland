@@ -6,12 +6,14 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using DynamicData;
 
@@ -123,6 +125,11 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
             ComponentsService.LoadComponentSettings(componentSettings,
                 componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!);
             InsertItem(targetList, componentSettings, insertIndex);
+            if (data.IsComponentContainer)
+            {
+                IAppHost.GetService<ITutorialService>().BeginNotCompletedTutorials(
+                    "classisland.getStarted.componentsEditing/containerComponent");
+            }
         }
         return true;
 

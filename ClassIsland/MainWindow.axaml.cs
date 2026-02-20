@@ -314,6 +314,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
+        TutorialService.BeginNotCompletedTutorials("classisland.getStarted.welcome/init");
     }
 
     public override void Show()
@@ -522,7 +523,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             e.Cancel = true;
             if (ViewModel.IsEditMode)
             {
-                ViewModel.IsEditMode = false;
+                ExitEditMode();
             }
             return;
         }
@@ -836,6 +837,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             Position = newPos;
         }
+        WindowState = WindowState.Normal;
+        
         if (updateEffectWindow)
         {
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
@@ -1221,24 +1224,44 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void EnterEditMode()
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+        if (ViewModel.IsEditMode || !await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
         {
             return;
         }
 
         ViewModel.IsEditMode = true;
-
-        if (!ViewModel.Settings.HasEditModeTutorialShown)
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.enter");
+        TutorialService.BeginNotCompletedTutorials(
+            "classisland.getStarted.componentsEditing/introduction",
+            "classisland.getStarted.componentsEditing/addComponent");
+        if (ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.SettingsType != null))
         {
-            ViewModel.EditModeTutorialPhase = 0;
+            TutorialService.BeginNotCompletedTutorials(
+                "classisland.getStarted.componentsEditing/componentSettings");
         }
+        if (ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.IsComponentContainer))
+        {
+            TutorialService.BeginNotCompletedTutorials(
+                "classisland.getStarted.componentsEditing/containerComponent");
+        }
+        TutorialService.BeginNotCompletedTutorials("classisland.getStarted.componentsEditing/mainWindowLine");
     }
 
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
     {
+        ExitEditMode();
+    }
+
+    private void ExitEditMode()
+    {
         ViewModel.IsEditMode = false;
         ViewModel.EditModeTutorialPhase = -1;
         ComponentsService.SaveConfig();
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.exit");
     }
 
     private void ButtonOpenComponentsLib_OnClick(object? sender, RoutedEventArgs e)
@@ -1333,7 +1356,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             listBox.SelectedItem = null;
         }
         ViewModel.SelectedComponentSettings = settings;
-        
+        Dispatcher.UIThread.Post(() =>
+        {
+            TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.selection.changed");
+        });
     }
 
     [RelayCommand]
@@ -1417,6 +1443,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void ButtonNewMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
     {
         ComponentsService.CurrentComponents.Lines.Add(new MainWindowLineSettings());
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.mainWindowLine.create");
     }
     
     private void ButtonManageComponentLayouts_OnClick(object? sender, RoutedEventArgs e)

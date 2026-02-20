@@ -48,6 +48,7 @@
     <StyleInclude Source="/Controls/StickerControl.axaml"/>
     <StyleInclude Source="/Controls/StickyScrollViewer.axaml"/>
     <StyleInclude Source="/Controls/VerticalDrawer.axaml"/>
+    <StyleInclude Source="/Controls/IconSources/AdvacnedImageIcon.axaml"/>
 
     <!-- Add Styles Here -->
 
@@ -286,8 +287,10 @@
         <Setter Property="CornerRadius" Value="6"/>
     </Style>
     
+    <Style Selector="controls|TeachingTip /template/ ContentPresenter#IconPresenter">
+        <Setter Property="MaxWidth" Value="60"/>
+        <Setter Property="MaxHeight" Value="60"/>
+    </Style>
     
-
-    <!-- 修复字体飞上去的问题 -->
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

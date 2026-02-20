@@ -14,12 +14,14 @@ public partial class EditModeViewModel(
     MainWindow mainWindow,
     IComponentsService componentsService,
     SettingsService settingsService,
-    IUriNavigationService uriNavigationService) : ObservableObject
+    IUriNavigationService uriNavigationService,
+    ITutorialService tutorialService) : ObservableObject
 {
     public MainWindow MainWindow { get; } = mainWindow;
     public IComponentsService ComponentsService { get; } = componentsService;
     public SettingsService SettingsService { get; } = settingsService;
     public IUriNavigationService UriNavigationService { get; } = uriNavigationService;
+    public ITutorialService TutorialService { get; } = tutorialService;
 
     public MainViewModel MainViewModel => MainWindow.ViewModel;
 
