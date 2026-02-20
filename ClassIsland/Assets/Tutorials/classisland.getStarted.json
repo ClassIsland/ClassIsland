@@ -2509,7 +2509,12 @@
           "Title": "\u5165\u95E8",
           "Description": "",
           "TopLevelClassName": "ClassIsland.MainWindow",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
           "Content": [
             {
               "Title": "",
@@ -2751,8 +2756,40 @@
           "Title": "\u6DFB\u52A0\u7EC4\u4EF6",
           "Description": "",
           "TopLevelClassName": "ClassIsland.MainWindow",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
           "Content": [
+            {
+              "Title": "",
+              "Content": "\u6211\u4EEC\u63A5\u4E0B\u6765\u6765\u4E86\u89E3\u5982\u4F55\u5411\u4E3B\u754C\u9762\u4E0A\u6DFB\u52A0\u7EC4\u4EF6\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Xmlns": {}
+            },
             {
               "Title": "",
               "Content": "\uD83D\uDC49\u70B9\u51FB\u3010\u6DFB\u52A0\u7EC4\u4EF6\u3011\u6309\u94AE\uFF0C\u6253\u5F00\u7EC4\u4EF6\u5E93\u3002",
@@ -2984,7 +3021,12 @@
           "Title": "\u7EC4\u4EF6\u8BBE\u7F6E",
           "Description": "",
           "TopLevelClassName": "ClassIsland.MainWindow",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
           "Content": [
             {
               "Title": "",
@@ -3218,7 +3260,12 @@
           "Title": "\u5BB9\u5668\u7EC4\u4EF6",
           "Description": "",
           "TopLevelClassName": "ClassIsland.MainWindow",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
           "Content": [
             {
               "Title": "",
@@ -3371,7 +3418,7 @@
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
+                  "Kind": 6,
                   "StringParameter": ""
                 }
               ],
@@ -3396,7 +3443,12 @@
           "Title": "\u4E3B\u754C\u9762\u884C",
           "Description": "",
           "TopLevelClassName": "ClassIsland.MainWindow",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit-mode"
+            }
+          ],
           "Content": [
             {
               "Title": "",

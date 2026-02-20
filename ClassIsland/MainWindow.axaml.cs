@@ -314,6 +314,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
+        TutorialService.BeginNotCompletedTutorials("classisland.getStarted.welcome/init");
     }
 
     public override void Show()
@@ -1221,17 +1222,31 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void EnterEditMode()
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+        if (ViewModel.IsEditMode || !await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
         {
             return;
         }
 
         ViewModel.IsEditMode = true;
         TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.enter");
-        // if (!ViewModel.Settings.HasEditModeTutorialShown)
-        // {
-        //     ViewModel.EditModeTutorialPhase = 0;
-        // }
+        TutorialService.BeginNotCompletedTutorials(
+            "classisland.getStarted.componentsEditing/introduction",
+            "classisland.getStarted.componentsEditing/addComponent");
+        if (ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.SettingsType != null))
+        {
+            TutorialService.BeginNotCompletedTutorials(
+                "classisland.getStarted.componentsEditing/componentSettings");
+        }
+        if (ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.IsComponentContainer))
+        {
+            TutorialService.BeginNotCompletedTutorials(
+                "classisland.getStarted.componentsEditing/containerComponent");
+        }
+        TutorialService.BeginNotCompletedTutorials("classisland.getStarted.componentsEditing/mainWindowLine");
     }
 
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
