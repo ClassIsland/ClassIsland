@@ -48,12 +48,13 @@
                                                Description="从先前的备份恢复处于正确状态的配置文件。"
                                                ActionIconSource="{ci:FluentIconSource &#xe44e;}"
                                                Click="ButtonRecoverBackup_OnClick"/>
-                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe135;}"
+                <controls:SettingsExpanderItem Name="ButtonRollBack" 
+                                               IconSource="{ci:FluentIconSource &#xe135;}"
                                                Content="回滚"
                                                Description="回滚到之前的 ClassIsland 版本"
                                                ActionIconSource="{ci:FluentIconSource &#xe44e;}"
 			                                   Click="ButtonRollBack_Onclick"
-                                               IsEnabled="{Binding HasMultipleInstallations}"/>
+                                               IsEnabled="False"/>
             </StackPanel>
             
             <StackPanel Classes="cardContainer">
