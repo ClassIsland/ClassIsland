@@ -5,9 +5,10 @@ using ClassIsland;
 #if NIX
 [assembly: AssemblyVersion("0.0.0.0")]
 [assembly: AssemblyInformationalVersion("NIXBUILD+NIXBUILD_LONG_HASH")]
-#endif
+#else
 [assembly: AssemblyVersion(GitInfo.Tag)]
 [assembly: AssemblyInformationalVersion($"{GitInfo.Tag}+{GitInfo.CommitHash}")]
+#endif
 
 [assembly: AssemblyTitle("ClassIsland")]
 [assembly: AssemblyProduct("ClassIsland")]
