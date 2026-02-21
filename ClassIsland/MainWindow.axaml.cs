@@ -1147,6 +1147,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         IAppHost.GetService<ScreenshotHelperWindow>().Show();
     }
+    
+    private void NativeMenuItemTutorials_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<TutorialCenterWindow>().Open();
+    }
     #endregion
 
     #region Gateways

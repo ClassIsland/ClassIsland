@@ -44,6 +44,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls.IconSources;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers;
