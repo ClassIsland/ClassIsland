@@ -134,7 +134,7 @@ public static class OSKIntegration
         }
         catch(COMException e)
         {
-            if ((uint)e.HResult == 0x80040154)
+            if ((uint)e.HResult == HRESULT.REGDB_E_CLASSNOTREG)
             {
                 Process p = new()
                 {
