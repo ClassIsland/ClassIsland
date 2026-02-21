@@ -61,8 +61,8 @@
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE959;}"
                             Click="NativeMenuItemTutorials_OnClick" 
                             IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
-            <NativeMenuItem Header="帮助…"
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEE31;}"
+            <NativeMenuItem Header="帮助文档…"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE23C;}"
                             Click="MenuItemHelps_OnClick" 
                             IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
             <NativeMenuItemSeparator/>
@@ -97,18 +97,19 @@
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEBAC;}"
                             IsVisible="{Binding !!$self.Menu.Items.Count}"/>
             <NativeMenuItemSeparator/>
-            <NativeMenuItem Header="编辑主界面…" Click="NativeMenuItemEnterEditMode_OnClick" 
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE7C9;}"/>
             <NativeMenuItem Header="编辑档案…" Click="ButtonSettings_OnClick" 
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE699;}"/>
-            <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" 
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEF27;}"/>
             <NativeMenuItem Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE6A1;}">
             </NativeMenuItem>
             <NativeMenuItem Header="换课…" Click="MenuItemClassSwap_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE15F;}">
             </NativeMenuItem>
+            <NativeMenuItemSeparator/>
+            <NativeMenuItem Header="编辑主界面…" Click="NativeMenuItemEnterEditMode_OnClick" 
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE7C9;}"/>
+            <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" 
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEF27;}"/>
             <NativeMenuItemSeparator />
             <NativeMenuItem  Header="重启" Click="MenuItemRestartApp_OnClick"
                              ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE0BD;}"/>
