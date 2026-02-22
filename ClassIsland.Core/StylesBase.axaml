@@ -107,13 +107,16 @@
         </Style>
     </Style>
 
-    <Style Selector="TabControl TabItem">
+    <Style Selector="TabControl TabItem, TabStrip TabStripItem">
         <Style Selector="^ TextBlock">
             <Setter Property="FontWeight" Value="Regular"/>
         </Style>
     </Style>
 
     <Style Selector="TabControl.navigation TabItem /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextElement.FontSize" Value="20"/>
+    </Style>
+    <Style Selector="TabStrip.navigation TabStripItem /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="TextElement.FontSize" Value="20"/>
     </Style>
     

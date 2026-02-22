@@ -154,6 +154,30 @@ public partial class TutorialService : ObservableObject, ITutorialService
         TryStartNextSentence();
     }
 
+    public bool GetIsTutorialCompleted(string path)
+    {
+        return Settings.CompletedTutorials.Contains(path);
+    }
+
+    public void SetIsTutorialCompleted(string path, bool completed)
+    {
+        if (completed)
+        {
+            Settings.CompletedTutorials.Add(path);
+        }
+        else
+        {
+            Settings.CompletedTutorials.Remove(path);
+        }
+        TutorialStateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void ResetTutorialCompletedState()
+    {
+        Settings.CompletedTutorials.Clear();
+        TutorialStateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     private void StartParagraph(Tutorial tutorial, TutorialParagraph paragraph)
     {
         CleanupPrevSentence();
