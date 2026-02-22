@@ -8,6 +8,7 @@
         xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
         xmlns:tutorial="clr-namespace:ClassIsland.Core.Models.Tutorial;assembly=ClassIsland.Core"
         xmlns:tutorial1="clr-namespace:ClassIsland.Controls.Tutorial;assembly=ClassIsland"
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.TutorialCenterWindow"
         Title="教学中心" Height="550" Width="1240"
@@ -193,8 +194,8 @@
                                         <Border CornerRadius="4" ClipToBounds="True">
                                             <tutorial1:TutorialStateProvider Grid.Row="0" Tutorial="{Binding}">
                                                 <Grid RowDefinitions="Auto Auto">
-                                                    <Image Grid.Row="0" Source="/Assets/DefaultTutorialBanner.webp"
-                                                           Height="100" Stretch="UniformToFill" StretchDirection="Both"></Image>
+                                                    <asyncImageLoader:AdvancedImage Grid.Row="0" Source="{Binding ActualBanner}"
+                                                           Height="100" Stretch="UniformToFill" StretchDirection="Both"/>
                                                     <StackPanel Grid.Row="1" Margin="12 8 12 12" Spacing="6">
                                                         <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Medium" />
                                                         <TextBlock Text="{Binding Description}" FontSize="12"

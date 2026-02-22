@@ -4,10 +4,12 @@
   "Description": "\u6B22\u8FCE\u6765\u5230\u4ECE\u96F6\u5F00\u59CB\u7684 ClassIsland \u4E4B\u65C5\u3002",
   "Tutorials": [
     {
+      "ActualBanner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/banner.webp",
       "Id": "classisland.getStarted.welcome",
       "Title": "\u6B22\u8FCE",
       "Description": "\u4E00\u5207\u7684\u5F00\u59CB\u3002",
       "Ordinary": 0,
+      "Banner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/banner.webp",
       "Paragraphs": [
         {
           "Id": "init",
@@ -845,10 +847,12 @@
       "Xmlns": {}
     },
     {
+      "ActualBanner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.profileEditing/banner.webp",
       "Id": "classisland.getStarted.profileEditing",
       "Title": "\u8BFE\u8868\u7F16\u8F91\u00B7\u5165\u95E8",
       "Description": "\u521D\u6B65\u4E86\u89E3\u5982\u4F55\u7F16\u8F91\u8BFE\u8868\u3002",
       "Ordinary": 0,
+      "Banner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.profileEditing/banner.webp",
       "Paragraphs": [
         {
           "Id": "concepts",
@@ -2499,10 +2503,12 @@
       }
     },
     {
+      "ActualBanner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.componentsEditing/banner.webp",
       "Id": "classisland.getStarted.componentsEditing",
       "Title": "\u7EC4\u4EF6\u7F16\u8F91\u00B7\u5165\u95E8",
       "Description": "\u521D\u6B65\u4E86\u89E3\u5982\u4F55\u81EA\u5B9A\u4E49\u4E3B\u754C\u9762\u4E0A\u663E\u793A\u7684\u5185\u5BB9\u3002",
       "Ordinary": 0,
+      "Banner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.componentsEditing/banner.webp",
       "Paragraphs": [
         {
           "Id": "introduction",
