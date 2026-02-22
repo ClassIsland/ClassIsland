@@ -7,8 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Reactive;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Models.AttachedSettings;
@@ -252,4 +254,14 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
 
     #endregion
 
+    private void StyledElement_OnActualThemeVariantChanged(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            foreach (var control in DetailedInfoTabControl.Children)
+            {
+                control.InvalidateVisual();  // fixes https://github.com/ClassIsland/ClassIsland/issues/1468
+            }
+        });
+    }
 }

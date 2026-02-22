@@ -12,6 +12,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="LessonControlExpandedRoot"
+             ActualThemeVariantChanged="StyledElement_OnActualThemeVariantChanged"
              Classes.ChangedClass="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource Self}}"
              Classes.HighlightChangedClass="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}"
              Classes.ExtraInfo4ShowSeconds="{Binding ExtraInfo4ShowSeconds, RelativeSource={RelativeSource Self}}">
