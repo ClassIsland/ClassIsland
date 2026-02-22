@@ -90,7 +90,12 @@
           "Title": "\u62D2\u7EDD\u5206\u652F-1",
           "Description": "",
           "TopLevelClassName": "ClassIsland.Views.SettingsWindowNew",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/settings"
+            }
+          ],
           "Content": [
             {
               "Title": "",
@@ -375,7 +380,12 @@
           "Title": "\u8BA4\u8BC6\u5E94\u7528\u8BBE\u7F6E",
           "Description": "",
           "TopLevelClassName": "ClassIsland.Views.SettingsWindowNew",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/settings"
+            }
+          ],
           "Content": [
             {
               "Title": "\u5E94\u7528\u8BBE\u7F6E",
@@ -606,7 +616,12 @@
           "Title": "\u8BA4\u8BC6\u7F16\u8F91\u6A21\u5F0F",
           "Description": "",
           "TopLevelClassName": "ClassIsland.MainWindow",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit"
+            }
+          ],
           "Content": [
             {
               "Title": "\u7F16\u8F91\u6A21\u5F0F",
@@ -726,7 +741,12 @@
           "Title": "\u8BA4\u8BC6\u6863\u6848\u7F16\u8F91\u5668",
           "Description": "",
           "TopLevelClassName": "ClassIsland.Views.ProfileSettingsWindow",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/profile"
+            }
+          ],
           "Content": [
             {
               "Title": "\u6863\u6848\u7F16\u8F91",
@@ -2518,7 +2538,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [
@@ -2765,7 +2785,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [
@@ -3030,7 +3050,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [
@@ -3269,7 +3289,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [
@@ -3452,7 +3472,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [
