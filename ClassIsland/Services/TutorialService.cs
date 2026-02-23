@@ -46,8 +46,12 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private List<Control> AttachedAdorners { get; } = [];
     
     private TeachingTip? CurrentTeachingTip { get; set; }
+    
+    private TutorialSpotlightControl? CurrentSpotlight { get; set; }
 
-    private IDisposable? _currentTeachingTipIsOpenObserver;
+    private bool _useDimPrev;
+
+    private bool _isInvokingActions;
 
     [ObservableProperty] private TopLevel? _attachedToplevel;
     
@@ -136,7 +140,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
             return;
         }
 
-        if (CurrentSentence is not { WaitForNextCommand: true })
+        if (_isInvokingActions || CurrentSentence is not { WaitForNextCommand: true })
         {
             return;
         }
@@ -146,7 +150,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     public void PushToNextSentenceByTag(string tag)
     {
-        if (CurrentSentence is not { WaitForNextCommand: true } sentence || sentence.Tag != tag)
+        if (_isInvokingActions || CurrentSentence is not { WaitForNextCommand: true } sentence || sentence.Tag != tag)
         {
             return;
         }
@@ -207,6 +211,12 @@ public partial class TutorialService : ObservableObject, ITutorialService
                 CurrentTeachingTip.Closed -= TeachingTipOnClosed;
             }
 
+            if (CurrentSpotlight != null)
+            {
+                CurrentSpotlight.Clicked -= CurrentSpotlightOnClicked;
+                CurrentSpotlight = null;
+            }
+
             foreach (var adorner in AttachedAdorners)
             {
                 layer?.Children.Remove(adorner);
@@ -234,7 +244,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
     {
         CleanupPrevSentence();
 
-        if (CurrentTutorial == null || CurrentParagraph == null)
+        if (CurrentTutorial == null || CurrentParagraph == null || AttachedToplevel == null)
         {
             return;
         }
@@ -256,8 +266,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
             Title = sentence.Title,
             Subtitle = sentence.Content,
             Target = sentence.PointToTarget ? targetControl : null,
-            PreferredPlacement = sentence.PlacementMode,
-            IsLightDismissEnabled = sentence.UseLightDismiss
+            PreferredPlacement = sentence.PlacementMode
         };
         if (!string.IsNullOrEmpty(sentence.LeftButtonText) && !sentence.UseLightDismiss)
         {
@@ -270,27 +279,46 @@ public partial class TutorialService : ObservableObject, ITutorialService
             teachingTip.CloseButtonCommandParameter = sentence.RightButtonActions;
         }
 
-        if (sentence.UseLightDismiss)
-        {
-            teachingTip.Closed += TeachingTipOnClosed;
-        }
 
         teachingTip.ActionButtonCommand = teachingTip.CloseButtonCommand = InvokeActionsCommand;
 
         AttachAdorner(teachingTip, AttachedToplevel);
-        if (sentence.ModalTarget && targetControl != null)
+        var useDim = sentence.ModalTarget || sentence.UseLightDismiss;
+        if (useDim)
         {
-            var spotlight = new TutorialSpotlightControl();
-            AttachAdorner(spotlight, targetControl);
+            var spotlight = CurrentSpotlight = new TutorialSpotlightControl()
+            {
+                FullscreenDim = targetControl == null,
+                DisableIntro = _useDimPrev
+            };
+            AttachAdorner(spotlight, targetControl ?? AttachedToplevel);
         }
+        _useDimPrev = useDim;
+        
         if (sentence.HighlightTarget && targetControl != null)
         {
             var highlightControl = new TutorialHighlightControl();
             AttachAdorner(highlightControl, targetControl);
         }
+        if (sentence.UseLightDismiss)
+        {
+            teachingTip.Closed += TeachingTipOnClosed;
+            if (CurrentSpotlight != null)
+            {
+                CurrentSpotlight.Clicked += CurrentSpotlightOnClicked;
+            }
+        }
         (AttachedToplevel as Window)?.Activate();
-        teachingTip.IsOpen = true;
-        
+        Dispatcher.UIThread.Post(() => teachingTip.IsOpen = true);
+    }
+
+    private void CurrentSpotlightOnClicked(object? sender, EventArgs e)
+    {
+        if (CurrentSentence == null)
+        {
+            return;
+        }
+        InvokeActions(CurrentSentence.RightButtonActions);
     }
 
     private void TeachingTipOnClosed(TeachingTip sender, TeachingTipClosedEventArgs args)
@@ -372,10 +400,12 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     private void InvokeActions(IList<TutorialAction> actions, bool isInit)
     {
+        _isInvokingActions = true;
         foreach (var action in actions)
         {
             InvokeAction(action, isInit);
         }
+        _isInvokingActions = false;
     }
 
     private void InvokeAction(TutorialAction action, bool isInit)

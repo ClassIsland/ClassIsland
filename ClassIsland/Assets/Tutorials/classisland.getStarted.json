@@ -158,7 +158,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "PlacementMode": 2,
               "Xmlns": {}
@@ -186,7 +186,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "Xmlns": {}
             },
@@ -213,7 +213,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "Xmlns": {}
             },
@@ -276,7 +276,7 @@
                 }
               ],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "PlacementMode": 2,
               "Xmlns": {}
@@ -314,7 +314,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "Xmlns": {}
             },
@@ -341,7 +341,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "Xmlns": {}
             },
@@ -560,6 +560,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u597D",
               "RightButtonActions": [
@@ -587,6 +588,7 @@
               "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "",
               "RightButtonActions": [
@@ -656,6 +658,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u597D",
               "RightButtonActions": [
