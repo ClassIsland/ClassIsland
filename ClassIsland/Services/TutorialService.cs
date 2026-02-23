@@ -6,6 +6,7 @@ using AsyncImageLoader;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Controls.Tutorial;
 using ClassIsland.Core;
@@ -47,7 +48,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
     
     private TeachingTip? CurrentTeachingTip { get; set; }
     
-    private TutorialSpotlightControl? CurrentSpotlight { get; set; }
+    private Border? CurrentDimBorder { get; set; }
 
     private bool _useDimPrev;
 
@@ -211,10 +212,10 @@ public partial class TutorialService : ObservableObject, ITutorialService
                 CurrentTeachingTip.Closed -= TeachingTipOnClosed;
             }
 
-            if (CurrentSpotlight != null)
+            if (CurrentDimBorder != null)
             {
-                CurrentSpotlight.Clicked -= CurrentSpotlightOnClicked;
-                CurrentSpotlight = null;
+                CurrentDimBorder.PointerReleased -= CurrentSpotlightOnClicked;
+                CurrentDimBorder = null;
             }
 
             foreach (var adorner in AttachedAdorners)
@@ -283,10 +284,10 @@ public partial class TutorialService : ObservableObject, ITutorialService
         teachingTip.ActionButtonCommand = teachingTip.CloseButtonCommand = InvokeActionsCommand;
 
         AttachAdorner(teachingTip, AttachedToplevel);
-        var useDim = sentence.ModalTarget || sentence.UseLightDismiss;
+        var useDim = sentence.ModalTarget;
         if (useDim)
         {
-            var spotlight = CurrentSpotlight = new TutorialSpotlightControl()
+            var spotlight = new TutorialSpotlightControl()
             {
                 FullscreenDim = targetControl == null,
                 DisableIntro = _useDimPrev
@@ -303,10 +304,12 @@ public partial class TutorialService : ObservableObject, ITutorialService
         if (sentence.UseLightDismiss)
         {
             teachingTip.Closed += TeachingTipOnClosed;
-            if (CurrentSpotlight != null)
+            CurrentDimBorder = new Border()
             {
-                CurrentSpotlight.Clicked += CurrentSpotlightOnClicked;
-            }
+                Background = Brushes.Transparent
+            };
+            CurrentDimBorder.PointerReleased += CurrentSpotlightOnClicked;
+            AttachAdorner(CurrentDimBorder, AttachedToplevel);
         }
         (AttachedToplevel as Window)?.Activate();
         Dispatcher.UIThread.Post(() => teachingTip.IsOpen = true);
