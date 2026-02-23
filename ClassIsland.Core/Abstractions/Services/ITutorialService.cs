@@ -88,6 +88,24 @@ public interface ITutorialService : INotifyPropertyChanged
     void PushToNextSentenceByTag(string tag);
 
     /// <summary>
+    /// 查询指定的教学是否已经完成。
+    /// </summary>
+    /// <param name="path">教学路径</param>
+    bool GetIsTutorialCompleted(string path);
+
+    /// <summary>
+    /// 设置指定的教学是否已经完成。
+    /// </summary>
+    /// <param name="path">教学路径</param>
+    /// <param name="completed">指定的教学段落是否已经完成</param>
+    void SetIsTutorialCompleted(string path, bool completed);
+
+    /// <summary>
+    /// 重置教学完成状态。
+    /// </summary>
+    void ResetTutorialCompletedState();
+
+    /// <summary>
     /// 停止当前教学。
     /// </summary>
     void StopTutorial();

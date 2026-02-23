@@ -3,8 +3,247 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:views="clr-namespace:ClassIsland.Views"
+        xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+        xmlns:tutorial="clr-namespace:ClassIsland.Core.Models.Tutorial;assembly=ClassIsland.Core"
+        xmlns:tutorial1="clr-namespace:ClassIsland.Controls.Tutorial;assembly=ClassIsland"
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.TutorialCenterWindow"
-        Title="TutorialCenterWindow">
-    Welcome to Avalonia!
+        Title="教学中心" Height="550" Width="1240"
+        d:DataContext="{d:DesignInstance views:TutorialCenterWindow}"
+        Icon="/Assets/AppLogo.ico"
+        EnableMicaWindow="True"
+        Closing="Window_OnClosing">
+    <ci:MyWindow.Resources>
+        
+    </ci:MyWindow.Resources>
+    <Grid RowDefinitions="Auto, *">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto * Auto">
+            <TabStrip Grid.Column="1"
+                      ItemsSource="{x:Static services:ITutorialService.RegisteredTutorialGroups}"
+                      SelectedItem="{Binding ViewModel.SelectedTutorialGroup}"
+                      Classes="navigation">
+                <TabStrip.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Title}"/>
+                    </DataTemplate>
+                </TabStrip.ItemTemplate>
+            </TabStrip>
+            <StackPanel Orientation="Horizontal" Grid.Column="2"
+                        Spacing="6" Classes="items-valign-center"
+                        Margin="0 0 6 0">
+                <Button IsVisible="{Binding ViewModel.TutorialService.IsTutorialRunning}"
+                        Click="ButtonStopCurrentTutorial_OnClick">
+                    <ci:IconText Glyph="&#xF087;" Text="停止当前教程"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+        
+        <Border Grid.Row="1" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch" />
+        <TabControl Grid.Row="1" ItemsSource="{x:Static services:ITutorialService.RegisteredTutorialGroups}"
+                    SelectedItem="{Binding ViewModel.SelectedTutorialGroup}"
+                    Padding="0"
+                    Classes="navigation">
+            <TabControl.Styles>
+                <Style Selector="TabItem">
+                    <Setter Property="IsVisible" Value="False"/>
+                </Style>
+            </TabControl.Styles>
+            <TabControl.ContentTemplate>
+                <DataTemplate x:DataType="{x:Type tutorial:TutorialGroup}">
+                    <SplitView PanePlacement="Right" 
+                               CompactPaneLength="0"
+                               DisplayMode="Inline"
+                               OpenPaneLength="328" 
+                               IsPaneOpen="{Binding $parent[views:TutorialCenterWindow].ViewModel.SelectedTutorial, Converter={x:Static ObjectConverters.IsNotNull}}"
+                               Pane="{Binding $parent[views:TutorialCenterWindow].ViewModel.SelectedTutorial}">
+                        <SplitView.PaneTemplate>
+                            <DataTemplate x:DataType="tutorial:Tutorial">
+                                <Grid Margin="12" RowDefinitions="Auto *">
+                                    <tutorial1:TutorialStateProvider Grid.Row="0" Tutorial="{Binding}">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="Medium" />
+                                            <TextBlock Text="{Binding Description}"
+                                                       Classes="l-instructive" />
+                                            <TextBlock FontSize="13"
+                                                       Classes="l-instructive">
+                                                已完成<Run Text="{Binding $parent[tutorial1:TutorialStateProvider].CompletedParagraphs}"/>/<Run Text="{Binding Paragraphs.Count}"/>个段落。
+                                            </TextBlock>
+                                            <!-- <ProgressBar Value="{Binding $parent[tutorial1:TutorialStateProvider].CompletedParagraphs, Mode=OneWay}" -->
+                                            <!--              Maximum="{Binding Paragraphs.Count, Mode=OneWay}"/> -->
+                                            <StackPanel Orientation="Horizontal" Spacing="8"
+                                                        Classes="items-valign-center">
+                                                <Button Content="播放教程" Classes="accent"
+                                                        IsEnabled="{Binding !$parent[views:TutorialCenterWindow].ViewModel.TutorialService.IsTutorialRunning}"
+                                                        Click="ButtonPlaySelectedTutorial_OnClick"/>
+                                                <TextBlock Text="或者，选择下方的段落播放：" FontSize="13"
+                                                           Classes="l-instructive"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </tutorial1:TutorialStateProvider>
+                                    <ListBox Grid.Row="1" ItemsSource="{Binding Paragraphs}" Margin="0 8 0 0">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <tutorial1:TutorialStateProvider 
+                                                    VerticalAlignment="Stretch"
+                                                    Margin="0 -8"
+                                                    Tutorial="{Binding $parent[views:TutorialCenterWindow].ViewModel.SelectedTutorial}"
+                                                    Paragraph="{Binding}"
+                                                    Classes.completed="{Binding $self.IsCompleted}">
+                                                    <tutorial1:TutorialStateProvider.Styles>
+                                                        <Style Selector="tutorial1|TutorialStateProvider.completed">
+                                                            <Style Selector="^ TextBlock.label">
+                                                                <Setter Property="FontStyle" Value="Italic"/>
+                                                                <Setter Property="Opacity" Value="0.75"/>
+                                                                <Setter Property="TextDecorations" Value="{x:Static TextDecorations.Strikethrough}"/>
+                                                            </Style>
+                                                        </Style>
+                                                    </tutorial1:TutorialStateProvider.Styles>
+                                                    <Grid ColumnDefinitions="* Auto"
+                                                          Classes="items-valign-center">
+                                                        <StackPanel Grid.Column="0" Spacing="4" Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Title}"
+                                                                       ClipToBounds="False"
+                                                                       Classes="label" />
+                                                            <TextBlock Text="已完成" Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                                                                       IsVisible="{Binding $parent[tutorial1:TutorialStateProvider].IsCompleted}"/>
+                                                        </StackPanel>
+                                                        <Button Grid.Column="1" Content="{ci:FluentIcon &#xEDB9;}"
+                                                                ToolTip.Tip="播放"
+                                                                Command="{Binding $parent[views:TutorialCenterWindow].PlaySelectedParagraphCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                IsEnabled="{Binding !$parent[views:TutorialCenterWindow].ViewModel.TutorialService.IsTutorialRunning}"
+                                                                Theme="{StaticResource TransparentButton}">
+                                                            <Button.IsVisible>
+                                                                <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                                                    <Binding Path="$parent[ListBoxItem].IsPointerOver" />
+                                                                    <Binding Path="$parent[ListBoxItem].IsSelected" />
+                                                                </MultiBinding>
+                                                            </Button.IsVisible>
+                                                        </Button>
+                                                    </Grid></tutorial1:TutorialStateProvider>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Grid>
+                            </DataTemplate>
+                        </SplitView.PaneTemplate>
+                        <ci:StickyScrollViewer CollapsedHeight="{Binding #InnerTitle.Bounds.Height}">
+                            <ci:StickyScrollViewer.HeaderContent>
+                                <Grid>
+                                    <Panel MaxHeight="200" 
+                                           Opacity="{Binding $self.(ci:StickyScrollViewer.HeaderFadingOpacity)}"
+                                           Background="Transparent">
+                                        <Panel.OpacityMask>
+                                            <LinearGradientBrush StartPoint="0%, 0%"
+                                                                 EndPoint="0%, 100%">
+                                                <GradientStop Color="#ffffffff" Offset="0.0"/>
+                                                <GradientStop Color="#ffffffff" Offset="0.75"/>
+                                                <GradientStop Color="#00ffffff" Offset="0.92"/>
+                                            </LinearGradientBrush>
+                                        </Panel.OpacityMask>
+                                        <Border Background="#2bbdbc"/>
+                                        <Border>
+                                            <Border.Background>
+                                                <DrawingBrush TileMode="Tile" DestinationRect="0,0,64,64" SourceRect="0,0,64,64" Stretch="None">
+                                                    <DrawingBrush.Transform>
+                                                        <RotateTransform Angle="60" />
+                                                    </DrawingBrush.Transform>
+                                                    <DrawingBrush.Drawing>
+                                                        <DrawingGroup>
+                                                            <GeometryDrawing Brush="#19ffffff">
+                                                                <GeometryDrawing.Geometry>
+                                                                    <GeometryGroup>
+                                                                        <RectangleGeometry Rect="0,0,32,32" />
+                                                                        <RectangleGeometry Rect="32,32,32,32" />
+                                                                    </GeometryGroup>
+                                                                </GeometryDrawing.Geometry>
+                                                            </GeometryDrawing>
+                                                        </DrawingGroup>
+                                                    </DrawingBrush.Drawing>
+                                                </DrawingBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <Image Grid.Row="0" Source="/Assets/DefaultTutorialGroupBanner.webp" 
+                                               Stretch="Uniform" StretchDirection="Both" HorizontalAlignment="Right"/>
+                                    </Panel>
+                                    <Border VerticalAlignment="Bottom"
+                                            x:Name="InnerTitle">
+                                        <WrapPanel Margin="12 8 18 0">
+                                            <TextBlock FontWeight="Normal"
+                                                       Text="{Binding Title}"
+                                                       Theme="{StaticResource TitleTextBlockStyle}"
+                                                       VerticalAlignment="Bottom"
+                                                       Margin="4 8" />
+                                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                                                       Classes="l-instructive"
+                                                       FontSize="14"
+                                                       Margin="4 8 0 10" VerticalAlignment="Bottom"/>
+                                        </WrapPanel>
+                                    </Border>
+                                </Grid>
+                            </ci:StickyScrollViewer.HeaderContent>
+                            <ListBox ItemsSource="{Binding Tutorials}"
+                                     SelectedItem="{Binding $parent[views:TutorialCenterWindow].ViewModel.SelectedTutorial}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="4" ClipToBounds="True">
+                                            <tutorial1:TutorialStateProvider Grid.Row="0" Tutorial="{Binding}">
+                                                <Grid RowDefinitions="Auto Auto">
+                                                    <asyncImageLoader:AdvancedImage Grid.Row="0" Source="{Binding ActualBanner}"
+                                                           Height="100" Stretch="UniformToFill" StretchDirection="Both"/>
+                                                    <StackPanel Grid.Row="1" Margin="12 8 12 12" Spacing="6">
+                                                        <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Medium" />
+                                                        <TextBlock Text="{Binding Description}" FontSize="12"
+                                                                   Classes="l-instructive" />
+                                                    </StackPanel>
+                                                    <ProgressBar Grid.Row="1" Margin="-2 0"
+                                                                 VerticalAlignment="Bottom"
+                                                                 Maximum="{Binding Paragraphs.Count}"
+                                                                 Value="{Binding $parent[tutorial1:TutorialStateProvider].CompletedParagraphs}"/>
+                                                </Grid>
+                                            </tutorial1:TutorialStateProvider>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <ListBox.ItemContainerTheme>
+                                    <ControlTheme TargetType="ListBoxItem">
+                                        <Setter Property="MinWidth" Value="0" />
+                                        <Setter Property="Margin" Value="4" />
+                                        <Setter Property="Template">
+                                            <ControlTemplate>
+                                                <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                        HorizontalContentAlignment="Stretch"
+                                                        VerticalContentAlignment="Stretch"
+                                                        ClipToBounds="True"
+                                                        Command="{Binding $parent[views:TutorialCenterWindow].SetSelectedTutorialCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Padding="0">
+                                                    <ContentPresenter Content="{TemplateBinding Content}"
+                                                                      ContentTemplate="{TemplateBinding ContentTemplate}" />
+                                                </Button>
+                                            </ControlTemplate>
+                                        </Setter>
+                                    </ControlTheme>
+                                </ListBox.ItemContainerTheme>
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Classes="animated-intro">
+                                            <Interaction.Behaviors>
+                                                <ci:WrapPanelAutoResizeBehavior TargetWidth="328" />
+                                            </Interaction.Behaviors>
+                                        </WrapPanel>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                            </ListBox>
+                        </ci:StickyScrollViewer>
+                    </SplitView>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </Grid>
 </ci:MyWindow>

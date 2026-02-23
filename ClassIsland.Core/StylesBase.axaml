@@ -4,7 +4,8 @@
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
-        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia">
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+        xmlns:themes="clr-namespace:ClassIsland.Core.Themes">
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -49,6 +50,8 @@
     <StyleInclude Source="/Controls/StickyScrollViewer.axaml"/>
     <StyleInclude Source="/Controls/VerticalDrawer.axaml"/>
     <StyleInclude Source="/Controls/IconSources/AdvacnedImageIcon.axaml"/>
+    
+    <themes:NativeMenuIconsStyle/>
 
     <!-- Add Styles Here -->
 
@@ -104,13 +107,16 @@
         </Style>
     </Style>
 
-    <Style Selector="TabControl TabItem">
+    <Style Selector="TabControl TabItem, TabStrip TabStripItem">
         <Style Selector="^ TextBlock">
             <Setter Property="FontWeight" Value="Regular"/>
         </Style>
     </Style>
 
     <Style Selector="TabControl.navigation TabItem /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="TextElement.FontSize" Value="20"/>
+    </Style>
+    <Style Selector="TabStrip.navigation TabStripItem /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="TextElement.FontSize" Value="20"/>
     </Style>
     

@@ -106,6 +106,8 @@ public partial class App
         services.AddTransient<DataTransferViewModel>();
         services.AddTransient<ScreenshotHelperViewModel>();
         services.AddTransient<EditModeViewModel>();
+        services.AddTransient<TutorialEditorViewModel>();
+        services.AddTransient<TutorialCenterViewModel>();
         // ViewModels/SettingsPages
         services.AddTransient<GeneralSettingsViewModel>();
         services.AddTransient<ClockSettingsViewModel>();
@@ -123,7 +125,6 @@ public partial class App
         services.AddTransient<ThemesSettingsViewModel>();
         services.AddTransient<UpdateSettingsPageViewModel>();
         services.AddTransient<DebugPageViewModel>();
-        services.AddTransient<TutorialEditorViewModel>();
         // Views
         services.AddTransient<ITopmostEffectPlayer>(x => x.GetRequiredService<TopmostEffectWindow>());
         services.AddSingleton<MainWindow>();
@@ -144,6 +145,7 @@ public partial class App
         services.AddTransient<ScreenshotHelperWindow>();
         services.AddSingleton<EditModeView>();
         services.AddTransient<TutorialEditorWindow>();
+        services.AddSingleton<TutorialCenterWindow>();
         // 设置页面分组
         services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
         services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
@@ -301,8 +303,8 @@ public partial class App
             VerticalSafeAreaPx = 20
         });
         // 教程
-        services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.test.json"));
-        services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.sp.json"));
+        // services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.test.json"));
+        // services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.sp.json"));
         services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.getStarted.json"));
         // Plugins
         if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1))

@@ -30,6 +30,20 @@ public partial class Tutorial : ObservableObject, IXmlnsAttached
     [ObservableProperty] private int _ordinary = 0;
 
     /// <summary>
+    /// 教程 Banner
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ActualBanner))]
+    private string _banner = "";
+
+    /// <summary>
+    /// 实际启用的 Banner
+    /// </summary>
+    public string ActualBanner => string.IsNullOrWhiteSpace(Banner)
+        ? "avares://ClassIsland/Assets/DefaultTutorialBanner.webp"
+        : Banner;
+
+    /// <summary>
     /// 包含的段落
     /// </summary>
     [ObservableProperty] private ObservableCollection<TutorialParagraph> _paragraphs = [];

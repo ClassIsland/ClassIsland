@@ -4,10 +4,12 @@
   "Description": "\u6B22\u8FCE\u6765\u5230\u4ECE\u96F6\u5F00\u59CB\u7684 ClassIsland \u4E4B\u65C5\u3002",
   "Tutorials": [
     {
+      "ActualBanner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/banner.webp",
       "Id": "classisland.getStarted.welcome",
       "Title": "\u6B22\u8FCE",
       "Description": "\u4E00\u5207\u7684\u5F00\u59CB\u3002",
       "Ordinary": 0,
+      "Banner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/banner.webp",
       "Paragraphs": [
         {
           "Id": "init",
@@ -55,7 +57,7 @@
           "Content": [
             {
               "Title": "",
-              "Content": "\u60A8\u968F\u65F6\u53EF\u4EE5\u901A\u8FC7\u70B9\u51FB\u5E94\u7528\u4E3B\u83DC\u5355\u7684\u3010\u6559\u7A0B\u2026\u3011\u9009\u9879\u6765\u5B66\u4E60 ClassIsland \u7684\u7528\u6CD5\u3002",
+              "Content": "\u60A8\u968F\u65F6\u53EF\u4EE5\u901A\u8FC7\u70B9\u51FB\u5E94\u7528\u4E3B\u83DC\u5355\u7684\u3010\u6559\u5B66\u2026\u3011\u9009\u9879\u6765\u5B66\u4E60 ClassIsland \u7684\u7528\u6CD5\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
@@ -88,11 +90,16 @@
           "Title": "\u62D2\u7EDD\u5206\u652F-1",
           "Description": "",
           "TopLevelClassName": "ClassIsland.Views.SettingsWindowNew",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/settings"
+            }
+          ],
           "Content": [
             {
               "Title": "",
-              "Content": "\u60A8\u968F\u65F6\u53EF\u4EE5\u901A\u8FC7\u70B9\u51FB\u5E94\u7528\u4E3B\u83DC\u5355\u7684\u3010\u6559\u7A0B\u2026\u3011\u9009\u9879\u6765\u5B66\u4E60 ClassIsland \u7684\u7528\u6CD5\u3002",
+              "Content": "\u60A8\u968F\u65F6\u53EF\u4EE5\u901A\u8FC7\u70B9\u51FB\u5E94\u7528\u4E3B\u83DC\u5355\u7684\u3010\u6559\u5B66\u2026\u3011\u9009\u9879\u6765\u5B66\u4E60 ClassIsland \u7684\u7528\u6CD5\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
@@ -151,7 +158,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "PlacementMode": 2,
               "Xmlns": {}
@@ -179,7 +186,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "Xmlns": {}
             },
@@ -206,7 +213,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "Xmlns": {}
             },
@@ -269,7 +276,7 @@
                 }
               ],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "PlacementMode": 2,
               "Xmlns": {}
@@ -307,7 +314,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "Xmlns": {}
             },
@@ -334,7 +341,7 @@
               ],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
               "Xmlns": {}
             },
@@ -373,7 +380,12 @@
           "Title": "\u8BA4\u8BC6\u5E94\u7528\u8BBE\u7F6E",
           "Description": "",
           "TopLevelClassName": "ClassIsland.Views.SettingsWindowNew",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/settings"
+            }
+          ],
           "Content": [
             {
               "Title": "\u5E94\u7528\u8BBE\u7F6E",
@@ -548,6 +560,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u597D",
               "RightButtonActions": [
@@ -575,6 +588,7 @@
               "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "",
               "RightButtonActions": [
@@ -604,7 +618,12 @@
           "Title": "\u8BA4\u8BC6\u7F16\u8F91\u6A21\u5F0F",
           "Description": "",
           "TopLevelClassName": "ClassIsland.MainWindow",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/edit"
+            }
+          ],
           "Content": [
             {
               "Title": "\u7F16\u8F91\u6A21\u5F0F",
@@ -639,6 +658,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u597D",
               "RightButtonActions": [
@@ -724,7 +744,12 @@
           "Title": "\u8BA4\u8BC6\u6863\u6848\u7F16\u8F91\u5668",
           "Description": "",
           "TopLevelClassName": "ClassIsland.Views.ProfileSettingsWindow",
-          "InitializeActions": [],
+          "InitializeActions": [
+            {
+              "Kind": 8,
+              "StringParameter": "classisland://app/profile"
+            }
+          ],
           "Content": [
             {
               "Title": "\u6863\u6848\u7F16\u8F91",
@@ -845,10 +870,12 @@
       "Xmlns": {}
     },
     {
+      "ActualBanner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.profileEditing/banner.webp",
       "Id": "classisland.getStarted.profileEditing",
       "Title": "\u8BFE\u8868\u7F16\u8F91\u00B7\u5165\u95E8",
       "Description": "\u521D\u6B65\u4E86\u89E3\u5982\u4F55\u7F16\u8F91\u8BFE\u8868\u3002",
       "Ordinary": 0,
+      "Banner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.profileEditing/banner.webp",
       "Paragraphs": [
         {
           "Id": "concepts",
@@ -2499,10 +2526,12 @@
       }
     },
     {
+      "ActualBanner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.componentsEditing/banner.webp",
       "Id": "classisland.getStarted.componentsEditing",
       "Title": "\u7EC4\u4EF6\u7F16\u8F91\u00B7\u5165\u95E8",
       "Description": "\u521D\u6B65\u4E86\u89E3\u5982\u4F55\u81EA\u5B9A\u4E49\u4E3B\u754C\u9762\u4E0A\u663E\u793A\u7684\u5185\u5BB9\u3002",
       "Ordinary": 0,
+      "Banner": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.componentsEditing/banner.webp",
       "Paragraphs": [
         {
           "Id": "introduction",
@@ -2512,7 +2541,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [
@@ -2759,7 +2788,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [
@@ -3024,7 +3053,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [
@@ -3263,7 +3292,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [
@@ -3446,7 +3475,7 @@
           "InitializeActions": [
             {
               "Kind": 8,
-              "StringParameter": "classisland://app/edit-mode"
+              "StringParameter": "classisland://app/edit"
             }
           ],
           "Content": [

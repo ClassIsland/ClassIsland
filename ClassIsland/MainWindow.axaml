@@ -57,11 +57,17 @@
                     </OnPlatform>
                 </NativeMenuItem.Icon>
             </NativeMenuItem>
-            <NativeMenuItem Header="帮助…"
+            <NativeMenuItem Header="教学…"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE959;}"
+                            Click="NativeMenuItemTutorials_OnClick" 
+                            IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
+            <NativeMenuItem Header="帮助文档…"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE23C;}"
                             Click="MenuItemHelps_OnClick" 
                             IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
             <NativeMenuItemSeparator/>
-            <NativeMenuItem Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
+            <NativeMenuItem Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE813;}">
                 <MenuItem.IsVisible>
                     <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}" />
@@ -69,7 +75,8 @@
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>
-            <NativeMenuItem Header="隐藏主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
+            <NativeMenuItem Header="隐藏主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE817;}">
                 <MenuItem.IsVisible>
                     <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay"/>
@@ -77,7 +84,8 @@
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>
-            <NativeMenuItem Header="清除全部提醒" Click="MenuItemClearAllNotifications_OnClick">
+            <NativeMenuItem Header="清除全部提醒" Click="MenuItemClearAllNotifications_OnClick"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE029;}">
                 <MenuItem.IsVisible>
                     <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
@@ -86,20 +94,30 @@
                 </MenuItem.IsVisible>
             </NativeMenuItem>
             <NativeMenuItem Header="更多选项…" Menu="{Binding MoreOptionsMenu}"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEBAC;}"
                             IsVisible="{Binding !!$self.Menu.Items.Count}"/>
             <NativeMenuItemSeparator/>
-            <NativeMenuItem Header="编辑主界面…" Click="NativeMenuItemEnterEditMode_OnClick" />
-            <NativeMenuItem Header="编辑档案…" Click="ButtonSettings_OnClick" />
-            <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" />
-            <NativeMenuItem Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick" >
+            <NativeMenuItem Header="编辑档案…" Click="ButtonSettings_OnClick" 
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE699;}"/>
+            <NativeMenuItem Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE6A1;}">
             </NativeMenuItem>
-            <NativeMenuItem Header="换课…" Click="MenuItemClassSwap_OnClick">
+            <NativeMenuItem Header="换课…" Click="MenuItemClassSwap_OnClick"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE15F;}">
             </NativeMenuItem>
+            <NativeMenuItemSeparator/>
+            <NativeMenuItem Header="编辑主界面…" Click="NativeMenuItemEnterEditMode_OnClick" 
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE7C9;}"/>
+            <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" 
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEF27;}"/>
             <NativeMenuItemSeparator />
-            <NativeMenuItem  Header="重启" Click="MenuItemRestartApp_OnClick"/>
-            <NativeMenuItem  Header="退出" Click="MenuItemExitApp_OnClick"/>
+            <NativeMenuItem  Header="重启" Click="MenuItemRestartApp_OnClick"
+                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE0BD;}"/>
+            <NativeMenuItem  Header="退出" Click="MenuItemExitApp_OnClick"
+                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE0DF;}"/>
             <NativeMenuItemSeparator IsVisible="{Binding ViewModel.Settings.IsDebugEnabled}"/>
-            <NativeMenuItem Header="dev__Debug" IsVisible="{Binding ViewModel.Settings.IsDebugEnabled}">
+            <NativeMenuItem Header="dev__Debug" IsVisible="{Binding ViewModel.Settings.IsDebugEnabled}"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE2C8;}">
                 <NativeMenu>
                     <NativeMenuItem Header="DevTools" Click="NativeMenuItemDebugDevTools_OnClick"/>
                     <NativeMenuItem Header="DevPortal" Click="NativeMenuItemDebugDevPortal_OnClick"/>

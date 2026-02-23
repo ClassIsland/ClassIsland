@@ -33,7 +33,8 @@
         <Setter Property="Margin" Value="0 3 0 0"/>
     </Style>
     <Style Selector="ComboBox TextBlock,
-                     Button AccessText">
+                     Button AccessText,
+                     :is(MenuItem) AccessText">
         <Setter Property="Margin" Value="0 1.5 0 -1.5"/>
     </Style>
     

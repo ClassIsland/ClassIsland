@@ -102,6 +102,11 @@
                         <TextBox Text="{Binding Description}" 
                                  AcceptsReturn="True" TextWrapping="Wrap"/>
                     </ci:Field>
+                    
+                    <ci:Field Label="Banner">
+                        <TextBox Text="{Binding Banner}" 
+                                 Watermark="（默认）"/>
+                    </ci:Field>
                 </StackPanel>
             </ScrollViewer>
         </DataTemplate>
