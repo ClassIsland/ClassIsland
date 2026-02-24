@@ -145,6 +145,9 @@
                             <ComboBoxItem HorizontalContentAlignment="Left">
                                 <controls1:IconText Glyph="&#xE15F;" Text="打开换课窗口" />
                             </ComboBoxItem>
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+								<controls1:IconText Glyph="&#xEF27;" Text="打开设置窗口" />
+                            </ComboBoxItem>
                         </ComboBox>
                     </Grid>
                 </controls3:SettingsExpander.Footer>

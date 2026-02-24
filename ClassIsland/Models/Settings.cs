@@ -541,10 +541,11 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     ///     <item>1 - 打开档案编辑窗口</item>
     ///     <item>2 - 显示/隐藏主界面</item>
     ///     <item>3 - 打开换课窗口</item>
+    ///     <item>4 - 打开设置窗口</item>
     /// </list>
     /// </value>
 
-    [SettingsInfo("点击托盘图标行为", "\uE5C1", enums: ["打开主菜单", "打开档案编辑窗口", "显示/隐藏主界面", "打开换课窗口"], order: 2)]
+    [SettingsInfo("点击托盘图标行为", "\uE5C1", enums: ["打开主菜单", "打开档案编辑窗口", "显示/隐藏主界面", "打开换课窗口","打开设置窗口"], order: 2)]
     public int TaskBarIconClickBehavior
     {
         get => _taskBarIconClickBehavior;

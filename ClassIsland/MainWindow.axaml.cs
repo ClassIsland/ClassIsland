@@ -595,6 +595,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             case 3:
                 OpenClassSwapWindow();
                 break;
+            case 4:
+                App.GetService<SettingsWindowNew>().Open();
+                break;
         }
     }
 
