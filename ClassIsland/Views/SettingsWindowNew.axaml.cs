@@ -532,20 +532,25 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         ShowRestartDialog();
     }
-
+    bool IsShowingRestartDialog = false;
     private async void ShowRestartDialog()
     {
-        var r = await new ContentDialog()
+        if (!IsShowingRestartDialog)
         {
-            Title = "需要重启",
-            Content = "部分设置需要重启以应用更改。",
-            PrimaryButtonText = "重启",
-            CloseButtonText = "取消",
-            DefaultButton = ContentDialogButton.Primary,
-        }.ShowAsync(this);
-        if (r != ContentDialogResult.Primary)
-            return;
-        AppBase.Current.Restart();
+            IsShowingRestartDialog = true;
+            var r = await new ContentDialog()
+            {
+                Title = "需要重启",
+                Content = "部分设置需要重启以应用更改。",
+                PrimaryButtonText = "重启",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+            }.ShowAsync(this);
+            IsShowingRestartDialog = false;
+            if (r != ContentDialogResult.Primary)
+                return;
+            AppBase.Current.Restart();
+        }
     }
 
     private void CommandBindingRestartApp_OnExecuted(object sender, ExecutedRoutedEventArgs e)
