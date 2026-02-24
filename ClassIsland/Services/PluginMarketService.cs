@@ -195,7 +195,8 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         var mirrors = SettingsService.Settings.OfficialIndexMirrors.Count == 0
             ? FallbackMirrors
             : SettingsService.Settings.OfficialIndexMirrors;
-        const string repo = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/plugin/index.zip?time={time}";
+        // Use GitHub-hosted index zip via gh-proxy CDN
+        const string repo = "https://cdn.gh-proxy.org/https://github.com/hmx12345/PluginIndex/releases/download/latest/index.zip";
         return SettingsService.Settings.PluginIndexes.Where(x => !string.IsNullOrWhiteSpace(x.Url)).Append(new PluginIndexInfo()
         {
             Id = DefaultPluginIndexKey,

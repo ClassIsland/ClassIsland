@@ -319,7 +319,7 @@
                         </WrapPanel>
                     </controls3:SettingsExpanderItem.Footer>
                     <TextBlock Background="Transparent" >
-                        <Run Text="Copyright (c) 2023-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" /> HelloWRC
+                        <Run Text="Copyright (c) 2023-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" /> hmx
                     </TextBlock>
                 </controls3:SettingsExpanderItem>
                 <controls3:SettingsExpanderItem Content="常用链接">
@@ -373,44 +373,9 @@
                     IsClickEnabled="True"/>
             </controls3:SettingsExpander>
             
-            <controls3:SettingsExpander Header="鸣谢" IconSource="{commands:FluentIconSource &#xE971;}"
-                                        IsExpanded="True">
-                <controls3:SettingsExpanderItem 
-                    Content="贡献人员"
-                    Click="ButtonContributors_OnClick"
-                    IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem 
-                    Content="第三方库"
-                    Click="ButtonThirdPartyLibs_OnClick"
-                    IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem>
-                    <TextBlock LineHeight="30" Margin="0 0 0 0" FontSize="14" TextWrapping="Wrap">
-                        本项目受到
-                        <HyperlinkButton Click="Hyperlink2_OnClick">DuguSand/class_form</HyperlinkButton>
-                        的启发而开发。<LineBreak/>
-                        界面主题和部分控件使用了 FluentAvalonia 框架。<LineBreak/>
-                        应用字体使用了华为出品的 HarmonyOS Sans。<LineBreak/>
-                        感谢协助本应用测试的同学。<LineBreak/>
-                        感谢<commands:NavHyperlink NavTarget="https://forum.smart-teach.cn/">智教联盟</commands:NavHyperlink>提供服务器资源，<commands:NavHyperlink NavTarget="https://xiaowuap.com/">吴恩泽</commands:NavHyperlink>提供 TTS、遥测等服务资源。<LineBreak/>
-                        天气数据来源于小米天气。<LineBreak/>
-                        部分图像资源（/Assets/HoYoStickers/*）来自米游社和 Bilibili 装扮表情包，版权归 miHoYo 所有。<LineBreak/>
-                        感谢其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
-                    </TextBlock>
-                </controls3:SettingsExpanderItem>
-
-            </controls3:SettingsExpander>
+            <!-- 已移除: 鸣谢 -->
             
-            <controls3:SettingsExpander Header="回声洞" IconSource="{commands:FluentIconSource &#xE55F;}">
-                <controls3:SettingsExpanderItem 
-                    IsClickEnabled="True"
-                    Click="Sayings_OnMouseLeftButtonDown">
-                    <StackPanel>
-                        <controls2:TypingControl
-                                 Text="{Binding ViewModel.Sayings, Mode=OneWay}"
-                                 IsBusy="{Binding ViewModel.IsSayingBusy, Mode=OneWayToSource}"/>
-                    </StackPanel>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+            <!-- 已移除: 回声洞 -->
             
         </StackPanel>
     </controls1:StickyScrollViewer>
