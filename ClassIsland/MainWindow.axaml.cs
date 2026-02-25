@@ -560,7 +560,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         switch (SettingsService.Settings.TaskBarIconClickBehavior)
         {
             case 0:
-                if (!OperatingSystem.IsWindows())
+                if (OperatingSystem.IsLinux())
                 {
                     SettingsService.Settings.TaskBarIconClickBehavior = 4;
                     break;
