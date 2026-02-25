@@ -97,7 +97,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _cityId = "weathercn:101010100";
     private string _cityName = "北京 (北京, 中国)";
     private int _mainWindowFontWeight2 = (int)FontWeight.Medium;
-    private int _taskBarIconClickBehavior = OperatingSystem.IsLinux() ? 4 : 0;
+    private int _taskBarIconClickBehavior = OperatingSystem.IsWindows() ? 0 : 4;
     private bool _showExtraInfoOnTimePoint = true;
     private int _extraInfoType = 0;
     private bool _isCountdownEnabled = true;
