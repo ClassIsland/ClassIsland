@@ -116,9 +116,14 @@
             </controls3:SettingsExpander>
             
             <!-- 点击托盘图标行为 -->
+            <!-- 平台行为差异：在macOS平台上此选项不显示（无效），在Linux平台上一些DE会正确响应左键（如Deepin），也有其他的DE将左键响应为右键点击（如Ubuntu）-->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C1;}" 
-                                        Header="点击托盘图标行为"
-                                        Description="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。">
+                                        Header="点击托盘图标行为">
+                <controls3:SettingsExpander.Description>
+                    <OnPlatform Default="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。">
+                        <On Options="Linux" Content="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。此选项可能因为桌面环境差异而无法工作。"/>
+                    </OnPlatform>
+                </controls3:SettingsExpander.Description>
                 <controls3:SettingsExpander.IsVisible>
                     <OnPlatform Default="True">
                         <On Options="macOS" Content="False"/>
@@ -134,6 +139,7 @@
                                         <On Options="Windows" Content="True"/>
                                     </OnPlatform>
                                 </ComboBoxItem.IsEnabled>
+                                <!-- 此选项只在Windows平台受支持 -->
                                 <controls1:IconText Glyph="&#xE075;" Text="打开主菜单" />
                             </ComboBoxItem>
                             <ComboBoxItem HorizontalContentAlignment="Left">
@@ -152,7 +158,6 @@
                     </Grid>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
-            
             <!-- 教学安全模式 -->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE809;}" 
                                         Header="教学安全模式"
