@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using ClassIsland.Controls.Tutorial;
 using ClassIsland.Core;
@@ -256,19 +257,25 @@ public partial class TutorialService : ObservableObject, ITutorialService
             ? AttachedToplevel.FindDescendantBySelector(SelectorHelpers.Parse(sentence.TargetSelector,
                 IXmlnsAttached.Combine([CurrentTutorial, CurrentParagraph, CurrentSentence]))) as Control
             : null;
+        var heroContent = !string.IsNullOrWhiteSpace(sentence.HeroImage) ? new AdvancedImage(new Uri("avares://ClassIsland/"))
+        {
+            Source = sentence.HeroImage,
+            CornerRadius = new CornerRadius(8, 8, 0, 0),
+        } : null;
+        if (heroContent != null)
+        {
+            RenderOptions.SetBitmapInterpolationMode(heroContent, BitmapInterpolationMode.HighQuality);
+        }
         var teachingTip = CurrentTeachingTip = new TeachingTip()
         {
-            HeroContent = !string.IsNullOrWhiteSpace(sentence.HeroImage) ? new AdvancedImage(new Uri("avares://ClassIsland/"))
-            {
-                Source = sentence.HeroImage,
-                CornerRadius = new CornerRadius(8, 8, 0, 0)
-            } : null,
+            HeroContent = heroContent,
             IconSource = sentence.IconSource,
             Title = sentence.Title,
             Subtitle = sentence.Content,
             Target = sentence.PointToTarget ? targetControl : null,
-            PreferredPlacement = sentence.PlacementMode
+            PreferredPlacement = sentence.PlacementMode,
         };
+        RenderOptions.SetBitmapInterpolationMode(teachingTip, BitmapInterpolationMode.HighQuality);
         if (!string.IsNullOrEmpty(sentence.LeftButtonText) && !sentence.UseLightDismiss)
         {
             teachingTip.ActionButtonContent = sentence.LeftButtonText;

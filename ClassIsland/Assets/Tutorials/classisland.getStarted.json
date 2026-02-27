@@ -59,7 +59,7 @@
               "Title": "",
               "Content": "\u60A8\u968F\u65F6\u53EF\u4EE5\u901A\u8FC7\u70B9\u51FB\u5E94\u7528\u4E3B\u83DC\u5355\u7684\u3010\u6559\u5B66\u2026\u3011\u9009\u9879\u6765\u5B66\u4E60 ClassIsland \u7684\u7528\u6CD5\u3002",
               "IconExpression": "",
-              "HeroImage": "",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/openTutorial.webp",
               "TargetSelector": "",
               "PointToTarget": true,
               "RightButtonText": "\u597D",
@@ -101,8 +101,9 @@
               "Title": "",
               "Content": "\u60A8\u968F\u65F6\u53EF\u4EE5\u901A\u8FC7\u70B9\u51FB\u5E94\u7528\u4E3B\u83DC\u5355\u7684\u3010\u6559\u5B66\u2026\u3011\u9009\u9879\u6765\u5B66\u4E60 ClassIsland \u7684\u7528\u6CD5\u3002",
               "IconExpression": "",
-              "HeroImage": "",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/openTutorial.webp",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u597D",
               "RightButtonActions": [
@@ -322,7 +323,7 @@
               "Title": "\u4E3B\u83DC\u5355",
               "Content": "\u3010\u4E3B\u83DC\u5355\u3011\u662F\u8BBF\u95EE\u5E94\u7528\u5404\u4E2A\u529F\u80FD\u7684\u5165\u53E3\uFF0C\u6211\u4EEC\u53EF\u4EE5\u4ECE\u4E3B\u83DC\u5355\u8BBF\u95EE\u5230\u5E94\u7528\u7684\u5404\u4E2A\u529F\u80FD\u3002",
               "IconExpression": "",
-              "HeroImage": "TODO",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/mainMenu.webp",
               "TargetSelector": "",
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
@@ -349,7 +350,7 @@
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u70B9\u51FB\u7CFB\u7EDF\u6258\u76D8\u4E2D\u5982\u56FE\u6240\u793A\u7684 ClassIsland \u56FE\u6807\uFF0C\u6253\u5F00\u5E94\u7528\u4E3B\u83DC\u5355\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u5E94\u7528\u8BBE\u7F6E\u2026\u3011\u6253\u5F00\u5E94\u7528\u8BBE\u7F6E\u3002",
               "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
-              "HeroImage": "",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/openAppSettings.webp",
               "TargetSelector": "",
               "PointToTarget": true,
               "RightButtonText": "",
@@ -497,8 +498,37 @@
               "Xmlns": {}
             },
             {
+              "Title": "",
+              "Content": "\u5BF9\u4E8E\u5176\u5B83\u8BBE\u7F6E\u9879\u76EE\uFF0C\u5728\u8BBE\u7F6E\u5361\u7684\u4E0B\u65B9\u4F1A\u6709\u5173\u4E8E\u6B64\u8BBE\u7F6E\u9879\u76EE\u7684\u89E3\u91CA\u3002\u60A8\u53EF\u4EE5\u53C2\u8003\u8FD9\u4E9B\u89E3\u91CA\u6765\u7406\u89E3\u8FD9\u4E2A\u8BBE\u7F6E\u7684\u4F5C\u7528\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "fa|SettingsExpanderItem /template/ TextBlock#DescriptionText",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "PlacementMode": 2,
+              "Xmlns": {}
+            },
+            {
               "Title": "\u66F4\u591A\u9009\u9879",
-              "Content": "\u8FD9\u4E2A\u662F\u3010\u66F4\u591A\u9009\u9879\u2026\u3011\uFF0C\u70B9\u51FB\u53EF\u4EE5\u5C55\u5F00\u5982\u3010\u5BFC\u51FA\u8BCA\u65AD\u6570\u636E\u3011\u3001\u3010\u65E5\u5FD7\u2026\u3011\u7B49\u9009\u9879\u3002",
+              "Content": "\u8FD9\u4E2A\u662F\u3010\u66F4\u591A\u9009\u9879\u2026\u3011\uFF0C\u70B9\u51FB\u53EF\u4EE5\u5C55\u5F00\u5982\u3010\u5BFC\u51FA\u8BCA\u65AD\u6570\u636E\u3011\u3001\u3010\u65E5\u5FD7\u2026\u3011\u3001\u3010\u96C6\u63A7\u3011\u7B49\u9009\u9879\u3002",
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "Button[(ToolTip.Tip)=\u66F4\u591A\u9009\u9879\u2026]",
@@ -586,7 +616,7 @@
               "Title": "",
               "Content": "\uD83D\uDC49\u73B0\u5728\uFF0C\u6253\u5F00\u4E3B\u83DC\u5355\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u7F16\u8F91\u4E3B\u754C\u9762\u2026\u3011\uFF0C\u8FDB\u5165\u7F16\u8F91\u6A21\u5F0F\u3002",
               "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
-              "HeroImage": "",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/openEditMode.webp",
               "TargetSelector": "",
               "ModalTarget": true,
               "PointToTarget": true,
@@ -713,7 +743,7 @@
               "Title": "",
               "Content": "\uD83D\uDC49\u6253\u5F00\u4E3B\u83DC\u5355\uFF0C\u7136\u540E\u70B9\u51FB\u3010\u7F16\u8F91\u6863\u6848\u2026\u3011\uFF0C\u6253\u5F00\u6863\u6848\u7F16\u8F91\u5668\u3002",
               "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
-              "HeroImage": "",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.welcome/openProfileEditor.webp",
               "TargetSelector": "",
               "PointToTarget": true,
               "RightButtonText": "",
@@ -895,6 +925,7 @@
               "IconExpression": "sticker(\u5E15\u59C6_\u55E8)",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -920,8 +951,9 @@
               "Title": "\u8BFE\u8868",
               "Content": "\u5982\u73B0\u5B9E\u4E16\u754C\u7684\u8BFE\u8868\u4E00\u6837\uFF0CClassIsland \u4E2D\u7684\u6BCF\u4E2A\u3010\u8BFE\u8868\u3011\u5B58\u50A8\u4E86\u4E00\u5929\u7684\u8BFE\u7A0B\u5B89\u6392\uFF0C\u5E76\u4F1A\u5728\u8FD9\u4E2A\u8BFE\u8868\u6EE1\u8DB3\u542F\u7528\u89C4\u5219\u65F6\u81EA\u52A8\u5C06\u8BFE\u7A0B\u663E\u793A\u5728\u4E3B\u754C\u9762\u4E0A\u3002",
               "IconExpression": "",
-              "HeroImage": "TODO",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.profileEditing/\u8BFE\u8868.webp",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -952,8 +984,9 @@
               "Title": "\u65F6\u95F4\u8868",
               "Content": "\u8981\u663E\u793A\u4E00\u5929\u7684\u8BFE\u7A0B\u5B89\u6392\u4E0D\u4EC5\u8981\u77E5\u9053\u6709\u54EA\u4E9B\u8BFE\u7A0B\uFF0C\u8FD8\u8981\u77E5\u9053\u4E00\u5929\u7684\u65F6\u95F4\u5B89\u6392\u3002\u5982\u73B0\u5B9E\u4E16\u754C\u7684\u4F5C\u606F\u5B89\u6392\u8868\u4E00\u6837\uFF0C\u3010\u65F6\u95F4\u8868\u3011\u5B58\u50A8\u4E86\u4E00\u5929\u7684\u65F6\u95F4\u5B89\u6392\uFF0C\u4F9B\u3010\u8BFE\u8868\u3011\u4F7F\u7528\u3002",
               "IconExpression": "",
-              "HeroImage": "TODO",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.profileEditing/\u65F6\u95F4\u8868.webp",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -984,8 +1017,9 @@
               "Title": "\u8BFE\u8868\u4E0E\u65F6\u95F4\u8868\u7684\u5173\u7CFB",
               "Content": "\u5982\u56FE\uFF0C\u591A\u4E2A\u8BFE\u8868\u53EF\u4EE5\u5171\u7528\u4E00\u4E2A\u65F6\u95F4\u8868\uFF0C\u6B63\u5982\u5728\u73B0\u5B9E\u4E2D\u4E00\u4EFD\u4F5C\u606F\u65F6\u95F4\u8868\u4E5F\u4F1A\u88AB\u5E94\u7528\u4E8E\u591A\u5929\u4E00\u6837\u3002",
               "IconExpression": "",
-              "HeroImage": "TODO",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.profileEditing/\u8BFE\u8868\u4E0E\u65F6\u95F4\u8868\u5173\u7CFB.webp",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -1016,8 +1050,9 @@
               "Title": "\u79D1\u76EE",
               "Content": "\u6B63\u5982\u73B0\u5B9E\u4E16\u754C\u7684\u79D1\u76EE\uFF0C\u8FD9\u91CC\u7684\u3010\u79D1\u76EE\u3011\u8868\u793A\u5728\u3010\u8BFE\u8868\u3011\u4E2D\u67D0\u4E2A\u8BFE\u7A0B\u7684\u79D1\u76EE\u3002\u5E94\u7528\u5DF2\u7ECF\u9884\u5148\u8BBE\u7F6E\u597D\u4E86\u4E00\u4E9B\u79D1\u76EE\uFF0C\u60A8\u4E5F\u53EF\u4EE5\u6839\u636E\u9700\u6C42\u81EA\u884C\u6DFB\u52A0\u4E00\u4E9B\u79D1\u76EE\u3002",
               "IconExpression": "",
-              "HeroImage": "",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.profileEditing/\u79D1\u76EE.webp",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u5B8C\u6210",
               "RightButtonActions": [
@@ -1050,6 +1085,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u597D",
               "RightButtonActions": [
@@ -3230,7 +3266,7 @@
               "Title": "",
               "Content": "\u6B64\u5916\uFF0C\u60A8\u4E5F\u53EF\u4EE5\u70B9\u51FB\u6B64\u5904\u4E3A\u6B64\u7EC4\u4EF6\u6DFB\u52A0\u9690\u85CF\u89C4\u5219\uFF0C\u4F7F\u5176\u5728\u7279\u5B9A\u60C5\u51B5\u4E0B\u81EA\u52A8\u9690\u85CF\u3002",
               "IconExpression": "",
-              "HeroImage": "",
+              "HeroImage": "avares://ClassIsland/Assets/TutorialImages/classisland.getStarted/classisland.getStarted.componentsEditing/ruleset.webp",
               "TargetSelector": "StackPanel#StackPanelComponentHideRules",
               "HighlightTarget": true,
               "PointToTarget": true,
