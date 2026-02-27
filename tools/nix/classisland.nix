@@ -26,6 +26,23 @@ let
       "Office"
     ];
   };
+
+  desktopUrlItem = makeDesktopItem {
+    type = "Application";
+    name = "cn.classisland.app-url-handler";
+    desktopName = "ClassIsland - URL Handler";
+    icon = "cn.classisland.app";
+    exec = "classisland --uri %U";
+    terminal = false;
+    startupNotify = true;
+    comment = "功能强大、可定制、跨平台的大屏课表显示工具。";
+    noDisplay = true;
+    mimeTypes = [ "x-scheme-handler/classisland" ];
+    categories = [
+      "Education"
+      "Office"
+    ];
+  };
 in
 buildDotnetModule {
   pname = "classisland";
@@ -63,6 +80,7 @@ buildDotnetModule {
   postInstall = ''
     mkdir -p $out/share/applications
     cp ${desktopItem}/share/applications/cn.classisland.app.desktop $out/share/applications/cn.classisland.app.desktop 
+    cp ${desktopUrlItem}/share/applications/cn.classisland.app-url-handler.desktop $out/share/applications/cn.classisland.app-url-handler.desktop 
     mkdir -p $out/share/icons/hicolor/scalable/apps/
     cp ClassIsland.Desktop/Assets/AppLogo.svg $out/share/icons/hicolor/scalable/apps/cn.classisland.app.svg
     printf deb > $out/lib/classisland/PackageType
