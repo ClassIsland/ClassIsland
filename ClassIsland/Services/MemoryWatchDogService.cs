@@ -40,7 +40,7 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     /// <summary>
     /// 获取主应用程序所使用的内存占用大小
     /// </summary>
-    /// <remarks>macOS平台上会返回<see cref="Process.WorkingSet64"/>字段，其他平台会返回<see cref="Process.PrivateMemorySize64"/>字段</remarks>
+    /// <remarks>由于<see href="https://github.com/dotnet/runtime/issues/105665">此问题</see>，macOS平台上会返回<see cref="Process.WorkingSet64"/>字段，其他平台会返回<see cref="Process.PrivateMemorySize64"/>字段</remarks>
     /// <returns>主应用程序所使用的内存占用大小(Bytes)</returns>
     public static long GetMemoryUsage()
     {

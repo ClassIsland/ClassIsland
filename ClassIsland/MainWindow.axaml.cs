@@ -562,6 +562,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             case 0:
                 if (!OperatingSystem.IsWindows())
                 {
+                    SettingsService.Settings.TaskBarIconClickBehavior = 4;
                     break;
                 }
                 // Get this tray icon's implementation
@@ -594,6 +595,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 break;
             case 3:
                 OpenClassSwapWindow();
+                break;
+            case 4:
+                App.GetService<SettingsWindowNew>().Open();
                 break;
         }
     }

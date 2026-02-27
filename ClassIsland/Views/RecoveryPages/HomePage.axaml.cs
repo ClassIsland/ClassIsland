@@ -1,12 +1,14 @@
-using System;
-using System.Diagnostics;
-using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Services;
 using FluentAvalonia.UI.Controls;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.RecoveryPages;
@@ -17,10 +19,31 @@ namespace ClassIsland.Views.RecoveryPages;
 public partial class HomePage : UserControl
 {
     public Frame? MainFrame { get; init; }
-    
+
     public HomePage()
     {
         InitializeComponent();
+        if (AppBase.Current.PackagingType is "folder" or "folderClassic")
+        {
+            List<string> validInstallations;
+            try
+            {
+                validInstallations = Directory.GetDirectories(CommonDirectories.AppPackageRoot)
+                    .Where(dir =>
+                        Path.GetFileName(dir).StartsWith("app", StringComparison.OrdinalIgnoreCase) &&
+                        !File.Exists(Path.Combine(dir, ".destroy")) &&
+                        !File.Exists(Path.Combine(dir, ".partial")) &&
+                        File.Exists(Path.Combine(dir, "ClassIsland.Desktop" + AppBase.PlatformExecutableExtension)))
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                this.ShowErrorToast($"无法检测其他安装实例的状态:{ex.Message}" + Environment.NewLine + "\"回滚\"选项将不可用。");
+                validInstallations = new List<string>();
+            }
+
+            ButtonRollBack.IsEnabled = validInstallations.Count > 1;
+        }
     }
 
     private void ButtonContinue_OnClick(object sender, RoutedEventArgs e)
@@ -190,5 +213,11 @@ public partial class HomePage : UserControl
                 LastPage = this
             };
         }
+    }
+
+    private void ButtonRollBack_Onclick(object sender, RoutedEventArgs e)
+    {
+        //TODO:实现回滚功能(版本管理器)
+        this.ShowToast("此功能仍在开发中");
     }
 }
