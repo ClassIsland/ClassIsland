@@ -46,6 +46,11 @@
   },
   {
     "pname": "Avalonia.BuildServices",
+    "version": "0.0.28",
+    "hash": "sha256-7NQWQl3xrBDOXhGihCkt5DIrws48KyDGon/7+gPzMDU="
+  },
+  {
+    "pname": "Avalonia.BuildServices",
     "version": "11.3.2",
     "hash": "sha256-6wx06tjSKWQOlX2czdp6Wh0nuwVapx5qf/s8Qj5we40="
   },
@@ -90,9 +95,19 @@
     "hash": "sha256-ZpKpPjPOhJWUiUinuR+Zvo/BSr86b5WpUqIunON1zns="
   },
   {
+    "pname": "Avalonia.Markup.Xaml.Loader",
+    "version": "11.2.0",
+    "hash": "sha256-1s5kSryb9M9CccQDPl/tDgWKbuW0JnYu/y4f+3o1zbg="
+  },
+  {
     "pname": "Avalonia.Native",
     "version": "11.3.10",
     "hash": "sha256-nd44zlwFNDrFa9OAT3zd2Yg12TOykQW2smXza6ZNmN4="
+  },
+  {
+    "pname": "Avalonia.Remote.Protocol",
+    "version": "11.0.0",
+    "hash": "sha256-gkVpdbk/0RDM7Hhq0jwZwltDpTsGRmbX+ZFTjWYYoKw="
   },
   {
     "pname": "Avalonia.Remote.Protocol",
@@ -141,8 +156,8 @@
   },
   {
     "pname": "AvaloniaUI.DiagnosticsSupport",
-    "version": "2.1.0",
-    "hash": "sha256-t/7lWHt/Pv2FHr2uABlZKT7qREW+8o7F8MJKwIBpBVY="
+    "version": "2.2.0-beta2",
+    "hash": "sha256-4Nc17Ly/h+VFEjua2ntMO2tAh7a6pdrAZHNXYk+ABik="
   },
   {
     "pname": "BouncyCastle.Cryptography",
@@ -806,8 +821,8 @@
   },
   {
     "pname": "PanAndZoom",
-    "version": "11.3.9",
-    "hash": "sha256-HT5nw0aw4IMdYh7jmsgvRooIoZ0A6sbA10VTV9IT1d0="
+    "version": "11.3.9.1",
+    "hash": "sha256-GBY4vVD5fD4+45L/YTz5/EtXjHMsWUH4K0gvhrSYxBE="
   },
   {
     "pname": "Pastel",
@@ -1166,6 +1181,11 @@
   },
   {
     "pname": "System.ComponentModel.Annotations",
+    "version": "4.5.0",
+    "hash": "sha256-15yE2NoT9vmL9oGCaxHClQR1jLW1j1ef5hHMg55xRso="
+  },
+  {
+    "pname": "System.ComponentModel.Annotations",
     "version": "5.0.0",
     "hash": "sha256-0pST1UHgpeE6xJrYf5R+U7AwIlH3rVC3SpguilI/MAg="
   },
@@ -1223,11 +1243,6 @@
     "pname": "System.Diagnostics.DiagnosticSource",
     "version": "8.0.0",
     "hash": "sha256-+aODaDEQMqla5RYZeq0Lh66j+xkPYxykrVvSCmJQ+Vs="
-  },
-  {
-    "pname": "System.Diagnostics.DiagnosticSource",
-    "version": "8.0.1",
-    "hash": "sha256-zmwHjcJgKcbkkwepH038QhcnsWMJcHys+PEbFGC0Jgo="
   },
   {
     "pname": "System.Diagnostics.EventLog",
@@ -1636,8 +1651,8 @@
   },
   {
     "pname": "Xaml.Behaviors",
-    "version": "11.3.9",
-    "hash": "sha256-NTHTizgbhkCdMEu0xPpX6MIRl2GP3QHWXSNeppY5Sr0="
+    "version": "11.3.9.5",
+    "hash": "sha256-Dyd5RkbPZ3STAuSrwv2ebAa4rSuMS+rimbY/Rd+wwhY="
   },
   {
     "pname": "YamlDotNet",
