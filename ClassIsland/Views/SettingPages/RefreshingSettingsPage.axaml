@@ -30,6 +30,9 @@
                         <StackPanel Orientation="Horizontal" Spacing="4" Classes="items-valign-center" IsVisible="{Binding !ViewModel.SettingsService.Settings.RefreshingScopes.Profile}">
                             <CheckBox Content="课表" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.ProfileClassPlans}"/>
                             <CheckBox Content="时间表" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.ProfileTimeLayouts}"/>
+                            <Button Content="{ci:FluentIcon &#xF1A8;}" ToolTip.Tip="选择保留的内容…"
+                                    Theme="{StaticResource TransparentButton}"
+                                    Click="ButtonReserveSettings_OnClick"/>
                         </StackPanel>
                     </controls:SettingsExpanderItem.Footer>
                     <CheckBox Content="档案" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Profile}"/>

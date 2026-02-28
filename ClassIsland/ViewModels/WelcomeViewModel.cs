@@ -1,6 +1,7 @@
 ﻿using System;
 
 using ClassIsland.Models;
+using ClassIsland.Models.Refreshing;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -28,4 +29,5 @@ public partial class WelcomeViewModel(SettingsService settingsService) : Observa
     [ObservableProperty] private Type? _currentPage;
     [ObservableProperty] private bool _canClose = false;
     [ObservableProperty] private bool _isWizardCompleted = false;
+    [ObservableProperty] private RefreshingScopes _refreshingScopes = new();
 }

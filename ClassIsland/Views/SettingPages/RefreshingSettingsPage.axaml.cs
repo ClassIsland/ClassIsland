@@ -55,4 +55,13 @@ public partial class RefreshingSettingsPage : SettingsPageBase
     {
         ViewModel.RefreshingService.ShowOnboardingDialog(true);
     }
+
+    private async void ButtonReserveSettings_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var win = new RefreshingScopesConfigDialog()
+        {
+            Scopes = ViewModel.SettingsService.Settings.RefreshingScopes
+        };
+        await win.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
+    }
 }
