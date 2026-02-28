@@ -698,7 +698,7 @@ public partial class App : AppBase, IAppHost
         _ = IAppHost.Host.StartAsync();
         IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
 
-        if (!Settings.IsWelcomeWindowShowed)
+        if (!Settings.IsWelcomeWindowShowed || ApplicationCommand.Refreshing || ApplicationCommand.Onboarding)
         {
             if (Settings.IsSplashEnabled)
             {
@@ -728,6 +728,10 @@ public partial class App : AppBase, IAppHost
                 }
             }
             var w = IAppHost.GetService<WelcomeWindow>();
+            if (ApplicationCommand.Refreshing)
+            {
+                w.SetWelcomeExperience(true, ApplicationCommand.Onboarding, true);
+            }
             await w.ShowDialog(PhonyRootWindow);
             if (!w.ViewModel.IsWizardCompleted)
             {

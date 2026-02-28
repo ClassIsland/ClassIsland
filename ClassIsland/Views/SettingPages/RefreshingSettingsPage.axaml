@@ -18,6 +18,9 @@
                     <Style Selector="controls|SettingsExpanderItem.new-cfg">
                         <Setter Property="Description" Value="将创建并切换到一个全新的配置文件。"/>
                     </Style>
+                    <Style Selector="controls|SettingsExpanderItem.disable-plugins">
+                        <Setter Property="Description" Value="将禁用已经启用的插件。"/>
+                    </Style>
                 </controls:SettingsExpander.Styles>
                 <controls:SettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsRefreshingToastEnabled, Mode=TwoWay}"/>
@@ -37,14 +40,17 @@
                     </controls:SettingsExpanderItem.Footer>
                     <CheckBox Content="档案" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Profile}"/>
                 </controls:SettingsExpanderItem>
-                <controls:SettingsExpanderItem>
-                    <CheckBox Content="应用设置" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Settings}"/>
-                </controls:SettingsExpanderItem>
+                <!-- <controls:SettingsExpanderItem> -->
+                <!--     <CheckBox Content="应用设置" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Settings}"/> -->
+                <!-- </controls:SettingsExpanderItem> -->
                 <controls:SettingsExpanderItem Classes.new-cfg="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Components}">
                     <CheckBox Content="组件配置" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Components}"/>
                 </controls:SettingsExpanderItem>
                 <controls:SettingsExpanderItem Classes.new-cfg="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Automations}">
                     <CheckBox Content="自动化" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Automations}"/>
+                </controls:SettingsExpanderItem>
+                <controls:SettingsExpanderItem Classes.disable-plugins="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Plugins}">
+                    <CheckBox Content="插件" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Plugins}"/>
                 </controls:SettingsExpanderItem>
                 <controls:SettingsExpanderItem Content="立即翻新" ActionIconSource="{ci:FluentIconSource &#xE44E;}"
                                                IsClickEnabled="True"

@@ -2,6 +2,9 @@ using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Helpers;
+using ClassIsland.Views;
 using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Services;
@@ -60,6 +63,10 @@ public class RefreshingService(SettingsService settingsService) : IRefreshingSer
 
     public async Task BeginRefresh(bool isOnboarding=false)
     {
-        
+        var welcomeWin = IAppHost.GetService<WelcomeWindow>();
+        welcomeWin.ViewModel.RefreshingScopes =
+            ConfigureFileHelper.CopyObject(SettingsService.Settings.RefreshingScopes);
+        welcomeWin.SetWelcomeExperience(true, isOnboarding, false);
+        await welcomeWin.ShowDialog(AppBase.Current.GetRootWindow());
     }
 }

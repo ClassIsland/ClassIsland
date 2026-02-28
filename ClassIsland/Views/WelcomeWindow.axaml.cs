@@ -18,6 +18,7 @@ using ClassIsland.Helpers;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using ClassIsland.Views.WelcomePages;
+using DynamicData;
 using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 using WindowsShortcutFactory;
@@ -35,17 +36,14 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
 
     public WelcomeViewModel ViewModel { get; } = IAppHost.GetService<WelcomeViewModel>();
 
-    public List<Type> Pages { get; } = [ 
-        typeof(WelcomePage),
-        typeof(LicensePage),
-        typeof(GeneralPage),
-        typeof(ColorThemePage),
-        typeof(AppearancePage),
-        typeof(SystemPage),
-        typeof(FinishPage)
-    ];
+    public List<Type> Pages { get; set; } = [];
 
+    public bool IsOnboarding { get; set; } = false;
+
+    public bool IsRefreshing { get; set; } = false;
+    
     private Dictionary<Type, object?> PageCache { get; } = new();
+
     
     public WelcomeWindow()
     {
@@ -58,6 +56,37 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
             ExtendClientAreaTitleBarHeightHint = -1;
             SystemDecorations = SystemDecorations.Full;
         }
+        SetWelcomeExperience(false, true, false);
+    }
+
+    public void SetWelcomeExperience(bool isRefreshing, bool isOnboarding, bool isRefreshCompleted)
+    {
+        Pages = [   
+            typeof(WelcomePage),
+            typeof(LicensePage),
+            typeof(RefreshingPage),
+            typeof(GeneralPage),
+            typeof(ColorThemePage),
+            typeof(AppearancePage),
+            typeof(SystemPage),
+            typeof(FinishPage)
+        ];
+        if (isRefreshCompleted || !isRefreshing)
+        {
+            Pages.Remove(typeof(RefreshingPage));
+        }
+        if (isRefreshCompleted || !isOnboarding)
+        {
+            Pages.Remove(typeof(WelcomePage));
+            Pages.Remove(typeof(LicensePage));
+        }
+        if (!isOnboarding)
+        {
+            Pages.Remove(typeof(SystemPage));
+        }
+        
+        ViewModel.IsOnboarding = IsOnboarding = isOnboarding;
+        IsRefreshing = isRefreshing;
     }
     
     // Create a page based on a Type, but you can create it however you want
@@ -91,7 +120,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
             ViewModel.CreateStartupShortcut = false;
         }
         
-        MainFrame.Navigate(typeof(WelcomePage));
+        MainFrame.Navigate(Pages[0]);
     }
 
     private void CommandBindingNavigateForward_OnExecuted(object? sender, ExecutedRoutedEventArgs e)
@@ -158,21 +187,30 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
     {
         ViewModel.CanClose = true;
         ViewModel.IsWizardCompleted = true;
-        try
+        if (IsOnboarding)
         {
-            if (OperatingSystem.IsWindows())
+            try
             {
-                await CreateShortcutsWindows();
-            }
+                if (OperatingSystem.IsWindows())
+                {
+                    await CreateShortcutsWindows();
+                }
 
-            if (OperatingSystem.IsLinux())
-            {
-                await CreateShortcutsFreedesktop();
+                if (OperatingSystem.IsLinux())
+                {
+                    await CreateShortcutsFreedesktop();
+                }
             }
+            catch (Exception ex)
+            {
+                App.GetService<ILogger<WelcomeWindow>>().LogError(ex, "无法创建快捷方式。");
+            }
+            ViewModel.TutorialService.ResetTutorialCompletedState();
         }
-        catch (Exception ex)
+
+        if (IsRefreshing)
         {
-            App.GetService<ILogger<WelcomeWindow>>().LogError(ex, "无法创建快捷方式。");
+            ViewModel.SettingsService.Settings.LeftRefreshingToastCounts = 0;
         }
         
         Close();
@@ -180,7 +218,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
 
     private async void Window_OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        if (ViewModel.CanClose || e.CloseReason is WindowCloseReason.OSShutdown or WindowCloseReason.ApplicationShutdown)
+        if (ViewModel.CanClose || e.CloseReason is WindowCloseReason.OSShutdown or WindowCloseReason.ApplicationShutdown || !IsOnboarding)
         {
             return;
         }

@@ -52,4 +52,8 @@ public class ApplicationCommand
     public bool ImportComplete { get; set; } = false;
 
     public bool ImportV1Complete { get; set; } = false;
+
+    public bool Refreshing { get; set; } = false;
+
+    public bool Onboarding { get; set; } = false;
 }

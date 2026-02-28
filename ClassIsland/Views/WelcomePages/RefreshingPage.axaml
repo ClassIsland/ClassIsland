@@ -25,51 +25,61 @@
                    HorizontalAlignment="Center"
                    Margin="0 0 0 8"/>
         
-        <CheckBox IsChecked="{Binding ViewModel.RefreshingScopes.Profile}">
+        <CheckBox IsChecked="{Binding ViewModel.RefreshingScopes.Profile}" 
+                  IsEnabled="{Binding !ViewModel.IsRefreshingInProgress}">
             <ci:Thing IconSource="{ci:FluentIconSource &#xE699;}" Header="档案"
                       Description="包含课表、时间表等信息。"/>
         </CheckBox>
         <CheckBox Margin="22 0 0 0"
                   IsChecked="{Binding ViewModel.RefreshingScopes.ProfileClassPlans}"
                   IsVisible="{Binding !ViewModel.RefreshingScopes.Profile}"
+                  IsEnabled="{Binding !ViewModel.IsRefreshingInProgress}"
                   VerticalContentAlignment="Center">
             <ci:IconText Glyph="&#xE6B1;" Text="课表" VerticalAlignment="Center"/>
         </CheckBox>
         <CheckBox Margin="22 0 0 0"
                   IsChecked="{Binding ViewModel.RefreshingScopes.ProfileTimeLayouts}"
                   IsVisible="{Binding !ViewModel.RefreshingScopes.Profile}"
+                  IsEnabled="{Binding !ViewModel.IsRefreshingInProgress}"
                   VerticalContentAlignment="Center">
             <ci:IconText Glyph="&#xF0EB;" Text="时间表" VerticalAlignment="Center"/>
         </CheckBox>
+        <HyperlinkButton Content="选择要保留的课表和时间表…" Margin="22 0 0 0"
+                         IsEnabled="{Binding !ViewModel.IsRefreshingInProgress}"
+                         IsVisible="{Binding !ViewModel.RefreshingScopes.Profile}"
+                         Click="ButtonSelectedReservedItems_OnClick"/>
         
-        <CheckBox IsChecked="{Binding ViewModel.RefreshingScopes.Settings}">
-            <ci:Thing IconSource="{ci:FluentIconSource &#xEF27;}" Header="应用设置"
-                      Description="应用的设置选项，如学期开始时间、隐藏规则、提醒等设置。"/>
-        </CheckBox>
+        <!-- <CheckBox IsChecked="{Binding ViewModel.RefreshingScopes.Settings}" -->
+        <!--           IsEnabled="{Binding !ViewModel.IsRefreshingInProgress}"> -->
+        <!--     <ci:Thing IconSource="{ci:FluentIconSource &#xEF27;}" Header="应用设置" -->
+        <!--               Description="应用的设置选项，如学期开始时间、隐藏规则、提醒等设置。"/> -->
+        <!-- </CheckBox> -->
         
-        <CheckBox IsChecked="{Binding ViewModel.RefreshingScopes.Components}">
+        <CheckBox IsChecked="{Binding ViewModel.RefreshingScopes.Components}"
+                  IsEnabled="{Binding !ViewModel.IsRefreshingInProgress}">
             <ci:Thing IconSource="{ci:FluentIconSource &#xe06f;}" Header="组件配置"
                       Description="主界面显示的内容。"/>
         </CheckBox>
         
-        <CheckBox IsChecked="{Binding ViewModel.RefreshingScopes.Automations}">
+        <CheckBox IsChecked="{Binding ViewModel.RefreshingScopes.Automations}"
+                  IsEnabled="{Binding !ViewModel.IsRefreshingInProgress}">
             <ci:Thing IconSource="{ci:FluentIconSource &#xEEF1;}" Header="自动化"
                       Description="应用在特定情况下自动执行的内容。"/>
         </CheckBox>
+        
+        <CheckBox IsChecked="{Binding ViewModel.RefreshingScopes.Plugins}"
+                  IsEnabled="{Binding !ViewModel.IsRefreshingInProgress}">
+            <ci:Thing IconSource="{ci:FluentIconSource &#xE071;}" Header="插件"
+                      Description="可以扩展应用的功能。"/>
+        </CheckBox>
 
-        <StackPanel>
+        <StackPanel IsVisible="{Binding ViewModel.IsRefreshingInProgress}">
             <TextBlock Text="正在翻新，请稍后…" />
             <ProgressBar IsIndeterminate="True" />
         </StackPanel>
         
         <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-            <Button Command="{x:Static views:WelcomeWindow.WelcomeNavigateBackCommand}"
-                    ToolTip.Tip="上一步"
-                    Content="{ci:FluentIcon &#xE108;, FontSize=18}"
-                    Width="48" Height="48"
-                    CornerRadius="24"
-                    Margin="0 8 0 0"/>
-            <Button Command="{x:Static views:WelcomeWindow.WelcomeNavigateForwardCommand}"
+            <Button Click="ButtonNext_OnClick"
                     ToolTip.Tip="下一步"
                     Content="{ci:FluentIcon &#xE130;, FontSize=18}"
                     Width="48" Height="48"
