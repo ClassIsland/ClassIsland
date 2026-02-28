@@ -97,6 +97,7 @@ public partial class App
         services.AddSingleton<IXamlThemeService, XamlThemeService>();
         services.AddSingleton<IAudioService, AudioService>();
         services.AddSingleton<ITutorialService, TutorialService>();
+        services.AddSingleton<IRefreshingService, RefreshingService>();
         // ViewModels
         services.AddTransient<ProfileSettingsViewModel>();
         services.AddTransient<DevPortalViewModel>();
@@ -125,6 +126,7 @@ public partial class App
         services.AddTransient<ThemesSettingsViewModel>();
         services.AddTransient<UpdateSettingsPageViewModel>();
         services.AddTransient<DebugPageViewModel>();
+        services.AddTransient<RefreshingSettingsViewModel>();
         // Views
         services.AddTransient<ITopmostEffectPlayer>(x => x.GetRequiredService<TopmostEffectWindow>());
         services.AddSingleton<MainWindow>();
@@ -154,6 +156,7 @@ public partial class App
         services.AddSettingsPage<ClockSettingsPage>();
         services.AddSettingsPage<StorageSettingsPage>();
         services.AddSettingsPage<PrivacySettingsPage>();
+        services.AddSettingsPage<RefreshingSettingsPage>();
         services.AddSettingsPage<AdvancedSettingsPage>();
         services.AddSettingsPage<ComponentsSettingsPage>();
         services.AddSettingsPage<AppearanceSettingsPage>();

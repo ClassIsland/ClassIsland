@@ -22,6 +22,8 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.ComponentModels;
 using System.Runtime.InteropServices;
+using ClassIsland.Models.Refreshing;
+using ClassIsland.Services;
 
 namespace ClassIsland.Models;
 
@@ -853,6 +855,120 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _reduceProgressAccuracy) return;
             _reduceProgressAccuracy = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
+
+    #region Refreshing
+
+    public DateTime AppLastStartedTime
+    {
+        get => _appLastStartedTime;
+        set
+        {
+            if (value.Equals(_appLastStartedTime)) return;
+            _appLastStartedTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsRefreshingToastEnabled
+    {
+        get => _isRefreshingToastEnabled;
+        set
+        {
+            if (value == _isRefreshingToastEnabled) return;
+            _isRefreshingToastEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int RefreshingToastThresholdDays
+    {
+        get => _refreshingToastThresholdDays;
+        set
+        {
+            if (value == _refreshingToastThresholdDays) return;
+            _refreshingToastThresholdDays = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowRefreshingToastOnNextStart
+    {
+        get => _showRefreshingToastOnNextStart;
+        set
+        {
+            if (value == _showRefreshingToastOnNextStart) return;
+            _showRefreshingToastOnNextStart = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int MaxRefreshingToastCounts
+    {
+        get => _maxRefreshingToastCounts;
+        set
+        {
+            if (value == _maxRefreshingToastCounts) return;
+            _maxRefreshingToastCounts = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int LeftRefreshingToastCounts
+    {
+        get => _leftRefreshingToastCounts;
+        set
+        {
+            if (value == _leftRefreshingToastCounts) return;
+            _leftRefreshingToastCounts = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool RefreshingToastIsOnboardingGuide
+    {
+        get => _refreshingToastIsOnboardingGuide;
+        set
+        {
+            if (value == _refreshingToastIsOnboardingGuide) return;
+            _refreshingToastIsOnboardingGuide = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string OnboardingToastTitle
+    {
+        get => _onboardingToastTitle;
+        set
+        {
+            if (value == _onboardingToastTitle) return;
+            _onboardingToastTitle = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string OnboardingToastBody
+    {
+        get => _onboardingToastBody;
+        set
+        {
+            if (value == _onboardingToastBody) return;
+            _onboardingToastBody = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public RefreshingScopes RefreshingScopes
+    {
+        get => _refreshingScopes;
+        set
+        {
+            if (Equals(value, _refreshingScopes)) return;
+            _refreshingScopes = value;
             OnPropertyChanged();
         }
     }
@@ -1747,6 +1863,16 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isScreenRecordingModeEnabled = false;
     private bool _hasEditModeTutorialShown = false;
     private int _classPlanEditModeIndex = 1;
+    private bool _isRefreshingToastEnabled = true;
+    private int _refreshingToastThresholdDays = 20;
+    private bool _showRefreshingToastOnNextStart = false;
+    private int _leftRefreshingToastCounts = 0;
+    private bool _refreshingToastIsOnboardingGuide = false;
+    private string _onboardingToastTitle = RefreshingService.DefaultOnboardingToastTitle;
+    private string _onboardingToastBody = RefreshingService.DefaultOnboardingToastBody;
+    private DateTime _appLastStartedTime = DateTime.Now;
+    private int _maxRefreshingToastCounts = 5;
+    private RefreshingScopes _refreshingScopes = new();
 
     public bool IsIgnoreWorkAreaEnabled
     {
