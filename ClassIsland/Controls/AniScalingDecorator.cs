@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -18,20 +19,61 @@ public class AniScalingDecorator : Decorator
     private double _currentScale = 1.0;
     private double _pendingScale = 1.0;
     private DispatcherTimer _hysteresisTimer;
-    private ScaleTransform _scaleTransform = new ScaleTransform();
-    private CancellationTokenSource? _animationCts;
+    private ScaleTransform _scaleTransform = new ScaleTransform
+    {
+        Transitions = new Transitions
+        {
+            new DoubleTransition
+            {
+                Property = ScaleTransform.ScaleXProperty,
+                Duration = TimeSpan.FromMilliseconds(300),
+                Easing = new CubicEaseOut()
+            },
+            new DoubleTransition
+            {
+                Property = ScaleTransform.ScaleYProperty,
+                Duration = TimeSpan.FromMilliseconds(300),
+                Easing = new CubicEaseOut()
+            }
+        }
+    };
     private Queue<double> _scaleBuffer = new Queue<double>();
     
     public static readonly StyledProperty<bool> IsAutoScalingEnabledProperty =
         AvaloniaProperty.Register<AniScalingDecorator, bool>(nameof(IsAutoScalingEnabled), true);
+
+    public static readonly StyledProperty<int> WindowDockingLocationProperty =
+        AvaloniaProperty.Register<AniScalingDecorator, int>(nameof(WindowDockingLocation), 1);
+        
+    public static readonly StyledProperty<double> AutoScalingSafetyMarginProperty =
+        AvaloniaProperty.Register<AniScalingDecorator, double>(nameof(AutoScalingSafetyMargin), 12.0);
 
     public bool IsAutoScalingEnabled
     {
         get => GetValue(IsAutoScalingEnabledProperty);
         set => SetValue(IsAutoScalingEnabledProperty, value);
     }
-    
+
     private Settings? Settings => (Avalonia.Application.Current as App)?.Settings;
+
+    public int WindowDockingLocation
+    {
+        get => GetValue(WindowDockingLocationProperty);
+        set => SetValue(WindowDockingLocationProperty, value);
+    }
+    
+    public double AutoScalingSafetyMargin
+    {
+        get => GetValue(AutoScalingSafetyMarginProperty);
+        set => SetValue(AutoScalingSafetyMarginProperty, value);
+    }
+    
+    static AniScalingDecorator()
+    {
+        AffectsMeasure<AniScalingDecorator>(IsAutoScalingEnabledProperty);
+        AffectsMeasure<AniScalingDecorator>(AutoScalingSafetyMarginProperty);
+        AffectsArrange<AniScalingDecorator>(WindowDockingLocationProperty);
+    }
 
     public AniScalingDecorator()
     {
@@ -55,7 +97,7 @@ public class AniScalingDecorator : Decorator
         var desired = Child.DesiredSize;
         
         // 获取安全边距
-        double safetyMargin = Settings?.AutoScalingSafetyMargin ?? 12.0; 
+        double safetyMargin = AutoScalingSafetyMargin; 
         double workableWidth = availableSize.Width - safetyMargin;
 
         // 计算所需缩放
@@ -98,13 +140,13 @@ public class AniScalingDecorator : Decorator
         }
 
         // 确定对齐方式：0=左, 1=中, 2=右
-        var dockingLocation = Settings?.WindowDockingLocation ?? 1;
+        var dockingLocation = WindowDockingLocation;
         int alignment = dockingLocation % 3; 
         
         // 垂直原点：0-2 顶部(0), 3-5 底部(1)
         double originY = dockingLocation >= 3 ? 1.0 : 0.0;
         
-        double safetyMarginTotal = Settings?.AutoScalingSafetyMargin ?? 12.0;
+        double safetyMarginTotal = AutoScalingSafetyMargin;
         double safetyMarginSide = safetyMarginTotal / 2.0;
         
         double x = 0.0;
@@ -181,42 +223,7 @@ public class AniScalingDecorator : Decorator
     {
         _currentScale = target;
         
-        _animationCts?.Cancel();
-        _animationCts = new CancellationTokenSource();
-        var token = _animationCts.Token;
-
-        var start = _scaleTransform.ScaleX;
-        var end = target;
-        
-        if (Math.Abs(start - end) < 0.001)
-        {
-            _scaleTransform.ScaleX = _scaleTransform.ScaleY = end;
-            return;
-        }
-
-        // 动画循环：300ms cubic-ease-out
-        var duration = TimeSpan.FromMilliseconds(300);
-        var startTime = DateTime.Now;
-        
-        DispatcherTimer.Run(() =>
-        {
-            if (token.IsCancellationRequested) return false;
-            
-            var now = DateTime.Now;
-            var elapsed = now - startTime;
-            var progress = elapsed.TotalMilliseconds / duration.TotalMilliseconds;
-            
-            if (progress >= 1.0)
-            {
-                _scaleTransform.ScaleX = _scaleTransform.ScaleY = end;
-                return false;
-            }
-            
-            var easing = 1 - Math.Pow(1 - progress, 3);
-            var current = start + (end - start) * easing;
-            
-            _scaleTransform.ScaleX = _scaleTransform.ScaleY = current;
-            return true;
-        }, TimeSpan.FromMilliseconds(16));
+        _scaleTransform.ScaleX = target;
+        _scaleTransform.ScaleY = target;
     }
 }

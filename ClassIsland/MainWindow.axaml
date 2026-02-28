@@ -206,18 +206,10 @@
                             <Style Selector=":edit-mode StackPanel#StackPanelRootContainer">
                                 <Setter Property="VerticalAlignment" Value="Center" />
                             </Style>
-                            <Style Selector=":dock-left StackPanel#StackPanelRootContainer">
-                                <Setter Property="HorizontalAlignment" Value="Left" />
-                            </Style>
-                            <Style Selector=":dock-center StackPanel#StackPanelRootContainer">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                            </Style>
-                            <Style Selector=":dock-right StackPanel#StackPanelRootContainer">
-                                <Setter Property="HorizontalAlignment" Value="Right" />
-                            </Style>
                         </StackPanel.Styles>
                         <LayoutTransformControl x:Name="RootLayoutTransformControl"
-                                                ClipToBounds="False">
+                                                ClipToBounds="False"
+                                                SizeChanged="RootLayoutTransformControl_OnSizeChanged">
                             <LayoutTransformControl.RenderTransform>
                                 <TranslateTransform X="{Binding ViewModel.ActualRootOffsetX}"
                                                     Y="{Binding ViewModel.ActualRootOffsetY}" />
@@ -225,18 +217,18 @@
                             
                             <LayoutTransformControl.LayoutTransform>
                                 <TransformGroup>
-                                    <ScaleTransform ScaleX="{Binding ViewModel.Settings.Scale, Mode=OneWay}"
-                                                    ScaleY="{Binding ViewModel.Settings.Scale, Mode=OneWay}" />
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
                                     <SkewTransform />
                                     <RotateTransform />
                                     <TranslateTransform />
                                 </TransformGroup>
                             </LayoutTransformControl.LayoutTransform>
-                            <controls:AniScalingDecorator IsAutoScalingEnabled="{Binding ViewModel.Settings.IsAutoScalingEnabled}">
+                            <controls:AniScalingDecorator IsAutoScalingEnabled="{Binding ViewModel.Settings.IsAutoScalingEnabled}"
+                                                          WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation}"
+                                                          AutoScalingSafetyMargin="{Binding ViewModel.Settings.AutoScalingSafetyMargin}">
                                 <Grid ClipToBounds="False"
                                       HorizontalAlignment="Stretch"
                                       x:Name="GridRoot"
-                                      RenderTransformOrigin="0,0"
 
                                   Classes.ExplicitShowed="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
                                   Classes.OverlayOpened="{Binding ViewModel.IsOverlayOpened, Mode=OneWay}"
@@ -252,6 +244,7 @@
                                   ci:MainWindowStylesAssist.CornerRadius="{Binding ViewModel.Settings.RadiusX}"
                                   ci:MainWindowStylesAssist.BackgroundOpacity="{Binding ViewModel.Settings.Opacity}"
                                   ci:MainWindowStylesAssist.BackgroundCorlor="{Binding ViewModel.Settings.BackgroundColor}"
+                                  ci:WrapPanelResizingAnimationAssist.IsControlResizingAnimationEnabled="True"
                                   ci:MainWindowStylesAssist.IsCustomBackgroundColorEnabled="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}">
                                 <Classes.BasicHidingMode>
                                     <Binding Path="ViewModel.Settings.HideMode"

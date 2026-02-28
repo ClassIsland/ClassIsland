@@ -447,6 +447,24 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         ViewModel.PluginMarketService.RestartRequested += OnPluginMarketServiceOnRestartRequested;
+
+        // 处理 pluginId 查询参数以选中指定插件
+        if (NavigationUri != null)
+        {
+            var queryParams = System.Web.HttpUtility.ParseQueryString(NavigationUri.Query);
+            var targetPluginId = queryParams["pluginId"];
+            if (!string.IsNullOrWhiteSpace(targetPluginId))
+            {
+                // 切换到商店页以显示插件
+                ViewModel.PluginCategoryIndex = 0;
+                ViewModel.UpdateMergedPlugins();
+
+                if (ViewModel.PluginMarketService.MergedPlugins.TryGetValue(targetPluginId, out var targetPlugin))
+                {
+                    ViewModel.SelectedPluginInfo = targetPlugin;
+                }
+            }
+        }
     }
 
     private void OnPluginMarketServiceOnRestartRequested(object? sender, EventArgs args)

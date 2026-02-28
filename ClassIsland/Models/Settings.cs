@@ -815,7 +815,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("自动缩放缓冲帧数", "\uE415", order: -1)]
+    [SettingsInfo("自动缩放缓冲区大小", "\uE415", order: -1)]
     public int AutoScalingBufferFrameCount
     {
         get => _autoScalingBufferFrameCount;
@@ -827,7 +827,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [SettingsInfo("自动缩放延迟 (秒)", "\uE916", order: -1)]
+    [SettingsInfo("自动缩放缓冲时间窗口", "\uE916", order: -1)]
     public double AutoScalingBufferTimeWindow
     {
         get => _autoScalingBufferTimeWindow;
