@@ -430,7 +430,15 @@ public partial class App : AppBase, IAppHost
 
     public override void OnFrameworkInitializationCompleted()
     {
-        DesktopLifetime!.Startup += DesktopLifetimeOnStartup;
+        if (ApplicationLifetime is IControlledApplicationLifetime lifetime)
+        {
+            lifetime.Startup += DesktopLifetimeOnStartup;
+        }
+
+        if (Design.IsDesignMode)
+        {
+            return;
+        }
         if (bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var b))
         {
             IThemeService.UseNativeTitlebar = b;
