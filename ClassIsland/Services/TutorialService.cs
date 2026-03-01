@@ -73,6 +73,11 @@ public partial class TutorialService : ObservableObject, ITutorialService
         AppBase.Current.AppStopping += (_, _) => SaveConfig();
         this.ObservableForProperty(x => x.IsTutorialRunning)
             .Subscribe(_ => TutorialStateChanged?.Invoke(this, EventArgs.Empty));
+
+        if (SettingsService.WillMigrateInitTutorial)
+        {
+            SetIsTutorialCompleted("classisland.getStarted.welcome/init", true);
+        }
     }
 
     public bool IsTutorialRunning => CurrentSentence != null;
