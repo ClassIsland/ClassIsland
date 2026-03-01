@@ -1,4 +1,4 @@
-﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.RollingComponent"
+<ci:ComponentBase x:Class="ClassIsland.Controls.Components.RollingComponent"
                   x:TypeArguments="componentSettings:RollingComponentSettings"
                   xmlns="https://github.com/avaloniaui"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -43,6 +43,14 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </Border>
+                <Rectangle Grid.Column="2"
+                           Width="{Binding #ItemsControlContainer.Bounds.Width}"
+                           Height="{Binding #ItemsControlContainer.Bounds.Height}"
+                           VerticalAlignment="Stretch">
+                    <Rectangle.Fill>
+                        <VisualBrush Visual="{Binding #ItemsControlContainer}" />
+                    </Rectangle.Fill>
+                </Rectangle>
             </Grid>
         </Canvas>
     </Border>
