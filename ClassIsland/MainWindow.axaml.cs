@@ -1267,12 +1267,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void ExitEditMode()
     {
-        ViewModel.IsEditMode = false;
         if (ViewModel.EditModeView != null)
         {
             ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
             ViewModel.EditModeView.ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Closed;
         }
+        ViewModel.IsEditMode = false;
         ViewModel.EditModeTutorialPhase = -1;
         ComponentsService.SaveConfig();
         TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.exit");

@@ -85,6 +85,10 @@ public partial class EditModeView : UserControl
         ViewModel.MainWindow.ViewModel.SelectedMainWindowLineSettings = null;
         ViewModel.MainViewModel.ContainerComponents.Clear();
         ViewModel.ContainerComponentCache.Clear();
+        foreach (var listBox in ViewModel.MainViewModel.ComponentsListBoxCache)
+        {
+            listBox.SelectedItem = null;
+        }
     }
 
     private void OpenDrawer(string key, string? title = null, string? icon = null)
