@@ -124,11 +124,13 @@ public partial class RefreshingPage : UserControl, IWelcomePage
                 return;
             }
 
-            List<string> args = ["--refreshing"];
+            List<string> args = ["--refreshing", "-m"];
             if (ViewModel.IsOnboarding)
             {
                 args.Add("--onboarding");
             }
+
+            ViewModel.IsManuallyRestarted = true;
             AppBase.Current.Restart(args.ToArray());
         }
         catch (Exception exception)
@@ -138,7 +140,10 @@ public partial class RefreshingPage : UserControl, IWelcomePage
         }
         finally
         {
-            ViewModel.IsRefreshingInProgress = false;
+            if (!restartRequired)
+            {
+                ViewModel.IsRefreshingInProgress = false;
+            }
         }
     }
 }

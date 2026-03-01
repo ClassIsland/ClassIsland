@@ -1,7 +1,9 @@
+using System;
 using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Views;
@@ -9,7 +11,7 @@ using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Services;
 
-public class RefreshingService(SettingsService settingsService) : IRefreshingService
+public class RefreshingService(SettingsService settingsService, IExactTimeService exactTimeService) : IRefreshingService
 {
     public const string DefaultOnboardingToastTitle = "欢迎使用 ClassIsland (/≧▽≦)/";
 
@@ -21,13 +23,56 @@ public class RefreshingService(SettingsService settingsService) : IRefreshingSer
     public const string DefaultRefreshingToastBody = "ClassIsland 似乎已经有一个长假没有启动了，部分设置可能已经过期。要跟随欢迎向导重新设置如学期开始时间等设置吗？";
     
     public SettingsService SettingsService { get; } = settingsService;
-    
-    public async Task Initialize()
+    public IExactTimeService ExactTimeService { get; } = exactTimeService;
+
+    public async Task<bool> Initialize()
     {
-        
+        var now = ExactTimeService.GetCurrentLocalDateTime();
+        var lastStartup = SettingsService.Settings.AppLastStartedTime;
+        SettingsService.Settings.AppLastStartedTime = now;
+
+        if ((now.Date - lastStartup.Date).TotalDays >= SettingsService.Settings.RefreshingToastThresholdDays || SettingsService.Settings.ShowRefreshingToastOnNextStart)
+        {
+            SettingsService.Settings.ShowRefreshingToastOnNextStart = false;
+            SettingsService.Settings.LeftRefreshingToastCounts = SettingsService.Settings.MaxRefreshingToastCounts;
+        }
+
+        if (!SettingsService.Settings.IsRefreshingToastEnabled || SettingsService.Settings.LeftRefreshingToastCounts <= 0)
+        {
+            SettingsService.Settings.LeftRefreshingToastCounts = 0;
+            return false;
+        }
+
+        SettingsService.Settings.LeftRefreshingToastCounts--;
+        if (SettingsService.Settings.RefreshingToastIsOnboardingGuide)
+        {
+            if (SettingsService.Settings.LeftRefreshingToastCounts <= 0)
+            {
+                SettingsService.Settings.RefreshingToastIsOnboardingGuide = false;
+            }
+            return await ShowOnboardingDialog();
+        }
+
+        await ShowRefreshingToast();
+
+        return false;
     }
 
-    public async Task ShowOnboardingDialog(bool isTest=false)
+    private async Task ShowRefreshingToast()
+    {
+        await PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+        {
+            Title = DefaultRefreshingToastTitle,
+            Body = DefaultRefreshingToastBody,
+            Buttons =
+            {
+                ["暂时不用"] = () => { },
+                ["立即翻新"] = async void () => await BeginRefresh(),
+            }
+        });
+    }
+
+    public async Task<bool> ShowOnboardingDialog(bool isTest=false)
     {
         var r = await new TaskDialog()
         {
@@ -49,24 +94,30 @@ public class RefreshingService(SettingsService settingsService) : IRefreshingSer
         {
             PlatformServices.DesktopService.IsAutoStartEnabled = false;
             SettingsService.Settings.LeftRefreshingToastCounts = 0;
+            SettingsService.Settings.RefreshingToastIsOnboardingGuide = false;
             AppBase.Current.Stop();
-            return;
+            return true;
         }
         if (!Equals(r, 2))
         {
-            return;
+            return false;
         }
-
-        SettingsService.Settings.LeftRefreshingToastCounts = 0;
-        await BeginRefresh(true);
+        
+        return await BeginRefresh(true);
     }
 
-    public async Task BeginRefresh(bool isOnboarding=false)
+    public async Task<bool> BeginRefresh(bool isOnboarding=false)
     {
         var welcomeWin = IAppHost.GetService<WelcomeWindow>();
         welcomeWin.ViewModel.RefreshingScopes =
             ConfigureFileHelper.CopyObject(SettingsService.Settings.RefreshingScopes);
         welcomeWin.SetWelcomeExperience(true, isOnboarding, false);
         await welcomeWin.ShowDialog(AppBase.Current.GetRootWindow());
+        if (!isOnboarding)
+        {
+            return false;
+        }
+
+        return welcomeWin.ViewModel is { IsWizardCompleted: false };
     }
 }

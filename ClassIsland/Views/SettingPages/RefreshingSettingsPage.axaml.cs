@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
@@ -63,5 +64,16 @@ public partial class RefreshingSettingsPage : SettingsPageBase
             Scopes = ViewModel.SettingsService.Settings.RefreshingScopes
         };
         await win.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
+    }
+
+    private void ButtonExit_OnClick(object? sender, RoutedEventArgs e)
+    {
+        AppBase.Current.Stop();
+    }
+
+    private void ButtonClearLeftToastCount_OnClick(object? sender, RoutedEventArgs e)
+    {   
+        ViewModel.SettingsService.Settings.LeftRefreshingToastCounts = 0;
+        ViewModel.SettingsService.Settings.RefreshingToastIsOnboardingGuide = false;
     }
 }

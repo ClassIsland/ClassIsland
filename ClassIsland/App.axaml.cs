@@ -697,7 +697,7 @@ public partial class App : AppBase, IAppHost
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = IAppHost.Host.StartAsync();
         IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
-
+        
         if (!Settings.IsWelcomeWindowShowed || ApplicationCommand.Refreshing || ApplicationCommand.Onboarding)
         {
             if (Settings.IsSplashEnabled)
@@ -733,16 +733,24 @@ public partial class App : AppBase, IAppHost
                 w.SetWelcomeExperience(true, ApplicationCommand.Onboarding, true);
             }
             await w.ShowDialog(PhonyRootWindow);
-            if (!w.ViewModel.IsWizardCompleted)
+            if (w is { IsOnboarding: true, ViewModel.IsManuallyRestarted: false })
             {
-                Stop();
+                if (!w.ViewModel.IsWizardCompleted)
+                {
+                    Stop();
+                }
+                else
+                {
+                    Settings.IsWelcomeWindowShowed = true;
+                    Restart();
+                }
+                return;
             }
-            else
+
+            if (w.ViewModel.IsManuallyRestarted)
             {
-                Settings.IsWelcomeWindowShowed = true;
-                Restart();
+                return;
             }
-            return;
         }
 
         // 如果不是开发构建, 则自动重置部分可能影响使用的调试选项
@@ -812,6 +820,7 @@ public partial class App : AppBase, IAppHost
                     .NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"));
                 PlatformServices.DesktopToastService.ShowToastAsync(content);
             }
+
             if (Settings.IsSplashEnabled)
             {
                 App.GetService<ISplashService>().EndSplash();
@@ -881,6 +890,13 @@ public partial class App : AppBase, IAppHost
             content.Activated += (_, _) =>
                 uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update"));
             await PlatformServices.DesktopToastService.ShowToastAsync(content);
+        }
+        
+        var needsStop = await IAppHost.GetService<IRefreshingService>().Initialize();
+        if (needsStop)
+        {
+            Stop();
+            return;
         }
     }
 

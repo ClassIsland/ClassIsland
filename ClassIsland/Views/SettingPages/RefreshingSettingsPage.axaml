@@ -108,6 +108,7 @@
                     <controls:SettingsExpanderItem.Footer>
                         <StackPanel Classes="items-valign-center" Orientation="Horizontal" Spacing="6">
                             <Button Content="立即退出应用"
+                                    Click="ButtonExit_OnClick"
                                     IsVisible="{Binding ViewModel.SettingsService.Settings.ShowRefreshingToastOnNextStart, Mode=TwoWay}"/>
                             <ToggleSwitch
                                 IsChecked="{Binding ViewModel.SettingsService.Settings.ShowRefreshingToastOnNextStart, Mode=TwoWay}" />
@@ -134,7 +135,7 @@
                 <controls:SettingsExpanderItem>
                     <controls:SettingsExpanderItem.Footer>
                         <StackPanel Classes="items-valign-center" Orientation="Horizontal" Spacing="6">
-                            <Button Content="清空">
+                            <Button Content="清空" Click="ButtonClearLeftToastCount_OnClick">
                                 <Button.IsVisible>
                                     <Binding Path="ViewModel.SettingsService.Settings.LeftRefreshingToastCounts"
                                              Converter="{x:Static ObjectConverters.NotEqual}">

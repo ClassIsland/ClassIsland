@@ -206,6 +206,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
                 App.GetService<ILogger<WelcomeWindow>>().LogError(ex, "无法创建快捷方式。");
             }
             ViewModel.TutorialService.ResetTutorialCompletedState();
+            ViewModel.SettingsService.Settings.RefreshingToastIsOnboardingGuide = false;
         }
 
         if (IsRefreshing)

@@ -33,4 +33,5 @@ public partial class WelcomeViewModel(SettingsService settingsService, ITutorial
     [ObservableProperty] private RefreshingScopes _refreshingScopes = new();
     [ObservableProperty] private bool _isRefreshingInProgress = false;
     [ObservableProperty] private bool _isOnboarding = false;
+    [ObservableProperty] private bool _isManuallyRestarted = false;
 }
