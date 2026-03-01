@@ -6,8 +6,11 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Input;
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Controls.Metadata;
@@ -19,6 +22,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using ClassIsland.Controls.EditMode;
 using ClassIsland.Core;
@@ -157,6 +161,29 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private List<object> TopmostLocks { get; } = [];
 
+    private double _lastScale = 1.0;
+    private CancellationTokenSource? _scaleAnimationCts;
+
+    public static readonly StyledProperty<double> AnimatedScaleProperty =
+        AvaloniaProperty.Register<MainWindow, double>(nameof(AnimatedScale), defaultValue: 1.0);
+
+    /// <summary>
+    /// 用于驱动缩放动画的属性。属性变化时同步更新 LayoutTransform 和窗口位置。
+    /// </summary>
+    public double AnimatedScale
+    {
+        get => GetValue(AnimatedScaleProperty);
+        set => SetValue(AnimatedScaleProperty, value);
+    }
+
+    static MainWindow()
+    {
+        AnimatedScaleProperty.Changed.AddClassHandler<MainWindow>((window, _) =>
+        {
+            window.SetLayoutScale(window.AnimatedScale);
+        });
+    }
+
 
     public static readonly StyledProperty<double> BackgroundWidthProperty = AvaloniaProperty.Register<MainWindow, double>(
         nameof(BackgroundWidth));
@@ -187,6 +214,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Initialization
+
     public MainWindow(SettingsService settingsService, 
         IProfileService profileService,
         INotificationHostService notificationHostService, 
@@ -247,6 +275,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
         PointerStateAssist.SetIsTouchMode(this, true);  // DEBUG
+        _lastScale = SettingsService.Settings.Scale;
+        SetLayoutScale(SettingsService.Settings.Scale);
     }
 
     private void PostInit()
@@ -470,6 +500,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             UpdateFadeStatus();
         }
+        if (e.PropertyName == nameof(ViewModel.Settings.Scale))
+        {
+            AnimateScaleChange(ViewModel.Settings.Scale);
+        }
     }
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -666,6 +700,78 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         PseudoClasses.Set(":dock-top", ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2);
         PseudoClasses.Set(":dock-bottom", ViewModel.Settings.WindowDockingLocation is 3 or 4 or 5);
+
+    }
+
+    /// <summary>
+    /// 直接设置 LayoutTransform 的 ScaleTransform 值。
+    /// </summary>
+    private void SetLayoutScale(double scale)
+    {
+        var transformGroup = (TransformGroup)RootLayoutTransformControl.LayoutTransform!;
+        var scaleTransform = (ScaleTransform)transformGroup.Children[0];
+        scaleTransform.ScaleX = scale;
+        scaleTransform.ScaleY = scale;
+    }
+
+    /// <summary>
+    /// 执行缩放动画：通过 Avalonia 原生 Animation API 对 AnimatedScale 属性做缓动动画，
+    /// AnimatedScale 属性变化回调中同步更新 LayoutTransform 和窗口位置，确保缩放和定位同帧进行。
+    /// </summary>
+    private async void AnimateScaleChange(double newScale)
+    {
+        var oldScale = _lastScale;
+        _lastScale = newScale;
+
+        if (Math.Abs(oldScale - newScale) < 0.0001 || oldScale <= 0 || newScale <= 0)
+        {
+            AnimatedScale = newScale;
+            return;
+        }
+
+        // 取消之前的动画
+        _scaleAnimationCts?.Cancel();
+        _scaleAnimationCts = new CancellationTokenSource();
+        var token = _scaleAnimationCts.Token;
+
+        var animation = new Avalonia.Animation.Animation
+        {
+            Duration = TimeSpan.FromMilliseconds(300),
+            Easing = new CubicEaseOut(),
+            FillMode = Avalonia.Animation.FillMode.Forward,
+            Children =
+            {
+                new Avalonia.Animation.KeyFrame
+                {
+                    Cue = new Avalonia.Animation.Cue(0),
+                    Setters =
+                    {
+                        new Setter(AnimatedScaleProperty, oldScale)
+                    }
+                },
+                new Avalonia.Animation.KeyFrame
+                {
+                    Cue = new Avalonia.Animation.Cue(1),
+                    Setters =
+                    {
+                        new Setter(AnimatedScaleProperty, newScale)
+                    }
+                }
+            }
+        };
+
+        try
+        {
+            await animation.RunAsync(this, token);
+            if (!token.IsCancellationRequested)
+            {
+                AnimatedScale = newScale;
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // 动画被取消，下一次 AnimateScaleChange 会接管
+        }
     }
 
     private async void UpdateTheme()
@@ -723,6 +829,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     #region Windowing
     private void StackPanelRootContainer_OnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        UpdateWindowPos();
+    }
+
+    private void RootLayoutTransformControl_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
         UpdateWindowPos();
     }
@@ -795,11 +906,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, Topmost);
     }
 
+    /// <summary>
+    /// 获取当前的全局缩放值。由于 LayoutTransform 现在是即时更新的，直接使用 Settings.Scale。
+    /// </summary>
+    private double GetCurrentAnimatedScale()
+    {
+        return AnimatedScale;
+    }
+
     private void OldWindowPosUpdateImpl(bool updateEffectWindow)
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
-        var scale = ViewModel.Settings.Scale;
+        var scale = GetCurrentAnimatedScale();
         ViewModel.GridRootLeft = Width / 10 * (scale - 1);
         ViewModel.GridRootTop = Height / 10 * (scale - 1);
         
@@ -853,7 +972,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
-        var scale = ViewModel.Settings.Scale;
+        var scale = GetCurrentAnimatedScale();
         ViewModel.GridRootLeft = Width / 10 * (scale - 1);
         ViewModel.GridRootTop = Height / 10 * (scale - 1);
 
@@ -1433,7 +1552,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     }
 
     [RelayCommand]
-    private void RemoveMainWindowLine(MainWindowLineSettings? settings)
+    private async Task RemoveMainWindowLine(MainWindowLineSettings? settings)
     {
         if (settings == null)
         {
@@ -1442,6 +1561,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         if (ComponentsService.CurrentComponents.Lines.Count <= 1)
         {
             this.ShowWarningToast("至少需要保留 1 个主界面行。");
+            return;
+        }
+
+        var result = await new ContentDialog()
+        {
+            Title = "删除主界面行",
+            Content = "确定要删除此主界面行吗？行内的所有组件也将被一并删除，此操作无法撤销。",
+            PrimaryButtonText = "删除",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Close
+        }.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
             return;
         }
 

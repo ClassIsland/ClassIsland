@@ -59,12 +59,15 @@
         
         <Style Selector="^:dock-left /template/:is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="ci:WrapPanelResizingAnimationAssist.IsControlResizingAnimationEnabled" Value="True" />
         </Style>
         <Style Selector="^:dock-center /template/ :is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="ci:WrapPanelResizingAnimationAssist.IsControlResizingAnimationEnabled" Value="True" />
         </Style>
         <Style Selector="^:dock-right /template/ :is(Control).docking">
             <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="ci:WrapPanelResizingAnimationAssist.IsControlResizingAnimationEnabled" Value="True" />
         </Style>
         
         <Style Selector="^:pointerover">

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -12,6 +13,7 @@ using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.Input;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Controls.EditMode;
 
@@ -104,10 +106,24 @@ public partial class EditableComponentsListBox : ListBox
     }
 
     [RelayCommand]
-    private void DeleteComponent(ComponentSettings? componentSettings)
+    private async Task DeleteComponent(ComponentSettings? componentSettings)
     {
         if (componentSettings == null
             || ItemsSource is not IList<ComponentSettings> components)
+        {
+            return;
+        }
+
+        var componentName = componentSettings.AssociatedComponentInfo?.Name ?? "此组件";
+        var result = await new ContentDialog()
+        {
+            Title = "删除组件",
+            Content = "确定要删除组件" + "\u201c" + componentName + "\u201d" + "吗？此操作无法撤销。",
+            PrimaryButtonText = "删除",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Close
+        }.ShowAsync();
+        if (result != ContentDialogResult.Primary)
         {
             return;
         }

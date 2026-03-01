@@ -8,6 +8,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
@@ -50,12 +51,268 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
     private Exception? _exception;
     private IDisposable? _pluginsUpdateProgressObserver;
 
-    public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger)
+    public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger, IUriNavigationService uriNavigationService)
     {
         SettingsService = settingsService;
         PluginService = pluginService;
         Logger = logger;
         
+        uriNavigationService.HandleAppNavigation("plugin/install", async args =>
+        {
+            var query = System.Web.HttpUtility.ParseQueryString(args.Uri.Query);
+            var pluginId = query["id"];
+
+            if (string.IsNullOrWhiteSpace(pluginId))
+            {
+                return;
+            }
+
+            var pluginPageUri = new Uri($"classisland://app/settings/classisland.plugins?pluginId={pluginId}");
+
+            var confirmBtn = new FluentAvalonia.UI.Controls.TaskDialogButton("确认安装", true)
+            {
+                IsDefault = true,
+                IsEnabled = false,
+                IconSource = new ClassIsland.Core.Controls.FluentIconSource("\uE071")
+            };
+            var viewBtn = new FluentAvalonia.UI.Controls.TaskDialogButton("在商店页查看", false)
+            {
+                IconSource = new ClassIsland.Core.Controls.FluentIconSource("\uF08B")
+            };
+
+            // 构建富内容面板
+            var pluginIcon = new AsyncImageLoader.AdvancedImage(new Uri("avares://ClassIsland/"))
+            {
+                Width = 48,
+                Height = 48,
+                IsVisible = false,
+                Margin = new Avalonia.Thickness(0, 0, 12, 0),
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top
+            };
+
+            var pluginNameText = new Avalonia.Controls.TextBlock()
+            {
+                Text = pluginId,
+                FontSize = 18,
+                FontWeight = Avalonia.Media.FontWeight.SemiBold,
+                TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis
+            };
+
+            var pluginAuthorText = new Avalonia.Controls.TextBlock()
+            {
+                Text = "",
+                FontSize = 13,
+                Opacity = 0.7,
+                IsVisible = false,
+                Margin = new Avalonia.Thickness(0, 2, 0, 0)
+            };
+
+            var statusText = new Avalonia.Controls.TextBlock()
+            {
+                Text = "正在获取插件信息...",
+                TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                Margin = new Avalonia.Thickness(0, 8, 0, 0)
+            };
+
+            var warningText = new Avalonia.Controls.TextBlock()
+            {
+                Text = "请确认您信任该来源，安装未知插件可能会带来安全风险。",
+                TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                Opacity = 0.7,
+                FontSize = 12,
+                IsVisible = false,
+                Margin = new Avalonia.Thickness(0, 4, 0, 0)
+            };
+
+            var infoPanel = new Avalonia.Controls.StackPanel()
+            {
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top
+            };
+            infoPanel.Children.Add(pluginNameText);
+            infoPanel.Children.Add(pluginAuthorText);
+
+            var headerPanel = new Avalonia.Controls.DockPanel()
+            {
+                Margin = new Avalonia.Thickness(0, 0, 0, 0)
+            };
+            headerPanel.Children.Add(pluginIcon);
+            headerPanel.Children.Add(infoPanel);
+
+            var contentPanel = new Avalonia.Controls.StackPanel()
+            {
+                Width = 380
+            };
+            contentPanel.Children.Add(headerPanel);
+            contentPanel.Children.Add(statusText);
+            contentPanel.Children.Add(warningText);
+
+            var dialog = new FluentAvalonia.UI.Controls.TaskDialog()
+            {
+                Title = "安装插件",
+                Header = "确认安装插件？",
+                Content = contentPanel,
+                XamlRoot = AppBase.Current.GetRootWindow(),
+                ShowProgressBar = true,
+                Buttons =
+                [
+                    viewBtn,
+                    confirmBtn
+                ]
+            };
+
+            // 初始加载时显示不确定进度条
+            dialog.SetProgressBarState(0, FluentAvalonia.UI.Controls.TaskDialogProgressState.Indeterminate);
+
+            PluginIndexItem? resolvedPluginInfo = null;
+            bool isAlreadyInstalled = false;
+            bool isDownloading = false;
+            bool downloadComplete = false;
+
+            dialog.Opened += async (s, e) =>
+            {
+                // 尝试置顶弹窗所在窗口
+                var rootWindow = AppBase.Current.GetRootWindow();
+                rootWindow.Topmost = true;
+                rootWindow.Activate();
+                rootWindow.Topmost = false;
+
+                var pluginInfo = ResolveMarketPlugin(pluginId);
+                if (pluginInfo == null)
+                {
+                    try
+                    {
+                        var refreshTask = RefreshPluginSourceAsync();
+                        await refreshTask;
+                        pluginInfo = ResolveMarketPlugin(pluginId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "获取插件信息时刷新插件源失败");
+                    }
+                }
+
+                int retry = 0;
+                while (pluginInfo == null && IsLoadingPluginSource && retry < 30)
+                {
+                    await Task.Delay(500);
+                    pluginInfo = ResolveMarketPlugin(pluginId);
+                    retry++;
+                }
+
+                // 加载完成，隐藏不确定进度条
+                dialog.ShowProgressBar = false;
+
+                if (pluginInfo != null)
+                {
+                    resolvedPluginInfo = pluginInfo;
+
+                    // 显示插件图标
+                    if (!string.IsNullOrWhiteSpace(pluginInfo.RealIconPath))
+                    {
+                        pluginIcon.Source = pluginInfo.RealIconPath;
+                        pluginIcon.IsVisible = true;
+                    }
+
+                    // 更新插件名称和作者
+                    pluginNameText.Text = pluginInfo.Manifest.Name;
+                    if (!string.IsNullOrWhiteSpace(pluginInfo.Manifest.Author))
+                    {
+                        pluginAuthorText.Text = $"作者：{pluginInfo.Manifest.Author}";
+                        pluginAuthorText.IsVisible = true;
+                    }
+
+                    // 检查插件是否已经安装
+                    if (MergedPlugins.TryGetValue(pluginId, out var mergedPlugin) && mergedPlugin.IsLocal)
+                    {
+                        isAlreadyInstalled = true;
+                        dialog.Header = "插件已安装";
+                        statusText.Text = $"插件 {pluginInfo.Manifest.Name} 已经安装在本地。";
+                        confirmBtn.IsEnabled = false;
+                        confirmBtn.Text = "已安装";
+                    }
+                    else
+                    {
+                        statusText.Text = $"您正在尝试通过外部链接安装插件 {pluginInfo.Manifest.Name}";
+                        warningText.IsVisible = true;
+                        confirmBtn.IsEnabled = true;
+                    }
+                }
+                else
+                {
+                    dialog.Header = "未找到插件";
+                    statusText.Text = $"无法在当前配置的插件源中找到插件：\n[{pluginId}]\n\n请检查插件源设置或重试。";
+                    confirmBtn.IsEnabled = false;
+                    viewBtn.IsEnabled = false;
+                }
+            };
+
+            dialog.Closing += (s, e) =>
+            {
+                // 处理"在商店页查看"按钮 - 始终允许导航
+                if (Equals(e.Result, false))
+                {
+                    uriNavigationService.NavigateWrapped(pluginPageUri);
+                    return;
+                }
+
+                if (Equals(e.Result, true))
+                {
+                    if (downloadComplete)
+                    {
+                        // 安装完成，用户点击"重启" => 重启应用
+                        AppBase.Current.Restart();
+                        return;
+                    }
+
+                    if (!isDownloading)
+                    {
+                        e.Cancel = true;
+                        isDownloading = true;
+
+                        confirmBtn.IsEnabled = false;
+                        confirmBtn.Text = "正在安装 0%";
+                        confirmBtn.IconSource = null;
+
+                        RequestDownloadPlugin(pluginId);
+
+                        _ = Task.Run(async () =>
+                        {
+                            while (DownloadTasks.ContainsKey(pluginId))
+                            {
+                                if (DownloadTasks.TryGetValue(pluginId, out var progress))
+                                {
+                                    await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        confirmBtn.Text = $"正在安装 {progress.Progress:F0}%";
+                                    });
+                                }
+                                await Task.Delay(200);
+                            }
+
+                            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                downloadComplete = true;
+                                dialog.Header = "插件已安装";
+                                statusText.Text = $"插件 {resolvedPluginInfo?.Manifest.Name ?? pluginId} 安装完成，重启应用以加载插件。";
+                                warningText.IsVisible = false;
+                                // 将确认按钮变更为"重启"并添加重启图标
+                                confirmBtn.Text = "重启以应用更新";
+                                confirmBtn.IconSource = new ClassIsland.Core.Controls.FluentIconSource("\uE0BD");
+                                confirmBtn.IsEnabled = true;
+                            });
+                        });
+                    }
+                    else
+                    {
+                        // 仍在下载中，保持弹窗打开
+                        e.Cancel = true;
+                    }
+                }
+            };
+
+            await dialog.ShowAsync();
+        });
+
         if (DateTime.Now - SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
         {
             _ = RefreshPluginSourceAsync();
