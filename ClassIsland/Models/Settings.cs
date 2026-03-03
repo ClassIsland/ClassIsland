@@ -1861,6 +1861,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isPluginsUpdateNotificationEnabled = true;
     private int _windowTopmostRecheckMode = 0;
     private bool _isScreenRecordingModeEnabled = false;
+    private bool _isScreenShotBlockingEnabled = false;
+    private bool _isScreenRecordingBlockingEnabled = false;
     private bool _hasEditModeTutorialShown = false;
     private int _classPlanEditModeIndex = 1;
     private bool _isRefreshingToastEnabled = true;
@@ -1944,6 +1946,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isScreenRecordingModeEnabled) return;
             _isScreenRecordingModeEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsScreenShotBlockingEnabled
+    {
+        get => _isScreenShotBlockingEnabled;
+        set
+        {
+            if (value == _isScreenShotBlockingEnabled) return;
+            _isScreenShotBlockingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsScreenRecordingBlockingEnabled
+    {
+        get => _isScreenRecordingBlockingEnabled;
+        set
+        {
+            if (value == _isScreenRecordingBlockingEnabled) return;
+            _isScreenRecordingBlockingEnabled = value;
             OnPropertyChanged();
         }
     }
