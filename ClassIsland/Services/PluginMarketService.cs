@@ -13,6 +13,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Shared;
@@ -167,8 +168,8 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                     Title = "插件更新可用",
                     Body = $"有 {count} 个插件有新版本可用，点击以查看详细信息。",
                     Activated = (_, _) => IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"))
-                });
-                UpdateAllPlugins();
+                }); 
+                if(SettingsService.Settings.IsPluginsAutoUpdateEnabled) UpdateAllPlugins();
             }
             transaction.Finish(SpanStatus.Ok);
         }
