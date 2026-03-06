@@ -20,6 +20,8 @@ using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared.Helpers;
 using Pastel;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 
 namespace ClassIsland.Desktop;
@@ -111,9 +113,7 @@ class Program
                 OSKIntegration.Integrate();
             };
         };
-#if !PLATFORM_ARM64
-        PatcherEntrance.InstallPatchers();
-#endif
+        if(RuntimeInformation.OSArchitecture!=Architecture.Arm64) PatcherEntrance.InstallPatchers();
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);
