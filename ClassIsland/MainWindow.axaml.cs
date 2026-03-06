@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
@@ -344,9 +345,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         AppBase.Current.AppStopping += (sender, args) => AppBase.Current.PlatformSettings!.ColorValuesChanged -= OnSystemEventsOnUserPreferenceChanged;
         span?.Finish();
     }
-
+    
     private void InitializeRawInputHandler()
     {
+        if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("RawInput仅在Windows平台受支持。");
         var handle = TryGetPlatformHandle()?.Handle ?? nint.Zero;
         RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse,
             RawInputDeviceFlags.InputSink, handle);
