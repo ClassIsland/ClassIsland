@@ -113,7 +113,7 @@ class Program
                 OSKIntegration.Integrate();
             };
         };
-        if(RuntimeInformation.OSArchitecture!=Architecture.Arm64) PatcherEntrance.InstallPatchers();
+        if (RuntimeInformation.OSArchitecture == Architecture.X64 || RuntimeInformation.OSArchitecture==Architecture.X86) PatcherEntrance.InstallPatchers();
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);
