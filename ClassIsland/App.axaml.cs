@@ -369,7 +369,7 @@ public partial class App : AppBase, IAppHost
             if (plugins.Count > 0)
             {
                 var pluginsWarning = "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题："+Environment.NewLine
-                                     + string.Join(Environment.NewLine, plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"))
+                                     + string.Join(Environment.NewLine, plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id},{x.Manifest.Version}]"))
                                      + (disabled
                                          ? Environment.NewLine+"以上异常插件已自动禁用，重启应用后生效。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。"
                                          : "")
