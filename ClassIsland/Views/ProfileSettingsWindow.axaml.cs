@@ -167,9 +167,10 @@ public partial class ProfileSettingsWindow : MyWindow
                 {
                     if (ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
                     {
-                        ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/multiweek-classplans");
+                        ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/setup-classplans");
                     }
-                    if (!ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeRule.WeekCountDiv > 0))
+                    if (!ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeRule.WeekCountDiv > 0)
+                        && ViewModel.ProfileService.Profile.ClassPlans.Count > 0)
                     {
                         ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/multiweek-classplans");
                     }
@@ -225,7 +226,14 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void MasterTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (ViewModel.MasterPageTabSelectIndex == 0 && ViewModel.ProfileService.Profile.TimeLayouts.Count > 0
+                                                        && ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
+            {
+                ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/setup-classplans");
+            }
+        });
     }
     
     private void ButtonHelp_OnClick(object? sender, RoutedEventArgs e)
