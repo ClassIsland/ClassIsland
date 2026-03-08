@@ -163,13 +163,19 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
             var count = MergedPlugins.Count(x => x.Value is { IsUpdateAvailable: true, IsEnabled: true, RestartRequired: false });
             if (count > 0)
             {
-                await PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+                if (SettingsService.Settings.IsPluginsUpdateNotificationEnabled)
                 {
-                    Title = "插件更新可用",
-                    Body = $"有 {count} 个插件有新版本可用，点击以查看详细信息。",
-                    Activated = (_, _) => IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"))
-                }); 
-                if(SettingsService.Settings.IsPluginsAutoUpdateEnabled) UpdateAllPlugins();
+                    await PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+                    {
+                        Title = "插件更新可用",
+                        Body = $"有 {count} 个插件有新版本可用，点击以查看详细信息。",
+                        Activated = (_, _) => IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"))
+                    });
+                }
+                if (SettingsService.Settings.IsPluginsAutoUpdateEnabled)
+                {
+                    UpdateAllPlugins();
+                }
             }
             transaction.Finish(SpanStatus.Ok);
         }
