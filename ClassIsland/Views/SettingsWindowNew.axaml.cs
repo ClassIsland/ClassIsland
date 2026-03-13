@@ -82,6 +82,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     public static readonly string StartupSettingsPage = "general";
 
     private IComponentsService ComponentsService { get; }
+    private ITutorialService TutorialService { get; }
 
     private string LaunchSettingsPage { get; set; } = StartupSettingsPage;
 
@@ -101,12 +102,14 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     public SettingsWindowNew(IManagementService managementService, IHangService hangService,
         ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService,
-        IComponentsService componentsService, IUriNavigationService uriNavigationService)
+        IComponentsService componentsService, IUriNavigationService uriNavigationService,
+        ITutorialService tutorialService)
     {
         Logger = logger;
         DataContext = this;
         ManagementService = managementService;
         ComponentsService = componentsService;
+        TutorialService = tutorialService;
         DiagnosticService = diagnosticService;
         HangService = hangService;
         SettingsService = settingsService;
@@ -129,6 +132,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             .ObservableForProperty(x => x.IsDebugOptionsEnabled)
             .Subscribe(_ => BuildNavigationMenuItems());
 
+        TitleBar.Height = 48;
         if (OperatingSystem.IsMacOS())
         {
             ExtendClientAreaToDecorationsHint = true;
@@ -472,6 +476,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
             Activate();
         }
+        TutorialService.PushToNextSentence("classisland.getStarted.welcome/systems");
     }
 
     public async void Open(string key, Uri? uri = null)
@@ -527,20 +532,25 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         ShowRestartDialog();
     }
-
+    bool IsShowingRestartDialog = false;
     private async void ShowRestartDialog()
     {
-        var r = await new ContentDialog()
+        if (!IsShowingRestartDialog)
         {
-            Title = "需要重启",
-            Content = "部分设置需要重启以应用更改。",
-            PrimaryButtonText = "重启",
-            CloseButtonText = "取消",
-            DefaultButton = ContentDialogButton.Primary,
-        }.ShowAsync(this);
-        if (r != ContentDialogResult.Primary)
-            return;
-        AppBase.Current.Restart();
+            IsShowingRestartDialog = true;
+            var r = await new ContentDialog()
+            {
+                Title = "需要重启",
+                Content = "部分设置需要重启以应用更改。",
+                PrimaryButtonText = "重启",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+            }.ShowAsync(this);
+            IsShowingRestartDialog = false;
+            if (r != ContentDialogResult.Primary)
+                return;
+            AppBase.Current.Restart();
+        }
     }
 
     private void CommandBindingRestartApp_OnExecuted(object sender, ExecutedRoutedEventArgs e)

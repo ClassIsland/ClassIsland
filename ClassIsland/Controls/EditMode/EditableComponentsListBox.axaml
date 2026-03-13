@@ -52,6 +52,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
                     <Button Height="32"
+                            x:Name="ButtonAddComponent"
                             IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
                             Command="{Binding $parent[controls1:EditableComponentsListBox].InvokeRequestAddComponentCommand}"
                             Content="{ci:FluentIcon &#xE00D;, FontSize=20}">
@@ -113,18 +114,21 @@
                                                         Content="{ci:FluentIcon &#xEF27;}"
                                                         Command="{Binding Data.ShowComponentSettingsCommand, Source={StaticResource ParentBindingProxy}}"
                                                         CommandParameter="{Binding}"
+                                                        x:Name="ButtonComponentSettings"
                                                         ToolTip.Tip="组件设置"/>
                                                 <Button Theme="{StaticResource TransparentButton}"
                                                         IsVisible="{Binding AssociatedComponentInfo.IsComponentContainer}"
                                                         Content="{ci:FluentIcon &#xEC30;}"
                                                         Command="{Binding Data.OpenChildComponentsCommand, Source={StaticResource ParentBindingProxy}}"
                                                         CommandParameter="{Binding}"
+                                                        x:Name="ButtonChildren"
                                                         ToolTip.Tip="查看子组件"/>
                                                 <Button Theme="{StaticResource TransparentButton}"
                                                         Content="{ci:FluentIcon &#xE61D;}"
                                                         Foreground="IndianRed"
                                                         Command="{Binding Data.DeleteComponentCommand, Source={StaticResource ParentBindingProxy}}"
                                                         CommandParameter="{Binding}"
+                                                        x:Name="ButtonDeleteComponent"
                                                         ToolTip.Tip="删除"/>
                                                 <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" StrokeThickness="1"
                                                       HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" >

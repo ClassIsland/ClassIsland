@@ -44,6 +44,8 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Assists;
+using ClassIsland.Core.Controls.IconSources;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
@@ -251,6 +253,13 @@ public partial class App : AppBase, IAppHost
             UriSource = new Uri(args[0]),
             ShowAsMonochrome = args.Length >= 2  && bool.TryParse(args[2], out var r1) && r1
         });
+        IconExpressionHelper.RegisterHandler("sticker", args => 
+            IAppHost.TryGetService<IManagementService>()?.Policy.DisableEasterEggs == true
+            ? args.Length >= 2 ? IconExpressionHelper.TryParseOrNull(args[1]) : new FontIconSource()
+            : new AdvancedImageIconSource()
+            {
+                Uri = Uri.TryCreate(args[0], UriKind.Absolute, out var uri) ? uri.ToString() : $"avares://ClassIsland/Assets/HoYoStickers/{args[0]}.png"
+            });
         base.Initialize();
     }
 
@@ -421,7 +430,15 @@ public partial class App : AppBase, IAppHost
 
     public override void OnFrameworkInitializationCompleted()
     {
-        DesktopLifetime!.Startup += DesktopLifetimeOnStartup;
+        if (ApplicationLifetime is IControlledApplicationLifetime lifetime)
+        {
+            lifetime.Startup += DesktopLifetimeOnStartup;
+        }
+
+        if (Design.IsDesignMode)
+        {
+            return;
+        }
         if (bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var b))
         {
             IThemeService.UseNativeTitlebar = b;
@@ -680,8 +697,8 @@ public partial class App : AppBase, IAppHost
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = IAppHost.Host.StartAsync();
         IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
-
-        if (!Settings.IsWelcomeWindowShowed)
+        
+        if (!Settings.IsWelcomeWindowShowed || ApplicationCommand.Refreshing || ApplicationCommand.Onboarding)
         {
             if (Settings.IsSplashEnabled)
             {
@@ -711,17 +728,29 @@ public partial class App : AppBase, IAppHost
                 }
             }
             var w = IAppHost.GetService<WelcomeWindow>();
+            if (ApplicationCommand.Refreshing)
+            {
+                w.SetWelcomeExperience(true, ApplicationCommand.Onboarding, true);
+            }
             await w.ShowDialog(PhonyRootWindow);
-            if (!w.ViewModel.IsWizardCompleted)
+            if (w is { IsOnboarding: true, ViewModel.IsManuallyRestarted: false })
             {
-                Stop();
+                if (!w.ViewModel.IsWizardCompleted)
+                {
+                    Stop();
+                }
+                else
+                {
+                    Settings.IsWelcomeWindowShowed = true;
+                    Restart();
+                }
+                return;
             }
-            else
+
+            if (w.ViewModel.IsManuallyRestarted)
             {
-                Settings.IsWelcomeWindowShowed = true;
-                Restart();
+                return;
             }
-            return;
         }
 
         // 如果不是开发构建, 则自动重置部分可能影响使用的调试选项
@@ -791,6 +820,7 @@ public partial class App : AppBase, IAppHost
                     .NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"));
                 PlatformServices.DesktopToastService.ShowToastAsync(content);
             }
+
             if (Settings.IsSplashEnabled)
             {
                 App.GetService<ISplashService>().EndSplash();
@@ -860,6 +890,13 @@ public partial class App : AppBase, IAppHost
             content.Activated += (_, _) =>
                 uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update"));
             await PlatformServices.DesktopToastService.ShowToastAsync(content);
+        }
+        
+        var needsStop = await IAppHost.GetService<IRefreshingService>().Initialize();
+        if (needsStop)
+        {
+            Stop();
+            return;
         }
     }
 

@@ -1,12 +1,16 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using ClassIsland.Controls;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Enums.Tutorial;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
@@ -118,5 +122,67 @@ public partial class DevPortalWindow : MyWindow
     private void ButtonSlantedMaskControlPlay_OnClick(object? sender, RoutedEventArgs e)
     {
         SlantedMaskControl.Open();
+    }
+
+    private async void ButtonParseSelector_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var selector = SelectorHelpers.Parse(ViewModel.StyleSelector, new Dictionary<string, string>());
+        // Debugger.Break();
+        await CommonTaskDialogs.ShowDialog("Success", selector.ToString());
+    }
+
+    private void ButtonTestTutorial_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.TutorialService.BeginTutorial(new Tutorial()
+        {
+            Paragraphs =
+            {
+                new TutorialParagraph()
+                {
+                    TopLevelClassName = "ClassIsland.Views.DevPortalWindow",
+                    Content =
+                    {
+                        new TutorialSentence()
+                        {
+                            Title = "Hello world!",
+                            Content = "Welcome to ClassIsland!",
+                            HeroImage = "https://res.classisland.tech/banners/banner-v2.webp"
+                        },
+                        new TutorialSentence()
+                        {
+                            Title = "Hello world!",
+                            Content = "Welcome to ClassIsland!",
+                        }
+                    }
+                },
+                new TutorialParagraph()
+                {
+                    TopLevelClassName = "ClassIsland.Views.ProfileSettingsWindow",
+                    InitializeActions =
+                    {
+                        new TutorialAction()
+                        {
+                            Kind = TutorialActionKind.InvokeUri,
+                            StringParameter = "classisland://app/profile/timeLayouts"
+                        }  
+                    },
+                    Content =
+                    {
+                        new TutorialSentence()
+                        {
+                            Title = "Hello world!",
+                            Content = "Welcome to ClassIsland!",
+                            HeroImage = "https://res.classisland.tech/banners/banner-v2.webp",
+                            TargetSelector = "TabControl.compact TabItem"
+                        },
+                        new TutorialSentence()
+                        {
+                            Title = "Hello world!",
+                            Content = "Welcome to ClassIsland!",
+                        }
+                    }
+                }
+            }
+        });
     }
 }

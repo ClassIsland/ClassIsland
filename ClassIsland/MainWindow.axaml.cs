@@ -145,6 +145,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     public TopmostEffectWindow TopmostEffectWindow { get; }
     
     public IXamlThemeService XamlThemeService { get; }
+    private ITutorialService TutorialService { get; }
 
     public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
 
@@ -201,7 +202,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         IWindowRuleService windowRuleService,
         IManagementService managementService,
         TopmostEffectWindow topmostEffectWindow,
-        IXamlThemeService xamlThemeService)
+        IXamlThemeService xamlThemeService,
+        ITutorialService tutorialService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -219,6 +221,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ManagementService = managementService;
         TopmostEffectWindow = topmostEffectWindow;
         XamlThemeService = xamlThemeService;
+        TutorialService = tutorialService;
 
         DataContext = this;
         
@@ -311,6 +314,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
+        TutorialService.BeginNotCompletedTutorials("classisland.getStarted.welcome/init");
     }
 
     public override void Show()
@@ -384,6 +388,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Event Handlers
+    
     private void HighFreqTopmostRecheckTimerOnTick(object? sender, EventArgs e)
     {
         if (ViewModel.Settings.WindowTopmostRecheckMode == 3)
@@ -518,7 +523,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             e.Cancel = true;
             if (ViewModel.IsEditMode)
             {
-                ViewModel.IsEditMode = false;
+                ExitEditMode();
             }
             return;
         }
@@ -557,6 +562,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             case 0:
                 if (!OperatingSystem.IsWindows())
                 {
+                    SettingsService.Settings.TaskBarIconClickBehavior = 4;
                     break;
                 }
                 // Get this tray icon's implementation
@@ -589,6 +595,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 break;
             case 3:
                 OpenClassSwapWindow();
+                break;
+            case 4:
+                App.GetService<SettingsWindowNew>().Open();
                 break;
         }
     }
@@ -809,6 +818,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         var dockingTop = ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2;
         var verticalSafeAreaPx = XamlThemeService.ActualVerticalSafeAreaPx;
+        if (TutorialService.IsTutorialRunning && TutorialService.AttachedToplevel == this)
+        {
+            verticalSafeAreaPx = Math.Max(verticalSafeAreaPx, 150);
+        }
         var safeT = Math.Max(dockingTop ? Math.Min(verticalSafeAreaPx, oy) : verticalSafeAreaPx, 0) * scale;
         var safeB = Math.Max(dockingTop ? verticalSafeAreaPx : Math.Min(verticalSafeAreaPx, -oy), 0) * scale;
         var x = screen.WorkingArea.X + ox;
@@ -828,6 +841,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             Position = newPos;
         }
+        WindowState = WindowState.Normal;
+        
         if (updateEffectWindow)
         {
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
@@ -1127,10 +1142,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         AppBase.Current.Restart();
     }
     
+    private void NativeMenuItemOpenTutorialEditor_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<TutorialEditorWindow>().Show();
+    }
 
     private void NativeMenuItemDebugOpenScreenshotWindow_OnClick(object? sender, EventArgs e)
     {
         IAppHost.GetService<ScreenshotHelperWindow>().Show();
+    }
+    
+    private void NativeMenuItemTutorials_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<TutorialCenterWindow>().Open();
     }
     #endregion
 
@@ -1209,24 +1233,49 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void EnterEditMode()
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+        if (ViewModel.IsEditMode || !await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
         {
             return;
         }
 
         ViewModel.IsEditMode = true;
-
-        if (!ViewModel.Settings.HasEditModeTutorialShown)
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.enter");
+        TutorialService.BeginNotCompletedTutorials(
+            "classisland.getStarted.componentsEditing/introduction",
+            "classisland.getStarted.componentsEditing/addComponent");
+        if (ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.SettingsType != null))
         {
-            ViewModel.EditModeTutorialPhase = 0;
+            TutorialService.BeginNotCompletedTutorials(
+                "classisland.getStarted.componentsEditing/componentSettings");
         }
+        if (ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.IsComponentContainer))
+        {
+            TutorialService.BeginNotCompletedTutorials(
+                "classisland.getStarted.componentsEditing/containerComponent");
+        }
+        TutorialService.BeginNotCompletedTutorials("classisland.getStarted.componentsEditing/mainWindowLine");
     }
 
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
     {
+        ExitEditMode();
+    }
+
+    private void ExitEditMode()
+    {
+        if (ViewModel.EditModeView != null)
+        {
+            ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
+            ViewModel.EditModeView.ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Closed;
+        }
         ViewModel.IsEditMode = false;
         ViewModel.EditModeTutorialPhase = -1;
         ComponentsService.SaveConfig();
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.exit");
     }
 
     private void ButtonOpenComponentsLib_OnClick(object? sender, RoutedEventArgs e)
@@ -1321,7 +1370,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             listBox.SelectedItem = null;
         }
         ViewModel.SelectedComponentSettings = settings;
-        
+        Dispatcher.UIThread.Post(() =>
+        {
+            TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.selection.changed");
+        });
     }
 
     [RelayCommand]
@@ -1405,6 +1457,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void ButtonNewMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
     {
         ComponentsService.CurrentComponents.Lines.Add(new MainWindowLineSettings());
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.mainWindowLine.create");
     }
     
     private void ButtonManageComponentLayouts_OnClick(object? sender, RoutedEventArgs e)

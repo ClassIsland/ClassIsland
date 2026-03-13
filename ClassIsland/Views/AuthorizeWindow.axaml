@@ -11,13 +11,16 @@
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
         mc:Ignorable="d"
-        Height="500" Width="500"
+        Width="500"
         WindowStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance local:AuthorizeWindow}"
         SizeToContent="Height"
+        CanResize="False"
         MinHeight="300"
         MaxHeight="700"
         Topmost="True"
+        ShowAsDialog="True"
+        CanMaximize="False"
         Title="ClassIsland">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static ci:AuthorizeProviderControlBase.CompleteAuthorizeCommand}" Executed="CommandBindingCompleteAuthorize_OnExecuted"></input:CommandBinding>

@@ -111,9 +111,9 @@
                     </Grid>
                 </controls:DrawerHost>
             </controls3:NavigationView>
-            <Border Grid.Column="0" Grid.Row="0" Padding="0 8"
-                                      Margin="0 0 8 4">
-                <Grid Margin="0 0 0 0" ColumnDefinitions="Auto,Auto,*,Auto">
+            <Border Grid.Column="0" Grid.Row="0" Height="48"
+                                      Margin="0 0 8 0">
+                <Grid VerticalAlignment="Center" ColumnDefinitions="Auto,Auto,*,Auto">
                     <StackPanel Orientation="Horizontal" Grid.Column="1"
                                 VerticalAlignment="Center">
                         <!-- 红绿灯空位 -->
@@ -250,78 +250,7 @@
                     </StackPanel>
                     <!-- 金刚键空位 -->
                     <Border Grid.Column="3" Width="140" Classes="custom-titlebar-only"/>
-                    <!--     <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" -->
-                <!--                 Margin="0 -16"> -->
-                <!--         <Button ToolTip.Tip="返回" -->
-                <!--                 Margin="0 0 16 0" -->
-                <!--                 VerticalAlignment="Center" -->
-                <!--                 Padding="0" -->
-                <!--                 Click="ButtonGoBack_OnClick" -->
-                <!--                 Visibility="{Binding ViewModel.CanGoBack, Converter={StaticResource BooleanToVisibilityConverter}}" -->
-                <!--                 Style="{StaticResource MaterialDesignToolForegroundButton}" -->
-                <!--                 Content="{materialDesign:PackIcon ArrowLeft, Size=24}" /> -->
-                <!--         <Button ToolTip.Tip="导航栏" -->
-                <!--                 Margin="0 0 16 0" -->
-                <!--                 VerticalAlignment="Center" -->
-                <!--                 Padding="0" -->
-                <!--                 Visibility="{Binding ViewModel.IsViewCompressed, Converter={StaticResource BooleanToVisibilityConverter}}" -->
-                <!--                 Style="{StaticResource MaterialDesignToolForegroundButton}" -->
-                <!--                 Click="ButtonBaseToggleNavigationDrawer_OnClick" -->
-                <!--                 Content="{materialDesign:PackIcon Menu, Size=24}" /> -->
-                <!--     </StackPanel> -->
-                <!-- -->
-                <!--     <StackPanel Orientation="Horizontal" Grid.Column="1"> -->
-                <!-- -->
-                <!--         <TextBlock Text="应用设置" -->
-                <!--                    Style="{StaticResource MaterialDesignHeadline6TextBlock}" -->
-                <!--                    HorizontalAlignment="Left" -->
-                <!--                    Margin="0 0 0 0" -->
-                <!--                    VerticalAlignment="Center" /> -->
-                <!--     </StackPanel> -->
-                <!--     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"> -->
-                <!--         <StackPanel.Resources> -->
-                <!--             <Style TargetType="materialDesign:Chip" -->
-                <!--                    BasedOn="{StaticResource MaterialDesignOutlineChip}"> -->
-                <!--                 <Style.Resources> -->
-                <!--                     <converters:SolidColorBrushOpacityConverter -->
-                <!--                         x:Key="SolidColorBrushOpacityConverter" /> -->
-                <!--                 </Style.Resources> -->
-                <!--                 <Setter Property="Foreground" -->
-                <!--                         Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}" /> -->
-                <!--                 <Setter Property="BorderBrush" -->
-                <!--                         Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}" /> -->
-                <!--                 <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}" /> -->
-                <!--                 <Setter Property="IconBackground" -->
-                <!--                         Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}" /> -->
-                <!--                 <Setter Property="Margin" Value="0 -8 6 -8" /> -->
-                <!--             </Style> -->
-                <!--         </StackPanel.Resources> -->
-                <!--         <materialDesign:Chip -->
-                <!--             Visibility="{Binding ViewModel.IsRequestedRestart, Converter={StaticResource BooleanToVisibilityConverter}}" -->
-                <!--             ToolTip.Tip="部分设置需要重启应用后生效。" -->
-                <!--             Click="ButtonRestartApp_OnClick" -->
-                <!--             Icon="{materialDesign:PackIcon Restart}"> -->
-                <!--             <TextBlock> -->
-                <!--                 <Run Text="需要重启" /> -->
-                <!--             </TextBlock> -->
-                <!--         </materialDesign:Chip> -->
-                <!--         <materialDesign:Chip -->
-                <!--             Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" -->
-                <!--             Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}" -->
-                <!--             ToolTip.Tip="查看您的单位/组织如何管理此ClassIsland实例。" -->
-                <!--             Icon="{materialDesign:PackIcon WorkOutline}"> -->
-                <!--             <materialDesign:Chip.CommandParameter> -->
-                <!--                 <controls2:ManagementInfoControl /> -->
-                <!--             </materialDesign:Chip.CommandParameter> -->
-                <!--             <TextBlock> -->
-                <!--                 <Run Text="由贵单位管理" /> -->
-                <!--             </TextBlock> -->
-                <!--         </materialDesign:Chip> -->
-                <!--         <TextBlock Text="{x:Static ci:App.AppVersion}" -->
-                <!--                    Margin="8 0 0 0" -->
-                <!--                    VerticalAlignment="Center" -->
-                <!--                    ToolTip.Tip="应用版本" /> -->
-                <!--     </StackPanel> -->
+                    
                 </Grid>
             </Border>
         </Grid>
