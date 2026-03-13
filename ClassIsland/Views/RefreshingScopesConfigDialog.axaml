@@ -1,0 +1,60 @@
+<ci:MyWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:views="clr-namespace:ClassIsland.Views;assembly=ClassIsland"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ClassIsland.Views.RefreshingScopesConfigDialog"
+        Title="编辑翻新范围"
+        Width="400"
+        Height="600"
+        WindowStartupLocation="CenterOwner"
+        ShowAsDialog="True"
+        CanResize="False"
+        d:DataContext="{d:DesignInstance views:RefreshingScopesConfigDialog}"
+        Opened="TopLevel_OnOpened"
+        Closed="TopLevel_OnClosed">
+    <Grid RowDefinitions="Auto * Auto" Margin="12">
+        <StackPanel Grid.Row="0" Spacing="6">
+            <TextBlock Text="选择翻新时要保留的内容" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+            <TextBlock Text="以下内容在翻新时不会被删除。" Classes="l-instructive"/>
+        </StackPanel>
+        <TabControl Margin="-4 4 -4 0" Classes="compact" Grid.Row="1">
+            <TabItem Header="课表">
+                <ListBox x:Name="ListBoxClassPlans"
+                         ItemsSource="{Binding ClassPlans.List}"
+                         SelectionMode="Multiple, Toggle"
+                         SelectionChanged="ListBoxClassPlans_OnSelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding Value.Name}"
+                                      IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+            <TabItem Header="时间表">
+                <ListBox x:Name="ListBoxTimeLayouts"
+                         ItemsSource="{Binding TimeLayouts.List}"
+                         SelectionMode="Multiple, Toggle"
+                         SelectionChanged="ListBoxTimeLayouts_OnSelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding Value.Name}"
+                                      IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+        </TabControl>
+        
+        <Grid Grid.Row="2" ColumnDefinitions="* *" 
+              Margin="-12 0 -12 -12"
+              Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}">
+            <Button Grid.Column="1" Content="确定" HorizontalAlignment="Stretch"
+                    Classes="accent" Click="ButtonDone_OnClick" IsCancel="True"
+                    Margin="4 8 12 8"/>
+        </Grid>
+    </Grid>
+</ci:MyWindow>

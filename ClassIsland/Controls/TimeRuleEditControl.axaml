@@ -19,6 +19,7 @@
                    Classes="l-instructive"/>
         
         <StackPanel Orientation="Horizontal" Classes="items-valign-center"
+                    x:Name="StackPanelWeekDivSettings"
                     Margin="0 8 0 0"
                     Spacing="2">
             <TextBlock Text="每"

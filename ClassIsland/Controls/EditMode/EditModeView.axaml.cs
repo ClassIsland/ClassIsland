@@ -50,7 +50,14 @@ public partial class EditModeView : UserControl
         _selectedComponentObserver ??= ViewModel.MainViewModel.ObservableForProperty(x => x.SelectedComponentSettings)
             .Subscribe(_ => UpdateComponentSettingsTabIndex());
         _mainDrawerStateObserver ??= ViewModel.ObservableForProperty(x => x.MainDrawerState)
-            .Subscribe(_ => UpdateComponentSettingsTabIndex());
+            .Subscribe(_ =>
+            {
+                if (ViewModel.MainDrawerState <= VerticalDrawerOpenState.Collapsed)
+                {
+                    ViewModel.TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.componentsLib.closed");
+                }
+                UpdateComponentSettingsTabIndex();
+            });
     }
 
     private void UpdateComponentSettingsTabIndex()
@@ -78,6 +85,10 @@ public partial class EditModeView : UserControl
         ViewModel.MainWindow.ViewModel.SelectedMainWindowLineSettings = null;
         ViewModel.MainViewModel.ContainerComponents.Clear();
         ViewModel.ContainerComponentCache.Clear();
+        foreach (var listBox in ViewModel.MainViewModel.ComponentsListBoxCache)
+        {
+            listBox.SelectedItem = null;
+        }
     }
 
     private void OpenDrawer(string key, string? title = null, string? icon = null)
@@ -117,6 +128,7 @@ public partial class EditModeView : UserControl
         // 重载组件库列表项目，修复切换视图后无法拖拽的问题。
         ViewModel.ComponentInfos = [];
         ViewModel.ComponentInfos = ComponentRegistryService.Registered;
+        ViewModel.TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.componentsLib.open");
     }
     
     public void OpenAppearanceSettingsDrawer()
@@ -172,6 +184,7 @@ public partial class EditModeView : UserControl
         OpenDrawerCore(this.FindResource("ComponentSettingsDrawer"), 
             this.FindResource("ComponentSettingsDrawerTitle"));
         UpdateComponentSettingsTabIndex();
+        ViewModel.TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.componentSettings.open");
     }
     
     public void OpenChildComponents(ComponentSettings? settings, IReadOnlyList<ComponentSettings> stack, Point pos)
@@ -191,7 +204,10 @@ public partial class EditModeView : UserControl
             return;
         }
         ViewModel.MainViewModel.ContainerComponents.Add(info);
-        
+        Dispatcher.UIThread.Post(() =>
+        {
+            ViewModel.TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.childrenComponent.open");
+        });
     }
     
     private void ButtonOpenRulesetForComponent_OnClick(object? sender, RoutedEventArgs e)

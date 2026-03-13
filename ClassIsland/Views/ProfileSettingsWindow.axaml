@@ -501,7 +501,13 @@
                         SelectionChanged="MasterTabControl_OnSelectionChanged"
                         x:Name="MasterTabControl"
                         SelectedIndex="{Binding ViewModel.MasterPageTabSelectIndex}">
-                <TabItem Header="课表" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
+                <TabControl.Styles>
+                    <Style Selector="TabControl#MasterTabControl /template/ ItemsPresenter#PART_ItemsPresenter">
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                    </Style>
+                </TabControl.Styles>
+                <TabItem Header="课表" Classes="tag-ClassPlans"
+                         IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <TabControl TabStripPlacement="Bottom" Classes="compact" Padding="0" 
                                 SelectedIndex="{Binding ViewModel.SettingsService.Settings.ClassPlanEditModeIndex}">
                         <TabItem Header="{ci:FluentIcon &#xE075;}" ToolTip.Tip="列表视图">
@@ -983,7 +989,7 @@
                                               Grid.Row="1" 
                                               VerticalAlignment="Stretch" />
 
-                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact"
+                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact tag-SubjectsInput"
                                             IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                             Padding="0">
                                     <TabItem Header="编辑科目">
@@ -1052,7 +1058,8 @@
                     </TabControl>
                     
                 </TabItem>
-                <TabItem Header="时间表" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
+                <TabItem Header="时间表" Classes="tag-TimeLayouts"
+                         IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
@@ -1364,7 +1371,7 @@
                                                     <AddClassAction ClassName="line-timePoint" />
                                                 </DataTriggerBehavior>
                                             </Interaction.Behaviors>
-                                            <StackPanel Spacing="8">
+                                            <StackPanel Spacing="8" Classes="tag-TimePointEditing">
                                                 <TextBlock Text="编辑时间点"
                                                            Theme="{StaticResource SubtitleTextBlockStyle}" />
                                                 <!--<TextBlock Text="{Binding}"/>-->
@@ -1485,7 +1492,8 @@
                         </ci:Emptiable>
                     </Grid>
                 </TabItem>
-                <TabItem Header="科目" IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
+                <TabItem Header="科目" Classes="tag-Subjects"
+                         IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <Grid RowDefinitions="Auto,*">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -1634,11 +1642,12 @@
 
                     </Grid>
                 </TabItem>
-                <TabItem Header="已禁止" IsVisible="{Binding ViewModel.ManagementService.Policy.DisableProfileEditing}">
+                <TabItem Header="已禁止" Classes="tag-Forbidden"
+                         IsVisible="{Binding ViewModel.ManagementService.Policy.DisableProfileEditing}">
                     <ci:Empty Text="您的组织已禁用档案编辑功能。"
                               Icon="{ci:FluentIconSource &#xee0f;, FontSize=48}"/>
                 </TabItem>
-                <TabItem Header="调课">
+                <TabItem Header="调课" Classes="tag-Adjustment">
                     <Grid RowDefinitions="Auto,*,Auto">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
@@ -1865,7 +1874,8 @@
             </TabControl>
 
             <!-- 信息栏 -->
-            <controls:CommandBar Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" DefaultLabelPosition="Right">
+            <controls:CommandBar Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" DefaultLabelPosition="Right"
+                                 Classes="tag-InfoBar">
                 <controls:CommandBar.SecondaryCommands>
                     
                 </controls:CommandBar.SecondaryCommands>

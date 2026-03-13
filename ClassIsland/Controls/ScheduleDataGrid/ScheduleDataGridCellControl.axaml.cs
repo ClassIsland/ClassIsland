@@ -9,7 +9,9 @@ using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.ComponentModels;
+using ClassIsland.Shared;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 
@@ -78,6 +80,15 @@ public class ScheduleDataGridCellControl : TemplatedControl
         remove => RemoveHandler(ScheduleDataGridSelectionChangedEvent, value);
     }
 
+    public static readonly StyledProperty<bool> IsNullClassPlanProperty = AvaloniaProperty.Register<ScheduleDataGridCellControl, bool>(
+        nameof(IsNullClassPlan));
+
+    public bool IsNullClassPlan
+    {
+        get => GetValue(IsNullClassPlanProperty);
+        set => SetValue(IsNullClassPlanProperty, value);
+    }
+
     private IDisposable? _isSelectedPropertyObserver;
     private ListBox? _innerListBox;
     private TextBlock? _mainTextBlock;
@@ -109,6 +120,7 @@ public class ScheduleDataGridCellControl : TemplatedControl
 
     private void InnerListBoxOnTapped(object? sender, TappedEventArgs e)
     {
+        IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("classisland.sdg.cell.edit.complete_edited");
         if (e.Source is Visual source && source.FindAncestorOfType<ListBoxItem>() != null)
         {
             IsEditPopupOpen = false;
@@ -127,6 +139,7 @@ public class ScheduleDataGridCellControl : TemplatedControl
             return;
         }
         Console.WriteLine("begin edit");
+        IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("classisland.sdg.cell.edit.open");
         if (ClassInfo != ClassInfo.Empty && ClassInfo != null)
         {
             IsEditPopupOpen = true;

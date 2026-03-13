@@ -111,7 +111,9 @@ class Program
                 OSKIntegration.Integrate();
             };
         };
+#if !PLATFORM_ARM64
         PatcherEntrance.InstallPatchers();
+#endif
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);

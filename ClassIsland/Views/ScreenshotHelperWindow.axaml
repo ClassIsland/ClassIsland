@@ -17,6 +17,7 @@
                         <TextBlock>
                             <Run Text="{Binding Window.Title}"/>
                             (Id=<Run Text="{Binding Id}"/>)
+                            [<Run Text="{Binding Type}"/>]
                         </TextBlock>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>

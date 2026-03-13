@@ -57,6 +57,8 @@ public static class Program
             new Option<string>(["--importEntries"], "指定要导入的 ClassIsland 1.7 配置信息"),
             new Option<bool>(["--importComplete"], "启动时显示导入完成窗口"),
             new Option<bool>(["--importV1Complete"], "从 ClassIsland 1 导入成功"),
+            new Option<bool>(["--refreshing"], "应用将继续翻新向导"),
+            new Option<bool>(["--onboarding"], "应用将继续迎新向导"),
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);

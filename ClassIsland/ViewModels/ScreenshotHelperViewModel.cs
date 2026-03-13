@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using Avalonia.Controls;
@@ -21,5 +22,6 @@ public partial class ScreenshotHelperViewModel : ObservableObject
         public Window Window { get; } = window;
 
         public int Id { get; } = window.GetHashCode();
+        public Type Type { get; } = window.GetType();
     }
 }
