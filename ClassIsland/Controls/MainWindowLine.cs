@@ -733,7 +733,10 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                             cancellationToken);
                     }
                 }
-                SpeechService.ClearSpeechQueue();
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    SpeechService.ClearSpeechQueue();
+                }
             }
 
             if (NotificationHostService.RequestQueue.Count + _notificationQueue.Count < 1 && notificationsShowed)
