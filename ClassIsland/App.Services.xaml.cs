@@ -194,7 +194,7 @@ public partial class App
         services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
         services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
         services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
-        // services.AddNotificationProvider<ManagementNotificationProvider>();
+        services.AddNotificationProvider<ManagementNotificationProvider>();
         services.AddNotificationProvider<ActionNotificationProvider>();
         // // Transients
         // services.AddTransient<ExcelImportWindow>();
