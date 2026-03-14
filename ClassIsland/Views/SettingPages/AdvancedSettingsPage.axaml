@@ -44,19 +44,21 @@
                     </ComboBox>
                 </controls:SettingsExpander.Footer>
             </controls:SettingsExpander>
-            
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF483;}" 
-                                        Header="使用系统标题栏"
-                                        Description="启用后应用窗口将使用系统提供的标题栏而非应用自定义的标题栏。一般情况下，系统标题栏具有更好的兼容性。">
-                <controls:SettingsExpander.IsVisible>
-                    <OnPlatform Default="False">
-                        <On Options="Windows" Content="True"/>
-                    </OnPlatform>
-                </controls:SettingsExpander.IsVisible>
-                <controls:SettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding ViewModel.UseNativeTitlebar, Mode=TwoWay}"/>
-                </controls:SettingsExpander.Footer>
-            </controls:SettingsExpander>
+
+            <Panel IsVisible="{Binding Platform, Source={x:Static ci:AppBase.Current}, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter='arm64'}">
+                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF483;}"
+                                           Header="使用系统标题栏"
+                                           Description="启用后应用窗口将使用系统提供的标题栏而非应用自定义的标题栏。一般情况下，系统标题栏具有更好的兼容性。">
+                    <controls:SettingsExpander.IsVisible>
+                        <OnPlatform Default="False">
+                            <On Options="Windows" Content="True" />
+                        </OnPlatform>
+                    </controls:SettingsExpander.IsVisible>
+                    <controls:SettingsExpander.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.UseNativeTitlebar, Mode=TwoWay}" />
+                    </controls:SettingsExpander.Footer>
+                </controls:SettingsExpander>
+            </Panel>
             
             <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF4D1;}" 
                                         Header="兼容缩放模式"

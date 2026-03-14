@@ -209,12 +209,14 @@ public partial class ScheduleDataGrid : TemplatedControl
     {
         SelectedDate += TimeSpan.FromDays(7);
         RefreshWeekScheduleRows(true);
+        Dispatcher.UIThread.Post(() => IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("classisland.sdg.weekSwitcher.next"));
     }
 
     private void ButtonPreviousWeek_OnClick(object? sender, RoutedEventArgs e)
     {
         SelectedDate -= TimeSpan.FromDays(7);
         RefreshWeekScheduleRows(true);
+        Dispatcher.UIThread.Post(() => IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("classisland.sdg.weekSwitcher.previous"));
     }
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)

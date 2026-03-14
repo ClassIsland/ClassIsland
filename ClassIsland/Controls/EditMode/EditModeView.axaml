@@ -252,6 +252,7 @@
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
                         Spacing="4"
+                        x:Name="StackPanelComponentHideRules"
                         Margin="0 0 4 0">
                 <ci:AnimatedIconButton
                     Theme="{StaticResource TransparentButton}"

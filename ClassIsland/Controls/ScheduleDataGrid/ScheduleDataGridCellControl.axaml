@@ -147,6 +147,9 @@
             </Style>
         </Style>
         
+        <Setter Property="IsNullClassPlan">
+            <Binding Path="$self.ClassInfo.IsEmpty"/>
+        </Setter>
     </Style>
     
     <Style Selector=":current scheduleDataGrid|ScheduleDataGridCellControl">

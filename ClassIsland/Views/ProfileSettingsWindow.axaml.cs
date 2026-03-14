@@ -16,6 +16,7 @@ using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClassIsland.Controls.ScheduleDataGrid;
 using ClassIsland.Core;
@@ -72,6 +73,8 @@ public partial class ProfileSettingsWindow : MyWindow
         TimeLineListControl.SelectionChanged += TimeLineListControl_OnSelectionChanged;
         TimeLineListControl.KeyDown += OnKeyDown;
         ListViewTimePoints.KeyDown += OnKeyDown;
+        ViewModel.ObservableForProperty(x => x.IsDrawerOpen)
+            .Subscribe(_ => OnDrawerStateChanged());
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -128,6 +131,14 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region Misc
 
+    private void OnDrawerStateChanged()
+    {
+        if (!ViewModel.IsDrawerOpen)
+        {
+            ViewModel.TutorialService.PushToNextSentenceByTag("classisland.profileSettingsWindow.drawer.close");
+        }
+    }
+
     public void OpenDrawer(string key)
     {
         ViewModel.IsDrawerOpen = true;
@@ -150,6 +161,27 @@ public partial class ProfileSettingsWindow : MyWindow
             SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.open");
             _isOpen = true;
             Show();
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (ViewModel.ProfileService.Profile.TimeLayouts.Count > 0)
+                {
+                    if (ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
+                    {
+                        ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/setup-classplans");
+                    }
+                    if (!ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeRule.WeekCountDiv > 0)
+                        && ViewModel.ProfileService.Profile.ClassPlans.Count > 0)
+                    {
+                        ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/multiweek-classplans");
+                    }
+                }
+                else
+                {
+                    ViewModel.TutorialService.BeginNotCompletedTutorials(
+                        "classisland.getStarted.profileEditing/concepts",
+                        "classisland.getStarted.profileEditing/setup-timeLayout");
+                }
+            });
         }
         else
         {
@@ -160,6 +192,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
             Activate();
         }
+        
+        ViewModel.TutorialService.PushToNextSentenceByTag("classisland.profileSettingsWindow.open");
 
         if (uri == null || uri.Segments.Length < 3)
         {
@@ -192,7 +226,14 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void MasterTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (ViewModel.MasterPageTabSelectIndex == 0 && ViewModel.ProfileService.Profile.TimeLayouts.Count > 0
+                                                        && ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
+            {
+                ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/setup-classplans");
+            }
+        });
     }
     
     private void ButtonHelp_OnClick(object? sender, RoutedEventArgs e)
@@ -719,6 +760,7 @@ public partial class ProfileSettingsWindow : MyWindow
         OpenDrawer("TimeLayoutInfoEditor");
         ViewModel.SelectedTimeLayout = timeLayout;
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.create");
+        ViewModel.TutorialService.PushToNextSentence("classisland.getStarted.profileEditing/setup-timeLayout");
     }
     
     private void ButtonDuplicateTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -872,6 +914,7 @@ public partial class ProfileSettingsWindow : MyWindow
             {"Type", timeType.ToString()},
             {"Auto", "False"}
         });
+        ViewModel.TutorialService.PushToNextSentence();
     }
 
     
