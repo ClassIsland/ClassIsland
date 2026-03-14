@@ -269,7 +269,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
         resolvedPlugins.Add(plugin);
         bool IsPluginSupportCurrentOSPlatforms = false;
-        if (plugin.Manifest.SupportedOSPlatforms==null||plugin.Manifest.SupportedOSPlatforms.Count == 0) IsPluginSupportCurrentOSPlatforms = true;
+        if (plugin.Manifest.SupportedOSPlatforms is null || plugin.Manifest.SupportedOSPlatforms.Count == 0) IsPluginSupportCurrentOSPlatforms = true;
         else
         {
             foreach (var _ in plugin.Manifest.SupportedOSPlatforms.Where(RuntimeInformation.IsOSPlatform).Select(i => new { }))
