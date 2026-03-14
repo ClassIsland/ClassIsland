@@ -38,6 +38,7 @@ using ReactiveUI;
 using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization;
 using Path = System.IO.Path;
+using System.Runtime.InteropServices;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -267,6 +268,30 @@ public partial class PluginsSettingsPage : SettingsPageBase
         }
 
         resolvedPlugins.Add(plugin);
+        bool IsPluginSupportCurrentOSPlatforms = false;
+        if (plugin.Manifest.SupportedOSPlatforms==null||plugin.Manifest.SupportedOSPlatforms.Count == 0) IsPluginSupportCurrentOSPlatforms = true;
+        else
+        {
+            foreach (var _ in plugin.Manifest.SupportedOSPlatforms.Where(RuntimeInformation.IsOSPlatform).Select(i => new { }))
+            {
+                IsPluginSupportCurrentOSPlatforms = true;
+            }
+        }
+        if (!IsPluginSupportCurrentOSPlatforms)
+        {
+            var result = await new ContentDialog()
+            {
+                Title = "操作系统不受该插件支持",
+                Content = "此插件所声明支持的操作系统并未包括当前所运行的操作系统。" + Environment.NewLine + "如果继续安装此插件，此插件将可能无法正常工作。您要继续安装此插件吗？",
+                SecondaryButtonText = "取消",
+                PrimaryButtonText = "继续",
+                DefaultButton = ContentDialogButton.Secondary
+            }.ShowAsync();
+            if (result != ContentDialogResult.Primary)
+            {
+                return;
+            }
+        }
         ResolveDependencies(plugin, resolvedPlugins, missingPlugins);
         if (missingPlugins.Count > 0)
         {
