@@ -109,6 +109,7 @@ public class PluginService : IPluginService
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .WithTypeConverter(new OSPlatformTypeConverter())
             .Build();
 
         var pluginDirs = Directory.EnumerateDirectories(PluginsRootPath)
