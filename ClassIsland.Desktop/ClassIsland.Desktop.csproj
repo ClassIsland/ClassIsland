@@ -24,7 +24,6 @@
         <DebControlMaintainer>ClassIsland</DebControlMaintainer>
         <Png32x32IconFile>Assets\AppLogo@32w.png</Png32x32IconFile>
         <SvgIconFile>Assets\AppLogo.svg</SvgIconFile>
-        <DesktopMimeType>x-scheme-handler/classisland</DesktopMimeType>
         <DesktopCategories>Education;Office</DesktopCategories>
         <InfoPermissions>autostart;notification;trayicon;clipboard</InfoPermissions>
         <DesktopExec>/opt/apps/$(AppId)/files/bin/$(AssemblyName)</DesktopExec>
