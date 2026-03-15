@@ -111,6 +111,11 @@ public interface ITutorialService : INotifyPropertyChanged
     void StopTutorial();
 
     /// <summary>
+    /// 跳过当前教学段落。
+    /// </summary>
+    void SkipTutorial();
+
+    /// <summary>
     /// 当教程状态变化时触发。
     /// </summary>
     event EventHandler? TutorialStateChanged;

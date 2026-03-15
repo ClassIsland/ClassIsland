@@ -131,10 +131,11 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
     private NotificationRequest BuildNotificationRequest(IClassNotificationSettings settingsSource, TimeSpan deltaTime)
     {
         var message = GetNotificationMessage(settingsSource);
+        var mask = GetNotificationMaskMessage(settingsSource);
 
         var prepareOnClassNotificationRequest = new NotificationRequest
         {
-            MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnPreparingMaskText, rightIcon: "lucide(\ue54f)", factory:
+            MaskContent = NotificationContent.CreateTwoIconsMask(mask, rightIcon: "lucide(\ue54f)", factory:
                 x =>
                 {
                     x.SpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。";
@@ -168,7 +169,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         }
     }
 
-    private string GetNotificationMessage(IClassNotificationSettings settingsSource)
+    private string GetNotificationMessage(IClassNotificationSettings? settingsSource)
     {
         if (settingsSource is null)
             return string.Empty;
@@ -178,6 +179,19 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             : (LessonsService.NextClassSubject.IsOutDoor
                 ? Settings.OutdoorClassOnPreparingText
                 : Settings.ClassOnPreparingText);
+        return message;
+    }
+    
+    private string GetNotificationMaskMessage(IClassNotificationSettings? settingsSource)
+    {
+        if (settingsSource is null)
+            return string.Empty;
+
+        var message = Settings != settingsSource && settingsSource?.ClassOnPreparingMaskText != null
+            ? settingsSource!.ClassOnPreparingMaskText
+            : (LessonsService.NextClassSubject.IsOutDoor
+                ? Settings.OutdoorClassOnPreparingMaskText
+                : Settings.ClassOnPreparingMaskText);
         return message;
     }
 

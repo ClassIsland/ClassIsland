@@ -221,6 +221,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         e.Cancel = true;
         _isOpen = false;
+        ViewModel.ProfileService.SaveProfile();
         Hide();
     }
     

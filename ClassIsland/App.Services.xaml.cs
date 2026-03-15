@@ -148,6 +148,7 @@ public partial class App
         services.AddSingleton<EditModeView>();
         services.AddTransient<TutorialEditorWindow>();
         services.AddSingleton<TutorialCenterWindow>();
+        services.AddTransient<TutorialControllerWindow>();
         // 设置页面分组
         services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
         services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
@@ -194,7 +195,7 @@ public partial class App
         services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
         services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
         services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
-        // services.AddNotificationProvider<ManagementNotificationProvider>();
+        services.AddNotificationProvider<ManagementNotificationProvider>();
         services.AddNotificationProvider<ActionNotificationProvider>();
         // // Transients
         // services.AddTransient<ExcelImportWindow>();
