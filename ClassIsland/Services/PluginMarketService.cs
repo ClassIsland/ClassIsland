@@ -2,64 +2,304 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
-using ClassIsland.Platforms.Abstraction;
-using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Shared;
-using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Helpers;
+using ClassIsland.Shared.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Downloader;
+using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
-using ReactiveUI;
 using Sentry;
 
 namespace ClassIsland.Services;
 
 public class PluginMarketService : ObservableRecipient, IPluginMarketService
 {
-    public static string DefaultPluginIndexKey { get; } = "Default";
+    private static readonly string DefaultPluginIndexKey = "official";
+    
+    private static readonly List<PluginIndexInfo> FallbackMirrors = 
+    [
+        new PluginIndexInfo()
+        {
+            Id = DefaultPluginIndexKey,
+            Url = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/plugin/index.zip?time={time}",
+            Name = "官方源",
+            Description = "官方提供的插件源。",
+            Mirrors = new Dictionary<string, string>()
+            {
+                { "github", "https://raw.githubusercontent.com/ClassIsland/ClassIsland-Plugins/master/" },
+                { "coding", "https://classisland.coding.net/p/classisland/d/ClassIsland-Plugins/git/raw/master/" }
+            }
+        }
+    ];
 
-    public SettingsService SettingsService { get; }
-    public IPluginService PluginService { get; }
+    private SettingsService SettingsService { get; }
+    private IPluginService PluginService { get; }
+    private ILogger<PluginMarketService> Logger { get; }
 
-    public ObservableDictionary<string, DownloadProgress> DownloadTasks { get; } = new();
+    public ObservableDictionary<string, DownloadProgress> DownloadTasks => IPluginService.DownloadTasks;
 
-    public ObservableDictionary<string, PluginIndex> Indexes { get; } = new();
-    public ILogger<PluginMarketService> Logger { get; }
+    public Dictionary<string, PluginIndex> Indexes { get; } = new();
 
-    public static ObservableDictionary<string, string> FallbackMirrors { get; } = new()
-    {
-        { "github", "https://github.com" },
-        { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
-        { "moeyy", "https://github.moeyy.xyz/https://github.com" }
-    };
-
-    private bool _isLoadingPluginSource = false;
+    private bool _isLoadingPluginSource;
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
     private IDisposable? _pluginsUpdateProgressObserver;
 
-    public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger)
+    public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger, IUriNavigationService uriNavigationService)
     {
         SettingsService = settingsService;
         PluginService = pluginService;
         Logger = logger;
         
+        uriNavigationService.HandleAppNavigation("plugin/install", async args =>
+        {
+            await HandlePluginInstallUriAsync(args, uriNavigationService);
+        });
+
         if (DateTime.Now - SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
         {
             _ = RefreshPluginSourceAsync();
         }
+    }
+
+    private class InstallPluginDialogContext
+    {
+        public string PluginId { get; set; } = "";
+        public Uri PluginPageUri { get; set; } = null!;
+        public TaskDialog Dialog { get; set; } = null!;
+        public TaskDialogButton ConfirmBtn { get; set; } = null!;
+        public TaskDialogButton ViewBtn { get; set; } = null!;
+        public AsyncImageLoader.AdvancedImage PluginIcon { get; set; } = null!;
+        public Avalonia.Controls.TextBlock PluginNameText { get; set; } = null!;
+        public Avalonia.Controls.TextBlock PluginAuthorText { get; set; } = null!;
+        public Avalonia.Controls.TextBlock StatusText { get; set; } = null!;
+        public Avalonia.Controls.TextBlock WarningText { get; set; } = null!;
+        public PluginIndexItem? ResolvedPluginInfo { get; set; }
+        public bool IsDownloading { get; set; }
+        public bool DownloadComplete { get; set; }
+    }
+
+    private async Task HandlePluginInstallUriAsync(AppNavigationEventArgs args, IUriNavigationService uriNavigationService)
+    {
+        var query = HttpUtility.ParseQueryString(args.Uri.Query);
+        var pluginId = query["id"];
+
+        if (string.IsNullOrWhiteSpace(pluginId))
+        {
+            return;
+        }
+
+        var context = SetupInstallPluginDialog(pluginId);
+        
+        context.Dialog.Opened += async (_, _) => await OnInstallPluginDialogOpened(context);
+        context.Dialog.Closing += (_, e) => OnInstallPluginDialogClosing(context, e, uriNavigationService);
+
+        await context.Dialog.ShowAsync();
+    }
+
+    private InstallPluginDialogContext SetupInstallPluginDialog(string pluginId)
+    {
+        var context = new InstallPluginDialogContext
+        {
+            PluginId = pluginId,
+            PluginPageUri = new Uri($"classisland://app/settings/classisland.plugins?pluginId={pluginId}")
+        };
+
+        context.ConfirmBtn = new TaskDialogButton("确认安装", true)
+        {
+            IsDefault = true,
+            IsEnabled = false,
+            IconSource = new ClassIsland.Core.Controls.FluentIconSource("\uE071")
+        };
+        context.ViewBtn = new TaskDialogButton("在商店页查看", false)
+        {
+            IconSource = new ClassIsland.Core.Controls.FluentIconSource("\uF08B")
+        };
+
+        context.PluginIcon = new AsyncImageLoader.AdvancedImage(new Uri("avares://ClassIsland/"))
+        {
+            Width = 48, Height = 48, IsVisible = false,
+            Margin = new Avalonia.Thickness(0, 0, 12, 0),
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top
+        };
+
+        context.PluginNameText = new Avalonia.Controls.TextBlock()
+        {
+            Text = pluginId, FontSize = 18, FontWeight = Avalonia.Media.FontWeight.SemiBold,
+            TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis
+        };
+
+        context.PluginAuthorText = new Avalonia.Controls.TextBlock()
+        {
+            Text = "", FontSize = 13, Opacity = 0.7, IsVisible = false,
+            Margin = new Avalonia.Thickness(0, 2, 0, 0)
+        };
+
+        context.StatusText = new Avalonia.Controls.TextBlock()
+        {
+            Text = "正在获取插件信息...", TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+            Margin = new Avalonia.Thickness(0, 8, 0, 0)
+        };
+
+        context.WarningText = new Avalonia.Controls.TextBlock()
+        {
+            Text = "请确认您信任该来源，安装未知插件可能会带来安全风险。",
+            TextWrapping = Avalonia.Media.TextWrapping.Wrap, Opacity = 0.7, FontSize = 12,
+            IsVisible = false, Margin = new Avalonia.Thickness(0, 4, 0, 0)
+        };
+
+        var infoPanel = new Avalonia.Controls.StackPanel() { VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top };
+        infoPanel.Children.Add(context.PluginNameText);
+        infoPanel.Children.Add(context.PluginAuthorText);
+
+        var headerPanel = new Avalonia.Controls.DockPanel();
+        headerPanel.Children.Add(context.PluginIcon);
+        headerPanel.Children.Add(infoPanel);
+
+        var contentPanel = new Avalonia.Controls.StackPanel() { Width = 380 };
+        contentPanel.Children.Add(headerPanel);
+        contentPanel.Children.Add(context.StatusText);
+        contentPanel.Children.Add(context.WarningText);
+
+        context.Dialog = new TaskDialog()
+        {
+            Title = "安装插件",
+            Header = "确认安装插件？",
+            Content = contentPanel,
+            XamlRoot = AppBase.Current.GetRootWindow(),
+            ShowProgressBar = true,
+            Buttons = [context.ViewBtn, context.ConfirmBtn]
+        };
+
+        context.Dialog.SetProgressBarState(0, TaskDialogProgressState.Indeterminate);
+        return context;
+    }
+
+    private async Task OnInstallPluginDialogOpened(InstallPluginDialogContext context)
+    {
+        var rootWindow = AppBase.Current.GetRootWindow();
+        rootWindow.Topmost = true;
+        rootWindow.Activate();
+        rootWindow.Topmost = false;
+
+        var pluginInfo = ResolveMarketPlugin(context.PluginId);
+        if (pluginInfo == null)
+        {
+            try { await RefreshPluginSourceAsync(); pluginInfo = ResolveMarketPlugin(context.PluginId); }
+            catch (Exception ex) { Logger.LogError(ex, "获取插件信息时刷新插件源失败"); }
+        }
+
+        int retry = 0;
+        while (pluginInfo == null && IsLoadingPluginSource && retry < 30)
+        {
+            await Task.Delay(500);
+            pluginInfo = ResolveMarketPlugin(context.PluginId);
+            retry++;
+        }
+
+        context.Dialog.ShowProgressBar = false;
+
+        if (pluginInfo != null)
+        {
+            context.ResolvedPluginInfo = pluginInfo;
+            if (!string.IsNullOrWhiteSpace(pluginInfo.RealIconPath)) { context.PluginIcon.Source = pluginInfo.RealIconPath; context.PluginIcon.IsVisible = true; }
+            context.PluginNameText.Text = pluginInfo.Manifest.Name;
+            if (!string.IsNullOrWhiteSpace(pluginInfo.Manifest.Author)) { context.PluginAuthorText.Text = $"作者：{pluginInfo.Manifest.Author}"; context.PluginAuthorText.IsVisible = true; }
+
+            if (MergedPlugins.TryGetValue(context.PluginId, out var mergedPlugin) && mergedPlugin.IsLocal)
+            {
+                context.Dialog.Header = "插件已安装";
+                context.StatusText.Text = $"插件 {pluginInfo.Manifest.Name} 已经安装在本地。";
+                context.ConfirmBtn.IsEnabled = false;
+                context.ConfirmBtn.Text = "已安装";
+            }
+            else
+            {
+                context.StatusText.Text = $"您正在尝试通过外部链接安装插件 {pluginInfo.Manifest.Name}";
+                context.WarningText.IsVisible = true;
+                context.ConfirmBtn.IsEnabled = true;
+            }
+        }
+        else
+        {
+            context.Dialog.Header = "未找到插件";
+            context.StatusText.Text = $"无法在当前配置的插件源中找到插件：\n[{context.PluginId}]\n\n请检查插件源设置或重试。";
+            context.ConfirmBtn.IsEnabled = false;
+            context.ViewBtn.IsEnabled = false;
+        }
+    }
+
+    private void OnInstallPluginDialogClosing(InstallPluginDialogContext context, TaskDialogClosingEventArgs e, IUriNavigationService uriNavigationService)
+    {
+        if (Equals(e.Result, false)) { uriNavigationService.NavigateWrapped(context.PluginPageUri); return; }
+        if (!Equals(e.Result, true)) return;
+
+        if (context.DownloadComplete) { AppBase.Current.Restart(); return; }
+
+        if (!context.IsDownloading)
+        {
+            e.Cancel = true;
+            context.IsDownloading = true;
+            context.ConfirmBtn.IsEnabled = false;
+            context.ConfirmBtn.Text = "正在安装 0%";
+            context.ConfirmBtn.IconSource = null;
+
+            RequestDownloadPlugin(context.PluginId);
+
+            _ = Task.Run(async () =>
+            {
+                DownloadProgress? finalProgress = null;
+                while (true)
+                {
+                    var isActive = await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        if (!DownloadTasks.TryGetValue(context.PluginId, out var progress)) 
+                            return false;
+                        finalProgress = progress;
+                        context.ConfirmBtn.Text = $"正在安装 {progress.Progress:F0}%";
+                        return true;
+                    });
+                    
+                    if (!isActive) break;
+                    await Task.Delay(200);
+                }
+
+                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    if (finalProgress?.Exception != null)
+                    {
+                        context.IsDownloading = false;
+                        context.Dialog.Header = "安装失败";
+                        context.StatusText.Text = $"安装插件时发生错误：\n{finalProgress.Exception.Message}";
+                        context.ConfirmBtn.Text = "重试安装";
+                        context.ConfirmBtn.IconSource = new ClassIsland.Core.Controls.FluentIconSource("\uE106");
+                        context.ConfirmBtn.IsEnabled = true;
+                        return;
+                    }
+
+                    context.DownloadComplete = true;
+                    context.Dialog.Header = "插件已安装";
+                    context.StatusText.Text = $"插件 {context.ResolvedPluginInfo?.Manifest.Name ?? context.PluginId} 安装完成，重启应用以加载插件。";
+                    context.WarningText.IsVisible = false;
+                    context.ConfirmBtn.Text = "重启以应用更新";
+                    context.ConfirmBtn.IconSource = new ClassIsland.Core.Controls.FluentIconSource("\uE0BD");
+                    context.ConfirmBtn.IsEnabled = true;
+                });
+            });
+        }
+        else { e.Cancel = true; }
     }
 
     public ObservableDictionary<string, PluginInfo> MergedPlugins { get; } = new();
