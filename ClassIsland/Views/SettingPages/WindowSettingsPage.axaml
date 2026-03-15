@@ -253,6 +253,32 @@
                 </controls1:SettingsExpander.Footer>
             </controls1:SettingsExpander>
 
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF4A4;}"
+                                        Header="阻止被截屏"
+                                        Description="启用后，将阻止其他应用截取 ClassIsland 主界面窗口内容。">
+                <controls1:SettingsExpander.IsVisible>
+                    <OnPlatform Default="False">
+                        <On Options="Windows" Content="True"/>
+                    </OnPlatform>
+                </controls1:SettingsExpander.IsVisible>
+                <controls1:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsScreenShotBlockingEnabled, Mode=TwoWay}"/>
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
+
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF4A6;}"
+                                        Header="阻止被录制"
+                                        Description="启用后，将阻止其他应用录制 ClassIsland 主界面窗口内容。若同时开启录制模式，本项优先生效。">
+                <controls1:SettingsExpander.IsVisible>
+                    <OnPlatform Default="False">
+                        <On Options="Windows" Content="True"/>
+                    </OnPlatform>
+                </controls1:SettingsExpander.IsVisible>
+                <controls1:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsScreenRecordingBlockingEnabled, Mode=TwoWay}"/>
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
+
             <!-- 指针穿透 --><!--
             <ci:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
                                    Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"

@@ -767,8 +767,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void UpdateWindowFeatures()
     {
+        var isCaptureBlocked = ViewModel.Settings.IsScreenShotBlockingEnabled
+                               || ViewModel.Settings.IsScreenRecordingBlockingEnabled;
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, ViewModel is { IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false });
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, !ViewModel.IsEditMode);
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Private, isCaptureBlocked);
     }
 
     private void UpdateWindowLayer()
