@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Core.Converters;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 
@@ -16,7 +17,13 @@ namespace ClassIsland.Helpers;
 
 public class WebRequestHelper(Uri? baseUri = null, bool phainon = false)
 {
-    private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Converters =
+        {
+            new ColorHexJsonConverter()
+        }
+    };
     private HttpClient HttpClient { get; } = new(new SentryHttpMessageHandler())
     {
         BaseAddress = baseUri
