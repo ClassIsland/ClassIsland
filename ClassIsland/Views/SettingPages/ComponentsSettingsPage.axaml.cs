@@ -151,11 +151,26 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         });
     }
     
-    private void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)
     {
         var remove = ViewModel.SelectedComponentSettings;
         if (remove == null)
             return;
+
+        var componentName = remove.AssociatedComponentInfo?.Name ?? "此组件";
+        var result = await new ContentDialog()
+        {
+            Title = "删除组件",
+            Content = "确定要删除组件" + "\u201c" + componentName + "\u201d" + "吗？此操作无法撤销。",
+            PrimaryButtonText = "删除",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Close
+        }.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
         if (ViewModel.SelectedComponentSettings == ViewModel.SelectedRootComponent)
         {
             CloseComponentChildrenView();
@@ -251,11 +266,24 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.SelectedMainWindowLineSettings = lineSettings;
     }
 
-    private void ButtonRemoveSelectedMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
+    private async void ButtonRemoveSelectedMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
     {
         if (ViewModel.ComponentsService.CurrentComponents.Lines.Count <= 1)
         {
             this.ShowWarningToast("至少需要保留 1 个主界面行。");
+            return;
+        }
+
+        var result = await new ContentDialog()
+        {
+            Title = "删除主界面行",
+            Content = "确定要删除此主界面行吗？行内的所有组件也将被一并删除，此操作无法撤销。",
+            PrimaryButtonText = "删除",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Close
+        }.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
             return;
         }
 
