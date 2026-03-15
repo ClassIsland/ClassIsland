@@ -46,8 +46,7 @@ public static class ShortcutHelpers
         }
         else if (OperatingSystem.IsLinux())
         {
-            var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                ".local/share/applications/cn.classisland.app.desktop");
+            var startMenuPath = Path.Combine(GetXdgApplicationsDirectory(), "cn.classisland.app.desktop");
 
             await CreateFreedesktopShortcutAsync(startMenuPath);
             await CopyFreeDesktopIconAsync();
@@ -71,15 +70,16 @@ public static class ShortcutHelpers
             return;
         }
         var targetPath = string.IsNullOrEmpty(path)
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                ".local/share/applications/cn.classisland.app.desktop") : path;
+            ? Path.Combine(GetXdgApplicationsDirectory(), "cn.classisland.app.desktop") : path;
+
+        Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
 
         var raw = await new StreamReader(
                 AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/cn.classisland.app.desktop")))
             .ReadToEndAsync();
         var final = string.Format(raw, AppBase.AppVersion, AppBase.ExecutingEntrance);
         await File.WriteAllTextAsync(targetPath, final);
-        SetUnixExecutePermission(path);
+        SetUnixExecutePermission(targetPath);
     }
 
     public static async Task CreateUriHandlerDesktopShortcutAsync(string path = "")
@@ -89,15 +89,27 @@ public static class ShortcutHelpers
             return;
         }
         var targetPath = string.IsNullOrEmpty(path)
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                ".local/share/applications/cn.classisland.app.uri.desktop") : path;
+            ? Path.Combine(GetXdgApplicationsDirectory(), "cn.classisland.app.uri.desktop") : path;
+
+        Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
 
         var raw = await new StreamReader(
                 AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/cn.classisland.app.uri.desktop")))
             .ReadToEndAsync();
         var final = string.Format(raw, AppBase.AppVersion, AppBase.ExecutingEntrance);
         await File.WriteAllTextAsync(targetPath, final);
-        SetUnixExecutePermission(path);
+        SetUnixExecutePermission(targetPath);
+    }
+
+    private static string GetXdgApplicationsDirectory()
+    {
+        var xdgDataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
+        if (!string.IsNullOrWhiteSpace(xdgDataHome))
+        {
+            return Path.Combine(xdgDataHome, "applications");
+        }
+
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "share", "applications");
     }
 
     public static async Task CopyFreeDesktopIconAsync()
