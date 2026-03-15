@@ -82,6 +82,24 @@ public static class ShortcutHelpers
         SetUnixExecutePermission(path);
     }
 
+    public static async Task CreateUriHandlerDesktopShortcutAsync(string path = "")
+    {
+        if (AppBase.Current.PackagingType == "deb")
+        {
+            return;
+        }
+        var targetPath = string.IsNullOrEmpty(path)
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                ".local/share/applications/cn.classisland.app.uri.desktop") : path;
+
+        var raw = await new StreamReader(
+                AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/cn.classisland.app.uri.desktop")))
+            .ReadToEndAsync();
+        var final = string.Format(raw, AppBase.AppVersion, AppBase.ExecutingEntrance);
+        await File.WriteAllTextAsync(targetPath, final);
+        SetUnixExecutePermission(path);
+    }
+
     public static async Task CopyFreeDesktopIconAsync()
     {
         if (AppBase.Current.PackagingType is "folder" or "folderClassic") // 仅在绿色版下才需要手动复制图标，安装版应当由安装程序将图标复制到系统目录。)
