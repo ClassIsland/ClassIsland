@@ -38,7 +38,7 @@
         </controls:SettingsExpander>
         
         <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-            <Button Command="{x:Static views:WelcomeWindow.WelcomeNavigateForwardCommand}"
+            <Button Click="ButtonNext_OnClick"
                     ToolTip.Tip="下一步"
                     Content="{ci:FluentIcon &#xE130;, FontSize=18}"
                     Width="48" Height="48"
