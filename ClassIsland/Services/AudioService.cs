@@ -95,38 +95,48 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
     public Task PlayAudioAsync(Stream audio, float volume, CancellationToken? cancellationToken = null) => Task.Run(async () =>
     {
         cancellationToken ??= CancellationToken.None;
-        using var lease = await TryInitializeDefaultPlaybackDeviceSafeAsync();
-        if (lease == null)
+        try
         {
+            using var lease = await TryInitializeDefaultPlaybackDeviceSafeAsync();
+            if (lease == null)
+            {
+                return;
+            }
+
+            var device = lease.Value;
+            using var player = new SoundPlayer(AudioEngine, IAudioService.DefaultAudioFormat,
+                new StreamDataProvider(AudioEngine, IAudioService.DefaultAudioFormat, audio));
+            player.Volume = volume;
+            Logger.LogDebug("开始播放音频 {}", audio.GetHashCode());
+            device.MasterMixer.AddComponent(player);
+            var tcs = new TaskCompletionSource<bool>();
+
+            player.PlaybackEnded += OnPlayerOnPlaybackEnded;
+            cancellationToken.Value.Register(() =>
+            {
+                Logger.LogDebug("取消播放音频 {}", audio.GetHashCode());
+                tcs.TrySetResult(false);
+            });
+            player.Play();
+            tcs.Task.Wait();  // 不要在此处 await，否则会导致设备停止过程阻塞，无法完成播放流程。
+            Logger.LogDebug("结束播放音频 {}", audio.GetHashCode());
+            player.PlaybackEnded -= OnPlayerOnPlaybackEnded;
+
             return;
+
+            void OnPlayerOnPlaybackEnded(object? sender, EventArgs args)
+            {
+                tcs.TrySetResult(true);
+            }
         }
-
-        var device = lease.Value;
-        using var player = new SoundPlayer(AudioEngine, IAudioService.DefaultAudioFormat,
-            new StreamDataProvider(AudioEngine, IAudioService.DefaultAudioFormat, audio));
-        player.Volume = volume;
-        Logger.LogDebug("开始播放音频 {}", audio.GetHashCode());
-        device.MasterMixer.AddComponent(player);
-        var tcs = new TaskCompletionSource<bool>();
-
-        player.PlaybackEnded += OnPlayerOnPlaybackEnded;
-        cancellationToken.Value.Register(() =>
+        finally
         {
-            Logger.LogDebug("取消播放音频 {}", audio.GetHashCode());
-            tcs.TrySetResult(false);
-        });
-        player.Play();
-        tcs.Task.Wait();  // 不要在此处 await，否则会导致设备停止过程阻塞，无法完成播放流程。
-        Logger.LogDebug("结束播放音频 {}", audio.GetHashCode());
-        player.PlaybackEnded -= OnPlayerOnPlaybackEnded;
-        
-        return;
-
-        void OnPlayerOnPlaybackEnded(object? sender, EventArgs args)
-        {
-            tcs.TrySetResult(true);
+            audio.Dispose();
         }
     });
+
+    public Task PlayAudioAsync(string filePath, float volume, CancellationToken? cancellationToken = null) =>
+        PlayAudioAsync(File.OpenRead(filePath), volume, cancellationToken);
 
     public void Dispose()
     {

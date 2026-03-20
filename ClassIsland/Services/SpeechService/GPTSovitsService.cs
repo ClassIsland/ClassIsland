@@ -207,7 +207,7 @@ public class GptSoVitsService : ISpeechService
             try
             {
                 Logger.LogDebug("开始播放 {FilePath}", playInfo.FilePath);
-                await AudioService.PlayAudioAsync(File.OpenRead(playInfo.FilePath),
+                await AudioService.PlayAudioAsync(playInfo.FilePath,
                     (float)SettingsService.Settings.SpeechVolume, playInfo.CancellationTokenSource.Token);
                 Logger.LogDebug("结束播放 {FilePath}", playInfo.FilePath);
             }
