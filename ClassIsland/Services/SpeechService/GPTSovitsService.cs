@@ -44,7 +44,6 @@ public class GptSoVitsService : ISpeechService
 
     private GptSoVitsPlayInfo? _currentPlayInfo;
 
-
     public GptSoVitsService(IAudioService audioService, ILogger<GptSoVitsService> logger, SettingsService settingsService)
     {
         AudioService = audioService;
