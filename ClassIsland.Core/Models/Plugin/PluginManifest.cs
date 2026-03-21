@@ -71,5 +71,5 @@ public class PluginManifest : ObservableRecipient, IMarketplaceItemManifest
     /// 插件所支持的操作系统平台。默认为所有平台。
     /// </summary>
     /// <remarks>有效值：<see cref="OSPlatform.Windows"/>和<see cref="OSPlatform.Linux"/>和<see cref="OSPlatform.OSX"/></remarks>
-    public List<OSPlatform>? SupportedOSPlatforms { get; set; } = [OSPlatform.Windows, OSPlatform.OSX, OSPlatform.Linux];
+    public List<OSPlatform> SupportedOSPlatforms { get; set; } = [OSPlatform.Windows, OSPlatform.OSX, OSPlatform.Linux];
 }
