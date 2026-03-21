@@ -90,9 +90,9 @@
                                         </Binding.ConverterParameter>
                                     </Binding>
                                 </TextBlock.IsVisible>
-                                <Run Text="{Binding CurrentTimeLayoutItem.StartTime, StringFormat='{}{0:hh\\:mm}'}">
+                                <Run Text="{Binding CurrentTimeLayoutItem.StartTime, StringFormat='{}{0:hh\\:mm}', Mode=OneWay}">
                                 </Run><Run Text="-">
-                                </Run><Run Text="{Binding CurrentTimeLayoutItem.EndTime, StringFormat='{}{0:hh\\:mm}'}" />
+                                </Run><Run Text="{Binding CurrentTimeLayoutItem.EndTime, StringFormat='{}{0:hh\\:mm}', Mode=OneWay}" />
                             </TextBlock>
                             <TextBlock VerticalAlignment="Bottom">
                                 <TextBlock.IsVisible>
