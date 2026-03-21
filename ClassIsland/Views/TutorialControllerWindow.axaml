@@ -25,6 +25,7 @@
             <ci:IconText Glyph="&#xE959;" Text="教学进行中…" Opacity="0.75"/>
             <Button Content="{ci:FluentIcon &#xE444;}"
                     Theme="{StaticResource TransparentButton}"
+                    x:Name="ButtonSkip"
                     ToolTip.Tip="跳过">
                 <Button.Flyout>
                     <Flyout>
