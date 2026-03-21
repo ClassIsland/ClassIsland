@@ -741,6 +741,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             return;
         }
+        // 桌面层模式下不重设置顶状态（窗口始终在桌面层）
+        if (ViewModel.Settings.WindowLayer == 2)
+        {
+            return;
+        }
         var handle = TryGetPlatformHandle()?.Handle ?? nint.Zero;
         if (ViewModel.IsNotificationWindowExplicitShowed || ViewModel.Settings.WindowLayer == 1)
         {
@@ -760,6 +765,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     
     private void SetBottom()
     {
+        // 桌面层模式和置顶模式下不需要置底操作
         if (ViewModel.Settings.WindowLayer != 0)
         {
             return;
@@ -787,17 +793,37 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             Topmost = false;
             PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, false);
             PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost, false);
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.DesktopLayer, false);
             PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, false);
             return;
         }
         switch (ViewModel.Settings.WindowLayer)
         {
-            case 0: // bottom
+            case 0: // 置底
                 Topmost = ViewModel.IsNotificationWindowExplicitShowed || ViewModel.IsEditMode;
+                PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.DesktopLayer, false);
                 break;
-            case 1:
+            case 1: // 置顶
                 Topmost = true;
+                PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.DesktopLayer, false);
                 break;
+            case 2: // 桌面层：位于桌面之上、所有应用窗口之下，显示桌面不消失
+                Topmost = false;
+                PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost, false);
+                PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, false);
+                PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, false);
+                // 通知弹出期间临时提升到 Topmost，不进入桌面层
+                if (!ViewModel.IsNotificationWindowExplicitShowed && !ViewModel.IsEditMode)
+                {
+                    PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.DesktopLayer, true);
+                }
+                else
+                {
+                    PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.DesktopLayer, false);
+                    Topmost = true;
+                    PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, true);
+                }
+                return; // 直接返回，跳过后续 SkipManagement / Topmost 覆盖逻辑
         }
 
         // 在 Linux 上 SkipManagement 会触发 unmap/map（override_redirect 切换），

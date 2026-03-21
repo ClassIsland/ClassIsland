@@ -176,8 +176,85 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             }
             var r = SetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
         }
+        if ((features & WindowFeatures.DesktopLayer) > 0)
+        {
+            if (state)
+            {
+                var workerW = FindDesktopWorkerW();
+                if (workerW != nint.Zero)
+                {
+                    SetParent((HWND)handle, (HWND)workerW);
+                    SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
+                        SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
+                        | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
+                }
+                else
+                {
+                    // 找不到 WorkerW，降级为置底模式
+                    SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
+                        SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
+                        | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
+                }
+            }
+            else
+            {
+                // 还原到正常父窗口（桌面根节点）
+                SetParent((HWND)handle, HWND.Null);
+                SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
+                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
+                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
+            }
+        }
         
     }
+
+    /// <summary>
+    /// 找到 Windows 桌面的 WorkerW 窗口（位于桌面图标和壁纸之间的层）。
+    /// 通过向 Progman 发送 0x052C 消息并枚举 WorkerW 子窗口来获取。
+    /// 若未找到合适的 WorkerW，则返回 Progman 本身作为回退父窗口。
+    /// </summary>
+    private static nint FindDesktopWorkerW()
+    {
+        // 向 Progman 发送特殊消息，促使 Shell 创建 WorkerW
+        var progman = FindWindow("Progman", null);
+        if (progman == HWND.Null)
+            return nint.Zero;
+
+        SendMessage(progman, 0x052C, new WPARAM(0), new LPARAM(0));
+
+        // 优先检查 SHELLDLL_DefView 是否直接在 Progman 下（某些系统配置）
+        var defViewInProgman = FindWindowEx(progman, HWND.Null, "SHELLDLL_DefView", null);
+        if (defViewInProgman != HWND.Null)
+        {
+            // 直接以 Progman 为父窗口
+            return (nint)progman;
+        }
+
+        // 枚举顶层窗口，找到包含 SHELLDLL_DefView 的 WorkerW，
+        // 然后取其后方的同级 WorkerW 作为目标父窗口
+        nint workerW = nint.Zero;
+        EnumWindows((hwnd, _) =>
+        {
+            var shellDefView = FindWindowEx(hwnd, HWND.Null, "SHELLDLL_DefView", null);
+            if (shellDefView != HWND.Null)
+            {
+                // WorkerW 在 shellDefView 所在 WorkerW 的下一个同级
+                workerW = (nint)FindWindowEx(HWND.Null, hwnd, "WorkerW", null);
+                if (workerW == nint.Zero)
+                {
+                    // 没有后续 WorkerW，回退到 Progman
+                    workerW = (nint)progman;
+                }
+                return false; // 找到后停止枚举
+            }
+            return true;
+        }, new LPARAM(0));
+
+        // 若完全找不到，以 Progman 为托底
+        return workerW != nint.Zero ? workerW : (nint)progman;
+    }
+
+
 
     public WindowFeatures GetWindowFeatures(TopLevel topLevel)
     {
