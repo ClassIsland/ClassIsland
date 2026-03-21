@@ -370,14 +370,14 @@ jobs:
         shell: pwsh
         env:
           S3_Bucket: ${{ vars.S3_BUCKET }}
-          S3_ENDPOINT: ${{ vars.S3_ENDPOINT }}
-          S3_REGION: ${{ vars.S3_REGION }}
-          PDC_ENDPOINT: ${{ vars.PDC_ENDPOINT }}
+          S3_Endpoint: ${{ vars.S3_ENDPOINT }}
+          S3_Region: ${{ vars.S3_REGION }}
+          PDC_Endpoint: ${{ vars.PDC_ENDPOINT }}
           PDC_SigningKey: ${{ secrets.PDC_SigningKey }}
           PDC_SigningKeyPs: ""
-          PDC_TOKEN: ${{ secrets.PDC_TOKEN }}
-          S3_ACCESSKEY: ${{ secrets.S3_ACCESSKEY }}
-          S3_SECRETKEY: ${{ secrets.S3_SECRETKEY }}
+          PDC_Token: ${{ secrets.PDC_TOKEN }}
+          S3_AccessKey: ${{ secrets.S3_ACCESSKEY }}
+          S3_SecretKey: ${{ secrets.S3_SECRETKEY }}
           PDCC_version: ${{ github.event.inputs.release_tag }}
           PDCC_primaryVersion: ${{ github.event.inputs.primary_version }}
         run: |
