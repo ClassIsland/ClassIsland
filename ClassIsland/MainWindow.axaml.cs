@@ -503,6 +503,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             PseudoClasses.Set(":windowed", ViewModel.IsWindowMode);
             UpdateTheme();
+            if (ViewModel.IsEditMode && ViewModel.IsWindowMode)
+            {
+                // 编辑模式从全屏切到自由窗口时，窗口管理器可能把窗口压到后面。
+                // 延后一帧激活，确保窗口保持在前台可操作。
+                _ = Dispatcher.UIThread.InvokeAsync(Activate, DispatcherPriority.Background);
+            }
         }
     }
 
@@ -769,7 +775,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void UpdateWindowFeatures()
     {
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, ViewModel is { IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false });
+        var shouldUseToolWindow = ViewModel is { IsEditMode: false, IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false };
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, shouldUseToolWindow);
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, !ViewModel.IsEditMode);
     }
 
@@ -793,7 +800,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 break;
         }
 
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, Topmost);
+        // 在 Linux 上 SkipManagement 会触发 unmap/map（override_redirect 切换），
+        // 编辑模式切换“自由窗口 -> 全屏”时会出现关闭动画甚至不显示。
+        // 编辑模式下不启用 SkipManagement，避免触发这条路径。
+        var shouldSkipManagement = Topmost && !ViewModel.IsEditMode;
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, shouldSkipManagement);
+        if (Topmost)
+        {
+            // 防止窗口在切换层级时残留 Bottommost 状态，导致“已激活但仍在最底层”。
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost, false);
+        }
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, Topmost);
     }
 

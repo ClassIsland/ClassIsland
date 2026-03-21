@@ -142,12 +142,20 @@ public class WindowPlatformService : IWindowPlatformService
         if ((features & WindowFeatures.Bottommost) > 0)
         {
             ChangeWMAtoms(handle, state, XInternAtom(_display, "_NET_WM_STATE_BELOW", true));
-            XLowerWindow(_display, handle);
+            if (state)
+            {
+                XLowerWindow(_display, handle);
+            }
+            XFlush(_display);
         }
         if ((features & WindowFeatures.Topmost) > 0)
         {
             ChangeWMAtoms(handle, state, XInternAtom(_display, "_NET_WM_STATE_ABOVE", true));
-            XRaiseWindow(_display, handle);
+            if (state)
+            {
+                XRaiseWindow(_display, handle);
+            }
+            XFlush(_display);
         }
         if ((features & WindowFeatures.Private) > 0)
         {
