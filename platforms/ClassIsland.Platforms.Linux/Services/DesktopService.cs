@@ -1,11 +1,9 @@
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Helpers;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Platforms.Linux.Services;
 
