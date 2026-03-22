@@ -152,6 +152,11 @@
                             <ci:IconText Glyph="&#xE197;" Text="置顶" />
                         </ComboBoxItem>
                         <ComboBoxItem>
+                            <ComboBoxItem.IsVisible>
+                                <OnPlatform Default="False">
+                                    <On Options="Windows" Content="True"/>
+                                </OnPlatform>
+                            </ComboBoxItem.IsVisible>
                             <ci:IconText Glyph="&#xE62F;" Text="桌面层" />
                         </ComboBoxItem>
                     </ComboBox>

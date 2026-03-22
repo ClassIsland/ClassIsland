@@ -26,6 +26,11 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
 
     private bool _isMoving = false;
 
+    /// <summary>
+    /// 记录每个窗口在启用桌面层之前的原始父窗口句柄，以便禁用时正确还原。
+    /// </summary>
+    private readonly Dictionary<nint, nint> _originalParents = new();
+
     public nint ForegroundWindowHandle { get; set; } = nint.Zero;
 
     public void Dispose()
@@ -180,6 +185,12 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
         {
             if (state)
             {
+                // 记录当前的原始父窗口，以便禁用时还原
+                // Avalonia 顶级窗口的 Win32 parent 始终为 null，此处保存 nint.Zero 作为还原目标
+                if (!_originalParents.ContainsKey(handle))
+                {
+                    _originalParents[handle] = nint.Zero;
+                }
                 var workerW = FindDesktopWorkerW();
                 if (workerW != nint.Zero)
                 {
@@ -198,11 +209,11 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             }
             else
             {
-                // 还原到正常父窗口（桌面根节点）
-                SetParent((HWND)handle, HWND.Null);
-                SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
-                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
-                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
+                // 恢复启用前的原始父窗口，而非硬编码为 HWND.Null
+                var originalParent = _originalParents.TryGetValue(handle, out var p) ? p : nint.Zero;
+                _originalParents.Remove(handle);
+                SetParent((HWND)handle, (HWND)originalParent);
+                // 不在此处强制设置 Z-Order，由调用方（UpdateWindowLayer）决定最终 Z-Order
             }
         }
         
@@ -220,7 +231,18 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
         if (progman == HWND.Null)
             return nint.Zero;
 
-        SendMessage(progman, 0x052C, new WPARAM(0), new LPARAM(0));
+        // 使用 SendMessageTimeout 避免在 Explorer/Shell 无响应时长期阻塞 UI 线程
+        unsafe
+        {
+            SendMessageTimeout(
+                progman,
+                0x052C,
+                new WPARAM(0),
+                new LPARAM(0),
+                SEND_MESSAGE_TIMEOUT_FLAGS.SMTO_ABORTIFHUNG,
+                2000,
+                null);
+        }
 
         // 优先检查 SHELLDLL_DefView 是否直接在 Progman 下（某些系统配置）
         var defViewInProgman = FindWindowEx(progman, HWND.Null, "SHELLDLL_DefView", null);
