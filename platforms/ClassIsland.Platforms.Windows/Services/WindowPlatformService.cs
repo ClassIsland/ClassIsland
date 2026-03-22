@@ -134,89 +134,118 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
 
         if ((features & WindowFeatures.Transparent) > 0)
         {
-            var style = GetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
-            if (state)
-            {
-                style |= (int)WINDOW_EX_STYLE.WS_EX_LAYERED | (int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
-                SetLayeredWindowAttributes((HWND)handle, new COLORREF(0), 255, (LAYERED_WINDOW_ATTRIBUTES_FLAGS)0x2);
-            }
-            else
-            {
-                style &= ~(int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
-            }
-            var r = SetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
+            SetTransparentFeature(handle, state);
         }
         if ((features & WindowFeatures.Bottommost) > 0)
         {
-            if (state)
-            {
-                SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
-                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
-                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
-            }
+            SetBottommostFeature(handle, state);
         }
         if ((features & WindowFeatures.Topmost) > 0)
         {
-            if (state)
-            {
-                SetWindowPos((HWND)handle, HWND.HWND_TOPMOST, 0, 0, 0, 0,
-                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
-                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
-            }
+            SetTopmostFeature(handle, state);
         }
         if ((features & WindowFeatures.Private) > 0)
         {
-            SetWindowDisplayAffinity((HWND)handle, state ? WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE : WINDOW_DISPLAY_AFFINITY.WDA_NONE);
+            SetPrivateFeature(handle, state);
         }
         if ((features & WindowFeatures.ToolWindow) > 0)
         {
-            var style = GetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
-            if (state)
-            {
-                style |= (int)WINDOW_EX_STYLE.WS_EX_TOOLWINDOW;
-            }
-            else
-            {
-                style &= ~(int)WINDOW_EX_STYLE.WS_EX_TOOLWINDOW;
-            }
-            var r = SetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
+            SetToolWindowFeature(handle, state);
         }
         if ((features & WindowFeatures.DesktopLayer) > 0)
         {
-            if (state)
+            SetDesktopLayerFeature(handle, state);
+        }
+    }
+
+    private void SetTransparentFeature(nint handle, bool state)
+    {
+        var style = GetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
+        if (state)
+        {
+            style |= (int)WINDOW_EX_STYLE.WS_EX_LAYERED | (int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
+            SetLayeredWindowAttributes((HWND)handle, new COLORREF(0), 255, (LAYERED_WINDOW_ATTRIBUTES_FLAGS)0x2);
+        }
+        else
+        {
+            style &= ~(int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
+        }
+        var r = SetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
+    }
+
+    private void SetBottommostFeature(nint handle, bool state)
+    {
+        if (state)
+        {
+            SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
+                SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
+                | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
+        }
+    }
+
+    private void SetTopmostFeature(nint handle, bool state)
+    {
+        if (state)
+        {
+            SetWindowPos((HWND)handle, HWND.HWND_TOPMOST, 0, 0, 0, 0,
+                SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
+                | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
+        }
+    }
+
+    private void SetPrivateFeature(nint handle, bool state)
+    {
+        SetWindowDisplayAffinity((HWND)handle, state ? WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE : WINDOW_DISPLAY_AFFINITY.WDA_NONE);
+    }
+
+    private void SetToolWindowFeature(nint handle, bool state)
+    {
+        var style = GetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
+        if (state)
+        {
+            style |= (int)WINDOW_EX_STYLE.WS_EX_TOOLWINDOW;
+        }
+        else
+        {
+            style &= ~(int)WINDOW_EX_STYLE.WS_EX_TOOLWINDOW;
+        }
+        var r = SetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
+    }
+
+    private void SetDesktopLayerFeature(nint handle, bool state)
+    {
+        if (state)
+        {
+            // 记录当前的原始父窗口，以便禁用时还原
+            // Avalonia 顶级窗口的 Win32 parent 始终为 null，此处保存 nint.Zero 作为还原目标
+            if (!_originalParents.ContainsKey(handle))
             {
-                // 记录当前的原始父窗口，以便禁用时还原
-                // Avalonia 顶级窗口的 Win32 parent 始终为 null，此处保存 nint.Zero 作为还原目标
-                if (!_originalParents.ContainsKey(handle))
-                {
-                    _originalParents[handle] = nint.Zero;
-                }
-                var workerW = FindDesktopWorkerW();
-                if (workerW != nint.Zero)
-                {
-                    SetParent((HWND)handle, (HWND)workerW);
-                    SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
-                        SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
-                        | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
-                }
-                else
-                {
-                    // 找不到 WorkerW，降级为置底模式
-                    SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
-                        SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
-                        | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
-                }
+                _originalParents[handle] = nint.Zero;
+            }
+            var workerW = FindDesktopWorkerW();
+            if (workerW != nint.Zero)
+            {
+                SetParent((HWND)handle, (HWND)workerW);
+                SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
+                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
+                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
             }
             else
             {
-                // 恢复启用前的原始父窗口，而非硬编码为 HWND.Null
-                var originalParent = _originalParents.TryGetValue(handle, out var p) ? p : nint.Zero;
-                _originalParents.Remove(handle);
-                SetParent((HWND)handle, (HWND)originalParent);
-                // 不在此处强制设置 Z-Order，由调用方（UpdateWindowLayer）决定最终 Z-Order
+                // 找不到 WorkerW，降级为置底模式
+                SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
+                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
+                    | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
             }
         }
-        
+        else
+        {
+            // 恢复启用前的原始父窗口，而非硬编码为 HWND.Null
+            var originalParent = _originalParents.TryGetValue(handle, out var p) ? p : nint.Zero;
+            _originalParents.Remove(handle);
+            SetParent((HWND)handle, (HWND)originalParent);
+            // 不在此处强制设置 Z-Order，由调用方（UpdateWindowLayer）决定最终 Z-Order
+        }
     }
 
     /// <summary>
@@ -251,7 +280,6 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             // 直接以 Progman 为父窗口
             return (nint)progman;
         }
-
         // 枚举顶层窗口，找到包含 SHELLDLL_DefView 的 WorkerW，
         // 然后取其后方的同级 WorkerW 作为目标父窗口
         nint workerW = nint.Zero;
