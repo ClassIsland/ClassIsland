@@ -338,7 +338,7 @@ jobs:
           path: ./out/package/release/*.nupkg
 
   publish:
-    runs-on: publish-runner-hk
+    runs-on: ubuntu-latest
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == 'true' }}
     if: ${{ always() && success('pack_app') && success('build_nupkg') && github.event.inputs.release_tag && github.event_name != 'pull_request' }}

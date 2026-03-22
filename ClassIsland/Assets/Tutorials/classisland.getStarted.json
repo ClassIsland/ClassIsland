@@ -29,7 +29,7 @@
               "RightButtonActions": [
                 {
                   "Kind": 5,
-                  "StringParameter": "mainwindow"
+                  "StringParameter": "skip"
                 }
               ],
               "LeftButtonText": "\u4E0D\u7528\u4E86",
@@ -123,6 +123,45 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Xmlns": {}
+            }
+          ],
+          "Xmlns": {}
+        },
+        {
+          "Id": "skip",
+          "Title": "\u8DF3\u8FC7\u6559\u7A0B",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.Views.TutorialControllerWindow",
+          "InitializeActions": [],
+          "Content": [
+            {
+              "Title": "\u8DF3\u8FC7\u6559\u7A0B",
+              "Content": "\u60A8\u53EF\u4EE5\u70B9\u51FB\u6B64\u6309\u94AE\u8DF3\u8FC7\u6559\u7A0B\u3002\u6559\u7A0B\u8DF3\u8FC7\u540E\u5C06\u88AB\u6807\u8BB0\u4E3A\u5DF2\u5B8C\u6210\uFF0C\u4E14\u4E0D\u4F1A\u518D\u81EA\u52A8\u663E\u793A\u3002\u60A8\u53EF\u4EE5\u4F7F\u7528\u4E3B\u83DC\u5355\u7684\u3010\u6559\u7A0B\u2026\u3011\u9009\u9879\u91CD\u770B\u6559\u7A0B\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "Button#ButtonSkip",
+              "HighlightTarget": true,
+              "PointToTarget": true,
+              "RightButtonText": "\u4E86\u89E3",
+              "RightButtonActions": [
+                {
+                  "Kind": 1,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": false,
+              "Tag": "",
+              "PlacementMode": 5,
               "Xmlns": {}
             }
           ],
