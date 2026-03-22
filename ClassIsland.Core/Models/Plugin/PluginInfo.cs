@@ -99,7 +99,6 @@ public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
         }
     }
 
-
     /// <summary>
     /// 插件文件路径。
     /// </summary>
