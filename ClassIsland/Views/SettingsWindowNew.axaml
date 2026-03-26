@@ -204,6 +204,7 @@
                                             <MenuItem.IsVisible>
                                                 <OnPlatform Default="False">
                                                     <On Options="Windows" Content="True" />
+                                                    <On Options="Linux" Content="True" />
                                                 </OnPlatform>
                                             </MenuItem.IsVisible>
                                         </MenuItem>

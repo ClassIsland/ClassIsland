@@ -67,6 +67,7 @@
                 <controls3:SettingsExpander.IsVisible>
                     <OnPlatform Default="False">
                         <On Options="Windows" Content="True"/>
+                        <On Options="Linux" Content="True" />
                     </OnPlatform>
                 </controls3:SettingsExpander.IsVisible>
                 <controls3:SettingsExpander.Footer>
