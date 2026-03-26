@@ -75,6 +75,7 @@
             <CheckBox.IsVisible>
                 <OnPlatform Default="False">
                     <On Options="Windows" Content="True"/>
+                    <On Options="Linux" Content="True" />
                 </OnPlatform>
             </CheckBox.IsVisible>
             <ci:Thing IconSource="{ci:FluentIconSource &#xE15F;}"
