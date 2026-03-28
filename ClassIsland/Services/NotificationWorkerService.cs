@@ -186,8 +186,12 @@ public class NotificationWorkerService : INotificationWorkerService
                     Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
                     if (string.IsNullOrWhiteSpace(settings.NotificationSoundPath))
                     {
-                        _ = AudioService.PlayAudioAsync(AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri),
-                            (float)SettingsService.Settings.NotificationSoundVolume, soundsCts.Token);
+                        _ = Task.Run(async () =>
+                        {
+                            using var stream = AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri);
+                            await AudioService.PlayAudioAsync(stream,
+                                (float)SettingsService.Settings.NotificationSoundVolume, soundsCts.Token);
+                        }, soundsCts.Token);
                     }
                     else
                     {
