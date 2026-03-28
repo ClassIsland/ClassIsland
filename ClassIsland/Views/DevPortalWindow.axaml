@@ -54,6 +54,12 @@
                         <Border Background="MediumVioletRed"/>
                         <tutorial:TutorialHighlightControl/>
                     </Panel>
+                    <Separator/>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <Button Click="ButtonStartSplash_OnClick">StartSplash</Button>
+                        <Button Click="ButtonEndSplash_OnClick">EndSplash</Button>
+                    </StackPanel>
                 </StackPanel>
             </TabItem>
             <TabItem Header="控件">

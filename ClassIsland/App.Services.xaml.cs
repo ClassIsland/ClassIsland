@@ -149,6 +149,7 @@ public partial class App
         services.AddTransient<TutorialEditorWindow>();
         services.AddSingleton<TutorialCenterWindow>();
         services.AddTransient<TutorialControllerWindow>();
+        services.AddTransient<ISplashProvider, SplashWindow>();
         // 设置页面分组
         services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
         services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");

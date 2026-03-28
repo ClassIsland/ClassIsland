@@ -850,8 +850,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var clientBoundsRelative = new PixelRect(0, (int)safeT, (int)aw, (int)ah)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
-        LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
-        LayoutContainerGrid.Height = Height = RootLayoutTransformControl.Bounds.Height + safeT + safeB;
+        if (LayoutContainerGrid != null)
+        {
+            LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
+            LayoutContainerGrid.Height = Height = RootLayoutTransformControl.Bounds.Height + safeT + safeB;
+        }
         ViewModel.ActualRootOffsetX = 0;
         ViewModel.ActualRootOffsetY = 0;
         var newPos = new PixelPoint((int)x, (int)y);

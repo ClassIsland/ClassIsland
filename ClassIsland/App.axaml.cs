@@ -658,6 +658,10 @@ public partial class App : AppBase, IAppHost
 
         CurrentLifetime = Core.Enums.ApplicationLifetime.StartingOnline;
         Logger.LogInformation("初始化应用。");
+        if (Settings.IsSplashEnabled)
+        {
+            GetService<ISplashService>().StartSplash();
+        }
 
         // 提前初始化好音频服务，防止在其他地方出现重复初始化的问题
         IAppHost.GetService<IAudioService>();
