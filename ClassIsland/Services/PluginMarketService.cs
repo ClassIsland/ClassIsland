@@ -51,6 +51,13 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
     private IDisposable? _pluginsUpdateProgressObserver;
+    private readonly OSPlatform _currentOSPlatform = new Func<OSPlatform>(() =>
+    {
+        if (OperatingSystem.IsWindows()) return OSPlatform.Windows;
+        if (OperatingSystem.IsLinux()) return OSPlatform.Linux;
+        if (OperatingSystem.IsMacOS()) return OSPlatform.OSX;
+        return OSPlatform.Create("Unknown");
+    })();
 
     public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger)
     {
@@ -449,13 +456,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                 plugin.IsAvailableOnMarket = true;
                 plugin.RealIconPath = plugin.RealIconPath.Replace("{root}", root);
                 plugin.Manifest.Readme = plugin.Manifest.Readme.Replace("{root}", root);
-                plugin.IsNotSupportCurrentOS = !plugin.Manifest.SupportedOSPlatforms.Contains(new Func<OSPlatform>(() =>
-                {
-                    if (OperatingSystem.IsWindows()) return OSPlatform.Windows;
-                    if (OperatingSystem.IsLinux()) return OSPlatform.Linux;
-                    if (OperatingSystem.IsMacOS()) return OSPlatform.OSX;
-                    return OSPlatform.Create("Unknown");
-                })());
+                plugin.IsNotSupportCurrentOS = !plugin.Manifest.SupportedOSPlatforms.Contains(_currentOSPlatform);
                 MergedPlugins[id] = plugin;
             }
         }
