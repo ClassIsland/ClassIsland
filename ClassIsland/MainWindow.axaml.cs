@@ -224,7 +224,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         XamlThemeService = xamlThemeService;
         TutorialService = tutorialService;
 
+        ViewModel = new MainViewModel();
         DataContext = this;
+        InitializeComponent();
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
@@ -237,9 +239,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         };
         LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-        ViewModel = new MainViewModel();
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
-        InitializeComponent();
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
         IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
@@ -712,17 +712,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
         ThemeService.SetTheme(ViewModel.Settings.Theme, primary);
 
-        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize)] =
-            SettingsService.Settings.MainWindowSecondaryFontSize;
-        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowBodyFontSize)] =
-            SettingsService.Settings.MainWindowBodyFontSize;
-        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowEmphasizedFontSize)] =
-            SettingsService.Settings.MainWindowEmphasizedFontSize;
-        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowLargeFontSize)] =
-            SettingsService.Settings.MainWindowLargeFontSize;
-
-        ControlColorHelper.SetControlForegroundColor(ResourceLoaderBorder, ViewModel.Settings.CustomForegroundColor,
-            ViewModel.Settings.IsCustomForegroundColorEnabled);
+        if (ResourceLoaderBorder != null)
+        {
+            ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize)] =
+                SettingsService.Settings.MainWindowSecondaryFontSize;
+            ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowBodyFontSize)] =
+                SettingsService.Settings.MainWindowBodyFontSize;
+            ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowEmphasizedFontSize)] =
+                SettingsService.Settings.MainWindowEmphasizedFontSize;
+            ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowLargeFontSize)] =
+                SettingsService.Settings.MainWindowLargeFontSize;
+            ControlColorHelper.SetControlForegroundColor(ResourceLoaderBorder, ViewModel.Settings.CustomForegroundColor,
+                ViewModel.Settings.IsCustomForegroundColorEnabled);
+        }
 
         App._isCriticalSafeModeEnabled = ViewModel.Settings.IsCriticalSafeMode;
         SizeToContent = SizeToContent.Height;
@@ -904,9 +906,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var clientBoundsRelative = new PixelRect(relativeX, relativeY, width, height)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
-        LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
-        LayoutContainerGrid.Height = Height = (screen.Bounds.Height - 1)  // 防止 Windows 发电误以为是全屏
-                                              / dpiY;
+        if (LayoutContainerGrid != null) 
+        {
+            LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
+            LayoutContainerGrid.Height = Height = (screen.Bounds.Height - 1)  // 防止 Windows 发电误以为是全屏
+                                                  / dpiY;
+        }
         ViewModel.ActualRootOffsetX = ox;
         ViewModel.ActualRootOffsetY = oy;
         var newPos = new PixelPoint((int)screen.Bounds.X, (int)screen.Bounds.Y);

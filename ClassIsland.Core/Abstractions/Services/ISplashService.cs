@@ -30,8 +30,8 @@ public interface ISplashService : INotifyPropertyChanged, INotifyPropertyChangin
     /// 启动屏幕结束事件
     /// </summary>
     event EventHandler? SplashEnded;
-    internal void EndSplash();
-    internal void StartSplash();
+    internal Task EndSplash();
+    internal Task StartSplash();
     /// <summary>
     /// 重置启动屏幕文字。
     /// </summary>

@@ -8,10 +8,10 @@ public interface ISplashProvider
     /// <summary>
     /// 开始显示启动界面。
     /// </summary>
-    void StartSplash();
+    Task StartSplash();
 
     /// <summary>
     /// 停止显示启动界面。
     /// </summary>
-    void EndSplash();
+    Task EndSplash();
 }

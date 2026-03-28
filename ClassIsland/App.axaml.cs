@@ -660,7 +660,7 @@ public partial class App : AppBase, IAppHost
         Logger.LogInformation("初始化应用。");
         if (Settings.IsSplashEnabled)
         {
-            GetService<ISplashService>().StartSplash();
+            await GetService<ISplashService>().StartSplash();
         }
 
         // 提前初始化好音频服务，防止在其他地方出现重复初始化的问题
@@ -687,7 +687,7 @@ public partial class App : AppBase, IAppHost
             spanCheckUpdate.Finish();
             if (r)
             {
-                GetService<ISplashService>().EndSplash();
+                await GetService<ISplashService>().EndSplash();
                 return;
             }
         }
@@ -706,7 +706,7 @@ public partial class App : AppBase, IAppHost
         {
             if (Settings.IsSplashEnabled)
             {
-                GetService<ISplashService>().EndSplash();
+                await GetService<ISplashService>().EndSplash();
             }
 
             if (System.OperatingSystem.IsLinux() && GlobalStorageService.GetValue("IgnoreQtScaling") != "1")

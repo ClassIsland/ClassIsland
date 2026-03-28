@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Shared;
@@ -46,13 +47,16 @@ public class SplashService: ObservableRecipient, ISplashService
     public event EventHandler<double>? ProgressChanged;
 
     public event EventHandler? SplashEnded;
-    public void EndSplash()
+    public async Task EndSplash()
     {
-        _currentSplashProvider?.EndSplash();
+        if (_currentSplashProvider != null)
+        {
+            await _currentSplashProvider.EndSplash();
+        }
         _currentSplashProvider = null;
     }
 
-    public void StartSplash()
+    public async Task StartSplash()
     {
         if (_currentSplashProvider != null)
         {
@@ -60,7 +64,10 @@ public class SplashService: ObservableRecipient, ISplashService
         }
 
         _currentSplashProvider = IAppHost.TryGetService<ISplashProvider>();
-        _currentSplashProvider?.StartSplash();
+        if (_currentSplashProvider != null)
+        {
+            await _currentSplashProvider.StartSplash();
+        }
     }
 
     private SettingsService SettingsService { get; }
