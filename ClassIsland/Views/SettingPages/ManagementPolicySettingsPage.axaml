@@ -72,6 +72,14 @@
                     <ToggleSwitch IsChecked="{Binding ManagementService.Policy.DisableSettingsEditing, Mode=TwoWay}"/>
                 </controls:SettingsExpander.Footer>
             </controls:SettingsExpander>
+            <!-- 禁止自定义启动加载界面 -->
+            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEea1;}"
+                                       Header="禁止自定义启动加载界面"
+                                       Description="启用此项后，用户将不能自定义启动界面。如果先前调整过启动界面自定义设置，这些设置会被清除。">
+                <controls:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ManagementService.Policy.DisableSplashCustomize, Mode=TwoWay}"/>
+                </controls:SettingsExpander.Footer>
+            </controls:SettingsExpander>
             <!-- 禁用调试菜单 -->
             <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe2c8;}"
                                        Header="禁用调试菜单"

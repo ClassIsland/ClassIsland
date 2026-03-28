@@ -112,7 +112,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _debugTimeOffsetSeconds = 0.0;
     private bool _expIsExcelImportEnabled = false;
     private int _timeLayoutEditorIndex = 1;
-    private bool _isSplashEnabled = true;
+    private bool _isSplashEnabled = false;
     private string _splashCustomText = "";
     private string _splashCustomLogoSource = "";
     private bool _isDebugConsoleEnabled = false;
