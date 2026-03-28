@@ -451,9 +451,9 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                 plugin.Manifest.Readme = plugin.Manifest.Readme.Replace("{root}", root);
                 plugin.IsNotSupportCurrentOS = !plugin.Manifest.SupportedOSPlatforms.Contains(new Func<OSPlatform>(() =>
                 {
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return OSPlatform.Windows;
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) return OSPlatform.Linux;
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return OSPlatform.OSX;
+                    if (OperatingSystem.IsWindows()) return OSPlatform.Windows;
+                    if (OperatingSystem.IsLinux()) return OSPlatform.Linux;
+                    if (OperatingSystem.IsMacOS()) return OSPlatform.OSX;
                     return OSPlatform.Create("Unknown");
                 })());
                 MergedPlugins[id] = plugin;
