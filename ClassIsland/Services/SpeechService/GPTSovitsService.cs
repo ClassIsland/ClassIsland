@@ -42,7 +42,6 @@ public class GptSoVitsService : ISpeechService
 
     private GptSoVitsPlayInfo? _currentPlayInfo;
 
-
     public GptSoVitsService(IAudioService audioService, ILogger<GptSoVitsService> logger, SettingsService settingsService)
     {
         AudioService = audioService;
@@ -50,7 +49,6 @@ public class GptSoVitsService : ISpeechService
         SettingsService = settingsService;
         
         Logger.LogInformation("初始化了 GPTSoVITS 服务。");
-        
     }
 
     private string GetCachePath(string text)
