@@ -94,6 +94,7 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
 
     public Task PlayAudioAsync(Stream audio, float volume, CancellationToken? cancellationToken = null) => Task.Run(async () =>
     {
+        using var audioStream = audio;
         cancellationToken ??= CancellationToken.None;
         using var lease = await TryInitializeDefaultPlaybackDeviceSafeAsync();
         if (lease == null)

@@ -77,12 +77,7 @@ public class GptSoVitsService : ISpeechService
         {
             return;
         }
-        var previousCts = requestingCancellationTokenSource;
-        requestingCancellationTokenSource = new CancellationTokenSource();
-        if (previousCts is { IsCancellationRequested: false })
-        {
-            requestingCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(previousCts.Token, requestingCancellationTokenSource.Token);
-        }
+        var requestToken = ResetRequestCancellationTokenSource();
 
         var cache = GetCachePath(text);
         Logger.LogDebug("语音缓存路径：{CachePath}", cache);
@@ -90,10 +85,10 @@ public class GptSoVitsService : ISpeechService
         Task<bool>? task = null;
         if (!File.Exists(cache))
         {
-            task = GenerateSpeechAsync(text, cache, requestingCancellationTokenSource.Token);
+            task = GenerateSpeechAsync(text, cache, requestToken);
         }
 
-        if (requestingCancellationTokenSource.IsCancellationRequested)
+        if (requestToken.IsCancellationRequested)
             return;
 
         PlayingQueue.Enqueue(new GptSoVitsPlayInfo(cache, new CancellationTokenSource(), task));
@@ -102,15 +97,15 @@ public class GptSoVitsService : ISpeechService
 
     public void ClearSpeechQueue()
     {
-        requestingCancellationTokenSource?.Cancel();
+        CancelAndDisposeRequestCancellationTokenSource();
 
         _currentPlayInfo?.CancellationTokenSource.Cancel();
         while (PlayingQueue.Count > 0)
         {
             var playInfo = PlayingQueue.Dequeue();
             playInfo.CancellationTokenSource.Cancel();
+            playInfo.CancellationTokenSource.Dispose();
         }
-        // IsPlaying = false;
     }
 
     private async Task<bool> GenerateSpeechAsync(string text, string filePath, CancellationToken cancellationToken)
@@ -181,43 +176,70 @@ public class GptSoVitsService : ISpeechService
         if (IsPlaying)
             return;
         IsPlaying = true;
-        while (PlayingQueue.Count > 0)
+        try
         {
-            var playInfo = _currentPlayInfo = PlayingQueue.Dequeue();
-            if (playInfo.CancellationTokenSource.IsCancellationRequested)
-                continue;
-            if (playInfo.DownloadTask != null)
+            while (PlayingQueue.Count > 0)
             {
-                Logger.LogDebug("等待语音生成完成...");
-                var result = await playInfo.DownloadTask;
-                if (!result)
+                var playInfo = _currentPlayInfo = PlayingQueue.Dequeue();
+                try
                 {
-                    Logger.LogError("语音 {} 生成失败。", playInfo.FilePath);
-                    continue;
-                }
-                Logger.LogDebug("语音生成完成。");
-            }
+                    if (playInfo.CancellationTokenSource.IsCancellationRequested)
+                        continue;
+                    if (playInfo.DownloadTask != null)
+                    {
+                        Logger.LogDebug("等待语音生成完成...");
+                        var result = await playInfo.DownloadTask;
+                        if (!result)
+                        {
+                            Logger.LogError("语音 {} 生成失败。", playInfo.FilePath);
+                            continue;
+                        }
+                        Logger.LogDebug("语音生成完成。");
+                    }
 
-            if (!File.Exists(playInfo.FilePath))
-            {
-                Logger.LogError("语音文件不存在：{FilePath}", playInfo.FilePath);
-                continue;
-            }
-            
-            try
-            {
-                Logger.LogDebug("开始播放 {FilePath}", playInfo.FilePath);
-                await AudioService.PlayAudioAsync(File.OpenRead(playInfo.FilePath),
-                    (float)SettingsService.Settings.SpeechVolume, playInfo.CancellationTokenSource.Token);
-                Logger.LogDebug("结束播放 {FilePath}", playInfo.FilePath);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "无法播放语音。");
+                    if (!File.Exists(playInfo.FilePath))
+                    {
+                        Logger.LogError("语音文件不存在：{FilePath}", playInfo.FilePath);
+                        continue;
+                    }
+                    
+                    Logger.LogDebug("开始播放 {FilePath}", playInfo.FilePath);
+                    await AudioService.PlayAudioAsync(File.OpenRead(playInfo.FilePath),
+                        (float)SettingsService.Settings.SpeechVolume, playInfo.CancellationTokenSource.Token);
+                    Logger.LogDebug("结束播放 {FilePath}", playInfo.FilePath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "无法播放语音。");
+                }
+                finally
+                {
+                    _currentPlayInfo = null;
+                    playInfo.CancellationTokenSource.Dispose();
+                }
             }
         }
+        finally
+        {
+            _currentPlayInfo = null;
+            IsPlaying = false;
+        }
+    }
 
-        _currentPlayInfo = null;
-        IsPlaying = false;
+    private CancellationToken ResetRequestCancellationTokenSource()
+    {
+        var previousSource = requestingCancellationTokenSource;
+        var currentSource = new CancellationTokenSource();
+        requestingCancellationTokenSource = currentSource;
+        previousSource?.Cancel();
+        previousSource?.Dispose();
+        return currentSource.Token;
+    }
+
+    private void CancelAndDisposeRequestCancellationTokenSource()
+    {
+        requestingCancellationTokenSource?.Cancel();
+        requestingCancellationTokenSource?.Dispose();
+        requestingCancellationTokenSource = null;
     }
 }
