@@ -67,6 +67,7 @@
                 <controls3:SettingsExpander.IsVisible>
                     <OnPlatform Default="False">
                         <On Options="Windows" Content="True"/>
+                        <On Options="Linux" Content="True"/>
                     </OnPlatform>
                 </controls3:SettingsExpander.IsVisible>
                 <controls3:SettingsExpander.Footer>
@@ -185,6 +186,60 @@
                                       IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}" />
                     </StackPanel>
                 </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <controls3:SettingsExpander Header="显示启动加载界面"
+                                        IconSource="{ci:FluentIconSource &#xEea1;}"
+                                        Description="启动时显示加载界面。注意：在不启用【禁用动画等待】的情况下，此功能会拖慢启动速度。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsSplashEnabled}"/>
+                </controls3:SettingsExpander.Footer>
+                <controls3:SettingsExpanderItem Content="启动图标"
+                                                IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"
+                                    HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <TextBox MinWidth="150" MaxWidth="250"
+                                     Text="{Binding ViewModel.SettingsService.Settings.SplashCustomLogoSource}"
+                                     VerticalAlignment="Center" Margin="0 0 2 0" 
+                                     Watermark="（默认图标）"/>
+                            <controls2:FileBrowserButton
+                                Theme="{StaticResource TransparentButton}"
+                                Content="{ci:FluentIcon &#xE88D;}"
+                                CurrentPath="{Binding ViewModel.SettingsService.Settings.SplashCustomLogoSource, Mode=TwoWay}"
+                                VerticalAlignment="Center"
+                                FileTypes="{x:Static local:GeneralSettingsPage.ImageFileTypes}"/>
+                        </StackPanel>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="启动文字"
+                                                IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <TextBox MinWidth="200" MaxWidth="300"
+                                 Watermark="正在启动…"
+                                 Text="{Binding ViewModel.SettingsService.Settings.SplashCustomText}"
+                                 VerticalAlignment="Center" />
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="显示详细状态信息"
+                                                IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}"
+                                                Description="注意：在不启用【禁用动画等待】的情况下，此选项会拖慢启动速度。">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.ShowDetailedStatusOnSplash}"/>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem IsVisible="{Binding ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}"
+                                                Content="自定义启动界面功能已被您所在的组织禁用。"/>
+                <controls3:SettingsExpanderItem ActionIconSource="{ci:FluentIconSource &#xE44E;}"
+                                            IsClickEnabled="True"
+                                            Content="预览启动界面"
+                                            IsEnabled="{Binding !ViewModel.IsSplashPreviewing}"
+                                            Click="SettingsExpanderItemPreviewSplash_OnClick">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <controls3:ProgressRing IsVisible="{Binding ViewModel.IsSplashPreviewing}"
+                                                Width="24" Height="24"/>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
             
             <Separator Margin="0 12 0 4" />
