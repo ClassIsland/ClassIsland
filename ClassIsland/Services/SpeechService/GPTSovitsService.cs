@@ -40,8 +40,6 @@ public class GptSoVitsService : ISpeechService
 
     private bool IsPlaying { get; set; } = false;
 
-    private CancellationTokenSource? requestingCancellationTokenSource;
-
     private GptSoVitsPlayInfo? _currentPlayInfo;
 
 
@@ -77,7 +75,7 @@ public class GptSoVitsService : ISpeechService
         {
             return;
         }
-        var requestToken = ResetRequestCancellationTokenSource();
+        var cancellationTokenSource = new CancellationTokenSource();
 
         var cache = GetCachePath(text);
         Logger.LogDebug("语音缓存路径：{CachePath}", cache);
@@ -85,20 +83,21 @@ public class GptSoVitsService : ISpeechService
         Task<bool>? task = null;
         if (!File.Exists(cache))
         {
-            task = GenerateSpeechAsync(text, cache, requestToken);
+            task = GenerateSpeechAsync(text, cache, cancellationTokenSource.Token);
         }
 
-        if (requestToken.IsCancellationRequested)
+        if (cancellationTokenSource.IsCancellationRequested)
+        {
+            cancellationTokenSource.Dispose();
             return;
+        }
 
-        PlayingQueue.Enqueue(new GptSoVitsPlayInfo(cache, new CancellationTokenSource(), task));
+        PlayingQueue.Enqueue(new GptSoVitsPlayInfo(cache, cancellationTokenSource, task));
         _ = ProcessPlayerList();
     }
 
     public void ClearSpeechQueue()
     {
-        CancelAndDisposeRequestCancellationTokenSource();
-
         _currentPlayInfo?.CancellationTokenSource.Cancel();
         while (PlayingQueue.Count > 0)
         {
@@ -226,20 +225,4 @@ public class GptSoVitsService : ISpeechService
         }
     }
 
-    private CancellationToken ResetRequestCancellationTokenSource()
-    {
-        var previousSource = requestingCancellationTokenSource;
-        var currentSource = new CancellationTokenSource();
-        requestingCancellationTokenSource = currentSource;
-        previousSource?.Cancel();
-        previousSource?.Dispose();
-        return currentSource.Token;
-    }
-
-    private void CancelAndDisposeRequestCancellationTokenSource()
-    {
-        requestingCancellationTokenSource?.Cancel();
-        requestingCancellationTokenSource?.Dispose();
-        requestingCancellationTokenSource = null;
-    }
 }
