@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Core.Enums.SettingsWindow;
@@ -20,6 +23,8 @@ namespace ClassIsland.Views.SettingPages;
 [SettingsPageInfo("general", "基本", SettingsPageCategory.Internal)]
 public partial class GeneralSettingsPage : SettingsPageBase
 {
+    public static List<FilePickerFileType> ImageFileTypes { get; } = [FilePickerFileTypes.ImageAll];
+
     public GeneralSettingsViewModel ViewModel { get; } = IAppHost.GetService<GeneralSettingsViewModel>();
 
     public GeneralSettingsPage()
@@ -73,6 +78,23 @@ public partial class GeneralSettingsPage : SettingsPageBase
     {
         ViewModel.SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
+    }
+
+    private async void SettingsExpanderItemPreviewSplash_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.IsSplashPreviewing = true;
+        try
+        {
+            IAppHost.GetService<ISplashService>().ResetSplashText();
+            var splash = IAppHost.GetService<ISplashProvider>();
+            await splash.StartSplash();
+            await Task.Delay(5000);
+            await splash.EndSplash();
+        }
+        finally
+        {
+            ViewModel.IsSplashPreviewing = false;
+        }
     }
 }
 
