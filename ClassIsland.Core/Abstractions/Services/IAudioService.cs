@@ -51,4 +51,6 @@ public interface IAudioService : IDisposable
     /// <param name="cancellationToken">用于停止音频播放的取消令牌</param>
     /// <returns></returns>
     Task PlayAudioAsync(Stream audio, float volume, CancellationToken? cancellationToken = null);
+
+    Task PlayAudioAsync(string filePath, float volume, CancellationToken? cancellationToken = null);
 }

@@ -119,7 +119,7 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
         tcs.Task.Wait();  // 不要在此处 await，否则会导致设备停止过程阻塞，无法完成播放流程。
         Logger.LogDebug("结束播放音频 {}", audio.GetHashCode());
         player.PlaybackEnded -= OnPlayerOnPlaybackEnded;
-        
+
         return;
 
         void OnPlayerOnPlaybackEnded(object? sender, EventArgs args)
@@ -127,6 +127,12 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
             tcs.TrySetResult(true);
         }
     });
+
+    public async Task PlayAudioAsync(string filePath, float volume, CancellationToken? cancellationToken = null)
+    {
+        using var audio = File.OpenRead(filePath);
+        await PlayAudioAsync(audio, volume, cancellationToken);
+    }
 
     public void Dispose()
     {
