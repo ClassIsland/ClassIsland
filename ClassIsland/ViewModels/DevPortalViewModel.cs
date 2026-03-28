@@ -43,6 +43,8 @@ public partial class DevPortalViewModel(
         
         """;
 
+    [ObservableProperty] private ISplashProvider? _splashProvider;
+
     public bool IsTargetDateTimeLoaded => IsTargetDateLoaded && IsTargetTimeLoaded;
 
     [ObservableProperty] private string _styleSelector = "Control";

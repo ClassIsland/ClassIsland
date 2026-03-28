@@ -1,0 +1,100 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:views="clr-namespace:ClassIsland.Views;assembly=ClassIsland"
+        xmlns:classIsland="clr-namespace:Sentry.Protocol;assembly=Sentry"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ClassIsland.Views.SplashWindow"
+        Title="ClassIsland 正在启动…"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True"
+        SystemDecorations="None"
+        Height="100"
+        Width="400"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        TransparencyLevelHint="AcrylicBlur, Transparent"
+        RequestedThemeVariant="Dark"
+        d:DataContext="{d:DesignInstance views:SplashWindow}">
+    <Border Padding="17"
+            Background="#88111111"
+            BorderBrush="{DynamicResource ControlStrokeColorOnAccentDefaultBrush}"
+            BorderThickness="1"
+            Opacity="1">
+        <Grid RowDefinitions="*,8,*,Auto">
+            <!-- Logo -->
+            <StackPanel x:Name="AppLogo" Grid.Row="0" Orientation="Horizontal" RenderTransformOrigin="0.5,0.5"
+                        Opacity="0">
+                <StackPanel.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform X="0"/>
+                    </TransformGroup>
+                </StackPanel.RenderTransform>
+                <asyncImageLoader:AdvancedImage Stretch="Uniform"
+                       Height="24" 
+                       VerticalAlignment="Center"
+                       Margin="0 0 8 0"
+                       Classes.use-default-logo="{Binding SettingsService.Settings.SplashCustomLogoSource, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=''}">
+                    <asyncImageLoader:AdvancedImage.Styles>
+                        <Style Selector="asyncImageLoader|AdvancedImage">
+                            <Setter Property="Source" Value="{Binding SettingsService.Settings.SplashCustomLogoSource}"/>
+                            <Style Selector="^.use-default-logo">
+                                <Setter Property="Source" Value="/Assets/AppLogo.png"/>
+                            </Style>
+                        </Style>
+                    </asyncImageLoader:AdvancedImage.Styles>
+                </asyncImageLoader:AdvancedImage>
+                <TextBlock Text="ClassIsland" 
+                           VerticalAlignment="Center"
+                           FontSize="20"
+                           FontWeight="Medium"
+                           IsVisible="{Binding SettingsService.Settings.SplashCustomLogoSource, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=''}">
+                </TextBlock>
+            </StackPanel>
+            <!-- Status -->
+            <StackPanel x:Name="Status" Grid.Row="2" Orientation="Horizontal" RenderTransformOrigin="0.5,0.5"
+                        Opacity="0">
+                <StackPanel.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform />
+                    </TransformGroup>
+                </StackPanel.RenderTransform>
+                <controls:ProgressRing Width="24"
+                             Height="24" 
+                             IsIndeterminate="True"
+                             VerticalAlignment="Center"
+                             Margin="0 0 4 0"/>
+                <TextBlock Text="{Binding SplashService.SplashStatus, Mode=OneWay}" 
+                           VerticalAlignment="Center"
+                           FontSize="16"
+                           FontWeight="Regular"/>
+            </StackPanel>
+            <TextBlock Grid.Row="2"
+                       VerticalAlignment="Bottom"
+                       HorizontalAlignment="Left"
+                       FontSize="9"
+                       Opacity="0.5"
+                       Margin="-16 0 0 -14">
+                <Run Text="ClassIsland"/>
+                <Run Text="{x:Static ci:AppBase.AppVersionLong}"/>
+            </TextBlock>
+            <Canvas Height="4" Width="400" Grid.Row="3" VerticalAlignment="Bottom"
+                    Margin="0 0 0 -17">
+                <Rectangle Width="400" Height="4" Fill="White" Canvas.Bottom="0"
+                           x:Name="ProgressBarFill"/>
+            </Canvas>
+            
+        </Grid>
+    </Border>
+</Window>
