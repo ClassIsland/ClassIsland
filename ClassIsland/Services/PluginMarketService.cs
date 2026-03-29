@@ -51,13 +51,11 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
     private IDisposable? _pluginsUpdateProgressObserver;
-    private readonly OSPlatform _currentOSPlatform = new Func<OSPlatform>(() =>
-    {
-        if (OperatingSystem.IsWindows()) return OSPlatform.Windows;
-        if (OperatingSystem.IsLinux()) return OSPlatform.Linux;
-        if (OperatingSystem.IsMacOS()) return OSPlatform.OSX;
-        return OSPlatform.Create("Unknown");
-    })();
+    private readonly OSPlatform _currentOSPlatform = 
+        OperatingSystem.IsWindows() ? OSPlatform.Windows :
+        OperatingSystem.IsLinux()   ? OSPlatform.Linux :
+        OperatingSystem.IsMacOS()   ? OSPlatform.OSX :
+        OSPlatform.Create("Unknown");
 
     public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger)
     {
