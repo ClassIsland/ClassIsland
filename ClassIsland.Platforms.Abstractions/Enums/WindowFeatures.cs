@@ -34,4 +34,8 @@ public enum WindowFeatures
     /// 跳过窗口管理器
     /// </summary>
     SkipManagement = 32,
+    /// <summary>
+    /// 嵌入桌面层（窗口位于桌面图标层，不受显示桌面操作影响）
+    /// </summary>
+    DesktopLayer = 64,
 }
