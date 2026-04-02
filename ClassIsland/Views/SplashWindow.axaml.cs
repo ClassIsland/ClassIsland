@@ -12,6 +12,7 @@ using Avalonia.Rendering.Composition;
 using Avalonia.Rendering.Composition.Animations;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Views;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Services;
@@ -20,7 +21,7 @@ using ReactiveUI;
 
 namespace ClassIsland.Views;
 
-public partial class SplashWindow : Window, ISplashProvider
+public partial class SplashWindow : SplashWindowBase
 {
     public ISplashService SplashService { get; } = IAppHost.GetService<ISplashService>();
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
@@ -42,23 +43,16 @@ public partial class SplashWindow : Window, ISplashProvider
         PreInitAnimations();
     }
 
-    public async Task StartSplash()
+    public override async Task StartSplash()
     {
         SplashService.ProgressChanged += SplashServiceOnProgressChanged;
-        var tcs = new TaskCompletionSource();
-        Opened += async (s, e) => 
-        {
-            await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
-            tcs.SetResult();
-        };
-        Show();
-        await tcs.Task;
+        await base.StartSplash();
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent | WindowFeatures.ToolWindow, true);
         _splashStatusObserver = SplashService.ObservableForProperty(x => x.SplashStatus)
             .Subscribe(_ => TryRunJobs());
         SetupIntroAnimation(AppLogo, TimeSpan.FromMilliseconds(0));
         SetupIntroAnimation(Status, TimeSpan.FromMilliseconds(150));
-        await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+        await TryWaitJobs();
     }
 
     private async void SplashServiceOnProgressChanged(object? sender, double value)
@@ -126,21 +120,11 @@ public partial class SplashWindow : Window, ISplashProvider
         compositionVisual.StartAnimation(nameof(compositionVisual.Opacity), opacityAnimation);
     }
 
-    private static void TryRunJobs()
-    {
-        if (IThemeService.IsWaitForTransientDisabled)
-        {
-            return;
-        }
-
-        Dispatcher.UIThread.RunJobs();
-    }
-
-    public async Task EndSplash()
+    public override async Task EndSplash()
     {
         SplashService.ProgressChanged -= SplashServiceOnProgressChanged;
         await UpdateAnimationAsync(100, true);
-        Close();
+        await base.EndSplash();
         _splashStatusObserver?.Dispose();
         _splashStatusObserver = null;
     }
