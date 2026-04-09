@@ -13,6 +13,7 @@ using ClassIsland.Core.Converters;
 using ClassIsland.Models.Actions;
 using ClassIsland.Shared.Helpers;
 using Microsoft.Extensions.Logging;
+using ClassIsland;
 namespace ClassIsland.Services.Automation.Actions;
 
 [ActionInfo("classisland.settings", "应用设置", "\uef27", addDefaultToMenu: false)]
@@ -20,12 +21,16 @@ public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSetting
 {
     SettingsService SettingsService { get; } = App.GetService<SettingsService>();
     ILogger<ModifyAppSettingsActionSettings> Logger { get; } = App.GetService<ILogger<ModifyAppSettingsActionSettings>>();
+    MainWindow MainWindow { get; } = App.GetService<MainWindow>();
 
     protected override async Task OnInvoke()
     {
         base.OnInvoke();
 
         if (Settings.Name == "") return;
+
+        if (MainWindow.ViewModel.IsEditMode && Settings.Name is "CurrentComponentConfig" or "WindowDockingLocation")
+            return;
 
         var propertyInfo = SettingsService.GetPropertyInfoByName(Settings.Name);
         if (propertyInfo == null)
@@ -53,6 +58,9 @@ public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSetting
         base.OnRevert();
 
         if (Settings.Name == "") return;
+
+        if (MainWindow.ViewModel.IsEditMode && Settings.Name is "CurrentComponentConfig" or "WindowDockingLocation")
+            return;
 
         await Dispatcher.UIThread.InvokeAsync(() =>
         {

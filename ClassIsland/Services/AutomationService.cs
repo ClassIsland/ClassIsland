@@ -18,6 +18,7 @@ using ClassIsland.Core.Models.Automation;
 using ClassIsland.Models;
 using Microsoft.Extensions.DependencyInjection;
 using ClassIsland.Shared.Enums;
+using ClassIsland;
 using ClassIsland.Shared.Models.Automation;
 namespace ClassIsland.Services;
 
@@ -88,6 +89,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
     /// </summary>
     void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
+        if (IAppHost.GetService<MainWindow>().ViewModel.IsEditMode) return;
         if (!ProfileService.IsCurrentProfileTrusted) return;
 
         var currentTime = ExactTimeService.GetCurrentLocalDateTime();
@@ -116,6 +118,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
     /// </summary>
     void TriggerTriggered(object? sender, EventArgs e)
     {
+        if (IAppHost.GetService<MainWindow>().ViewModel.IsEditMode) return;
         if (!SettingsService.Settings.IsAutomationEnabled) return;
         if (sender is not TriggerBase trigger) return;
         var workflow = trigger.AssociatedWorkflow;
@@ -137,6 +140,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
     /// </summary>
     void TriggerTriggeredRevert(object? sender, EventArgs e)
     {
+        if (IAppHost.GetService<MainWindow>().ViewModel.IsEditMode) return;
         if (!SettingsService.Settings.IsAutomationEnabled) return;
         if (sender is not TriggerBase trigger) return;
         var workflow = trigger.AssociatedWorkflow;
@@ -155,6 +159,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
     /// </summary>
     void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
     {
+        if (IAppHost.GetService<MainWindow>().ViewModel.IsEditMode) return;
         if (!SettingsService.Settings.IsAutomationEnabled) return;
 
         foreach (var workflow in Workflows.Where(x => x is
