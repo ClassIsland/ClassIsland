@@ -158,7 +158,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
     private bool TomorrowWeatherRuleHandler(object? o)
     {
-        if (o is not TomorrowWeatherRuleSettings settings)
+        if (o is not CurrentWeatherRuleSettings settings)
         {
             return false;
         }
