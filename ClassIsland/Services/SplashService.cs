@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
-
+using ClassIsland.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;
@@ -10,6 +11,7 @@ public class SplashService: ObservableRecipient, ISplashService
 {
     private string _splashStatus = "正在启动…";
     private double _currentProgress = 0.0;
+    private ISplashProvider? _currentSplashProvider;
 
     public string SplashStatus
     {
@@ -45,11 +47,27 @@ public class SplashService: ObservableRecipient, ISplashService
     public event EventHandler<double>? ProgressChanged;
 
     public event EventHandler? SplashEnded;
-    public void EndSplash()
+    public async Task EndSplash()
     {
-        if (!SettingsService.Settings.IsSplashEnabled)
-            return;
-        SplashEnded?.Invoke(this, EventArgs.Empty);
+        if (_currentSplashProvider != null)
+        {
+            await _currentSplashProvider.EndSplash();
+        }
+        _currentSplashProvider = null;
+    }
+
+    public async Task StartSplash()
+    {
+        if (_currentSplashProvider != null)
+        {
+            throw new InvalidOperationException("启动界面已显示，不能重复显示启动界面。");
+        }
+
+        _currentSplashProvider = IAppHost.TryGetService<ISplashProvider>();
+        if (_currentSplashProvider != null)
+        {
+            await _currentSplashProvider.StartSplash();
+        }
     }
 
     private SettingsService SettingsService { get; }

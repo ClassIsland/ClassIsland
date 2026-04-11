@@ -1,9 +1,4 @@
-#if false
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
@@ -13,14 +8,11 @@ using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Protobuf.Command;
 using ClassIsland.Shared.Protobuf.Enum;
-
-
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("0117fb4f-5374-434a-97fb-4f5374634a07", "集控提醒", MaterialIconKind.Work, "来自集控服务器的提醒。")]
+[NotificationProviderInfo("0117fb4f-5374-434a-97fb-4f5374634a07", "集控提醒", "\uE821", "来自集控服务器的提醒。")]
 public class ManagementNotificationProvider : NotificationProviderBase
 {
     private INotificationHostService NotificationHostService { get; }
@@ -50,14 +42,30 @@ public class ManagementNotificationProvider : NotificationProviderBase
     {
         if (e.Type != CommandTypes.SendNotification)
             return;
-        var payload = SendNotification.Parser.ParseFrom(e.Payload);
+        SendNotification payload;
+        try
+        {
+            payload = SendNotification.Parser.ParseFrom(e.Payload);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "解析集控通知指令失败。");
+            return;
+        }
+
         if (payload == null)
             return;
+
+        var repeatCounts = Math.Max(1, payload.RepeatCounts);
+        var durationSeconds = payload.DurationSeconds <= 0 ? 5 : payload.DurationSeconds;
+        var maskText = string.IsNullOrWhiteSpace(payload.MessageMask) ? "集控通知" : payload.MessageMask;
+        var messageContent = string.IsNullOrWhiteSpace(payload.MessageContent) ? "" : payload.MessageContent;
+
         Logger.LogInformation("接受集控消息：{} {}", payload.MessageMask, payload.MessageContent);
         ShowNotification(new NotificationRequest()
         {
-            MaskContent = NotificationContent.CreateTwoIconsMask(payload.MessageMask, rightIcon:MaterialIconKind.Announcement),
-            OverlayContent = NotificationContent.CreateRollingTextContent(payload.MessageContent, TimeSpan.FromSeconds(payload.DurationSeconds) * payload.RepeatCounts, payload.RepeatCounts),
+            MaskContent = NotificationContent.CreateTwoIconsMask(maskText, rightIcon: "\uE7E7"),
+            OverlayContent = NotificationContent.CreateRollingTextContent(messageContent, TimeSpan.FromSeconds(durationSeconds) * repeatCounts, repeatCounts),
             IsPriorityOverride = payload.IsEmergency,
             PriorityOverride = -1,
             RequestNotificationSettings =
@@ -70,13 +78,4 @@ public class ManagementNotificationProvider : NotificationProviderBase
             }
         });
     }
-
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-    }
 }
-#endif

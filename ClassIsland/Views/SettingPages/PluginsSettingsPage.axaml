@@ -155,6 +155,10 @@
                                 <ci:IconText Glyph="&#xE0BD;" Text="重启以应用更改"/>
                             </Button>
                         </WrapPanel>
+                        <controls2:InfoBar Message="此插件未声明支持当前所运行的操作系统。此插件可能不能正常按预期工作。"
+                                           Severity="Warning"
+                                           IsOpen="{Binding IsNotSupportCurrentOS}"> 
+                        </controls2:InfoBar>
                         <!-- Download Progresses -->
                         <DockPanel Margin="0 4 0 0" IsVisible="{Binding DownloadProgress.IsDownloading, FallbackValue={x:False}}">
                             <ProgressBar Value="{Binding DownloadProgress.Progress}"/>

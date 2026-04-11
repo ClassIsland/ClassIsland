@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
@@ -145,6 +146,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     public TopmostEffectWindow TopmostEffectWindow { get; }
     
     public IXamlThemeService XamlThemeService { get; }
+    private ITutorialService TutorialService { get; }
 
     public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
 
@@ -201,7 +203,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         IWindowRuleService windowRuleService,
         IManagementService managementService,
         TopmostEffectWindow topmostEffectWindow,
-        IXamlThemeService xamlThemeService)
+        IXamlThemeService xamlThemeService,
+        ITutorialService tutorialService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -219,8 +222,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ManagementService = managementService;
         TopmostEffectWindow = topmostEffectWindow;
         XamlThemeService = xamlThemeService;
+        TutorialService = tutorialService;
 
+        ViewModel = new MainViewModel();
         DataContext = this;
+        InitializeComponent();
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
@@ -233,9 +239,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         };
         LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-        ViewModel = new MainViewModel();
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
-        InitializeComponent();
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
         IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
@@ -311,6 +315,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
+        TutorialService.BeginNotCompletedTutorials("classisland.getStarted.welcome/init");
     }
 
     public override void Show()
@@ -340,9 +345,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         AppBase.Current.AppStopping += (sender, args) => AppBase.Current.PlatformSettings!.ColorValuesChanged -= OnSystemEventsOnUserPreferenceChanged;
         span?.Finish();
     }
-
+    
     private void InitializeRawInputHandler()
     {
+        if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("RawInput仅在Windows平台受支持。");
         var handle = TryGetPlatformHandle()?.Handle ?? nint.Zero;
         RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse,
             RawInputDeviceFlags.InputSink, handle);
@@ -384,6 +390,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Event Handlers
+    
     private void HighFreqTopmostRecheckTimerOnTick(object? sender, EventArgs e)
     {
         if (ViewModel.Settings.WindowTopmostRecheckMode == 3)
@@ -496,6 +503,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             PseudoClasses.Set(":windowed", ViewModel.IsWindowMode);
             UpdateTheme();
+            if (ViewModel.IsEditMode && ViewModel.IsWindowMode)
+            {
+                // 编辑模式从全屏切到自由窗口时，窗口管理器可能把窗口压到后面。
+                // 延后一帧激活，确保窗口保持在前台可操作。
+                _ = Dispatcher.UIThread.InvokeAsync(Activate, DispatcherPriority.Background);
+            }
         }
     }
 
@@ -518,7 +531,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             e.Cancel = true;
             if (ViewModel.IsEditMode)
             {
-                ViewModel.IsEditMode = false;
+                ExitEditMode();
             }
             return;
         }
@@ -557,6 +570,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             case 0:
                 if (!OperatingSystem.IsWindows())
                 {
+                    SettingsService.Settings.TaskBarIconClickBehavior = 4;
                     break;
                 }
                 // Get this tray icon's implementation
@@ -589,6 +603,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 break;
             case 3:
                 OpenClassSwapWindow();
+                break;
+            case 4:
+                App.GetService<SettingsWindowNew>().Open();
                 break;
         }
     }
@@ -695,17 +712,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
         ThemeService.SetTheme(ViewModel.Settings.Theme, primary);
 
-        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize)] =
-            SettingsService.Settings.MainWindowSecondaryFontSize;
-        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowBodyFontSize)] =
-            SettingsService.Settings.MainWindowBodyFontSize;
-        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowEmphasizedFontSize)] =
-            SettingsService.Settings.MainWindowEmphasizedFontSize;
-        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowLargeFontSize)] =
-            SettingsService.Settings.MainWindowLargeFontSize;
-
-        ControlColorHelper.SetControlForegroundColor(ResourceLoaderBorder, ViewModel.Settings.CustomForegroundColor,
-            ViewModel.Settings.IsCustomForegroundColorEnabled);
+        if (ResourceLoaderBorder != null)
+        {
+            ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize)] =
+                SettingsService.Settings.MainWindowSecondaryFontSize;
+            ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowBodyFontSize)] =
+                SettingsService.Settings.MainWindowBodyFontSize;
+            ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowEmphasizedFontSize)] =
+                SettingsService.Settings.MainWindowEmphasizedFontSize;
+            ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowLargeFontSize)] =
+                SettingsService.Settings.MainWindowLargeFontSize;
+            ControlColorHelper.SetControlForegroundColor(ResourceLoaderBorder, ViewModel.Settings.CustomForegroundColor,
+                ViewModel.Settings.IsCustomForegroundColorEnabled);
+        }
 
         App._isCriticalSafeModeEnabled = ViewModel.Settings.IsCriticalSafeMode;
         SizeToContent = SizeToContent.Height;
@@ -758,7 +777,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void UpdateWindowFeatures()
     {
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, ViewModel is { IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false });
+        var shouldUseToolWindow = ViewModel is { IsEditMode: false, IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false };
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, shouldUseToolWindow);
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, !ViewModel.IsEditMode);
     }
 
@@ -782,7 +802,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 break;
         }
 
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, Topmost);
+        // 在 Linux 上 SkipManagement 会触发 unmap/map（override_redirect 切换），
+        // 编辑模式切换“自由窗口 -> 全屏”时会出现关闭动画甚至不显示。
+        // 编辑模式下不启用 SkipManagement，避免触发这条路径。
+        var shouldSkipManagement = Topmost && !ViewModel.IsEditMode;
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, shouldSkipManagement);
+        if (Topmost)
+        {
+            // 防止窗口在切换层级时残留 Bottommost 状态，导致“已激活但仍在最底层”。
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost, false);
+        }
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, Topmost);
     }
 
@@ -809,6 +838,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         var dockingTop = ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2;
         var verticalSafeAreaPx = XamlThemeService.ActualVerticalSafeAreaPx;
+        if (TutorialService.IsTutorialRunning && TutorialService.AttachedToplevel == this)
+        {
+            verticalSafeAreaPx = Math.Max(verticalSafeAreaPx, 150);
+        }
         var safeT = Math.Max(dockingTop ? Math.Min(verticalSafeAreaPx, oy) : verticalSafeAreaPx, 0) * scale;
         var safeB = Math.Max(dockingTop ? verticalSafeAreaPx : Math.Min(verticalSafeAreaPx, -oy), 0) * scale;
         var x = screen.WorkingArea.X + ox;
@@ -819,8 +852,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var clientBoundsRelative = new PixelRect(0, (int)safeT, (int)aw, (int)ah)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
-        LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
-        LayoutContainerGrid.Height = Height = RootLayoutTransformControl.Bounds.Height + safeT + safeB;
+        if (LayoutContainerGrid != null)
+        {
+            LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
+            LayoutContainerGrid.Height = Height = RootLayoutTransformControl.Bounds.Height + safeT + safeB;
+        }
         ViewModel.ActualRootOffsetX = 0;
         ViewModel.ActualRootOffsetY = 0;
         var newPos = new PixelPoint((int)x, (int)y);
@@ -828,6 +864,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             Position = newPos;
         }
+        WindowState = WindowState.Normal;
+        
         if (updateEffectWindow)
         {
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
@@ -868,9 +906,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var clientBoundsRelative = new PixelRect(relativeX, relativeY, width, height)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
-        LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
-        LayoutContainerGrid.Height = Height = (screen.Bounds.Height - 1)  // 防止 Windows 发电误以为是全屏
-                                              / dpiY;
+        if (LayoutContainerGrid != null) 
+        {
+            LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
+            LayoutContainerGrid.Height = Height = (screen.Bounds.Height - 1)  // 防止 Windows 发电误以为是全屏
+                                                  / dpiY;
+        }
         ViewModel.ActualRootOffsetX = ox;
         ViewModel.ActualRootOffsetY = oy;
         var newPos = new PixelPoint((int)screen.Bounds.X, (int)screen.Bounds.Y);
@@ -1127,10 +1168,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         AppBase.Current.Restart();
     }
     
+    private void NativeMenuItemOpenTutorialEditor_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<TutorialEditorWindow>().Show();
+    }
 
     private void NativeMenuItemDebugOpenScreenshotWindow_OnClick(object? sender, EventArgs e)
     {
         IAppHost.GetService<ScreenshotHelperWindow>().Show();
+    }
+    
+    private void NativeMenuItemTutorials_OnClick(object? sender, EventArgs e)
+    {
+        IAppHost.GetService<TutorialCenterWindow>().Open();
     }
     #endregion
 
@@ -1209,24 +1259,49 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void EnterEditMode()
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+        if (ViewModel.IsEditMode || !await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
         {
             return;
         }
 
         ViewModel.IsEditMode = true;
-
-        if (!ViewModel.Settings.HasEditModeTutorialShown)
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.enter");
+        TutorialService.BeginNotCompletedTutorials(
+            "classisland.getStarted.componentsEditing/introduction",
+            "classisland.getStarted.componentsEditing/addComponent");
+        if (ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.SettingsType != null))
         {
-            ViewModel.EditModeTutorialPhase = 0;
+            TutorialService.BeginNotCompletedTutorials(
+                "classisland.getStarted.componentsEditing/componentSettings");
         }
+        if (ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.IsComponentContainer))
+        {
+            TutorialService.BeginNotCompletedTutorials(
+                "classisland.getStarted.componentsEditing/containerComponent");
+        }
+        TutorialService.BeginNotCompletedTutorials("classisland.getStarted.componentsEditing/mainWindowLine");
     }
 
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
     {
+        ExitEditMode();
+    }
+
+    private void ExitEditMode()
+    {
+        if (ViewModel.EditModeView != null)
+        {
+            ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
+            ViewModel.EditModeView.ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Closed;
+        }
         ViewModel.IsEditMode = false;
         ViewModel.EditModeTutorialPhase = -1;
         ComponentsService.SaveConfig();
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.exit");
     }
 
     private void ButtonOpenComponentsLib_OnClick(object? sender, RoutedEventArgs e)
@@ -1321,7 +1396,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             listBox.SelectedItem = null;
         }
         ViewModel.SelectedComponentSettings = settings;
-        
+        Dispatcher.UIThread.Post(() =>
+        {
+            TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.selection.changed");
+        });
     }
 
     [RelayCommand]
@@ -1405,6 +1483,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void ButtonNewMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
     {
         ComponentsService.CurrentComponents.Lines.Add(new MainWindowLineSettings());
+        TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.mainWindowLine.create");
     }
     
     private void ButtonManageComponentLayouts_OnClick(object? sender, RoutedEventArgs e)

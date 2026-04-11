@@ -2,6 +2,20 @@
 
 2.1 - LiliyaOlenyeva（莉莉娅·阿琳） 的新增功能。
 
+## 翻新与迎新
+
+当您在长假长时间没有启动 ClassIsland 后，再次启动 ClassIsland 时应用会询问您是否翻新部分设置以适应新学期。同时您也可以启用迎新模式，迎新模式会在翻新的基础上重置教程状态，以便新同学上手应用。
+
+![](https://res.classisland.tech/screenshots/changelogs/2.1/6.webp)
+
+![](https://res.classisland.tech/screenshots/changelogs/2.1/7.webp)
+
+## 教程
+
+ClassIsland 现在引入了教程系统，您可以跟着教程手把手地上手 ClassIsland。
+
+![](https://res.classisland.tech/screenshots/changelogs/2.1/5.webp)
+
 ## 表格课表编辑器
 
 现在档案编辑器支持以周表格的形式快速录入和查看课表。此外，在通过点击表头创建课表时，应用会自动填充部分信息，提升课表创建效率。
@@ -23,6 +37,68 @@
 ![](https://res.classisland.tech/screenshots/changelogs/2.1/1.webp)
 
 此外，设置页面导航栏的高亮逻辑也得到了优化。
+
+***
+
+# 2.0.3.1
+
+2.1 - LiliyaOlenyeva（莉莉娅·阿琳）
+
+这个版本中我们添加了教学跳过功能，以临时缓解教学中出现的边缘情况。我们会在未来进一步增强教学系统的健壮性，以从根源解决此问题。
+
+在此版本发布后，我将放缓 ClassIsland 的开发节奏，直到我高考结束（2026.6），感谢各位用户的理解与支持。
+
+## 🚀 新增功能与优化
+
+- 【教学】允许用户跳过教程 ([#1697](https://github.com/ClassIsland/ClassIsland/issues/1697))
+- 【应用】在插件崩溃信息中添加插件版本 (([#1671](https://github.com/ClassIsland/ClassIsland/issues/1671)))
+- 【依赖】将 Avalonia 升级到 11.3.12
+
+## 🐛 Bug 修复
+
+- 【课表控件】修复课表组件双向绑定会意外更新时间点信息的问题 ([#1714](https://github.com/ClassIsland/ClassIsland/issues/1714))
+- 【主窗口/编辑模式】修复在 Linux 下的编辑模式中窗口容易消失的问题
+- 【集控】修复自集控拉取组件数据时无法解析颜色值的问题 (([#1703](https://github.com/ClassIsland/ClassIsland/issues/1703)))
+- 【集控】收到通知后无通知显示 (([#1707](https://github.com/ClassIsland/ClassIsland/issues/1707)))
+- 【插件市场】修复插件更新通知和自动更新选项无效的问题 ([#1661](https://github.com/ClassIsland/ClassIsland/issues/1661))
+- 【提醒/上下课提醒】修复户外课程即将上课提醒未使用设置的户外提醒遮罩的问题 ([#1686](https://github.com/ClassIsland/ClassIsland/issues/1686))
+- 【教学】修复课表教学触发时机不正确的问题 ([#1681](https://github.com/ClassIsland/ClassIsland/issues/1681))
+- 【UI/档案编辑器】修复档案编辑器退出时未自动保存档案的问题 ([#1667](https://github.com/ClassIsland/ClassIsland/issues/1667))
+- 【UI/欢迎】修复欢迎界面的基本页面可能出现无法前进的问题
+- 【UI/应用设置/天气】纠正天气设置页面重复「使用」的笔误 (([#1722](https://github.com/ClassIsland/ClassIsland/issues/1722)))
+- 【UI/应用设置/主题】解决主题信息可编辑的问题
+- 【主界面】修复 RawInput 在不受支持的平台上初始化的问题
+- 【应用】修复 WOA 平台上程序无法启动的问题
+
+***
+
+# 2.0.3.0
+
+2.1 - LiliyaOlenyeva（莉莉娅·阿琳）
+
+## 🚀 新增功能与优化
+
+- **【翻新】翻新与迎新：** 在长假长时间没有启动应用后，应用会询问您是否需要翻新部分设置以适应新学期。迎新模式将在翻新的基础上重置教程状态，以便新同学快速上手本应用 ([#496](https://github.com/ClassIsland/ClassIsland/issues/496))
+- **【教程】教程：** 加入基础教程，手把手助您上手本应用
+- 【UI/应用设置】将应用设置界面的标题栏高度设置为 48
+- 【UI/应用设置】确保同时“需要重启”信息框只显示一个
+- 【UI/主菜单】为主菜单添加图标
+- 【UI/主菜单】优化主菜单项目排序与描述
+- 【UI/主菜单】为托盘菜单点击添加“打开设置窗口”行为，并将其设置为非Windows平台的默认值 ([#1655](https://github.com/ClassIsland/ClassIsland/issues/1655))
+- 【恢复】修改了回滚按钮在恢复模式中的启用状态，使其由是否有多个有效的安装决定，同时为回滚按钮添加了OnClick事件 ([#1598](https://github.com/ClassIsland/ClassIsland/issues/1598))
+
+## 🐛 Bug 修复
+
+- 【应用】修复设计器无法使用的问题
+- 【主界面】修复主界面会被意外最大化/最小化的问题 ([#1649](https://github.com/ClassIsland/ClassIsland/issues/1649))
+- 【主界面/编辑模式】修复双指缩放乱飘的问题，将 PanAndZoom 更新到 11.3.9.1 ([#1600](https://github.com/ClassIsland/ClassIsland/issues/1600))
+- 【主界面/编辑模式】修复退出编辑模式的抽屉残留的问题
+- 【主界面/编辑模式】修复在选中组件后退出编辑模式后再次进入编辑模式时选择异常的问题
+- 【平台/Windows】修复在 Arm64 架构上因 Harmony 不支持 arm64 导致修补失败的问题 ([#1638](https://github.com/ClassIsland/ClassIsland/issues/1638))
+- 【平台/Windows】修复在 x86 架构上播放音频崩溃的问题 ([#1485](https://github.com/ClassIsland/ClassIsland/issues/1485))
+- 【UI】修复部分窗口可能会被意外最大化的问题 ([#1650](https://github.com/ClassIsland/ClassIsland/issues/1650))
+- 【UI/课表】修复时间点附加信息会在切换主题时消失的问题 ([#1468](https://github.com/ClassIsland/ClassIsland/issues/1468))
+
 
 ***
 

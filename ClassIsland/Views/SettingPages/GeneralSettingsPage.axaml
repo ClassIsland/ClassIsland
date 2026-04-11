@@ -67,6 +67,7 @@
                 <controls3:SettingsExpander.IsVisible>
                     <OnPlatform Default="False">
                         <On Options="Windows" Content="True"/>
+                        <On Options="Linux" Content="True"/>
                     </OnPlatform>
                 </controls3:SettingsExpander.IsVisible>
                 <controls3:SettingsExpander.Footer>
@@ -116,9 +117,14 @@
             </controls3:SettingsExpander>
             
             <!-- 点击托盘图标行为 -->
+            <!-- 平台行为差异：在macOS平台上此选项不显示（无效），在Linux平台上一些DE会正确响应左键（如Deepin），也有其他的DE将左键响应为右键点击（如Ubuntu）-->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C1;}" 
-                                        Header="点击托盘图标行为"
-                                        Description="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。">
+                                        Header="点击托盘图标行为">
+                <controls3:SettingsExpander.Description>
+                    <OnPlatform Default="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。">
+                        <On Options="Linux" Content="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。此选项可能因为桌面环境差异而无法工作。"/>
+                    </OnPlatform>
+                </controls3:SettingsExpander.Description>
                 <controls3:SettingsExpander.IsVisible>
                     <OnPlatform Default="True">
                         <On Options="macOS" Content="False"/>
@@ -134,6 +140,7 @@
                                         <On Options="Windows" Content="True"/>
                                     </OnPlatform>
                                 </ComboBoxItem.IsEnabled>
+                                <!-- 此选项只在Windows平台受支持 -->
                                 <controls1:IconText Glyph="&#xE075;" Text="打开主菜单" />
                             </ComboBoxItem>
                             <ComboBoxItem HorizontalContentAlignment="Left">
@@ -145,11 +152,13 @@
                             <ComboBoxItem HorizontalContentAlignment="Left">
                                 <controls1:IconText Glyph="&#xE15F;" Text="打开换课窗口" />
                             </ComboBoxItem>
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+								<controls1:IconText Glyph="&#xEF27;" Text="打开设置窗口" />
+                            </ComboBoxItem>
                         </ComboBox>
                     </Grid>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
-            
             <!-- 教学安全模式 -->
             <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE809;}" 
                                         Header="教学安全模式"
@@ -177,6 +186,60 @@
                                       IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}" />
                     </StackPanel>
                 </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            
+            <controls3:SettingsExpander Header="显示启动加载界面"
+                                        IconSource="{ci:FluentIconSource &#xEea1;}"
+                                        Description="启动时显示加载界面。注意：在不启用【禁用动画等待】的情况下，此功能会拖慢启动速度。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsSplashEnabled}"/>
+                </controls3:SettingsExpander.Footer>
+                <controls3:SettingsExpanderItem Content="启动图标"
+                                                IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"
+                                    HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <TextBox MinWidth="150" MaxWidth="250"
+                                     Text="{Binding ViewModel.SettingsService.Settings.SplashCustomLogoSource}"
+                                     VerticalAlignment="Center" Margin="0 0 2 0" 
+                                     Watermark="（默认图标）"/>
+                            <controls2:FileBrowserButton
+                                Theme="{StaticResource TransparentButton}"
+                                Content="{ci:FluentIcon &#xE88D;}"
+                                CurrentPath="{Binding ViewModel.SettingsService.Settings.SplashCustomLogoSource, Mode=TwoWay}"
+                                VerticalAlignment="Center"
+                                FileTypes="{x:Static local:GeneralSettingsPage.ImageFileTypes}"/>
+                        </StackPanel>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="启动文字"
+                                                IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <TextBox MinWidth="200" MaxWidth="300"
+                                 Watermark="正在启动…"
+                                 Text="{Binding ViewModel.SettingsService.Settings.SplashCustomText}"
+                                 VerticalAlignment="Center" />
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem Content="显示详细状态信息"
+                                                IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}"
+                                                Description="注意：在不启用【禁用动画等待】的情况下，此选项会拖慢启动速度。">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.ShowDetailedStatusOnSplash}"/>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
+                <controls3:SettingsExpanderItem IsVisible="{Binding ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}"
+                                                Content="自定义启动界面功能已被您所在的组织禁用。"/>
+                <controls3:SettingsExpanderItem ActionIconSource="{ci:FluentIconSource &#xE44E;}"
+                                            IsClickEnabled="True"
+                                            Content="预览启动界面"
+                                            IsEnabled="{Binding !ViewModel.IsSplashPreviewing}"
+                                            Click="SettingsExpanderItemPreviewSplash_OnClick">
+                    <controls3:SettingsExpanderItem.Footer>
+                        <controls3:ProgressRing IsVisible="{Binding ViewModel.IsSplashPreviewing}"
+                                                Width="24" Height="24"/>
+                    </controls3:SettingsExpanderItem.Footer>
+                </controls3:SettingsExpanderItem>
             </controls3:SettingsExpander>
             
             <Separator Margin="0 12 0 4" />

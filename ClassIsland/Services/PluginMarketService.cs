@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Web;
 using ClassIsland.Core;
@@ -13,6 +14,9 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Models;
+using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models;
@@ -56,6 +60,11 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
     private IDisposable? _pluginsUpdateProgressObserver;
+    private readonly OSPlatform _currentOSPlatform = 
+        OperatingSystem.IsWindows() ? OSPlatform.Windows :
+        OperatingSystem.IsLinux()   ? OSPlatform.Linux :
+        OperatingSystem.IsMacOS()   ? OSPlatform.OSX :
+        OSPlatform.Create("Unknown");
 
     public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger, IUriNavigationService uriNavigationService)
     {
@@ -402,13 +411,19 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
             var count = MergedPlugins.Count(x => x.Value is { IsUpdateAvailable: true, IsEnabled: true, RestartRequired: false });
             if (count > 0)
             {
-                await PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+                if (SettingsService.Settings.IsPluginsUpdateNotificationEnabled)
                 {
-                    Title = "插件更新可用",
-                    Body = $"有 {count} 个插件有新版本可用，点击以查看详细信息。",
-                    Activated = (_, _) => IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"))
-                });
-                UpdateAllPlugins();
+                    await PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
+                    {
+                        Title = "插件更新可用",
+                        Body = $"有 {count} 个插件有新版本可用，点击以查看详细信息。",
+                        Activated = (_, _) => IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"))
+                    });
+                }
+                if (SettingsService.Settings.IsPluginsAutoUpdateEnabled)
+                {
+                    UpdateAllPlugins();
+                }
             }
             transaction.Finish(SpanStatus.Ok);
         }
@@ -681,6 +696,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                 plugin.IsAvailableOnMarket = true;
                 plugin.RealIconPath = plugin.RealIconPath.Replace("{root}", root);
                 plugin.Manifest.Readme = plugin.Manifest.Readme.Replace("{root}", root);
+                plugin.IsNotSupportCurrentOS = !plugin.Manifest.SupportedOSPlatforms.Contains(_currentOSPlatform);
                 MergedPlugins[id] = plugin;
             }
         }

@@ -1,0 +1,18 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:ClassIsland.Core.Controls.IconSources;assembly=ClassIsland.Core"
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia">
+    <Design.PreviewWith>
+        <controls:AdvancedImageIcon />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|AdvancedImageIcon">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <asyncImageLoader:AdvancedImage Source="{Binding $parent[controls:AdvancedImageIcon].IconSource.Uri}"
+                                                RenderOptions.BitmapInterpolationMode="HighQuality"/>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

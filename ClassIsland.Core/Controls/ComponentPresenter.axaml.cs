@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
+using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Reactive;
@@ -21,6 +22,7 @@ namespace ClassIsland.Core.Controls;
 /// <summary>
 /// ComponentPresenter.xaml 的交互逻辑
 /// </summary>
+[PseudoClasses(":has-settings", ":container")]
 public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 {
     public static readonly StyledProperty<ComponentSettings?> SettingsProperty = AvaloniaProperty.Register<ComponentPresenter, ComponentSettings?>(
@@ -138,6 +140,8 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         }
 
         PresentingContent = content;
+        PseudoClasses.Set(":has-settings", Settings.AssociatedComponentInfo.SettingsType != null);
+        PseudoClasses.Set(":container", Settings.AssociatedComponentInfo.IsComponentContainer);
         UpdateTheme();
         if (isInit)
         {
