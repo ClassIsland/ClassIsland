@@ -126,10 +126,22 @@
                                                 <Button Theme="{StaticResource TransparentButton}"
                                                         Content="{ci:FluentIcon &#xE61D;}"
                                                         Foreground="IndianRed"
-                                                        Command="{Binding Data.DeleteComponentCommand, Source={StaticResource ParentBindingProxy}}"
-                                                        CommandParameter="{Binding}"
                                                         x:Name="ButtonDeleteComponent"
-                                                        ToolTip.Tip="删除"/>
+                                                        ToolTip.Tip="删除">
+                                                    <Button.Flyout>
+                                                        <Flyout >
+                                                            <StackPanel Spacing="8">
+                                                                <TextBlock Text="确定要删除此组件吗？" />
+                                                                <Button HorizontalAlignment="Stretch"
+                                                                        Classes="accent"
+                                                                        Theme="{StaticResource TransparentButton}"
+                                                                        Command="{Binding Data.DeleteComponentCommand, Source={StaticResource ParentBindingProxy}}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Content="确认删除" />
+                                                            </StackPanel>
+                                                        </Flyout>
+                                                    </Button.Flyout>
+                                                </Button>
                                                 <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" StrokeThickness="1"
                                                       HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" >
                                                 </Line>

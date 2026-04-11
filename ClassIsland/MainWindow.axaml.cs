@@ -1433,15 +1433,29 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     }
 
     [RelayCommand]
-    private void RemoveMainWindowLine(MainWindowLineSettings? settings)
+    private async Task RemoveMainWindowLine(MainWindowLineSettings? settings)
     {
         if (settings == null)
         {
             return;
         }
+
         if (ComponentsService.CurrentComponents.Lines.Count <= 1)
         {
             this.ShowWarningToast("至少需要保留 1 个主界面行。");
+            return;
+        }
+
+        var result = await new ContentDialog()
+        {
+            Title = "删除主界面行",
+            Content = "确定要删除此主界面行吗？行内的所有组件也将被一并删除，此操作无法撤销。",
+            PrimaryButtonText = "删除",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Close
+        }.ShowAsync();
+        if (result != ContentDialogResult.Primary)
+        {
             return;
         }
 
