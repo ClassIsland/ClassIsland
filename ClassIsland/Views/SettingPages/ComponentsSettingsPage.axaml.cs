@@ -151,12 +151,13 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         });
     }
     
-    private void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private void RemoveSelectedComponent(ComponentSettings? remove)
     {
-        var remove = ViewModel.SelectedComponentSettings;
         if (remove == null)
             return;
-        if (ViewModel.SelectedComponentSettings == ViewModel.SelectedRootComponent)
+
+        if (remove == ViewModel.SelectedRootComponent)
         {
             CloseComponentChildrenView();
         }
@@ -176,82 +177,8 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         }
     }
     
-    private void ButtonChildrenViewClose_OnClick(object sender, RoutedEventArgs e)
-    {
-        CloseComponentChildrenView();
-    }
-    
-    private void CloseComponentChildrenView()
-    {
-        ViewModel.IsComponentChildrenViewOpen = false;
-        ViewModel.ChildrenComponentSettingsNavigationStack.Clear();
-        ViewModel.CanChildrenNavigateBack = false;
-        ViewModel.SelectedComponentContainerChildren = [];
-        ViewModel.SelectedRootComponent = null;
-    }
-    
-    private void ButtonOpenRuleset_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (this.FindResource("RulesetControl") is not RulesetControl control ||
-            ViewModel.SelectedMainWindowLineSettings == null) 
-            return;
-        control.Ruleset = ViewModel.SelectedMainWindowLineSettings.HidingRules;
-        OpenDrawer("RulesetControl");
-    }
-    
-    private void ButtonShowChildrenComponents_OnClick(object sender, RoutedEventArgs e)
-    {
-        SetCurrentSelectedComponentContainer(ViewModel.SelectedComponentSettings);
-    }
-
-    private void SetCurrentSelectedComponentContainer(ComponentSettings? componentSettings, bool isBack=false)
-    {
-        if (componentSettings?.AssociatedComponentInfo?.IsComponentContainer != true)
-        {
-            return;
-        }
-
-        var type = componentSettings.AssociatedComponentInfo.ComponentType?.BaseType;
-        if (componentSettings.Settings is JsonElement && type != null)
-        {
-            componentSettings.Settings = ComponentsService.LoadComponentSettings(componentSettings, type);
-        }
-        if (componentSettings.Settings is not IComponentContainerSettings settings)
-        {
-            return;
-        }
-        if (componentSettings == ViewModel.SelectedComponentSettingsMain)
-        {
-            ViewModel.ChildrenComponentSettingsNavigationStack.Clear();
-            ViewModel.SelectedRootComponent = componentSettings;
-        } else if (ViewModel.SelectedContainerComponent != null && !isBack)
-        {
-            ViewModel.ChildrenComponentSettingsNavigationStack.Push(ViewModel.SelectedContainerComponent);
-        }
-        ViewModel.SelectedComponentContainerChildren = settings.Children;
-        ViewModel.SelectedContainerComponent = componentSettings;
-        ViewModel.IsComponentChildrenViewOpen = true;
-        ViewModel.CanChildrenNavigateBack = ViewModel.ChildrenComponentSettingsNavigationStack.Count >= 1;
-    }
-
-    private void ListBoxComponents_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        // 这里应该把指针按下的事件吞掉，这样在拖动这里面的在组件时就不会把事件往上传送到上级，让上级 ListBoxItem 也跟着被拖动。
-        e.Handled = true;
-    }
-
-    private void ButtonCreateMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var index = ViewModel.SelectedMainWindowLineSettings == null
-            ? 0
-            : Math.Max(0,
-                ViewModel.ComponentsService.CurrentComponents.Lines.IndexOf(ViewModel.SelectedMainWindowLineSettings) + 1);
-        var lineSettings = new MainWindowLineSettings();
-        ViewModel.ComponentsService.CurrentComponents.Lines.Insert(index, lineSettings);
-        ViewModel.SelectedMainWindowLineSettings = lineSettings;
-    }
-
-    private void ButtonRemoveSelectedMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
+    [RelayCommand]
+    private void RemoveSelectedMainWindowLine(MainWindowLineSettings? lineSettings)
     {
         if (ViewModel.ComponentsService.CurrentComponents.Lines.Count <= 1)
         {
@@ -259,8 +186,8 @@ public partial class ComponentsSettingsPage : SettingsPageBase
             return;
         }
 
-        if (ViewModel.SelectedMainWindowLineSettings != null)
-            ViewModel.ComponentsService.CurrentComponents.Lines.Remove(ViewModel.SelectedMainWindowLineSettings);
+        if (lineSettings != null)
+            ViewModel.ComponentsService.CurrentComponents.Lines.Remove(lineSettings);
     }
 
     private void ToggleButtonIsNotificationEnabled_OnIsCheckedChanged(object? sender, RoutedEventArgs e)

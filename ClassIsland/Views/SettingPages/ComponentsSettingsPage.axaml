@@ -109,9 +109,22 @@
                             VerticalAlignment="Center"
                             ToolTip.Tip="删除"
                             IsVisible="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
-                            Click="ButtonRemoveSelectedComponent_OnClick"
                             Theme="{StaticResource TransparentButton}"
-                            Content="{ci:FluentIcon &#xE61D;}"/>
+                            Content="{ci:FluentIcon &#xE61D;}">
+                            <Button.Flyout>
+                                <Flyout>
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="确定要删除此组件吗？" />
+                                        <Button HorizontalAlignment="Stretch"
+                                                Classes="accent"
+                                                Theme="{StaticResource TransparentButton}"
+                                                Command="{Binding $parent[settingPages:ComponentsSettingsPage].RemoveSelectedComponentCommand}"
+                                                CommandParameter="{Binding}"
+                                                Content="确认删除" />
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
                     </StackPanel>
                 </DataTemplate>
             </Setter>
