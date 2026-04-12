@@ -57,6 +57,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         LoadData();
         LoadWeatherIconTemplate();
         RulesetService.RegisterRuleHandler("classisland.weather.currentWeather", CurrentWeatherRuleHandler);
+        RulesetService.RegisterRuleHandler("classisland.weather.tomorrowWeather", TomorrowWeatherRuleHandler);
         RulesetService.RegisterRuleHandler("classisland.weather.hasWeatherAlert", HasAlertRuleHandler);
         RulesetService.RegisterRuleHandler("classisland.weather.rainTime", RainTimeRuleHandler);
         RulesetService.RegisterRuleHandler("classisland.weather.sunRiseSet", SunRiseSetRuleHandler);
@@ -152,7 +153,66 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         }
 
         return IsWeatherRefreshed &&
-               settings.WeatherId.ToString() == Settings.LastWeatherInfo.Current.Weather;
+               (settings.IsFuzzyMatch 
+                   ? IsWeatherCodeMatched(Settings.LastWeatherInfo.Current.Weather, settings.WeatherId.ToString())
+                   : settings.WeatherId.ToString() == Settings.LastWeatherInfo.Current.Weather);
+    }
+
+    private bool TomorrowWeatherRuleHandler(object? o)
+    {
+        if (o is not CurrentWeatherRuleSettings settings)
+        {
+            return false;
+        }
+
+        if (!IsWeatherRefreshed || Settings.LastWeatherInfo.ForecastDaily.Weather.Value == null || Settings.LastWeatherInfo.ForecastDaily.Weather.Value.Count <= 1)
+        {
+            return false;
+        }
+
+        var tomorrowWeather = Settings.LastWeatherInfo.ForecastDaily.Weather.Value[1];
+        var targetWeather = settings.WeatherId.ToString();
+        
+        if (settings.IsFuzzyMatch)
+        {
+            return IsWeatherCodeMatched(tomorrowWeather.From, targetWeather) ||
+                   IsWeatherCodeMatched(tomorrowWeather.To, targetWeather);
+        }
+        else
+        {
+            return tomorrowWeather.From == targetWeather || tomorrowWeather.To == targetWeather;
+        }
+    }
+
+    private static bool IsWeatherCodeMatched(string actualWeatherCode, string targetWeatherCode)
+    {
+        if (actualWeatherCode == targetWeatherCode)
+        {
+            return true;
+        }
+
+        var actualCodes = ExpandWeatherCode(actualWeatherCode);
+        var targetCodes = ExpandWeatherCode(targetWeatherCode);
+
+        return actualCodes.Overlaps(targetCodes);
+    }
+
+    private static HashSet<string> ExpandWeatherCode(string weatherCode)
+    {
+        return weatherCode switch
+        {
+            "21" => ["7", "8", "21"],
+            "22" => ["8", "9", "22"],
+            "23" => ["9", "10", "23"],
+            "24" => ["10", "11", "24"],
+            "25" => ["11", "12", "25"],
+            "26" => ["14", "15", "26"],
+            "27" => ["15", "16", "27"],
+            "28" => ["16", "17", "28"],
+            "301" => ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "19", "21", "22", "23", "24", "25", "301"],
+            "302" => ["6", "13", "14", "15", "16", "17", "26", "27", "28", "34", "302"],
+            _ => [weatherCode]
+        };
     }
 
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
