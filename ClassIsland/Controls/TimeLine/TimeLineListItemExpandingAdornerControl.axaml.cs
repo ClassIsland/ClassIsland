@@ -4,12 +4,16 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using ClassIsland.Helpers;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls.TimeLine;
 
 public partial class TimeLineListItemExpandingAdornerControl : UserControl
 {
+    private static readonly TimeSpan MinTime = TimeSpan.Zero;
+    private static readonly TimeSpan MaxTime = new TimeSpan(23, 59, 59);
+    
     public TimeLineListItemExpandingAdornerControl() => InitializeComponent();
 
     public static readonly StyledProperty<TimeLayoutItem> TimePointProperty = AvaloniaProperty.Register<TimeLineListItemExpandingAdornerControl, TimeLayoutItem>(
@@ -124,7 +128,7 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
         // Console.WriteLine($"{_initStartTime} {e.Vector.Y} {d}");
         if (TimePoint.EndTime > a + d && (!(a + d < PrevTimePoint()?.EndTime) || IsSticky))
         {
-            var newStart = a + d;
+            var newStart = TimeSpanHelper.Clamp(a + d, MinTime, MaxTime);
             if (!IsSticky)
             {
                 TimePoint.StartTime = newStart;
@@ -152,7 +156,7 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
         Console.WriteLine(d);
         if (a + d > TimePoint.StartTime && (!(NextTimePoint()?.StartTime < a + d) || IsSticky))
         {
-            var newEnd = TimePoint.EndTime + d;
+            var newEnd = TimeSpanHelper.Clamp(a + d, MinTime, MaxTime);
             if (!IsSticky)
             {
                 TimePoint.EndTime = newEnd;
@@ -179,9 +183,13 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
 
         if (!IsSticky && (a1 + d < PrevTimePoint()?.EndTime || NextTimePoint()?.StartTime < a2 + d))
             return;
+        if (!TimeSpanHelper.Within(a1 + d, MinTime, MaxTime) || !TimeSpanHelper.Within(a2 + d, MinTime, MaxTime))
+        {
+            return;
+        }
 
-        var newStart = a1 + d;
-        var newEnd = a2 + d;
+        var newStart = TimeSpanHelper.Clamp(a1 + d, MinTime, MaxTime);
+        var newEnd = TimeSpanHelper.Clamp(a2 + d, MinTime, MaxTime);
         if (!IsSticky)
         {
             TimePoint.StartTime = newStart;

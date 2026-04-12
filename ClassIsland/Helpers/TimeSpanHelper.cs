@@ -10,4 +10,8 @@ public static class TimeSpanHelper
     {
         return !double.IsRealNumber(seconds) ? TimeSpan.Zero : TimeSpan.FromSeconds(Math.Max(0, Math.Min(MaxTimeSpanSeconds, seconds)));
     }
+    
+    public static TimeSpan Clamp(TimeSpan x, TimeSpan min, TimeSpan max) => x > max ? max : x < min ? min : x;
+    
+    public static bool Within(TimeSpan x, TimeSpan min, TimeSpan max) => x >= min && x <= max;
 }
