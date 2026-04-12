@@ -153,7 +153,9 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         }
 
         return IsWeatherRefreshed &&
-               IsWeatherCodeMatched(Settings.LastWeatherInfo.Current.Weather, settings.WeatherId.ToString());
+               (settings.IsFuzzyMatch 
+                   ? IsWeatherCodeMatched(Settings.LastWeatherInfo.Current.Weather, settings.WeatherId.ToString())
+                   : settings.WeatherId.ToString() == Settings.LastWeatherInfo.Current.Weather);
     }
 
     private bool TomorrowWeatherRuleHandler(object? o)
@@ -171,8 +173,15 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         var tomorrowWeather = Settings.LastWeatherInfo.ForecastDaily.Weather.Value[1];
         var targetWeather = settings.WeatherId.ToString();
         
-        return IsWeatherCodeMatched(tomorrowWeather.From, targetWeather) ||
-               IsWeatherCodeMatched(tomorrowWeather.To, targetWeather);
+        if (settings.IsFuzzyMatch)
+        {
+            return IsWeatherCodeMatched(tomorrowWeather.From, targetWeather) ||
+                   IsWeatherCodeMatched(tomorrowWeather.To, targetWeather);
+        }
+        else
+        {
+            return tomorrowWeather.From == targetWeather || tomorrowWeather.To == targetWeather;
+        }
     }
 
     private static bool IsWeatherCodeMatched(string actualWeatherCode, string targetWeatherCode)
