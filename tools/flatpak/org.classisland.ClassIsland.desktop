@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=ClassIsland
+Comment=A cross-platform course scheduling application
+Exec=ClassIsland.Desktop
+Icon=org.classisland.ClassIsland
+Type=Application
+Categories=Utility;Education;
+StartupNotify=true
+Terminal=false
