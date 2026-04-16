@@ -1,10 +1,11 @@
 {
     "app-id": "org.classisland.ClassIsland",
     "runtime": "org.freedesktop.Platform",
-    "runtime-version": "23.08",
+    "runtime-version": "24.08",
     "sdk": "org.freedesktop.Sdk",
     "sdk-extensions": [
-        "org.freedesktop.Sdk.Extension.dotnet8"
+        "org.freedesktop.Sdk.Extension.dotnet8",
+        "org.freedesktop.Sdk.Extension.dotnet9"
     ],
     "command": "ClassIsland.Desktop",
     "finish-args": [
@@ -22,7 +23,13 @@
     "build-options": {
         "append-path": "/usr/lib/sdk/dotnet8/bin",
         "env": {
-            "DOTNET_CLI_TELEMETRY_OPTOUT": "1"
+            "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+            "DOTNET_NO_MANIFEST_UPDATE": "1"
+        },
+        "append-path": "/usr/lib/sdk/dotnet9/bin",
+        "env": {
+            "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+            "DOTNET_NO_MANIFEST_UPDATE": "1"
         }
     },
     "modules": [
@@ -30,7 +37,6 @@
             "name": "ClassIsland",
             "buildsystem": "simple",
             "build-commands": [
-                "dotnet restore",
                 "dotnet publish -c Release -o /app/bin ClassIsland.Desktop/ClassIsland.Desktop.csproj",
                 "mkdir -p /app/share/applications",
                 "mkdir -p /app/share/icons/hicolor/512x512/apps",
@@ -40,7 +46,7 @@
             "sources": [
                 {
                     "type": "git",
-                    "url": ".",
+                    "url": "../..",
                     "branch": "master"
                 }
             ]
