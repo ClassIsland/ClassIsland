@@ -1861,6 +1861,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isPluginsUpdateNotificationEnabled = true;
     private int _windowTopmostRecheckMode = 0;
     private bool _isScreenRecordingModeEnabled = false;
+    private bool _isDynamicIslandModeEnabled = false;
     private bool _hasEditModeTutorialShown = false;
     private int _classPlanEditModeIndex = 1;
     private bool _isRefreshingToastEnabled = true;
@@ -1945,6 +1946,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isScreenRecordingModeEnabled) return;
             _isScreenRecordingModeEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsDynamicIslandModeEnabled
+    {
+        get => _isDynamicIslandModeEnabled;
+        set
+        {
+            if (value == _isDynamicIslandModeEnabled) return;
+            _isDynamicIslandModeEnabled = value;
             OnPropertyChanged();
         }
     }

@@ -187,6 +187,14 @@
                 </controls1:SettingsExpanderItem>
             </controls1:SettingsExpander>
 
+            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF023;}"
+                                        Header="灵动岛模式"
+                                        Description="启用后，上课动画结束后主界面会收窄为胶囊并仅显示本节课信息；下课前 10 秒自动展开以显示下课动画。">
+                <controls1:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsDynamicIslandModeEnabled, Mode=TwoWay}"/>
+                </controls1:SettingsExpander.Footer>
+            </controls1:SettingsExpander>
+
             <!-- 指针移入淡化 -->
             <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C3;}"
                                         Header="指针移入淡化"
