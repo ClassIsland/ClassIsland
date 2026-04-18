@@ -271,6 +271,9 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
             .Replace("%M", Math.Ceiling(delta.TotalMinutes).ToString(CultureInfo.InvariantCulture))
             .Replace("%S", Math.Ceiling(delta.TotalSeconds).ToString(CultureInfo.InvariantCulture))
             .Replace("%X", Math.Ceiling(delta.TotalMilliseconds).ToString(CultureInfo.InvariantCulture))
+            .Replace("%p",
+                Math.Round(totalTime <= TimeSpan.Zero ? 0.0 : (totalTime - delta) / totalTime * 100, 2)
+                    .ToString("F2", CultureInfo.InvariantCulture))
             .Replace("%P",
                 Math.Round(totalTime <= TimeSpan.Zero ? 0.0 : (totalTime - delta) / totalTime, 2)
                     .ToString("P0", CultureInfo.InvariantCulture))

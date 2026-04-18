@@ -1,4 +1,4 @@
-﻿<controls2:ComponentBase x:TypeArguments="componentSettings:CountDownComponentSettings"
+<controls2:ComponentBase x:TypeArguments="componentSettings:CountDownComponentSettings"
                          x:Class="ClassIsland.Controls.Components.CountDownComponentSettingsControl"
                          xmlns="https://github.com/avaloniaui"
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -361,6 +361,7 @@
                                                 <Run Text="以上数值向上取整。" FontWeight="Medium"/><LineBreak/><LineBreak/>
                                                 <Run Text="%L - 剩余百分比"/><LineBreak/>
                                                 <Run Text="%P - 已过百分比"/><LineBreak/>
+                                                <Run Text="%p - 已过百分比（2位小数）"/><LineBreak/>
                                                 <Run Text="以上数值四舍五入取整。" FontWeight="Medium"/>
                                             </SelectableTextBlock>
                                             <SelectableTextBlock Grid.Row="1" Grid.Column="1">
