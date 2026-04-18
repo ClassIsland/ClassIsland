@@ -494,6 +494,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 EditModeViewCp.Content = ViewModel.EditModeView = null;
                 ZoomBorder.ResetMatrix();
             }
+
+            TopmostEffectWindow.ViewModel.IsEditMode = ViewModel.IsEditMode;
             UpdateWindowLayer();
             UpdateTheme();
             _ = Dispatcher.UIThread.InvokeAsync(UpdateTheme);
