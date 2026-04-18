@@ -47,6 +47,7 @@
     <Window.Resources>
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
+        <converters:DynamicIslandRootComponentVisibilityMultiConverter x:Key="DynamicIslandRootComponentVisibilityMultiConverter" />
         <profile:ClassPlan x:Key="FallbackClassPlan"/>
         
         <NativeMenu x:Key="AppMenu">
@@ -370,13 +371,23 @@
                                                                     ClipToBounds="False">
                                                                     <editMode:EditableComponentsListBox.ItemTemplate>
                                                                         <DataTemplate>
-                                                                            <ci:ComponentPresenter
-                                                                                IsOnMainWindow="True"
-                                                                                IsRootComponent="True"
-                                                                                Settings="{Binding}"
-                                                                                HidingRules="{Binding HidingRules, Mode=OneWay}"
-                                                                                HideOnRule="{Binding HideOnRule, Mode=OneWay}"
-                                                                                Margin="6 0" />
+                                                                            <Border Margin="6 0">
+                                                                                <Border.IsVisible>
+                                                                                    <MultiBinding Converter="{StaticResource DynamicIslandRootComponentVisibilityMultiConverter}">
+                                                                                        <Binding Path="ViewModel.IsDynamicIslandCompactModeActive"
+                                                                                                 RelativeSource="{RelativeSource AncestorType=local:MainWindow}" />
+                                                                                        <Binding />
+                                                                                        <Binding Path="ViewModel.IsEditMode"
+                                                                                                 RelativeSource="{RelativeSource AncestorType=local:MainWindow}" />
+                                                                                    </MultiBinding>
+                                                                                </Border.IsVisible>
+                                                                                <ci:ComponentPresenter
+                                                                                    IsOnMainWindow="True"
+                                                                                    IsRootComponent="True"
+                                                                                    Settings="{Binding}"
+                                                                                    HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                                                    HideOnRule="{Binding HideOnRule, Mode=OneWay}" />
+                                                                            </Border>
                                                                         </DataTemplate>
                                                                     </editMode:EditableComponentsListBox.ItemTemplate>
                                                                 </editMode:EditableComponentsListBox>

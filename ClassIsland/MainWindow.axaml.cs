@@ -385,6 +385,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var r = SettingsService.Settings;
         ViewModel.Settings = r;
         ViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        UpdateDynamicIslandCompactState();
     }
 
     public void LoadProfile()
@@ -437,6 +438,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
+        UpdateDynamicIslandCompactState();
         if (ViewModel.Settings.WindowTopmostRecheckMode == 2)
         {
             ReCheckTopmostState();
@@ -469,6 +471,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         if (!CheckAccess())
         {
             return;
+        }
+        if (e.PropertyName == nameof(ViewModel.Settings.IsDynamicIslandModeEnabled))
+        {
+            UpdateDynamicIslandCompactState();
         }
         UpdateTheme();
         UpdateStyleStates();
@@ -675,6 +681,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel.IsMainWindowFaded =
             ViewModel.Settings.IsMouseInFadingEnabled &&
            (ViewModel.IsMouseIn ^ ViewModel.Settings.IsMouseInFadingReversed);
+    }
+
+    private void UpdateDynamicIslandCompactState()
+    {
+        var state = DynamicIslandDisplayStateHelper.GetCurrentState(
+            ViewModel.Settings,
+            LessonsService,
+            ExactTimeService,
+            NotificationHostService);
+        ViewModel.IsDynamicIslandCompactModeActive = state.IsCompactModeActive;
     }
 
     private void UpdateStyleStates()

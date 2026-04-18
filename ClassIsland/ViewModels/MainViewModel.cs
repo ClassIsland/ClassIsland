@@ -37,6 +37,7 @@ public partial class MainViewModel : ObservableRecipient
     private DateTime _debugCurrentTime = DateTime.Now;
     private bool _isNotificationWindowExplicitShowed = false;
     private bool _isHideRuleSatisfied = false;
+    private bool _isDynamicIslandCompactModeActive = false;
     private string? _lastStoryboardName;
     private NotificationContent? _currentMaskContent;
     private NotificationContent? _currentOverlayContent;
@@ -163,6 +164,17 @@ public partial class MainViewModel : ObservableRecipient
         {
             if (value == _isHideRuleSatisfied) return;
             _isHideRuleSatisfied = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsDynamicIslandCompactModeActive
+    {
+        get => _isDynamicIslandCompactModeActive;
+        set
+        {
+            if (value == _isDynamicIslandCompactModeActive) return;
+            _isDynamicIslandCompactModeActive = value;
             OnPropertyChanged();
         }
     }
