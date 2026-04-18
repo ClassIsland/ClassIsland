@@ -183,6 +183,10 @@
             <Setter Property="CanResize" Value="True"/>
             <Setter Property="CanMaximize" Value="True"/>
             <Setter Property="CanMinimize" Value="True"/>
+            <Style Selector="^:no-windowed-transparent:edit-mode">
+                <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
+                <Setter Property="TransparencyLevelHint" Value="None"/>
+            </Style>
         </Style>
     </Window.Styles>
     <Grid ci:MainWindowStylesAssist.MainWindowInEditMode="{Binding ViewModel.IsEditMode}"

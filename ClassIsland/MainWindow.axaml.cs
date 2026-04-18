@@ -65,7 +65,7 @@ namespace ClassIsland;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-[PseudoClasses(":dock-top", ":dock-bottom", ":edit-mode", ":windowed")]
+[PseudoClasses(":dock-top", ":dock-bottom", ":edit-mode", ":windowed", ":no-windowed-transparent")]
 public partial class MainWindow : Window, ITopmostEffectPlayer
 {
     #region Fields & Properties
@@ -248,6 +248,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
         PointerStateAssist.SetIsTouchMode(this, true);  // DEBUG
+
+        if (Environment.OSVersion.Version <= WindowsVersions.Win10V1809)
+        {
+            PseudoClasses.Set(":no-windowed-transparent", true);
+        }
     }
 
     private void PostInit()
