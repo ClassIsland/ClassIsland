@@ -323,7 +323,7 @@ jobs:
           ./build.ps1 BuildNupkg --isRelease $env:is_release
       
       - name: Upload Nuget packages to GitHub registry
-        if: ${{ github.event_name != 'pull_request' }} 
+        if: ${{ github.event_name != 'pull_request' && github.repository_owner == 'ClassIsland' }} 
         env:
           GHPKG_KEY: ${{ secrets.GITHUB_TOKEN }}
           MYGET_ORG_KEY: ${{ secrets.MYGET_ORG_KEY }}
