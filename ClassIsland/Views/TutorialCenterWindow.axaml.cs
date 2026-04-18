@@ -32,7 +32,7 @@ public partial class TutorialCenterWindow : MyWindow
     {
         if (!IsOpened)
         {
-            SentrySdk.Metrics.Increment("views.TutorialCenterWindow.open");
+            SentrySdk.Metrics.EmitCounter("views.TutorialCenterWindow.open", 1);
             IsOpened = true;
             Show();
         }

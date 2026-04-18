@@ -185,7 +185,7 @@ public partial class AboutSettingsPage : SettingsPageBase
             ViewModel.Sayings = ViewModel.SayingsCollection[0];
             ViewModel.SayingsCollection.RemoveAt(0);
         }
-        SentrySdk.Metrics.Increment("views.settings.about.sayings.click");
+        SentrySdk.Metrics.EmitCounter("views.settings.about.sayings.click", 1);
     }
 
     private void UIElementAppInfo_OnMouseDown(object? sender, RoutedEventArgs pointerPressedEventArgs)
