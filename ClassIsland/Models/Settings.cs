@@ -1873,6 +1873,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private DateTime _appLastStartedTime = DateTime.Now;
     private int _maxRefreshingToastCounts = 5;
     private RefreshingScopes _refreshingScopes = new();
+    private bool _isThemeSeparateInfoVisible = true;
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -2385,6 +2386,18 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isThemeWarningVisible) return;
             _isThemeWarningVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    public bool IsThemeSeparateInfoVisible
+    {
+        get => _isThemeSeparateInfoVisible;
+        set
+        {
+            if (value == _isThemeSeparateInfoVisible) return;
+            _isThemeSeparateInfoVisible = value;
             OnPropertyChanged();
         }
     }

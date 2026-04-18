@@ -73,8 +73,16 @@
         <converters:ThemeEnabledConverter Source="{Binding ViewModel.XamlThemeService.EnabledThemes}"
                                           x:Key="ThemeEnabledConverter"/>
     </ci:SettingsPageBase.Resources>
-    <Grid RowDefinitions="Auto,Auto,*,Auto">
-        <Grid Row="0" ColumnDefinitions="*,Auto" IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+        <controls:InfoBar Grid.Row="0" Message="在启用了支持的主题（如 Fluent）后，您可以在直接【外观】设置中开启【分体主界面】选项使主界面分开。在没有开启此选项时，即使启用了支持的主题，主界面也不会分开。"
+                          IsOpen="{Binding ViewModel.SettingsService.Settings.IsThemeSeparateInfoVisible, Mode=TwoWay}">
+            <controls:InfoBar.ActionButton>
+                <HyperlinkButton Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                 CommandParameter="classisland://app/settings/appearance">前往【外观】设置</HyperlinkButton>
+            </controls:InfoBar.ActionButton>
+        </controls:InfoBar>
+
+        <Grid Row="1" ColumnDefinitions="*,Auto" IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
             <TabStrip Grid.Column="0" Classes="compact"
                       SelectionChanged="ListBoxCategory_OnSelectionChanged"
                       SelectedIndex="{Binding ViewModel.ThemeCategoryIndex}">
@@ -102,13 +110,13 @@
             </StackPanel>
         </Grid>
 
-        <StackPanel Grid.Row="1" Grid.Column="0" IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
+        <StackPanel Grid.Row="2" Grid.Column="0" IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
             <ProgressBar IsIndeterminate="True"
                          IsVisible="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource}"/>
         </StackPanel>
         
 
-        <ListBox Grid.Row="2" 
+        <ListBox Grid.Row="3" 
                  ItemsSource="{Binding ViewModel.MergedThemesFiltered.Items}"
                  IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
             <ListBox.ItemContainerTheme>
@@ -297,7 +305,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
         
-        <Border Grid.Row="0" Grid.RowSpan="3"
+        <Border Grid.Row="0" Grid.RowSpan="4"
                 IsVisible="{Binding ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
             <ScrollViewer>
                 <StackPanel VerticalAlignment="Center"
