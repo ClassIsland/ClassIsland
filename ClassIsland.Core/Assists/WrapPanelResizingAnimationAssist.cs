@@ -22,12 +22,34 @@ public class WrapPanelResizingAnimationAssist
     public static readonly AttachedProperty<bool> IsAnimationAttachedProperty =
         AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationAssist, Visual, bool>("IsAnimationAttached");
 
+    public static readonly AttachedProperty<bool> IsControlResizingAnimationEnabledProperty =
+        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationAssist, Control, bool>("IsControlResizingAnimationEnabled");
+
+    public static void SetIsControlResizingAnimationEnabled(Control obj, bool value) => obj.SetValue(IsControlResizingAnimationEnabledProperty, value);
+    public static bool GetIsControlResizingAnimationEnabled(Control obj) => obj.GetValue(IsControlResizingAnimationEnabledProperty);
+
     private static void SetIsAnimationAttached(Visual obj, bool value) => obj.SetValue(IsAnimationAttachedProperty, value);
     public static bool GetIsAnimationAttached(Visual obj) => obj.GetValue(IsAnimationAttachedProperty);
     
     static WrapPanelResizingAnimationAssist()
     {
         IsResizingAnimationEnabledProperty.Changed.AddClassHandler<Panel>(HandleIsResizingAnimationEnabledChanged);
+        IsControlResizingAnimationEnabledProperty.Changed.AddClassHandler<Control>(HandleIsControlResizingAnimationEnabledChanged);
+    }
+
+    private static void HandleIsControlResizingAnimationEnabledChanged(Control control, AvaloniaPropertyChangedEventArgs args)
+    {
+        if (IThemeService.AnimationLevel < 2)
+            return;
+        
+        if (GetIsControlResizingAnimationEnabled(control))
+        {
+            TrySetupControl(control);
+        }
+        else
+        {
+            ClearControlAnimation(control);
+        }
     }
 
     public static readonly AttachedProperty<bool> IsLoadedHandlerAttachedProperty =
