@@ -1,4 +1,4 @@
-﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WindowSettingsPage"
+<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WindowSettingsPage"
       xmlns="https://github.com/avaloniaui"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -151,6 +151,14 @@
                         <ComboBoxItem>
                             <ci:IconText Glyph="&#xE197;" Text="置顶" />
                         </ComboBoxItem>
+                        <ComboBoxItem>
+                            <ComboBoxItem.IsVisible>
+                                <OnPlatform Default="False">
+                                    <On Options="Windows" Content="True"/>
+                                </OnPlatform>
+                            </ComboBoxItem.IsVisible>
+                            <ci:IconText Glyph="&#xE62F;" Text="桌面层" />
+                        </ComboBoxItem>
                     </ComboBox>
                 </controls1:SettingsExpander.Footer>
                 <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xE125;}"
@@ -185,7 +193,20 @@
                         </ComboBox>
                     </controls1:SettingsExpanderItem.Footer>
                 </controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xE62F;}"
+                                                Content="桌面层"
+                                                 Description="启用&quot;桌面层&quot;后，主界面将嵌入 Windows 桌面层，位于所有应用窗口之下但始终可见，执行&quot;显示桌面&quot;（Win+D）操作时不会消失。此功能仅在 Windows 上可用。">
+                    <controls1:SettingsExpanderItem.IsVisible>
+                        <Binding Path="ViewModel.SettingsService.Settings.WindowLayer"
+                                 Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>2</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls1:SettingsExpanderItem.IsVisible>
+                </controls1:SettingsExpanderItem>
             </controls1:SettingsExpander>
+
 
             <!-- 指针移入淡化 -->
             <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C3;}"

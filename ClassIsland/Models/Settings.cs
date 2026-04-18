@@ -1953,9 +1953,10 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// </summary>
     /// <value>
     /// 0 - 置底<br/>
-    /// 1 - 置顶
+    /// 1 - 置顶<br/>
+    /// 2 - 桌面层（仅 Windows 可用）
     /// </value>
-    [SettingsInfo("窗口层级", "\uea2f", enums: ["置底", "置顶"], order: 2)]
+    [SettingsInfo("窗口层级", "\uea2f", enums: ["置底", "置顶", "桌面层"], order: 2)]
     public int WindowLayer
     {
         get => _windowLayer;
