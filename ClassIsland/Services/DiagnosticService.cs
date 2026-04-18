@@ -20,6 +20,7 @@ using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
+using Sentry;
 
 namespace ClassIsland.Services;
 
@@ -58,6 +59,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {"SystemOsArch",  RuntimeInformation.OSArchitecture.ToString()},
             {"SystemDeviceName", name},
             {"SystemDeviceVendor", vendor},
+            {"UserTraceId", SentrySdk.GetTraceHeader()?.TraceId.ToString() ?? "none"},
             {"AppPackageRoot", CommonDirectories.AppPackageRoot},
             {"AppRoot", CommonDirectories.AppRootFolderPath},
             {"AppCurrentDirectory", Environment.CurrentDirectory},
