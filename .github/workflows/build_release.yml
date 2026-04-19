@@ -343,7 +343,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       isTestMode: ${{ github.event.inputs.is_test_mode == 'true' }}
-    if: ${{ always() && success('pack_app') && success('build_nupkg') && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
+    if: ${{ always() && success('pack_app') && success('build_nupkg') && github.event_name != 'pull_request' && (github.event.inputs.release_tag || startsWith(github.ref, 'refs/tags/')) }}
     needs: [ pack_app, build_nupkg ]
     concurrency:
       group: "publish-public"
@@ -355,20 +355,27 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
+          ref: ${{ github.event.inputs.release_tag || github.ref_name }} 
           
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           path: ./out_artifacts
 
+      - name: Init Artifacts
+        shell: pwsh
+        run: |
+          ./tools/release-gen/init-artifacts.ps1
+
       - name: Install SSH key
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag && github.repository_owner == 'ClassIsland' }}
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.METADATA_DEPLOY_KEY }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: Publish App
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag && github.repository_owner == 'ClassIsland' }}
         shell: pwsh
         env:
           S3_Bucket: ${{ vars.S3_BUCKET }}
@@ -383,21 +390,34 @@ jobs:
           PDCC_version: ${{ github.event.inputs.release_tag }}
           PDCC_primaryVersion: ${{ github.event.inputs.primary_version }}
         run: |
-          ./tools/release-gen/init-artifacts.ps1
           ./tools/release-gen/install-pdcc.ps1 linux
           ./pdcc/PhainonDistributionCenter.Client ./phainon.yml Publish ${{ github.event.inputs.primary_version }} ${{ github.event.inputs.release_tag }} ./out
           
       - name: Upload APP to release
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag && github.repository_owner == 'ClassIsland' }}
         uses: ncipollo/release-action@v1
         with:
           artifacts: "./out/*.zip,./out/*.appx,./out/*.deb,./out/*.pkg"
+          allowUpdates: true
+          replacesArtifacts: true
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
+          tag: ${{ github.event.inputs.release_tag || github.ref_name }} 
+
+      - name: Upload APP to release (tag push / fork)
+        if: ${{ startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag && github.repository_owner != 'ClassIsland') }}
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "./out/*.zip,./out/*.appx,./out/*.deb,./out/*.pkg"
+          allowUpdates: true
+          replacesArtifacts: true
+          draft: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.event.inputs.release_tag || github.ref_name }} 
           
       - name: Upload Nuget packages to NuGet Gallery
-        if: ${{ github.event_name != 'pull_request' && github.event.inputs.is_test_mode != 'true' }}
+        if: ${{ github.repository_owner == 'ClassIsland' && github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag && github.event.inputs.is_test_mode != 'true' }}
         shell: pwsh
         env:
           NUGET_KEY: ${{ secrets.NUGET_ORG_KEY }}
