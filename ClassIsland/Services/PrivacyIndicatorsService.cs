@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using Avalonia.Threading;
 using ClassIsland.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -17,6 +18,7 @@ public interface IPrivacyIndicatorsService : INotifyPropertyChanged
 public partial class PrivacyIndicatorsService : ObservableRecipient, IPrivacyIndicatorsService, IDisposable
 {
     private const string ConsentStoreBasePath = @"Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore";
+    private const int CapabilitySearchDepth = 6;
 
     private readonly DispatcherTimer _timer = new()
     {
@@ -73,13 +75,26 @@ public partial class PrivacyIndicatorsService : ObservableRecipient, IPrivacyInd
 
     private static bool IsCapabilityInUse(string capabilityName)
     {
-        using var root = Registry.CurrentUser.OpenSubKey($@"{ConsentStoreBasePath}\{capabilityName}");
-        if (root == null)
+        return IsCapabilityInUseFromHive(Registry.CurrentUser, capabilityName) ||
+               IsCapabilityInUseFromHive(Registry.LocalMachine, capabilityName);
+    }
+
+    private static bool IsCapabilityInUseFromHive(RegistryKey hive, string capabilityName)
+    {
+        try
+        {
+            using var root = hive.OpenSubKey($@"{ConsentStoreBasePath}\{capabilityName}");
+            if (root == null)
+            {
+                return false;
+            }
+
+            return ContainsActiveUsage(root, CapabilitySearchDepth);
+        }
+        catch
         {
             return false;
         }
-
-        return ContainsActiveUsage(root, 4);
     }
 
     private static bool ContainsActiveUsage(RegistryKey key, int depth)
@@ -120,7 +135,8 @@ public partial class PrivacyIndicatorsService : ObservableRecipient, IPrivacyInd
         }
 
         var stop = ReadFileTimeValue(key, "LastUsedTimeStop");
-        return stop <= 0 || stop < start;
+        // Some capability providers may write stop as equal-to-start or long.MaxValue while still active.
+        return stop <= 0 || stop <= start || stop == long.MaxValue;
     }
 
     private static long ReadFileTimeValue(RegistryKey key, string valueName)
@@ -129,11 +145,50 @@ public partial class PrivacyIndicatorsService : ObservableRecipient, IPrivacyInd
         return value switch
         {
             long l => l,
+            ulong ul => NormalizeUnsignedFileTime(ul),
             int i => i,
-            byte[] bytes when bytes.Length >= 8 => BitConverter.ToInt64(bytes, 0),
-            string s when long.TryParse(s, out var parsed) => parsed,
+            uint ui => ui,
+            byte[] bytes when bytes.Length >= 8 => NormalizeUnsignedFileTime(BitConverter.ToUInt64(bytes, 0)),
+            string s when TryParseFileTimeString(s, out var parsed) => parsed,
             _ => 0
         };
+    }
+
+    private static long NormalizeUnsignedFileTime(ulong value)
+    {
+        return value > long.MaxValue ? long.MaxValue : (long)value;
+    }
+
+    private static bool TryParseFileTimeString(string value, out long parsed)
+    {
+        var raw = value.Trim();
+        if (raw.Length == 0)
+        {
+            parsed = 0;
+            return false;
+        }
+
+        if (long.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var longValue))
+        {
+            parsed = longValue;
+            return true;
+        }
+
+        if (ulong.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var ulongValue))
+        {
+            parsed = NormalizeUnsignedFileTime(ulongValue);
+            return true;
+        }
+
+        if (raw.StartsWith("0x", StringComparison.OrdinalIgnoreCase) &&
+            ulong.TryParse(raw[2..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var hexValue))
+        {
+            parsed = NormalizeUnsignedFileTime(hexValue);
+            return true;
+        }
+
+        parsed = 0;
+        return false;
     }
 
     public void Dispose()
