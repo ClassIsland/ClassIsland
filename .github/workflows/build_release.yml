@@ -17,6 +17,10 @@ on:
         required: false
         type: boolean
 
+permissions:
+  contents: write
+  packages: write
+
 env:
   PDC_CLIENT_VERSION: 1.0.1.0
 
