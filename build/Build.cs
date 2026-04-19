@@ -89,11 +89,36 @@ partial class Build : NukeBuild
     Target PopulateGitVersion => _ => _
         .Executes(() =>
         {
-            var gitVersion = GitVersion = Version.TryParse(Git("describe --tags --abbrev=0").StdToText() ?? "0.0.0.0",
-                out var v)
+            string? gitTag = null;
+            try
+            {
+                gitTag = Git("describe --tags --abbrev=0").StdToText()?.Trim();
+            }
+            catch
+            {
+                gitTag = null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(gitTag) && gitTag.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+            {
+                gitTag = gitTag[1..];
+            }
+
+            var gitVersion = GitVersion = Version.TryParse(gitTag ?? "0.0.0.0", out var v)
                 ? v
                 : new Version(0, 0, 0, 0);
-            var gitCommitCount = GitCommitCount = int.TryParse(Git("rev-list --count HEAD").StdToText(), out var count)
+
+            string? gitCommitCountText = null;
+            try
+            {
+                gitCommitCountText = Git("rev-list --count HEAD").StdToText()?.Trim();
+            }
+            catch
+            {
+                gitCommitCountText = null;
+            }
+
+            var gitCommitCount = GitCommitCount = int.TryParse(gitCommitCountText, out var count)
                 ? count
                 : 0;
             Log.Information("GitVersion = {gitVersion}", gitVersion);
