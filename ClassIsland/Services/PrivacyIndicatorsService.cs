@@ -19,6 +19,7 @@ public partial class PrivacyIndicatorsService : ObservableRecipient, IPrivacyInd
 {
     private const string ConsentStoreBasePath = @"Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore";
     private const int CapabilitySearchDepth = 6;
+    private static readonly long EqualStartStopActiveWindowTicks = TimeSpan.FromMinutes(3).Ticks;
 
     private readonly DispatcherTimer _timer = new()
     {
@@ -89,7 +90,7 @@ public partial class PrivacyIndicatorsService : ObservableRecipient, IPrivacyInd
                 return false;
             }
 
-            return ContainsActiveUsage(root, CapabilitySearchDepth);
+            return ContainsActiveUsage(root, root.Name, CapabilitySearchDepth);
         }
         catch
         {
@@ -97,9 +98,9 @@ public partial class PrivacyIndicatorsService : ObservableRecipient, IPrivacyInd
         }
     }
 
-    private static bool ContainsActiveUsage(RegistryKey key, int depth)
+    private static bool ContainsActiveUsage(RegistryKey key, string capabilityRootPath, int depth)
     {
-        if (IsUsageActive(key))
+        if (ShouldEvaluateUsageState(key, capabilityRootPath) && IsUsageActive(key))
         {
             return true;
         }
@@ -117,13 +118,29 @@ public partial class PrivacyIndicatorsService : ObservableRecipient, IPrivacyInd
                 continue;
             }
 
-            if (ContainsActiveUsage(subKey, depth - 1))
+            if (ContainsActiveUsage(subKey, capabilityRootPath, depth - 1))
             {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private static bool ShouldEvaluateUsageState(RegistryKey key, string capabilityRootPath)
+    {
+        // Skip container nodes; only leaf-like app nodes should drive active state.
+        if (string.Equals(key.Name, capabilityRootPath, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (key.Name.EndsWith(@"\NonPackaged", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private static bool IsUsageActive(RegistryKey key)
@@ -135,8 +152,25 @@ public partial class PrivacyIndicatorsService : ObservableRecipient, IPrivacyInd
         }
 
         var stop = ReadFileTimeValue(key, "LastUsedTimeStop");
-        // Some capability providers may write stop as equal-to-start or long.MaxValue while still active.
-        return stop <= 0 || stop <= start || stop == long.MaxValue;
+        if (stop <= 0 || stop == long.MaxValue)
+        {
+            return true;
+        }
+
+        if (stop < start)
+        {
+            return true;
+        }
+
+        if (stop == start)
+        {
+            // Some providers report start==stop during a short active transition.
+            // Keep this window tight to avoid stale-history false positives.
+            var nowFileTime = DateTime.UtcNow.ToFileTimeUtc();
+            return nowFileTime >= start && nowFileTime - start <= EqualStartStopActiveWindowTicks;
+        }
+
+        return false;
     }
 
     private static long ReadFileTimeValue(RegistryKey key, string valueName)
