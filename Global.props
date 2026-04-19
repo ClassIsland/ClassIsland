@@ -23,18 +23,6 @@
 		<GitVersion_UpdateAssemblyInfo>true</GitVersion_UpdateAssemblyInfo>
 	</PropertyGroup>
 
-	<Target Name="NormalizeGitTagForAssemblyVersion"
-			AfterTargets="GetGitInfoForSourceGenerator"
-			BeforeTargets="GetAnalyzerSettings"
-			Condition="'$(NIX)' != 'true'">
-		<PropertyGroup>
-			<_NormalizedGitTag>$([System.Text.RegularExpressions.Regex]::Match('$(GitTag)', '\d+\.\d+\.\d+\.\d+').Value)</_NormalizedGitTag>
-			<GitTag Condition="'$(_NormalizedGitTag)' != ''">$(_NormalizedGitTag)</GitTag>
-			<GitTag Condition="'$(_NormalizedGitTag)' == ''">0.0.0.0</GitTag>
-		</PropertyGroup>
-		<Message Text="Normalized GitTag = $(GitTag)" Importance="low" />
-	</Target>
-
 	<!--<Target Name="PopulateInfo" DependsOnTargets="GitVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
 		<PropertyGroup>
 			<Version>$(GitBaseTag)</Version>
