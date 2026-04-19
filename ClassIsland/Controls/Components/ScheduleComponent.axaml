@@ -108,11 +108,12 @@
                 VerticalAlignment="Center"
                 CornerRadius="10"
                 Background="{DynamicResource SubtleFillColorSecondaryBrush}"
-                IsVisible="{Binding IsDynamicIslandCompactModeActive}">
+                IsVisible="{Binding IsDynamicIslandRightBadgeVisible}">
             <StackPanel Orientation="Horizontal"
                         Spacing="4"
                         Classes="items-valign-center">
                 <TextBlock Text="{Binding NextLessonInitialShort}"
+                           IsVisible="{Binding HasNextLessonCompactBadge}"
                            FontWeight="SemiBold"
                            FontSize="{DynamicResource MainWindowSecondaryFontSize}" />
                 <Ellipse Width="8"
