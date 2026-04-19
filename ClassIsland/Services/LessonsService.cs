@@ -462,7 +462,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         // 获取下节时间点信息
         nextClassTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 0 &&
-            i.EndTime >= now);
+            i.StartTime > now);
         if (nextClassTimeLayoutItem != null)
         {
             var i0 = GetClassIndex(layout.IndexOf(nextClassTimeLayoutItem));
