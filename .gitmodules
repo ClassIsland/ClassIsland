@@ -1,4 +1,4 @@
 [submodule "vendors/EdgeTtsSharp"]
 	path = vendors/EdgeTtsSharp
-	url = https://github.com/ClassIsland/EdgeTtsSharp.git
+	url = git@github.com:ClassIsland/EdgeTtsSharp.git
 	branch = classisland-v2
