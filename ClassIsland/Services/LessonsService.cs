@@ -480,7 +480,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         else
             onClassLeftTime = nextClassTimeLayoutItem?.StartTime - now;
 
-        if (nextClassTimeLayoutItem == null &&
+        // Only enter after-school when there is neither an active slot nor upcoming slots.
+        // This prevents the last on-class slot from being misclassified as after-school.
+        if (currentTimeLayoutItem == null &&
+            nextClassTimeLayoutItem == null &&
             nextBreakingTimeLayoutItem == null)
             currentState = TimeState.AfterSchool;
 
