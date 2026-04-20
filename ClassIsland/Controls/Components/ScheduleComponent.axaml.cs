@@ -60,6 +60,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
     private bool _isAfterSchool = false;
     private bool _isDynamicIslandCompactModeActive;
     private bool _isDynamicIslandOnClassModeActive;
+    private bool _hasNextLessonCompactBadge;
     private string _nextLessonInitialShort = "?";
     private PrivacyIndicatorState _privacyIndicatorState = PrivacyIndicatorState.None;
     private static readonly IBrush CameraIndicatorBrush = new SolidColorBrush(Colors.LimeGreen);
@@ -119,6 +120,19 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
             if (value == _isDynamicIslandCompactModeActive) return;
             _isDynamicIslandCompactModeActive = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsDynamicIslandRightBadgeVisible));
+        }
+    }
+
+    public bool HasNextLessonCompactBadge
+    {
+        get => _hasNextLessonCompactBadge;
+        set
+        {
+            if (value == _hasNextLessonCompactBadge) return;
+            _hasNextLessonCompactBadge = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsDynamicIslandRightBadgeVisible));
         }
     }
 
@@ -143,6 +157,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
             OnPropertyChanged();
             OnPropertyChanged(nameof(PrivacyIndicatorBrush));
             OnPropertyChanged(nameof(IsPrivacyIndicatorVisible));
+            OnPropertyChanged(nameof(IsDynamicIslandRightBadgeVisible));
         }
     }
 
@@ -155,6 +170,9 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
     };
 
     public bool IsPrivacyIndicatorVisible => PrivacyIndicatorState != PrivacyIndicatorState.None;
+
+    public bool IsDynamicIslandRightBadgeVisible => IsDynamicIslandCompactModeActive &&
+                                                    (HasNextLessonCompactBadge || IsPrivacyIndicatorVisible);
 
     public ClassPlan? TomorrowClassPlan
     {
@@ -269,9 +287,11 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
 
     private void CurrentTimeStateChanged()
     {
-        IsAfterSchool =
-            LessonsService.CurrentState == TimeState.AfterSchool ||
-            LessonsService.CurrentClassPlan == null;
+        var currentItem = LessonsService.CurrentTimeLayoutItem;
+        var hasActiveTimePoint = currentItem != TimeLayoutItem.Empty && currentItem.TimeType is 0 or 1;
+        IsAfterSchool = !hasActiveTimePoint &&
+                        (LessonsService.CurrentState == TimeState.AfterSchool ||
+                         LessonsService.CurrentClassPlan == null);
     }
 
     public override void OnMigrated(Guid sourceId, object? settings)
@@ -325,6 +345,15 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
 
     private void UpdateNextLessonInitialShort()
     {
+        var hasNextLesson = LessonsService.NextClassTimeLayoutItem != TimeLayoutItem.Empty &&
+                            !ReferenceEquals(LessonsService.NextClassSubject, Subject.Fallback);
+        if (!hasNextLesson)
+        {
+            HasNextLessonCompactBadge = false;
+            NextLessonInitialShort = string.Empty;
+            return;
+        }
+
         var initial = LessonsService.NextClassSubject?.Initial;
         if (string.IsNullOrWhiteSpace(initial))
         {
@@ -335,6 +364,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         {
             initial = "?";
         }
+        HasNextLessonCompactBadge = true;
         NextLessonInitialShort = initial.Trim().Substring(0, 1);
     }
 
