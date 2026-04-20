@@ -287,11 +287,9 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
 
     private void CurrentTimeStateChanged()
     {
-        var currentItem = LessonsService.CurrentTimeLayoutItem;
-        var hasActiveTimePoint = currentItem != TimeLayoutItem.Empty && currentItem.TimeType is 0 or 1;
-        IsAfterSchool = !hasActiveTimePoint &&
-                        (LessonsService.CurrentState == TimeState.AfterSchool ||
-                         LessonsService.CurrentClassPlan == null);
+        IsAfterSchool =
+            LessonsService.CurrentState == TimeState.AfterSchool ||
+            LessonsService.CurrentClassPlan == null;
     }
 
     public override void OnMigrated(Guid sourceId, object? settings)
