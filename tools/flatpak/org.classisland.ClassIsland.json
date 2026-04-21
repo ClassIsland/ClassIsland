@@ -33,10 +33,17 @@
             "name": "ClassIsland",
             "buildsystem": "simple",
             "build-commands": [
-                "ls -a",
                 "dotnet publish -c Release --source nuget-sources -o /app/bin ClassIsland.Desktop/ClassIsland.Desktop.csproj",
                 "mkdir -p /app/share/applications",
-                "mkdir -p /app/share/icons/hicolor/512x512/apps"
+                "mkdir -p /app/share/icons/hicolor/scalable/apps",
+                "mkdir -p /app/share/icons/hicolor/128x128/apps",
+                "mkdir -p /app/share/icons/hicolor/512x512/apps",
+                "cp ClassIsland/Assets/ShortcutTemplates/cn.classisland.app.desktop /app/share/applications/org.classisland.ClassIsland.desktop",
+                "sed -i 's|{1}|/app/bin/ClassIsland.Desktop|g' /app/share/applications/org.classisland.ClassIsland.desktop",
+                "sed -i 's/Icon=classisland/Icon=org.classisland.ClassIsland/g' /app/share/applications/org.classisland.ClassIsland.desktop",
+                "cp ClassIsland/Assets/AppLogo.png /app/share/icons/hicolor/512x512/apps/org.classisland.ClassIsland.png",
+                "cp ClassIsland/Assets/AppLogo@128w.png /app/share/icons/hicolor/128x128/apps/org.classisland.ClassIsland.png",
+                "cp ClassIsland/Assets/AppLogo_AppLogo.svg /app/share/icons/hicolor/scalable/apps/org.classisland.ClassIsland.svg"
                 ],
             "sources": [
                 {

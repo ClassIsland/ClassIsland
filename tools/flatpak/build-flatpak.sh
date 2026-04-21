@@ -1,4 +1,5 @@
 #!/bin/bash
+# ClassIsland Flatpak构建脚本
 
 set -e
 
