@@ -8,37 +8,33 @@ FLATPAK_MANIFEST="org.classisland.ClassIsland.json"
 
 echo "ClassIsland Flatpak Build Script"
 
-echo "1. Checking if running on Linux..."
 if [ "$(uname -s)" != "Linux" ]; then
     echo "Error: This script must be run on Linux."
     exit 1
 fi
 echo "   ✓ Running on Linux"
 
-echo "2. Checking if flatpak is installed..."
 if ! command -v flatpak &>/dev/null; then
     echo "Error: flatpak is not installed. Please install it first."
     exit 1
 fi
 echo "   ✓ flatpak is installed"
 
-echo "3. Checking if flatpak-builder is installed..."
 if ! command -v flatpak-builder &>/dev/null; then
     echo "Error: flatpak-builder is not installed. Please install it first."
     exit 1
 fi
 echo "   ✓ flatpak-builder is installed"
 
-echo "4. Checking if flathub remote is configured..."
-if ! flatpak remotes --user | grep -q "^flathub"; then
+if ! flatpak remotes | grep -q "^flathub"; then
     echo "   Flathub remote not found. Adding flathub..."
-    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     echo "   ✓ Flathub remote added"
 else
     echo "   ✓ Flathub remote is configured"
 fi
 
-echo "5. Downloading flatpak-dotnet-generator.py..."
+echo "Downloading flatpak-dotnet-generator.py..."
 cd "$SCRIPT_DIR"
 if [ -f "flatpak-dotnet-generator.py" ]; then
     echo "   flatpak-dotnet-generator.py already exists, skipping download"
@@ -55,18 +51,18 @@ else
     echo "   ✓ flatpak-dotnet-generator.py downloaded"
 fi
 
-echo "6. Generating sources.json..."
-python3 flatpak-dotnet-generator.py sources.json "$FLATPAK_MANIFEST"
+echo "Generating Nuget source file..."
+python3 flatpak-dotnet-generator.py sources.json "$SCRIPT_DIR/../../ClassIsland.Desktop/ClassIsland.Desktop.csproj" -d 9
 echo "   ✓ sources.json generated"
 
-echo "7. Building Flatpak package..."
-flatpak-builder --user --install-deps-from=flathub --repo=repo build "$FLATPAK_MANIFEST"
+echo "Building Flatpak package..."
+flatpak-builder --install-deps-from=flathub --force-clean --repo=repo build "$FLATPAK_MANIFEST"
 echo "   ✓ Flatpak build completed"
 
-echo "8. Exporting Flatpak bundle..."
+echo "Exporting Flatpak bundle..."
 flatpak build-bundle repo ClassIsland.flatpak org.classisland.ClassIsland
 echo "   ✓ Flatpak bundle created: ClassIsland.flatpak"
 
 echo ""
-echo "Success!"
+echo "Done!"
 echo "Flatpak bundle location: $SCRIPT_DIR/ClassIsland.flatpak"
