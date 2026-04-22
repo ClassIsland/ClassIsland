@@ -10,11 +10,13 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
+using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views.SettingPages;
@@ -121,17 +123,19 @@ public partial class WeatherSettingsPage : SettingsPageBase
     private async void ButtonGetCurrentPos_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsLocationUpdating = true;
-        this.ShowToast("正在定位...");
+        var toast = this.ShowToast(new ToastMessage("正在定位...") { AutoClose = false });
         try
         {
             var pos = await ViewModel.LocationService.GetLocationAsync();
             ViewModel.SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4); 
             ViewModel.SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
             await ViewModel.WeatherService.QueryWeatherAsync();
+            toast.Close();
             this.ShowSuccessToast("定位成功");
         }
         catch (Exception exception)
         {
+            toast.Close();
             Logger.LogError(exception, "无法获取当前位置");
             this.ShowErrorToast($"无法获取当前位置：{exception.Message}");
         }

@@ -14,9 +14,11 @@ public static class ToastsHelper
     /// </summary>
     /// <param name="control">包含在要显示消息的容器中的控件</param>
     /// <param name="message">要显示的消息</param>
-    public static void ShowToast(this Control control, ToastMessage message)
+    /// <returns>返回 <see cref="ToastMessage"/> 实例引用，可用于后续更新或关闭。</returns>
+    public static ToastMessage ShowToast(this Control control, ToastMessage message)
     {
         control.RaiseEvent(new ShowToastEventArgs(message));
+        return message;
     }
     
     /// <summary>
@@ -24,9 +26,10 @@ public static class ToastsHelper
     /// </summary>
     /// <param name="control">包含在要显示消息的容器中的控件</param>
     /// <param name="message">要显示的消息</param>
-    public static void ShowToast(this Control control, string message)
+    /// <returns>返回 <see cref="ToastMessage"/> 实例引用。</returns>
+    public static ToastMessage ShowToast(this Control control, string message)
     {
-        ShowToast(control, new ToastMessage(message));
+        return ShowToast(control, new ToastMessage(message));
     }
 
     /// <summary>
@@ -34,9 +37,10 @@ public static class ToastsHelper
     /// </summary>
     /// <param name="control">包含在要显示消息的容器中的控件</param>
     /// <param name="message">要显示的消息</param>
-    public static void ShowWarningToast(this Control control, string message)
+    /// <returns>返回 <see cref="ToastMessage"/> 实例引用。</returns>
+    public static ToastMessage ShowWarningToast(this Control control, string message)
     {
-        ShowToast(control, new ToastMessage(message)
+        return ShowToast(control, new ToastMessage(message)
         {
             Severity = InfoBarSeverity.Warning
         });
@@ -47,9 +51,10 @@ public static class ToastsHelper
     /// </summary>
     /// <param name="control">包含在要显示消息的容器中的控件</param>
     /// <param name="message">要显示的消息</param>
-    public static void ShowErrorToast(this Control control, string message)
+    /// <returns>返回 <see cref="ToastMessage"/> 实例引用。</returns>
+    public static ToastMessage ShowErrorToast(this Control control, string message)
     {
-        ShowToast(control, new ToastMessage(message)
+        return ShowToast(control, new ToastMessage(message)
         {
             Severity = InfoBarSeverity.Error,
             Duration = TimeSpan.FromSeconds(10)
@@ -61,9 +66,10 @@ public static class ToastsHelper
     /// </summary>
     /// <param name="control">包含在要显示消息的容器中的控件</param>
     /// <param name="message">要显示的消息</param>
-    public static void ShowSuccessToast(this Control control, string message)
+    /// <returns>返回 <see cref="ToastMessage"/> 实例引用。</returns>
+    public static ToastMessage ShowSuccessToast(this Control control, string message)
     {
-        ShowToast(control, new ToastMessage(message)
+        return ShowToast(control, new ToastMessage(message)
         {
             Severity = InfoBarSeverity.Success
         });
@@ -75,14 +81,17 @@ public static class ToastsHelper
     /// <param name="control">包含在要显示消息的容器中的控件</param>
     /// <param name="title">要显示的错误标题</param>
     /// <param name="exception">异常内容</param>
-    public static void ShowErrorToast(this Control control, string title, Exception exception)
+    /// <returns>返回 <see cref="ToastMessage"/> 实例引用。</returns>
+    public static ToastMessage ShowErrorToast(this Control control, string title, Exception exception)
     {
-        control.RaiseEvent(new ShowToastEventArgs(new ToastMessage()
+        var message = new ToastMessage()
         {
             Title = title,
             Message = exception.Message,
             Severity = InfoBarSeverity.Error,
             AutoClose = false
-        }));
+        };
+        control.RaiseEvent(new ShowToastEventArgs(message));
+        return message;
     }
 }
