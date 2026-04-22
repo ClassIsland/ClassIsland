@@ -9,6 +9,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
@@ -119,16 +120,24 @@ public partial class WeatherSettingsPage : SettingsPageBase
 
     private async void ButtonGetCurrentPos_OnClick(object sender, RoutedEventArgs e)
     {
+        ViewModel.IsLocationUpdating = true;
+        this.ShowToast("正在定位...");
         try
         {
             var pos = await ViewModel.LocationService.GetLocationAsync();
             ViewModel.SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4); 
             ViewModel.SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
             await ViewModel.WeatherService.QueryWeatherAsync();
+            this.ShowSuccessToast("定位成功");
         }
         catch (Exception exception)
         {
             Logger.LogError(exception, "无法获取当前位置");
+            this.ShowErrorToast($"无法获取当前位置：{exception.Message}");
+        }
+        finally
+        {
+            ViewModel.IsLocationUpdating = false;
         }
     }
 
