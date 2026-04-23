@@ -1958,6 +1958,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             if (value == _isScreenShotBlockingEnabled) return;
             _isScreenShotBlockingEnabled = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(WindowCaptureBlockingMode));
         }
     }
 
@@ -1968,6 +1969,60 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isScreenRecordingBlockingEnabled) return;
             _isScreenRecordingBlockingEnabled = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(WindowCaptureBlockingMode));
+        }
+    }
+
+    /// <summary>
+    /// 窗口截取阻止模式
+    /// </summary>
+    /// <value>
+    /// 0 - 可截取<br/>
+    /// 1 - 阻止录屏<br/>
+    /// 2 - 阻止截图和录屏
+    /// </value>
+    [JsonIgnore]
+    public int WindowCaptureBlockingMode
+    {
+        get
+        {
+            if (IsScreenShotBlockingEnabled)
+            {
+                return 2;
+            }
+
+            return IsScreenRecordingBlockingEnabled ? 1 : 0;
+        }
+        set
+        {
+            var normalizedValue = value switch
+            {
+                1 => 1,
+                2 => 2,
+                _ => 0
+            };
+
+            if (normalizedValue == WindowCaptureBlockingMode) return;
+
+            switch (normalizedValue)
+            {
+                case 0:
+                    _isScreenShotBlockingEnabled = false;
+                    _isScreenRecordingBlockingEnabled = false;
+                    break;
+                case 1:
+                    _isScreenShotBlockingEnabled = false;
+                    _isScreenRecordingBlockingEnabled = true;
+                    break;
+                case 2:
+                    _isScreenShotBlockingEnabled = true;
+                    _isScreenRecordingBlockingEnabled = true;
+                    break;
+            }
+
+            OnPropertyChanged(nameof(IsScreenShotBlockingEnabled));
+            OnPropertyChanged(nameof(IsScreenRecordingBlockingEnabled));
             OnPropertyChanged();
         }
     }
