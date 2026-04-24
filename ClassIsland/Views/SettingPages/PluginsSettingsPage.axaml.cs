@@ -318,8 +318,10 @@ public partial class PluginsSettingsPage : SettingsPageBase
             return;
         }
 
-        var manifests = await GetPluginManifestsAsync(paths);
-        if (!manifests.Any())
+        ViewModel.IsInstallingLocalPlugin = true;
+        List<PluginInstallPreviewItem> manifests;
+        manifests = await GetPluginManifestsAsync(paths);
+        if (manifests.Count == 0)
         {
             this.ShowWarningToast("未能从选择的文件中解析出任何可安装的插件包。");
             return;
@@ -340,6 +342,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
         };
 
         var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+        ViewModel.IsInstallingLocalPlugin = false;
         if (topLevel == null)
         {
             this.ShowErrorToast("找不到父窗口根节点");

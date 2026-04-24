@@ -28,6 +28,7 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
     [ObservableProperty] private int _pluginCategoryIndex = 1;
     [ObservableProperty] private string _pluginFilterText = "";
     [ObservableProperty] private bool _isLoadingDocument = false;
+    [ObservableProperty] private bool _isInstallingLocalPlugin = false;
     [ObservableProperty] private bool _isDetailsShown = false;
     [ObservableProperty] private bool _isDragEntering = false;
     [ObservableProperty] private bool _isDragInstallValid = false;

@@ -753,6 +753,17 @@
                 </StackPanel></ScrollViewer>
             </Border>
         </Grid>
+        <Grid IsVisible="{Binding ViewModel.IsInstallingLocalPlugin}">
+            <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    Opacity="0.8"/>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <controls2:ProgressRing IsIndeterminate="True" Width="64" Height="64" />
+                <TextBlock Text="正在解析..." 
+                           Margin="0 16 0 0" 
+                           HorizontalAlignment="Center"
+                           FontSize="16"/>
+            </StackPanel>
+        </Grid>
         <Grid IsVisible="{Binding ViewModel.IsDragEntering}">
             <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                     Opacity="0.75"/>
