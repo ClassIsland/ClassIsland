@@ -42,83 +42,138 @@
                                                    TextTrimming="CharacterEllipsis"
                                                    FontWeight="Medium"
                                                    Margin="0 0 0 4"/>
-                        <TextBlock Margin="0 0 0 2">
-                            <Run Text="{Binding Manifest.Version}"/>
-                            <Run Text=" "/>
-                            <ci:NavHyperlink NavTarget="{Binding Manifest.Url}">项目主页</ci:NavHyperlink>
-                            <Run Text=" "/>
-                            <Run Text="{Binding Manifest.Author}"/>
-                        </TextBlock>
-                        <!-- Local Operations -->
+                        <WrapPanel Orientation="Horizontal" Margin="0 0 0 2">
+                            <TextBlock VerticalAlignment="Center">
+                                <Run Text="{Binding Manifest.Version}"/>
+                                <Run Text=" | "/>
+                                <ci:NavHyperlink NavTarget="{Binding Manifest.Url}">项目主页</ci:NavHyperlink>
+                                <Run Text=" | "/>
+                                <Run Text="{Binding Manifest.Author}"/>
+                            </TextBlock>
+                            
+                            <TextBlock Text=" | " VerticalAlignment="Center" Margin="0 0 4 0"/>
+                            <WrapPanel Orientation="Horizontal">
+                                <Border Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}"
+                                        CornerRadius="999"
+                                        Padding="10 3"
+                                        VerticalAlignment="Center">
+                                    <Border.IsVisible>
+                                        <Binding Path="LoadStatus" Converter="{x:Static ObjectConverters.Equal}">
+                                            <Binding.ConverterParameter>
+                                                <enums:PluginLoadStatus>Loaded</enums:PluginLoadStatus>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
+                                    </Border.IsVisible>
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <ci:FluentIcon Glyph="&#xE426;" FontSize="14" VerticalAlignment="Center"/>
+                                        <TextBlock VerticalAlignment="Center">
+                                            <Run Text="已加载"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                                        CornerRadius="999"
+                                        Padding="10 3"
+                                        VerticalAlignment="Center">
+                                    <Border.IsVisible>
+                                        <Binding Path="LoadStatus" Converter="{x:Static ObjectConverters.Equal}">
+                                            <Binding.ConverterParameter>
+                                                <enums:PluginLoadStatus>Disabled</enums:PluginLoadStatus>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
+                                    </Border.IsVisible>
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <ci:FluentIcon Glyph="&#xE673;" FontSize="14" VerticalAlignment="Center"/>
+                                        <TextBlock VerticalAlignment="Center">
+                                            <Run Text="已禁用"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="{DynamicResource SystemFillColorCriticalBackgroundBrush}"
+                                        CornerRadius="999"
+                                        Padding="10 3"
+                                        VerticalAlignment="Center">
+                                    <Border.IsVisible>
+                                        <Binding Path="LoadStatus" Converter="{x:Static ObjectConverters.Equal}">
+                                            <Binding.ConverterParameter>
+                                                <enums:PluginLoadStatus>Error</enums:PluginLoadStatus>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
+                                    </Border.IsVisible>
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <ci:FluentIcon Glyph="&#xE673;" FontSize="14" VerticalAlignment="Center"/>
+                                        <TextBlock VerticalAlignment="Center">
+                                            <Run Text="错误"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                                        CornerRadius="999"
+                                        Padding="10 3"
+                                        VerticalAlignment="Center">
+                                    <Border.IsVisible>
+                                        <Binding Path="LoadStatus" Converter="{x:Static ObjectConverters.Equal}">
+                                            <Binding.ConverterParameter>
+                                                <enums:PluginLoadStatus>NotLoaded</enums:PluginLoadStatus>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
+                                    </Border.IsVisible>
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <ci:FluentIcon Glyph="&#xE673;" FontSize="14" VerticalAlignment="Center"/>
+                                        <TextBlock VerticalAlignment="Center">
+                                            <Run Text="未加载"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                            </WrapPanel>
+                        </WrapPanel>
                         <WrapPanel Orientation="Horizontal" 
                                    Margin="0 0 0 4"
                                    IsVisible="{Binding IsLocal}">
                             <CheckBox Content="已启用" Margin="0 0 6  0"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{Binding IsEnabled}"/>
+                            <Button Click="ButtonInstallPlugin_OnClick" Classes="accent"
+                                    VerticalAlignment="Center"
+                                    Margin="0 0 6 0"
+                                    IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}">
+                                <Button.IsVisible>
+                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                        <Binding Path="IsLocal" />
+                                        <Binding Path="IsUpdateAvailable" />
+                                        <Binding Path="IsAvailableOnMarket"/>
+                                        <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
+                                    </MultiBinding>
+                                </Button.IsVisible>
+                                <ci:IconText Glyph="&#xE1A0;" Text="更新"/>
+                            </Button>
+                            <Button VerticalAlignment="Center"
+                                    Click="ButtonRestart_OnClick"
+                                    Classes="accent"
+                                    Margin="0 0 6 0">
+                                <Button.IsVisible>
+                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                        <Binding Path="IsLocal"/>
+                                        <Binding Path="RestartRequired"/>
+                                    </MultiBinding>
+                                </Button.IsVisible>
+                                <ci:IconText Glyph="&#xE0BD;" Text="重启以应用更改"/>
+                            </Button>
                             <Button VerticalAlignment="Center"
                                     Margin="0 0 6  0"
                                     Click="ButtonUninstall_OnClick"
                                     IsVisible="{Binding !IsUninstalling}">
-                                <ci:IconText Glyph="&#xE61D;" Text="卸载"/>
+                                <ci:IconText Glyph="&#xE61D;" Text="移除"/>
                             </Button>
                             <Button VerticalAlignment="Center"
                                     Margin="0 0 6  0"
                                     Click="ButtonUndoUninstall_OnClick"
                                     IsVisible="{Binding IsUninstalling}">
-                                <ci:IconText Glyph="&#xE625;" Text="撤销卸载"/>
+                                <ci:IconText Glyph="&#xE625;" Text="撤销移除"/>
                             </Button>
-                            <TextBlock Opacity="0.8"
-                                       VerticalAlignment="Center">
-                                <Classes.Error>
-                                    <Binding Path="LoadStatus" Converter="{x:Static ObjectConverters.Equal}">
-                                        <Binding.ConverterParameter>
-                                            <enums:PluginLoadStatus>Error</enums:PluginLoadStatus>
-                                        </Binding.ConverterParameter>
-                                    </Binding>
-                                </Classes.Error>
-                                <Classes.Loaded>
-                                    <Binding Path="LoadStatus" Converter="{x:Static ObjectConverters.Equal}">
-                                        <Binding.ConverterParameter>
-                                            <enums:PluginLoadStatus>Loaded</enums:PluginLoadStatus>
-                                        </Binding.ConverterParameter>
-                                    </Binding>
-                                </Classes.Loaded>
-                                <Classes.Disabled>
-                                    <Binding Path="LoadStatus" Converter="{x:Static ObjectConverters.Equal}">
-                                        <Binding.ConverterParameter>
-                                            <enums:PluginLoadStatus>Disabled</enums:PluginLoadStatus>
-                                        </Binding.ConverterParameter>
-                                    </Binding>
-                                </Classes.Disabled>
-                                <Classes.NotLoaded>
-                                    <Binding Path="LoadStatus" Converter="{x:Static ObjectConverters.Equal}">
-                                        <Binding.ConverterParameter>
-                                            <enums:PluginLoadStatus>NotLoaded</enums:PluginLoadStatus>
-                                        </Binding.ConverterParameter>
-                                    </Binding>
-                                </Classes.NotLoaded>
-                                <TextBlock.Styles>
-                                    <Style Selector="TextBlock">
-                                        <Style Selector="^.Error">
-                                            <Setter Property="Text" Value="错误"/>
-                                            <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}"/>
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </Style>
-                                        <Style Selector="^.Loaded">
-                                            <Setter Property="Text" Value="已加载"/>
-                                            <Setter Property="Foreground" Value="LawnGreen"/>
-                                        </Style>
-                                        <Style Selector="^.Disabled">
-                                            <Setter Property="Text" Value="已禁用"/>
-                                            <Setter Property="FontStyle" Value="Italic"/>
-                                        </Style>
-                                        <Style Selector="^.NotLoaded">
-                                            <Setter Property="Text" Value="未加载"/>
-                                        </Style>
-                                    </Style>
-                                </TextBlock.Styles>
-                            </TextBlock>
                         </WrapPanel>
                         <!-- Market Operations -->
                         <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
@@ -132,27 +187,6 @@
                             </WrapPanel.IsVisible>
                             <Button Click="ButtonInstallPlugin_OnClick" Classes="accent">
                                 <ci:IconText Glyph="&#xE0D3;" Text="安装"/>
-                            </Button>
-                        </WrapPanel>
-                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
-                                   Margin="0 0 0 4">
-                            <WrapPanel.IsVisible>
-                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                    <Binding Path="IsLocal" />
-                                    <Binding Path="IsUpdateAvailable" />
-                                    <Binding Path="IsAvailableOnMarket"/>
-                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
-                                </MultiBinding>
-                            </WrapPanel.IsVisible>
-                            <Button Click="ButtonInstallPlugin_OnClick" Classes="accent">
-                                <ci:IconText Glyph="&#xE1A0;" Text="更新"/>
-                            </Button>
-                        </WrapPanel>
-                        <WrapPanel Orientation="Horizontal" Margin="0 0 0 4"
-                                   IsVisible="{Binding RestartRequired}">
-                            <Button Click="ButtonRestart_OnClick"
-                                    Classes="accent">
-                                <ci:IconText Glyph="&#xE0BD;" Text="重启以应用更改"/>
                             </Button>
                         </WrapPanel>
                         <controls2:InfoBar Message="此插件未声明支持当前所运行的操作系统。此插件可能不能正常按预期工作。"
@@ -534,7 +568,7 @@
                                             <TextBlock Text="{Binding Value.StarsCount, Converter={StaticResource LargeNumberToFriendlyNumberConverter}}"
                                                        FontSize="12" VerticalAlignment="Center"/>
                                         </StackPanel>
-                                        <ci:FluentIcon ToolTip.Tip="此插件将在重启后被卸载。"
+                                        <ci:FluentIcon ToolTip.Tip="此插件将在重启后被移除。"
                                                          Foreground="Orange"
                                                          Width="16" Height="16"
                                                          VerticalAlignment="Center"
