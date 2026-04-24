@@ -59,6 +59,8 @@ public class TimeLineListItemBehavior : Behavior<Control>
 
         if (AssociatedObject != null)
         {
+            AssociatedObject.AttachedToVisualTree -= AssociatedObjectOnAttachedToVisualTree;
+            AssociatedObject.DetachedFromVisualTree -= AssociatedObjectOnDetachedFromVisualTree;
             AssociatedObject.AttachedToVisualTree += AssociatedObjectOnAttachedToVisualTree;
             AssociatedObject.DetachedFromVisualTree += AssociatedObjectOnDetachedFromVisualTree;
         }

@@ -88,7 +88,17 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private bool _isFirstNavigated = false;
 
-    private readonly Dictionary<string, SettingsPageBase?> _cachedPages = new();
+    private const int MaxCachedPages = 20;
+
+    private sealed class CachedPageEntry(string key, SettingsPageBase? page, bool keepStrongReference)
+    {
+        public string Key { get; } = key;
+        public WeakReference<SettingsPageBase?> WeakPage { get; } = new(page);
+        public SettingsPageBase? StrongPage { get; set; } = keepStrongReference ? page : null;
+    }
+
+    private readonly Dictionary<string, LinkedListNode<CachedPageEntry>> _cachedPages = new();
+    private readonly LinkedList<CachedPageEntry> _cachedPagesLru = new();
     private IDisposable? _isDebugOptionsEnabledObserver;
     
     public static readonly FuncValueConverter<object?, double> ControlToWidthConverter = new(x =>
@@ -167,7 +177,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         _isDebugOptionsEnabledObserver?.Dispose();
         _isDebugOptionsEnabledObserver = null;
 
-        _cachedPages.Clear();
+        ClearCachedPages();
 
         base.OnClosed(e);
     }
@@ -446,22 +456,117 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     private SettingsPageBase? GetPage(string? id, out bool cached)
     {
         cached = false;
-        if (_cachedPages.TryGetValue(id ?? "", out var page))
+        var key = id ?? "";
+        if (TryGetCachedPage(key, out var page))
         {
             cached = true;
             return page;
         }
         var pageNew = IAppHost.Host?.Services.GetKeyedService<SettingsPageBase>(id);
-        if (SettingsService.Settings.SettingsPagesCachePolicy >= 1)
-        {
-            _cachedPages[id ?? ""] = pageNew;
-        }
+        CachePageIfNeeded(key, pageNew);
 
         if (pageNew != null)
         {
             pageNew.Tag = id;
         }
         return pageNew;
+    }
+
+    private bool TryGetCachedPage(string key, out SettingsPageBase? page)
+    {
+        page = null;
+        if (!_cachedPages.TryGetValue(key, out var node))
+        {
+            return false;
+        }
+
+        var entry = node.Value;
+        if (entry.StrongPage != null)
+        {
+            page = entry.StrongPage;
+            TouchCachedPageNode(node);
+            return true;
+        }
+
+        if (entry.WeakPage.TryGetTarget(out var weakPage) && weakPage != null)
+        {
+            page = weakPage;
+            TouchCachedPageNode(node);
+            return true;
+        }
+
+        RemoveCachedPageNode(node);
+        return false;
+    }
+
+    private void CachePageIfNeeded(string key, SettingsPageBase? page)
+    {
+        var policy = SettingsService.Settings.SettingsPagesCachePolicy;
+        if (policy < 1)
+        {
+            return;
+        }
+
+        // policy=1: 强引用 LRU（关闭窗口时清空）；policy>=2: 弱引用 LRU（允许 GC 回收）
+        var keepStrongReference = policy == 1;
+
+        if (_cachedPages.TryGetValue(key, out var existingNode))
+        {
+            existingNode.Value.StrongPage = keepStrongReference ? page : null;
+            if (page != null)
+            {
+                existingNode.Value.WeakPage.SetTarget(page);
+            }
+            TouchCachedPageNode(existingNode);
+        }
+        else
+        {
+            var newNode = new LinkedListNode<CachedPageEntry>(new CachedPageEntry(key, page, keepStrongReference));
+            _cachedPages[key] = newNode;
+            _cachedPagesLru.AddFirst(newNode);
+        }
+
+        TrimCachedPagesIfNeeded();
+    }
+
+    private void TrimCachedPagesIfNeeded()
+    {
+        while (_cachedPages.Count > MaxCachedPages)
+        {
+            var last = _cachedPagesLru.Last;
+            if (last == null)
+            {
+                break;
+            }
+
+            RemoveCachedPageNode(last);
+        }
+    }
+
+    private void TouchCachedPageNode(LinkedListNode<CachedPageEntry> node)
+    {
+        if (!ReferenceEquals(_cachedPagesLru.First, node))
+        {
+            _cachedPagesLru.Remove(node);
+            _cachedPagesLru.AddFirst(node);
+        }
+    }
+
+    private void RemoveCachedPageNode(LinkedListNode<CachedPageEntry> node)
+    {
+        _cachedPages.Remove(node.Value.Key);
+        _cachedPagesLru.Remove(node);
+        node.Value.StrongPage = null;
+    }
+
+    private void ClearCachedPages()
+    {
+        foreach (var entry in _cachedPagesLru)
+        {
+            entry.StrongPage = null;
+        }
+        _cachedPages.Clear();
+        _cachedPagesLru.Clear();
     }
 
     private void SettingsWindowNew_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -542,7 +647,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         App.GetService<IAutomationService>().SaveConfig("关闭应用设置窗口");
         if (SettingsService.Settings.SettingsPagesCachePolicy <= 1)
         {
-            _cachedPages.Clear();
+            ClearCachedPages();
         }
         GC.Collect();
     }
