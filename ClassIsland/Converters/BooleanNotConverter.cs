@@ -11,8 +11,8 @@ public class BooleanNotConverter : IValueConverter
         return value is bool b && !b;
     }
 
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return null;
+        throw new NotSupportedException();
     }
 }

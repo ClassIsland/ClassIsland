@@ -192,13 +192,17 @@ public partial class PluginsSettingsPage : SettingsPageBase
     public class PluginInstallPreviewItem : PluginManifest
     {
         public Avalonia.Media.Imaging.Bitmap? IconBitmap { get; set; }
+        public string? SourcePath { get; set; }
     }
 
-    private Task<List<PluginInstallPreviewItem>> GetPluginManifestsAsync(IEnumerable<string> fileNames)
+    private sealed record PluginInstallPreviewRaw(PluginManifest Manifest, string SourcePath, byte[]? IconBytes);
+
+    private async Task<List<PluginInstallPreviewItem>> GetPluginManifestsAsync(IEnumerable<string> fileNames)
     {
-        return Task.Run(() =>
+        var raws = await Task.Run(() =>
         {
-            var manifests = new List<PluginInstallPreviewItem>();
+            var result = new List<PluginInstallPreviewRaw>();
+
             var deserializer = new DeserializerBuilder()
                 .IgnoreUnmatchedProperties()
                 .WithTypeConverter(new OSPlatformTypeConverter())
@@ -212,17 +216,16 @@ public partial class PluginsSettingsPage : SettingsPageBase
                     using var pkg = ZipFile.OpenRead(fileName);
                     var mf = pkg.GetEntry(Services.PluginService.PluginManifestFileName);
                     if (mf == null)
-                    {
                         continue;
-                    }
 
                     using var reader = new StreamReader(mf.Open());
                     var mfText = reader.ReadToEnd();
-                    var manifest = deserializer.Deserialize<PluginInstallPreviewItem>(mfText);
+                    var manifest = deserializer.Deserialize<PluginManifest>(mfText);
                     if (manifest == null)
-                    {
                         continue;
-                    }
+
+                    byte[]? iconBytes = null;
+
                     var iconPath = manifest.Icon?.Replace('\\', '/').TrimStart('/');
                     if (!string.IsNullOrWhiteSpace(iconPath))
                     {
@@ -232,10 +235,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
                             try
                             {
                                 using var iconStream = iconEntry.Open();
-                                using var ms = new MemoryStream(iconEntry.Length > 0 ? (int)iconEntry.Length : 0);
+                                using var ms = new MemoryStream();
                                 iconStream.CopyTo(ms);
-                                ms.Position = 0;
-                                manifest.IconBitmap = new Avalonia.Media.Imaging.Bitmap(ms);
+                                iconBytes = ms.ToArray();
                             }
                             catch (Exception ex)
                             {
@@ -243,8 +245,11 @@ public partial class PluginsSettingsPage : SettingsPageBase
                             }
                         }
                     }
-
-                    manifests.Add(manifest);
+                    result.Add(new PluginInstallPreviewRaw(manifest, fileName, iconBytes));
+                }
+                catch (InvalidDataException)
+                {
+                Logger.LogWarning("不是有效插件包：{File}", fileName);
                 }
                 catch (Exception ex)
                 {
@@ -252,12 +257,53 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 }
             }
 
-            return manifests;
+            return result;
         });
+
+        var manifests = new List<PluginInstallPreviewItem>();
+        foreach (var raw in raws)
+        {
+            var m = raw.Manifest;
+            var item = new PluginInstallPreviewItem()
+            {
+                EntranceAssembly = m.EntranceAssembly,
+                Name = m.Name,
+                Id = m.Id,
+                Description = m.Description,
+                Icon = m.Icon,
+                Readme = m.Readme,
+                Url = m.Url,
+                Version = m.Version,
+                ApiVersion = m.ApiVersion,
+                Author = m.Author,
+                Dependencies = m.Dependencies?.ToList() ?? [],
+                SupportedOSPlatforms = m.SupportedOSPlatforms?.ToList() ?? [],
+                SourcePath = raw.SourcePath
+            };
+
+            if (raw.IconBytes is { Length: > 0 })
+            {
+                try
+                {
+                    using var ms = new MemoryStream(raw.IconBytes);
+                    item.IconBitmap = new Avalonia.Media.Imaging.Bitmap(ms);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "Bitmap 创建失败：{Name}", item.Name);
+                }
+            }
+
+            manifests.Add(item);
+        }
+        return manifests;
     }
 
     private async Task ProcessInstallFiles(IEnumerable<string> filePaths)
     {
+        if (ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
+            return;
+
         var paths = filePaths
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x.Trim())
@@ -266,10 +312,18 @@ public partial class PluginsSettingsPage : SettingsPageBase
             .Where(x => Path.GetExtension(x).Equals(IPluginService.PluginPackageExtension, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
-        if (!paths.Any()) return;
+        if (!paths.Any())
+        {
+            // this.ShowWarningToast($"请选择有效的 {IPluginService.PluginPackageExtension} 插件包文件。");
+            return;
+        }
 
         var manifests = await GetPluginManifestsAsync(paths);
-        if (!manifests.Any()) return;
+        if (!manifests.Any())
+        {
+            this.ShowWarningToast("未能从选择的文件中解析出任何可安装的插件包。");
+            return;
+        }
 
         var contentTemplate = this.TryFindResource("InstallPluginConfirmTemplate", out var templateObj)
             ? templateObj as IDataTemplate
@@ -296,24 +350,45 @@ public partial class PluginsSettingsPage : SettingsPageBase
         if (result != ContentDialogResult.Primary)
             return;
 
-        var success = 0;
-        foreach (var path in paths)
+        int success = 0;
+        int failed = 0;
+        foreach (var m in manifests)
         {
+            var path = m.SourcePath;
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                failed++;
+                continue;
+            }
+            path = path.Trim();
+            if (!File.Exists(path))
+            {
+                this.ShowWarningToast($"文件不存在：{path}");
+                failed++;
+                continue;
+            }
             try
             {
-                File.Copy(path, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(path)), true);
+                var dest = Path.Combine(
+                    Services.PluginService.PluginsPkgRootPath,
+                    Path.GetFileName(path));
+                File.Copy(path, dest, true);
                 success++;
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                this.ShowErrorToast($"无法安装插件 {path}", exception);
+                failed++;
+                this.ShowErrorToast($"无法安装插件 {path}", ex);
             }
         }
-
         if (success > 0)
         {
             this.ShowSuccessToast($"成功安装了 {success} 个插件。");
             RequestRestart();
+        }
+        else if (failed > 0)
+        {
+        this.ShowWarningToast($"安装失败：{failed} 个插件。");
         }
     }
 
@@ -332,7 +407,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
             AllowMultiple = true
         }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
         PopupHelper.RestoreAllPopups();
-        
+        if (file == null || file.Count == 0)
+            return;
+
         await ProcessInstallFiles(file);
     }
 
@@ -513,7 +590,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private void Grid_DragEnter(object sender, DragEventArgs e)
     {
         var files = e.Data.GetFiles()?.Select(x => x.Path.LocalPath).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-        if (files == null || files.Count == 0)
+        if (files == null || files.Count == 0 || ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
         {
             ViewModel.IsDragEntering = false;
             e.DragEffects = DragDropEffects.None;
@@ -542,6 +619,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private async void Grid_Drop(object sender, DragEventArgs e)
     {
         ViewModel.IsDragEntering = false;
+        if (ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
+            return;
+
         var files = e.Data.GetFiles()?.Select(x => x.Path.LocalPath).ToList();
         if (files == null || files.Count == 0)
             return;
@@ -552,6 +632,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private void Grid_DragLeave(object sender, DragEventArgs e)
     {
         ViewModel.IsDragEntering = false;
+        ViewModel.IsDragInstallValid = false;
     }
 
     private void PluginsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)

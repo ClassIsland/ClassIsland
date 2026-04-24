@@ -41,7 +41,6 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
 
     public SyncDictionaryList<string, PluginInfo> MergedPlugins { get; }
 
-
     /// <inheritdoc/>
     public PluginsSettingsPageViewModel(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService, ILogger<PluginsSettingsPage> logger)
     {
