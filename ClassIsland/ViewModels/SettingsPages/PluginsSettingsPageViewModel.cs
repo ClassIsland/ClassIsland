@@ -30,6 +30,11 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
     [ObservableProperty] private bool _isLoadingDocument = false;
     [ObservableProperty] private bool _isDetailsShown = false;
     [ObservableProperty] private bool _isDragEntering = false;
+    [ObservableProperty] private bool _isDragInstallValid = false;
+    [ObservableProperty] private int _dragInstallTotalCount = 0;
+    [ObservableProperty] private int _dragInstallSupportedCount = 0;
+    [ObservableProperty] private string _dragInstallHintText = "将插件拖入到此处，松手即可安装。";
+    [ObservableProperty] private string _dragInstallSubHintText = "";
     [ObservableProperty] private bool _pluginListBoxHasItems = false;
     [ObservableProperty] private IObservableList<KeyValuePair<string, PluginInfo>> _mergedPluginsFiltered = null!;
     [ObservableProperty] private SyncDictionaryList<string, string> _officialPluginMirrors = null!;
