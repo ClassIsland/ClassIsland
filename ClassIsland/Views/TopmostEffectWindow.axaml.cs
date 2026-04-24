@@ -71,6 +71,11 @@ public partial class TopmostEffectWindow : Window, ITopmostEffectPlayer
         Logger.LogInformation("播放顶层特效：{}", effect);
         if (effect is not Control element)
             return;
+        if (ViewModel.IsEditMode)
+        {
+            Logger.LogInformation("由于应用处于编辑模式，将丢弃当前顶层特效");
+            return;
+        }
         ViewModel.EffectControls.Add(element);
         if (!element.IsLoaded)
         {

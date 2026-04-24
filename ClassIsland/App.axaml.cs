@@ -260,6 +260,14 @@ public partial class App : AppBase, IAppHost
             {
                 Uri = Uri.TryCreate(args[0], UriKind.Absolute, out var uri) ? uri.ToString() : $"avares://ClassIsland/Assets/HoYoStickers/{args[0]}.png"
             });
+        SentrySdk.ConfigureScope(s =>
+        {
+            s.SetTag("subChannel", AppSubChannel);
+            s.SetTag("subChannel.os", OperatingSystem);
+            s.SetTag("subChannel.platform", Platform);
+            s.SetTag("subChannel.buildType", BuildType);
+            s.SetTag("subChannel.packagingType", PackagingType);
+        });
         base.Initialize();
     }
 

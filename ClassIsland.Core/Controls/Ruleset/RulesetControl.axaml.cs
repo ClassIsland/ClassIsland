@@ -10,6 +10,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.Input;
@@ -95,5 +96,14 @@ public partial class RulesetControl : UserControl
         {
             e.Handled = true;
         }
+    }
+
+    private void Control_OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (MainListBox.Scroll != null) 
+                MainListBox.Scroll.Offset = new Vector(0, 0);
+        });
     }
 }

@@ -28,7 +28,6 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
     public void Analyze()
     {
         Nodes.Clear();
-        using var timer = SentrySdk.Metrics.StartTimer("profileAnalyze.analyzeAll");
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         var profile = ProfileService.Profile;

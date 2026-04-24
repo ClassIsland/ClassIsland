@@ -40,7 +40,7 @@
                               SelectionMode="Single"
                               GridLinesVisibility="All"
                               SelectedItem="{Binding SelectedWeekClassPlanRow, Mode=TwoWay}"
-                              SelectedIndex="{Binding SelectedClassInfoIndex, Converter={x:Static ci:PreventNullConverter.Instance}, Mode=TwoWay}"
+                              SelectedIndex="{Binding SelectedClassInfoIndex, Converter={x:Static ci:PreventNullConverter.Instance}, Mode=OneWay}"
                               scheduleDataGrid:ScheduleDataGridCellControl.Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
                               x:Name="PART_DataGridWeekSchedule">
                         <DataGrid.Styles>

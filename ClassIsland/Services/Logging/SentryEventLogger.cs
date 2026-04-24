@@ -23,6 +23,32 @@ public class SentryEventLogger(string categoryName) : ILogger
                 };
             });
         }
+        var message = formatter(state, exception);
+        // switch (logLevel)
+        // {
+        //     case LogLevel.Trace:
+        //         SentrySdk.Logger.LogTrace(message);
+        //         break;
+        //     case LogLevel.Debug:
+        //         SentrySdk.Logger.LogDebug(message);
+        //         break;
+        //     case LogLevel.Information:
+        //         SentrySdk.Logger.LogInfo(message);
+        //         break;
+        //     case LogLevel.Warning:
+        //         SentrySdk.Logger.LogWarning(message);
+        //         break;
+        //     case LogLevel.Error:
+        //         SentrySdk.Logger.LogError(message);
+        //         break;
+        //     case LogLevel.Critical:
+        //         SentrySdk.Logger.LogFatal(message);
+        //         break;
+        //     case LogLevel.None:
+        //         break;
+        //     default:
+        //         throw new ArgumentOutOfRangeException(nameof(logLevel), logLevel, null);
+        // }
     }
 
     public bool IsEnabled(LogLevel logLevel)

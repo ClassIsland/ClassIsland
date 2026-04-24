@@ -13,37 +13,46 @@
         "--share=network",
         "--socket=wayland",
         "--socket=x11",
+        "--socket=session-bus",
         "--device=dri",
         "--filesystem=home",
         "--filesystem=xdg-config:ro",
         "--filesystem=xdg-data:ro",
-        "--filesystem=xdg-cache:ro"
+        "--filesystem=xdg-cache:ro",
+        "--filesystem=host"
         ],
     "build-options": {
         "append-path": "/usr/lib/sdk/dotnet8/bin",
         "append-path": "/usr/lib/sdk/dotnet9/bin",
+        "append-ld-library-path": "/usr/lib/sdk/dotnet9/lib",
+        "prepend-pkg-config-path": "/usr/lib/sdk/dotnet9/lib/pkgconfig",
         "env": {
             "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
             "DOTNET_NO_MANIFEST_UPDATE": "1",
             "RESOLV_CONF": "/etc/resolv.conf"
+        },
+        "arch": {
+        "aarch64": {
+            "env" : {
+                "RUNTIME": "linux-arm64"
+            }
+        },
+        "x86_64": {
+            "env" : {
+                "RUNTIME": "linux-x64"
+            }
         }
+    }
     },
     "modules": [
         {
             "name": "ClassIsland",
             "buildsystem": "simple",
             "build-commands": [
-                "dotnet publish -c Release --source nuget-sources -o /app/bin ClassIsland.Desktop/ClassIsland.Desktop.csproj",
+                "dotnet publish -c Release --source nuget-sources --source /usr/lib/sdk/dotnet8/nuget/packages --source /usr/lib/sdk/dotnet9/nuget/packages -o /app/bin ClassIsland.Desktop/ClassIsland.Desktop.csproj --runtime $RUNTIME --sc",
                 "mkdir -p /app/share/applications",
-                "mkdir -p /app/share/icons/hicolor/scalable/apps",
-                "mkdir -p /app/share/icons/hicolor/128x128/apps",
                 "mkdir -p /app/share/icons/hicolor/512x512/apps",
-                "cp ClassIsland/Assets/ShortcutTemplates/cn.classisland.app.desktop /app/share/applications/org.classisland.ClassIsland.desktop",
-                "sed -i 's|{1}|/app/bin/ClassIsland.Desktop|g' /app/share/applications/org.classisland.ClassIsland.desktop",
-                "sed -i 's/Icon=classisland/Icon=org.classisland.ClassIsland/g' /app/share/applications/org.classisland.ClassIsland.desktop",
-                "cp ClassIsland/Assets/AppLogo.png /app/share/icons/hicolor/512x512/apps/org.classisland.ClassIsland.png",
-                "cp ClassIsland/Assets/AppLogo@128w.png /app/share/icons/hicolor/128x128/apps/org.classisland.ClassIsland.png",
-                "cp ClassIsland/Assets/AppLogo_AppLogo.svg /app/share/icons/hicolor/scalable/apps/org.classisland.ClassIsland.svg"
+                "ln -s /var/app/org.classisland.ClassIsland/test-write /app/bin/test-write"
                 ],
             "sources": [
                 {

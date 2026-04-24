@@ -372,3 +372,8 @@ cipx/
 **/.idea/avalonia.xml
 **/.idea/copilot.*
 .idea/.idea.ClassIsland/.idea/.name
+
+# Flatpak script artifacts
+tools/flatpak/repo
+tools/flatpak/ClassIsland.flatpak
+tools/flatpak/flatpak-dotnet-generator.py

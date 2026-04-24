@@ -463,7 +463,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             {
                 return;
             }
-            SentrySdk.Metrics.Increment("views.SettingsWindow.open");
+            SentrySdk.Metrics.EmitCounter("views.SettingsWindow.open", 1);
             IsOpened = true;
             Show();
         }

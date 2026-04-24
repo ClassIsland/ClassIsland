@@ -138,6 +138,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             else
             {
                 style &= ~(int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
+                style &= ~(int)WINDOW_EX_STYLE.WS_EX_LAYERED;
             }
             var r = SetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
         }
