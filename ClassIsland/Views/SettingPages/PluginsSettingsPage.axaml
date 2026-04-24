@@ -399,7 +399,7 @@
             </Grid>
         </ControlTemplate>
     </ci:SettingsPageBase.Resources>
-    <Grid Margin="8 12 0 12">
+    <Grid Margin="8 12 0 12" DragDrop.AllowDrop="True" DragDrop.DragEnter="Grid_DragEnter" DragDrop.DragOver="Grid_DragEnter" DragDrop.Drop="Grid_Drop" DragDrop.DragLeave="Grid_DragLeave">
         <controls1:ListDetailView IsEnabled="{Binding ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
                                   IsPanelOpened="{Binding ViewModel.IsDetailsShown, Mode=TwoWay}"
                                   IsVisible="{Binding !ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible}">
@@ -707,19 +707,18 @@
                     </Button>
                 </StackPanel></ScrollViewer>
         </Border>
-        <!-- <Grid Grid.Row="0" -->
-        <!--       IsVisible="{Binding ViewModel.IsDragEntering}"> -->
-        <!--     <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}" -->
-        <!--             Opacity="0.75"/> -->
-        <!--     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"> -->
-        <!--         <ci:FluentIcon Kind="FileImport" -->
-        <!--                          HorizontalAlignment="Center" -->
-        <!--                          Height="64" Width="64" -->
-        <!--                          Margin="0 0 0 8"/> -->
-        <!--         <TextBlock Text="将插件拖入到此处，松手即可安装。" -->
-        <!--            FontSize="14" -->
-        <!--            VerticalAlignment="Center"/> -->
-        <!--     </StackPanel> -->
-        <!-- </Grid> -->
+        <Grid IsVisible="{Binding ViewModel.IsDragEntering}">
+            <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    Opacity="0.75"/>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ci:FluentIcon Glyph="&#xE162;"
+                                 HorizontalAlignment="Center"
+                                 Height="64" Width="64"
+                                 Margin="0 0 0 8"/>
+                <TextBlock Text="将插件拖入到此处，松手即可安装。"
+                   FontSize="14"
+                   VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </ci:SettingsPageBase>

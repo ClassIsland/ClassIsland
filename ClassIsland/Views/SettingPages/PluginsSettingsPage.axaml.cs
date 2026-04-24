@@ -403,55 +403,48 @@ public partial class PluginsSettingsPage : SettingsPageBase
     }
     private void Grid_DragEnter(object sender, DragEventArgs e)
     {
-        // TODO: 实现插件拖拽安装
-        // if (e.Data.GetDataPresent(DataFormats.FileDrop))
-        // {
-        //     ViewModel.IsDragEntering = true;
-        //     e.Effects = DragDropEffects.Link;
-        // }
-        // else
-        // {
-        //     ViewModel.IsDragEntering = false;
-        //     e.Effects = DragDropEffects.None;
-        // }
+        if (e.Data.GetFiles()?.Any(x => Path.GetExtension(x.Path.LocalPath).Equals(IPluginService.PluginPackageExtension, StringComparison.OrdinalIgnoreCase)) == true)
+        {
+            ViewModel.IsDragEntering = true;
+            e.DragEffects = DragDropEffects.Copy;
+        }
+        else
+        {
+            ViewModel.IsDragEntering = false;
+            e.DragEffects = DragDropEffects.None;
+        }
     }
     private void Grid_Drop(object sender, DragEventArgs e)
     {
-        // TODO: 实现插件拖拽安装
-        // ViewModel.IsDragEntering = false;
-        // if (e.Data.GetDataPresent(DataFormats.FileDrop))
-        // {
-        //     var fileName = ((System.Array)e.Data.GetData(DataFormats.FileDrop))?.GetValue(0)?.ToString();
-        //     if (fileName == null)
-        //         return;
-        //     if (Path.GetExtension(fileName) != ".cipx")
-        //     {
-        //         ViewModel.MessageQueue.Enqueue($"不支持的文件：{fileName}");
-        //         return;
-        //     }
-        //     try
-        //     {
-        //         File.Copy(fileName, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(fileName)), true);
-        //
-        //         var deserializer = new DeserializerBuilder()
-        //             .IgnoreUnmatchedProperties()
-        //             .WithNamingConvention(CamelCaseNamingConvention.Instance)
-        //             .Build();
-        //         using var pkg = ZipFile.OpenRead(fileName);
-        //         var mf = pkg.GetEntry("manifest.yml");
-        //         if (mf == null)
-        //             return;
-        //         var mfText = new StreamReader(mf.Open()).ReadToEnd();
-        //         var manifest = deserializer.Deserialize<PluginManifest>(mfText);
-        //
-        //         ViewModel.MessageQueue.Enqueue($"插件 {manifest.Name} 版本 {manifest.Version} 安装成功。");
-        //         RequestRestart();
-        //     }
-        //     catch (Exception exception)
-        //     {
-        //         CommonDialog.ShowError($"无法安装插件：{exception.Message}");
-        //     }
-        // }
+        ViewModel.IsDragEntering = false;
+        var files = e.Data.GetFiles()?.ToList();
+        if (files == null || files.Count == 0)
+            return;
+
+        var success = 0;
+        foreach (var file in files)
+        {
+            var fileName = file.Path.LocalPath;
+            if (!Path.GetExtension(fileName).Equals(IPluginService.PluginPackageExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+            try
+            {
+                File.Copy(fileName, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(fileName)), true);
+                success++;
+            }
+            catch (Exception exception)
+            {
+                this.ShowErrorToast($"无法安装插件 {fileName}", exception);
+            }
+        }
+
+        if (success > 0)
+        {
+            this.ShowSuccessToast($"成功安装了 {success} 个插件。");
+            RequestRestart();
+        }
     }
 
     private void Grid_DragLeave(object sender, DragEventArgs e)
