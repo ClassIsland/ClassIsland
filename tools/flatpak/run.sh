@@ -2,4 +2,4 @@
 
 export ClassIsland_PackageRoot="/app/bin"
 
-exec /app/bin/ClassIsland "$@"
+exec /app/bin/ClassIsland.Desktop "$@"

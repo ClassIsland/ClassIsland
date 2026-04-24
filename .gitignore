@@ -377,3 +377,4 @@ cipx/
 tools/flatpak/repo
 tools/flatpak/ClassIsland.flatpak
 tools/flatpak/flatpak-dotnet-generator.py
+tools/flatpak/sources.json
