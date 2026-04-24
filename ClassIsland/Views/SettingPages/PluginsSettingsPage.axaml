@@ -444,11 +444,19 @@
             <controls1:ListDetailView.LeftContent>
                 <Grid RowDefinitions="Auto,*">
                     <StackPanel Grid.Row="0">
-                        <TextBox Watermark="搜索插件…"
-                                 Text="{Binding ViewModel.PluginFilterText, UpdateSourceTrigger=PropertyChanged}"
-                                 KeyDown="TextBoxFilter_OnKeyDown"
-                                 Padding="4 4"
-                                 Margin="4 0"/>
+                        <Grid Margin="4 0">
+                            <TextBox Watermark="搜索插件…"
+                                     Text="{Binding ViewModel.PluginFilterText, UpdateSourceTrigger=PropertyChanged}"
+                                     KeyDown="TextBoxFilter_OnKeyDown"
+                                     Padding="26 4"
+                                     BorderThickness="0"
+                                     HorizontalAlignment="Stretch"/>
+                            <ci:FluentIcon Glyph="&#xEEF3;"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Left"
+                                           Margin="8 0"
+                                           IsHitTestVisible="False"/>
+                        </Grid>
                         <DockPanel Dock="Left" LastChildFill="False">
                             <TabStrip SelectedIndex="{Binding ViewModel.PluginCategoryIndex}"
                                       Classes="compact"

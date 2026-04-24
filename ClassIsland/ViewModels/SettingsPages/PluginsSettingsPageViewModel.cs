@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.ComponentModels;
 using ClassIsland.Core.Models.Plugin;
@@ -36,7 +37,6 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
 
     public SyncDictionaryList<string, PluginInfo> MergedPlugins { get; }
 
-
     /// <inheritdoc/>
     public PluginsSettingsPageViewModel(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService, ILogger<PluginsSettingsPage> logger)
     {
@@ -49,16 +49,23 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         SettingsService.Settings
             .ObservableForProperty(x => x.OfficialIndexMirrors)
             .Subscribe(_ => UpdateOfficialPluginSources());
-        
+
         UpdateMergedPlugins();
         UpdateOfficialPluginSources();
     }
 
     public void UpdateMergedPlugins()
     {
+        if (MergedPluginsFiltered != null)
+            return;
+
+        var pluginFilter = this
+            .WhenAnyValue(x => x.PluginFilterText, x => x.PluginCategoryIndex)
+            .Select(_ => new Func<KeyValuePair<string, PluginInfo>, bool>(PluginSourceFilter));
+
         MergedPluginsFiltered = MergedPlugins.List
             .ToObservableChangeSet()
-            .Filter(PluginSourceFilter)
+            .Filter(pluginFilter)
             .AsObservableList();
     }
 
