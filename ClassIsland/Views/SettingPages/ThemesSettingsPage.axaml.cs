@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -36,13 +37,20 @@ namespace ClassIsland.Views.SettingPages;
 public partial class ThemesSettingsPage : SettingsPageBase
 {
     public ThemesSettingsViewModel ViewModel { get; } = IAppHost.GetService<ThemesSettingsViewModel>();
+    private IDisposable? _pluginMarketExceptionObserver;
 
     public ThemesSettingsPage()
     {
 
         InitializeComponent();
         DataContext = this;
-        ViewModel.PluginMarketService.ObservableForProperty(x => x.Exception)
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _pluginMarketExceptionObserver?.Dispose();
+        _pluginMarketExceptionObserver = ViewModel.PluginMarketService.ObservableForProperty(x => x.Exception)
             .Subscribe(_ =>
             {
                 if (ViewModel.PluginMarketService.Exception == null)
@@ -52,7 +60,13 @@ public partial class ThemesSettingsPage : SettingsPageBase
 
                 this.ShowErrorToast("无法刷新市场", ViewModel.PluginMarketService.Exception);
             });
+    }
 
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        _pluginMarketExceptionObserver?.Dispose();
+        _pluginMarketExceptionObserver = null;
+        base.OnDetachedFromVisualTree(e);
     }
 
     private void ButtonLoadThemes_OnClick(object sender, RoutedEventArgs e)

@@ -30,6 +30,7 @@ namespace ClassIsland.Services.SpeechService;
 public class GptSoVitsService : ISpeechService
 {
     public static readonly string GPTSoVITSCacheFolderPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "GPTSoVITS");
+    private static readonly HttpClient HttpClient = new();
 
     public IAudioService AudioService { get; }
     private ILogger<GptSoVitsService> Logger { get; }
@@ -107,23 +108,7 @@ public class GptSoVitsService : ISpeechService
 
     private async Task<bool> GenerateSpeechAsync(string text, string filePath, CancellationToken cancellationToken)
     {
-        var httpClient = new HttpClient();
         var settings = SettingsService.Settings.GptSoVitsSpeechSettings;
-
-        if (settings.IsInternal && GptSovitsSecrets.IsSecretsFilled)
-        {
-            var key = new EncryptionKeys(GptSovitsSecrets.PrivateKey, GptSovitsSecrets.PrivateKeyPassPhrase);
-            var pgp = new PGP(key);
-            var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            var signData = new
-            {
-                ContentSHA256 = SHA256.HashData(Encoding.UTF8.GetBytes(text)),
-                Timestamp = Convert.ToInt64(ts.TotalMilliseconds)
-            };
-            var sign = await pgp.SignAsync(JsonSerializer.Serialize(signData));
-            httpClient.DefaultRequestHeaders.Add("X-ClassIsland-ApiSignature", Convert.ToBase64String(Encoding.UTF8.GetBytes(sign)));
-        }
-        httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("ClassIsland", AppBase.AppVersion));
         var serverIp = settings.GptSoVitsServerIp;
         var port = settings.GptSoVitsPort;
 
@@ -146,7 +131,23 @@ public class GptSoVitsService : ISpeechService
         try
         {
             Logger.LogDebug("发送 TTS 请求到：{RequestUri}", requestUri);
-            using var response = await httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            using var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            request.Headers.UserAgent.Add(new ProductInfoHeaderValue("ClassIsland", AppBase.AppVersion));
+            if (settings.IsInternal && GptSovitsSecrets.IsSecretsFilled)
+            {
+                var key = new EncryptionKeys(GptSovitsSecrets.PrivateKey, GptSovitsSecrets.PrivateKeyPassPhrase);
+                var pgp = new PGP(key);
+                var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                var signData = new
+                {
+                    ContentSHA256 = SHA256.HashData(Encoding.UTF8.GetBytes(text)),
+                    Timestamp = Convert.ToInt64(ts.TotalMilliseconds)
+                };
+                var sign = await pgp.SignAsync(JsonSerializer.Serialize(signData));
+                request.Headers.Add("X-ClassIsland-ApiSignature", Convert.ToBase64String(Encoding.UTF8.GetBytes(sign)));
+            }
+
+            using var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
                 await using var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None);

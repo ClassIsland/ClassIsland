@@ -55,6 +55,32 @@ public partial class SplashWindow : SplashWindowBase
         await TryWaitJobs();
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        try
+        {
+            SplashService.ProgressChanged -= SplashServiceOnProgressChanged;
+        }
+        catch
+        {
+            // ignored
+        }
+
+        _splashStatusObserver?.Dispose();
+        _splashStatusObserver = null;
+
+        try
+        {
+            Loaded -= OnLoaded;
+        }
+        catch
+        {
+            // ignored
+        }
+
+        base.OnClosed(e);
+    }
+
     private async void SplashServiceOnProgressChanged(object? sender, double value)
     {
         _ = UpdateAnimationAsync(value);

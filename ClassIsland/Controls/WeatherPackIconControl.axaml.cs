@@ -6,6 +6,7 @@ using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 
@@ -18,6 +19,7 @@ namespace ClassIsland.Controls;
 public partial class WeatherPackIconControl : UserControl, INotifyPropertyChanged
 {
     private string _weatherName = "";
+    private IDisposable? _codeObserver;
     
     public static readonly StyledProperty<string> CodeProperty = AvaloniaProperty.Register<WeatherPackIconControl, string>(
         nameof(Code));
@@ -59,18 +61,34 @@ public partial class WeatherPackIconControl : UserControl, INotifyPropertyChange
     public WeatherPackIconControl()
     {
         InitializeComponent();
-        this.GetObservable(CodeProperty).Subscribe(_ =>
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _codeObserver?.Dispose();
+        _codeObserver = this.GetObservable(CodeProperty).Subscribe(_ => UpdateWeather());
+        UpdateWeather();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        _codeObserver?.Dispose();
+        _codeObserver = null;
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void UpdateWeather()
+    {
+        WeatherName = App.GetService<IWeatherService>().GetWeatherTextByCode(Code);
+        if (AllowColor)
         {
-            WeatherName = App.GetService<IWeatherService>().GetWeatherTextByCode(Code);
-            if (AllowColor)
-            {
-                PseudoClasses.Set(":rainy", (WeatherName.Contains('雨') || WeatherName is "飑"));
-            }
-            else
-            {
-                PseudoClasses.Set(":rainy", false);
-            }
-        });
+            PseudoClasses.Set(":rainy", (WeatherName.Contains('雨') || WeatherName is "飑"));
+        }
+        else
+        {
+            PseudoClasses.Set(":rainy", false);
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

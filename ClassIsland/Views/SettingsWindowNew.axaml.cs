@@ -89,6 +89,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     private bool _isFirstNavigated = false;
 
     private readonly Dictionary<string, SettingsPageBase?> _cachedPages = new();
+    private IDisposable? _isDebugOptionsEnabledObserver;
     
     public static readonly FuncValueConverter<object?, double> ControlToWidthConverter = new(x =>
     {
@@ -128,7 +129,8 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         }
 
         BuildNavigationMenuItems();
-        SettingsService.Settings
+        _isDebugOptionsEnabledObserver?.Dispose();
+        _isDebugOptionsEnabledObserver = SettingsService.Settings
             .ObservableForProperty(x => x.IsDebugOptionsEnabled)
             .Subscribe(_ => BuildNavigationMenuItems());
 
@@ -140,6 +142,34 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             ExtendClientAreaTitleBarHeightHint = -1;
             SystemDecorations = SystemDecorations.Full;
         }
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        try
+        {
+            SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        }
+        catch
+        {
+            // ignored
+        }
+
+        try
+        {
+            ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
+        }
+        catch
+        {
+            // ignored
+        }
+
+        _isDebugOptionsEnabledObserver?.Dispose();
+        _isDebugOptionsEnabledObserver = null;
+
+        _cachedPages.Clear();
+
+        base.OnClosed(e);
     }
 
     private void BuildNavigationMenuItems()

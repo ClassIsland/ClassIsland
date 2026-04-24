@@ -5,6 +5,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml.Templates;
+using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactivity;
 using ClassIsland.Controls.TimeLine;
 
@@ -12,6 +13,10 @@ namespace ClassIsland.Behaviors;
 
 public class TimeLineListItemBehavior : Behavior<Control>
 {
+    private IDisposable? _listBoxItemPropertyObserver;
+    private IDisposable? _listBoxItemSelectedObserver;
+    private ListBoxItem? _observedListBoxItem;
+
 
     public static readonly StyledProperty<IControlTemplate> ThumbTemplateProperty = AvaloniaProperty.Register<TimeLineListItemBehavior, IControlTemplate>(
         nameof(ThumbTemplate));
@@ -47,15 +52,33 @@ public class TimeLineListItemBehavior : Behavior<Control>
 
     protected override void OnAttached()
     {
+        base.OnAttached();
+
+        _listBoxItemPropertyObserver?.Dispose();
+        _listBoxItemPropertyObserver = this.GetObservable(ListBoxItemProperty).Subscribe(_ => UpdateListBoxItemObserver());
+
         if (AssociatedObject != null)
         {
-            this.GetObservable(ListBoxItemProperty).Subscribe(_ => UpdateListBoxItemObserver());
+            AssociatedObject.AttachedToVisualTree += AssociatedObjectOnAttachedToVisualTree;
+            AssociatedObject.DetachedFromVisualTree += AssociatedObjectOnDetachedFromVisualTree;
         }
-        base.OnAttached();
+
+        UpdateListBoxItemObserver();
     }
 
     protected override void OnDetaching()
     {
+        _listBoxItemPropertyObserver?.Dispose();
+        _listBoxItemPropertyObserver = null;
+
+        DetachFromListBoxItem();
+
+        if (AssociatedObject != null)
+        {
+            AssociatedObject.AttachedToVisualTree -= AssociatedObjectOnAttachedToVisualTree;
+            AssociatedObject.DetachedFromVisualTree -= AssociatedObjectOnDetachedFromVisualTree;
+        }
+
         RemoveAdorner();
         base.OnDetaching();
     }
@@ -64,20 +87,50 @@ public class TimeLineListItemBehavior : Behavior<Control>
     {
         if (ListBoxItem == null)
         {
+            DetachFromListBoxItem();
+            RemoveAdorner();
             return;
         }
-        RemoveAdorner();
-        ListBoxItem.Unloaded += (_, _) => RemoveAdorner();
-        ListBoxItem.GetObservable(ListBoxItem.IsSelectedProperty).Subscribe(v =>
+
+        if (ReferenceEquals(ListBoxItem, _observedListBoxItem))
         {
-            CheckAdorner(v);
-        });
-        if (AssociatedObject != null)
-        {
-            AssociatedObject.AttachedToVisualTree += (sender, args) => CheckAdorner(ListBoxItem.IsSelected);
-            AssociatedObject.DetachedFromVisualTree += (o, _) => RemoveAdorner(o);
+            return;
         }
+
+        DetachFromListBoxItem();
+        _observedListBoxItem = ListBoxItem;
+
+        RemoveAdorner();
+        _observedListBoxItem.Unloaded += ListBoxItemOnUnloaded;
+        _listBoxItemSelectedObserver = _observedListBoxItem.GetObservable(ListBoxItem.IsSelectedProperty).Subscribe(CheckAdorner);
         if (ListBoxItem.IsSelected) AttachAdorner();
+    }
+
+    private void DetachFromListBoxItem()
+    {
+        if (_observedListBoxItem != null)
+        {
+            _observedListBoxItem.Unloaded -= ListBoxItemOnUnloaded;
+        }
+
+        _listBoxItemSelectedObserver?.Dispose();
+        _listBoxItemSelectedObserver = null;
+        _observedListBoxItem = null;
+    }
+
+    private void ListBoxItemOnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        RemoveAdorner();
+    }
+
+    private void AssociatedObjectOnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        CheckAdorner(ListBoxItem?.IsSelected == true);
+    }
+
+    private void AssociatedObjectOnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        RemoveAdorner(sender);
     }
 
     private void CheckAdorner(bool v)

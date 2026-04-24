@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Models.Weather;
 
 namespace ClassIsland.Controls;
@@ -14,6 +15,8 @@ namespace ClassIsland.Controls;
 /// </summary>
 public partial class WeatherRangePackIconControl : UserControl, INotifyPropertyChanged
 {
+    private IDisposable? _valueObserver;
+
     public static readonly StyledProperty<RangedValue?> ValueProperty = AvaloniaProperty.Register<WeatherRangePackIconControl, RangedValue?>(
         nameof(Value));
 
@@ -41,7 +44,26 @@ public partial class WeatherRangePackIconControl : UserControl, INotifyPropertyC
     public WeatherRangePackIconControl()
     {
         InitializeComponent();
-        this.GetObservable(ValueProperty).Subscribe(_ => HasSecondIcon = Value != null && Value.From != Value.To);
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _valueObserver?.Dispose();
+        _valueObserver = this.GetObservable(ValueProperty).Subscribe(_ => UpdateHasSecondIcon());
+        UpdateHasSecondIcon();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        _valueObserver?.Dispose();
+        _valueObserver = null;
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void UpdateHasSecondIcon()
+    {
+        HasSecondIcon = Value != null && Value.From != Value.To;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -56,9 +56,9 @@ public partial class ScreenshotHelperWindow : MyWindow
             
         };
  
-        var renderTargetBitmap = new RenderTargetBitmap(new PixelSize(width, height));
+        using var renderTargetBitmap = new RenderTargetBitmap(new PixelSize(width, height));
         using var canvas = renderTargetBitmap.CreateDrawingContext(false);
- 
+  
         canvas.DrawRectangle(visualBrush, null, new Rect(0, 0, width, height));
         if (!Directory.Exists(Path.GetDirectoryName(filePath)))
         {

@@ -56,21 +56,14 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private IStorageProvider? StorageProvider => TopLevel.GetTopLevel(this)?.StorageProvider;
 
+    private static readonly HttpClient ReadmeHttpClient = new();
     private CancellationTokenSource DocumentLoadingCancellationTokenSource { get; set; } = new();
+    private IDisposable? _pluginMarketExceptionObserver;
 
     public PluginsSettingsPage()
     {
         InitializeComponent();
         DataContext = this;
-
-        ViewModel.PluginMarketService.ObservableForProperty(x => x.Exception)
-            .Subscribe(_ =>
-            {
-                if (ViewModel.PluginMarketService.Exception != null)
-                {
-                    this.ShowErrorToast("无法加载插件源", ViewModel.PluginMarketService.Exception);
-                }
-            });
         if (DateTime.Now - ViewModel.SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
         {
             _ = ViewModel.PluginMarketService.RefreshPluginSourceAsync();
@@ -92,12 +85,21 @@ public partial class PluginsSettingsPage : SettingsPageBase
         try
         {
             ViewModel.ReadmeDocument = "> Loading...";
-            await DocumentLoadingCancellationTokenSource.CancelAsync();
+            var prevTokenSource = DocumentLoadingCancellationTokenSource;
             DocumentLoadingCancellationTokenSource = new();
+            try
+            {
+                prevTokenSource.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+                // ignored
+            }
+            prevTokenSource.Dispose();
             ViewModel.IsLoadingDocument = true;
             document = uri.Scheme switch
             {
-                "https" or "http" => await new HttpClient().GetStringAsync(uri,
+                "https" or "http" => await ReadmeHttpClient.GetStringAsync(uri,
                     DocumentLoadingCancellationTokenSource.Token),
                 "file" => await File.ReadAllTextAsync(path, DocumentLoadingCancellationTokenSource.Token),
                 _ => ""
@@ -463,6 +465,15 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         ViewModel.PluginMarketService.RestartRequested += OnPluginMarketServiceOnRestartRequested;
+        _pluginMarketExceptionObserver?.Dispose();
+        _pluginMarketExceptionObserver = ViewModel.PluginMarketService.ObservableForProperty(x => x.Exception)
+            .Subscribe(_ =>
+            {
+                if (ViewModel.PluginMarketService.Exception != null)
+                {
+                    this.ShowErrorToast("无法加载插件源", ViewModel.PluginMarketService.Exception);
+                }
+            });
     }
 
     private void OnPluginMarketServiceOnRestartRequested(object? sender, EventArgs args)
@@ -478,6 +489,19 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
         ViewModel.PluginMarketService.RestartRequested -= OnPluginMarketServiceOnRestartRequested;
+        _pluginMarketExceptionObserver?.Dispose();
+        _pluginMarketExceptionObserver = null;
+
+        try
+        {
+            DocumentLoadingCancellationTokenSource.Cancel();
+        }
+        catch
+        {
+            // ignored
+        }
+        DocumentLoadingCancellationTokenSource.Dispose();
+        DocumentLoadingCancellationTokenSource = new();
     }
 
     private void ButtonOpenMarket_OnClick(object sender, RoutedEventArgs e)
@@ -497,4 +521,3 @@ public partial class PluginsSettingsPage : SettingsPageBase
         Dispatcher.UIThread.InvokeAsync(() => OpenDrawer("PluginUpdateSettingsDrawer"));
     }
 }
-

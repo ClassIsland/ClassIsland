@@ -251,7 +251,6 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         // 获取城市信息
         try
         {
-            using var http = new HttpClient();
             var uri = Settings.WeatherLocationSource switch
             {
                 0 => $"{Schema}://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn",
@@ -284,7 +283,6 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         // 请求天气信息
         try
         {
-            using var http = new HttpClient();
             var uri =
                 $"{Schema}://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude={cityLatitude}&longitude={cityLongitude}&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
