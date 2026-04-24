@@ -51,7 +51,7 @@
                 "dotnet publish -c Release --source nuget-sources --source /usr/lib/sdk/dotnet8/nuget/packages --source /usr/lib/sdk/dotnet9/nuget/packages -o /app/bin ClassIsland.Desktop/ClassIsland.Desktop.csproj --runtime $RUNTIME --sc",
                 "mkdir -p /app/share/applications",
                 "mkdir -p /app/share/icons/hicolor/512x512/apps",
-                "echo flatpak>>/app/bin/PackageType",
+                "echo flatpak>/app/bin/PackageType",
                 "install -Dm755 run.sh /app/bin/run.sh"
                 ],
             "sources": [

@@ -61,7 +61,7 @@ case $(uname -m) in
     ;;
     *)
     echo "Unsupported Runtime.Exiting..."
-    exit
+    exit 1
     ;;
 esac
 
