@@ -51,8 +51,21 @@ else
     echo "   ✓ flatpak-dotnet-generator.py downloaded"
 fi
 
-echo "Generating Nuget source file..."
-python3 flatpak-dotnet-generator.py sources.json "$SCRIPT_DIR/../../ClassIsland.Desktop/ClassIsland.Desktop.csproj" -d 9
+case $(uname -m) in
+    x86_64)
+    RUNTIME="linux-x64"
+    ;;
+    aarch64|arm64)
+    RUNTIME="linux-arm64"
+    ;;
+    *)
+    echo "Unsupported Runtime.Exiting..."
+    exit
+    ;;
+esac
+
+echo "Generating Nuget source file for $RUNTIME..."
+python3 flatpak-dotnet-generator.py sources.json "$SCRIPT_DIR/../../ClassIsland.Desktop/ClassIsland.Desktop.csproj" -d 9 -r $RUNTIME
 echo "   ✓ sources.json generated"
 
 echo "Building Flatpak package..."
