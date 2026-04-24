@@ -156,6 +156,7 @@
                                 <Border x:Name="OverlayMaskShadowRoot"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
+                                        IsVisible="{Binding !$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
                                         CornerRadius="{Binding $self.(ci:MainWindowStylesAssist.CornerRadius), Converter={StaticResource SizeDoubleToCornerRadiusConverter}, ConverterParameter=1.0}">
                                     <Border x:Name="OverlayMask"
                                             TextElement.Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
@@ -276,7 +277,7 @@
             <Setter Property="IsVisible" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InvertBooleanConverter}}"/>
         </Style>
        
-        <Style Selector="^[IsNotificationEnabled=True]">
+        <Style Selector="^[IsNotificationEnabled=True][(ci|MainWindowStylesAssist.MainWindowInEditMode)=False]">
             <Style Selector="^ /template/ ContentPresenter#OverlayMaskContent">
                 <!-- <Setter Property="Transitions"> -->
                 <!--     <Transitions> -->

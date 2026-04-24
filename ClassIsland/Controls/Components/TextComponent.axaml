@@ -9,15 +9,21 @@
                         xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                         xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
                         mc:Ignorable="d" 
+                        AttachedToVisualTree="Visual_OnAttachedToVisualTree"
+                        DetachedFromVisualTree="Visual_OnDetachedFromVisualTree"
                         d:DesignHeight="450" d:DesignWidth="800">
     <controls:ComponentBase.Resources>
         <converters:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
     </controls:ComponentBase.Resources>
     <Grid VerticalAlignment="Center" 
           DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TextComponent}}">
-        <TextBlock 
+        <Grid.Styles>
+            <Style Selector=":custom-font-color TextBlock#MainTextBlock">
+                <Setter Property="Foreground" Value="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+            </Style>
+        </Grid.Styles>
+        <TextBlock x:Name="MainTextBlock"
                    Text="{Binding Settings.TextContent}"
-                   FontSize="{Binding Settings.FontSize}"
-                   Foreground="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+                   FontSize="{Binding Settings.FontSize}"/>
     </Grid>
 </controls:ComponentBase>

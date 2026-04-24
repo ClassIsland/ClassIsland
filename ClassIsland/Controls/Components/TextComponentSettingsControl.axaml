@@ -24,10 +24,15 @@
             </controls1:SettingsExpander>
             
             <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xEC54;}"
-                                        Header="字体颜色"
+                                        Header="自定义字体颜色"
                                         Description="选择要显示文本的颜色。">
                 <controls1:SettingsExpander.Footer>
-                    <ColorPicker Color="{Binding Settings.FontColor, Mode=TwoWay}" />
+                    <StackPanel Orientation="Horizontal" Classes="items-valign-center"
+                                Spacing="4">
+                        <ColorPicker Color="{Binding Settings.FontColor, Mode=TwoWay}" 
+                                     IsVisible="{Binding Settings.UseCustomFontColor}"/>
+                        <ToggleSwitch IsChecked="{Binding Settings.UseCustomFontColor}"/>
+                    </StackPanel>
                 </controls1:SettingsExpander.Footer>
             </controls1:SettingsExpander>
             

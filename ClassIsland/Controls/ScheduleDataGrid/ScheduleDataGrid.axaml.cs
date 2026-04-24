@@ -203,6 +203,18 @@ public partial class ScheduleDataGrid : TemplatedControl
         }
 
         _mainDataGrid = e.NameScope.Find<DataGrid>("PART_DataGridWeekSchedule");
+        if (_mainDataGrid != null)
+        {
+            _mainDataGrid.SelectionChanged += MainDataGrid_OnSelectionChanged;
+        }
+    }
+
+    private void MainDataGrid_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_mainDataGrid != null && this.IsAttachedToVisualTree() && _mainDataGrid.SelectedIndex >= 0)
+        {
+            SelectedClassInfoIndex = _mainDataGrid.SelectedIndex;
+        }
     }
 
     private void ButtonNextWeek_OnClick(object? sender, RoutedEventArgs e)
@@ -368,7 +380,7 @@ public partial class ScheduleDataGrid : TemplatedControl
 
     private void UpdateSelectedClassInfoByIndex()
     {
-        if (SelectedClassInfoIndex < 0 || SelectedClassInfoIndex >= WeekClassPlanRows.Count)
+        if (SelectedClassInfoIndex < 0 || SelectedClassInfoIndex >= WeekClassPlanRows.Count || !this.IsAttachedToVisualTree())
         {
             return;
         }

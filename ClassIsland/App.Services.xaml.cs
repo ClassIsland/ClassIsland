@@ -47,6 +47,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Sentry;
 
 namespace ClassIsland;
 
@@ -213,6 +214,8 @@ public partial class App
             {
                 o.InitializeSdk = false;
                 o.MinimumBreadcrumbLevel = LogLevel.Information;
+                o.EnableLogs = true;
+                o.SetBeforeSendLog(log => log.Level < SentryLogLevel.Info ? null : log);
             });
             var debug = false;
 #if DEBUG
