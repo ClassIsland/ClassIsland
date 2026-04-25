@@ -6,7 +6,7 @@ namespace ClassIsland.Core.Controls.IconSources;
 /// <summary>
 /// 高级图像的图标源
 /// </summary>
-public class AdvancedImageIconSource : IconSource
+public class AdvancedImageIconSource : FAIconSource
 {
     public static readonly StyledProperty<string> UriProperty = AvaloniaProperty.Register<AdvancedImageIconSource, string>(
         nameof(Uri));
@@ -19,7 +19,7 @@ public class AdvancedImageIconSource : IconSource
     
     static AdvancedImageIconSource()
     {
-        IconHelpers.RegisterCustomIconSourceFactory(typeof(AdvancedImageIconSource), x => x switch
+        FAIconHelpers.RegisterCustomIconSourceFactory(typeof(AdvancedImageIconSource), x => x switch
         {
             AdvancedImageIconSource iconSource => new AdvancedImageIcon()
             {

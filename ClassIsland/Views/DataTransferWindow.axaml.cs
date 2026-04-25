@@ -26,9 +26,8 @@ public partial class DataTransferWindow : MyWindow
         if (OperatingSystem.IsMacOS())
         {
             ExtendClientAreaToDecorationsHint = true;
-            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
             ExtendClientAreaTitleBarHeightHint = -1;
-            SystemDecorations = SystemDecorations.Full;
+            WindowDecorations = WindowDecorations.Full;
         }
     }
 

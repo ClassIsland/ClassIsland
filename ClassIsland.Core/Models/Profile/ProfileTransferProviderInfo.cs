@@ -30,7 +30,7 @@ public class ProfileTransferProviderInfo
     /// <summary>
     /// 提供方图标
     /// </summary>
-    public IconSource? Icon { get; init; } = IconExpressionHelper.Parse("\ue68f");
+    public FAIconSource? Icon { get; init; } = IconExpressionHelper.Parse("\ue68f");
 
     /// <summary>
     /// 提供方处理器

@@ -29,7 +29,7 @@
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
-            <controls3:InfoBar IsOpen="{Binding ViewModel.SettingsService.Settings.ShowSellingAnnouncement, Mode=TwoWay}"
+            <controls3:FAInfoBar IsOpen="{Binding ViewModel.SettingsService.Settings.ShowSellingAnnouncement, Mode=TwoWay}"
                                IsVisible="{Binding ViewModel.SettingsService.Settings.ShowSellingAnnouncement}"
                                Severity="Warning"
                                Message="ClassIsland 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在 https://github.com/ClassIsland/ClassIsland/。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。"
@@ -52,33 +52,33 @@
 
             <controls1:IconText Glyph="&#xE84F;" Text="行为" Margin="0 0 0 4" />
             <!-- 开机自启 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE342;}" 
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE342;}" 
                                         Header="开机自启"
                                         Description="在您的系统启动时自动运行本应用。"
                                         >
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding IsAutoStartEnabled, Source={x:Static abstraction:PlatformServices.DesktopService}, Mode=TwoWay}"/>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
             <!-- 注册 Url 协议 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEAB0;}" 
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xEAB0;}" 
                                         Header="注册 Url 协议"
                                         Description="允许第三方应用或网页通过 Url 协议 classisland:// 调用本应用的部分功能，详见帮助文档。">
-                <controls3:SettingsExpander.IsVisible>
+                <controls3:FASettingsExpander.IsVisible>
                     <OnPlatform Default="False">
                         <On Options="Windows" Content="True"/>
                         <On Options="Linux" Content="True"/>
                     </OnPlatform>
-                </controls3:SettingsExpander.IsVisible>
-                <controls3:SettingsExpander.Footer>
+                </controls3:FASettingsExpander.IsVisible>
+                <controls3:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding IsUrlSchemeRegistered, Source={x:Static abstraction:PlatformServices.DesktopService}, Mode=TwoWay}"/>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
             <!--  学期开始时间  -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE304;}"
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE304;}"
                                         Header="学期开始时间"
                                         Description="设置学期首日，该日期将作为多周轮换课表的计算起点和每周的第一天。">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal"
                                 Spacing="4">
                         <CalendarDatePicker SelectedDate="{Binding ViewModel.SettingsService.Settings.SingleWeekStartTime}"
@@ -100,10 +100,10 @@
                             </Button.Flyout>
                         </Button>
                     </StackPanel>
-                </controls3:SettingsExpander.Footer>
+                </controls3:FASettingsExpander.Footer>
                 <!--  最大多周轮换周数  -->
-                <controls3:SettingsExpanderItem Content="最大多周轮换周数">
-                    <controls3:SettingsExpanderItem.Footer>
+                <controls3:FASettingsExpanderItem Content="最大多周轮换周数">
+                    <controls3:FASettingsExpanderItem.Footer>
                         <ci:Field VerticalAlignment="Center"
                                   Suffix="周">
                             <NumericUpDown MinWidth="120"
@@ -112,25 +112,25 @@
                                            Value="{Binding ViewModel.SettingsService.Settings.MultiWeekRotationMaxCycle}"
                                            FormatString="0" />
                         </ci:Field>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
             
             <!-- 点击托盘图标行为 -->
             <!-- 平台行为差异：在macOS平台上此选项不显示（无效），在Linux平台上一些DE会正确响应左键（如Deepin），也有其他的DE将左键响应为右键点击（如Ubuntu）-->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C1;}" 
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE5C1;}" 
                                         Header="点击托盘图标行为">
-                <controls3:SettingsExpander.Description>
+                <controls3:FASettingsExpander.Description>
                     <OnPlatform Default="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。">
                         <On Options="Linux" Content="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。此选项可能因为桌面环境差异而无法工作。"/>
                     </OnPlatform>
-                </controls3:SettingsExpander.Description>
-                <controls3:SettingsExpander.IsVisible>
+                </controls3:FASettingsExpander.Description>
+                <controls3:FASettingsExpander.IsVisible>
                     <OnPlatform Default="True">
                         <On Options="macOS" Content="False"/>
                     </OnPlatform>
-                </controls3:SettingsExpander.IsVisible>
-                <controls3:SettingsExpander.Footer>
+                </controls3:FASettingsExpander.IsVisible>
+                <controls3:FASettingsExpander.Footer>
                     <Grid>
                         <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.TaskBarIconClickBehavior}"
                                   HorizontalContentAlignment="Left">
@@ -157,13 +157,13 @@
                             </ComboBoxItem>
                         </ComboBox>
                     </Grid>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
             <!-- 教学安全模式 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE809;}" 
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE809;}" 
                                         Header="教学安全模式"
                                         Description="启用后，如果 ClassIsland 发生意外崩溃，将自动按照右侧选择的方法处理崩溃，以确保教学不受到影响。如果发生的是不可忽略的异常，应用将自动退出。您可以在日志记录中查看崩溃详情。">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                         <ComboBox Width="135"
                                   VerticalAlignment="Center"
@@ -185,18 +185,18 @@
                                       Margin="8 0 0 0"
                                       IsChecked="{Binding ViewModel.SettingsService.Settings.IsCriticalSafeMode}" />
                     </StackPanel>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
             
-            <controls3:SettingsExpander Header="显示启动加载界面"
+            <controls3:FASettingsExpander Header="显示启动加载界面"
                                         IconSource="{ci:FluentIconSource &#xEea1;}"
                                         Description="启动时显示加载界面。注意：在不启用【禁用动画等待】的情况下，此功能会拖慢启动速度。">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsSplashEnabled}"/>
-                </controls3:SettingsExpander.Footer>
-                <controls3:SettingsExpanderItem Content="启动图标"
+                </controls3:FASettingsExpander.Footer>
+                <controls3:FASettingsExpanderItem Content="启动图标"
                                                 IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}">
-                    <controls3:SettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"
                                     HorizontalAlignment="Right" VerticalAlignment="Center">
                             <TextBox MinWidth="150" MaxWidth="250"
@@ -210,46 +210,46 @@
                                 VerticalAlignment="Center"
                                 FileTypes="{x:Static local:GeneralSettingsPage.ImageFileTypes}"/>
                         </StackPanel>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="启动文字"
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="启动文字"
                                                 IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}">
-                    <controls3:SettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <TextBox MinWidth="200" MaxWidth="300"
                                  Watermark="正在启动…"
                                  Text="{Binding ViewModel.SettingsService.Settings.SplashCustomText}"
                                  VerticalAlignment="Center" />
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="显示详细状态信息"
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="显示详细状态信息"
                                                 IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}"
                                                 Description="注意：在不启用【禁用动画等待】的情况下，此选项会拖慢启动速度。">
-                    <controls3:SettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.ShowDetailedStatusOnSplash}"/>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem IsVisible="{Binding ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}"
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem IsVisible="{Binding ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}"
                                                 Content="自定义启动界面功能已被您所在的组织禁用。"/>
-                <controls3:SettingsExpanderItem ActionIconSource="{ci:FluentIconSource &#xE44E;}"
+                <controls3:FASettingsExpanderItem ActionIconSource="{ci:FluentIconSource &#xE44E;}"
                                             IsClickEnabled="True"
                                             Content="预览启动界面"
                                             IsEnabled="{Binding !ViewModel.IsSplashPreviewing}"
                                             Click="SettingsExpanderItemPreviewSplash_OnClick">
-                    <controls3:SettingsExpanderItem.Footer>
-                        <controls3:ProgressRing IsVisible="{Binding ViewModel.IsSplashPreviewing}"
+                    <controls3:FASettingsExpanderItem.Footer>
+                        <controls3:FAProgressRing IsVisible="{Binding ViewModel.IsSplashPreviewing}"
                                                 Width="24" Height="24"/>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
             
             <Separator Margin="0 12 0 4" />
             <controls1:IconText Glyph="&#xf485;" Text="界面" Margin="0 0 0 4" />
             
             <!-- 隐藏窗口 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}" 
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}" 
                                         Header="隐藏窗口"
                                         Description="将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。">
-                <controls3:SettingsExpanderItem>
+                <controls3:FASettingsExpanderItem>
                     <TabControl HorizontalContentAlignment="Left"
                                 SelectedIndex="{Binding ViewModel.SettingsService.Settings.HideMode}"
                                 Classes="compact">
@@ -274,14 +274,14 @@
                             </StackPanel>
                         </TabItem>
                     </TabControl>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
             
             <!-- 动画级别 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEDC1;}" 
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xEDC1;}" 
                                         Header="动画级别"
                                         Description="控制应用界面的动画级别，禁用动画选项不适用于应用主界面和部分控件。">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <ComboBox Width="120"
                               VerticalAlignment="Center"
                               SelectedIndex="{Binding ViewModel.SettingsService.Settings.AnimationLevel}">
@@ -289,27 +289,27 @@
                         <ComboBoxItem>标准</ComboBoxItem>
                         <ComboBoxItem>华丽</ComboBoxItem>
                     </ComboBox>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
             
             <!-- 禁用动画等待 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xF365;}" 
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xF365;}" 
                                        Header="禁用动画等待"
                                        Description="默认情况下 ClassIsland 在进行阻塞 UI 线程的操作时，会确保动画播放完成。启用此选项后将不会等待动画播放完成，可以一定程度上地提升加载速度。"
             >
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsWaitForTransientDisabled, Mode=TwoWay}"/>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
             
             <!-- 降低主界面进度条精度 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xe5e3;}" 
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xe5e3;}" 
                                         Header="降低主界面进度条精度"
                                         Description="启用后将降低主界面进度条精度，降低主界面更新频率，以减少应用的性能占用。">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.ReduceProgressAccuracy}"/>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

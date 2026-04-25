@@ -74,14 +74,14 @@
                                           x:Key="ThemeEnabledConverter"/>
     </ci:SettingsPageBase.Resources>
     <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
-        <controls:InfoBar Grid.Row="0" Message="在启用了支持的主题（如 Fluent）后，您可以在直接【外观】设置中开启【分体主界面】选项使主界面分开。在没有开启此选项时，即使启用了支持的主题，主界面也不会分开。"
+        <controls:FAInfoBar Grid.Row="0" Message="在启用了支持的主题（如 Fluent）后，您可以在直接【外观】设置中开启【分体主界面】选项使主界面分开。在没有开启此选项时，即使启用了支持的主题，主界面也不会分开。"
                           IsOpen="{Binding ViewModel.SettingsService.Settings.IsThemeSeparateInfoVisible, Mode=TwoWay}" 
                           IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
-            <controls:InfoBar.ActionButton>
+            <controls:FAInfoBar.ActionButton>
                 <HyperlinkButton Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
                                  CommandParameter="classisland://app/settings/appearance">前往【外观】设置</HyperlinkButton>
-            </controls:InfoBar.ActionButton>
-        </controls:InfoBar>
+            </controls:FAInfoBar.ActionButton>
+        </controls:FAInfoBar>
 
         <Grid Row="1" ColumnDefinitions="*,Auto" IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
             <TabStrip Grid.Column="0" Classes="compact"
@@ -276,7 +276,7 @@
                                                 </MultiBinding>
                                             </Button.IsVisible>
                                         </Button>
-                                        <controls:ProgressRing Width="28" Height="28" MinWidth="0" MinHeight="0" IsIndeterminate="False"
+                                        <controls:FAProgressRing Width="28" Height="28" MinWidth="0" MinHeight="0" IsIndeterminate="False"
                                                                 IsVisible="{Binding Value.DownloadProgress.IsDownloading, FallbackValue={x:False}}"
                                                                 Value="{Binding Value.DownloadProgress.Progress}"
                                                                 Maximum="100"/>

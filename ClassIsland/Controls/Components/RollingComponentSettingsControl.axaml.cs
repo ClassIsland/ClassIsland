@@ -52,7 +52,7 @@ public partial class RollingComponentSettingsControl : ComponentBase<RollingComp
         OpenDrawer("RulesetControl");
     }
 
-    private void ButtonCloseWarningTip_OnClick(InfoBar infoBar, EventArgs args)
+    private void ButtonCloseWarningTip_OnClick(FAInfoBar infoBar, EventArgs args)
     {
         SettingsService.Settings.IsRollingComponentWarningVisible = false;
     }

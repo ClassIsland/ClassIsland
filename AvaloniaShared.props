@@ -1,6 +1,9 @@
 <Project>
     <PropertyGroup>
-        <AvaloniaVersion>11.3.13</AvaloniaVersion>
+        <AvaloniaVersion>12.0.1</AvaloniaVersion>
+        <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+
+
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Remove="**\*.xaml"/>

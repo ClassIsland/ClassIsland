@@ -33,7 +33,7 @@ public partial class WelcomePage : UserControl, IWelcomePage
             Title = "欢迎使用 ClassIsland",
             Message = "ClassIsland 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在 https://github.com/ClassIsland/ClassIsland/。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。",
             AutoClose = false,
-            Severity = InfoBarSeverity.Warning
+            Severity = FAInfoBarSeverity.Warning
         });
         WelcomeWindow.WelcomeNavigateForwardCommand.Execute(this);
     }

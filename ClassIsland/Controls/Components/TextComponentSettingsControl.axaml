@@ -14,39 +14,39 @@
         <StackPanel
             Classes="component-settings-container animated-intro" Margin="0"
             DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TextComponentSettingsControl}}">
-            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xE510;}"
+            <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xE510;}"
                                         Header="文本内容"
                                         Description="要显示的文本。">
-                <controls1:SettingsExpander.Footer>
+                <controls1:FASettingsExpander.Footer>
                     <TextBox MinWidth="200"
                              Text="{Binding Settings.TextContent,UpdateSourceTrigger=PropertyChanged}" />
-                </controls1:SettingsExpander.Footer>
-            </controls1:SettingsExpander>
+                </controls1:FASettingsExpander.Footer>
+            </controls1:FASettingsExpander>
             
-            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xEC54;}"
+            <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xEC54;}"
                                         Header="自定义字体颜色"
                                         Description="选择要显示文本的颜色。">
-                <controls1:SettingsExpander.Footer>
+                <controls1:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal" Classes="items-valign-center"
                                 Spacing="4">
                         <ColorPicker Color="{Binding Settings.FontColor, Mode=TwoWay}" 
                                      IsVisible="{Binding Settings.UseCustomFontColor}"/>
                         <ToggleSwitch IsChecked="{Binding Settings.UseCustomFontColor}"/>
                     </StackPanel>
-                </controls1:SettingsExpander.Footer>
-            </controls1:SettingsExpander>
+                </controls1:FASettingsExpander.Footer>
+            </controls1:FASettingsExpander>
             
-            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF273;}"
+            <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xF273;}"
                                         Header="字体大小"
                                         Description="修改要显示的文本的大小。">
-                <controls1:SettingsExpander.Footer>
+                <controls1:FASettingsExpander.Footer>
                     <Slider Width="200"
                             TickFrequency="1" TickPlacement="None"
                             Maximum="30" Minimum="16" IsSnapToTickEnabled="True"
                             Value="{Binding Settings.FontSize}" 
                             Classes="auto-tooltip"/>
-                </controls1:SettingsExpander.Footer>
-            </controls1:SettingsExpander>
+                </controls1:FASettingsExpander.Footer>
+            </controls1:FASettingsExpander>
             
         </StackPanel>
     </ScrollViewer>

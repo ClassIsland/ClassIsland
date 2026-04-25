@@ -23,7 +23,7 @@ namespace ClassIsland.Views.RecoveryPages;
 /// </summary>
 public partial class RecoverBackupPage : UserControl
 {
-    public Frame? MainFrame { get; init; }
+    public FAFrame? MainFrame { get; init; }
 
     public UserControl? LastPage { get; init; }
 

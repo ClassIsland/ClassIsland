@@ -5,7 +5,8 @@
         xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
-        xmlns:themes="clr-namespace:ClassIsland.Core.Themes">
+        xmlns:themes="clr-namespace:ClassIsland.Core.Themes"
+        xmlns:controls1="clr-namespace:SmoothScroll.Avalonia.Controls;assembly=SmoothScroll.Avalonia.Controls">
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -25,6 +26,8 @@
 
     <StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+    <controls1:ScrollViewerSmoothTheme />
+    <controls1:ScrollViewDefaultTheme />
 
     <StyleInclude Source="/Controls/Field.axaml"/>
     <StyleInclude Source="/Controls/Emptiable.axaml"/>
@@ -74,14 +77,14 @@
         <Setter Property="Spacing" Value="4"/>
     </Style>
 
-    <Style Selector="controls|FontIcon.fi, ci|FluentIcon">
+    <Style Selector="controls|FAFontIcon.fi, ci|FluentIcon">
         <Setter Property="FontFamily" Value="{StaticResource FluentIcons}"/>
     </Style>
 
-    <Style Selector="controls|SettingsExpander.switcher">
+    <Style Selector="controls|FASettingsExpander.switcher">
         <Setter Property="FooterTemplate" Value="{StaticResource SwitcherTemplate}"/>
     </Style>
-    <Style Selector="controls|SettingsExpanderItem.switcher">
+    <Style Selector="controls|FASettingsExpanderItem.switcher">
         <Setter Property="FooterTemplate" Value="{StaticResource SwitcherTemplate}"/>
     </Style>
 
@@ -95,7 +98,7 @@
         <Setter Property="OffContent" Value="关"/>
     </Style>
 
-    <Style Selector="controls|SettingsExpanderItem">
+    <Style Selector="controls|FASettingsExpanderItem">
         <Style Selector="^ ToggleSwitch">
             <Setter Property="Margin" Value="0 -12"/>
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
@@ -165,7 +168,7 @@
         </Style>
     </Style>
 
-    <Style Selector="controls|CommandBar.hide-popup-indicator controls|CommandBarButton:labelright /template/ controls|FontIcon#SubItemChevron">
+    <Style Selector="controls|FACommandBar.hide-popup-indicator controls|FACommandBarButton:labelright /template/ controls|FAFontIcon#SubItemChevron">
         <Setter Property="IsVisible" Value="False"/>
     </Style>
     <Style Selector=":is(Control).hidden">
@@ -221,7 +224,7 @@
         </Style>
     </Style>
 
-    <Style Selector="controls|SettingsExpander.no-radius">
+    <Style Selector="controls|FASettingsExpander.no-radius">
         <Style Selector="^">
             <Setter Property="CornerRadius" Value="0"/>
         </Style>
@@ -231,14 +234,14 @@
         <Style Selector="^ /template/ ToggleButton#ToggleButton">
             <Setter Property="CornerRadius" Value="0"/>
         </Style>
-        <Style Selector="^ /template/ controls|SettingsExpanderItem /template/ Border#Root">
+        <Style Selector="^ /template/ controls|FASettingsExpanderItem /template/ Border#Root">
             <Setter Property="CornerRadius" Value="0"/>
         </Style>
         <Style Selector="^ /template/ Expander#Expander /template/ ToggleButton /template/ Border#Root">
             <Setter Property="CornerRadius" Value="0"/>
         </Style>
     </Style>
-    <Style Selector="controls|SettingsExpanderItem.no-radius /template/ Border#Root">
+    <Style Selector="controls|FASettingsExpanderItem.no-radius /template/ Border#Root">
         <Setter Property="CornerRadius" Value="0"/>
     </Style>
 
@@ -251,10 +254,10 @@
     </Style>
 
     <Style Selector="StackPanel.cardContainer">
-        <Style Selector="^> controls|SettingsExpanderItem:nth-child(1) /template/ Border#Root">
+        <Style Selector="^> controls|FASettingsExpanderItem:nth-child(1) /template/ Border#Root">
             <Setter Property="CornerRadius" Value="4 4 0 0"/>
         </Style>
-        <Style Selector="^> controls|SettingsExpanderItem:nth-child(1):nth-last-child(1) /template/ Border#Root">
+        <Style Selector="^> controls|FASettingsExpanderItem:nth-child(1):nth-last-child(1) /template/ Border#Root">
             <Setter Property="CornerRadius" Value="4"/>
         </Style>
         <Setter Property="Spacing" Value="1"/>
@@ -265,11 +268,11 @@
         <Setter Property="ShowTitle" Value="True"/>
     </Style>
     
-    <Style Selector="controls|MenuFlyoutSubItem">
+    <Style Selector="controls|FAMenuFlyoutSubItem">
         <Setter Property="ci:FaMenuFlyoutSubItemTouchFixAssist.IsRepairApplied" Value="True"/>
     </Style>
     
-    <Style Selector=":is(windowing|AppWindow):not(:windows) :is(Control).custom-titlebar-only">
+    <Style Selector=":is(windowing|FAAppWindow):not(:windows) :is(Control).custom-titlebar-only">
         <Setter Property="IsVisible" Value="False"/>
     </Style>
     
@@ -293,7 +296,7 @@
         <Setter Property="CornerRadius" Value="6"/>
     </Style>
     
-    <Style Selector="controls|TeachingTip /template/ ContentPresenter#IconPresenter">
+    <Style Selector="controls|FATeachingTip /template/ ContentPresenter#IconPresenter">
         <Setter Property="MaxWidth" Value="60"/>
         <Setter Property="MaxHeight" Value="60"/>
     </Style>

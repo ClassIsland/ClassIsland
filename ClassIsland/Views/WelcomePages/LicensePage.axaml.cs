@@ -21,7 +21,7 @@ public partial class LicensePage : UserControl
     {
         var license = await new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/LICENSE.txt")))
             .ReadToEndAsync();
-        await new ContentDialog()
+        await new FAContentDialog()
         {
             Title = "开放源代码许可",
             Content = new TextBlock()
@@ -29,7 +29,7 @@ public partial class LicensePage : UserControl
                 Text = license
             },
             PrimaryButtonText = "关闭",
-            DefaultButton = ContentDialogButton.Primary
+            DefaultButton = FAContentDialogButton.Primary
         }.ShowAsync();
     }
 

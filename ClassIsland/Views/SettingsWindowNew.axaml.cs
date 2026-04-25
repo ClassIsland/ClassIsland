@@ -51,16 +51,15 @@ using Markdown.Avalonia.Full;
 using ReactiveUI;
 using WindowsShortcutFactory;
 using Control = Avalonia.Controls.Control;
-using SaveFileDialog = Avalonia.Controls.SaveFileDialog;
-using TaskDialog = FluentAvalonia.UI.Controls.TaskDialog;
-using TaskDialogButton = FluentAvalonia.UI.Controls.TaskDialogButton;
+using FATaskDialog = FluentAvalonia.UI.Controls.FATaskDialog;
+using FATaskDialogButton = FluentAvalonia.UI.Controls.FATaskDialogButton;
 
 namespace ClassIsland.Views;
 
 /// <summary>
 /// SettingsWindowNew.xaml 的交互逻辑
 /// </summary>
-public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
+public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
 {
     private const string KeepHistoryParameterName = "ci_keepHistory";
     private const string ErrorPageId = "_error";
@@ -118,7 +117,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         // SplashScreen = new EmptySplashScreen();
 
         TitleBar.ExtendsContentIntoTitleBar = true;
-        TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+        TitleBar.TitleBarHitTestType = FATitleBarHitTestType.Complex;
         NavigationFrame.NavigationPageFactory = this;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
 
@@ -136,9 +135,8 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         if (OperatingSystem.IsMacOS())
         {
             ExtendClientAreaToDecorationsHint = true;
-            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
             ExtendClientAreaTitleBarHeightHint = -1;
-            SystemDecorations = SystemDecorations.Full;
+            WindowDecorations = WindowDecorations.Full;
         }
     }
 
@@ -172,14 +170,14 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                     continue;
                 }
 
-                NavigationViewItem item;
+                FANavigationViewItem item;
 
                 if (i.GroupId != null && SettingsWindowRegistryService.Groups.TryGetValue(i.GroupId, out var group))
                 {
                     
-                    item = new NavigationViewItem()
+                    item = new FANavigationViewItem()
                     {
-                        IconSource = group.IconSource,
+                        IconSource = group.FAIconSource,
                         Content = group.Name,
                         Tag = i,
                         // IsExpanded = true
@@ -187,9 +185,9 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
                     if (groups.FirstOrDefault(x => x.Key == i.GroupId) is {} groupItems)
                     {
-                        List<NavigationViewItem> children =
+                        List<FANavigationViewItem> children =
                         [
-                            ..groupItems.Select(x => new NavigationViewItem()
+                            ..groupItems.Select(x => new FANavigationViewItem()
                             {
                                 IconSource = new FluentIconSource(x.UnSelectedIconGlyph),
                                 Content = x.Name,
@@ -204,7 +202,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 }
                 else
                 {
-                    item = new NavigationViewItem()
+                    item = new FANavigationViewItem()
                     {
                         IconSource = new FluentIconSource(i.UnSelectedIconGlyph),
                         Content = i.Name,
@@ -222,7 +220,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 continue;
             }
             
-            NavigationView.MenuItems.Add(new NavigationViewItemSeparator());
+            NavigationView.MenuItems.Add(new FANavigationViewItemSeparator());
         }
     }
 
@@ -254,7 +252,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         // await CoreNavigate(ViewModel.SelectedPageInfo);
     }
 
-    private async void NavigationServiceOnNavigating(object sender, NavigatingCancelEventArgs e)
+    private async void NavigationServiceOnNavigating(object sender, FANavigatingCancelEventArgs e)
     {
         ViewModel.IsNavigating = true;
     }
@@ -287,7 +285,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         }
     }
 
-    private async void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
+    private async void NavigationServiceOnLoadCompleted(object sender, FANavigationEventArgs e)
     {
         if (e.Parameter is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true } data)
         {
@@ -312,7 +310,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 transaction?.Finish(SpanStatus.InternalError);
             }
         }
-        else if (e.NavigationMode == NavigationMode.Back)
+        else if (e.NavigationMode == FANavigationMode.Back)
         {
             // 对于通过其它方式导航的设置页面，需要手动设置选中的导航菜单项
             var info = e.Content is SettingsPageBase spb
@@ -538,16 +536,16 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         if (!IsShowingRestartDialog)
         {
             IsShowingRestartDialog = true;
-            var r = await new ContentDialog()
+            var r = await new FAContentDialog()
             {
                 Title = "需要重启",
                 Content = "部分设置需要重启以应用更改。",
                 PrimaryButtonText = "重启",
                 CloseButtonText = "取消",
-                DefaultButton = ContentDialogButton.Primary,
+                DefaultButton = FAContentDialogButton.Primary,
             }.ShowAsync(this);
             IsShowingRestartDialog = false;
-            if (r != ContentDialogResult.Primary)
+            if (r != FAContentDialogResult.Primary)
                 return;
             AppBase.Current.Restart();
         }
@@ -604,15 +602,15 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         };
         try
         {
-            var r = await new TaskDialog()
+            var r = await new FATaskDialog()
             {
                 Header = "导出诊断信息",
                 Content = "您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案、所使用的插件（如有）和集控设置（如有），可能包含敏感信息，请在导出后注意检查。",
                 XamlRoot = this,
                 Buttons =
                 {
-                    new TaskDialogButton("取消", false),
-                    new TaskDialogButton("继续", true)
+                    new FATaskDialogButton("取消", false),
+                    new FATaskDialogButton("继续", true)
                     {
                         IsDefault = true
                     }
@@ -719,15 +717,15 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         if (!PlatformServices.DesktopService.IsUrlSchemeRegistered)
         {
-            var urlDialogResult = await new TaskDialog()
+            var urlDialogResult = await new FATaskDialog()
             {
                 Header = "创建快捷换课快捷方式",
                 Content = "快捷换课快捷方式需要启用【注册 Url 协议】选项才能工作。您要启用它吗？",
                 XamlRoot = this,
                 Buttons =
                 {
-                    new TaskDialogButton("取消", false),
-                    new TaskDialogButton("启用", true)
+                    new FATaskDialogButton("取消", false),
+                    new FATaskDialogButton("启用", true)
                     {
                         IsDefault = true
                     }
@@ -807,15 +805,15 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         return page;
     }
 
-    private async void NavigationView_OnItemInvoked(object? sender, NavigationViewItemInvokedEventArgs e)
+    private async void NavigationView_OnItemInvoked(object? sender, FANavigationViewItemInvokedEventArgs e)
     {
-        if (e.InvokedItemContainer is NavigationViewItem navItem && navItem.Tag is SettingsPageInfo info)
+        if (e.InvokedItemContainer is FANavigationViewItem navItem && navItem.Tag is SettingsPageInfo info)
         {
             await CoreNavigate(info);
         }
     }
 
-    private void NavigationView_OnBackRequested(object? sender, NavigationViewBackRequestedEventArgs e)
+    private void NavigationView_OnBackRequested(object? sender, FANavigationViewBackRequestedEventArgs e)
     {
         NavigationFrame.GoBack();
     }
@@ -854,7 +852,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         {
             NavigationView.SelectedItem = item;
         } else if (NavigationView.MenuItems
-                   .OfType<NavigationViewItem>()
+                   .OfType<FANavigationViewItem>()
                    .FirstOrDefault(x => x.MenuItems.Contains(item))
                    is {} parent)
         {

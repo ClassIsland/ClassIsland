@@ -11,25 +11,25 @@
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
             <!-- 定期翻新 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE0B9;}" 
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0B9;}" 
                                         Header="定期翻新"
                                         Description="当在长时间未启动 ClassIsland 的寒假/暑假等学期结束后的长假后启动 ClassIsland 时，显示桌面通知询问是否重新设置应用的部分设置以适应新学期。">
-                <controls:SettingsExpander.Styles>
-                    <Style Selector="controls|SettingsExpanderItem.new-cfg">
+                <controls:FASettingsExpander.Styles>
+                    <Style Selector="controls|FASettingsExpanderItem.new-cfg">
                         <Setter Property="Description" Value="将创建并切换到一个全新的配置文件。"/>
                     </Style>
-                    <Style Selector="controls|SettingsExpanderItem.disable-plugins">
+                    <Style Selector="controls|FASettingsExpanderItem.disable-plugins">
                         <Setter Property="Description" Value="将禁用已经启用的插件。"/>
                     </Style>
-                </controls:SettingsExpander.Styles>
-                <controls:SettingsExpander.Footer>
+                </controls:FASettingsExpander.Styles>
+                <controls:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsRefreshingToastEnabled, Mode=TwoWay}"/>
-                </controls:SettingsExpander.Footer>
-                <controls:SettingsExpanderItem Description="默认情况下将勾选以下翻新范围，翻新时会重置对应的设置。">
+                </controls:FASettingsExpander.Footer>
+                <controls:FASettingsExpanderItem Description="默认情况下将勾选以下翻新范围，翻新时会重置对应的设置。">
                     <TextBlock Text="默认翻新范围"/>
-                </controls:SettingsExpanderItem>
-                <controls:SettingsExpanderItem Classes.new-cfg="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Profile}">
-                    <controls:SettingsExpanderItem.Footer>
+                </controls:FASettingsExpanderItem>
+                <controls:FASettingsExpanderItem Classes.new-cfg="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Profile}">
+                    <controls:FASettingsExpanderItem.Footer>
                         <StackPanel Orientation="Horizontal" Spacing="4" Classes="items-valign-center" IsVisible="{Binding !ViewModel.SettingsService.Settings.RefreshingScopes.Profile}">
                             <CheckBox Content="课表" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.ProfileClassPlans}"/>
                             <CheckBox Content="时间表" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.ProfileTimeLayouts}"/>
@@ -37,63 +37,63 @@
                                     Theme="{StaticResource TransparentButton}"
                                     Click="ButtonReserveSettings_OnClick"/>
                         </StackPanel>
-                    </controls:SettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem.Footer>
                     <CheckBox Content="档案" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Profile}"/>
-                </controls:SettingsExpanderItem>
-                <!-- <controls:SettingsExpanderItem> -->
+                </controls:FASettingsExpanderItem>
+                <!-- <controls:FASettingsExpanderItem> -->
                 <!--     <CheckBox Content="应用设置" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Settings}"/> -->
-                <!-- </controls:SettingsExpanderItem> -->
-                <controls:SettingsExpanderItem Classes.new-cfg="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Components}">
+                <!-- </controls:FASettingsExpanderItem> -->
+                <controls:FASettingsExpanderItem Classes.new-cfg="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Components}">
                     <CheckBox Content="组件配置" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Components}"/>
-                </controls:SettingsExpanderItem>
-                <controls:SettingsExpanderItem Classes.new-cfg="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Automations}">
+                </controls:FASettingsExpanderItem>
+                <controls:FASettingsExpanderItem Classes.new-cfg="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Automations}">
                     <CheckBox Content="自动化" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Automations}"/>
-                </controls:SettingsExpanderItem>
-                <controls:SettingsExpanderItem Classes.disable-plugins="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Plugins}">
+                </controls:FASettingsExpanderItem>
+                <controls:FASettingsExpanderItem Classes.disable-plugins="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Plugins}">
                     <CheckBox Content="插件" IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingScopes.Plugins}"/>
-                </controls:SettingsExpanderItem>
-                <controls:SettingsExpanderItem Content="立即翻新" ActionIconSource="{ci:FluentIconSource &#xE44E;}"
+                </controls:FASettingsExpanderItem>
+                <controls:FASettingsExpanderItem Content="立即翻新" ActionIconSource="{ci:FluentIconSource &#xE44E;}"
                                                IsClickEnabled="True"
                                                Click="SettingsExpanderItemRefreshNow_OnClick"/>
-            </controls:SettingsExpander>
+            </controls:FASettingsExpander>
             
             <!-- 启用迎新指引 -->
-            <controls:SettingsExpander Header="迎新模式"
+            <controls:FASettingsExpander Header="迎新模式"
                                        IconSource="{ci:FluentIconSource &#xE95D;}"
                                        IsExpanded="{Binding ViewModel.SettingsService.Settings.RefreshingToastIsOnboardingGuide, Mode=OneWay}"
                                        Description="启用后，在下次显示翻新提示时将其替换为迎新指引，指引不熟悉 ClassIsland 的新同学上手本应用，并对应用进行翻新。此选项在生效一次后将自动关闭。">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.RefreshingToastIsOnboardingGuide, Mode=TwoWay}"/>
-                </controls:SettingsExpander.Footer>
-                <controls:SettingsExpanderItem Content="通知标题">
-                    <controls:SettingsExpanderItem.Footer>
+                </controls:FASettingsExpander.Footer>
+                <controls:FASettingsExpanderItem Content="通知标题">
+                    <controls:FASettingsExpanderItem.Footer>
                         <TextBox Text="{Binding ViewModel.SettingsService.Settings.OnboardingToastTitle}"
                                  MinWidth="120" MaxWidth="450"/>
-                    </controls:SettingsExpanderItem.Footer>
-                </controls:SettingsExpanderItem>
-                <controls:SettingsExpanderItem>
+                    </controls:FASettingsExpanderItem.Footer>
+                </controls:FASettingsExpanderItem>
+                <controls:FASettingsExpanderItem>
                     <ci:Field Label="通知内容">
                         <TextBox Text="{Binding ViewModel.SettingsService.Settings.OnboardingToastBody}"
                                  AcceptsReturn="True" TextWrapping="Wrap"/>
                     </ci:Field>
-                </controls:SettingsExpanderItem>
-                <controls:SettingsExpanderItem Content="重置为默认值"
+                </controls:FASettingsExpanderItem>
+                <controls:FASettingsExpanderItem Content="重置为默认值"
                                                IsClickEnabled="True" ActionIconSource="{ci:FluentIconSource &#xE44E;}"
                                                Click="SettingsExpanderItemResetOnboardingMessages_OnClick"/>
-                <controls:SettingsExpanderItem Content="测试通知"
+                <controls:FASettingsExpanderItem Content="测试通知"
                                                IsClickEnabled="True" ActionIconSource="{ci:FluentIconSource &#xE44E;}"
                                                Click="SettingsExpanderItemTestOnboardingDialog_OnClick"/>
-            </controls:SettingsExpander>
+            </controls:FASettingsExpander>
             
             <Separator Margin="0 12 0 4" />
             <ci:IconText Glyph="&#xE408;" Text="通知选项" Margin="0 0 0 4" />
             
             <!-- 通知显示间隔 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE3F8;}" 
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE3F8;}" 
                                        Header="通知显示间隔"
                                        IsExpanded="True"
                                        Description="设置在不启动 ClassIsland 多少天后显示翻新或迎新指引。">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <ci:Field VerticalAlignment="Center"
                               Suffix="天">
                         <NumericUpDown MinWidth="120"
@@ -102,10 +102,10 @@
                                        Value="{Binding ViewModel.SettingsService.Settings.RefreshingToastThresholdDays}"
                                        FormatString="0" />
                     </ci:Field>
-                </controls:SettingsExpander.Footer>
-                <controls:SettingsExpanderItem Content="在下次启动时显示通知"
+                </controls:FASettingsExpander.Footer>
+                <controls:FASettingsExpanderItem Content="在下次启动时显示通知"
                                                Description="启用后，将在下一次启动应用时立即显示翻新或迎新指引通知。此选项生效后将被关闭。">
-                    <controls:SettingsExpanderItem.Footer>
+                    <controls:FASettingsExpanderItem.Footer>
                         <StackPanel Classes="items-valign-center" Orientation="Horizontal" Spacing="6">
                             <Button Content="立即退出应用"
                                     Click="ButtonExit_OnClick"
@@ -113,16 +113,16 @@
                             <ToggleSwitch
                                 IsChecked="{Binding ViewModel.SettingsService.Settings.ShowRefreshingToastOnNextStart, Mode=TwoWay}" />
                         </StackPanel>
-                    </controls:SettingsExpanderItem.Footer>
-                </controls:SettingsExpanderItem>
-            </controls:SettingsExpander>
+                    </controls:FASettingsExpanderItem.Footer>
+                </controls:FASettingsExpanderItem>
+            </controls:FASettingsExpander>
             
             <!-- 最高通知显示次数 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE3FE;}" 
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE3FE;}" 
                                        Header="最高通知显示次数"
                                        IsExpanded="True"
                                        Description="如果用户忽略了通知，应用会在下次启动时再次发送给通知询问用户。这里可以设置翻新或迎新指引通知在触发后最多可以显示次数。">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <ci:Field VerticalAlignment="Center"
                               Suffix="次">
                         <NumericUpDown MinWidth="120"
@@ -131,9 +131,9 @@
                                        Value="{Binding ViewModel.SettingsService.Settings.MaxRefreshingToastCounts}"
                                        FormatString="0" />
                     </ci:Field>
-                </controls:SettingsExpander.Footer>
-                <controls:SettingsExpanderItem>
-                    <controls:SettingsExpanderItem.Footer>
+                </controls:FASettingsExpander.Footer>
+                <controls:FASettingsExpanderItem>
+                    <controls:FASettingsExpanderItem.Footer>
                         <StackPanel Classes="items-valign-center" Orientation="Horizontal" Spacing="6">
                             <Button Content="清空" Click="ButtonClearLeftToastCount_OnClick">
                                 <Button.IsVisible>
@@ -146,12 +146,12 @@
                                 </Button.IsVisible>
                             </Button>
                         </StackPanel>
-                    </controls:SettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem.Footer>
                     <TextBlock VerticalAlignment="Center">
                         <Run Text="剩余通知次数："/><Run Text="{Binding ViewModel.SettingsService.Settings.LeftRefreshingToastCounts}"/>
                     </TextBlock>
-                </controls:SettingsExpanderItem>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpanderItem>
+            </controls:FASettingsExpander>
             
            
         </StackPanel>

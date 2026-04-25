@@ -270,15 +270,15 @@ public partial class PluginsSettingsPage : SettingsPageBase
         resolvedPlugins.Add(plugin);
         if (plugin.IsNotSupportCurrentOS)
         {
-            var result = await new ContentDialog()
+            var result = await new FAContentDialog()
             {
                 Title = "操作系统不受该插件支持",
                 Content = "此插件所声明支持的操作系统并未包括当前所运行的操作系统。" + Environment.NewLine + "如果继续安装此插件，此插件将可能无法正常工作。您要继续安装此插件吗？",
                 SecondaryButtonText = "取消",
                 PrimaryButtonText = "继续",
-                DefaultButton = ContentDialogButton.Secondary
+                DefaultButton = FAContentDialogButton.Secondary
             }.ShowAsync();
-            if (result != ContentDialogResult.Primary)
+            if (result != FAContentDialogResult.Primary)
             {
                 return;
             }
@@ -286,16 +286,16 @@ public partial class PluginsSettingsPage : SettingsPageBase
         ResolveDependencies(plugin, resolvedPlugins, missingPlugins);
         if (missingPlugins.Count > 0)
         {
-            var result = await new ContentDialog()
+            var result = await new FAContentDialog()
             {
                 Title = "缺少依赖项",
                 Content = "此插件的部分必选依赖项未安装且无法从市场获取。如果继续安装此插件，此插件将可能无法工作。您要继续安装此插件吗？" +Environment.NewLine +Environment.NewLine +
                           "未找到的必选依赖项："+Environment.NewLine + string.Join(Environment.NewLine, missingPlugins),
                 SecondaryButtonText = "取消",
                 PrimaryButtonText = "继续",
-                DefaultButton = ContentDialogButton.Secondary
+                DefaultButton = FAContentDialogButton.Secondary
             }.ShowAsync();
-            if (result != ContentDialogResult.Primary)
+            if (result != FAContentDialogResult.Primary)
             {
                 return;
             }

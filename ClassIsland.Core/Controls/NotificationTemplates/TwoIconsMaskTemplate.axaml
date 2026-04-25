@@ -6,14 +6,14 @@
                   DataType="{x:Type templates:TwoIconsMaskTemplateData}">
         <StackPanel Orientation="Horizontal" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
-            <controls:IconSourceElement IconSource="{Binding LeftIconSource}" 
+            <controls:FAIconSourceElement IconSource="{Binding LeftIconSource}" 
                                         VerticalAlignment="Center"
                                         Classes="repair-fontsize"
                                         TextElement.FontSize="20"
                                         Height="20" Width="20"/>
             <TextBlock Text="{Binding Text}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" 
                        Margin="8 0" FontWeight="Bold"/>
-            <controls:IconSourceElement IconSource="{Binding RightIconSource}" 
+            <controls:FAIconSourceElement IconSource="{Binding RightIconSource}" 
                                         VerticalAlignment="Center"
                                         Classes="repair-fontsize"
                                         TextElement.FontSize="20"

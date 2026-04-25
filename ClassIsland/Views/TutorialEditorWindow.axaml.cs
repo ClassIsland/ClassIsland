@@ -31,8 +31,8 @@ public partial class TutorialEditorWindow : MyWindow
     public static FuncValueConverter<TutorialActionKind, int> TutorialActionKindToIntConverter { get; } =
         new(x => (int)x, x => (TutorialActionKind)x);
     
-    public static FuncValueConverter<TeachingTipPlacementMode, int> TeachingTipPlacementModeToIntConverter { get; } =
-        new(x => (int)x, x => (TeachingTipPlacementMode)x);
+    public static FuncValueConverter<FATeachingTipPlacementMode, int> TeachingTipPlacementModeToIntConverter { get; } =
+        new(x => (int)x, x => (FATeachingTipPlacementMode)x);
     
     public TutorialEditorViewModel ViewModel { get; } = IAppHost.GetService<TutorialEditorViewModel>();
     
@@ -224,19 +224,19 @@ public partial class TutorialEditorWindow : MyWindow
     {
         if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath))
         {
-            var dialog = new TaskDialog()
+            var dialog = new FATaskDialog()
             {
                 XamlRoot = this,
                 Header = "更改尚未保存",
                 Content = "更改尚未保存，您要在退出前保存更改吗？",
                 Buttons =
                 [
-                    new TaskDialogButton("保存", 0)
+                    new FATaskDialogButton("保存", 0)
                     {
                         IsDefault = true,
                     },
-                    new TaskDialogButton("不保存", 1),
-                    new TaskDialogButton("取消", 2)
+                    new FATaskDialogButton("不保存", 1),
+                    new FATaskDialogButton("取消", 2)
                 ]
             };
             var result = await dialog.ShowAsync();

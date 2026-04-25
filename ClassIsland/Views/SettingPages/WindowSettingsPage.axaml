@@ -1,4 +1,4 @@
-﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WindowSettingsPage"
+<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WindowSettingsPage"
       xmlns="https://github.com/avaloniaui"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -77,12 +77,12 @@
                     <Grid ColumnDefinitions="*,*">
                         <!-- 向右偏移 -->
                         <ci:Field Label="向右偏移" Grid.Column="0">
-                            <controls1:NumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetX, Converter={x:Static ci:NotNaNConverter.Instance}}"
+                            <controls1:FANumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetX, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                  SpinButtonPlacementMode="Inline"/>
                         </ci:Field>
                         <!-- 向下偏移 -->
                         <ci:Field Label="向下偏移" Grid.Column="1">
-                            <controls1:NumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetY, Converter={x:Static ci:NotNaNConverter.Instance}}"
+                            <controls1:FANumberBox Value="{Binding ViewModel.SettingsService.Settings.WindowDockingOffsetY, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                  SpinButtonPlacementMode="Inline"/>
                         </ci:Field>
                     </Grid>
@@ -127,22 +127,22 @@
             </Grid>
             <Separator Margin="0 12" />
             
-            <controls1:InfoBar Message="初始化 RawInput 失败，将使用兼容模式判断光标位置。详细请查看日志。"
+            <controls1:FAInfoBar Message="初始化 RawInput 失败，将使用兼容模式判断光标位置。详细请查看日志。"
                                IsClosable="False"
                                IsOpen="True"
                                Severity="Warning"
                                IsVisible="{Binding ViewModel.SettingsService.Settings.IsErrorLoadingRawInput}"/>
-            <controls1:InfoBar Message="使用原始输入判断鼠标位置时，如果前台窗口的进程以管理员身份运行，可能会出现无法判定鼠标位置的情况。以管理员身份运行 ClassIsland 可以解决此问题。"
+            <controls1:FAInfoBar Message="使用原始输入判断鼠标位置时，如果前台窗口的进程以管理员身份运行，可能会出现无法判定鼠标位置的情况。以管理员身份运行 ClassIsland 可以解决此问题。"
                                IsClosable="False"
                                IsOpen="True"
                                IsVisible="{Binding ViewModel.SettingsService.Settings.UseRawInput}"/>
 
             <!-- 窗口层级 -->
-            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xEA2F;}"
+            <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xEA2F;}"
                                         Header="窗口层级"
                                         Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。"
                                         IsExpanded="True">
-                <controls1:SettingsExpander.Footer>
+                <controls1:FASettingsExpander.Footer>
                     <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.WindowLayer, Mode=TwoWay}"
                               Foreground="{DynamicResource MaterialDesignBody}">
                         <ComboBoxItem>
@@ -152,11 +152,11 @@
                             <ci:IconText Glyph="&#xE197;" Text="置顶" />
                         </ComboBoxItem>
                     </ComboBox>
-                </controls1:SettingsExpander.Footer>
-                <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xE125;}"
+                </controls1:FASettingsExpander.Footer>
+                <controls1:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xE125;}"
                                                 Content="窗口层级设置频率"
                                                 Description="ClassIsland 在什么时候重新设置窗口置顶/置底状态。请注意，较高的设置频率可能会产生较高的性能占用并导致主界面内容闪烁。">
-                    <controls1:SettingsExpanderItem.Footer>
+                    <controls1:FASettingsExpanderItem.Footer>
                         <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.WindowTopmostRecheckMode}">
                             <ComboBoxItem>窗口层级变化时（默认）</ComboBoxItem>
                             <ComboBoxItem>前台窗口变化时</ComboBoxItem>
@@ -183,75 +183,75 @@
                                 </StackPanel>
                             </ComboBoxItem>
                         </ComboBox>
-                    </controls1:SettingsExpanderItem.Footer>
-                </controls1:SettingsExpanderItem>
-            </controls1:SettingsExpander>
+                    </controls1:FASettingsExpanderItem.Footer>
+                </controls1:FASettingsExpanderItem>
+            </controls1:FASettingsExpander>
 
             <!-- 指针移入淡化 -->
-            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xE5C3;}"
+            <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xE5C3;}"
                                         Header="指针移入淡化"
                                         Description="启用后，在鼠标移入或触屏点击主界面区域时，将淡化主界面。"
                                         IsExpanded="{Binding ViewModel.SettingsService.Settings.IsMouseInFadingEnabled, Mode=OneWay}">
-                <controls1:SettingsExpander.Footer>
+                <controls1:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsMouseInFadingEnabled, Mode=TwoWay}"/>
-                </controls1:SettingsExpander.Footer>
+                </controls1:FASettingsExpander.Footer>
                 <!-- 使用原始输入 -->
-                <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xEFDB;}"
+                <controls1:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xEFDB;}"
                                                 Content="使用原始输入"
                                                 Description="启用后，ClassIsland 将使用 RawInput 接收鼠标/触屏事件，而不是轮询获取光标位置。这允许应用辨别鼠标和触摸事件，并分别做出更适宜的响应。如果出现不兼容的问题，请尝试禁用此选项。">
-                    <controls1:SettingsExpanderItem.IsVisible>
+                    <controls1:FASettingsExpanderItem.IsVisible>
                         <OnPlatform Default="False">
                             <On Options="Windows" Content="True"/>
                         </OnPlatform>
-                    </controls1:SettingsExpanderItem.IsVisible>
-                    <controls1:SettingsExpanderItem.Footer>
+                    </controls1:FASettingsExpanderItem.IsVisible>
+                    <controls1:FASettingsExpanderItem.Footer>
                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.UseRawInput, Mode=TwoWay}"/>
-                    </controls1:SettingsExpanderItem.Footer>
-                </controls1:SettingsExpanderItem>
+                    </controls1:FASettingsExpanderItem.Footer>
+                </controls1:FASettingsExpanderItem>
                 <!-- 触屏点击后自动恢复 -->
-                <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xE460;}"
+                <controls1:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xE460;}"
                                                 Content="触屏点击后自动恢复时间"
                                                 IsVisible="{Binding ViewModel.SettingsService.Settings.UseRawInput}"
                                                 Description="启用后，触屏点击主界面区域后将在一定时间后自动恢复主界面显示。设置为0为禁用。">
-                    <controls1:SettingsExpanderItem.Footer>
+                    <controls1:FASettingsExpanderItem.Footer>
                         <ci:Field Suffix="ms">
-                            <controls1:NumberBox Width="150"
+                            <controls1:FANumberBox Width="150"
                                                  Value="{Binding ViewModel.SettingsService.Settings.TouchInFadingDurationMs, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                  SpinButtonPlacementMode="Inline"
                                                  Minimum="0"
                                                  Foreground="{DynamicResource MaterialDesignBody}"/>
                         </ci:Field>
-                    </controls1:SettingsExpanderItem.Footer>
-                </controls1:SettingsExpanderItem>
+                    </controls1:FASettingsExpanderItem.Footer>
+                </controls1:FASettingsExpanderItem>
                 
 
                 <!-- 反转指针移入淡化 -->
-                <controls1:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xE5C5;}"
+                <controls1:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xE5C5;}"
                                                 Content="反转指针移入淡化"
                                                 Description="启用后，将默认淡化主界面，使主界面仅在鼠标移入时显示。此开关不影响隐藏主界面。">
-                    <controls1:SettingsExpanderItem.Footer>
+                    <controls1:FASettingsExpanderItem.Footer>
                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsMouseInFadingReversed, Mode=TwoWay}"/>
-                    </controls1:SettingsExpanderItem.Footer>
-                </controls1:SettingsExpanderItem>
-            </controls1:SettingsExpander>
+                    </controls1:FASettingsExpanderItem.Footer>
+                </controls1:FASettingsExpanderItem>
+            </controls1:FASettingsExpander>
             
             <!-- 使用原始屏幕尺寸 -->
-            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xE67F;}"
+            <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xE67F;}"
                                         Header="使用原始屏幕尺寸"
                                         Description="若启用，主界面调整位置时将忽略系统工作区设置（通常包括任务栏和部分顶栏应用）。">
-                <controls1:SettingsExpander.Footer>
+                <controls1:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsIgnoreWorkAreaEnabled, Mode=TwoWay}"/>
-                </controls1:SettingsExpander.Footer>
-            </controls1:SettingsExpander>
+                </controls1:FASettingsExpander.Footer>
+            </controls1:FASettingsExpander>
             
             <!-- 录制模式 -->
-            <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF405;}"
+            <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xF405;}"
                                         Header="录制模式"
                                         Description="启用后，ClassIsland 将调整窗口属性以便被录屏软件录制。这会导致主界面窗口显示在任务栏中且主界面窗口只会在一个虚拟桌面上显示，如您没有录制 ClassIsland 窗口的需求，请勿开启此选项。">
-                <controls1:SettingsExpander.Footer>
+                <controls1:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsScreenRecordingModeEnabled, Mode=TwoWay}"/>
-                </controls1:SettingsExpander.Footer>
-            </controls1:SettingsExpander>
+                </controls1:FASettingsExpander.Footer>
+            </controls1:FASettingsExpander>
 
             <!-- 指针穿透 --><!--
             <ci:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"

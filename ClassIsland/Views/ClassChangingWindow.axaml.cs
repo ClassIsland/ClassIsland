@@ -89,15 +89,15 @@ public partial class ClassChangingWindow : MyWindow
         var key = l[0].Key;
         if (!ViewModel.WriteToSourceClassPlan && !ClassPlan.IsOverlay && ViewModel.ProfileService.Profile.OverlayClassPlanId != null)
         {
-            var r = await new ContentDialog()
+            var r = await new FAContentDialog()
             {
                 Title = "覆盖当前的临时层",
                 Content = "当前已经存在一个临时层课表，如果继续换课，那么该临时层将被覆盖。是否继续？",
                 PrimaryButtonText = "继续",
                 SecondaryButtonText = "取消",
-                DefaultButton = ContentDialogButton.Primary
+                DefaultButton = FAContentDialogButton.Primary
             }.ShowAsync();
-            if (r != ContentDialogResult.Primary)
+            if (r != FAContentDialogResult.Primary)
             {
                 return;
             }

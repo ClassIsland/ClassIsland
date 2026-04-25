@@ -7,16 +7,16 @@ using HarmonyLib;
 
 namespace ClassIsland.Platform.Windows.Patches;
 
-[HarmonyPatch(typeof(AppWindow), "InitializeAppWindow")]
+[HarmonyPatch(typeof(FAAppWindow), "InitializeAppWindow")]
 public class AppWindowInitializeAppWindowPatcher
 {
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_PseudoClasses")]
     private static extern IPseudoClasses GetPseudoClasses(StyledElement window);
     
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "set_IsWindows")]
-    private static extern void SetIsWindowsProperty(AppWindow window, bool v);
+    private static extern void SetIsWindowsProperty(FAAppWindow window, bool v);
     
-    static void Postfix(AppWindow __instance)
+    static void Postfix(FAAppWindow __instance)
     {
         if (!IThemeService.UseNativeTitlebar) return;
         GetPseudoClasses(__instance).Remove(":windows");

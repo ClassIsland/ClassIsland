@@ -171,7 +171,7 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <controls:ProgressRing Grid.Row="1" Width="48" Height="48"
+                    <controls:FAProgressRing Grid.Row="1" Width="48" Height="48"
                                            IsVisible="{TemplateBinding IsLoading}"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <ci:Empty Grid.Row="1" Text="这里还没有课表，不妨先点击上方的【新课表】按钮创建课表吧"

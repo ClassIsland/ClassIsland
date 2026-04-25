@@ -1,4 +1,4 @@
-﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.SlideComponentSettingsControl"
+<ci:ComponentBase x:Class="ClassIsland.Controls.Components.SlideComponentSettingsControl"
                   x:TypeArguments="componentSettings:SlideComponentSettings"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -19,35 +19,35 @@
             Classes="component-settings-container animated-intro"
             DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponentSettingsControl}}">
             <!-- 轮换间隔 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf361;}"
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xf361;}"
                                        Header="轮换间隔"
                                        Description="组件自动轮换的间隔时间">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <ci:Field Suffix="秒">
-                        <controls:NumberBox Width="150" SpinButtonPlacementMode="Inline"
+                        <controls:FANumberBox Width="150" SpinButtonPlacementMode="Inline"
                                             Minimum="0.1"
                                             Value="{Binding Settings.SlideSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                     </ci:Field>
-                </controls:SettingsExpander.Footer>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
             <!-- 轮换模式 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xefcd;}"
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xefcd;}"
                                        Header="轮换模式"
                                        Description="设定轮换组件的行为">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <ComboBox SelectedIndex="{Binding Settings.SlideMode}"
                               Width="100">
                         <ComboBoxItem>循环</ComboBoxItem>
                         <ComboBoxItem>随机</ComboBoxItem>
                         <ComboBoxItem>往复</ComboBoxItem>
                     </ComboBox>
-                </controls:SettingsExpander.Footer>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
             <!-- 满足规则时暂停 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xec93;}"
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xec93;}"
                                        Header="满足规则时暂停"
                                        Description="在指定规则满足时暂停轮播。">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                         <Button HorizontalAlignment="Left"
                                 Theme="{StaticResource TransparentButton}"
@@ -58,13 +58,13 @@
                         <ToggleSwitch VerticalAlignment="Center"
                                       IsChecked="{Binding Settings.IsPauseOnRuleEnabled}" />
                     </StackPanel>
-                </controls:SettingsExpander.Footer>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
             <!-- 满足规则时停止 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xee67;}"
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xee67;}"
                                        Header="满足规则时停止"
                                        Description="在指定规则满足时停止轮播。停止时会停止轮播，并回到第一个组件。如果此处的规则和暂停规则同时满足，会停止轮播而不是暂停。">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                         <Button HorizontalAlignment="Left"
                                 Theme="{StaticResource TransparentButton}"
@@ -75,17 +75,17 @@
                         <ToggleSwitch VerticalAlignment="Center"
                                       IsChecked="{Binding Settings.IsStopOnRuleEnabled}" />
                     </StackPanel>
-                </controls:SettingsExpander.Footer>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
             <!-- 启用动画 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xedc1;}"
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xedc1;}"
                                        Header="启用动画"
                                        Description="启用后，将在切换组件时播放过渡动画。">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <ToggleSwitch VerticalAlignment="Center"
                                   IsChecked="{Binding Settings.IsAnimationEnabled, Mode=TwoWay}" />
-                </controls:SettingsExpander.Footer>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </ci:ComponentBase>

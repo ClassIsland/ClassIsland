@@ -33,7 +33,7 @@
                     <TextBox TextChanged="TextBoxSearchCity_OnTextChanged"
                              Watermark="搜索城市或省份…"
                              x:Name="TextBoxSearchCity"/>
-                    <controls3:ProgressRing 
+                    <controls3:FAProgressRing 
                           IsIndeterminate="True"
                           HorizontalAlignment="Right"
                           Margin="0 0 4 0"
@@ -115,11 +115,11 @@
             <Separator Margin="0 12 0 8" />
             <controls1:IconText Glyph="&#xEF27;" Text="设置" Margin="0 0 0 4" />
             
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE7C5;}"
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C5;}"
                                         Header="天气位置"
                                         IsExpanded="True"
                                         Description="设置 ClassIsland 用于查询天气的位置信息及获取这些位置信息的方式。">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <ListBox
                         Theme="{StaticResource ChipListBoxTheme}"
                         SelectionMode="Single">
@@ -131,12 +131,12 @@
                         <ListBoxItem Content="选择城市" />
                         <ListBoxItem Content="坐标定位" IsVisible="{x:Static abstraction:PlatformServices.IsLocationSupported}"/>
                     </ListBox>
-                </controls3:SettingsExpander.Footer>
+                </controls3:FASettingsExpander.Footer>
                 <!-- 城市选择 -->
-                <controls3:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xE478;}"
+                <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xE478;}"
                                                 Content="城市选择"
                                                 Description="选择当前所在的城市，以用于天气查询。">
-                    <controls3:SettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding ViewModel.SettingsService.Settings.CityName}"
                                        VerticalAlignment="Center" />
@@ -155,21 +155,21 @@
                                 </Button.IsVisible>
                             </Button>
                         </StackPanel>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
                 <!-- 位置坐标 -->
-                <controls3:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xEB5A;}"
+                <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xEB5A;}"
                                                 Content="位置坐标"
                                                 Description="输入用于获取天气信息的经纬坐标">
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="ViewModel.SettingsService.Settings.WeatherLocationSource"
                                  Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <system:Int32>1</system:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <StackPanel Orientation="Horizontal">
                             <Grid>
                                 <StackPanel Orientation="Horizontal"
@@ -215,49 +215,49 @@
                                     ToolTip.Tip="定位"
                                     Click="ButtonGetCurrentPos_OnClick" />
                         </StackPanel>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
                 <!-- 自动获取位置 -->
-                <controls3:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xEAEA;}"
+                <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xEAEA;}"
                                            Content="自动获取位置"
                                            Description="启用后，将在应用每次启动时自动更新位置信息。">
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="ViewModel.SettingsService.Settings.WeatherLocationSource"
                                  Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <system:Int32>1</system:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AutoRefreshWeatherLocation, Mode=TwoWay}"/>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
             
             <!-- 排除预警 -->
-            <controls3:SettingsExpander IsExpanded="True"
+            <controls3:FASettingsExpander IsExpanded="True"
                                         IconSource="{ci:FluentIconSource &#xE837;}"
                                         Header="排除的气象预警"
                                         Description="包含以下字符串的预警将不会显示，一行一条排除项。">
-                <controls3:SettingsExpanderItem Content="排除列表">
-                    <controls3:SettingsExpanderItem.Footer>
+                <controls3:FASettingsExpanderItem Content="排除列表">
+                    <controls3:FASettingsExpanderItem.Footer>
                         <TextBox Padding="8"
                                  MaxHeight="250"
                                  Width="250"
                                  AcceptsReturn="True"
                                  Text="{Binding ViewModel.SettingsService.Settings.ExcludedWeatherAlerts, Converter={StaticResource CollectionToStringConverter}}" />
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
             
             
             <!-- 天气图标包 -->
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xE9B0;}"
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE9B0;}"
                                         Header="天气图标包"
                                         Description="调整在显示天气类型时使用的图标外观。">
 
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
                               ItemsSource="{x:Static services:IWeatherService.RegisteredTemplates}"
                               HorizontalContentAlignment="Left"
@@ -270,15 +270,15 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
-            <controls3:SettingsExpander IconSource="{ci:FluentIconSource &#xEAB0;}"
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xEAB0;}"
                                        Header="不使用TLS协议获取天气"
                                        Description="不建议，但可能改善兼容性较差的网络环境下的天气获取。启用后，应用将通过不安全的HTTP协议获取天气信息。">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.NoTLSWeatherRequests, Mode=TwoWay}"/>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
             <TextBlock TextWrapping="Wrap" FontWeight="Regular" Margin="0 8 0 0">
                 要调整天气提醒设置，请转到<ci:NavHyperlink NavTarget="classisland://app/settings/notification">【提醒】页面</ci:NavHyperlink>。要调整主界面上的天气快速信息，请在<ci:NavHyperlink NavTarget="classisland://app/settings/components">【组件】页面</ci:NavHyperlink>中配置天气简报组件。
             </TextBlock>

@@ -28,7 +28,7 @@ namespace ClassIsland.Core.Controls;
 /// 通用窗口基类
 /// </summary>
 [PseudoClasses(":no-easter-eggs")]
-public class MyWindow : AppWindow
+public class MyWindow : FAAppWindow
 {
     
     private bool _isAdornerAdded;
@@ -184,13 +184,13 @@ public class MyWindow : AppWindow
         var layer = AdornerLayer.GetAdornerLayer(element);
         var appToastAdorner = _appToastAdorner = new AppToastAdorner(this);
         layer?.Children.Add(appToastAdorner);
-        AdornerLayer.SetAdornedElement(appToastAdorner, this);
+        AdornerLayer.SetAdornedElement(appToastAdorner, element);
         
         if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark))
         {
             var adorner = new DevelopmentBuildAdorner(AppBase.Current.IsDevelopmentBuild, ShowOssWatermark);
             layer?.Children.Add(adorner);
-            AdornerLayer.SetAdornedElement(adorner, this);
+            AdornerLayer.SetAdornedElement(adorner, element);
         }
         _isAdornerAdded = true;
     }

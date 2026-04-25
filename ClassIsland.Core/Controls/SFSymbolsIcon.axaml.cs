@@ -3,7 +3,7 @@ using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Controls;
 
-public class SFSymbolsIcon : FontIcon
+public class SFSymbolsIcon : FAFontIcon
 {
     public SFSymbolsIcon()
     {

@@ -5,7 +5,7 @@ namespace ClassIsland.Core.Controls;
 /// <summary>
 /// Lucide Icon 图标源
 /// </summary>
-public class LucideIconSource : FontIconSource
+public class LucideIconSource : FAFontIconSource
 {
     /// <inheritdoc />
     public LucideIconSource()

@@ -26,5 +26,5 @@
         <input:CommandBinding Command="{x:Static views:WelcomeWindow.FinishWelcomeWizardCommand}"
                               Executed="CommandBindingFinishWizard_OnExecuted"/>
     </input:CommandManager.CommandBindings>
-    <controls:Frame x:Name="MainFrame" NavigationPageFactory="{Binding}"/>
+    <controls:FAFrame x:Name="MainFrame" NavigationPageFactory="{Binding}"/>
 </ci:MyWindow>

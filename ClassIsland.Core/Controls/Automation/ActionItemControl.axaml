@@ -46,18 +46,18 @@
 
                             <Button.DataTemplates>
                                 <DataTemplate DataType="{x:Type automation:ActionMenuTreeItem}">
-                                    <fa:MenuFlyoutItem Text="{Binding Name}"
+                                    <fa:FAMenuFlyoutItem Text="{Binding Name}"
                                                        Command="{Binding $parent[local:ActionItemControl].ChangeActionCommand}">
-                                        <fa:MenuFlyoutItem.CommandParameter>
+                                        <fa:FAMenuFlyoutItem.CommandParameter>
                                             <MultiBinding Converter="{StaticResource ValuesToValueTupleMultiConverter}">
                                                 <Binding Path="#ChangeActionButton.DataContext" />
                                                 <Binding />
                                             </MultiBinding>
-                                        </fa:MenuFlyoutItem.CommandParameter>
-                                        <fa:MenuFlyoutItem.IconSource>
+                                        </fa:FAMenuFlyoutItem.CommandParameter>
+                                        <fa:FAMenuFlyoutItem.IconSource>
                                             <ci:FluentIconSource Glyph="{Binding IconGlyph}" FontSize="20"/>
-                                        </fa:MenuFlyoutItem.IconSource>
-                                    </fa:MenuFlyoutItem>
+                                        </fa:FAMenuFlyoutItem.IconSource>
+                                    </fa:FAMenuFlyoutItem>
                                 </DataTemplate>
                             </Button.DataTemplates>
                         </Button>
@@ -78,7 +78,7 @@
                             </ci:AnimatedIconButton.Flyout>
                         </ci:AnimatedIconButton>
 
-                        <fa:ProgressRing Grid.Column="4"
+                        <fa:FAProgressRing Grid.Column="4"
                                          Height="20"
                                          Margin="0 0 -2 0"
                                          IsActive="{Binding $parent[local:ActionItemControl].ActionItem.IsWorking}"

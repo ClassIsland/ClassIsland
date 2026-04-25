@@ -32,15 +32,15 @@
                             <TabControl Classes="compact">
                                 <TabItem Header="导入">
                                     <StackPanel Classes="animated-intro" Spacing="2">
-                                        <controls:SettingsExpander Header="ClassIsland 1.7.0.x"
+                                        <controls:FASettingsExpander Header="ClassIsland 1.7.0.x"
                                                                    IsClickEnabled="True"
                                                                    Click="SettingsExpanderImportFromClassIsland1_OnClick">
-                                            <controls:SettingsExpander.IconSource>
-                                                <controls:BitmapIconSource
+                                            <controls:FASettingsExpander.IconSource>
+                                                <controls:FABitmapIconSource
                                                     UriSource="avares://ClassIsland/Assets/AppLogo.png" />
-                                            </controls:SettingsExpander.IconSource>
-                                        </controls:SettingsExpander>
-                                        <controls:SettingsExpander Header="Class Widgets 1.2"
+                                            </controls:FASettingsExpander.IconSource>
+                                        </controls:FASettingsExpander>
+                                        <controls:FASettingsExpander Header="Class Widgets 1.2"
                                                                    IsClickEnabled="True"
                                                                    Click="ImportFromClassWidgets1_OnClick"
                                                                    IconSource="{ci:FluentIconSource &#xe06f;}" />
@@ -108,12 +108,12 @@
                                        TextAlignment="Center"
                                        Margin="0 0 0 8"/>
                             
-                            <controls:SettingsExpander Header="浏览…"
+                            <controls:FASettingsExpander Header="浏览…"
                                                        IconSource="{ci:FluentIconSource &#xe88d;}"
                                                        Description="手动浏览导入位置"
                                                        IsClickEnabled="True"
                                                        Click="SettingsExpanderBrowse_OnClick">
-                            </controls:SettingsExpander>
+                            </controls:FASettingsExpander>
                             <Button Click="ButtonTurnBack_OnClick"
                                     ToolTip.Tip="上一步"
                                     Content="{ci:FluentIcon &#xE108;, FontSize=18}"
@@ -133,7 +133,7 @@
                                        TextAlignment="Center"
                                        TextWrapping="Wrap"
                                        Margin="0 0 0 4"/>
-                            <controls:ProgressRing IsIndeterminate="True"
+                            <controls:FAProgressRing IsIndeterminate="True"
                                                    Width="48" Height="48"
                                          Margin="0 8 0 0"/>
                         </StackPanel>

@@ -1,4 +1,4 @@
-﻿<ci:AttachedSettingsControlBase x:TypeArguments="attachedSettings:ClassNotificationAttachedSettings"
+<ci:AttachedSettingsControlBase x:TypeArguments="attachedSettings:ClassNotificationAttachedSettings"
                                 x:Class="ClassIsland.Controls.AttachedSettingsControls.ClassNotificationAttachedSettingsControl"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -39,7 +39,7 @@
 
                 <!-- 准备上课提醒时间 -->
                 <controls1:Field Suffix="秒" Label="准备上课提醒时间">
-                    <controls2:NumberBox Maximum="3600" Minimum="0"
+                    <controls2:FANumberBox Maximum="3600" Minimum="0"
                                          Value="{Binding Settings.ClassPreparingDeltaTime, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                          SpinButtonPlacementMode="Compact" />
                 </controls1:Field>

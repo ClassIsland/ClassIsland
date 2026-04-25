@@ -1,4 +1,4 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.SettingsWindowNew"
+<controls:MyWindow x:Class="ClassIsland.Views.SettingsWindowNew"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -16,7 +16,7 @@
         MinWidth="560"
         Title="应用设置" Height="550" Width="1240"
         EnableMicaWindow="True"
-        windowing:AppWindow.AllowInteractionInTitleBar="True"
+        windowing:FAAppWindow.AllowInteractionInTitleBar="True"
         SizeChanged="SettingsWindowNew_OnSizeChanged"
         Closing="SettingsWindowNew_OnClosing"
         Icon="/Assets/AppLogo.ico">
@@ -49,7 +49,7 @@
     </input:CommandManager.CommandBindings>
     <Grid x:Name="RootGrid">
         <Grid RowDefinitions="Auto,*">
-            <controls3:NavigationView Grid.Row="1" 
+            <controls3:FANavigationView Grid.Row="1" 
                   x:Name="NavigationView"
                   PaneDisplayMode="Auto" 
                   IsSettingsVisible="False"
@@ -58,11 +58,11 @@
                   BackRequested="NavigationView_OnBackRequested"
                   Loaded="Control_OnLoaded"
                   OpenPaneLength="283">
-                <controls3:NavigationView.Styles>
-                    <Style Selector="controls3|NavigationView#NavigationView:minimal">
+                <controls3:FANavigationView.Styles>
+                    <Style Selector="controls3|FANavigationView#NavigationView:minimal">
                         <Setter Property="IsPaneToggleButtonVisible" Value="False"/>
                     </Style>
-                </controls3:NavigationView.Styles>
+                </controls3:FANavigationView.Styles>
                 <!-- 页面内容 -->
                 <controls:DrawerHost IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
                            DrawerPlacement="Right"
@@ -102,15 +102,15 @@
                                        Text="{Binding ViewModel.SelectedPageInfo.Name}"
                                        Theme="{StaticResource TitleTextBlockStyle}"/>
                         </Grid>
-                        <controls3:Frame Grid.Row="1" Content="{Binding ViewModel.FrameContent}"
+                        <controls3:FAFrame Grid.Row="1" Content="{Binding ViewModel.FrameContent}"
                                          Navigated="NavigationServiceOnLoadCompleted"
                                          Navigating="NavigationServiceOnNavigating"
                                          CacheSize="0"
                                          x:Name="NavigationFrame">
-                        </controls3:Frame>
+                        </controls3:FAFrame>
                     </Grid>
                 </controls:DrawerHost>
-            </controls3:NavigationView>
+            </controls3:FANavigationView>
             <Border Grid.Column="0" Grid.Row="0" Height="48"
                                       Margin="0 0 8 0">
                 <Grid VerticalAlignment="Center" ColumnDefinitions="Auto,Auto,*,Auto">

@@ -24,10 +24,10 @@
         <StackPanel Classes="settings-container animated-intro">
             <controls1:IconText Glyph="&#xEF27;" Text="基本" Margin="0 0 0 4" />
             <!-- 界面缩放 -->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF4D1;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xF4D1;}"
                                         Header="界面缩放"
                                         Description="主界面的缩放大小。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <Slider Width="180" Minimum="0.75" Maximum="2.5"
                             VerticalAlignment="Center"
                             Classes="auto-tooltip"
@@ -36,14 +36,14 @@
                             TickFrequency="0.05"
                             TickPlacement="None"
                             IsSnapToTickEnabled="True"/>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             
             <!--背景颜色-->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE523;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xE523;}"
                                         Header="背景颜色"
                                         Description="主界面背景颜色，禁用时将根据应用主题自动选择颜色。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                     
                         <ColorPicker
@@ -54,28 +54,28 @@
                         <ToggleSwitch VerticalAlignment="Center"
                                       IsChecked="{Binding ViewModel.SettingsService.Settings.IsCustomBackgroundColorEnabled}" />
                     </StackPanel>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             
             <!-- 背景不透明度 -->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF37D;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xF37D;}"
                                         Header="背景不透明度"
                                         Description="主界面背景的不透明度。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <Slider Width="180" Minimum="0" Maximum="1"
                             Classes="auto-tooltip"
                             ci:SliderDragTooltipAssist.StringFormat="F2"
                             Value="{Binding ViewModel.SettingsService.Settings.Opacity}"
                             TickFrequency="0.05"
                             IsSnapToTickEnabled="True"/>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             
             <!-- 圆角半径 -->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF031;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xF031;}"
                                         Header="圆角半径"
                                         Description="主界面圆角半径，调至最大数值时左右边缘为半圆。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
                             Value="{Binding ViewModel.SettingsService.Settings.RadiusX}"
                             TickFrequency="0.5"
@@ -83,14 +83,14 @@
                             Classes="auto-tooltip"
                             IsSnapToTickEnabled="True"
                             VerticalAlignment="Center"/>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             
             <!-- 行间隔 -->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE6EF;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xE6EF;}"
                                         Header="行间隔"
                                         Description="主界面行间间隔。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                         <Slider Width="130" Minimum="0" Maximum="150"
                                 Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin}"
@@ -104,25 +104,25 @@
                             Margin="6,0,0,0"
                             Width="125"/>
                     </StackPanel>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             
             <!-- 分体主界面 -->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xf023;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xf023;}"
                                         Header="分体主界面"
                                         Description="启用后组件会分开。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsIslandSeperated}"/>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             
             <Separator Margin="0 12 0 4" />
             <controls1:IconText Glyph="&#xE51E;" Text="主题" Margin="0 0 0 4" />
             <!-- 应用主题 -->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE5CB;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xE5CB;}"
                                         Header="应用主题"
                                         Description="控制应用的明暗主题。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
                               SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}"
                               HorizontalContentAlignment="Left">
@@ -130,14 +130,14 @@
                         <controls1:IconText Glyph="&#xF465;" Text="明亮" />
                         <controls1:IconText Glyph="&#xF44B;" Text="黑暗" />
                     </ComboBox>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             
             <!-- 主题色来源 -->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xEC50;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xEC50;}"
                                         Header="主题色来源"
                                         Description="控制应用选取主题色的途径。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
                               SelectionChanged="ButtonUpdateWallpaper_OnClick"
                               HorizontalContentAlignment="Left"
@@ -155,28 +155,28 @@
                             <controls1:IconText Glyph="&#xEEED;" Text="屏幕主题色"/>
                         </ComboBoxItem>
                     </ComboBox>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             
             <StackPanel>
                 <!-- todo: 仅在使用自定义主题色时显示 -->
                 <!-- 第一主题色 -->
-                <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE51E;}"
+                <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xE51E;}"
                                             Header="强调色"
                                             Description="应用显示强调元素时所使用的颜色。">
-                    <controls2:SettingsExpander.IsVisible>
+                    <controls2:FASettingsExpander.IsVisible>
                         <Binding Path="ViewModel.SettingsService.Settings.ColorSource"
                                  Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <system:Int32>0</system:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls2:SettingsExpander.IsVisible>
-                    <controls2:SettingsExpander.Footer>
+                    </controls2:FASettingsExpander.IsVisible>
+                    <controls2:FASettingsExpander.Footer>
                         <ColorPicker
                             Color="{Binding ViewModel.SettingsService.Settings.PrimaryColor, Mode=TwoWay}" />
-                    </controls2:SettingsExpander.Footer>
-                </controls2:SettingsExpander>
+                    </controls2:FASettingsExpander.Footer>
+                </controls2:FASettingsExpander>
                 
             </StackPanel>
             <!-- 壁纸主题色 -->
@@ -401,10 +401,10 @@
             <!-- </StackPanel> -->
             <Separator Margin="0 16 0 8" />
             <controls1:IconText Glyph="&#xF26F;" Text="字体" Margin="0 0 0 8" />
-            <controls2:SettingsExpander Header="自定义字体"
+            <controls2:FASettingsExpander Header="自定义字体"
                                         Description="自定义主界面显示课表的字体。"
                                         IconSource="{controls1:FluentIconSource &#xF271;}">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <ComboBox x:Name="FontComboBox"
                               ItemsSource="{Binding ViewModel.FontFamilies}"
                               Foreground="{DynamicResource MaterialDesignBody}"
@@ -418,7 +418,7 @@
                             </Style>
                             <Style Selector="#FontComboBox /template/ Popup#PART_Popup">
                                 <Setter Property="Width" Value="280"/>
-                                <Setter Property="PlacementMode" Value="BottomEdgeAlignedRight"/>
+                                <Setter Property="Placement" Value="BottomEdgeAlignedRight"/>
                             </Style>
                         </ComboBox.Styles>
                         <ComboBox.ItemTemplate>
@@ -443,12 +443,12 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF26F;}"
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xF26F;}"
                                         Header="自定义字重"
                                         Description="自定义主界面显示的字体的字重，需要对应字体支持。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <ComboBox
                         SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
                         Foreground="{DynamicResource MaterialDesignBody}">
@@ -475,67 +475,67 @@
                         <x:Static Member="FontWeight.ExtraBlack" />
                         <!--<x:Static Member="FontWeights.UltraBlack"/>-->
                     </ComboBox>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             <!-- 字体大小 -->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF273;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xF273;}"
                                         Header="字体大小"
                                         Description="调整主界面上各类字体的大小。">
-                <controls2:SettingsExpander.Styles>
+                <controls2:FASettingsExpander.Styles>
                     <Style Selector="controls1|Field">
                         <Setter Property="Width" Value="175"/>
                         <Setter Property="Suffix" Value="px"/>
-                        <Style Selector="^ controls2|NumberBox">
+                        <Style Selector="^ controls2|FANumberBox">
                             <Setter Property="SpinButtonPlacementMode" Value="Inline"/>
                             <Setter Property="Minimum" Value="1"/>
                             <Setter Property="Maximum" Value="40"/>
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
                         </Style>
                     </Style>
-                </controls2:SettingsExpander.Styles>
-                <controls2:SettingsExpanderItem Content="次级字体大小"
+                </controls2:FASettingsExpander.Styles>
+                <controls2:FASettingsExpanderItem Content="次级字体大小"
                                                 Description="时间点附加信息等">
 
-                    <controls2:SettingsExpanderItem.Footer>
+                    <controls2:FASettingsExpanderItem.Footer>
                         <controls1:Field>
-                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowSecondaryFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
+                            <controls2:FANumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowSecondaryFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </controls1:Field>
-                    </controls2:SettingsExpanderItem.Footer>
-                </controls2:SettingsExpanderItem>
-                <controls2:SettingsExpanderItem Content="正文字体大小"
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+                <controls2:FASettingsExpanderItem Content="正文字体大小"
                                                 Description="主界面默认字体大小">
 
-                    <controls2:SettingsExpanderItem.Footer>
+                    <controls2:FASettingsExpanderItem.Footer>
                         <controls1:Field>
-                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowBodyFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
+                            <controls2:FANumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowBodyFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </controls1:Field>
-                    </controls2:SettingsExpanderItem.Footer>
-                </controls2:SettingsExpanderItem>
-                <controls2:SettingsExpanderItem Content="强调字体大小"
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+                <controls2:FASettingsExpanderItem Content="强调字体大小"
                                                 Description="课程表、时钟、提醒标题、天气预报等内容">
 
-                    <controls2:SettingsExpanderItem.Footer>
+                    <controls2:FASettingsExpanderItem.Footer>
                         <controls1:Field>
-                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowEmphasizedFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
+                            <controls2:FANumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowEmphasizedFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </controls1:Field>
-                    </controls2:SettingsExpanderItem.Footer>
-                </controls2:SettingsExpanderItem>
-                <controls2:SettingsExpanderItem Content="大号字体大小"
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+                <controls2:FASettingsExpanderItem Content="大号字体大小"
                                                 Description="课程预报等内容">
 
-                    <controls2:SettingsExpanderItem.Footer>
+                    <controls2:FASettingsExpanderItem.Footer>
                         <controls1:Field>
-                            <controls2:NumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowLargeFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
+                            <controls2:FANumberBox Value="{Binding ViewModel.SettingsService.Settings.MainWindowLargeFontSize, Converter={x:Static ci:NotNaNConverter.Instance}}"/>
                         </controls1:Field>
-                    </controls2:SettingsExpanderItem.Footer>
-                </controls2:SettingsExpanderItem>
-            </controls2:SettingsExpander>
+                    </controls2:FASettingsExpanderItem.Footer>
+                </controls2:FASettingsExpanderItem>
+            </controls2:FASettingsExpander>
             
             <!-- 字体颜色 -->
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xF22A;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xF22A;}"
                                         Header="字体颜色"
                                         Description="调整字体颜色，将覆盖主题默认值。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                     
                         <ColorPicker
@@ -546,8 +546,8 @@
                         <ToggleSwitch VerticalAlignment="Center"
                                       IsChecked="{Binding ViewModel.SettingsService.Settings.IsCustomForegroundColorEnabled}" />
                     </StackPanel>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             <!-- 字体预览 -->
             <TabControl Classes="compact" Padding="0">
                 <TabItem Header="字体预览">

@@ -1,4 +1,4 @@
-﻿<ci:AttachedSettingsControlBase x:TypeArguments="attachedSettings:LessonControlAttachedSettings"
+<ci:AttachedSettingsControlBase x:TypeArguments="attachedSettings:LessonControlAttachedSettings"
                                 x:Class="ClassIsland.Controls.AttachedSettingsControls.LessonControlAttachedSettingsControl"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -50,7 +50,7 @@
         <!-- 显示精确倒计时时长 -->
         <controls1:Field Label="显示精确倒计时时长"
                          Prefix="剩余" Suffix="秒时">
-            <controls:NumberBox 
+            <controls:FANumberBox 
                 MinWidth="100" Minimum="0"
                 SpinButtonPlacementMode="Compact"
                 Value="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Mode=TwoWay, Converter={x:Static ci:NotNaNConverter.Instance}}" />
@@ -65,7 +65,7 @@
             <controls1:Field Label="显示精确倒计时时长"
                              Suffix="秒"
                              IsVisible="{Binding Settings.IsCountdownEnabled}">
-                <controls:NumberBox 
+                <controls:FANumberBox 
                     Maximum="36000" Minimum="0"
                     MinWidth="100"
                     SpinButtonPlacementMode="Compact"

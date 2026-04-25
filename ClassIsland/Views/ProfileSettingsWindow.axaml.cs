@@ -256,16 +256,16 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private async void ButtonTrustProfile_OnClick(object? sender, RoutedEventArgs e)
     {
-        var result = await new ContentDialog()
+        var result = await new FAContentDialog()
         {
             Title = "不信任的档案",
             Content = "当前档案不受信任，部分功能（如行动时间点等）将禁用。如果您信任此档案并希望启用这些受限的功能，请将此档案设置为信任。",
-            DefaultButton = ContentDialogButton.Primary,
+            DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "信任此档案",
             SecondaryButtonText = "取消"
         }.ShowAsync();
 
-        if (result == ContentDialogResult.Primary)
+        if (result == FAContentDialogResult.Primary)
         {
             ViewModel.ProfileService.TrustCurrentProfile();
         }
@@ -278,7 +278,7 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.ProfileService.SaveProfile();
             this.ShowToast(new ToastMessage($"已保存到 {ViewModel.ProfileService.CurrentProfilePath}。")
             {
-                Severity = InfoBarSeverity.Success
+                Severity = FAInfoBarSeverity.Success
             });
         }
         catch (Exception exception)
@@ -293,7 +293,7 @@ public partial class ProfileSettingsWindow : MyWindow
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.create", 1);
         ViewModel.CreateProfileName = "";
         var textBox = new TextBox();
-        var r = await new ContentDialog()
+        var r = await new FAContentDialog()
         {
             Title = "新建档案",
             Content = new Field()
@@ -302,13 +302,13 @@ public partial class ProfileSettingsWindow : MyWindow
                 Label = "档案名称",
                 Suffix = ".json"
             },
-            DefaultButton = ContentDialogButton.Primary,
+            DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "新建",
             SecondaryButtonText = "取消"
         }.ShowAsync();
 
         var path = Path.Combine(Services.ProfileService.ProfilePath, $"{textBox.Text}.json");
-        if (r != ContentDialogResult.Primary || File.Exists(path))
+        if (r != FAContentDialogResult.Primary || File.Exists(path))
         {
             return;
         }
@@ -347,7 +347,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             Text = ViewModel.RenameProfileName
         };
-        var r = await new ContentDialog()
+        var r = await new FAContentDialog()
         {
             Title = "重命名档案",
             Content = new Field()
@@ -356,14 +356,14 @@ public partial class ProfileSettingsWindow : MyWindow
                 Label = "档案名称",
                 Suffix = ".json"
             },
-            DefaultButton = ContentDialogButton.Primary,
+            DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "重命名",
             SecondaryButtonText = "取消"
         }.ShowAsync();
 
         var raw = Path.Combine(Services.ProfileService.ProfilePath, $"{ViewModel.SelectedProfile}");
         var path = Path.Combine(Services.ProfileService.ProfilePath, $"{textBox.Text}.json");
-        if (r != ContentDialogResult.Primary || !File.Exists(raw))
+        if (r != FAContentDialogResult.Primary || !File.Exists(raw))
         {
             return;
         }
@@ -373,7 +373,7 @@ public partial class ProfileSettingsWindow : MyWindow
             this.ShowToast(new ToastMessage()
             {
                 Message = "无法重命名档案，因为已存在一个相同名称的档案。",
-                Severity = InfoBarSeverity.Warning
+                Severity = FAInfoBarSeverity.Warning
             });
             return;
         }
@@ -403,22 +403,22 @@ public partial class ProfileSettingsWindow : MyWindow
                 );
             this.ShowToast(new ToastMessage("无法删除已加载或将要加载的档案。")
             {
-                Severity = InfoBarSeverity.Warning
+                Severity = FAInfoBarSeverity.Warning
             });
             return;
         }
 
         var textBox = new TextBox();
-        var r = await new ContentDialog()
+        var r = await new FAContentDialog()
         {
             Title = "删除档案",
             Content = $"您确定要删除档案 {ViewModel.ProfileService.CurrentProfilePath} 吗？此操作无法撤销，档案内的课表、时间表、科目等信息都将被删除！",
-            DefaultButton = ContentDialogButton.Primary,
+            DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "删除",
             SecondaryButtonText = "取消"
         }.ShowAsync();
 
-        if (r == ContentDialogResult.Primary)
+        if (r == FAContentDialogResult.Primary)
         {
             SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.remove", 1,
                 [
@@ -572,7 +572,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             this.ShowToast(new ToastMessage("在这一天已存在一个临时层课表，无法创建新的临时层课表。")
             {
-                Severity = InfoBarSeverity.Warning,
+                Severity = FAInfoBarSeverity.Warning,
                 Duration = TimeSpan.FromSeconds(5)
             });
         }
@@ -684,7 +684,7 @@ public partial class ProfileSettingsWindow : MyWindow
             };
             ViewModel.CurrentClassPlanEditDoneToast = new ToastMessage()
             {
-                Severity = InfoBarSeverity.Success,
+                Severity = FAInfoBarSeverity.Success,
                 Message = "已完成此课表的课程录入。",
                 ActionContent = actionButton,
                 AutoClose = false
@@ -1019,7 +1019,7 @@ public partial class ProfileSettingsWindow : MyWindow
         RemoveSelectedTimePoint();
     }
 
-    private void StackPanelBreakingTimePointSettings_OnGotFocus(object? sender, GotFocusEventArgs e)
+    private void StackPanelBreakingTimePointSettings_OnGotFocus(object? sender, RoutedEventArgs e)
     {
         ViewModel.CurrentProfileBreakNames = new HashSet<string>(
             ViewModel.ProfileService.Profile.TimeLayouts.Values
@@ -1262,7 +1262,7 @@ public partial class ProfileSettingsWindow : MyWindow
             this.ShowWarningToast("选择课程区域无效。");
             return;
         }
-        if (sender is CommandBarButton button1 && this.FindResource("ChangeClassFlyout") is Flyout flyout)
+        if (sender is FACommandBarButton button1 && this.FindResource("ChangeClassFlyout") is Flyout flyout)
         {
             flyout.ShowAt(button1);
         }
@@ -1315,11 +1315,11 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             if (info != infos.FirstOrDefault())
             {
-                TransferNavigationView.MenuItems.Add(new NavigationViewItemSeparator());
+                TransferNavigationView.MenuItems.Add(new FANavigationViewItemSeparator());
             }
             if (info.Key != ProfileTransferProviderType.None)
             {
-                TransferNavigationView.MenuItems.Add(new NavigationViewItemHeader()
+                TransferNavigationView.MenuItems.Add(new FANavigationViewItemHeader()
                 {
                     Content = info.Key switch
                     {
@@ -1330,7 +1330,7 @@ public partial class ProfileSettingsWindow : MyWindow
                 });    
             }
             
-            TransferNavigationView.MenuItems.AddRange(info.Select(x => new NavigationViewItem()
+            TransferNavigationView.MenuItems.AddRange(info.Select(x => new FANavigationViewItem()
             {
                 IconSource = x.Icon,
                 Content = x.Name,
@@ -1340,9 +1340,9 @@ public partial class ProfileSettingsWindow : MyWindow
         }
     }
     
-    private void TransferNavigationView_OnItemInvoked(object? sender, NavigationViewItemInvokedEventArgs e)
+    private void TransferNavigationView_OnItemInvoked(object? sender, FANavigationViewItemInvokedEventArgs e)
     {
-        if (e.InvokedItemContainer is not NavigationViewItem { Tag: ProfileTransferProviderInfo info })
+        if (e.InvokedItemContainer is not FANavigationViewItem { Tag: ProfileTransferProviderInfo info })
         {
             return;
         }

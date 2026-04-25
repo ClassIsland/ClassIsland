@@ -45,7 +45,7 @@
                                 <Setter Property="Opacity" Value="0"/>
                                 <Setter Property="RenderTransform" Value="translateY(0px)"/>
                             </Style>
-                            <Style Selector="controls|InfoBar[Severity=Informational]">
+                            <Style Selector="controls|FAInfoBar[Severity=Informational]">
                                 <Setter Property="Background" Value="{DynamicResource SystemFillColorSolidNeutralBackgroundBrush}"/>
                             </Style>
                         </Border.Styles>
@@ -57,7 +57,7 @@
                                 <AddClassAction ClassName="closed"/>
                             </DataTriggerBehavior>
                         </Interaction.Behaviors>
-                        <controls:InfoBar Severity="{Binding Severity}"
+                        <controls:FAInfoBar Severity="{Binding Severity}"
                                           Title="{Binding Title}"
                                           Message="{Binding Message}"
                                           ActionButton="{Binding ActionContent}"

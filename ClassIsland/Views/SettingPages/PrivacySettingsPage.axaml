@@ -30,13 +30,13 @@
                 </TextBlock>
             </StackPanel>
             
-            <controls2:SettingsExpander IconSource="{controls1:FluentIconSource &#xE4E8;}"
+            <controls2:FASettingsExpander IconSource="{controls1:FluentIconSource &#xE4E8;}"
                                         Header="启用匿名使用情况分析"
                                         Description="启用后，应用将收集应用的使用情况与错误信息并上传，以改进此应用。上传的信息不包含您的个人信息。为了确保环境块完全刷新，可能需要重启计算机才能使本设置完全生效。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding SettingsService.Settings.IsSentryEnabled, Mode=TwoWay}"/>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

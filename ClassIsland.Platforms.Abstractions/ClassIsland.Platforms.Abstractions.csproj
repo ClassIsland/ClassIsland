@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Description>ClassIsland 应用跨平台抽象基类。</Description>
@@ -13,7 +13,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+<!--        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />-->
         <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     </ItemGroup>
     

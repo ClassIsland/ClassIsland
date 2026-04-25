@@ -25,7 +25,7 @@ using WindowsShortcutFactory;
 
 namespace ClassIsland.Views;
 
-public partial class WelcomeWindow : MyWindow, INavigationPageFactory
+public partial class WelcomeWindow : MyWindow, IFANavigationPageFactory
 {
    
     public static readonly ICommand WelcomeNavigateBackCommand = new RoutedCommand(nameof(WelcomeNavigateBackCommand));
@@ -52,9 +52,8 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         if (OperatingSystem.IsMacOS())
         {
             ExtendClientAreaToDecorationsHint = true;
-            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
             ExtendClientAreaTitleBarHeightHint = -1;
-            SystemDecorations = SystemDecorations.Full;
+            WindowDecorations = WindowDecorations.Full;
         }
         SetWelcomeExperience(false, true, false);
     }
@@ -225,15 +224,15 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         }
 
         e.Cancel = true;
-        var r = await new ContentDialog()
+        var r = await new FAContentDialog()
         {
             Title = "退出 ClassIsland",
             Content = "您需要完成设置才能开始使用本应用。关闭此窗口将直接退出应用。",
             PrimaryButtonText = "退出",
             SecondaryButtonText = "取消",
-            DefaultButton = ContentDialogButton.Primary
+            DefaultButton = FAContentDialogButton.Primary
         }.ShowAsync(this);
-        if (r != ContentDialogResult.Primary)
+        if (r != FAContentDialogResult.Primary)
         {
             return;
         }

@@ -14,20 +14,20 @@ namespace ClassIsland.Core.Behaviors;
 public class FaMenuFlyoutSubItemTouchFixAssist
 {
     public static readonly AttachedProperty<bool> IsRepairAppliedProperty =
-        AvaloniaProperty.RegisterAttached<FaMenuFlyoutSubItemTouchFixAssist, MenuFlyoutSubItem, bool>("IsRepairApplied");
+        AvaloniaProperty.RegisterAttached<FaMenuFlyoutSubItemTouchFixAssist, FAMenuFlyoutSubItem, bool>("IsRepairApplied");
 
-    public static void SetIsRepairApplied(MenuFlyoutSubItem obj, bool value) => obj.SetValue(IsRepairAppliedProperty, value);
-    public static bool GetIsRepairApplied(MenuFlyoutSubItem obj) => obj.GetValue(IsRepairAppliedProperty);
+    public static void SetIsRepairApplied(FAMenuFlyoutSubItem obj, bool value) => obj.SetValue(IsRepairAppliedProperty, value);
+    public static bool GetIsRepairApplied(FAMenuFlyoutSubItem obj) => obj.GetValue(IsRepairAppliedProperty);
 
-    private static readonly MethodInfo? MenuFlyoutSubItemOpenMethod = typeof(MenuFlyoutSubItem).GetMethod("Open", BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.Instance);
-    private static readonly MethodInfo? MenuFlyoutSubItemCloseMethod = typeof(MenuFlyoutSubItem).GetMethod("Close", BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.Instance);
+    private static readonly MethodInfo? MenuFlyoutSubItemOpenMethod = typeof(FAMenuFlyoutSubItem).GetMethod("Open", BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.Instance);
+    private static readonly MethodInfo? MenuFlyoutSubItemCloseMethod = typeof(FAMenuFlyoutSubItem).GetMethod("Close", BindingFlags.NonPublic | BindingFlags.InvokeMethod | BindingFlags.Instance);
 
     static FaMenuFlyoutSubItemTouchFixAssist()
     {
-        IsRepairAppliedProperty.Changed.AddClassHandler<MenuFlyoutSubItem>(IsRepairAppliedChanged);
+        IsRepairAppliedProperty.Changed.AddClassHandler<FAMenuFlyoutSubItem>(IsRepairAppliedChanged);
     }
 
-    private static void IsRepairAppliedChanged(MenuFlyoutSubItem control, AvaloniaPropertyChangedEventArgs args)
+    private static void IsRepairAppliedChanged(FAMenuFlyoutSubItem control, AvaloniaPropertyChangedEventArgs args)
     {
         control.Loaded += ControlOnLoaded;
         
@@ -49,7 +49,7 @@ public class FaMenuFlyoutSubItemTouchFixAssist
         void ControlOnPointerReleased(object? sender, PointerReleasedEventArgs e)
         {
             var itemsControl = control.FindAncestorOfType<StackPanel>();
-            foreach (var other in itemsControl?.Children.OfType<MenuFlyoutSubItem>()
+            foreach (var other in itemsControl?.Children.OfType<FAMenuFlyoutSubItem>()
                          .Where(x => x != control)?? [])
             {
                 MenuFlyoutSubItemCloseMethod?.Invoke(other, [false]);

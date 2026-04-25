@@ -48,7 +48,7 @@ public class ToastMessage : ObservableRecipient
     /// <summary>
     /// 消息重要程度
     /// </summary>
-    public InfoBarSeverity Severity { get; init; } = InfoBarSeverity.Informational;
+    public FAInfoBarSeverity Severity { get; init; } = FAInfoBarSeverity.Informational;
     
     /// <summary>
     /// 操作按钮内容

@@ -17,7 +17,7 @@
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
             <StackPanel Classes="cardContainer">
-                <controls1:SettingsExpanderItem>
+                <controls1:FASettingsExpanderItem>
                     <StackPanel Spacing="8">
                         <TextBlock Text="集控" FontWeight="Bold"/>
 
@@ -32,27 +32,27 @@
                             </TextBlock>
                         </StackPanel>
                     </StackPanel>
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem Click="ButtonJoinManagement_OnClick" 
+                </controls1:FASettingsExpanderItem>
+                <controls1:FASettingsExpanderItem Click="ButtonJoinManagement_OnClick" 
                                                 IsClickEnabled="True"
                                                 IsVisible="{Binding !ManagementService.IsManagementEnabled}">
                     <Grid>
                         <TextBlock Text="加入管理" />
                     </Grid>
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                </controls1:FASettingsExpanderItem>
+                <controls1:FASettingsExpanderItem Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
                                                 IsClickEnabled="True"
                                                 ActionIconSource="{ci:FluentIconSource &#xEC2E;}"
                                                 CommandParameter="https://docs.classisland.tech/management/">
                     <Grid>
                         <TextBlock Text="了解更多" />
                     </Grid>
-                </controls1:SettingsExpanderItem>
+                </controls1:FASettingsExpanderItem>
             </StackPanel>
 
             <StackPanel Classes="cardContainer"
                         IsVisible="{Binding !ManagementService.IsManagementEnabled}">
-                <controls1:SettingsExpanderItem>
+                <controls1:FASettingsExpanderItem>
                     <StackPanel Spacing="8">
                         <TextBlock Text="管理" FontWeight="Bold"/>
 
@@ -62,54 +62,54 @@
                             </TextBlock>
                         </StackPanel>
                     </StackPanel>
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                </controls1:FASettingsExpanderItem>
+                <controls1:FASettingsExpanderItem Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
                                                 IsClickEnabled="True"
                                                 CommandParameter="classisland://app/settings/management.credentials?ci_keepHistory=true">
                     <Grid>
                         <TextBlock Text="密码保护设置…" />
                     </Grid>
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                </controls1:FASettingsExpanderItem>
+                <controls1:FASettingsExpanderItem Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
                                                 IsClickEnabled="True"
                                                 CommandParameter="classisland://app/settings/management.policy?ci_keepHistory=true">
                     <Grid>
                         <TextBlock Text="限制策略…" />
                     </Grid>
-                </controls1:SettingsExpanderItem>
+                </controls1:FASettingsExpanderItem>
             </StackPanel>
 
             <StackPanel Classes="cardContainer">
-                <controls1:SettingsExpanderItem>
+                <controls1:FASettingsExpanderItem>
                     <StackPanel Spacing="8">
                         <TextBlock Text="客户端信息" FontWeight="Bold"/>
                     </StackPanel>
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem>
+                </controls1:FASettingsExpanderItem>
+                <controls1:FASettingsExpanderItem>
                     <TextBlock TextWrapping="Wrap">
                         <Run>CUID：</Run><Run Text="{Binding ManagementService.Persist.ClientUniqueId}" />
                     </TextBlock>
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem
+                </controls1:FASettingsExpanderItem>
+                <controls1:FASettingsExpanderItem
                     IsVisible="{Binding ManagementService.IsManagementEnabled}">
                     <TextBlock TextWrapping="Wrap">
                         <Run>ID：</Run><Run Text="{Binding ManagementService.Settings.ClassIdentity}" />
                     </TextBlock>
-                </controls1:SettingsExpanderItem>
+                </controls1:FASettingsExpanderItem>
             </StackPanel>
 
             <StackPanel Classes="cardContainer"
                         IsVisible="{Binding ManagementService.IsManagementEnabled}">
-                <controls1:SettingsExpanderItem>
+                <controls1:FASettingsExpanderItem>
                     <StackPanel Spacing="8">
                         <TextBlock Text="服务端信息" FontWeight="Bold"/>
                     </StackPanel>
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem>
+                </controls1:FASettingsExpanderItem>
+                <controls1:FASettingsExpanderItem>
                     <TextBlock TextWrapping="Wrap">
                         <Run>服务端类型：</Run><Run Text="{Binding ManagementService.Manifest.ServerKind}"/>
                     </TextBlock>
-                </controls1:SettingsExpanderItem>
+                </controls1:FASettingsExpanderItem>
             </StackPanel>
 
         </StackPanel>

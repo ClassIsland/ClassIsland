@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -23,7 +23,7 @@ public class SettingsNewViewModel : ObservableRecipient
     private List<string> _echoCaveTexts = [];
     private List<string> _echoCaveTextsAll = [];
     private bool _isCoverVisible = true;
-    private ObservableCollection<NavigationViewItemBase> _flattenNavigationItemsCache = [];
+    private ObservableCollection<FANavigationViewItemBase> _flattenNavigationItemsCache = [];
 
     public object? FrameContent
     {
@@ -194,7 +194,7 @@ public class SettingsNewViewModel : ObservableRecipient
         }
     }
 
-    public ObservableCollection<NavigationViewItemBase> FlattenNavigationItemsCache
+    public ObservableCollection<FANavigationViewItemBase> FlattenNavigationItemsCache
     {
         get => _flattenNavigationItemsCache;
         set

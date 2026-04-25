@@ -18,7 +18,7 @@ namespace ClassIsland.Views.RecoveryPages;
 /// </summary>
 public partial class HomePage : UserControl
 {
-    public Frame? MainFrame { get; init; }
+    public FAFrame? MainFrame { get; init; }
 
     public HomePage()
     {

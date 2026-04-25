@@ -238,7 +238,7 @@ public partial class App : AppBase, IAppHost
         ActivateAppDirectories();
         if (!Design.IsDesignMode && !System.OperatingSystem.IsMacOS())
         {
-            this.EnableHotReload();
+            // this.EnableHotReload();
         }
         AvaloniaXamlLoader.Load(this);
         if (DesktopLifetime != null)
@@ -248,14 +248,14 @@ public partial class App : AppBase, IAppHost
         IconExpressionHelper.RegisterHandler("fluent", args => new FluentIconSource(args[0]));
         IconExpressionHelper.RegisterHandler("lucide", args => new LucideIconSource(args[0]));
         IconExpressionHelper.RegisterHandler("sfsymbols", args => new SFSymbolsIconSource(args[0]));
-        IconExpressionHelper.RegisterHandler("bitmap", args => new BitmapIconSource
+        IconExpressionHelper.RegisterHandler("bitmap", args => new FABitmapIconSource
         {
             UriSource = new Uri(args[0]),
             ShowAsMonochrome = args.Length >= 2  && bool.TryParse(args[2], out var r1) && r1
         });
         IconExpressionHelper.RegisterHandler("sticker", args => 
             IAppHost.TryGetService<IManagementService>()?.Policy.DisableEasterEggs == true
-            ? args.Length >= 2 ? IconExpressionHelper.TryParseOrNull(args[1]) : new FontIconSource()
+            ? args.Length >= 2 ? IconExpressionHelper.TryParseOrNull(args[1]) : new FAFontIconSource()
             : new AdvancedImageIconSource()
             {
                 Uri = Uri.TryCreate(args[0], UriKind.Absolute, out var uri) ? uri.ToString() : $"avares://ClassIsland/Assets/HoYoStickers/{args[0]}.png"
@@ -539,15 +539,15 @@ public partial class App : AppBase, IAppHost
         if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
             Logger?.LogDebug("应用多次启动失败。startupCount={startupCount}",startupCount);
-            var dialog = new TaskDialog()
+            var dialog = new FATaskDialog()
             {
                 Title = "进入恢复模式",
                 Content = "ClassIsland 多次启动失败，您需要进入恢复模式以尝试修复 ClassIsland 吗？",
                 XamlRoot = GetRootWindow(),
                 Buttons =
                 [
-                    new TaskDialogButton("取消", false),
-                    new TaskDialogButton("进入恢复模式", true)
+                    new FATaskDialogButton("取消", false),
+                    new FATaskDialogButton("进入恢复模式", true)
                     {
                         IsDefault = true
                     }
@@ -719,7 +719,7 @@ public partial class App : AppBase, IAppHost
 
             if (System.OperatingSystem.IsLinux() && GlobalStorageService.GetValue("IgnoreQtScaling") != "1")
             {
-                var dialog = new TaskDialog()
+                var dialog = new FATaskDialog()
                 {
                     Title = "ClassIsland",
                     Header = "当前界面缩放是否正常？",
@@ -727,8 +727,8 @@ public partial class App : AppBase, IAppHost
                     XamlRoot = GetRootWindow(),
                     Buttons =
                     [
-                        new TaskDialogButton("正常", false),
-                        new TaskDialogButton("不正常", true)
+                        new FATaskDialogButton("正常", false),
+                        new FATaskDialogButton("不正常", true)
                     ],
                 };
                 var r = await dialog.ShowAsync();
@@ -920,7 +920,7 @@ public partial class App : AppBase, IAppHost
             Height = 1,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             ShowActivated = false,
-            SystemDecorations = SystemDecorations.None,
+            WindowDecorations = WindowDecorations.None,
             ShowInTaskbar = false,
             Background = Brushes.Transparent,
             TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ],
@@ -982,7 +982,7 @@ public partial class App : AppBase, IAppHost
 
     private async Task ProcessInstanceExisted()
     {
-        var dialog = new TaskDialog()
+        var dialog = new FATaskDialog()
         {
             Title = "ClassIsland 已在运行",
             Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行设置等操作。" +Environment.NewLine+Environment.NewLine+
@@ -990,11 +990,11 @@ public partial class App : AppBase, IAppHost
             XamlRoot = GetRootWindow(),
             Buttons =
             [
-                new TaskDialogButton("取消", false)
+                new FATaskDialogButton("取消", false)
             ],
             Commands =
             [
-                new TaskDialogCommand()
+                new FATaskDialogCommand()
                 {
                     DialogResult = true,
                     ClosesOnInvoked = true,

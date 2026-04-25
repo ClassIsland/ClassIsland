@@ -1,4 +1,4 @@
-﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AboutSettingsPage"
+<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AboutSettingsPage"
       xmlns="https://github.com/avaloniaui"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -289,18 +289,18 @@
             </Grid>
         </controls1:StickyScrollViewer.HeaderContent>
         <StackPanel Classes="settings-container ">
-            <controls3:SettingsExpander Header="ClassIsland"
+            <controls3:FASettingsExpander Header="ClassIsland"
                                         IsExpanded="True">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <TextBlock Text="{x:Static local:AboutSettingsPage.DisplayVersion}"
                                FontSize="12"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                </controls3:SettingsExpander.Footer>
-                <controls3:SettingsExpander.IconSource>
-                    <controls3:ImageIconSource Source="/Assets/AppLogo.png"/>
-                </controls3:SettingsExpander.IconSource>
-                <controls3:SettingsExpanderItem Description="本项目基于 GNU General Public License v3.0 获得许可。">
-                    <controls3:SettingsExpanderItem.Footer>
+                </controls3:FASettingsExpander.Footer>
+                <controls3:FASettingsExpander.IconSource>
+                    <controls3:FAImageIconSource Source="/Assets/AppLogo.png"/>
+                </controls3:FASettingsExpander.IconSource>
+                <controls3:FASettingsExpanderItem Description="本项目基于 GNU General Public License v3.0 获得许可。">
+                    <controls3:FASettingsExpanderItem.Footer>
                         <WrapPanel Classes="animated-resize">
                             <WrapPanel.Styles>
                                 <Style Selector="HyperlinkButton">
@@ -317,13 +317,13 @@
                                 <TextBlock Text="隐私政策"/>
                             </HyperlinkButton>
                         </WrapPanel>
-                    </controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.Footer>
                     <TextBlock Background="Transparent" >
                         <Run Text="Copyright (c) 2023-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" /> HelloWRC
                     </TextBlock>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="常用链接">
-                    <controls3:SettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="常用链接">
+                    <controls3:FASettingsExpanderItem.Footer>
                         <WrapPanel Classes="animated-resize">
                             <WrapPanel.Styles>
                                 <Style Selector="HyperlinkButton">
@@ -348,42 +348,42 @@
                                 <TextBlock Text="加入社区"/>
                             </HyperlinkButton>
                         </WrapPanel>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
                 
-            </controls3:SettingsExpander>
+            </controls3:FASettingsExpander>
 
-            <controls3:SettingsExpander Header="遇到问题？" IconSource="{commands:FluentIconSource &#xE3F6;}"
+            <controls3:FASettingsExpander Header="遇到问题？" IconSource="{commands:FluentIconSource &#xE3F6;}"
                                         IsExpanded="True">
-                <controls3:SettingsExpanderItem
+                <controls3:FASettingsExpanderItem
                     Click="UriNavigationCommands_OnClick"
                     CommandParameter="https://github.com/ClassIsland/ClassIsland/issues/"
                     Content="问题反馈/功能建议"
                     ActionIconSource="{controls1:FluentIconSource &#xEC2E;} "
                     IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem
+                <controls3:FASettingsExpanderItem
                     Click="UriNavigationCommands_OnClick"
                     CommandParameter="https://github.com/ClassIsland/voting/discussions/categories/classisland?discussions_q=is%3Aopen+category%3AClassIsland+sort%3Atop"
                     Content="功能投票"
                     ActionIconSource="{controls1:FluentIconSource &#xEC2E;} "
                     IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem 
+                <controls3:FASettingsExpanderItem 
                     Click="ButtonDiagnosticInfo_OnClick"
                     Content="查看诊断信息"
                     IsClickEnabled="True"/>
-            </controls3:SettingsExpander>
+            </controls3:FASettingsExpander>
             
-            <controls3:SettingsExpander Header="鸣谢" IconSource="{commands:FluentIconSource &#xE971;}"
+            <controls3:FASettingsExpander Header="鸣谢" IconSource="{commands:FluentIconSource &#xE971;}"
                                         IsExpanded="True">
-                <controls3:SettingsExpanderItem 
+                <controls3:FASettingsExpanderItem 
                     Content="贡献人员"
                     Click="ButtonContributors_OnClick"
                     IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem 
+                <controls3:FASettingsExpanderItem 
                     Content="第三方库"
                     Click="ButtonThirdPartyLibs_OnClick"
                     IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem>
+                <controls3:FASettingsExpanderItem>
                     <TextBlock LineHeight="30" Margin="0 0 0 0" FontSize="14" TextWrapping="Wrap">
                         本项目受到
                         <HyperlinkButton Click="Hyperlink2_OnClick">DuguSand/class_form</HyperlinkButton>
@@ -396,12 +396,12 @@
                         部分图像资源（/Assets/HoYoStickers/*）来自米游社和 Bilibili 装扮表情包，版权归 miHoYo 所有。<LineBreak/>
                         感谢其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
                     </TextBlock>
-                </controls3:SettingsExpanderItem>
+                </controls3:FASettingsExpanderItem>
 
-            </controls3:SettingsExpander>
+            </controls3:FASettingsExpander>
             
-            <controls3:SettingsExpander Header="回声洞" IconSource="{commands:FluentIconSource &#xE55F;}">
-                <controls3:SettingsExpanderItem 
+            <controls3:FASettingsExpander Header="回声洞" IconSource="{commands:FluentIconSource &#xE55F;}">
+                <controls3:FASettingsExpanderItem 
                     IsClickEnabled="True"
                     Click="Sayings_OnMouseLeftButtonDown">
                     <StackPanel>
@@ -409,8 +409,8 @@
                                  Text="{Binding ViewModel.Sayings, Mode=OneWay}"
                                  IsBusy="{Binding ViewModel.IsSayingBusy, Mode=OneWayToSource}"/>
                     </StackPanel>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
             
             <TextBlock Text="谨以此应用，献给现在或曾经陪伴着我的同学们。愿时光流转，各位能与所念之人重逢。"
                        Margin="0 8 0 0"

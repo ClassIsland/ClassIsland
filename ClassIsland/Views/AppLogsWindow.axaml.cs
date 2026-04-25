@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Reactive;
 using ClassIsland.Core;

@@ -12,7 +12,7 @@
           x:Name="Root"
           Classes.HasDetails="{Binding Announcement.HasDetails}">
         <Grid.Styles>
-            <Style Selector="Grid#Root.HasDetails controls|InfoBar#MainInfoBar">
+            <Style Selector="Grid#Root.HasDetails controls|FAInfoBar#MainInfoBar">
                 <Setter Property="ActionButton">
                     <Template>
                         <Button Content="详细信息"
@@ -38,7 +38,7 @@
                 <AddClassAction ClassName="Critical"/>
             </DataTriggerBehavior>
         </Interaction.Behaviors>
-        <controls:InfoBar x:Name="MainInfoBar"
+        <controls:FAInfoBar x:Name="MainInfoBar"
                           Severity="{Binding Announcement.Severity, Converter={x:Static local:AnnouncementControl.AnnouncementSeverityToInfoBarSeverityConverter}}"
                           Message="{Binding Announcement.Summary}"
                           IsOpen="True"

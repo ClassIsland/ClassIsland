@@ -132,19 +132,19 @@
                     <Run Text="{Binding ViewModel.UpdateService.DistributionInfo.Version, Mode=OneWay}" />
                 </TextBlock>
             </Grid>
-            <controls:InfoBar Severity="Error" Title="更新时发生错误，请检查您的网络连接并重试。" Message="{Binding ViewModel.UpdateService.NetworkErrorException.Message, FallbackValue=''}"
+            <controls:FAInfoBar Severity="Error" Title="更新时发生错误，请检查您的网络连接并重试。" Message="{Binding ViewModel.UpdateService.NetworkErrorException.Message, FallbackValue=''}"
                               IsOpen="{Binding ViewModel.UpdateService.NetworkErrorException, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneWay}"
                               CloseButtonClick="InfoBarError_OnCloseButtonClick"/>
-            <controls:InfoBar Severity="Informational" Title="更新将在重启后应用" Message="已成功部署更新，下次启动应用时将启动新版本。您也可以现在重启以立即使用新版本的 ClassIsland。">
-                <controls:InfoBar.IsOpen>
+            <controls:FAInfoBar Severity="Informational" Title="更新将在重启后应用" Message="已成功部署更新，下次启动应用时将启动新版本。您也可以现在重启以立即使用新版本的 ClassIsland。">
+                <controls:FAInfoBar.IsOpen>
                     <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
                              Converter="{x:Static ObjectConverters.Equal}">
                         <Binding.ConverterParameter>
                             <enums:UpdateStatus>UpdateDeployed</enums:UpdateStatus>
                         </Binding.ConverterParameter>
                     </Binding>
-                </controls:InfoBar.IsOpen>
-            </controls:InfoBar>
+                </controls:FAInfoBar.IsOpen>
+            </controls:FAInfoBar>
             <WrapPanel Classes="animated-resize">
                 <WrapPanel.IsEnabled>
                     <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
@@ -329,24 +329,24 @@
                 <TabItem Header="更新设置">
                     <StackPanel Margin="0" Classes="settings-container animated-intro">
                         <!-- 更新模式 -->
-                        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe161;}"
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xe161;}"
                                                    Header="更新模式"
                                                    Description="设置应用的更新模式。">
-                            <controls:SettingsExpander.Footer>
+                            <controls:FASettingsExpander.Footer>
                                 <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.UpdateMode}">
                                     <ComboBoxItem>从不自动更新</ComboBoxItem>
                                     <ComboBoxItem>自动检查更新并通知</ComboBoxItem>
                                     <ComboBoxItem>自动检查更新并下载</ComboBoxItem>
                                     <ComboBoxItem>自动检查更新并安装</ComboBoxItem>
                                 </ComboBox>
-                            </controls:SettingsExpander.Footer>
-                        </controls:SettingsExpander>
+                            </controls:FASettingsExpander.Footer>
+                        </controls:FASettingsExpander>
                         
                         <!-- 更新通道 -->
-                        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe3d2;}"
+                        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xe3d2;}"
                                                    Header="更新通道" IsExpanded="True"
                                                    Description="控制应用的更新目标版本。版本的发行节奏和稳定程度因更新通道而异，部分通道可能包含不稳定的功能，请谨慎使用。">
-                            <controls:SettingsExpander.Footer>
+                            <controls:FASettingsExpander.Footer>
                                 <ComboBox ItemsSource="{Binding ViewModel.UpdateService.DistributionMetadata.Channels}"
                                           SelectedValueBinding="{Binding Key}"
                                           SelectedValue="{Binding ViewModel.SettingsService.Settings.SelectedUpdateChannelV3}">
@@ -356,17 +356,17 @@
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
-                            </controls:SettingsExpander.Footer>
-                            <controls:SettingsExpanderItem>
+                            </controls:FASettingsExpander.Footer>
+                            <controls:FASettingsExpanderItem>
                                 <TextBlock Text="{Binding ViewModel.SelectedChannel.Description}" TextWrapping="Wrap"/>
-                            </controls:SettingsExpanderItem>
-                            <controls:SettingsExpanderItem Content="强制检查更新"
+                            </controls:FASettingsExpanderItem>
+                            <controls:FASettingsExpanderItem Content="强制检查更新"
                                                            IsClickEnabled="True"
                                                            Click="SettingsExpanderItemCheckUpdateForce_OnClick"
                                                            Description="强制将应用更新到当前通道上的最新版本，即使此版本比应用当前版本更旧。"
                                                            ActionIconSource="{ci:FluentIconSource &#xe44e;}">
-                            </controls:SettingsExpanderItem>
-                        </controls:SettingsExpander>
+                            </controls:FASettingsExpanderItem>
+                        </controls:FASettingsExpander>
                         
                     </StackPanel>
                 </TabItem>

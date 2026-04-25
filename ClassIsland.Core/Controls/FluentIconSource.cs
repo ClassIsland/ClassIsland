@@ -5,7 +5,7 @@ namespace ClassIsland.Core.Controls;
 /// <summary>
 /// Fluent Icon 图标源
 /// </summary>
-public class FluentIconSource : FontIconSource
+public class FluentIconSource : FAFontIconSource
 {
     /// <inheritdoc />
     public FluentIconSource()

@@ -17,87 +17,87 @@
                          mc:Ignorable="d">
     <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=components:CountDownComponentSettingsControl}}">
         <StackPanel Classes="component-settings-container animated-intro">
-            <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xEE7D;}"
+            <controls3:FASettingsExpander IconSource="{controls1:FluentIconSource &#xEE7D;}"
                                         Header="倒计时名称"
                                         Description="会作为设定日期事件名称显示。">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <TextBox Text="{Binding Settings.CountDownName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Width="180"/>
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
             
-            <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xE304;}"
+            <controls3:FASettingsExpander IconSource="{controls1:FluentIconSource &#xE304;}"
                                         Header="时间"
                                         Description="倒计时的开始和结束时间。"
                                         IsExpanded="True">
-                <controls3:SettingsExpander.Styles>
-                    <Style Selector="controls3|SettingsExpanderItem.has-radius /template/ Border#Root">
+                <controls3:FASettingsExpander.Styles>
+                    <Style Selector="controls3|FASettingsExpanderItem.has-radius /template/ Border#Root">
                         <Setter Property="CornerRadius" Value="0 0 4 4"/>
                     </Style>
-                </controls3:SettingsExpander.Styles>
-                <controls3:SettingsExpander.Footer>
+                </controls3:FASettingsExpander.Styles>
+                <controls3:FASettingsExpander.Footer>
                     <ComboBox SelectedIndex="{Binding Settings.CountdownSource}">
                         <ComboBoxItem Content="固定时间"/>
                         <ComboBoxItem Content="周期"/>
                         <ComboBoxItem Content="今天"/>
                         <ComboBoxItem Content="本周"/>
                     </ComboBox>
-                </controls3:SettingsExpander.Footer>
+                </controls3:FASettingsExpander.Footer>
                 <!-- 固定时间 -->
-                <controls3:SettingsExpanderItem Content="开始日期"
+                <controls3:FASettingsExpanderItem Content="开始日期"
                                                 Description="倒计时开始的日期。">
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <x:Int32>0</x:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <CalendarDatePicker
                             SelectedDate="{Binding Settings.StartTime, Mode=TwoWay}"
                             Width="120" />
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="结束日期"
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="结束日期"
                                                 Description="倒计时为 0 天时的日期。"
                                                 Classes="has-radius">
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <x:Int32>0</x:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <CalendarDatePicker
                             SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
                             Width="120" />
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
                 <!-- 周期 -->
-                <controls3:SettingsExpanderItem>
-                    <controls3:SettingsExpanderItem.IsVisible>
+                <controls3:FASettingsExpanderItem>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <x:Int32>1</x:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
+                    </controls3:FASettingsExpanderItem.IsVisible>
                     <CheckBox IsChecked="{Binding Settings.IsAdvancedCycleTimingEnabled}">高级计时</CheckBox>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem>
-                    <controls3:SettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <TextBox IsVisible="{Binding !Settings.IsAdvancedCycleTimingEnabled}"
                                  Text="{Binding Settings.CycleDuration, UpdateSourceTrigger=LostFocus, Converter={x:Static converters:TimeSpanToStringConverter.Instance}}" />
-                    </controls3:SettingsExpanderItem.Footer>
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    </controls3:FASettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <x:Int32>1</x:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
+                    </controls3:FASettingsExpanderItem.IsVisible>
                     <Panel>
                         <Grid ColumnDefinitions="Auto 1* Auto 1* Auto 2* Auto 2* Auto 1* Auto 1* Auto"
                               RowDefinitions="32,6,Auto"
@@ -208,35 +208,35 @@
                         </Grid>
                         <TextBlock Text="周期持续时间" IsVisible="{Binding !Settings.IsAdvancedCycleTimingEnabled}"/>
                     </Panel>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="周期开始时间"
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="周期开始时间"
                                                 Description="整个周期的开始时间，从周期前阶段开始计时。">
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <x:Int32>1</x:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <CalendarDatePicker
                             SelectedDate="{Binding Settings.CycleStartTime, Mode=TwoWay}"
                             Width="120" />
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="限制周期循环次数"
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="限制周期循环次数"
                                                 Description="启用后，将限制倒计时周期的最大循环次数。"
                                                 Classes="has-radius">
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <x:Int32>1</x:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <StackPanel Orientation="Horizontal" Spacing="4">
-                            <controls3:NumberBox MinWidth="150"
+                            <controls3:FANumberBox MinWidth="150"
                                                  SpinButtonPlacementMode="Inline"
                                                  Value="{Binding Settings.CycleCountLimit, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                  Maximum="33550336" Minimum="1"
@@ -244,55 +244,55 @@
                                                  VerticalAlignment="Center"/>
                             <ToggleSwitch IsChecked="{Binding Settings.IsCycleCountLimited}"/>
                         </StackPanel>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="时间模式"
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="时间模式"
                                                 Description="默认情况下将从当日课程安排获取倒计时时间，以当天的第一个上课或课间休息时间点的开始时间为开始时间，最后一个上课或课间休息时间点的结束时间为结束时间。如果当日课程不可用，将使用从当日凌晨至次日凌晨的自然时间。当在右侧复选框指定了时间模式后，如果选择的时间模式不可用，将不会进行倒计时。"
                                                 Classes="has-radius">
-                    <controls3:SettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <ComboBox SelectedIndex="{Binding Settings.NatureTimeUseMode}">
                             <ComboBoxItem Content="默认"/>
                             <ComboBoxItem Content="强制自然时间"/>
                             <ComboBoxItem Content="强制课程时间"/>
                         </ComboBox>
-                    </controls3:SettingsExpanderItem.Footer>
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    </controls3:FASettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <x:Int32>2</x:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
+                    </controls3:FASettingsExpanderItem.IsVisible>
                     
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="时间模式"
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="时间模式"
                                                 Description="默认情况下将从本周课程安排获取倒计时时间，以本周的第一个上课或课间休息时间点的开始时间为开始时间，最后一个上课或课间休息时间点的结束时间为结束时间。如果本周课程不可用，将使用从本周第一天凌晨至本周最后一天次日凌晨的自然时间。当在右侧复选框指定了时间模式后，如果选择的时间模式不可用，将不会进行倒计时。">
-                    <controls3:SettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <ComboBox SelectedIndex="{Binding Settings.NatureTimeUseMode}">
                             <ComboBoxItem Content="默认"/>
                             <ComboBoxItem Content="强制自然时间"/>
                             <ComboBoxItem Content="强制课程时间"/>
                         </ComboBox>
-                    </controls3:SettingsExpanderItem.Footer>
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    </controls3:FASettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <x:Int32>3</x:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="自定义每周的第一天"
+                    </controls3:FASettingsExpanderItem.IsVisible>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="自定义每周的第一天"
                                                 Description="默认情况下将使用在【基本】中设置的学期开始时间的星期作为每周的第一天，启用后将使用此处指定的星期。"
                                                 Classes="has-radius">
-                    <controls3:SettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.IsVisible>
                         <Binding Path="Settings.CountdownSource" Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <x:Int32>3</x:Int32>
                             </Binding.ConverterParameter>
                         </Binding>
-                    </controls3:SettingsExpanderItem.IsVisible>
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.IsVisible>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <StackPanel Orientation="Horizontal" Spacing="4">
                             <ComboBox SelectedIndex="{Binding Settings.WeekCountdownStartDay}"
                                       IsVisible="{Binding Settings.IsCustomWeekCountdownStartDayEnabled}">
@@ -306,39 +306,39 @@
                             </ComboBox>
                             <ToggleSwitch IsChecked="{Binding Settings.IsCustomWeekCountdownStartDayEnabled}"/>
                         </StackPanel>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
             
-            <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xe079;}"
+            <controls3:FASettingsExpander IconSource="{controls1:FluentIconSource &#xe079;}"
                                         Header="显示内容"
                                         Description="要在组件上显示的信息"
                                         IsExpanded="True">
-                <controls3:SettingsExpanderItem>
-                    <controls3:SettingsExpanderItem.Content>
+                <controls3:FASettingsExpanderItem>
+                    <controls3:FASettingsExpanderItem.Content>
                         <CheckBox Content="进度条" IsChecked="{Binding Settings.ShowProgress}"/>
-                    </controls3:SettingsExpanderItem.Content>
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.Content>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <ComboBox SelectedIndex="{Binding Settings.ProgressBarMode}"
                                   IsVisible="{Binding Settings.ShowProgress}">
                             <ComboBoxItem Content="进度环"/>
                             <ComboBoxItem Content="进度条"/>
                         </ComboBox>    
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem>
-                    <controls3:SettingsExpanderItem.Content>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem>
+                    <controls3:FASettingsExpanderItem.Content>
                         <CheckBox Content="倒计时连接词" IsChecked="{Binding !Settings.IsCompactModeEnabled}"/>
-                    </controls3:SettingsExpanderItem.Content>
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.Content>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <TextBox Text="{Binding Settings.CountDownConnector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  MinWidth="120"
                                  MaxWidth="300"
                                  IsVisible="{Binding !Settings.IsCompactModeEnabled}"/>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="倒计时">
-                    <controls3:SettingsExpanderItem.Footer>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="倒计时">
+                    <controls3:FASettingsExpanderItem.Footer>
                         <StackPanel Orientation="Horizontal">
                             <TextBox
                                 Text="{Binding Settings.CustomStringFormat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -377,43 +377,43 @@
                                 </Button.Flyout>
                             </Button>
                         </StackPanel>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
             
-            <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xEC54;}"
+            <controls3:FASettingsExpander IconSource="{controls1:FluentIconSource &#xEC54;}"
                                         Header="强调色"
                                         Description="事件名称和倒计时的字体颜色。"
                                         IsExpanded="True">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <ColorPicker 
                         Color="{Binding Settings.FontColor,Mode=TwoWay}"/>
-                </controls3:SettingsExpander.Footer>
-                <controls3:SettingsExpanderItem Content="进度条使用强调色"
+                </controls3:FASettingsExpander.Footer>
+                <controls3:FASettingsExpanderItem Content="进度条使用强调色"
                                                 Description="启用后，进度条将使用选定的主题色作为主题色，而不是使用应用的主题色。">
-                    <controls3:SettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.UseAccentOnProgressBar, Mode=TwoWay}"/>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="倒计时连接词使用强调颜色"
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+                <controls3:FASettingsExpanderItem Content="倒计时连接词使用强调颜色"
                                                 Description="启用后，倒计时连接词颜色与字体颜色一致，否则为默认颜色。">
-                    <controls3:SettingsExpanderItem.Footer>
+                    <controls3:FASettingsExpanderItem.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.IsConnectorColorEmphasized, Mode=TwoWay}"/>
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
-            </controls3:SettingsExpander>
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
             
-            <controls3:SettingsExpander IconSource="{controls1:FluentIconSource &#xF26F;}"
+            <controls3:FASettingsExpander IconSource="{controls1:FluentIconSource &#xF26F;}"
                                         Header="字体大小"
                                         Description="事件名称和倒计时的字体大小。">
-                <controls3:SettingsExpander.Footer>
+                <controls3:FASettingsExpander.Footer>
                     <Slider Width="180" 
                             Maximum="30" Minimum="16" TickFrequency="1" 
                             TickPlacement="None" IsSnapToTickEnabled="True"
                             Classes="auto-tooltip"
                             Value="{Binding Settings.FontSize}" />
-                </controls3:SettingsExpander.Footer>
-            </controls3:SettingsExpander>
+                </controls3:FASettingsExpander.Footer>
+            </controls3:FASettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </controls2:ComponentBase>

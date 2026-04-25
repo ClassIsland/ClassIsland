@@ -55,7 +55,7 @@
                         Spacing="8"
                         Margin="16">
                 <TextBlock Text="课程表信息" Theme="{StaticResource SubtitleTextBlockStyle}" />
-                <controls:InfoBar Message="这是一个临时层课表，将在使用过后自动删除。" IsVisible="{Binding IsOverlay}"/>
+                <controls:FAInfoBar Message="这是一个临时层课表，将在使用过后自动删除。" IsVisible="{Binding IsOverlay}"/>
                 <ci:Field Label="名称">
                     <TextBox Text="{Binding Name}"/>
                 </ci:Field>
@@ -519,19 +519,19 @@
                                 </Grid.ColumnDefinitions>
                                 <!-- 课表选择区域 -->
                                 <Grid Grid.Column="0" RowDefinitions="Auto, *">
-                                    <controls:CommandBar Grid.Row="0"
+                                    <controls:FACommandBar Grid.Row="0"
                                                          DefaultLabelPosition="Right"
                                                          IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}">
-                                        <controls:CommandBar.PrimaryCommands>
-                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe00d;}"
+                                        <controls:FACommandBar.PrimaryCommands>
+                                            <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe00d;}"
                                                                        Label="添加" ToolTip.Tip="新建一个课表。"
                                                                        Click="ButtonAddClassPlan_OnClick" />
-                                            <controls:CommandBarSeparator />
-                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe58d;}"
+                                            <controls:FACommandBarSeparator />
+                                            <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe58d;}"
                                                                        Label="复制" ToolTip.Tip="复制一个当前选中的课表的副本。"
                                                                        Click="ButtonDuplicateClassPlan_OnClick" />
-                                        </controls:CommandBar.PrimaryCommands>
-                                    </controls:CommandBar>
+                                        </controls:FACommandBar.PrimaryCommands>
+                                    </controls:FACommandBar>
 
                                     <ListBox Grid.Row="1"
                                              ItemsSource="{Binding ViewModel.ClassPlans.List, Mode=OneWay}"
@@ -702,30 +702,30 @@
                                               IsDirectContentMode="True"
                                               IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}">
                                     <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto">
-                                        <controls:CommandBar Grid.Row="0" DefaultLabelPosition="Right"
+                                        <controls:FACommandBar Grid.Row="0" DefaultLabelPosition="Right"
                                                              Classes="hide-popup-indicator">
-                                            <controls:CommandBar.PrimaryCommands>
-                                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe9e4;}"
+                                            <controls:FACommandBar.PrimaryCommands>
+                                                <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe9e4;}"
                                                                            Label="详细信息"
                                                                            Click="ButtonOpenClassPlanDetails_OnClick"
                                                                            ToolTip.Tip="查看并编辑课表的基本信息。" />
-                                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe077;}"
+                                                <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe077;}"
                                                                            Label="详细看板"
                                                                            ToolTip.Tip="查看课表的所有时间点的附加设置继承情况。"
                                                                            Click="ButtonOpenClassPlanDetailsWindow_OnClick" />
-                                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xea2f;}"
+                                                <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xea2f;}"
                                                                            Label="创建临时层"
                                                                            ToolTip.Tip="创建临时课表层。"
                                                                            Click="ButtonOpenCreateOverlayClassPlanFlyout_OnClick"
                                                                            IsEnabled="{Binding ViewModel.SelectedClassPlan.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}"
                                                                            Flyout="{StaticResource CreateOverlayFlyout}"/>
-                                                <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe61d;}"
+                                                <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe61d;}"
                                                                            Label="删除"
                                                                            ToolTip.Tip="删除该课表。"
                                                                            Flyout="{StaticResource DeleteClassPlanConfirmFlyout}"/>
-                                            </controls:CommandBar.PrimaryCommands>
+                                            </controls:FACommandBar.PrimaryCommands>
 
-                                        </controls:CommandBar>
+                                        </controls:FACommandBar>
 
                                         <!-- 课表编辑 -->
                                         <Grid Grid.Row="1"
@@ -741,21 +741,21 @@
                                             <StackPanel Grid.Row="0" Grid.Column="0">
                                                 <StackPanel.Styles>
                                                     <Style Selector="StackPanel">
-                                                        <Style Selector="^ controls|InfoBar#InfoBarNoTimeLayoutWarning">
+                                                        <Style Selector="^ controls|FAInfoBar#InfoBarNoTimeLayoutWarning">
                                                             <Setter Property="IsVisible" Value="False" />
                                                         </Style>
                                                         <Style
-                                                            Selector="^ controls|InfoBar#InfoBarEmptyTimeLayoutIdWarning">
+                                                            Selector="^ controls|FAInfoBar#InfoBarEmptyTimeLayoutIdWarning">
                                                             <Setter Property="IsVisible"
                                                                     Value="{Binding TimeLayout, Converter={x:Static ObjectConverters.IsNull}}" />
                                                         </Style>
                                                     </Style>
                                                     <Style Selector="StackPanel.no-timeLayouts">
-                                                        <Style Selector="^ controls|InfoBar#InfoBarNoTimeLayoutWarning">
+                                                        <Style Selector="^ controls|FAInfoBar#InfoBarNoTimeLayoutWarning">
                                                             <Setter Property="IsVisible" Value="True" />
                                                         </Style>
                                                         <Style
-                                                            Selector="^ controls|InfoBar#InfoBarEmptyTimeLayoutIdWarning">
+                                                            Selector="^ controls|FAInfoBar#InfoBarEmptyTimeLayoutIdWarning">
                                                             <Setter Property="IsVisible" Value="False" />
                                                         </Style>
                                                     </Style>
@@ -773,27 +773,27 @@
                                                         <RemoveClassAction ClassName="no-timeLayouts" />
                                                     </DataTriggerBehavior>
                                                 </Interaction.Behaviors>
-                                                <controls:InfoBar Message="在设置课表之前，您需要在【时间表】页面中根据学校的作息安排编排时间表。"
+                                                <controls:FAInfoBar Message="在设置课表之前，您需要在【时间表】页面中根据学校的作息安排编排时间表。"
                                                                   Severity="Warning"
                                                                   IsOpen="True"
                                                                   IsClosable="False"
                                                                   x:Name="InfoBarNoTimeLayoutWarning">
-                                                    <controls:InfoBar.ActionButton>
+                                                    <controls:FAInfoBar.ActionButton>
                                                         <Button Content="前往编排时间表"
                                                                 Click="ButtonGoToTimeLayoutsPage_OnClick" />
-                                                    </controls:InfoBar.ActionButton>
-                                                </controls:InfoBar>
-                                                <controls:InfoBar
+                                                    </controls:FAInfoBar.ActionButton>
+                                                </controls:FAInfoBar>
+                                                <controls:FAInfoBar
                                                     Message="您还没有为此课表设置时间表。在编排课程之前，您需要在【课表信息】中为本课表设置一个时间表。"
                                                     Severity="Warning"
                                                     IsOpen="True"
                                                     IsClosable="False"
                                                     x:Name="InfoBarEmptyTimeLayoutIdWarning">
-                                                    <controls:InfoBar.ActionButton>
+                                                    <controls:FAInfoBar.ActionButton>
                                                         <Button Content="前往设置时间表"
                                                                 Click="ButtonOpenClassPlanDetails_OnClick" />
-                                                    </controls:InfoBar.ActionButton>
-                                                </controls:InfoBar>
+                                                    </controls:FAInfoBar.ActionButton>
+                                                </controls:FAInfoBar>
                                             </StackPanel>
 
                                             <DataGrid Grid.Column="0" Grid.Row="1"
@@ -918,18 +918,18 @@
                                     <ColumnDefinition Width="300" MinWidth="300" MaxWidth="450" />
                                 </Grid.ColumnDefinitions>
                                 
-                                <controls:CommandBar Grid.Column="0" Grid.ColumnSpan="3"
+                                <controls:FACommandBar Grid.Column="0" Grid.ColumnSpan="3"
                                                      Grid.Row="0" DefaultLabelPosition="Right"
                                                      Margin="0 -4 0 -4"
                                                      IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                                      Classes="hide-popup-indicator">
-                                    <controls:CommandBar.PrimaryCommands>
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE0B5;}"
+                                    <controls:FACommandBar.PrimaryCommands>
+                                        <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xE0B5;}"
                                                                    Label="刷新"
                                                                    Click="ButtonRefreshScheduleDataGrid_OnClick"
                                                                    ToolTip.Tip="刷新当前视图。" />
-                                        <controls:CommandBarSeparator/>
-                                        <controls:CommandBarElementContainer IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                        <controls:FACommandBarSeparator/>
+                                        <controls:FACommandBarElementContainer IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}">
                                             <StackPanel VerticalAlignment="Center" Classes="items-valign-center"
                                                         Margin="8 0"
                                                         Orientation="Horizontal"
@@ -939,8 +939,8 @@
                                                 <TextBlock FontSize="13"
                                                            Text="{Binding ViewModel.SelectedClassPlan.Name, FallbackValue=''}"/>
                                             </StackPanel>
-                                        </controls:CommandBarElementContainer>
-                                        <controls:CommandBarElementContainer IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNull}}">
+                                        </controls:FACommandBarElementContainer>
+                                        <controls:FACommandBarElementContainer IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNull}}">
                                             <StackPanel VerticalAlignment="Center" Classes="items-valign-center"
                                                         Margin="8 0"
                                                         Orientation="Horizontal"
@@ -949,32 +949,32 @@
                                                 <TextBlock FontSize="13"
                                                            Text="未选择课表"/>
                                             </StackPanel>
-                                        </controls:CommandBarElementContainer>
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe9e4;}"
+                                        </controls:FACommandBarElementContainer>
+                                        <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe9e4;}"
                                                                    Label="详细信息"
                                                                    Click="ButtonOpenClassPlanDetails_OnClick"
                                                                    IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                                    ToolTip.Tip="查看并编辑课表的基本信息。" />
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe077;}"
+                                        <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe077;}"
                                                                    Label="详细看板"
                                                                    ToolTip.Tip="查看课表的所有时间点的附加设置继承情况。"
                                                                    Click="ButtonOpenClassPlanDetailsWindow_OnClick" 
                                                                    IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}"/>
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xea2f;}"
+                                        <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xea2f;}"
                                                                    Label="创建临时层"
                                                                    ToolTip.Tip="创建临时课表层。"
                                                                    Click="ButtonOpenCreateOverlayClassPlanFlyout_OnClick"
                                                                    IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                                    IsEnabled="{Binding ViewModel.SelectedClassPlan.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}, FallbackValue={x:False}}"
                                                                    Flyout="{StaticResource CreateOverlayFlyout}"/>
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe61d;}"
+                                        <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe61d;}"
                                                                    Label="删除"
                                                                    ToolTip.Tip="删除该课表。"
                                                                    Flyout="{StaticResource DeleteClassPlanConfirmFlyout}"
                                                                    IsVisible="{Binding ViewModel.SelectedClassPlan, Converter={x:Static ObjectConverters.IsNotNull}}"/>
-                                    </controls:CommandBar.PrimaryCommands>
+                                    </controls:FACommandBar.PrimaryCommands>
 
-                                </controls:CommandBar>
+                                </controls:FACommandBar>
                                  
                                 <scheduleDataGrid:ScheduleDataGrid Grid.Row="1" Grid.Column="0"
                                                                    x:Name="ScheduleDataGrid"
@@ -1036,19 +1036,19 @@
                         </TabItem>
                         <TabItem Header="{ci:FluentIcon &#xE304;}" ToolTip.Tip="月视图">
                             <Grid RowDefinitions="Auto *">
-                                <controls:CommandBar Grid.Column="0"
+                                <controls:FACommandBar Grid.Column="0"
                                                      Grid.Row="0" DefaultLabelPosition="Right"
                                                      Margin="0 -4 0 -4"
                                                      IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                                      Classes="hide-popup-indicator">
-                                    <controls:CommandBar.PrimaryCommands>
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE0B5;}"
+                                    <controls:FACommandBar.PrimaryCommands>
+                                        <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xE0B5;}"
                                                                    Label="刷新"
                                                                    Click="ButtonRefreshScheduleDataGrid_OnClick"
                                                                    ToolTip.Tip="刷新当前视图。" />
-                                    </controls:CommandBar.PrimaryCommands>
+                                    </controls:FACommandBar.PrimaryCommands>
 
-                                </controls:CommandBar>
+                                </controls:FACommandBar>
                                 <controls1:ScheduleCalendarControl x:Name="ScheduleCalendarControl2"
                                                                    Grid.Row="1"
                                                                    DisplayDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"
@@ -1069,20 +1069,20 @@
                         <!-- 时间表选择 -->
                         <Grid Grid.Column="0" Margin="0 0 3 0" RowDefinitions="Auto,*,Auto">
                             <!-- 时间表操作 -->
-                            <controls:CommandBar Grid.Row="0" 
+                            <controls:FACommandBar Grid.Row="0" 
                                                  DefaultLabelPosition="Right"
                                                  IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}">
-                                <controls:CommandBar.PrimaryCommands>
-                                    <controls:CommandBarButton Click="ButtonAddTimeLayout_OnClick" ToolTip.Tip="新建一个时间表。"
+                                <controls:FACommandBar.PrimaryCommands>
+                                    <controls:FACommandBarButton Click="ButtonAddTimeLayout_OnClick" ToolTip.Tip="新建一个时间表。"
                                                                IconSource="{ci:FluentIconSource &#xE00D;}"
                                                                Label="添加"/>
-                                    <controls:CommandBarSeparator />
-                                    <controls:CommandBarButton Click="ButtonDuplicateTimeLayout_OnClick" ToolTip.Tip="复制选中的时间表。"
+                                    <controls:FACommandBarSeparator />
+                                    <controls:FACommandBarButton Click="ButtonDuplicateTimeLayout_OnClick" ToolTip.Tip="复制选中的时间表。"
                                                                IconSource="{ci:FluentIconSource &#xE58D;}"
                                                                IsEnabled="{Binding ViewModel.SelectedTimeLayout, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                                Label="复制"/>
-                                </controls:CommandBar.PrimaryCommands>
-                            </controls:CommandBar>
+                                </controls:FACommandBar.PrimaryCommands>
+                            </controls:FACommandBar>
 
                             <!-- 时间表 -->
                             <ListBox Grid.Row="1"
@@ -1111,13 +1111,13 @@
                                       IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}}">
                                 <StackPanel Spacing="4">
                                     <ci:Field Label="默认上课时间点时长" Suffix="分钟">
-                                        <controls:NumberBox
+                                        <controls:FANumberBox
                                             Maximum="36000" Minimum="0" HorizontalAlignment="Stretch"
                                             Foreground="{DynamicResource MaterialDesignBody}"
                                             Value="{Binding ViewModel.SettingsService.Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                                     </ci:Field>
                                     <ci:Field Label="默认课间时间点时长" Suffix="分钟">
-                                        <controls:NumberBox
+                                        <controls:FANumberBox
                                             Maximum="36000" Minimum="0" HorizontalAlignment="Stretch"
                                             Foreground="{DynamicResource MaterialDesignBody}"
                                             Value="{Binding ViewModel.SettingsService.Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={x:Static ci:NotNaNConverter.Instance}}" />
@@ -1138,49 +1138,49 @@
                                     <ColumnDefinition Width="375" MinWidth="250" MaxWidth="450"/>
                                 </Grid.ColumnDefinitions>
                                 
-                                <controls:CommandBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
+                                <controls:FACommandBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
                                                      DefaultLabelPosition="Right"
                                                      IsEnabled="{Binding !$parent[views:ProfileSettingsWindow].ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing}"
                                                      Classes="hide-popup-indicator">
-                                    <controls:CommandBar.PrimaryCommands>
-                                        <controls:CommandBarButton Click="ButtonAddClassTime_OnClick" 
+                                    <controls:FACommandBar.PrimaryCommands>
+                                        <controls:FACommandBarButton Click="ButtonAddClassTime_OnClick" 
                                                                    IconSource="{ci:FluentIconSource &#xE47A;}"
                                                                    ToolTip.Tip="添加上课时间点。"
                                                                    Label="上课"/>
-                                        <controls:CommandBarButton Click="ButtonAddBreakTime_OnClick" 
+                                        <controls:FACommandBarButton Click="ButtonAddBreakTime_OnClick" 
                                                                    IconSource="{ci:FluentIconSource &#xE4C4;}"
                                                                    ToolTip.Tip="添加课间休息时间点。"
                                                                    Label="课间"/>
-                                        <controls:CommandBarButton Click="ButtonAddSeparator_OnClick" 
+                                        <controls:FACommandBarButton Click="ButtonAddSeparator_OnClick" 
                                                                    IconSource="{ci:FluentIconSource &#xF021;}"
                                                                    ToolTip.Tip="添加分割线。"
                                                                    Label="分割线"/>
-                                        <controls:CommandBarButton Click="ButtonAddActionTimePoint_OnClick" 
+                                        <controls:FACommandBarButton Click="ButtonAddActionTimePoint_OnClick" 
                                                                    IconSource="{ci:FluentIconSource &#xE01F;}"
                                                                    ToolTip.Tip="添加行动时间点。"
                                                                    Label="行动"/>
-                                        <controls:CommandBarSeparator/>
-                                        <controls:CommandBarButton Click="ButtonRemoveTimePoint_OnClick"
+                                        <controls:FACommandBarSeparator/>
+                                        <controls:FACommandBarButton Click="ButtonRemoveTimePoint_OnClick"
                                                                    ToolTip.Tip="删除选中的时间点。"
                                                                    IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                                    Label="删除">
-                                            <controls:CommandBarButton.IconSource>
-                                                <controls:SymbolIconSource Symbol="Remove"/>
-                                            </controls:CommandBarButton.IconSource>
-                                        </controls:CommandBarButton>
-                                        <controls:CommandBarButton Click="ButtonRefreshTimeLayout_OnClick" 
+                                            <controls:FACommandBarButton.IconSource>
+                                                <controls:FASymbolIconSource Symbol="Remove"/>
+                                            </controls:FACommandBarButton.IconSource>
+                                        </controls:FACommandBarButton>
+                                        <controls:FACommandBarButton Click="ButtonRefreshTimeLayout_OnClick" 
                                                                    IconSource="{ci:FluentIconSource &#xE0B5;}"
                                                                    ToolTip.Tip="重新排序该时间表中的时间点。"
                                                                    Label="刷新"/>
-                                        <controls:CommandBarSeparator />
-                                        <controls:CommandBarButton Click="ButtonEditTimeLayoutInfo_OnClick" 
+                                        <controls:FACommandBarSeparator />
+                                        <controls:FACommandBarButton Click="ButtonEditTimeLayoutInfo_OnClick" 
                                                                    IconSource="{ci:FluentIconSource &#xE9E4;}"
                                                                    ToolTip.Tip="查看并编辑时间表的基本信息。"
                                                                    Label="时间表信息"/>
-                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE61D;}"
+                                        <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xE61D;}"
                                                                    ToolTip.Tip="删除该时间表。"
                                                                    Label="删除时间表">
-                                            <controls:CommandBarButton.Flyout>
+                                            <controls:FACommandBarButton.Flyout>
                                                 <Flyout>
                                                     <StackPanel Spacing="8">
                                                         <TextBlock FontWeight="Bold">
@@ -1192,10 +1192,10 @@
                                                         <Button Content="删除" Classes="accent" Click="ButtonDeleteTimeLayout_OnClick"/>
                                                     </StackPanel>   
                                                 </Flyout>
-                                            </controls:CommandBarButton.Flyout>
-                                        </controls:CommandBarButton>
-                                    </controls:CommandBar.PrimaryCommands>
-                                </controls:CommandBar>
+                                            </controls:FACommandBarButton.Flyout>
+                                        </controls:FACommandBarButton>
+                                    </controls:FACommandBar.PrimaryCommands>
+                                </controls:FACommandBar>
                                 
                                 <TabControl Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Classes="compact"
                                             Padding="0"
@@ -1470,7 +1470,7 @@
                                             <StackPanel x:Name="StackPanelActionTimePointSettings"
                                                         IsVisible="{Binding ViewModel.SelectedTimePoint.ActionSet, Converter={x:Static ObjectConverters.IsNotNull}}">
                                                 <ci:IconText Glyph="&#xE01F;" Text="行动" Margin="0 0 0 8" />
-                                                <controls:InfoBar
+                                                <controls:FAInfoBar
                                                     IsClosable="False"
                                                     IsOpen="True"
                                                     IsVisible="{Binding !ViewModel.ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=views:ProfileSettingsWindow}}"
@@ -1501,21 +1501,21 @@
                             <ColumnDefinition Width="450" MaxWidth="500" MinWidth="200"/>
                         </Grid.ColumnDefinitions>
                         <!-- 科目操作 -->
-                        <controls:CommandBar Grid.Column="0" Grid.ColumnSpan="3"
+                        <controls:FACommandBar Grid.Column="0" Grid.ColumnSpan="3"
                                  Grid.Row="0" DefaultLabelPosition="Right"
                                  IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource BooleanToBooleanReConverter}}">
-                            <controls:CommandBar.PrimaryCommands>
-                                <controls:CommandBarButton Click="ButtonAddSubject_OnClick" ToolTip.Tip="新建一个科目。"
+                            <controls:FACommandBar.PrimaryCommands>
+                                <controls:FACommandBarButton Click="ButtonAddSubject_OnClick" ToolTip.Tip="新建一个科目。"
                                                            IconSource="{ci:FluentIconSource &#xE00D;}" Label="添加"/>
-                                <controls:CommandBarSeparator/>
-                                <controls:CommandBarButton Click="ButtonDuplicateSubject_OnClick" ToolTip.Tip="复制选中的科目。"
+                                <controls:FACommandBarSeparator/>
+                                <controls:FACommandBarButton Click="ButtonDuplicateSubject_OnClick" ToolTip.Tip="复制选中的科目。"
                                                            IsEnabled="{Binding ViewModel.SelectedSubject, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                            IconSource="{ci:FluentIconSource &#xE58D;}" Label="复制"/>
-                                <controls:CommandBarButton Click="ButtonDeleteSubject_OnClick" ToolTip.Tip="删除选中的科目。"
+                                <controls:FACommandBarButton Click="ButtonDeleteSubject_OnClick" ToolTip.Tip="删除选中的科目。"
                                                            IsEnabled="{Binding ViewModel.SelectedSubject, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                            IconSource="{ci:FluentIconSource &#xE61D;}" Label="删除"/>
-                            </controls:CommandBar.PrimaryCommands>
-                        </controls:CommandBar>
+                            </controls:FACommandBar.PrimaryCommands>
+                        </controls:FACommandBar>
                         <!-- 科目选择 -->
                         <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 3 0">
                             <!-- 科目 -->
@@ -1654,55 +1654,55 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <controls:CommandBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                        <controls:FACommandBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
                                              Classes="hide-popup-indicator"
                                              DefaultLabelPosition="Right">
-                            <controls:CommandBar.PrimaryCommands>
-                                <controls:CommandBarButton Click="ButtonRefreshScheduleAdjustmentView_OnClick" 
+                            <controls:FACommandBar.PrimaryCommands>
+                                <controls:FACommandBarButton Click="ButtonRefreshScheduleAdjustmentView_OnClick" 
                                                            IconSource="{ci:FluentIconSource &#xE0B5;}"
                                                            Label="刷新"
                                                            IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}"/>
-                                <controls:CommandBarSeparator>
-                                    <controls:CommandBarSeparator.IsVisible>
+                                <controls:FACommandBarSeparator>
+                                    <controls:FACommandBarSeparator.IsVisible>
                                         <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
                                                  Converter="{x:Static ObjectConverters.Equal}">
                                             <Binding.ConverterParameter>
                                                 <system:Int32>0</system:Int32>
                                             </Binding.ConverterParameter>
                                         </Binding>
-                                    </controls:CommandBarSeparator.IsVisible>
-                                </controls:CommandBarSeparator>
-                                <controls:CommandBarButton Click="ButtonEditClassInfoTemp_OnClick"
+                                    </controls:FACommandBarSeparator.IsVisible>
+                                </controls:FACommandBarSeparator>
+                                <controls:FACommandBarButton Click="ButtonEditClassInfoTemp_OnClick"
                                                            IconSource="{ci:FluentIconSource &#xE7C9;}"
                                                            Label="修改课程"
                                                            IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
-                                    <controls:CommandBarButton.IsVisible>
+                                    <controls:FACommandBarButton.IsVisible>
                                         <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
                                                  Converter="{x:Static ObjectConverters.Equal}">
                                             <Binding.ConverterParameter>
                                                 <system:Int32>0</system:Int32>
                                             </Binding.ConverterParameter>
                                         </Binding>
-                                    </controls:CommandBarButton.IsVisible>
-                                </controls:CommandBarButton>
-                                <controls:CommandBarButton Click="ButtonSwapSchedule_OnClick" 
+                                    </controls:FACommandBarButton.IsVisible>
+                                </controls:FACommandBarButton>
+                                <controls:FACommandBarButton Click="ButtonSwapSchedule_OnClick" 
                                                            IconSource="{ci:FluentIconSource &#xE15F;}"
                                                            Label="交换课程"
                                                            IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
-                                    <controls:CommandBarButton.IsVisible>
+                                    <controls:FACommandBarButton.IsVisible>
                                         <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
                                                  Converter="{x:Static ObjectConverters.Equal}">
                                             <Binding.ConverterParameter>
                                                 <system:Int32>0</system:Int32>
                                             </Binding.ConverterParameter>
                                         </Binding>
-                                    </controls:CommandBarButton.IsVisible>
-                                </controls:CommandBarButton>
-                                <controls:CommandBarButton Click="ButtonCancelClassSwap_OnClick" 
+                                    </controls:FACommandBarButton.IsVisible>
+                                </controls:FACommandBarButton>
+                                <controls:FACommandBarButton Click="ButtonCancelClassSwap_OnClick" 
                                                            IconSource="{ci:FluentIconSource &#xE671;}"
                                                            Label="取消"
                                                            IsEnabled="{Binding !ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
-                                    <controls:CommandBarButton.IsVisible>
+                                    <controls:FACommandBarButton.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                                             <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
                                                      Converter="{x:Static ObjectConverters.Equal}">
@@ -1712,13 +1712,13 @@
                                             </Binding>
                                             <Binding Path="ViewModel.IsInScheduleSwappingMode"/>
                                         </MultiBinding>
-                                    </controls:CommandBarButton.IsVisible>
-                                </controls:CommandBarButton>
-                                <controls:CommandBarButton Click="ButtonSwapScheduleComplete_OnClick" 
+                                    </controls:FACommandBarButton.IsVisible>
+                                </controls:FACommandBarButton>
+                                <controls:FACommandBarButton Click="ButtonSwapScheduleComplete_OnClick" 
                                                            IconSource="{ci:FluentIconSource &#xE424;}"
                                                            Label="完成交换"
                                                            IsEnabled="{Binding !ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
-                                    <controls:CommandBarButton.IsVisible>
+                                    <controls:FACommandBarButton.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                                             <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
                                                      Converter="{x:Static ObjectConverters.Equal}">
@@ -1728,10 +1728,10 @@
                                             </Binding>
                                             <Binding Path="ViewModel.IsInScheduleSwappingMode"/>
                                         </MultiBinding>
-                                    </controls:CommandBarButton.IsVisible>
-                                </controls:CommandBarButton>
-                                <controls:CommandBarElementContainer>
-                                    <controls:CommandBarElementContainer.IsVisible>
+                                    </controls:FACommandBarButton.IsVisible>
+                                </controls:FACommandBarButton>
+                                <controls:FACommandBarElementContainer>
+                                    <controls:FACommandBarElementContainer.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                                             <Binding Path="#ScheduleAdjustmentTabControl.SelectedIndex"
                                                      Converter="{x:Static ObjectConverters.Equal}">
@@ -1741,15 +1741,15 @@
                                             </Binding>
                                             <Binding Path="ViewModel.IsInScheduleSwappingMode"/>
                                         </MultiBinding>
-                                    </controls:CommandBarElementContainer.IsVisible>
+                                    </controls:FACommandBarElementContainer.IsVisible>
                                     <CheckBox
                                         IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                         IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}">
                                         永久换课
                                     </CheckBox>
-                                </controls:CommandBarElementContainer>
-                            </controls:CommandBar.PrimaryCommands>
-                        </controls:CommandBar>
+                                </controls:FACommandBarElementContainer>
+                            </controls:FACommandBar.PrimaryCommands>
+                        </controls:FACommandBar>
 
                         <ListBox Grid.Row="1" Grid.Column="0"
                                  ItemsSource="{Binding ViewModel.OrderedSchedules.List}"
@@ -1816,17 +1816,17 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="导入/导出" IsVisible="False">
-                    <controls:NavigationView MenuItems="{Binding ViewModel.TransferNavigationViewItems, Mode=OneWay}"
+                    <controls:FANavigationView MenuItems="{Binding ViewModel.TransferNavigationViewItems, Mode=OneWay}"
                                              PaneDisplayMode="Left" 
                                              IsSettingsVisible="False"
                                              OpenPaneLength="280"
                                              x:Name="TransferNavigationView"
                                              ItemInvoked="TransferNavigationView_OnItemInvoked"
                                              IsEnabled="{Binding !ViewModel.IsTransferring}">
-                        <controls:NavigationView.Resources>
+                        <controls:FANavigationView.Resources>
                             <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
                             <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent"/>
-                        </controls:NavigationView.Resources>
+                        </controls:FANavigationView.Resources>
                         <ci:Emptiable IsDirectContentMode="True"
                                       Data="{Binding ViewModel.SelectedTransferInfo}">
                             <Grid RowDefinitions="Auto, *, Auto, Auto">
@@ -1848,7 +1848,7 @@
                                 <Separator Grid.Row="2"/>
                                 <Border Grid.Row="3" Padding="12">
                                     <Grid>
-                                        <controls:ProgressRing Width="32" Height="32"
+                                        <controls:FAProgressRing Width="32" Height="32"
                                                                IsActive="{Binding ViewModel.IsTransferring}"
                                                                IsIndeterminate="True"
                                                                IsVisible="{Binding ViewModel.IsTransferring}"/>  
@@ -1869,50 +1869,50 @@
                                 </Border>
                             </Grid>
                         </ci:Emptiable>
-                    </controls:NavigationView>
+                    </controls:FANavigationView>
                 </TabItem>
             </TabControl>
 
             <!-- 信息栏 -->
-            <controls:CommandBar Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" DefaultLabelPosition="Right"
-                                 Classes="tag-InfoBar">
-                <controls:CommandBar.SecondaryCommands>
+            <controls:FACommandBar Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" DefaultLabelPosition="Right"
+                                 Classes="tag-FAInfoBar">
+                <controls:FACommandBar.SecondaryCommands>
                     
-                </controls:CommandBar.SecondaryCommands>
-                <controls:CommandBar.PrimaryCommands>
-                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe699;}"
+                </controls:FACommandBar.SecondaryCommands>
+                <controls:FACommandBar.PrimaryCommands>
+                    <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe699;}"
                                                Label="{Binding ViewModel.ProfileService.CurrentProfilePath}"
                                                ToolTip.Tip="当前启用的档案"
                                                Click="ButtonOpenProfileManager_OnClick"/>
-                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe6b1;}"
+                    <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe6b1;}"
                                                Click="ButtonOpenTempClassPlans_OnClick"
                                                Label="{Binding ViewModel.LessonsService.CurrentClassPlan.Name, FallbackValue='（无）'}"
                                                ToolTip.Tip="启用临时课表"/>
-                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe92f;}"
+                    <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe92f;}"
                                                Click="ButtonClassPlansGroup_OnClick"
                                                ToolTip.Tip="管理课表群"
                                                Label="{Binding Data.Name, Source={StaticResource ClassPlanGroupBindingProxy}, Mode=OneWay}"/>
-                    <controls:CommandBarSeparator/>
-                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xf431;}"
+                    <controls:FACommandBarSeparator/>
+                    <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xf431;}"
                                                Label="不信任"
                                                Click="ButtonTrustProfile_OnClick"
                                                ToolTip.Tip="当前档案不受信任，部分功能受限。"
                                                IsVisible="{Binding ViewModel.ProfileService.IsCurrentProfileTrusted, Converter={StaticResource InvertBooleanConverter}}" />
-                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xeeb5;}"
+                    <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xeeb5;}"
                                                Label="保存"
                                                Click="ButtonSaveProfile_OnClick"
                                                ToolTip.Tip="保存当前档案文件。"/>
-                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe68f;}"
+                    <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xe68f;}"
                                                Label="导入/导出"
                                                Click="ButtonOpenProfileImportPage_OnClick"
                                                ToolTip.Tip="导入外部的课程信息，或导出当前的档案信息。"/>
-                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xee2f;}"
+                    <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xee2f;}"
                                                Label="帮助"
                                                Click="ButtonHelp_OnClick"
                                                CommandParameter="https://docs.classisland.tech/app/profile/"
                                                ToolTip.Tip="查看档案编辑器帮助"/>
-                </controls:CommandBar.PrimaryCommands>
-            </controls:CommandBar>
+                </controls:FACommandBar.PrimaryCommands>
+            </controls:FACommandBar>
         </Grid>
     </ci:DrawerHost>
 </ci:MyWindow>

@@ -21,7 +21,7 @@
     <Style Selector=":no-easter-eggs controls|StickerControl">
         <Setter Property="Template">
             <ControlTemplate>
-                <controls1:IconSourceElement IconSource="{TemplateBinding FallbackIcon}"
+                <controls1:FAIconSourceElement IconSource="{TemplateBinding FallbackIcon}"
                                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
             </ControlTemplate>
         </Setter>

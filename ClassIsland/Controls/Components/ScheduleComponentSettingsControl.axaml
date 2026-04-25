@@ -19,25 +19,25 @@
         <ScrollViewer>
             <StackPanel Classes="animated-intro component-settings-container">
                 <!-- 附加设置覆盖提示 -->
-                <controls:InfoBar IsOpen="True" Message="此处的设置可以在档案设置中被附加设置覆盖。">
-                    <controls:InfoBar.ActionButton>
+                <controls:FAInfoBar IsOpen="True" Message="此处的设置可以在档案设置中被附加设置覆盖。">
+                    <controls:FAInfoBar.ActionButton>
                         <Button DockPanel.Dock="Right"
                                 Foreground="{DynamicResource MaterialDesignBody}"
                                 Click="ButtonShowAttachedSettings_OnClick" Content="查看…">
                         </Button>
-                    </controls:InfoBar.ActionButton>
-                </controls:InfoBar>
+                    </controls:FAInfoBar.ActionButton>
+                </controls:FAInfoBar>
                 
                 <!-- 显示时间点附加信息 -->
-                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF14B;}"
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xF14B;}"
                                            Header="显示时间点附加信息"
                                            Description="在当前的时间点上显示当前时间点的附加信息。"
                                            IsExpanded="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=OneWay}">
-                    <controls:SettingsExpander.Footer>
+                    <controls:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=TwoWay}"/>
-                    </controls:SettingsExpander.Footer>
-                    <controls:SettingsExpanderItem Content="要显示的附加信息">
-                        <controls:SettingsExpanderItem.Footer>
+                    </controls:FASettingsExpander.Footer>
+                    <controls:FASettingsExpanderItem Content="要显示的附加信息">
+                        <controls:FASettingsExpanderItem.Footer>
                             <ComboBox Grid.Row="0" Grid.Column="1"
                                       VerticalAlignment="Center"
                                       Foreground="{DynamicResource MaterialDesignBody}"
@@ -63,10 +63,10 @@
                                     <TextBlock Text="倒计时" />
                                 </ComboBoxItem>
                             </ComboBox>
-                        </controls:SettingsExpanderItem.Footer>
-                    </controls:SettingsExpanderItem>
-                    <controls:SettingsExpanderItem Content="显示精确倒计时">
-                        <controls:SettingsExpanderItem.Footer>
+                        </controls:FASettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem>
+                    <controls:FASettingsExpanderItem Content="显示精确倒计时">
+                        <controls:FASettingsExpanderItem.Footer>
                             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 5 0 -3" HorizontalAlignment="Right">
                                 <!-- <StackPanel.Style> -->
                                 <!--     <Style TargetType="StackPanel"> -->
@@ -86,89 +86,89 @@
                                 <TextBlock Text="秒" VerticalAlignment="Center"
                                            Opacity="0.75"/>
                             </StackPanel>
-                        </controls:SettingsExpanderItem.Footer>
-                    </controls:SettingsExpanderItem>
-                </controls:SettingsExpander>
+                        </controls:FASettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem>
+                </controls:FASettingsExpander>
                 
                 <!-- 时间点结束倒计时 -->
-                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF361;}"
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xF361;}"
                                            Header="时间点结束倒计时"
                                            Description="在当前时间点将要结束时显示倒计时。"
                                            IsExpanded="{Binding Settings.IsCountdownEnabled, Mode=OneWay}">
-                    <controls:SettingsExpander.Footer>
+                    <controls:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.IsCountdownEnabled, Mode=TwoWay}"/>
-                    </controls:SettingsExpander.Footer>
-                    <controls:SettingsExpanderItem Content="时间点结束倒计时时长">
-                        <controls:SettingsExpanderItem.Footer>
-                            <controls:NumberBox Grid.Row="0" Width="100"
+                    </controls:FASettingsExpander.Footer>
+                    <controls:FASettingsExpanderItem Content="时间点结束倒计时时长">
+                        <controls:FASettingsExpanderItem.Footer>
+                            <controls:FANumberBox Grid.Row="0" Width="100"
                                      Grid.Column="1"
                                      VerticalAlignment="Center"
                                      Value="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={x:Static ci:NotNaNConverter.Instance}}" />
-                        </controls:SettingsExpanderItem.Footer>
-                    </controls:SettingsExpanderItem>
-                    <controls:SettingsExpanderItem Content="使用模糊倒计时">
-                        <controls:SettingsExpanderItem.Footer>
+                        </controls:FASettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem>
+                    <controls:FASettingsExpanderItem Content="使用模糊倒计时">
+                        <controls:FASettingsExpanderItem.Footer>
                             <ToggleSwitch IsChecked="{Binding Settings.IsNonExactCountdownEnabled, Mode=TwoWay}"/>
-                        </controls:SettingsExpanderItem.Footer>
-                    </controls:SettingsExpanderItem>
-                </controls:SettingsExpander>
+                        </controls:FASettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem>
+                </controls:FASettingsExpander>
                 
                 <!-- 上课时仅显示当前课程 -->
-                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}"
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}"
                                            Header="上课时仅显示当前课程"
                                            Description="在处于上课类型的时间点时，只显示当前时间点。">
-                    <controls:SettingsExpander.Footer>
+                    <controls:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=TwoWay}"/>
-                    </controls:SettingsExpander.Footer>
-                </controls:SettingsExpander>
+                    </controls:FASettingsExpander.Footer>
+                </controls:FASettingsExpander>
 
                 <!-- 不显示已结束的课程 -->
-                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}"
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}"
                                            Header="不显示已结束的课程"
                                            Description="隐藏已结束的课程，只显示当前课程与暂未开始的课程。">
-                    <controls:SettingsExpander.Footer>
+                    <controls:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.HideFinishedClass, Mode=TwoWay}"/>
-                    </controls:SettingsExpander.Footer>
-                </controls:SettingsExpander>
+                    </controls:FASettingsExpander.Footer>
+                </controls:FASettingsExpander>
                 
-                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xF37D;}"
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xF37D;}"
                                            Header="淡化上过的课程"
                                            Description="已经上过的课程将被淡化显示。">
-                    <controls:SettingsExpander.Footer>
+                    <controls:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.FadeCompletedClasses, Mode=TwoWay}"/>
-                    </controls:SettingsExpander.Footer>
-                </controls:SettingsExpander>
+                    </controls:FASettingsExpander.Footer>
+                </controls:FASettingsExpander>
 
                 <!-- 标记换课课程 -->
-                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE15F;}"
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE15F;}"
                                            Header="标记换课课程"
                                            Description="将临时层中的换课课程以高亮色标记，仅支持使用“换课”修改的课程。">
-                    <controls:SettingsExpander.Footer>
+                    <controls:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.HighlightChangedClass, Mode=TwoWay}"/>
-                    </controls:SettingsExpander.Footer>
-                </controls:SettingsExpander>
+                    </controls:FASettingsExpander.Footer>
+                </controls:FASettingsExpander>
 
                 <!-- 课程表文本间距 -->
-                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE0ED;}"
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE0ED;}"
                                            Header="课程表文本间距"
                                            Description="使课程表显示更紧凑或宽松。">
-                    <controls:SettingsExpander.Footer>
+                    <controls:FASettingsExpander.Footer>
                         <Slider Width="150" Minimum="0.2" Maximum="1"
                                 Value="{Binding Settings.ScheduleSpacing}"
                                 TickFrequency="0.05" IsSnapToTickEnabled="True"/>
-                    </controls:SettingsExpander.Footer>
-                </controls:SettingsExpander>
+                    </controls:FASettingsExpander.Footer>
+                </controls:FASettingsExpander>
                 
                 <!-- 无课程时显示占位符 -->
-                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE51C;}"
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE51C;}"
                                            Header="无课程时显示占位符"
                                            Description="当当前没有加载课表或当日所有课程都已结束且不显示第二日课程时，显示指定的占位符。"
                                            IsExpanded="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=OneWay}">
-                    <controls:SettingsExpander.Footer>
+                    <controls:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=TwoWay}"/>
-                    </controls:SettingsExpander.Footer>
-                    <controls:SettingsExpanderItem Content="当日没有课程的占位符内容">
-                        <controls:SettingsExpanderItem.Footer>
+                    </controls:FASettingsExpander.Footer>
+                    <controls:FASettingsExpanderItem Content="当日没有课程的占位符内容">
+                        <controls:FASettingsExpanderItem.Footer>
                             <TextBox MinWidth="100"
                                      MaxWidth="300"
                                      Grid.Column="1"
@@ -179,10 +179,10 @@
                                 <!-- <system:String>无</system:String> -->
                                 <!-- <system:String>[ ]</system:String> -->
                             </TextBox>
-                        </controls:SettingsExpanderItem.Footer>
-                    </controls:SettingsExpanderItem>
-                    <controls:SettingsExpanderItem Content="当日课程结束的占位符内容">
-                        <controls:SettingsExpanderItem.Footer>
+                        </controls:FASettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem>
+                    <controls:FASettingsExpanderItem Content="当日课程结束的占位符内容">
+                        <controls:FASettingsExpanderItem.Footer>
                             <TextBox MinWidth="100"
                                      MaxWidth="300"
                                      Grid.Column="1"
@@ -193,15 +193,15 @@
                                 <!-- <system:String>无</system:String> -->
                                 <!-- <system:String>[ ]</system:String> -->
                             </TextBox>
-                        </controls:SettingsExpanderItem.Footer>
-                    </controls:SettingsExpanderItem>
-                </controls:SettingsExpander>
+                        </controls:FASettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem>
+                </controls:FASettingsExpander>
                 
                 <!-- 放学后显示明天课表 -->
-                <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE34A;}"
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE34A;}"
                                            Header="显示明天课表"
                                            Description="设置什么时候显示明天课表。">
-                    <controls:SettingsExpander.Footer>
+                    <controls:FASettingsExpander.Footer>
                         <Grid>
                             <ComboBox SelectedIndex="{Binding Settings.TomorrowScheduleShowMode}">
                                 <ComboBoxItem>不显示</ComboBoxItem>
@@ -210,8 +210,8 @@
                                 <ComboBoxItem>无展示课程时显示</ComboBoxItem>
                             </ComboBox>
                         </Grid>
-                    </controls:SettingsExpander.Footer>
-                </controls:SettingsExpander>
+                    </controls:FASettingsExpander.Footer>
+                </controls:FASettingsExpander>
             </StackPanel>
         </ScrollViewer>
     </Grid>

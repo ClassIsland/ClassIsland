@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ClassIsland.Controls.ScheduleDayControl"
+<UserControl x:Class="ClassIsland.Controls.ScheduleDayControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -84,7 +84,7 @@
                         </Flyout>
                     </Button.Flyout>
                 </Button>
-                <controls:InfoBadge IsHitTestVisible="False"
+                <controls:FAInfoBadge IsHitTestVisible="False"
                                     IsVisible="{Binding HasOrderedSchedule}"
                                     Margin="-6" VerticalAlignment="Top"
                                     HorizontalAlignment="Right"/>

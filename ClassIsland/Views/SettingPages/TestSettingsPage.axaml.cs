@@ -38,7 +38,7 @@ public partial class TestSettingsPage : SettingsPageBase
     //     navigationService!.Navigated += OnNavigated;
     // }
     //
-    // private void OnNavigated(object sender, NavigationEventArgs args)
+    // private void OnNavigated(object sender, FANavigationEventArgs args)
     // {
     //     NavigationUri = (args.ExtraData as SettingsWindowNavigationData)?.NavigateUri;
     // }

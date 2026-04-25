@@ -33,16 +33,16 @@ public partial class RefreshingSettingsPage : SettingsPageBase
 
     private async void SettingsExpanderItemResetOnboardingMessages_OnClick(object? sender, RoutedEventArgs e)
     {
-        var dialog = new ContentDialog()
+        var dialog = new FAContentDialog()
         {
             Title = "重置迎新消息设置",
             Content = "确定要重置迎新消息设置吗？此操作不可撤销！",
             PrimaryButtonText = "重置",
-            DefaultButton = ContentDialogButton.Primary,
+            DefaultButton = FAContentDialogButton.Primary,
             SecondaryButtonText = "取消"
         };
         var r = await dialog.ShowAsync(TopLevel.GetTopLevel(this));
-        if (r != ContentDialogResult.Primary)
+        if (r != FAContentDialogResult.Primary)
         {
             return;
         }

@@ -30,18 +30,18 @@ public partial class AnnouncementControl : UserControl
         set => SetValue(AnnouncementProperty, value);
     }
 
-    public static FuncValueConverter<Severity, InfoBarSeverity> AnnouncementSeverityToInfoBarSeverityConverter =
+    public static FuncValueConverter<Severity, FAInfoBarSeverity> AnnouncementSeverityToInfoBarSeverityConverter =
         new (x => x switch
         {
-            Severity.Announcement => InfoBarSeverity.Informational,
-            Severity.Info => InfoBarSeverity.Informational,
-            Severity.Important => InfoBarSeverity.Warning,
-            Severity.Warning => InfoBarSeverity.Warning,
-            Severity.Critical => InfoBarSeverity.Error,
+            Severity.Announcement => FAInfoBarSeverity.Informational,
+            Severity.Info => FAInfoBarSeverity.Informational,
+            Severity.Important => FAInfoBarSeverity.Warning,
+            Severity.Warning => FAInfoBarSeverity.Warning,
+            Severity.Critical => FAInfoBarSeverity.Error,
             _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
         });
 
-    private void ButtonRead_OnClick(InfoBar infoBar, EventArgs args)
+    private void ButtonRead_OnClick(FAInfoBar infoBar, EventArgs args)
     {
         var service = IAppHost.GetService<IAnnouncementService>();
         var readStateStorage = Announcement.ReadStateStorageScope switch

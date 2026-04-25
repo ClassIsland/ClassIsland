@@ -91,10 +91,10 @@ public partial class AutomationSettingsPage : SettingsPageBase
         {
             Text = ""
         };
-        var dialogResult = await new ContentDialog
+        var dialogResult = await new FAContentDialog
         {
             Title = "新建自动化配置方案",
-            DefaultButton = ContentDialogButton.Primary,
+            DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "创建",
             SecondaryButtonText = "取消",
             Content = new Field
@@ -108,7 +108,7 @@ public partial class AutomationSettingsPage : SettingsPageBase
         var createProfileName = textBox.Text;
         var path = Path.Combine(AutomationService.AutomationConfigsFolderPath,
             createProfileName + ".json");
-        if (dialogResult != ContentDialogResult.Primary || File.Exists(path)) return;
+        if (dialogResult != FAContentDialogResult.Primary || File.Exists(path)) return;
         ConfigureFileHelper.SaveConfig(path, new ObservableCollection<Workflow>());
         ViewModel.AutomationService.RefreshConfigs();
         ViewModel.SettingsService.Settings.CurrentAutomationConfig = createProfileName;

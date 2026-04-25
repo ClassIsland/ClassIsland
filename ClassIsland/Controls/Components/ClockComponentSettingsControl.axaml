@@ -17,30 +17,30 @@
                          d:DesignWidth="800">
     <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClockComponentSettingsControl}}">
         <StackPanel Classes="component-settings-container animated-intro">
-            <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xE4D2;}"
+            <controls2:FASettingsExpander IconSource="{ci:FluentIconSource &#xE4D2;}"
                                         Header="使用实际时间"
                                         Description="显示不经过时间偏移的系统时间。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding Settings.ShowRealTime, Mode=TwoWay}"/>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
 
-            <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xEC26;}"
+            <controls2:FASettingsExpander IconSource="{ci:FluentIconSource &#xEC26;}"
                                         Header="显示秒数"
                                         Description="启用后，时钟将显示精准到秒的时间。">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding Settings.ShowSeconds, Mode=TwoWay}"/>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
             
-            <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xE85F;}"
+            <controls2:FASettingsExpander IconSource="{ci:FluentIconSource &#xE85F;}"
                                         Header="闪动时间分隔符"
                                         Description="模拟电子时钟的分隔符闪动效果。"
                                         IsVisible="{Binding !Settings.ShowSeconds}">
-                <controls2:SettingsExpander.Footer>
+                <controls2:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding Settings.FlashTimeSeparator, Mode=TwoWay}"/>
-                </controls2:SettingsExpander.Footer>
-            </controls2:SettingsExpander>
+                </controls2:FASettingsExpander.Footer>
+            </controls2:FASettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </controls1:ComponentBase>

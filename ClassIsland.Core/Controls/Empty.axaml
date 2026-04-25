@@ -11,7 +11,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <StackPanel Spacing="8" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <controls1:IconSourceElement IconSource="{TemplateBinding Icon}" 
+                    <controls1:FAIconSourceElement IconSource="{TemplateBinding Icon}" 
                                                  Height="{TemplateBinding IconHeight}"
                                                  Width="{TemplateBinding IconWidth}"
                                                  HorizontalAlignment="Center"/>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<Title>ClassIsland Plugin SDK</Title>
@@ -19,8 +19,8 @@
 
 	<ItemGroup>
 		<Folder Include="Properties\" />
-		<None Include="ClassIsland.PluginSdk.targets" Pack="True" PackagePath="build/net8.0" />
-		<None Include="generate-md5.ps1" Pack="True" PackagePath="build/net8.0" />
+		<None Include="ClassIsland.PluginSdk.targets" Pack="True" PackagePath="build/net10.0" />
+		<None Include="generate-md5.ps1" Pack="True" PackagePath="build/net10.0" />
 	</ItemGroup>
 	
 	<Import Project="..\GeneratePackage.props" />

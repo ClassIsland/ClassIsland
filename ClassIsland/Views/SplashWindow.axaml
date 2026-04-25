@@ -70,7 +70,7 @@
                         <TranslateTransform />
                     </TransformGroup>
                 </StackPanel.RenderTransform>
-                <controls:ProgressRing Width="24"
+                <controls:FAProgressRing Width="24"
                              Height="24" 
                              IsIndeterminate="True"
                              VerticalAlignment="Center"

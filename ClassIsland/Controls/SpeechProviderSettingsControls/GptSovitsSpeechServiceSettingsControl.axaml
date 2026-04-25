@@ -1,4 +1,4 @@
-﻿<ci:SpeechProviderControlBase x:Class="ClassIsland.Controls.SpeechProviderSettingsControls.GptSovitsSpeechServiceSettingsControl"
+<ci:SpeechProviderControlBase x:Class="ClassIsland.Controls.SpeechProviderSettingsControls.GptSovitsSpeechServiceSettingsControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -92,7 +92,7 @@
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:GptSovitsSpeechServiceSettingsControl}}" 
                 Spacing="1">
 
-        <controls:SettingsExpanderItem>
+        <controls:FASettingsExpanderItem>
             <WrapPanel>
                 <Button HorizontalAlignment="Left"
                         Margin="0 0 2 0"
@@ -104,84 +104,84 @@
                         Content="保存预设">
                 </Button>
             </WrapPanel>
-        </controls:SettingsExpanderItem>
+        </controls:FASettingsExpanderItem>
 
         <!-- 服务器 IP -->
-        <controls:SettingsExpanderItem Content="服务器 IP">
-            <controls:SettingsExpanderItem.Footer>
+        <controls:FASettingsExpanderItem Content="服务器 IP">
+            <controls:FASettingsExpanderItem.Footer>
                 <TextBox Width="150" 
                          Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </controls:SettingsExpanderItem.Footer>
-        </controls:SettingsExpanderItem>
+            </controls:FASettingsExpanderItem.Footer>
+        </controls:FASettingsExpanderItem>
 
         <!-- 服务器端口 -->
-        <controls:SettingsExpanderItem Content="服务器端口">
-            <controls:SettingsExpanderItem.Footer >
+        <controls:FASettingsExpanderItem Content="服务器端口">
+            <controls:FASettingsExpanderItem.Footer >
                 <TextBox Width="150"
                          Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </controls:SettingsExpanderItem.Footer>
-        </controls:SettingsExpanderItem>
+            </controls:FASettingsExpanderItem.Footer>
+        </controls:FASettingsExpanderItem>
 
         <!-- 语音名称 -->
-        <controls:SettingsExpanderItem Content="语音名称" Description="用于在本地区分不同语音的音频缓存。">
-            <controls:SettingsExpanderItem.Footer >
+        <controls:FASettingsExpanderItem Content="语音名称" Description="用于在本地区分不同语音的音频缓存。">
+            <controls:FASettingsExpanderItem.Footer >
                 <TextBox Width="150"
                          Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsVoiceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </controls:SettingsExpanderItem.Footer>
-        </controls:SettingsExpanderItem>
+            </controls:FASettingsExpanderItem.Footer>
+        </controls:FASettingsExpanderItem>
 
         <!-- 文本语言 -->
-        <controls:SettingsExpanderItem Content="文本语言"> 
-            <controls:SettingsExpanderItem.Footer>
+        <controls:FASettingsExpanderItem Content="文本语言"> 
+            <controls:FASettingsExpanderItem.Footer>
                 <TextBox Width="150"
                          Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsTextLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </controls:SettingsExpanderItem.Footer>
-        </controls:SettingsExpanderItem>
+            </controls:FASettingsExpanderItem.Footer>
+        </controls:FASettingsExpanderItem>
 
         <!-- 参考音频路径 -->
-        <controls:SettingsExpanderItem Description="服务器上相对服务器工作路径的参考音频路径。">
+        <controls:FASettingsExpanderItem Description="服务器上相对服务器工作路径的参考音频路径。">
             <ci:Field Label="参考音频路径">
                 <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsRefAudioPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </ci:Field>
-        </controls:SettingsExpanderItem>
+        </controls:FASettingsExpanderItem>
 
         <!-- 参考音频语言 -->
-        <controls:SettingsExpanderItem>
+        <controls:FASettingsExpanderItem>
             <ci:Field Label="参考音频语言">
                 <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsPromptLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </ci:Field>
-        </controls:SettingsExpanderItem>
+        </controls:FASettingsExpanderItem>
 
         <!-- 参考音频文本 -->
-        <controls:SettingsExpanderItem>
+        <controls:FASettingsExpanderItem>
             <ci:Field Label="参考音频文本">
                 <TextBox TextWrapping="Wrap"
                          Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsPromptText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </ci:Field>
-        </controls:SettingsExpanderItem>
+        </controls:FASettingsExpanderItem>
 
-        <controls:SettingsExpander Header="高级选项"
+        <controls:FASettingsExpander Header="高级选项"
                                    Description="如果您不清楚这些设置的作用，请不要修改这些设置。"
                                    Classes="no-radius">
-            <controls:SettingsExpander.Styles>
-                <Style Selector="controls|SettingsExpander /template/ Expander#Expander">
+            <controls:FASettingsExpander.Styles>
+                <Style Selector="controls|FASettingsExpander /template/ Expander#Expander">
                     <Setter Property="Padding" Value="-1"/>
                 </Style>
-            </controls:SettingsExpander.Styles>
-            <controls:SettingsExpanderItem Content="文本分割方法"> 
+            </controls:FASettingsExpander.Styles>
+            <controls:FASettingsExpanderItem Content="文本分割方法"> 
                 <!-- 文本分割方法 -->
-                <controls:SettingsExpanderItem.Footer >
+                <controls:FASettingsExpanderItem.Footer >
                     <TextBox Width="150"
                              Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsTextSplitMethod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                </controls:SettingsExpanderItem.Footer>
-            </controls:SettingsExpanderItem>
-            <controls:SettingsExpanderItem Classes="no-radius" Content="并发数">
-                <controls:SettingsExpanderItem.Footer>
+                </controls:FASettingsExpanderItem.Footer>
+            </controls:FASettingsExpanderItem>
+            <controls:FASettingsExpanderItem Classes="no-radius" Content="并发数">
+                <controls:FASettingsExpanderItem.Footer>
                     <TextBox Width="150"
                              Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsBatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                </controls:SettingsExpanderItem.Footer>
-            </controls:SettingsExpanderItem>
-        </controls:SettingsExpander>
+                </controls:FASettingsExpanderItem.Footer>
+            </controls:FASettingsExpanderItem>
+        </controls:FASettingsExpander>
     </StackPanel>
     <!--State:G6MAAJzJ4+5T0YTJW4I5XDeVesEtfWC7sW8kSuamXGagGQfs3WNggQ04xwmOxjhgZ+Hpkt/U6PcNtL+7eR1Ax+dDz0Kg9H+YfTFe+eIEaINW1LeeAx0NyfIBagOQZS/sAdCI/D//wikKxZ2cUGOoJtR8FpL0b8wxvCRLcbZAtBPikQ==-->
 </ci:SpeechProviderControlBase>

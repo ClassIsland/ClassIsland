@@ -22,28 +22,28 @@
         <ScrollViewer>
             <StackPanel Spacing="6">
                 <!-- 启用天气预报 -->
-                <fa:SettingsExpander IconSource="{ci:FluentIconSource &#xE4DC;}"
+                <fa:FASettingsExpander IconSource="{ci:FluentIconSource &#xE4DC;}"
                                      Header="启用天气预报"
                                      Description="若启用天气预报，会在指定时间段显示今天和明后两天的天气概况。">
-                    <fa:SettingsExpander.Footer>
+                    <fa:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.IsForecastEnabled, Mode=TwoWay}" />
-                    </fa:SettingsExpander.Footer>
-                </fa:SettingsExpander>
+                    </fa:FASettingsExpander.Footer>
+                </fa:FASettingsExpander>
 
                 <!-- 启用极端天气预警 -->
-                <fa:SettingsExpander IconSource="{ci:FluentIconSource &#xF431;}"
+                <fa:FASettingsExpander IconSource="{ci:FluentIconSource &#xF431;}"
                                      Header="启用极端天气预警"
                                      Description="当发布气象预警时，会在指定的时间段进行通知。">
-                    <fa:SettingsExpander.Footer>
+                    <fa:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.IsAlertEnabled, Mode=TwoWay}" />
-                    </fa:SettingsExpander.Footer>
-                </fa:SettingsExpander>
+                    </fa:FASettingsExpander.Footer>
+                </fa:FASettingsExpander>
 
-                <fa:SettingsExpander IconSource="{ci:FluentIconSource &#xE4DC;}"
+                <fa:FASettingsExpander IconSource="{ci:FluentIconSource &#xE4DC;}"
                                      Header="默认天气预报显示模式"
                                      Description="天气预报的默认显示模式，可以在各个时间点覆盖该设置。"
                                      IsVisible="{Binding Settings.IsForecastEnabled}">
-                    <fa:SettingsExpander.Footer>
+                    <fa:FASettingsExpander.Footer>
                         <Grid>
                             <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
                                       SelectedIndex="{Binding Settings.ForecastShowMode, Converter={StaticResource ShowModeToIntConverter}}">
@@ -51,16 +51,16 @@
                                 <system:String>默认启用</system:String>
                             </ComboBox>
                         </Grid>
-                    </fa:SettingsExpander.Footer>
-                </fa:SettingsExpander>
+                    </fa:FASettingsExpander.Footer>
+                </fa:FASettingsExpander>
 
                 <!-- 默认极端天气提醒显示模式 -->
 
-                    <fa:SettingsExpander IconSource="{ci:FluentIconSource &#xF431;}"
+                    <fa:FASettingsExpander IconSource="{ci:FluentIconSource &#xF431;}"
                                          Header="默认极端天气提醒显示模式"
                                          Description="极端天气提醒的默认显示模式，可以在各个时间点覆盖该设置。"
                                          IsVisible="{Binding Settings.IsAlertEnabled}">
-                        <fa:SettingsExpander.Footer>
+                        <fa:FASettingsExpander.Footer>
                         <Grid>
                             <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
                                       SelectedIndex="{Binding Settings.AlertShowMode, Converter={StaticResource ShowModeToIntConverter}}">
@@ -68,14 +68,14 @@
                                 <system:String>默认启用</system:String>
                             </ComboBox>
                         </Grid>
-                            </fa:SettingsExpander.Footer>
-                </fa:SettingsExpander>
+                            </fa:FASettingsExpander.Footer>
+                </fa:FASettingsExpander>
                 <!-- 极端天气文本滚动速度 -->
-                <fa:SettingsExpander IconSource="{ci:FluentIconSource &#xF373;}"
+                <fa:FASettingsExpander IconSource="{ci:FluentIconSource &#xF373;}"
                                      Header="极端天气预警滚动速度（字/秒）"
                                      Description="显示天气预警详细信息时文本滚动一轮的速度。无论此选项设置为何值，滚动一轮的时间始终限制在10~90秒内。"
                                      IsVisible="{Binding Settings.IsAlertEnabled}">
-                    <fa:SettingsExpander.Footer>
+                    <fa:FASettingsExpander.Footer>
                         <Grid>
                             <Slider Width="180" Minimum="5" Maximum="12"
                                     VerticalAlignment="Center"
@@ -86,8 +86,8 @@
                                     ci:SliderDragTooltipAssist.StringFormat="F1"
                                     Classes="auto-tooltip" />
                         </Grid>
-                    </fa:SettingsExpander.Footer>
-                </fa:SettingsExpander>
+                    </fa:FASettingsExpander.Footer>
+                </fa:FASettingsExpander>
             </StackPanel>
         </ScrollViewer>
     </Grid>

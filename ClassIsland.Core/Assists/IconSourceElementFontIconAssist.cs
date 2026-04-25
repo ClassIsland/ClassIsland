@@ -4,23 +4,23 @@ using FluentAvalonia.UI.Controls;
 namespace ClassIsland.Core.Assists;
 
 /// <summary>
-/// 适用于 <see cref="IconSourceElement"/> 中 <see cref="FontIcon"/> 的助手类
+/// 适用于 <see cref="FAIconSourceElement"/> 中 <see cref="FAFontIcon"/> 的助手类
 /// </summary>
 public class IconSourceElementFontIconAssist
 {
     public static readonly AttachedProperty<bool> IsFontSizeRepairedProperty =
-        AvaloniaProperty.RegisterAttached<IconSourceElementFontIconAssist, FontIcon, bool>("IsFontSizeRepaired");
+        AvaloniaProperty.RegisterAttached<IconSourceElementFontIconAssist, FAFontIcon, bool>("IsFontSizeRepaired");
 
-    public static void SetIsFontSizeRepaired(FontIcon obj, bool value) => obj.SetValue(IsFontSizeRepairedProperty, value);
-    public static bool GetIsFontSizeRepaired(FontIcon obj) => obj.GetValue(IsFontSizeRepairedProperty);
+    public static void SetIsFontSizeRepaired(FAFontIcon obj, bool value) => obj.SetValue(IsFontSizeRepairedProperty, value);
+    public static bool GetIsFontSizeRepaired(FAFontIcon obj) => obj.GetValue(IsFontSizeRepairedProperty);
 
     static IconSourceElementFontIconAssist()
     {
-        IsFontSizeRepairedProperty.Changed.AddClassHandler<FontIcon>(IsFontSizeRepairedPropertyChanged);
+        IsFontSizeRepairedProperty.Changed.AddClassHandler<FAFontIcon>(IsFontSizeRepairedPropertyChanged);
     }
 
-    private static void IsFontSizeRepairedPropertyChanged(FontIcon arg1, AvaloniaPropertyChangedEventArgs arg2)
+    private static void IsFontSizeRepairedPropertyChanged(FAFontIcon arg1, AvaloniaPropertyChangedEventArgs arg2)
     {
-        arg1.ClearValue(FontIcon.FontSizeProperty);
+        arg1.ClearValue(FAFontIcon.FontSizeProperty);
     }
 }

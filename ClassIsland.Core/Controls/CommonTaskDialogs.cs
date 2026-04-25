@@ -5,7 +5,7 @@ using FluentAvalonia.UI.Controls;
 namespace ClassIsland.Core.Controls;
 
 /// <summary>
-/// 一些常用的 TaskDialog 
+/// 一些常用的 FATaskDialog 
 /// </summary>
 public static class CommonTaskDialogs
 {
@@ -19,13 +19,13 @@ public static class CommonTaskDialogs
     /// <param name="xamlRoot">XAML 根元素</param>
     public static async Task<object?> ShowDialog(string header, string content, Visual? xamlRoot = null)
     {
-        var dialog = new TaskDialog()
+        var dialog = new FATaskDialog()
         {
             Content = content,
             Header = header,
             Buttons =
             {
-                new TaskDialogButton("确定", true)
+                new FATaskDialogButton("确定", true)
                 {
                     IsDefault = true,
                 }

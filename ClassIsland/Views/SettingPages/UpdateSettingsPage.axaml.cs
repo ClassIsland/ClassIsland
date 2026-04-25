@@ -138,7 +138,7 @@ public partial class UpdateSettingsPage : SettingsPageBase
         await ViewModel.UpdateService.ExtractUpdateAsync();
     }
 
-    private void InfoBarError_OnCloseButtonClick(InfoBar sender, EventArgs args)
+    private void InfoBarError_OnCloseButtonClick(FAInfoBar sender, EventArgs args)
     {
         ViewModel.UpdateService.NetworkErrorException = null;
     }

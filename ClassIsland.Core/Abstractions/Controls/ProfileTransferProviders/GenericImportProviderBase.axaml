@@ -14,8 +14,8 @@
     </ci:ProfileTransferProviderControlBase.Resources>
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
-            <controls:SettingsExpander Header="{Binding ImportFileHeader}">
-                <controls:SettingsExpander.Footer>
+            <controls:FASettingsExpander Header="{Binding ImportFileHeader}">
+                <controls:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <TextBox VerticalAlignment="Center"
                                  Text="{Binding SourceFilePath}"
@@ -25,14 +25,14 @@
                                 Content="{ci:FluentIcon &#xe88d;}"
                                 Click="ButtonPickFile_OnClick"/>
                     </StackPanel>
-                </controls:SettingsExpander.Footer>
-            </controls:SettingsExpander>
-            <controls:SettingsExpander Header="导入目标" IsExpanded="True">
-                <controls:SettingsExpanderItem IsEnabled="{Binding AllowMergeToCurrentProfile}">
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
+            <controls:FASettingsExpander Header="导入目标" IsExpanded="True">
+                <controls:FASettingsExpanderItem IsEnabled="{Binding AllowMergeToCurrentProfile}">
                     <RadioButton IsChecked="{Binding ImportType, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}">合并到当前档案</RadioButton>
-                </controls:SettingsExpanderItem>
-                <controls:SettingsExpanderItem>
-                    <controls:SettingsExpanderItem.Footer>
+                </controls:FASettingsExpanderItem>
+                <controls:FASettingsExpanderItem>
+                    <controls:FASettingsExpanderItem.Footer>
                         <ci:Field Suffix=".json">
                             <ci:Field.IsVisible>
                                 <Binding Path="ImportType" Converter="{x:Static ObjectConverters.Equal}">
@@ -43,10 +43,10 @@
                             </ci:Field.IsVisible>
                             <TextBox Watermark="新档案名称" Text="{Binding NewProfileName}"/>
                         </ci:Field>
-                    </controls:SettingsExpanderItem.Footer>
+                    </controls:FASettingsExpanderItem.Footer>
                     <RadioButton IsChecked="{Binding ImportType, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}">导入到新的档案</RadioButton>
-                </controls:SettingsExpanderItem>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpanderItem>
+            </controls:FASettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </ci:ProfileTransferProviderControlBase>

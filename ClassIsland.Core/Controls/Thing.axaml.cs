@@ -7,10 +7,10 @@ namespace ClassIsland.Core.Controls;
 
 public class Thing : TemplatedControl
 {
-    public static readonly StyledProperty<IconSource> IconSourceProperty = AvaloniaProperty.Register<Thing, IconSource>(
+    public static readonly StyledProperty<FAIconSource> IconSourceProperty = AvaloniaProperty.Register<Thing, FAIconSource>(
         nameof(IconSource));
 
-    public IconSource IconSource
+    public FAIconSource IconSource
     {
         get => GetValue(IconSourceProperty);
         set => SetValue(IconSourceProperty, value);

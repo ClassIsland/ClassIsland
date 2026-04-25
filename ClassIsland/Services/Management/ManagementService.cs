@@ -235,15 +235,15 @@ public class ManagementService : IManagementService
             throw new InvalidOperationException($"集控服务核心版本（{mf.CoreVersion}）与应用当前核心版本不兼容（{IAppHost.CoreVersion}）");
         }
 
-        var dialog = new TaskDialog
+        var dialog = new FATaskDialog
         {
             Title = "ClassIsland",
             SubHeader = "加入集控",
             Content = $"确定要加入组织 {mf.OrganizationName} 的管理吗？",
             Buttons =
             {
-                TaskDialogButton.CancelButton,
-                new TaskDialogButton("加入", true)
+                FATaskDialogButton.CancelButton,
+                new FATaskDialogButton("加入", true)
                 {
                     IsDefault = true
                 }
@@ -285,15 +285,15 @@ public class ManagementService : IManagementService
         if (!Policy.AllowExitManagement)
             throw new Exception("您的组织不允许您退出集控。");
         
-        var dialog = new TaskDialog
+        var dialog = new FATaskDialog
         {
             Title = "ClassIsland",
             SubHeader = "退出集控",
             Content = $"确定要退出组织 {Manifest.OrganizationName} 的管理吗？",
             Buttons =
             {
-                TaskDialogButton.CancelButton,
-                new TaskDialogButton("退出", true)
+                FATaskDialogButton.CancelButton,
+                new FATaskDialogButton("退出", true)
                 {
                     IsDefault = true
                 }

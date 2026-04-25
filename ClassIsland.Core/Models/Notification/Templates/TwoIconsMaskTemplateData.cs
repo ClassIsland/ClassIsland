@@ -12,12 +12,12 @@ public partial class TwoIconsMaskTemplateData : ObservableObject
     /// <summary>
     /// 左侧图标类型
     /// </summary>
-    [ObservableProperty] private IconSource? _leftIconSource = new LucideIconSource("\ue0ff");
+    [ObservableProperty] private FAIconSource? _leftIconSource = new LucideIconSource("\ue0ff");
 
     /// <summary>
     /// 右侧图标类型
     /// </summary>
-    [ObservableProperty] private IconSource? _rightIconSource = new LucideIconSource("\ue224");
+    [ObservableProperty] private FAIconSource? _rightIconSource = new LucideIconSource("\ue224");
 
     /// <summary>
     /// 是否拥有右侧图标

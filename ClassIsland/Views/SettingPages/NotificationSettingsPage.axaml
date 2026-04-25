@@ -1,4 +1,4 @@
-﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.NotificationSettingsPage"
+<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.NotificationSettingsPage"
                            xmlns="https://github.com/avaloniaui"
                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -61,26 +61,26 @@
             <Grid Margin="0 0 4 0" RowDefinitions="Auto,Auto,*">
 
                 <!-- 提醒开关 -->
-                <controls3:SettingsExpander Grid.Row="0"
+                <controls3:FASettingsExpander Grid.Row="0"
                                             IconSource="{ci:FluentIconSource &#xE02B;}"
                                             Header="启用提醒"
                                             Description="启用提醒后，将会在对重要事件发出醒目提醒。拖动提醒提供方以调整对应类型提醒的优先级。"
                                             Margin="0 0 0 6">
-                    <controls3:SettingsExpander.Footer>
+                    <controls3:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsNotificationEnabled, Mode=TwoWay}"/>
-                    </controls3:SettingsExpander.Footer>
-                </controls3:SettingsExpander>
+                    </controls3:FASettingsExpander.Footer>
+                </controls3:FASettingsExpander>
                 
-                <controls3:InfoBar Grid.Row="1"
+                <controls3:FAInfoBar Grid.Row="1"
                                    Severity="Warning"
                                    Title="提醒可能无法显示"
                                    Message="您禁用了所有主界面行的提醒功能，这可能会导致所有提醒都无法显示。要修复此问题，您需要在【组件】页面至少为一个主界面行开启提醒。"
                                    IsOpen="{Binding !ViewModel.HasValidMainWindowLine, Mode=OneWay}">
-                    <controls3:InfoBar.ActionButton>
+                    <controls3:FAInfoBar.ActionButton>
                         <Button Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
                                 CommandParameter="classisland://app/settings/components">前往【组件】页面</Button>
-                    </controls3:InfoBar.ActionButton>
-                </controls3:InfoBar>
+                    </controls3:FAInfoBar.ActionButton>
+                </controls3:FAInfoBar>
 
                 <!-- 提醒提供方列表 -->
                 <TabControl Grid.Row="2" Classes="compact" Padding="0" Margin="0">
@@ -220,22 +220,22 @@
                         <ScrollViewer>
                             <StackPanel Margin="0 0 0 0" Classes="settings-container animated-intro">
                                 <!-- 启用提醒语音 -->
-                                <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xED53;}"
+                                <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xED53;}"
                                                             Header="启用提醒语音"
                                                             Description="在发出提醒时用语音播报提醒内容。"
                                                             IsExpanded="{Binding ViewModel.SettingsService.Settings.AllowNotificationSpeech, Mode=OneWay}">
-                                    <controls3:SettingsExpander.Footer>
+                                    <controls3:FASettingsExpander.Footer>
                                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AllowNotificationSpeech, Mode=TwoWay}"/>
-                                    </controls3:SettingsExpander.Footer>
+                                    </controls3:FASettingsExpander.Footer>
                                     
                                     <!-- 默认启用 -->
-                                    <controls3:SettingsExpanderItem>
+                                    <controls3:FASettingsExpanderItem>
                                         <CheckBox Content="默认启用" IsChecked="{Binding ViewModel.SettingsService.Settings.IsSpeechEnabled}"
                                                   Margin="0 0 0 6" />
-                                    </controls3:SettingsExpanderItem>
+                                    </controls3:FASettingsExpanderItem>
                                     <!-- 语音引擎 -->
-                                    <controls3:SettingsExpanderItem Content="语音引擎">
-                                        <controls3:SettingsExpanderItem.Footer>
+                                    <controls3:FASettingsExpanderItem Content="语音引擎">
+                                        <controls3:FASettingsExpanderItem.Footer>
                                             <StackPanel>
                                                 <ComboBox ItemsSource="{x:Static registry:SpeechProviderRegistryService.RegisteredProviders}"
                                                           SelectedValueBinding="{Binding Id}"
@@ -247,71 +247,71 @@
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
                                             </StackPanel>
-                                        </controls3:SettingsExpanderItem.Footer>
-                                    </controls3:SettingsExpanderItem>
+                                        </controls3:FASettingsExpanderItem.Footer>
+                                    </controls3:FASettingsExpanderItem>
                                     <!-- 语音引擎设置 -->
-                                    <controls3:SettingsExpanderItem Padding="0" MinHeight="0" Margin="0 0 0 -1">
-                                        <controls3:SettingsExpanderItem.Template>
+                                    <controls3:FASettingsExpanderItem Padding="0" MinHeight="0" Margin="0 0 0 -1">
+                                        <controls3:FASettingsExpanderItem.Template>
                                             <ControlTemplate>
                                                 <ContentPresenter Content="{TemplateBinding Content}"/>
                                             </ControlTemplate>
-                                        </controls3:SettingsExpanderItem.Template>
+                                        </controls3:FASettingsExpanderItem.Template>
                                         <ContentPresenter Content="{Binding ViewModel.SpeechProviderSettingsControl, Converter={x:Static ci:ElementConverters.ControlPreventNullConverter}}"/>
-                                    </controls3:SettingsExpanderItem>
+                                    </controls3:FASettingsExpanderItem>
                                     <!-- 语音音量 -->
-                                    <controls3:SettingsExpanderItem Content="语音音量">
-                                        <controls3:SettingsExpanderItem.Footer>
+                                    <controls3:FASettingsExpanderItem Content="语音音量">
+                                        <controls3:FASettingsExpanderItem.Footer>
                                             <Slider Minimum="0" Maximum="1"
                                                     Value="{Binding ViewModel.SettingsService.Settings.SpeechVolume}"
                                                     TickFrequency="0.01"
                                                     Classes="auto-tooltip"
                                                     ci:SliderDragTooltipAssist.StringFormat="F2"
                                                     Width="150" />
-                                        </controls3:SettingsExpanderItem.Footer>
-                                    </controls3:SettingsExpanderItem>
+                                        </controls3:FASettingsExpanderItem.Footer>
+                                    </controls3:FASettingsExpanderItem>
                                     <!-- 测试朗读文本 -->
-                                    <controls3:SettingsExpanderItem Content="测试朗读文本">
-                                        <controls3:SettingsExpanderItem.Footer>
+                                    <controls3:FASettingsExpanderItem Content="测试朗读文本">
+                                        <controls3:FASettingsExpanderItem.Footer>
                                             <TextBox Text="{Binding ViewModel.TestSpeechText}" />
-                                        </controls3:SettingsExpanderItem.Footer>
-                                    </controls3:SettingsExpanderItem>
+                                        </controls3:FASettingsExpanderItem.Footer>
+                                    </controls3:FASettingsExpanderItem>
                                     <!-- 测试语音 -->
-                                    <controls3:SettingsExpanderItem Content="测试语音" IsClickEnabled="True"
+                                    <controls3:FASettingsExpanderItem Content="测试语音" IsClickEnabled="True"
                                                                     Click="ButtonTestSpeeching_OnClick"/>
-                                </controls3:SettingsExpander>
+                                </controls3:FASettingsExpander>
 
                                 
                                 <!-- 启用提醒强调特效 -->
-                                <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xEA2F;}"
+                                <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xEA2F;}"
                                                             Header="启用提醒强调特效"
                                                             Description="启用后，发出提醒时会播放全屏强调特效。"
                                                             IsExpanded="{Binding ViewModel.SettingsService.Settings.AllowNotificationEffect, Mode=OneWay}">
-                                    <controls3:SettingsExpander.Footer>
+                                    <controls3:FASettingsExpander.Footer>
                                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AllowNotificationEffect, Mode=TwoWay}"/>
-                                    </controls3:SettingsExpander.Footer>
+                                    </controls3:FASettingsExpander.Footer>
                                     <!-- 默认启用 -->
-                                    <controls3:SettingsExpanderItem>
+                                    <controls3:FASettingsExpanderItem>
                                         <CheckBox Content="默认启用" IsChecked="{Binding ViewModel.SettingsService.Settings.IsNotificationEffectEnabled}"
                                                   Margin="0 0 0 6" />
-                                    </controls3:SettingsExpanderItem>
-                                </controls3:SettingsExpander>
+                                    </controls3:FASettingsExpanderItem>
+                                </controls3:FASettingsExpander>
                                 
                                 <!-- 启用提醒音效 -->
-                                <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xE649;}"
+                                <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xE649;}"
                                                             Header="启用提醒音效"
                                                             Description="启用后，发出提醒时会播放音效。"
                                                             IsExpanded="{Binding ViewModel.SettingsService.Settings.AllowNotificationSound, Mode=OneWay}">
-                                    <controls3:SettingsExpander.Footer>
+                                    <controls3:FASettingsExpander.Footer>
                                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AllowNotificationSound, Mode=TwoWay}"/>
-                                    </controls3:SettingsExpander.Footer>
+                                    </controls3:FASettingsExpander.Footer>
                                     <!-- 默认启用 -->
-                                    <controls3:SettingsExpanderItem>
+                                    <controls3:FASettingsExpanderItem>
                                         <CheckBox Content="默认启用"
                                                   IsChecked="{Binding ViewModel.SettingsService.Settings.IsNotificationSoundEnabled}"
                                                   Margin="0 0 0 6" />
-                                    </controls3:SettingsExpanderItem>
-                                    <controls3:SettingsExpanderItem Content="音效音量">
-                                        <controls3:SettingsExpanderItem.Footer>
+                                    </controls3:FASettingsExpanderItem>
+                                    <controls3:FASettingsExpanderItem Content="音效音量">
+                                        <controls3:FASettingsExpanderItem.Footer>
                                             <Slider Grid.Row="1" Grid.Column="1"
                                                     Value="{Binding ViewModel.SettingsService.Settings.NotificationSoundVolume}"
                                                     Minimum="0" Maximum="1"
@@ -321,13 +321,13 @@
                                                     Classes="auto-tooltip"
                                                     IsSnapToTickEnabled="True" 
                                             />
-                                        </controls3:SettingsExpanderItem.Footer>
-                                    </controls3:SettingsExpanderItem>
+                                        </controls3:FASettingsExpanderItem.Footer>
+                                    </controls3:FASettingsExpanderItem>
                                     <!-- 自定义音效 -->
-                                    <controls3:SettingsExpanderItem
+                                    <controls3:FASettingsExpanderItem
                                         IconSource="{ci:FluentIconSource &#xE6A5;}" Content="自定义音效"
                                         Description="设置自定义音效，留空以禁用。如果音效长于提醒显示时间，多出来的部分会被截断。">
-                                        <controls3:SettingsExpanderItem.Footer>
+                                        <controls3:FASettingsExpanderItem.Footer>
                                             <StackPanel Orientation="Horizontal"
                                                         HorizontalAlignment="Right"
                                                         VerticalAlignment="Center">
@@ -344,24 +344,24 @@
                                                     VerticalAlignment="Center">
                                                 </controls1:FileBrowserButton>
                                             </StackPanel>
-                                        </controls3:SettingsExpanderItem.Footer>
-                                    </controls3:SettingsExpanderItem>
-                                </controls3:SettingsExpander>
+                                        </controls3:FASettingsExpanderItem.Footer>
+                                    </controls3:FASettingsExpanderItem>
+                                </controls3:FASettingsExpander>
 
                                 <!-- 置顶提醒 -->
-                                <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xE1A1;}"
+                                <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xE1A1;}"
                                                             Header="置顶提醒"
                                                             IsExpanded="{Binding ViewModel.SettingsService.Settings.AllowNotificationTopmost, Mode=OneWay}"
                                                             Description="在发出提醒时强制显示并置顶主界面。">
-                                    <controls3:SettingsExpander.Footer>
+                                    <controls3:FASettingsExpander.Footer>
                                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AllowNotificationTopmost, Mode=TwoWay}"/>
-                                    </controls3:SettingsExpander.Footer>
+                                    </controls3:FASettingsExpander.Footer>
                                     <!-- 默认启用 -->
-                                    <controls3:SettingsExpanderItem>
+                                    <controls3:FASettingsExpanderItem>
                                         <CheckBox Content="默认启用" IsChecked="{Binding ViewModel.SettingsService.Settings.IsNotificationTopmostEnabled}"
                                                   Margin="0 0 0 6" />
-                                    </controls3:SettingsExpanderItem>
-                                </controls3:SettingsExpander>
+                                    </controls3:FASettingsExpanderItem>
+                                </controls3:FASettingsExpander>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
@@ -405,55 +405,55 @@
                                     <StackPanel Classes="animated-intro settings-container"
                                                 Margin="0">
                                         <!-- 对此提醒来源启用特殊高级设置 -->
-                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xe02f;}"
+                                        <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xe02f;}"
                                                                     Header="对此提醒来源启用特殊高级设置"
                                                                     Description="启用后，此处的设置将覆盖全局设置和提醒请求中要求的设置。">
-                                            <controls3:SettingsExpander.Footer>
+                                            <controls3:FASettingsExpander.Footer>
                                                 <ToggleSwitch
                                                     IsChecked="{Binding ProviderSettings.IsSettingsEnabled, Mode=TwoWay}" />
-                                            </controls3:SettingsExpander.Footer>
-                                        </controls3:SettingsExpander>
+                                            </controls3:FASettingsExpander.Footer>
+                                        </controls3:FASettingsExpander>
                                         <Separator Margin="0 4" />
-                                        <controls3:InfoBar Message="此处的设置将覆盖全局设置和提醒请求中要求的设置。"
+                                        <controls3:FAInfoBar Message="此处的设置将覆盖全局设置和提醒请求中要求的设置。"
                                                            IsClosable="False" IsOpen="True"
                                                            IsVisible="{Binding ProviderSettings.IsSettingsEnabled}" />
                                         <!-- 启用提醒语音 -->
-                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xED53;}"
+                                        <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xED53;}"
                                                                     IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
                                                                     Header="启用提醒语音"
                                                                     Description="在发出提醒时用语音播报提醒内容。">
-                                            <controls3:SettingsExpander.Footer>
+                                            <controls3:FASettingsExpander.Footer>
                                                 <ToggleSwitch
                                                     IsChecked="{Binding ProviderSettings.IsSpeechEnabled, Mode=TwoWay}" />
-                                            </controls3:SettingsExpander.Footer>
-                                        </controls3:SettingsExpander>
+                                            </controls3:FASettingsExpander.Footer>
+                                        </controls3:FASettingsExpander>
 
                                         <!-- 启用提醒强调特效 -->
-                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xEA2F;}"
+                                        <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xEA2F;}"
                                                                     IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
                                                                     Header="启用提醒强调特效"
                                                                     Description="启用后，发出提醒时会播放全屏强调特效。">
-                                            <controls3:SettingsExpander.Footer>
+                                            <controls3:FASettingsExpander.Footer>
                                                 <ToggleSwitch
                                                     IsChecked="{Binding ProviderSettings.IsNotificationEffectEnabled, Mode=TwoWay}" />
-                                            </controls3:SettingsExpander.Footer>
-                                        </controls3:SettingsExpander>
+                                            </controls3:FASettingsExpander.Footer>
+                                        </controls3:FASettingsExpander>
 
                                         <!-- 启用提醒音效 -->
-                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xE649;}"
+                                        <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xE649;}"
                                                                     IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
                                                                     Header="启用提醒音效"
                                                                     Description="启用后，发出提醒时会播放音效。"
                                                                     IsExpanded="{Binding ProviderSettings.IsNotificationSoundEnabled, Mode=OneWay}">
-                                            <controls3:SettingsExpander.Footer>
+                                            <controls3:FASettingsExpander.Footer>
                                                 <ToggleSwitch
                                                     IsChecked="{Binding ProviderSettings.IsNotificationSoundEnabled, Mode=TwoWay}" />
-                                            </controls3:SettingsExpander.Footer>
+                                            </controls3:FASettingsExpander.Footer>
                                             <!-- 自定义音效 -->
-                                            <controls3:SettingsExpanderItem
+                                            <controls3:FASettingsExpanderItem
                                                 IconSource="{ci:FluentIconSource &#xE6A5;}" Content="自定义音效"
                                                 Description="设置自定义音效，留空以禁用。如果音效长于提醒显示时间，多出来的部分会被截断。">
-                                                <controls3:SettingsExpanderItem.Footer>
+                                                <controls3:FASettingsExpanderItem.Footer>
                                                     <StackPanel Orientation="Horizontal"
                                                                 HorizontalAlignment="Right"
                                                                 VerticalAlignment="Center">
@@ -470,20 +470,20 @@
                                                             CurrentPath="{Binding ProviderSettings.NotificationSoundPath, Mode=TwoWay}"
                                                             VerticalAlignment="Center" />
                                                     </StackPanel>
-                                                </controls3:SettingsExpanderItem.Footer>
-                                            </controls3:SettingsExpanderItem>
-                                        </controls3:SettingsExpander>
+                                                </controls3:FASettingsExpanderItem.Footer>
+                                            </controls3:FASettingsExpanderItem>
+                                        </controls3:FASettingsExpander>
 
                                         <!-- 置顶提醒 -->
-                                        <controls3:SettingsExpander IconSource="{controls2:FluentIconSource &#xE1A1;}"
+                                        <controls3:FASettingsExpander IconSource="{controls2:FluentIconSource &#xE1A1;}"
                                                                     IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}"
                                                                     Header="置顶提醒"
                                                                     Description="在发出提醒时强制显示并置顶主界面。">
-                                            <controls3:SettingsExpander.Footer>
+                                            <controls3:FASettingsExpander.Footer>
                                                 <ToggleSwitch
                                                     IsChecked="{Binding ProviderSettings.IsNotificationTopmostEnabled, Mode=TwoWay}" />
-                                            </controls3:SettingsExpander.Footer>
-                                        </controls3:SettingsExpander>
+                                            </controls3:FASettingsExpander.Footer>
+                                        </controls3:FASettingsExpander>
                                     </StackPanel>
                                 </ScrollViewer>
                             </TabItem>

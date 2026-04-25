@@ -22,7 +22,7 @@
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-    <Style Selector="controls|NavigationViewItem TextBlock,
+    <Style Selector="controls|FANavigationViewItem TextBlock,
                      ToggleSwitch TextBlock,
                      CheckBox TextBlock,
                      ListBoxItem TextBlock,
@@ -38,12 +38,12 @@
         <Setter Property="Margin" Value="0 1.5 0 -1.5"/>
     </Style>
     
-    <Style Selector="controls|IconSourceElement.repair-fontsize :is(controls|FontIcon)">
+    <Style Selector="controls|FAIconSourceElement.repair-fontsize :is(controls|FAFontIcon)">
         <Setter Property="ci:IconSourceElementFontIconAssist.IsFontSizeRepaired" Value="True"/>
-        <Setter Property="FontSize" Value="{Binding $parent[controls:IconSourceElement].(TextElement.FontSize)}"/>
+        <Setter Property="FontSize" Value="{Binding $parent[controls:FAIconSourceElement].(TextElement.FontSize)}"/>
     </Style>
     
-    <Style Selector="controls|IconSourceElement :is(controls|FontIcon)">
+    <Style Selector="controls|FAIconSourceElement :is(controls|FAFontIcon)">
         <Setter Property="Margin" Value="0 -1.5 0 -1.5"/>
     </Style>
     

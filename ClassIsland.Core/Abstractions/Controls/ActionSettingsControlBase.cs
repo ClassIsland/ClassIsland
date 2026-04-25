@@ -91,7 +91,7 @@ public abstract class ActionSettingsControlBase : UserControl
     protected async Task ShowDrawer(Control control, bool isOpenInDialog = false)
     {
         if (!isOpenInDialog &&
-            this.GetVisualRoot() is Window window &&
+            TopLevel.GetTopLevel(this) is Window window &&
             window.GetType().FullName == "ClassIsland.Views.SettingsWindowNew")
         {
             control.Classes.Remove("in-dialog");
@@ -107,17 +107,17 @@ public abstract class ActionSettingsControlBase : UserControl
             control.Classes.Remove("in-drawer");
             control.Classes.Add("in-dialog");
 
-            if (control.Parent is ContentDialog contentDialog)
+            if (control.Parent is FAContentDialog contentDialog)
             {
                 contentDialog.Content = null;
             }
 
-            var dialog = new ContentDialog
+            var dialog = new FAContentDialog
             {
                 Content = control,
                 TitleTemplate = new DataTemplate(),
                 PrimaryButtonText = "确定",
-                DefaultButton = ContentDialogButton.Primary,
+                DefaultButton = FAContentDialogButton.Primary,
                 DataContext = this
             };
 

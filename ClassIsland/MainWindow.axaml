@@ -169,7 +169,7 @@
         <Style Selector=":is(Window)">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="TransparencyLevelHint" Value="Transparent"/>
-            <Setter Property="SystemDecorations" Value="None"/>
+            <Setter Property="WindowDecorations" Value="None"/>
             <Setter Property="CanResize" Value="False"/>
             <Setter Property="CanMaximize" Value="False"/>
             <Setter Property="CanMinimize" Value="False"/>
@@ -179,7 +179,7 @@
             <Setter Property="TransparencyLevelHint" Value="AcrylicBlur, Transparent"/>
         </Style>
         <Style Selector=":is(Window):windowed">
-            <Setter Property="SystemDecorations" Value="Full"/>
+            <Setter Property="WindowDecorations" Value="Full"/>
             <Setter Property="CanResize" Value="True"/>
             <Setter Property="CanMaximize" Value="True"/>
             <Setter Property="CanMinimize" Value="True"/>
@@ -483,7 +483,7 @@
                                                                         Theme="{StaticResource TransparentButton}"
                                                                         Command="{Binding $parent[local:MainWindow].CloseContainerComponentCommand}"
                                                                         CommandParameter="{Binding}" />
-                                                                <controls1:IconSourceElement
+                                                                <controls1:FAIconSourceElement
                                                                     IconSource="{Binding Settings.AssociatedComponentInfo.IconSource}"
                                                                     VerticalAlignment="Center" Height="16" Width="16"
                                                                     ClipToBounds="False"
@@ -612,63 +612,63 @@
         
         <ContentPresenter x:Name="EditModeViewCp" />
         
-        <controls1:TeachingTip Title="移动视图"
+        <controls1:FATeachingTip Title="移动视图"
                                Subtitle="按住鼠标中键并拖动或用手指拖动以移动视图。"
                                CloseButtonContent="下一条"
                                CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}">
-            <controls1:TeachingTip.CloseButtonCommandParameter>
+            <controls1:FATeachingTip.CloseButtonCommandParameter>
                 <x:Int32>1</x:Int32>
-            </controls1:TeachingTip.CloseButtonCommandParameter>
-            <controls1:TeachingTip.IsOpen>
+            </controls1:FATeachingTip.CloseButtonCommandParameter>
+            <controls1:FATeachingTip.IsOpen>
                 <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
                     <Binding.ConverterParameter>
                         <x:Int32>0</x:Int32>
                     </Binding.ConverterParameter>
                 </Binding>
-            </controls1:TeachingTip.IsOpen>
-        </controls1:TeachingTip>
-        <controls1:TeachingTip Title="缩放"
+            </controls1:FATeachingTip.IsOpen>
+        </controls1:FATeachingTip>
+        <controls1:FATeachingTip Title="缩放"
                                Subtitle="滚动鼠标滚轮或双指捏合即可缩放视图。"
                                ActionButtonContent="上一条"
                                CloseButtonContent="下一条"
                                ActionButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
                                CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}">
-            <controls1:TeachingTip.ActionButtonCommandParameter>
+            <controls1:FATeachingTip.ActionButtonCommandParameter>
                 <x:Int32>0</x:Int32>
-            </controls1:TeachingTip.ActionButtonCommandParameter>
-            <controls1:TeachingTip.CloseButtonCommandParameter>
+            </controls1:FATeachingTip.ActionButtonCommandParameter>
+            <controls1:FATeachingTip.CloseButtonCommandParameter>
                 <x:Int32>2</x:Int32>
-            </controls1:TeachingTip.CloseButtonCommandParameter>
-            <controls1:TeachingTip.IsOpen>
+            </controls1:FATeachingTip.CloseButtonCommandParameter>
+            <controls1:FATeachingTip.IsOpen>
                 <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
                     <Binding.ConverterParameter>
                         <x:Int32>1</x:Int32>
                     </Binding.ConverterParameter>
                 </Binding>
-            </controls1:TeachingTip.IsOpen>
-        </controls1:TeachingTip>
-        <controls1:TeachingTip Title="添加组件"
+            </controls1:FATeachingTip.IsOpen>
+        </controls1:FATeachingTip>
+        <controls1:FATeachingTip Title="添加组件"
                                Subtitle="点击此按钮打开组件库并将组件拖动到要添加的位置，或点击主界面行中的加号【+】组件库并选择组件以添加组件。"
                                Target="{Binding #ButtonOpenComponentsLib}"
                                ActionButtonContent="上一条"
                                CloseButtonContent="下一条"
                                ActionButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
                                CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}">
-            <controls1:TeachingTip.ActionButtonCommandParameter>
+            <controls1:FATeachingTip.ActionButtonCommandParameter>
                 <x:Int32>1</x:Int32>
-            </controls1:TeachingTip.ActionButtonCommandParameter>
-            <controls1:TeachingTip.CloseButtonCommandParameter>
+            </controls1:FATeachingTip.ActionButtonCommandParameter>
+            <controls1:FATeachingTip.CloseButtonCommandParameter>
                 <x:Int32>3</x:Int32>
-            </controls1:TeachingTip.CloseButtonCommandParameter>
-            <controls1:TeachingTip.IsOpen>
+            </controls1:FATeachingTip.CloseButtonCommandParameter>
+            <controls1:FATeachingTip.IsOpen>
                 <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
                     <Binding.ConverterParameter>
                         <x:Int32>2</x:Int32>
                     </Binding.ConverterParameter>
                 </Binding>
-            </controls1:TeachingTip.IsOpen>
-        </controls1:TeachingTip>
-        <controls1:TeachingTip Title="完成"
+            </controls1:FATeachingTip.IsOpen>
+        </controls1:FATeachingTip>
+        <controls1:FATeachingTip Title="完成"
                                Subtitle="当编辑完成时，点击【完成】按钮即可退出编辑模式。"
                                Target="{Binding #ButtonExitEditMode}"
                                ActionButtonContent="上一条"
@@ -676,20 +676,20 @@
                                ActionButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
                                CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
                                CloseButtonClick="TeachingTipEditModeP4_OnCloseButtonClick">
-            <controls1:TeachingTip.ActionButtonCommandParameter>
+            <controls1:FATeachingTip.ActionButtonCommandParameter>
                 <x:Int32>2</x:Int32>
-            </controls1:TeachingTip.ActionButtonCommandParameter>
-            <controls1:TeachingTip.CloseButtonCommandParameter>
+            </controls1:FATeachingTip.ActionButtonCommandParameter>
+            <controls1:FATeachingTip.CloseButtonCommandParameter>
                 <x:Int32>-1</x:Int32>
-            </controls1:TeachingTip.CloseButtonCommandParameter>
-            <controls1:TeachingTip.IsOpen>
+            </controls1:FATeachingTip.CloseButtonCommandParameter>
+            <controls1:FATeachingTip.IsOpen>
                 <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
                     <Binding.ConverterParameter>
                         <x:Int32>3</x:Int32>
                     </Binding.ConverterParameter>
                 </Binding>
-            </controls1:TeachingTip.IsOpen>
-        </controls1:TeachingTip>
+            </controls1:FATeachingTip.IsOpen>
+        </controls1:FATeachingTip>
 
         <!-- debug -->
         <StackPanel IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}"

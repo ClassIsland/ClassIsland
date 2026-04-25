@@ -110,15 +110,15 @@ public partial class DataTransferPage : UserControl
 
     private async Task BeginPerformClassIslandImport()
     {
-        var r = await new ContentDialog()
+        var r = await new FAContentDialog()
         {
             Title = "重启以继续",
             Content = "应用需要重启以继续导入操作，要重启以继续导入吗？",
             PrimaryButtonText = "重启并继续",
             SecondaryButtonText = "取消",
-            DefaultButton = ContentDialogButton.Primary
+            DefaultButton = FAContentDialogButton.Primary
         }.ShowAsync(TopLevel.GetTopLevel(this));
-        if (r != ContentDialogResult.Primary)
+        if (r != FAContentDialogResult.Primary)
         {
             return;
         }
@@ -474,15 +474,15 @@ public partial class DataTransferPage : UserControl
         {
             return;
         }
-        var r = await new ContentDialog()
+        var r = await new FAContentDialog()
         {
             Title = "重启以继续",
             Content = "应用需要重启以完全应用导入操作，要继续吗？",
             PrimaryButtonText = "重启并继续",
             SecondaryButtonText = "取消",
-            DefaultButton = ContentDialogButton.Primary
+            DefaultButton = FAContentDialogButton.Primary
         }.ShowAsync(TopLevel.GetTopLevel(this));
-        if (r != ContentDialogResult.Primary)
+        if (r != FAContentDialogResult.Primary)
         {
             return;
         }

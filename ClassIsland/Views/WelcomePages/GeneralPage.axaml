@@ -18,24 +18,24 @@
         <TextBlock Text="配置 ClassIsland 的基本设置。" HorizontalAlignment="Center"
                    Margin="0 0 0 8"/>
         
-        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE304;}"
+        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE304;}"
                                         Header="学期开始时间"
                                         Description="设置学期首日，该日期将作为多周轮换课表的计算起点和每周的第一天。">
-            <controls:SettingsExpander.Footer>
+            <controls:FASettingsExpander.Footer>
                 <StackPanel Orientation="Horizontal"
                             Spacing="4">
                     <CalendarDatePicker SelectedDate="{Binding ViewModel.SettingsService.Settings.SingleWeekStartTime}"
                                 MinWidth="120"/>
                 </StackPanel>
-            </controls:SettingsExpander.Footer>
-        </controls:SettingsExpander>
-        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE4E8;}"
+            </controls:FASettingsExpander.Footer>
+        </controls:FASettingsExpander>
+        <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE4E8;}"
                                    Header="匿名使用情况分析"
                                    Description="本应用将通过 SentrySDK 来收集本应用中的使用情况与错误信息，以改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。">
-            <controls:SettingsExpander.Footer>
+            <controls:FASettingsExpander.Footer>
                 <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsSentryEnabled}"/>
-            </controls:SettingsExpander.Footer>
-        </controls:SettingsExpander>
+            </controls:FASettingsExpander.Footer>
+        </controls:FASettingsExpander>
         
         <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
             <Button Click="ButtonNext_OnClick"

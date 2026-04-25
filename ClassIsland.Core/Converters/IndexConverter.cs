@@ -11,7 +11,7 @@ public class IndexConverter : IValueConverter
     {
         var item = (ListBoxItem)value;
         var listBox = ItemsControl.ItemsControlFromItemContainer(item) as ListBox;
-        return listBox!.ItemContainerGenerator.IndexFromContainer(item);
+        return listBox!.IndexFromContainer(item);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

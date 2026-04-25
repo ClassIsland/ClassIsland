@@ -155,21 +155,21 @@
                                 <ci:IconText Glyph="&#xE0BD;" Text="重启以应用更改"/>
                             </Button>
                         </WrapPanel>
-                        <controls2:InfoBar Message="此插件未声明支持当前所运行的操作系统。此插件可能不能正常按预期工作。"
+                        <controls2:FAInfoBar Message="此插件未声明支持当前所运行的操作系统。此插件可能不能正常按预期工作。"
                                            Severity="Warning"
                                            IsOpen="{Binding IsNotSupportCurrentOS}"> 
-                        </controls2:InfoBar>
+                        </controls2:FAInfoBar>
                         <!-- Download Progresses -->
                         <DockPanel Margin="0 4 0 0" IsVisible="{Binding DownloadProgress.IsDownloading, FallbackValue={x:False}}">
                             <ProgressBar Value="{Binding DownloadProgress.Progress}"/>
                         </DockPanel>
-                        <controls2:InfoBar Message="无法安装插件，请检查您的网络连接。更换插件镜像源可能可以解决此问题。"
+                        <controls2:FAInfoBar Message="无法安装插件，请检查您的网络连接。更换插件镜像源可能可以解决此问题。"
                                            Severity="Error"
                                            IsOpen="{Binding DownloadProgress.Exception, Mode=OneWay, Converter={x:Static ObjectConverters.IsNotNull}}">
-                            <controls2:InfoBar.ActionButton>
+                            <controls2:FAInfoBar.ActionButton>
                                 <HyperlinkButton Click="MenuItemManagePluginSources_OnClick">更换插件镜像源</HyperlinkButton>
-                            </controls2:InfoBar.ActionButton>
-                        </controls2:InfoBar>
+                            </controls2:FAInfoBar.ActionButton>
+                        </controls2:FAInfoBar>
                         
                     </StackPanel>
                     <Button Grid.Column="1" VerticalAlignment="Top"
@@ -614,7 +614,7 @@
                                                     </MultiBinding>
                                                 </Button.IsVisible>
                                             </Button>
-                                            <controls2:ProgressRing Width="28" Height="28" MinWidth="0" MinHeight="0" IsIndeterminate="False"
+                                            <controls2:FAProgressRing Width="28" Height="28" MinWidth="0" MinHeight="0" IsIndeterminate="False"
                                                                     IsVisible="{Binding Value.DownloadProgress.IsDownloading, FallbackValue={x:False}}"
                                                                     Value="{Binding Value.DownloadProgress.Progress}"
                                                                     Maximum="100"/>

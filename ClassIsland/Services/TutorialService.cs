@@ -50,7 +50,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     private List<Control> AttachedAdorners { get; } = [];
     
-    private TeachingTip? CurrentTeachingTip { get; set; }
+    private FATeachingTip? CurrentTeachingTip { get; set; }
     
     private Border? CurrentDimBorder { get; set; }
     
@@ -288,10 +288,10 @@ public partial class TutorialService : ObservableObject, ITutorialService
         {
             RenderOptions.SetBitmapInterpolationMode(heroContent, BitmapInterpolationMode.HighQuality);
         }
-        var teachingTip = CurrentTeachingTip = new TeachingTip()
+        var teachingTip = CurrentTeachingTip = new FATeachingTip()
         {
             HeroContent = heroContent,
-            IconSource = sentence.IconSource,
+            IconSource = sentence.FAIconSource,
             Title = sentence.Title,
             Subtitle = sentence.Content,
             Target = sentence.PointToTarget ? targetControl : null,
@@ -353,7 +353,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         InvokeActions(CurrentSentence.RightButtonActions);
     }
 
-    private void TeachingTipOnClosed(TeachingTip sender, TeachingTipClosedEventArgs args)
+    private void TeachingTipOnClosed(FATeachingTip sender, FATeachingTipClosedEventArgs args)
     {
         if (CurrentSentence == null)
         {

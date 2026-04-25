@@ -5,7 +5,7 @@ using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Controls;
 
-public class LucideIcon : FontIcon
+public class LucideIcon : FAFontIcon
 {
     public LucideIcon()
     {

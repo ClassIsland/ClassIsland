@@ -70,10 +70,10 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         {
             Text = ""
         };
-        var dialogResult = await new ContentDialog()
+        var dialogResult = await new FAContentDialog()
         {
             Title = "创建组件配置",
-            DefaultButton = ContentDialogButton.Primary,
+            DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "创建",
             SecondaryButtonText = "取消",
             Content = new Field()
@@ -87,7 +87,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.CreateProfileName = textBox.Text;
         var path = Path.Combine(ClassIsland.Services.ComponentsService.ComponentSettingsPath,
             ViewModel.CreateProfileName + ".json");
-        if (dialogResult != ContentDialogResult.Primary || File.Exists(path))
+        if (dialogResult != FAContentDialogResult.Primary || File.Exists(path))
         {
             return;
         }

@@ -22,18 +22,18 @@
             <controls:ListDetailView.LeftContent>
                 <Grid RowDefinitions="Auto,Auto,*,Auto" Classes="animated-intro">
                     <!--  左上：自动化开关  -->
-                    <fa:SettingsExpander Description="自动化是一种可使 ClassIsland 自动作出行动的功能。"
+                    <fa:FASettingsExpander Description="自动化是一种可使 ClassIsland 自动作出行动的功能。"
                                          Header="启用自动化"
                                          IconSource="{ci:FluentIconSource &#xEEF1;}">
-                        <fa:SettingsExpander.Resources>
+                        <fa:FASettingsExpander.Resources>
                             <x:Double x:Key="SettingsExpanderItemAdaptiveWidthTrigger">495</x:Double>
-                        </fa:SettingsExpander.Resources>
-                        <fa:SettingsExpander.Styles>
-                            <Style Selector="fa|SettingsExpander /template/ fa|SettingsExpanderItem#ContentHost:footerBottom ci|AnimatedIconButton#HelperButton">
+                        </fa:FASettingsExpander.Resources>
+                        <fa:FASettingsExpander.Styles>
+                            <Style Selector="fa|FASettingsExpander /template/ fa|FASettingsExpanderItem#ContentHost:footerBottom ci|AnimatedIconButton#HelperButton">
                                 <Setter Property="IsKeepingExpanded" Value="True" />
                             </Style>
-                        </fa:SettingsExpander.Styles>
-                        <fa:SettingsExpander.Footer>
+                        </fa:FASettingsExpander.Styles>
+                        <fa:FASettingsExpander.Footer>
                             <StackPanel Orientation="Horizontal"
                                         Spacing="6">
                                 <ci:AnimatedIconButton x:Name="HelperButton"
@@ -45,8 +45,8 @@
                                                        ToolTip.Tip="打开自动化帮助文档…" />
                                 <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsAutomationEnabled}" />
                             </StackPanel>
-                        </fa:SettingsExpander.Footer>
-                    </fa:SettingsExpander>
+                        </fa:FASettingsExpander.Footer>
+                    </fa:FASettingsExpander>
                     <Grid Grid.Row="1"
                           Margin="0 6 0 0"
                           ColumnDefinitions="Auto,*,Auto">

@@ -9,7 +9,7 @@ using FluentAvalonia.UI.Windowing;
 
 namespace ClassIsland.Controls;
 
-public class EmptySplashScreen : IApplicationSplashScreen
+public class EmptySplashScreen : IFAApplicationSplashScreen
 {
     public async Task RunTasks(CancellationToken cancellationToken)
     {

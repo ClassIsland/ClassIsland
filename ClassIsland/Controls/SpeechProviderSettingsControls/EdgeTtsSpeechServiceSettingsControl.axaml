@@ -11,7 +11,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:EdgeTtsSpeechServiceSettingsControl}}"
                 Spacing="1">
-        <controls:SettingsExpanderItem CornerRadius="0"
+        <controls:FASettingsExpanderItem CornerRadius="0"
                                        Classes="no-radius"
                                        Description="注意：EdgeTTS需要联网工作，并且可能存在一定延迟。">
             <ci:Field Label="EdgeTTS说话人">
@@ -25,7 +25,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
             </ci:Field>
-        </controls:SettingsExpanderItem>
+        </controls:FASettingsExpanderItem>
         
     </StackPanel>
 </ci:SpeechProviderControlBase>

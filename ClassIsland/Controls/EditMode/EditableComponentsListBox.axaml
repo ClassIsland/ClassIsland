@@ -27,7 +27,7 @@
                         BorderBrush="{DynamicResource SurfaceStrokeColorDefaultBrush}"
                         BorderThickness="1">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <controls:IconSourceElement IconSource="{Binding ComponentSettings.AssociatedComponentInfo.IconSource}"
+                        <controls:FAIconSourceElement IconSource="{Binding ComponentSettings.AssociatedComponentInfo.IconSource}"
                                                     VerticalAlignment="Center" Height="16" Width="16"
                                                     ClipToBounds="False"
                                                     TextElement.FontSize="16"
@@ -102,7 +102,7 @@
                                                 BorderThickness="1" >
                                             <StackPanel Orientation="Horizontal" Spacing="6">
                                                 <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0">
-                                                    <controls:IconSourceElement IconSource="{Binding AssociatedComponentInfo.IconSource}"
+                                                    <controls:FAIconSourceElement IconSource="{Binding AssociatedComponentInfo.IconSource}"
                                                         VerticalAlignment="Center" Height="16" Width="16"
                                                         ClipToBounds="False"
                                                         TextElement.FontSize="16"
@@ -146,7 +146,7 @@
                                                                         <Setter Property="Icon" x:DataType="attributes:ComponentInfo">
                                                                             <Template>
                                                                                 <Border>
-                                                                                    <controls:IconSourceElement IconSource="{Binding IconSource}"
+                                                                                    <controls:FAIconSourceElement IconSource="{Binding IconSource}"
                                                                                         Height="14" Width="14"
                                                                                         TextElement.FontSize="14"
                                                                                         Classes="repair-fontsize"/>

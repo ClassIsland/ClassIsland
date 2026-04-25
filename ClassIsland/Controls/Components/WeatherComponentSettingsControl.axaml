@@ -14,13 +14,13 @@
                         d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
         <StackPanel Classes="component-settings-container animated-intro" Margin="0">
-                <controls1:InfoBar Message="本页面仅包含组件设置，要调整显示天气的城市，请转到【天气】选项卡"
+                <controls1:FAInfoBar Message="本页面仅包含组件设置，要调整显示天气的城市，请转到【天气】选项卡"
                                    IsOpen="True" IsClosable="False"/>
                 
-                <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xEFD7;}"
+                <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xEFD7;}"
                                             Header="显示天气信息"
                                             Description="显示当前天气信息摘要。">
-                    <controls1:SettingsExpander.Footer>
+                    <controls1:FASettingsExpander.Footer>
                         <StackPanel Orientation="Horizontal" Spacing="4"
                                     Classes="items-valign-center">
                             <ComboBox SelectedIndex="{Binding Settings.MainWeatherInfoKind}"
@@ -35,46 +35,46 @@
                             </ComboBox>
                             <ToggleSwitch IsChecked="{Binding Settings.ShowMainWeatherInfo}"/>
                         </StackPanel>
-                    </controls1:SettingsExpander.Footer>
-                </controls1:SettingsExpander>
+                    </controls1:FASettingsExpander.Footer>
+                </controls1:FASettingsExpander>
                 
-                <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF431;}"
+                <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xF431;}"
                                             Header="显示预警信号"
                                             Description="启用后，预警将以图标形式显示在天气组件上。"
                                             IsExpanded="{Binding Settings.ShowAlerts, Mode=OneWay}">
-                    <controls1:SettingsExpander.Footer>
+                    <controls1:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.ShowAlerts, Mode=TwoWay}"/>
-                    </controls1:SettingsExpander.Footer>
-                    <controls1:SettingsExpanderItem Content="显示预警类型"
+                    </controls1:FASettingsExpander.Footer>
+                    <controls1:FASettingsExpanderItem Content="显示预警类型"
                                                     IconSource="{ci:FluentIconSource &#xF21A;}"
                                                     Description="设置何种情况下显示预警类型。">
-                        <controls1:SettingsExpanderItem.Footer>
+                        <controls1:FASettingsExpanderItem.Footer>
                             <ComboBox SelectedIndex="{Binding Settings.AlertsTitleShowMode}">
                                 <ComboBoxItem>不显示</ComboBoxItem>
                                 <ComboBoxItem>仅当没有对应图标时</ComboBoxItem>
                                 <ComboBoxItem>总是显示</ComboBoxItem>
                             </ComboBox>
-                        </controls1:SettingsExpanderItem.Footer>
-                    </controls1:SettingsExpanderItem>
-                </controls1:SettingsExpander>
+                        </controls1:FASettingsExpanderItem.Footer>
+                    </controls1:FASettingsExpanderItem>
+                </controls1:FASettingsExpander>
                
-                <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF453;}"
+                <controls1:FASettingsExpander IconSource="{ci:FluentIconSource &#xF453;}"
                                             Header="显示降水提示"
                                             Description="启用后，将显示降水即将到来的时间和降水剩余时间。正数代表降水即将到来的时间，负数代表剩余时间。"
                                             IsExpanded="{Binding Settings.ShowRainTime, Mode=OneWay}">
-                    <controls1:SettingsExpander.Footer>
+                    <controls1:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.ShowRainTime, Mode=TwoWay}"/>
-                    </controls1:SettingsExpander.Footer>
-                    <controls1:SettingsExpanderItem Content="模糊长时间降雨倒计时时间显示精度"
+                    </controls1:FASettingsExpander.Footer>
+                    <controls1:FASettingsExpanderItem Content="模糊长时间降雨倒计时时间显示精度"
                                                     Description="开启后，大于 60min 的降雨时间将会以 0.5h 为单位模糊显示，关闭则总是以精确分钟显示。">
-                        <controls1:SettingsExpanderItem.IsVisible>
+                        <controls1:FASettingsExpanderItem.IsVisible>
                             <Binding Path="Settings.ShowRainTime"/>
-                        </controls1:SettingsExpanderItem.IsVisible>
-                        <controls1:SettingsExpanderItem.Footer>
+                        </controls1:FASettingsExpanderItem.IsVisible>
+                        <controls1:FASettingsExpanderItem.Footer>
                             <ToggleSwitch IsChecked="{Binding Settings.IsFuzzyLongRainCountdownEnabled, Mode=TwoWay}"/>
-                        </controls1:SettingsExpanderItem.Footer>
-                    </controls1:SettingsExpanderItem>
-                </controls1:SettingsExpander>
+                        </controls1:FASettingsExpanderItem.Footer>
+                    </controls1:FASettingsExpanderItem>
+                </controls1:FASettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </controls:ComponentBase>

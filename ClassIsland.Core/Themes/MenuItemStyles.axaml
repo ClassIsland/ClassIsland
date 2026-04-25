@@ -24,7 +24,7 @@
         <Setter Property="TextElement.FontSize" Value="18"/>
         <Setter Property="Margin" Value="0 0 8 0"/>
     </Style>
-    <Style Selector="controls|MenuFlyoutSubItem:icons /template/ Viewbox#IconRoot">
+    <Style Selector="controls|FAMenuFlyoutSubItem:icons /template/ Viewbox#IconRoot">
         <Setter Property="Width" Value="18"/>
         <Setter Property="Height" Value="18"/>
         <Setter Property="TextElement.FontSize" Value="18"/>

@@ -12,12 +12,12 @@
 
     <UserControl.DataTemplates>
         <DataTemplate DataType="{x:Type automation:ActionMenuTreeGroup}">
-            <fa:MenuFlyoutSubItem Text="{Binding Name}"
+            <fa:FAMenuFlyoutSubItem Text="{Binding Name}"
                                   ItemsSource="{Binding Children}">
-                <fa:MenuFlyoutSubItem.IconSource>
+                <fa:FAMenuFlyoutSubItem.IconSource>
                     <ci:FluentIconSource Glyph="{Binding IconGlyph}" />
-                </fa:MenuFlyoutSubItem.IconSource>
-            </fa:MenuFlyoutSubItem>
+                </fa:FAMenuFlyoutSubItem.IconSource>
+            </fa:FAMenuFlyoutSubItem>
         </DataTemplate>
     </UserControl.DataTemplates>
 
@@ -60,13 +60,13 @@
             </Button.Flyout>
             <Button.DataTemplates>
                 <DataTemplate DataType="{x:Type automation:ActionMenuTreeItem}">
-                    <fa:MenuFlyoutItem Text="{Binding Name}"
+                    <fa:FAMenuFlyoutItem Text="{Binding Name}"
                                        Command="{Binding $parent[local:ActionControl].AddActionCommand}"
                                        CommandParameter="{Binding}">
-                        <fa:MenuFlyoutItem.IconSource>
+                        <fa:FAMenuFlyoutItem.IconSource>
                             <ci:FluentIconSource Glyph="{Binding IconGlyph}" FontSize="18"/>
-                        </fa:MenuFlyoutItem.IconSource>
-                    </fa:MenuFlyoutItem>
+                        </fa:FAMenuFlyoutItem.IconSource>
+                    </fa:FAMenuFlyoutItem>
                 </DataTemplate>
             </Button.DataTemplates>
         </Button>

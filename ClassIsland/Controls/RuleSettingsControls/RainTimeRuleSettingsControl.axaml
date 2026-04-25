@@ -1,4 +1,4 @@
-﻿<ci:RuleSettingsControlBase x:Class="ClassIsland.Controls.RuleSettingsControls.RainTimeRuleSettingsControl"
+<ci:RuleSettingsControlBase x:Class="ClassIsland.Controls.RuleSettingsControls.RainTimeRuleSettingsControl"
                             x:TypeArguments="rules:RainTimeRuleSettings"
                             xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -32,7 +32,7 @@
             </TabStripItem>
         </TabStrip>
         <ci:Field  Suffix="分钟">
-            <controls:NumberBox Value="{Binding Settings.RainTimeMinutes, Converter={x:Static ci:NotNaNConverter.Instance}}"
+            <controls:FANumberBox Value="{Binding Settings.RainTimeMinutes, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                 SpinButtonPlacementMode="Compact"
                                 Margin="0 0 -4 0"
                                 Minimum="0" Maximum="120"/>

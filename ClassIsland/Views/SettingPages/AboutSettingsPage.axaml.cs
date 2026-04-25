@@ -55,7 +55,7 @@ public partial class AboutSettingsPage : SettingsPageBase
     {
         var url = e.Source switch
         {
-            SettingsExpanderItem s => s.CommandParameter?.ToString(),
+            FASettingsExpanderItem s => s.CommandParameter?.ToString(),
             Button s => s.CommandParameter?.ToString(),
             _ => "classisland://app/test/"
         };
@@ -74,7 +74,7 @@ public partial class AboutSettingsPage : SettingsPageBase
     private async void ButtonDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
     {
         var diagInfo = ViewModel.DiagnosticService.GetDiagnosticInfo();
-        var dialog = new ContentDialog()
+        var dialog = new FAContentDialog()
         {
             Title = "诊断信息",
             Content = new TextBox()
@@ -84,13 +84,13 @@ public partial class AboutSettingsPage : SettingsPageBase
             IsSecondaryButtonEnabled = true,
             PrimaryButtonText = "确定",
             SecondaryButtonText = "复制",
-            DefaultButton = ContentDialogButton.Primary
+            DefaultButton = FAContentDialogButton.Primary
         };
         dialog.SecondaryButtonClick += ButtonCopyDiagnosticInfo_OnClick;
         await dialog.ShowAsync();
     }
 
-    private async void ButtonCopyDiagnosticInfo_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void ButtonCopyDiagnosticInfo_OnClick(FAContentDialog sender, FAContentDialogButtonClickEventArgs args)
     {
         bool success = false;
         try
@@ -134,7 +134,7 @@ public partial class AboutSettingsPage : SettingsPageBase
             App.GetService<ILogger<AboutSettingsPage>>().LogError(ex, "无法获取贡献者名单。");
             this.ShowToast(new ToastMessage()
             {
-                Severity = InfoBarSeverity.Error,
+                Severity = FAInfoBarSeverity.Error,
                 Title = "无法获取贡献者名单",
                 Message = ex.Message,
                 AutoClose = false
@@ -202,7 +202,7 @@ public partial class AboutSettingsPage : SettingsPageBase
     {
         var license = await new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/LICENSE.txt")))
             .ReadToEndAsync();
-        await new ContentDialog()
+        await new FAContentDialog()
         {
             Title = "开放源代码许可",
             Content = new TextBlock()
@@ -210,7 +210,7 @@ public partial class AboutSettingsPage : SettingsPageBase
                 Text = license
             },
             PrimaryButtonText = "关闭",
-            DefaultButton = ContentDialogButton.Primary
+            DefaultButton = FAContentDialogButton.Primary
         }.ShowAsync();
     }
 
@@ -240,7 +240,7 @@ public partial class AboutSettingsPage : SettingsPageBase
             textBlock.PointerPressed += (_,_) => {
                 timesBlockClicked++;
             };
-            var r = await new ContentDialog()
+            var r = await new FAContentDialog()
             {
                 Title = "启用调试菜单",
                 Content = new StackPanel
@@ -259,11 +259,11 @@ public partial class AboutSettingsPage : SettingsPageBase
                 },
                 PrimaryButtonText = "继续",
                 SecondaryButtonText = "取消",
-                DefaultButton = ContentDialogButton.Primary
+                DefaultButton = FAContentDialogButton.Primary
             }.ShowAsync();
             
             
-            if (r != ContentDialogResult.Primary)
+            if (r != FAContentDialogResult.Primary)
             {
                 return;
             }

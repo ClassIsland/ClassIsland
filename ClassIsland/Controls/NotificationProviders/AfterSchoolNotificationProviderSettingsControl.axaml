@@ -1,4 +1,4 @@
-﻿<ci:NotificationProviderControlBase
+<ci:NotificationProviderControlBase
     x:TypeArguments="notificationProviderSettings:AfterSchoolNotificationProviderSettings"
     x:Class="ClassIsland.Controls.NotificationProviders.AfterSchoolNotificationProviderSettingsControl"
     xmlns="https://github.com/avaloniaui"
@@ -16,28 +16,28 @@
         DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AfterSchoolNotificationProviderSettingsControl}}">
         <StackPanel Classes="settings-container animated-intro" Margin="0">
             <!-- 附加设置覆盖提示 -->
-            <controls:InfoBar Message="此处的设置可以在档案设置中被附加设置覆盖。"
+            <controls:FAInfoBar Message="此处的设置可以在档案设置中被附加设置覆盖。"
                               IsOpen="True" IsClosable="False">
-                <controls:InfoBar.ActionButton>
+                <controls:FAInfoBar.ActionButton>
                     <Button Click="ButtonShowAttachedSettingsInfo_OnClick"
                             Content="查看…" />
-                </controls:InfoBar.ActionButton>
-            </controls:InfoBar>
+                </controls:FAInfoBar.ActionButton>
+            </controls:FAInfoBar>
             <!-- 在放学时发出提醒 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xed35;}"
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xed35;}"
                                        Header="在放学时发出提醒"
                                        Description="在当日所有时间点结束后显示醒目提醒，提示已经放学。"
                                        IsExpanded="{Binding Settings.IsEnabled, Mode=OneWay}">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding Settings.IsEnabled}"/>
-                </controls:SettingsExpander.Footer>
+                </controls:FASettingsExpander.Footer>
                 <!-- 提醒显示内容 -->
-                <controls:SettingsExpanderItem>
+                <controls:FASettingsExpanderItem>
                     <ci:Field Label="提醒显示内容">
                         <TextBox Text="{Binding Settings.NotificationMsg}" />
                     </ci:Field>
-                </controls:SettingsExpanderItem>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpanderItem>
+            </controls:FASettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </ci:NotificationProviderControlBase>

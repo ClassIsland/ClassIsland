@@ -2,7 +2,6 @@ using System;
 using System.Text;
 using Avalonia;
 using Avalonia.Logging;
-using Avalonia.Utilities;
 using ClassIsland.Shared;
 using Microsoft.Extensions.Logging;
 
@@ -74,7 +73,7 @@ public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
         {
             return;
         }
-        
+
         var message = Format<object, object, object>(area, messageTemplate, source, propertyValues);
 
         switch (level)
@@ -111,16 +110,16 @@ public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
         object?[]? values)
     {
         var result = new StringBuilder();
-        var r = new CharacterReader(template.AsSpan());
         var i = 0;
+        var pos = 0;
 
         result.Append('[');
         result.Append(area);
         result.Append("] ");
 
-        while (!r.End)
+        while (pos < template.Length)
         {
-            var c = r.Take();
+            var c = template[pos++];
 
             if (c != '{')
             {
@@ -128,18 +127,25 @@ public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
             }
             else
             {
-                if (r.Peek != '{')
+                if (pos < template.Length && template[pos] == '{')
                 {
-                    result.Append('\'');
-                    result.Append(values?[i++]);
-                    result.Append('\'');
-                    r.TakeUntil('}');
-                    r.Take();
+                    // Escaped '{{' → literal '{'
+                    result.Append('{');
+                    pos++;
                 }
                 else
                 {
-                    result.Append('{');
-                    r.Take();
+                    // Placeholder: consume until '}'
+                    result.Append('\'');
+                    if (values != null && i < values.Length)
+                        result.Append(values[i]);
+                    i++;
+                    result.Append('\'');
+
+                    while (pos < template.Length && template[pos] != '}')
+                        pos++;
+                    if (pos < template.Length)
+                        pos++; // skip '}'
                 }
             }
         }

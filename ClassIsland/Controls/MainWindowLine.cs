@@ -661,7 +661,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     private PixelPoint GetCenter()
     {
         // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
-        if (GridWrapper?.GetVisualRoot() == null)
+        if (TopLevel.GetTopLevel(GridWrapper) == null)
         {
             return _centerPointCache;
         }

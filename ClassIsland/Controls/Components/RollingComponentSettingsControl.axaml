@@ -1,4 +1,4 @@
-﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.RollingComponentSettingsControl"
+<ci:ComponentBase x:Class="ClassIsland.Controls.Components.RollingComponentSettingsControl"
                   x:TypeArguments="componentSettings:RollingComponentSettings"
                   xmlns="https://github.com/avaloniaui"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -19,60 +19,60 @@
         <StackPanel
             Classes="component-settings-container animated-intro"
             DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponentSettingsControl}}">
-            <controls:InfoBar Message="滚动组件仅在组件内容超出滚动组件宽度时才会开始滚动。您可能需要在【高级设置】中为本组件设置【最大宽度】或【固定宽度】以限制组件的宽度，这样在组件内容超出限制的宽度时内容才会开始滚动。"
+            <controls:FAInfoBar Message="滚动组件仅在组件内容超出滚动组件宽度时才会开始滚动。您可能需要在【高级设置】中为本组件设置【最大宽度】或【固定宽度】以限制组件的宽度，这样在组件内容超出限制的宽度时内容才会开始滚动。"
                               IsOpen="{Binding SettingsService.Settings.IsRollingComponentWarningVisible}"
                               CloseButtonClick="ButtonCloseWarningTip_OnClick"/>
 
             <!-- 滚动速度 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xf373;}"
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xf373;}"
                                        Header="滚动速度"
                                        Description="组件内容的滚动速度">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <ci:Field Suffix="px/秒">
-                        <controls:NumberBox Width="150"
+                        <controls:FANumberBox Width="150"
                                             Minimum="0.1"
                                             Value="{Binding Settings.SpeedPixelPerSecond, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                     </ci:Field>
-                </controls:SettingsExpander.Footer>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
 
             <!-- 定时暂停 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xe4d0;}"
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xe4d0;}"
                                        Header="定时暂停"
                                        Description="启用后，将在滚动到指定位置后暂停滚动一段时间"
                                        IsExpanded="{Binding Settings.IsPauseEnabled, Mode=OneWay}">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding Settings.IsPauseEnabled, Mode=TwoWay}"/>
-                </controls:SettingsExpander.Footer>
-                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe4c4;}"
+                </controls:FASettingsExpander.Footer>
+                <controls:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xe4c4;}"
                                                Content="暂停时长"
                                                Description="每次暂停时停留的时长">
-                    <controls:SettingsExpanderItem.Footer>
+                    <controls:FASettingsExpanderItem.Footer>
                         <ci:Field Suffix="秒">
-                            <controls:NumberBox Width="150"
+                            <controls:FANumberBox Width="150"
                                                 Minimum="0" Maximum="{x:Static helpers:TimeSpanHelper.MaxTimeSpanSeconds}"
                                                 Value="{Binding Settings.PauseSeconds, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                         </ci:Field>
-                    </controls:SettingsExpanderItem.Footer>
-                </controls:SettingsExpanderItem>
-                <controls:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xede1;}"
+                    </controls:FASettingsExpanderItem.Footer>
+                </controls:FASettingsExpanderItem>
+                <controls:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xede1;}"
                                                Content="暂停位置"
                                                Description="暂停时的滚动偏移值">
-                    <controls:SettingsExpanderItem.Footer>
+                    <controls:FASettingsExpanderItem.Footer>
                         <ci:Field Suffix="px">
-                            <controls:NumberBox Width="150"
+                            <controls:FANumberBox Width="150"
                                                 Minimum="0"
                                                 Value="{Binding Settings.PauseOffsetX, Converter={x:Static ci:NotNaNConverter.Instance}}" />
                         </ci:Field>
-                    </controls:SettingsExpanderItem.Footer>
-                </controls:SettingsExpanderItem>
-            </controls:SettingsExpander>
+                    </controls:FASettingsExpanderItem.Footer>
+                </controls:FASettingsExpanderItem>
+            </controls:FASettingsExpander>
 
             <!-- 满足规则时停止 -->
-            <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xee67;}"
+            <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xee67;}"
                                        Header="满足规则时停止"
                                        Description="在指定规则满足时停止滚动。停止时会停止滚动，并回到初始位置。">
-                <controls:SettingsExpander.Footer>
+                <controls:FASettingsExpander.Footer>
                     <StackPanel Orientation="Horizontal">
                         <Button HorizontalAlignment="Left"
                                 Theme="{StaticResource TransparentButton}"
@@ -83,8 +83,8 @@
                         <ToggleSwitch VerticalAlignment="Center"
                                       IsChecked="{Binding Settings.StopOnRule}" />
                     </StackPanel>
-                </controls:SettingsExpander.Footer>
-            </controls:SettingsExpander>
+                </controls:FASettingsExpander.Footer>
+            </controls:FASettingsExpander>
             
         </StackPanel>
     </ScrollViewer>

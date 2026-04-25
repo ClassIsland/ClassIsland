@@ -7,11 +7,11 @@ namespace ClassIsland.Core.Assists;
 
 public class NativeMenuItemAssist
 {
-    public static readonly AttachedProperty<IconSource?> IconSourceProperty =
-        AvaloniaProperty.RegisterAttached<NativeMenuItemAssist, NativeMenuItem, IconSource?>("IconSource");
+    public static readonly AttachedProperty<FAIconSource?> IconSourceProperty =
+        AvaloniaProperty.RegisterAttached<NativeMenuItemAssist, NativeMenuItem, FAIconSource?>("FAIconSource");
 
-    public static void SetIconSource(NativeMenuItem obj, IconSource? value) => obj.SetValue(IconSourceProperty, value);
-    public static IconSource? GetIconSource(NativeMenuItem obj) => obj.GetValue(IconSourceProperty);
+    public static void SetIconSource(NativeMenuItem obj, FAIconSource? value) => obj.SetValue(IconSourceProperty, value);
+    public static FAIconSource? GetIconSource(NativeMenuItem obj) => obj.GetValue(IconSourceProperty);
 
     public static readonly AttachedProperty<bool> OverrideIconProperty =
         AvaloniaProperty.RegisterAttached<NativeMenuItemAssist, MenuItem, bool>("OverrideIcon");
@@ -37,11 +37,11 @@ public class NativeMenuItemAssist
             return;
         }
 
-        var ise = new IconSourceElement
+        var ise = new FAIconSourceElement
         {
             Classes = { "repair-fontsize" }
         };
-        ise.Bind(IconSourceElement.IconSourceProperty, nativeMenuItem.GetObservable(IconSourceProperty));
+        ise.Bind(FAIconSourceElement.IconSourceProperty, nativeMenuItem.GetObservable(IconSourceProperty));
         obj.Icon = ise;
     }
 }

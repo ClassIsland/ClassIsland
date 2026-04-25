@@ -13,10 +13,10 @@ public class Win32WindowManagerConstructorPatcher
     static System.Reflection.MethodBase TargetMethod()
     {
         var type = AccessTools.TypeByName("FluentAvalonia.UI.Windowing.Win32WindowManager");
-        return AccessTools.Constructor(type, [typeof(AppWindow)]);
+        return AccessTools.Constructor(type, [typeof(FAAppWindow)]);
     }
     
-    static bool Prefix(AppWindow window)
+    static bool Prefix(FAAppWindow window)
     {
         return !IThemeService.UseNativeTitlebar;
     }

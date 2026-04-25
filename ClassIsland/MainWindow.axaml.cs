@@ -227,6 +227,18 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel = new MainViewModel();
         DataContext = this;
         InitializeComponent();
+        var span = SentrySdk.GetSpan()?.StartChild("startup-initialize-mainWindow");
+        ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
+        ViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        LoadSettings();
+        //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
+        LoadProfile();
+        IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（1）");
+        // UpdateTheme();
+        UserPrefrenceUpdateStopwatch.Start();
+        AppBase.Current.PlatformSettings!.ColorValuesChanged += OnSystemEventsOnUserPreferenceChanged;
+        AppBase.Current.AppStopping += (sender, args) => AppBase.Current.PlatformSettings!.ColorValuesChanged -= OnSystemEventsOnUserPreferenceChanged;
+        span?.Finish();
         
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
@@ -337,18 +349,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        var span = SentrySdk.GetSpan()?.StartChild("startup-initialize-mainWindow");
-        ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
-        ViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
-        LoadSettings();
-        //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
-        LoadProfile();
-        IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（1）");
-        // UpdateTheme();
-        UserPrefrenceUpdateStopwatch.Start();
-        AppBase.Current.PlatformSettings!.ColorValuesChanged += OnSystemEventsOnUserPreferenceChanged;
-        AppBase.Current.AppStopping += (sender, args) => AppBase.Current.PlatformSettings!.ColorValuesChanged -= OnSystemEventsOnUserPreferenceChanged;
-        span?.Finish();
+        
     }
     
     private void InitializeRawInputHandler()
@@ -1126,7 +1127,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private async void NativeMenuItemDebugEnableTempClassPlan_OnClick(object? sender, EventArgs e)
     {
         var input = new TextBox();
-        var dialog = new TaskDialog()
+        var dialog = new FATaskDialog()
         {
             Header = "启用临时课表",
             Content = new StackPanel()
@@ -1144,7 +1145,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             XamlRoot = this,
             Buttons =
             {
-                TaskDialogButton.OKButton
+                FATaskDialogButton.OKButton
             }
         };
         await dialog.ShowAsync();
@@ -1514,7 +1515,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel.EditModeTutorialPhase = 0;
     }
     
-    private void TeachingTipEditModeP4_OnCloseButtonClick(TeachingTip sender, EventArgs args)
+    private void TeachingTipEditModeP4_OnCloseButtonClick(FATeachingTip sender, EventArgs args)
     {
         ViewModel.Settings.HasEditModeTutorialShown = true;
     }

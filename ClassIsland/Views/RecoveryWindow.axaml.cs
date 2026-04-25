@@ -49,7 +49,7 @@ public partial class RecoveryWindow : MyWindow
         MainFrame.Content = home;
     }
 
-    private void NavigationServiceOnNavigated(object sender, NavigationEventArgs e)
+    private void NavigationServiceOnNavigated(object sender, FANavigationEventArgs e)
     {
         ViewModel.CanGoBack = MainFrame.CanGoBack;
     }

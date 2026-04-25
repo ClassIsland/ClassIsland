@@ -1,4 +1,4 @@
-﻿<ci:NotificationProviderControlBase x:Class="ClassIsland.Controls.NotificationProviders.ClassNotificationProviderSettingsControl"
+<ci:NotificationProviderControlBase x:Class="ClassIsland.Controls.NotificationProviders.ClassNotificationProviderSettingsControl"
              x:TypeArguments="notificationProviderSettings:ClassNotificationSettings"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -23,137 +23,137 @@
             <StackPanel Classes="settings-container animated-intro"
                         Margin="0">
                 <!-- 附加设置覆盖提示 -->
-                <controls2:InfoBar Message="此处的设置可以在档案设置中被附加设置覆盖。"
+                <controls2:FAInfoBar Message="此处的设置可以在档案设置中被附加设置覆盖。"
                                    IsOpen="True" IsClosable="False">
-                    <controls2:InfoBar.ActionButton>
+                    <controls2:FAInfoBar.ActionButton>
                         <Button Click="ButtonShowAttachedSettingsInfo_OnClick"
                                 Content="查看…"/>
-                    </controls2:InfoBar.ActionButton>
-                </controls2:InfoBar>
+                    </controls2:FAInfoBar.ActionButton>
+                </controls2:FAInfoBar>
                 
                 <!-- 在课前准备时发出提醒 -->
-                <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xe21b;}"
+                <controls2:FASettingsExpander IconSource="{ci:FluentIconSource &#xe21b;}"
                                             Header="在课前准备时发出提醒"
                                             Description="在上课前一段时间发出醒目提醒，提示做好上课准备。"
                                             IsExpanded="{Binding Settings.IsClassOnPreparingNotificationEnabled, Mode=OneWay}">
-                    <controls2:SettingsExpander.Footer>
+                    <controls2:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.IsClassOnPreparingNotificationEnabled, Mode=TwoWay}"/>
-                    </controls2:SettingsExpander.Footer>
+                    </controls2:FASettingsExpander.Footer>
                     <!-- 启用语音 -->
-                    <controls2:SettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
                         <CheckBox Content="启用语音" 
                                   IsChecked="{Binding Settings.IsSpeechEnabledOnClassPreparing}"/>
-                    </controls2:SettingsExpanderItem>
+                    </controls2:FASettingsExpanderItem>
                     <!-- 室内课程课前提醒时间 -->
-                    <controls2:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe02b;}"
+                    <controls2:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xe02b;}"
                                                     Content="室内课程课前提醒时间"
                                                     Description="在室内课程的上课前指定时间进行上课提醒。">
-                        <controls2:SettingsExpanderItem.Footer>
+                        <controls2:FASettingsExpanderItem.Footer>
                             <controls1:Field Suffix="秒">
-                                <controls2:NumberBox Maximum="3600" Minimum="0"
+                                <controls2:FANumberBox Maximum="3600" Minimum="0"
                                                      Value="{Binding Settings.InDoorClassPreparingDeltaTime, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                      Width="150" 
                                                      SpinButtonPlacementMode="Inline"/>
                             </controls1:Field>
-                        </controls2:SettingsExpanderItem.Footer>
-                    </controls2:SettingsExpanderItem>
+                        </controls2:FASettingsExpanderItem.Footer>
+                    </controls2:FASettingsExpanderItem>
                     <!-- 室外课程课前提醒时间 -->
-                    <controls2:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe02b;}"
+                    <controls2:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xe02b;}"
                                                     Content="室外课程课前提醒时间"
                                                     Description="在室外课程的上课前指定时间进行上课提醒。">
-                        <controls2:SettingsExpanderItem.Footer>
+                        <controls2:FASettingsExpanderItem.Footer>
                             <controls1:Field Suffix="秒">
-                                <controls2:NumberBox Maximum="3600" Minimum="0"
+                                <controls2:FANumberBox Maximum="3600" Minimum="0"
                                                      Value="{Binding Settings.OutDoorClassPreparingDeltaTime, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                                      Width="150" 
                                                      SpinButtonPlacementMode="Inline"/> 
                             </controls1:Field>
-                        </controls2:SettingsExpanderItem.Footer>
-                    </controls2:SettingsExpanderItem>
+                        </controls2:FASettingsExpanderItem.Footer>
+                    </controls2:FASettingsExpanderItem>
                     <!-- 准备上课提醒文字 -->
-                    <controls2:SettingsExpanderItem >
+                    <controls2:FASettingsExpanderItem >
                         <ci:Field Label="室内课程准备上课提醒文字"> 
                             <TextBox Text="{Binding Settings.ClassOnPreparingText}"
                                      MinWidth="150"
                                      Watermark="（禁用）"/>
                         </ci:Field>
-                    </controls2:SettingsExpanderItem>
+                    </controls2:FASettingsExpanderItem>
                     <!-- 准备上课遮罩文字 -->
-                    <controls2:SettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
                         <ci:Field Label="室内课程准备上课遮罩文字">
                             <TextBox Text="{Binding Settings.ClassOnPreparingMaskText}"
                                      MinWidth="150"/>
                         </ci:Field>
-                    </controls2:SettingsExpanderItem>
+                    </controls2:FASettingsExpanderItem>
                     <!-- 户外课程准备上课提醒文字 -->
-                    <controls2:SettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
                         <ci:Field Label="户外课程准备上课提醒文字">
                             <TextBox Text="{Binding Settings.OutdoorClassOnPreparingText}"
                                      MinWidth="150"
                                      Watermark="（禁用）"/>
                         </ci:Field>
-                    </controls2:SettingsExpanderItem>
+                    </controls2:FASettingsExpanderItem>
                     <!-- 户外课程准备上课遮罩文字 -->
-                    <controls2:SettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
                         <ci:Field Label="户外课程准备上课遮罩文字">
                             <TextBox Text="{Binding Settings.OutdoorClassOnPreparingMaskText}"/>
                         </ci:Field>
-                    </controls2:SettingsExpanderItem>
-                </controls2:SettingsExpander>
+                    </controls2:FASettingsExpanderItem>
+                </controls2:FASettingsExpander>
                 
                 <!-- 在上课时发出提醒 -->
-                <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xe47a;}"
+                <controls2:FASettingsExpander IconSource="{ci:FluentIconSource &#xe47a;}"
                                             Header="在上课时发出提醒"
                                             Description="在上课时发出醒目提醒，提示已经上课。"
                                             IsExpanded="{Binding Settings.IsClassOnNotificationEnabled, Mode=OneWay}">
-                    <controls2:SettingsExpander.Footer>
+                    <controls2:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.IsClassOnNotificationEnabled, Mode=TwoWay}"/>
-                    </controls2:SettingsExpander.Footer>
+                    </controls2:FASettingsExpander.Footer>
                     <!-- 启用语音 -->
-                    <controls2:SettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
                         <CheckBox Content="启用语音"
                                   IsChecked="{Binding Settings.IsSpeechEnabledOnClassOn}"/>
-                    </controls2:SettingsExpanderItem>
+                    </controls2:FASettingsExpanderItem>
                     <!-- 上课遮罩文字 -->
-                    <controls2:SettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
                         <ci:Field Label="上课遮罩文字">
                             <TextBox Text="{Binding Settings.ClassOnMaskText}"
                                      MinWidth="150"/>
                         </ci:Field>
-                    </controls2:SettingsExpanderItem>
-                </controls2:SettingsExpander>
+                    </controls2:FASettingsExpanderItem>
+                </controls2:FASettingsExpander>
                 
                 <!-- 在下课时发出提醒 -->
-                <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xe4c4;}"
+                <controls2:FASettingsExpander IconSource="{ci:FluentIconSource &#xe4c4;}"
                                             Header="在下课时发出提醒"
                                             Description="在下课时发出醒目提醒，提示已经下课。"
                                             IsExpanded="{Binding Settings.IsClassOffNotificationEnabled, Mode=OneWay}">
-                    <controls2:SettingsExpander.Footer>
+                    <controls2:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.IsClassOffNotificationEnabled, Mode=TwoWay}"/>
-                    </controls2:SettingsExpander.Footer>
+                    </controls2:FASettingsExpander.Footer>
                     <!-- 启用语音 -->
-                    <controls2:SettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
                         <CheckBox Content="启用语音"
                                   IsChecked="{Binding Settings.IsSpeechEnabledOnClassOff}"/>
-                    </controls2:SettingsExpanderItem>
+                    </controls2:FASettingsExpanderItem>
                     <!-- 下课提醒文字 -->
-                    <controls2:SettingsExpanderItem>
+                    <controls2:FASettingsExpanderItem>
                         <ci:Field Label="下课提醒文字">
                             <TextBox Text="{Binding Settings.ClassOffOverlayText}"
                                      MinWidth="150"
                                      Watermark="（禁用）"/>
                         </ci:Field>
-                    </controls2:SettingsExpanderItem>
-                </controls2:SettingsExpander>
+                    </controls2:FASettingsExpanderItem>
+                </controls2:FASettingsExpander>
                 
                 <!-- 显示教科任老师名字 -->
-                <controls2:SettingsExpander IconSource="{ci:FluentIconSource &#xeee9;}"
+                <controls2:FASettingsExpander IconSource="{ci:FluentIconSource &#xeee9;}"
                                             Header="显示科任老师名字"
                                             Description="在显示课程相关的提醒时同时展示并播报对应科任老师的名字">
-                    <controls2:SettingsExpander.Footer>
+                    <controls2:FASettingsExpander.Footer>
                         <ToggleSwitch IsChecked="{Binding Settings.ShowTeacherName, Mode=TwoWay}"/>
-                    </controls2:SettingsExpander.Footer>
-                </controls2:SettingsExpander>
+                    </controls2:FASettingsExpander.Footer>
+                </controls2:FASettingsExpander>
             </StackPanel>
         </ScrollViewer>
     </Grid>

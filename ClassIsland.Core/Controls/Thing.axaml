@@ -16,7 +16,7 @@
                     <Viewbox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                              Width="18" Height="18"
                              Margin="0 0 8 0">
-                        <controls1:IconSourceElement x:Name="IconSourceElement"
+                        <controls1:FAIconSourceElement x:Name="FAIconSourceElement"
                                                      IconSource="{TemplateBinding IconSource}" />
                     </Viewbox>
                     <TextBlock Grid.Row="0" Grid.Column="1" Text="{TemplateBinding Header}" 

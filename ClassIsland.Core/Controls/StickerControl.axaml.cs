@@ -26,10 +26,10 @@ public class StickerControl : TemplatedControl
         set => SetValue(StickerToolTipProperty, value);
     }
 
-    public static readonly StyledProperty<IconSource?> FallbackIconProperty = AvaloniaProperty.Register<StickerControl, IconSource?>(
+    public static readonly StyledProperty<FAIconSource?> FallbackIconProperty = AvaloniaProperty.Register<StickerControl, FAIconSource?>(
         nameof(FallbackIcon));
 
-    public IconSource? FallbackIcon
+    public FAIconSource? FallbackIcon
     {
         get => GetValue(FallbackIconProperty);
         set => SetValue(FallbackIconProperty, value);

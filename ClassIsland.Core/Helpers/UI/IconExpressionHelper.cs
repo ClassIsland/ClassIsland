@@ -14,17 +14,17 @@ public static class IconExpressionHelper
     /// <summary>
     /// 已经注册的图标表达式处理器
     /// </summary>
-    public static IReadOnlyDictionary<string, Func<string[], IconSource?>> IconExpressionHandlers =>
+    public static IReadOnlyDictionary<string, Func<string[], FAIconSource?>> IconExpressionHandlers =>
         _iconExpressionHandlers;
     
-    private static Dictionary<string, Func<string[], IconSource?>> _iconExpressionHandlers = [];
+    private static Dictionary<string, Func<string[], FAIconSource?>> _iconExpressionHandlers = [];
 
     /// <summary>
     /// 注册新的图标处理器
     /// </summary>
     /// <param name="name">图标处理器名称</param>
     /// <param name="handler">图标处理器</param>
-    public static void RegisterHandler(string name, Func<string[], IconSource?> handler)
+    public static void RegisterHandler(string name, Func<string[], FAIconSource?> handler)
     {
         _iconExpressionHandlers.Add(name, handler);
     }
@@ -35,7 +35,7 @@ public static class IconExpressionHelper
     /// <param name="expr">图标表达式</param>
     /// <param name="result">解析结果</param>
     /// <returns>解析是否成功</returns>
-    public static bool TryParse(string expr, [NotNullWhen(true)] out IconSource? result)
+    public static bool TryParse(string expr, [NotNullWhen(true)] out FAIconSource? result)
     {
         result = null;
         // 对于单字符的 iconfont，兼容回退为 FluentSystemIcon
@@ -67,7 +67,7 @@ public static class IconExpressionHelper
     /// <param name="expr">图标表达式</param>
     /// <returns>解析结果</returns>
     /// <exception cref="InvalidOperationException">如果解析失败，将抛出此异常。</exception>
-    public static IconSource Parse(string expr)
+    public static FAIconSource Parse(string expr)
     {
         if (!TryParse(expr, out var result))
         {
@@ -82,7 +82,7 @@ public static class IconExpressionHelper
     /// </summary>
     /// <param name="expr">图标表达式</param>
     /// <returns>解析结果</returns>
-    public static IconSource? TryParseOrNull(string expr)
+    public static FAIconSource? TryParseOrNull(string expr)
     {
         _ = TryParse(expr, out var result);
         return result;
