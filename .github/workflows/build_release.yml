@@ -65,12 +65,12 @@ jobs:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
       
       - name: Install Macos workload
         if: ${{ matrix.os == 'macos' }}
         run: |
-          dotnet workload install macos --version 9.0.300
+          dotnet workload install macos
         
       - name: Add GitHub Package Registry
         run: dotnet nuget add source --username ClassIsland --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
@@ -136,8 +136,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: |
-            8.0.x
-            9.0.x
+            10.0.x
 
       - name: Setup philia Environment
         if: ${{ matrix.os == 'linux' }}
@@ -310,7 +309,7 @@ jobs:
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
