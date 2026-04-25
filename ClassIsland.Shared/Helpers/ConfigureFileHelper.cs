@@ -48,7 +48,8 @@ public class ConfigureFileHelper
     static ConfigureFileHelper()
     {
         // 覆盖默认的 JsonSerializerOptions
-        var field = typeof(JsonSerializerOptions)?.GetField("s_defaultOptions", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        var field = typeof(JsonSerializerOptions).GetField("<Default>k__BackingField", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
+            ?? typeof(JsonSerializerOptions).GetField("s_defaultOptions", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
         field?.SetValue(null, SerializerOptions);
     }
 
