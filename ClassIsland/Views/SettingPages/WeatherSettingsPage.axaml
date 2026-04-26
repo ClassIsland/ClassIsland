@@ -77,7 +77,7 @@
                 <StackPanel Spacing="12">
                     <Grid ColumnDefinitions="Auto, *, Auto">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
-                            <controls2:WeatherPackIconControl Width="48" Height="48"
+                            <controls2:WeatherPackIconControl MinWidth="48" MaxWidth="120" Height="48"
                                                               Code="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Weather}"
                                                               VerticalAlignment="Center" />
                             <StackPanel VerticalAlignment="Center" Spacing="0">
