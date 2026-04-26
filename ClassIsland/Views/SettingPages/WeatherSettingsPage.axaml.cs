@@ -123,7 +123,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
     private async void ButtonGetCurrentPos_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsLocationUpdating = true;
-        var toast = this.ShowToast(new ToastMessage("正在定位...") { AutoClose = false });
+        var toast = this.ShowToastRef(new ToastMessage("正在定位...") { AutoClose = false });
         try
         {
             var pos = await ViewModel.LocationService.GetLocationAsync();
