@@ -769,7 +769,13 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         var isCaptureBlocked = ViewModel.Settings.IsScreenShotBlockingEnabled
                                || ViewModel.Settings.IsScreenRecordingBlockingEnabled;
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, ViewModel is { IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false });
+        var shouldUseToolWindow = ViewModel is
+        {
+            IsEditMode: false,
+            IsWindowMode: false,
+            Settings.IsScreenRecordingModeEnabled: false
+        };
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, shouldUseToolWindow);
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, !ViewModel.IsEditMode);
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Private, isCaptureBlocked);
     }
