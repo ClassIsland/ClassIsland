@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.ComponentModels;
@@ -32,7 +33,10 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
     [ObservableProperty] private bool _isDetailsShown = false;
     [ObservableProperty] private bool _isDragEntering = false;
     [ObservableProperty] private bool _pluginListBoxHasItems = false;
-    [ObservableProperty] private IObservableList<KeyValuePair<string, PluginInfo>> _mergedPluginsFiltered = null!;
+
+    private ReadOnlyObservableCollection<KeyValuePair<string, PluginInfo>> _mergedPluginsFiltered = null!;
+    public ReadOnlyObservableCollection<KeyValuePair<string, PluginInfo>> MergedPluginsFiltered => _mergedPluginsFiltered;
+
     [ObservableProperty] private SyncDictionaryList<string, string> _officialPluginMirrors = null!;
 
     public SyncDictionaryList<string, PluginInfo> MergedPlugins { get; }
@@ -63,10 +67,14 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
             .WhenAnyValue(x => x.PluginFilterText, x => x.PluginCategoryIndex)
             .Select(_ => new Func<KeyValuePair<string, PluginInfo>, bool>(PluginSourceFilter));
 
-        MergedPluginsFiltered = MergedPlugins.List
+        MergedPlugins.List
             .ToObservableChangeSet()
             .Filter(pluginFilter)
-            .AsObservableList();
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out _mergedPluginsFiltered)
+            .Subscribe();
+
+        OnPropertyChanged(nameof(MergedPluginsFiltered));
     }
 
     private void UpdateOfficialPluginSources()
