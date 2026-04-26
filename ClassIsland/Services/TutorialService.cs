@@ -18,7 +18,9 @@ using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Models.Tutorial;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
+using ClassIsland.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
@@ -27,6 +29,7 @@ using Tmds.DBus.Protocol;
 
 namespace ClassIsland.Services;
 
+// TutorialService 或有潜力成为继 NotificationHostService 来的下个 shi 山
 public partial class TutorialService : ObservableObject, ITutorialService
 {
     private SettingsService SettingsService { get; }
@@ -50,13 +53,15 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private TeachingTip? CurrentTeachingTip { get; set; }
     
     private Border? CurrentDimBorder { get; set; }
+    
+    private TutorialControllerWindow? ControllerWindow { get; set; }
 
     private bool _useDimPrev;
 
     private bool _isInvokingActions;
 
     [ObservableProperty] private TopLevel? _attachedToplevel;
-    
+
     public event EventHandler? TutorialStateChanged;
 
     /// <inheritdoc/>
@@ -70,7 +75,11 @@ public partial class TutorialService : ObservableObject, ITutorialService
             "Tutorial.json"));
         Settings.PropertyChanged += (_, _) => SaveConfig();
         TutorialStateChanged += (_, _) => SaveConfig();
-        AppBase.Current.AppStopping += (_, _) => SaveConfig();
+        AppBase.Current.AppStopping += (_, _) =>
+        {
+            StopTutorial();
+            SaveConfig();
+        };
         this.ObservableForProperty(x => x.IsTutorialRunning)
             .Subscribe(_ => TutorialStateChanged?.Invoke(this, EventArgs.Empty));
 
@@ -85,6 +94,13 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private void SaveConfig()
     {
         ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppConfigPath, "Tutorial.json"), Settings);
+    }
+
+    private static TutorialControllerWindow BuildControllerWindow()
+    {
+        var win = IAppHost.GetService<TutorialControllerWindow>();
+        win.Show();
+        return win;
     }
 
     public void BeginTutorial(Tutorial tutorial)
@@ -195,6 +211,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         CurrentTutorial = tutorial;
         CurrentParagraph = paragraph;
         SentenceIndex = 0;
+        ControllerWindow ??= BuildControllerWindow();
         InvokeActions(paragraph.InitializeActions, true);
         var topLevel =
             AppBase.Current.DesktopLifetime?.Windows.FirstOrDefault(x =>
@@ -399,12 +416,23 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     public void StopTutorial()
     {
+        ControllerWindow?.Close();
+        ControllerWindow = null;
         CleanupPrevSentence();
         TrySetCurrentParagraphCompleted();
         CurrentSentence = null;
         CurrentParagraph = null;
         CurrentTutorial = null;
         TutorialStateChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    public void SkipTutorial()
+    {
+        if (GetCurrentParagraphPath() is {} path)
+        {
+            SetIsTutorialCompleted(path, true);
+        }
+        StopTutorial();
     }
 
     [RelayCommand]

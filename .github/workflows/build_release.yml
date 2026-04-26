@@ -166,7 +166,7 @@ jobs:
   sign_1:
     name: Sign_1
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' && inputs.is_test_mode != true }}
+    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' && github.event.inputs.is_test_mode != 'true' }}
     needs: [ build_app, build_launcher ]
     steps:
       - name: Checkout
@@ -326,9 +326,11 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }} 
         env:
           GHPKG_KEY: ${{ secrets.GITHUB_TOKEN }}
+          MYGET_ORG_KEY: ${{ secrets.MYGET_ORG_KEY }}
         run: |
           dotnet nuget add source --username github-actions --password $env:GHPKG_KEY --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
           dotnet nuget push .\out\package\release\*.nupkg -k $env:GHPKG_KEY --source "github" --skip-duplicate
+          dotnet nuget push .\out\package\release\*.nupkg -k $env:MYGET_ORG_KEY --source https://www.myget.org/F/classisland/api/v3/index.json --skip-duplicate
 
       - name: Upload Nuget Packages to artifacts
         if: ${{ !matrix.trim_assets }}
@@ -338,15 +340,15 @@ jobs:
           path: ./out/package/release/*.nupkg
 
   publish:
-    runs-on: windows-2022
+    runs-on: ubuntu-latest
     env:
-      isTestMode: ${{ github.event.inputs.is_test_mode == true }}
+      isTestMode: ${{ github.event.inputs.is_test_mode == 'true' }}
     if: ${{ always() && success('pack_app') && success('build_nupkg') && github.event.inputs.release_tag && github.event_name != 'pull_request' }}
     needs: [ pack_app, build_nupkg ]
     concurrency:
       group: "publish-public"
     environment:
-      name: ${{ inputs.is_test_mode == true && 'staging' || 'public' }}
+      name: ${{ github.event.inputs.is_test_mode == 'true' && 'staging' || 'public' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -367,22 +369,23 @@ jobs:
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: Publish App
+        shell: pwsh
         env:
           S3_Bucket: ${{ vars.S3_BUCKET }}
-          S3_ENDPOINT: ${{ vars.S3_ENDPOINT }}
-          S3_REGION: ${{ vars.S3_REGION }}
-          PDC_ENDPOINT: ${{ vars.PDC_ENDPOINT }}
+          S3_Endpoint: ${{ vars.S3_ENDPOINT }}
+          S3_Region: ${{ vars.S3_REGION }}
+          PDC_Endpoint: ${{ vars.PDC_ENDPOINT }}
           PDC_SigningKey: ${{ secrets.PDC_SigningKey }}
           PDC_SigningKeyPs: ""
-          PDC_TOKEN: ${{ secrets.PDC_TOKEN }}
-          S3_ACCESSKEY: ${{ secrets.S3_ACCESSKEY }}
-          S3_SECRETKEY: ${{ secrets.S3_SECRETKEY }}
+          PDC_Token: ${{ secrets.PDC_TOKEN }}
+          S3_AccessKey: ${{ secrets.S3_ACCESSKEY }}
+          S3_SecretKey: ${{ secrets.S3_SECRETKEY }}
           PDCC_version: ${{ github.event.inputs.release_tag }}
           PDCC_primaryVersion: ${{ github.event.inputs.primary_version }}
         run: |
-          pwsh -ep Bypass -c ./tools/release-gen/init-artifacts.ps1
-          pwsh -ep Bypass -c ./tools/release-gen/install-pdcc.ps1 win
-          ./pdcc/PhainonDistributionCenter.Client.exe ./phainon.yml Publish ${{ github.event.inputs.primary_version }} ${{ github.event.inputs.release_tag }} ./out
+          ./tools/release-gen/init-artifacts.ps1
+          ./tools/release-gen/install-pdcc.ps1 linux
+          ./pdcc/PhainonDistributionCenter.Client ./phainon.yml Publish ${{ github.event.inputs.primary_version }} ${{ github.event.inputs.release_tag }} ./out
           
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
@@ -394,7 +397,8 @@ jobs:
           tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
           
       - name: Upload Nuget packages to NuGet Gallery
-        if: ${{ github.event_name != 'pull_request' && !inputs.is_test_mode }}
+        if: ${{ github.event_name != 'pull_request' && github.event.inputs.is_test_mode != 'true' }}
+        shell: pwsh
         env:
           NUGET_KEY: ${{ secrets.NUGET_ORG_KEY }}
         run: |

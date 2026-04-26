@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;
 
-public class TopmostEffectWindowViewModel : ObservableRecipient
+public partial class TopmostEffectWindowViewModel : ObservableRecipient
 {
     private ObservableCollection<Control> _effectControls = [];
 
@@ -19,4 +19,6 @@ public class TopmostEffectWindowViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    [ObservableProperty] private bool _isEditMode = false;
 }

@@ -158,7 +158,7 @@ public partial class ProfileSettingsWindow : MyWindow
                 return;
             }
 
-            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.open");
+            SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.open", 1);
             _isOpen = true;
             Show();
             Dispatcher.UIThread.Post(() =>
@@ -221,6 +221,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         e.Cancel = true;
         _isOpen = false;
+        ViewModel.ProfileService.SaveProfile();
         Hide();
     }
     
@@ -289,7 +290,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private async void ButtonCreateProfile_OnClick(object sender, RoutedEventArgs e)
     {
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.create");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.create", 1);
         ViewModel.CreateProfileName = "";
         var textBox = new TextBox();
         var r = await new ContentDialog()
@@ -324,7 +325,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonOpenProfileFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.openFolder");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.openFolder", 1);
         Process.Start(new ProcessStartInfo()
         {
             FileName = Path.GetFullPath(Services.ProfileService.ProfilePath),
@@ -334,13 +335,13 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonRefreshProfiles_OnClick(object sender, RoutedEventArgs e)
     {
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.refresh");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.refresh", 1);
         RefreshProfiles();
     }
 
     private async void MenuItemRenameProfile_OnClick(object sender, RoutedEventArgs e)
     {
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.rename");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.rename", 1);
         ViewModel.RenameProfileName = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile);
         var textBox = new TextBox()
         {
@@ -394,12 +395,12 @@ public partial class ProfileSettingsWindow : MyWindow
         if (ViewModel.SelectedProfile == ViewModel.ProfileService.CurrentProfilePath ||
             ViewModel.SelectedProfile == ViewModel.SettingsService.Settings.SelectedProfile)
         {
-            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.remove",
-                tags: new Dictionary<string, string>
-                {
-                    { "Reason", "正在删除已加载或将要加载的档案。" },
-                    { "IsSuccess", "false" }
-                });
+            SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.remove", 1,
+                [
+                    new KeyValuePair<string, object>("Reason", "正在删除已加载或将要加载的档案。"),
+                    new KeyValuePair<string, object>("IsSuccess", "false" ) 
+                ]
+                );
             this.ShowToast(new ToastMessage("无法删除已加载或将要加载的档案。")
             {
                 Severity = InfoBarSeverity.Warning
@@ -419,21 +420,20 @@ public partial class ProfileSettingsWindow : MyWindow
 
         if (r == ContentDialogResult.Primary)
         {
-            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.remove",
-                tags: new Dictionary<string, string>
-                {
-                    { "IsSuccess", "true" }
-                });
+            SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.remove", 1,
+                [
+                    new KeyValuePair<string, object>("IsSuccess", "true")
+                ]);
             File.Delete(path);
         }
         else
         {
-            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.remove",
-                tags: new Dictionary<string, string>
-                {
-                    { "Reason", "用户取消操作。" },
-                    { "IsSuccess", "false" }
-                });
+            SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.remove", 1,
+                [
+                    new KeyValuePair<string, object>("Reason", "用户取消操作。"),
+                    new KeyValuePair<string, object>("IsSuccess", "false")
+                ]
+                );
         }
 
         RefreshProfiles();
@@ -441,7 +441,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void MenuItemProfileDuplicate_OnClick(object sender, RoutedEventArgs e)
     {
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.duplicate");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.duplicate", 1);
         var raw = Path.Combine(Services.ProfileService.ProfilePath, $"{ViewModel.SelectedProfile}");
         var d = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile) + " - 副本.json";
         var d1 = Path.Combine(Services.ProfileService.ProfilePath, $"{d}");
@@ -633,7 +633,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.SelectedClassPlan = s;
         UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.classPlan.duplicate");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.classPlan.duplicate", 1);
     }
     
     private void ButtonGoToTimeLayoutsPage_OnClick(object? sender, RoutedEventArgs e)
@@ -759,7 +759,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.ProfileService.Profile.TimeLayouts.Add(Guid.NewGuid(), timeLayout);
         OpenDrawer("TimeLayoutInfoEditor");
         ViewModel.SelectedTimeLayout = timeLayout;
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.create");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timeLayout.create", 1);
         ViewModel.TutorialService.PushToNextSentence("classisland.getStarted.profileEditing/setup-timeLayout");
     }
     
@@ -774,7 +774,7 @@ public partial class ProfileSettingsWindow : MyWindow
         OpenDrawer("TimeLayoutInfoEditor");
         ViewModel.ProfileService.Profile.TimeLayouts.Add(Guid.NewGuid(), s);
         ViewModel.SelectedTimeLayout = s;
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.duplicate");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timeLayout.duplicate", 1);
     }
     
     private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -786,18 +786,20 @@ public partial class ProfileSettingsWindow : MyWindow
         if (c)
         {
             this.ShowWarningToast("仍有课表在使用该时间表。删除时间表前需要删除所有使用该时间表的课表。");
-            SentrySdk.Metrics.Increment(eventName, tags: new Dictionary<string, string>
-            {
-                {"IsSuccess", "false"},
-                {"Reason", "仍有课表在使用该时间表。"}
-            });
+            SentrySdk.Metrics.EmitCounter(eventName, 1,
+            [
+                new KeyValuePair<string, object>("IsSuccess", "false"),
+                new KeyValuePair<string, object>("Reason", "仍有课表在使用该时间表。")
+            ]
+            );
             return;
         }
 
-        SentrySdk.Metrics.Increment(eventName, tags: new Dictionary<string, string>
-        {
-            {"IsSuccess", "true"}
-        });
+        SentrySdk.Metrics.EmitCounter(eventName, 1,
+        [
+            new KeyValuePair<string, object>("IsSuccess", "true")
+        ]
+        );
         ViewModel.ProfileService.Profile.TimeLayouts.Remove(key);
         FlyoutHelper.CloseAncestorFlyout(sender);
     }
@@ -909,11 +911,12 @@ public partial class ProfileSettingsWindow : MyWindow
         // ReSortTimeLayout(newItem);
         ViewModel.SelectedTimePoint = newItem;
         //OpenDrawer("TimePointEditor");
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.create", tags: new Dictionary<string, string>()
-        {
-            {"Type", timeType.ToString()},
-            {"Auto", "False"}
-        });
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.create", 1,
+        [
+            new KeyValuePair<string, object>("Type", timeType.ToString()),
+            new KeyValuePair<string, object>("Auto", "False")
+        ]
+        );
         ViewModel.TutorialService.PushToNextSentence();
     }
 
@@ -978,7 +981,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.ObservableForProperty(x => x.SelectedTimeLayout).Subscribe(_ => message.Close());
         this.ShowToast(message);
         
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.remove");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.remove", 1);
         return;
 
         void RevertButtonOnClick(object? o, RoutedEventArgs routedEventArgs)
@@ -996,7 +999,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonEditTimeLayoutInfo_OnClick(object sender, RoutedEventArgs e)
     {
         OpenDrawer("TimeLayoutInfoEditor");
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.edit");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timeLayout.edit", 1);
     }
     
     private void ButtonOverwriteClasses_OnClick(object sender, RoutedEventArgs e)
@@ -1079,7 +1082,7 @@ public partial class ProfileSettingsWindow : MyWindow
         DataGridSubjects.IsReadOnly = false;
         DataGridSubjects.SelectedIndex = ViewModel.ProfileService.Profile.Subjects.Count - 1;
         //TextBoxSubjectName.Focus();
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.create");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.create", 1);
     }
     
     private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
@@ -1099,15 +1102,16 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         DataGridSubjects.SelectedItem = ViewModel.ProfileService.Profile.EditingSubjects.Last();
         DataGridSubjects.IsReadOnly = false;
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.duplicate");
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.duplicate", 1);
     }
 
     private void ButtonDeleteSubject_OnClick(object sender, RoutedEventArgs e)
     {
-        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.remove", tags: new Dictionary<string, string>
-        {
-            {"IsSuccess", "true"},
-        });
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.remove", 1,
+        [
+            new KeyValuePair<string, object>("IsSuccess", "true")
+        ]
+        );
 
         DataGridSubjects.CancelEdit();
         DataGridSubjects.IsReadOnly = true;

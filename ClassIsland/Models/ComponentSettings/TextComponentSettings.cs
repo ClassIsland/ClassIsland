@@ -8,6 +8,7 @@ public class TextComponentSettings : ObservableRecipient
     private string _textContent = "";
     private int _fontSize = 16;
     private Color _fontColor = Color.FromRgb(255, 255, 255);
+    private bool _useCustomFontColor = true;
 
     public string TextContent
     {
@@ -38,6 +39,18 @@ public class TextComponentSettings : ObservableRecipient
             if (value == null) return;
             if (value.Equals(_fontColor)) return;
             _fontColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    // 为保证向前兼容性，默认启用自定义文本颜色。
+    public bool UseCustomFontColor
+    {
+        get => _useCustomFontColor;
+        set
+        {
+            if (value == _useCustomFontColor) return;
+            _useCustomFontColor = value;
             OnPropertyChanged();
         }
     }

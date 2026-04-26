@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using ClassIsland.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.Tutorial;
 using ClassIsland.Core.Helpers.UI;
@@ -184,5 +185,17 @@ public partial class DevPortalWindow : MyWindow
                 }
             }
         });
+    }
+
+    private void ButtonStartSplash_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.SplashProvider ??= IAppHost.GetService<ISplashProvider>();
+        ViewModel.SplashProvider?.StartSplash();
+    }
+
+    private void ButtonEndSplash_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.SplashProvider?.EndSplash();
+        ViewModel.SplashProvider = null;
     }
 }

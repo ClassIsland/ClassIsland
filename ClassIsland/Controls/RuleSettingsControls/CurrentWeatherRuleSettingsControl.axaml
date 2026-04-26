@@ -1,4 +1,4 @@
-﻿<ci:RuleSettingsControlBase x:TypeArguments="rules:CurrentWeatherRuleSettings" 
+<ci:RuleSettingsControlBase x:TypeArguments="rules:CurrentWeatherRuleSettings" 
                             x:Class="ClassIsland.Controls.RuleSettingsControls.CurrentWeatherRuleSettingsControl"
                             xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -11,19 +11,25 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:CurrentWeatherRuleSettingsControl}}">
-        <ComboBox SelectedValue="{Binding Settings.WeatherId}"
-                  SelectedValueBinding="{Binding Code}"
-                  ItemsSource="{Binding WeatherService.WeatherStatusList}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal"
-                                Classes="items-valign-center"
-                                Spacing="4">
-                        <controls:WeatherPackIconControl Code="{Binding Code}"/>
-                        <TextBlock Text="{Binding Weather}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+        <StackPanel Spacing="4" Orientation="Horizontal" Classes="items-valign-center">
+            <ComboBox SelectedValue="{Binding Settings.WeatherId}"
+                      SelectedValueBinding="{Binding Code}"
+                      ItemsSource="{Binding WeatherService.WeatherStatusList}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal"
+                                    Classes="items-valign-center"
+                                    Spacing="4">
+                            <controls:WeatherPackIconControl Code="{Binding Code}"/>
+                            <TextBlock Text="{Binding Weather}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <CheckBox IsChecked="{Binding Settings.IsFuzzyMatch}" 
+                      Content="包含相似天气" 
+                      Margin="4,0,0,0"
+                      ToolTip.Tip="勾选后，选择如“雨”、“雪”等大类天气时，将自动匹配其包含的所有具体天气（如“小雨”、“中雪”等）。"/>
+        </StackPanel>
     </Grid>
 </ci:RuleSettingsControlBase>

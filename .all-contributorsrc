@@ -368,6 +368,33 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "IsHPDuwu",
+      "name": "HPD HE",
+      "avatar_url": "https://avatars.githubusercontent.com/u/120182813?v=4",
+      "profile": "https://github.com/IsHPDuwu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yusancky",
+      "name": "yusancky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/83524927?v=4",
+      "profile": "https://yusancky.github.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "oldernewbee",
+      "name": "oldernewbee",
+      "avatar_url": "https://avatars.githubusercontent.com/u/209997500?v=4",
+      "profile": "https://github.com/oldernewbee",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

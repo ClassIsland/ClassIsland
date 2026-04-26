@@ -18,6 +18,7 @@ public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
     private bool _isUpdateAvailable = false;
     private long _downloadCount = 0;
     private long _starsCount = 0;
+    private bool _isNotSupportCurrentOS = false;
 
     /// <summary>
     /// 插件元数据
@@ -97,7 +98,6 @@ public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
             OnPropertyChanged();
         }
     }
-
 
     /// <summary>
     /// 插件文件路径。
@@ -182,6 +182,21 @@ public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
         {
             if (value == _isUpdateAvailable) return;
             _isUpdateAvailable = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件是否支持当前的操作系统。
+    /// </summary>
+    [JsonIgnore]
+    public bool IsNotSupportCurrentOS
+    {
+        get => _isNotSupportCurrentOS;
+        set
+        {
+            if (value == _isNotSupportCurrentOS) return;
+            _isNotSupportCurrentOS = value;
             OnPropertyChanged();
         }
     }

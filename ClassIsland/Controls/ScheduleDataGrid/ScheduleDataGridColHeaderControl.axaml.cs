@@ -205,6 +205,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         cp.TimeLayoutId = timeLayoutId;
         cp.AssociatedGroup = profileService.Profile.SelectedClassPlanGroupId;
         cp.TimeRule = ViewModel.ClassPlanTimeRule;
+        cp.IsOverlay = false;
         _timeRuleWeekDivSuggestObserver?.Dispose();
         _timeRuleWeekDivSuggestObserver = null;
         ViewModel.ClassPlanTimeRule = ConfigureFileHelper.CopyObject(ViewModel.ClassPlanTimeRule);

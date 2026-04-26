@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using ClassIsland.Helpers;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Shared.Models.Profile;
 
@@ -14,6 +15,8 @@ namespace ClassIsland.Controls.TimeLine;
 public partial class TimeLineListItemSeparatorAdornerControl : UserControl
 {
     private static double BaseTicks { get; } = 1000000000.0;
+    private static readonly TimeSpan MinTime = TimeSpan.Zero;
+    private static readonly TimeSpan MaxTime = new TimeSpan(23, 59, 59);
 
     public static readonly StyledProperty<TimeLayoutItem> TimePointProperty = AvaloniaProperty.Register<TimeLineListItemSeparatorAdornerControl, TimeLayoutItem>(
         nameof(TimePoint));
@@ -82,7 +85,7 @@ public partial class TimeLineListItemSeparatorAdornerControl : UserControl
         var v = e.Vector.Y;
         var d = GetDelta(_initStartTime, v);
 
-        TimePoint.StartTime = TimePoint.EndTime = _initStartTime + d;
+        TimePoint.StartTime = TimePoint.EndTime = TimeSpanHelper.Clamp(_initStartTime + d, MinTime, MaxTime);
     }
 
     private void Thumb_OnDragCompleted(object sender, VectorEventArgs e)

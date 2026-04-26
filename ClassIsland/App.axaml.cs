@@ -260,6 +260,14 @@ public partial class App : AppBase, IAppHost
             {
                 Uri = Uri.TryCreate(args[0], UriKind.Absolute, out var uri) ? uri.ToString() : $"avares://ClassIsland/Assets/HoYoStickers/{args[0]}.png"
             });
+        SentrySdk.ConfigureScope(s =>
+        {
+            s.SetTag("subChannel", AppSubChannel);
+            s.SetTag("subChannel.os", OperatingSystem);
+            s.SetTag("subChannel.platform", Platform);
+            s.SetTag("subChannel.buildType", BuildType);
+            s.SetTag("subChannel.packagingType", PackagingType);
+        });
         base.Initialize();
     }
 
@@ -369,7 +377,7 @@ public partial class App : AppBase, IAppHost
             if (plugins.Count > 0)
             {
                 var pluginsWarning = "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题："+Environment.NewLine
-                                     + string.Join(Environment.NewLine, plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"))
+                                     + string.Join(Environment.NewLine, plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id},{x.Manifest.Version}]"))
                                      + (disabled
                                          ? Environment.NewLine+"以上异常插件已自动禁用，重启应用后生效。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。"
                                          : "")
@@ -592,13 +600,13 @@ public partial class App : AppBase, IAppHost
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.StartingOffline;
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
-        foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Error))
+        foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Error))
         {
-            Logger.LogWarning("插件加载失败:{PluginName}({PluginID},{PluginVersion}):{PluginLoadException}", plugin.Value.Name,plugin.Value.Id, plugin.Value.Version, plugin.Key.Exception);
+            Logger.LogWarning("插件加载失败:{PluginName}({PluginID},{PluginVersion}):{PluginLoadException}", plugin.Manifest.Name,plugin.Manifest.Id, plugin.Manifest.Version, plugin.Exception);
         }
         Logger.LogInformation(
-            PluginService.PluginLoadedStatus.Any(p => p.Key.LoadStatus == PluginLoadStatus.Loaded) ? "此次会话已加载插件:{loadedPlugin}" : "此次会话没有加载插件。",
-            string.Join(",", PluginService.PluginLoadedStatus.Where(p => p.Key.LoadStatus == PluginLoadStatus.Loaded).Select(p => $"{p.Value.Name}({p.Value.Id},{p.Value.Version})"))
+            PluginService.PluginLoadedStatus.Any(p => p.LoadStatus == PluginLoadStatus.Loaded) ? "此次会话已加载插件:{loadedPlugin}" : "此次会话没有加载插件。",
+            string.Join(",", PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Loaded).Select(p => $"{p.Manifest.Name}({p.Manifest.Id},{p.Manifest.Version})"))
         );
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));
@@ -658,6 +666,10 @@ public partial class App : AppBase, IAppHost
 
         CurrentLifetime = Core.Enums.ApplicationLifetime.StartingOnline;
         Logger.LogInformation("初始化应用。");
+        if (Settings.IsSplashEnabled)
+        {
+            await GetService<ISplashService>().StartSplash();
+        }
 
         // 提前初始化好音频服务，防止在其他地方出现重复初始化的问题
         IAppHost.GetService<IAudioService>();
@@ -683,7 +695,7 @@ public partial class App : AppBase, IAppHost
             spanCheckUpdate.Finish();
             if (r)
             {
-                GetService<ISplashService>().EndSplash();
+                await GetService<ISplashService>().EndSplash();
                 return;
             }
         }
@@ -702,7 +714,7 @@ public partial class App : AppBase, IAppHost
         {
             if (Settings.IsSplashEnabled)
             {
-                GetService<ISplashService>().EndSplash();
+                await GetService<ISplashService>().EndSplash();
             }
 
             if (System.OperatingSystem.IsLinux() && GlobalStorageService.GetValue("IgnoreQtScaling") != "1")

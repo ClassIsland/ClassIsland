@@ -47,6 +47,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Sentry;
 
 namespace ClassIsland;
 
@@ -148,6 +149,8 @@ public partial class App
         services.AddSingleton<EditModeView>();
         services.AddTransient<TutorialEditorWindow>();
         services.AddSingleton<TutorialCenterWindow>();
+        services.AddTransient<TutorialControllerWindow>();
+        services.AddTransient<ISplashProvider, SplashWindow>();
         // 设置页面分组
         services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
         services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
@@ -194,7 +197,7 @@ public partial class App
         services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
         services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
         services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
-        // services.AddNotificationProvider<ManagementNotificationProvider>();
+        services.AddNotificationProvider<ManagementNotificationProvider>();
         services.AddNotificationProvider<ActionNotificationProvider>();
         // // Transients
         // services.AddTransient<ExcelImportWindow>();
@@ -211,6 +214,8 @@ public partial class App
             {
                 o.InitializeSdk = false;
                 o.MinimumBreadcrumbLevel = LogLevel.Information;
+                o.EnableLogs = true;
+                o.SetBeforeSendLog(log => log.Level < SentryLogLevel.Info ? null : log);
             });
             var debug = false;
 #if DEBUG
@@ -254,6 +259,7 @@ public partial class App
         services.AddRule<CurrentSubjectRuleSettings, CurrentSubjectRuleSettingsControl>("classisland.lessons.previousSubject", "上节课科目是", "\uE226");
         services.AddRule<TimeStateRuleSettings, TimeStateRuleSettingsControl>("classisland.lessons.timeState", "当前时间状态是", "\uE4C4");
         services.AddRule<CurrentWeatherRuleSettings, CurrentWeatherRuleSettingsControl>("classisland.weather.currentWeather", "当前天气是", "\uE4DC");
+        services.AddRule<CurrentWeatherRuleSettings, CurrentWeatherRuleSettingsControl>("classisland.weather.tomorrowWeather", "明天天气是", "\uE4DC");
         services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.weather.hasWeatherAlert", "存在气象预警", "\uF431");
         services.AddRule<RainTimeRuleSettings, RainTimeRuleSettingsControl>("classisland.weather.rainTime", "距离降水开始/结束还剩", "\uF43F");
         services.AddRule<SunRiseSetRuleSettings, SunRiseSetRuleSettingsControl>("classisland.weather.sunRiseSet", "是否日出/日落", "\uE150");

@@ -105,10 +105,10 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         {
             return;
         }
-        var outdatedBackups = Directory.EnumerateDirectories(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups"), "Auto_*").OrderByDescending(Directory.GetLastWriteTime).Skip(SettingsService.Settings.AutoBackupLimit).ToList();
+        var outdatedBackups = Directory.EnumerateFiles(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups"), "Auto_*").OrderByDescending(File.GetLastWriteTime).Skip(SettingsService.Settings.AutoBackupLimit).ToList();
         foreach (var i in outdatedBackups)
         {
-            Directory.Delete(i, true);
+            File.Delete(i);
         }        
     }
 

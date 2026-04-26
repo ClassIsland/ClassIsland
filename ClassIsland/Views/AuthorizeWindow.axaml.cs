@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
@@ -33,14 +34,22 @@ public partial class AuthorizeWindow : MyWindow
         ViewModel.Credential = credential;
         ViewModel.IsEditingMode = isEditingMode;
         InitializeComponent();
-        Loaded += (sender, args) => ViewModel.SelectedCredentialItem = ViewModel.Credential.Items.FirstOrDefault();
+        Loaded += (sender, args) =>
+        {
+            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Private, true);
+            ViewModel.SelectedCredentialItem = ViewModel.Credential.Items.FirstOrDefault();
+            Activate();
+        };
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
     }
 
     public override void Show()
     {
         base.Show();
-        Activate();
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Private, true);
     }
 
     private void ButtonAddAuthorizeMethod_OnClick(object sender, RoutedEventArgs e)

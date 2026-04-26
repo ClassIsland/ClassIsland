@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <AvaloniaVersion>11.3.12</AvaloniaVersion>
+        <AvaloniaVersion>11.3.13</AvaloniaVersion>
     </PropertyGroup>
     <ItemGroup>
         <AvaloniaResource Remove="**\*.xaml"/>
@@ -14,6 +14,6 @@
         <HotAvalonia Condition="'$(Configuration)' == 'Debug'">True</HotAvalonia>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="HotAvalonia" Version="3.0.2" PrivateAssets="All" Publish="True"/>
+        <PackageReference Include="HotAvalonia" Version="3.1.0" PrivateAssets="All" Publish="True"/>
     </ItemGroup>
 </Project>

@@ -21,6 +21,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
+        <PackageReference Include="System.Drawing.Common" Version="8.0.25"/>
     </ItemGroup>
     <Import Project="../../Global.props" />
 </Project>

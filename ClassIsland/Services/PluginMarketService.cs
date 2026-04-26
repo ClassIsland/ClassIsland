@@ -7,12 +7,14 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Shared;
@@ -49,6 +51,11 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
     private IDisposable? _pluginsUpdateProgressObserver;
+    private readonly OSPlatform _currentOSPlatform = 
+        OperatingSystem.IsWindows() ? OSPlatform.Windows :
+        OperatingSystem.IsLinux()   ? OSPlatform.Linux :
+        OperatingSystem.IsMacOS()   ? OSPlatform.OSX :
+        OSPlatform.Create("Unknown");
 
     public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger)
     {
@@ -447,6 +454,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                 plugin.IsAvailableOnMarket = true;
                 plugin.RealIconPath = plugin.RealIconPath.Replace("{root}", root);
                 plugin.Manifest.Readme = plugin.Manifest.Readme.Replace("{root}", root);
+                plugin.IsNotSupportCurrentOS = !plugin.Manifest.SupportedOSPlatforms.Contains(_currentOSPlatform);
                 MergedPlugins[id] = plugin;
             }
         }

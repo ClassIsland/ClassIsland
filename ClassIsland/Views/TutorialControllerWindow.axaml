@@ -1,0 +1,46 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:ClassIsland.Views;assembly=ClassIsland"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ClassIsland.Views.TutorialControllerWindow"
+        Title="教程控制窗口"
+        ShowInTaskbar="False"
+        SystemDecorations="BorderOnly"
+        TransparencyLevelHint="AcrylicBlur, Transparent"
+        SizeToContent="WidthAndHeight"
+        d:DataContext="{d:DesignInstance views:TutorialControllerWindow}"
+        Topmost="True"
+        CanResize="False"
+        Background="Transparent">
+    <Panel>
+        <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                Opacity="0.5"/>
+        <StackPanel Orientation="Horizontal"
+                    Classes="items-valign-center"
+                    Margin="12 4"
+                    Spacing="4">
+            <ci:IconText Glyph="&#xE959;" Text="教学进行中…" Opacity="0.75"/>
+            <Button Content="{ci:FluentIcon &#xE444;}"
+                    Theme="{StaticResource TransparentButton}"
+                    x:Name="ButtonSkip"
+                    ToolTip.Tip="跳过">
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel Spacing="8" MaxWidth="328">
+                            <TextBlock FontWeight="Bold">
+                                <Run Text="跳过教程" />
+                            </TextBlock>
+                            <TextBlock Text="是否确定跳过本段落教程？您稍后可以在【主菜单】->【教学…】中重看本段教程。" 
+                                       TextWrapping="Wrap"/>
+                            <Button Content="跳过" Classes="accent"
+                                    Click="ButtonSkip_OnClick" />
+                        </StackPanel> 
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </StackPanel>
+    </Panel>
+</Window>

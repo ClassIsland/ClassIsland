@@ -416,7 +416,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Button HorizontalAlignment="Left"
                                                 Theme="{StaticResource TransparentButton}"
-                                                Click="ButtonOpenRuleset_OnClick"
+                                                Click="ButtonOpenMainWindowLineRuleset_OnClick"
                                                 IsVisible="{Binding HideOnRule}">
                                             <ci:IconText Glyph="&#xF17E;" Text="编辑规则集…" />
                                         </Button>

@@ -89,10 +89,12 @@
         <ListBox
             x:Name="MainListBox"
             Classes="sliding">
-            <ListBoxItem FontSize="{DynamicResource MainWindowBodyFontSize}">
+            <ListBoxItem FontSize="{DynamicResource MainWindowBodyFontSize}"
+                         Foreground="{DynamicResource TextFillColorPrimaryBrush}">
                 <ContentPresenter Content="{Binding Element, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}"/>
             </ListBoxItem>
-            <ListBoxItem FontSize="{DynamicResource MainWindowBodyFontSize}">
+            <ListBoxItem FontSize="{DynamicResource MainWindowBodyFontSize}"
+                         Foreground="{DynamicResource TextFillColorPrimaryBrush}">
                 <TextBlock Text="{Binding Message, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"/>

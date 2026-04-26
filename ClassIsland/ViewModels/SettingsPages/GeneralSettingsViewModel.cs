@@ -20,6 +20,7 @@ public class GeneralSettingsViewModel(
     public ISplashService SplashService { get; } = splashService;
     public IAnnouncementService AnnouncementService { get; } = announcementService;
     private bool _isWeekOffsetSettingsOpen = false;
+    private bool _isSplashPreviewing = false;
 
     public bool IsWeekOffsetSettingsOpen
     {
@@ -51,6 +52,17 @@ public class GeneralSettingsViewModel(
                 SettingsService.Settings.IsCriticalSafeMode = true;
                 SettingsService.Settings.CriticalSafeModeMethod = value - 1;
             }
+        }
+    }
+
+    public bool IsSplashPreviewing
+    {
+        get => _isSplashPreviewing;
+        set
+        {
+            if (value == _isSplashPreviewing) return;
+            _isSplashPreviewing = value;
+            OnPropertyChanged();
         }
     }
 }

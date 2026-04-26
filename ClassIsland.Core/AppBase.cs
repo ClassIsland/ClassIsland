@@ -163,7 +163,7 @@ public abstract class AppBase : Application, IAppHost
     public Window GetRootWindow()
     {
         var w =  Current.DesktopLifetime?.Windows
-            .Where(x => x.GetType().Name != "TrayPopupRoot" && x is { IsActive: true, IsVisible: true })
+            .Where(x => x.GetType().Name != "TrayPopupRoot" && x is { IsActive: true, IsVisible: true,  PlatformImpl: not null })
             .OrderBy(x => x == MainWindow ? 1 : 0)  // 将主窗口的优先级下降，防止出现因主界面置底导致内容子窗口的问题
             .FirstOrDefault();
         if (w != null) 
