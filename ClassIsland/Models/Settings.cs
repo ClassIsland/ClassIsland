@@ -1956,6 +1956,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             _isScreenShotBlockingEnabled = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(WindowCaptureBlockingMode));
+            OnPropertyChanged(nameof(IsWindowCaptureBlockingEnabled));
         }
     }
 
@@ -1968,7 +1969,15 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             _isScreenRecordingBlockingEnabled = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(WindowCaptureBlockingMode));
+            OnPropertyChanged(nameof(IsWindowCaptureBlockingEnabled));
         }
+    }
+
+    [JsonIgnore]
+    public bool IsWindowCaptureBlockingEnabled
+    {
+        get => WindowCaptureBlockingMode != 0;
+        set => WindowCaptureBlockingMode = value ? 2 : 0;
     }
 
     /// <summary>
@@ -2020,6 +2029,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
             OnPropertyChanged(nameof(IsScreenShotBlockingEnabled));
             OnPropertyChanged(nameof(IsScreenRecordingBlockingEnabled));
+            OnPropertyChanged(nameof(IsWindowCaptureBlockingEnabled));
             OnPropertyChanged();
         }
     }

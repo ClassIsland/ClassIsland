@@ -254,20 +254,15 @@
             </controls1:SettingsExpander>
 
             <controls1:SettingsExpander IconSource="{ci:FluentIconSource &#xF4A4;}"
-                                        Header="阻止截取窗口"
-                                        Description="设置其他应用是否可截取或录制 ClassIsland 主界面窗口内容。若同时开启录制模式，本项优先生效。">
+                                        Header="阻止截图"
+                                        Description="开启后，其他应用无法截取 ClassIsland 主界面窗口内容，录制时也不会录制到主页面。">
                 <controls1:SettingsExpander.IsVisible>
                     <OnPlatform Default="False">
                         <On Options="Windows" Content="True"/>
                     </OnPlatform>
                 </controls1:SettingsExpander.IsVisible>
                 <controls1:SettingsExpander.Footer>
-                    <ComboBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.WindowCaptureBlockingMode, Mode=TwoWay}"
-                              Foreground="{DynamicResource MaterialDesignBody}">
-                        <ComboBoxItem>可截取</ComboBoxItem>
-                        <ComboBoxItem>阻止录屏</ComboBoxItem>
-                        <ComboBoxItem>阻止截图和录屏</ComboBoxItem>
-                    </ComboBox>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsWindowCaptureBlockingEnabled, Mode=TwoWay}"/>
                 </controls1:SettingsExpander.Footer>
             </controls1:SettingsExpander>
 
