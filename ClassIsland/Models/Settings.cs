@@ -221,7 +221,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isNonExactCountdownEnabled = false;
     private bool _showDetailedStatusOnSplash = false;
 
-
     public void NotifyPropertyChanged(string propertyName)
     {
         OnPropertyChanged(propertyName);
@@ -1705,7 +1704,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-
     public UpdateStatus LastUpdateStatus
     {
         get => _lastUpdateStatus;
@@ -1917,7 +1915,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _windowDockingMonitorIndex) return;
-
 
             if (value < 0)
             {
