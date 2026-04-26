@@ -70,47 +70,80 @@
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
             <controls1:IconText Glyph="&#xF464;" Text="天气预览" Margin="0 0 0 8" />
-            <StackPanel Orientation="Horizontal">
-                <controls2:WeatherPackIconControl Width="32" Height="32"
-                                                  Code="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Weather}"
-                                                  VerticalAlignment="Center" />
-                <TextBlock VerticalAlignment="Center" FontSize="20" Margin="6 0 0 0">
-                    <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}">
-                    </Run>
-                    <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" />
-                </TextBlock>
-                <Button Content="刷新" Theme="{StaticResource TransparentButton}"
-                        HorizontalAlignment="Left"
-                        Click="ButtonRefreshWeather_OnClick"
-                        Margin="6 0 0 0" />
-            </StackPanel>
-            <TextBlock
-                Classes="l-instructive"
-                Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.UpdateTime, Mode=OneWay}">
-            </TextBlock>
-            <ItemsControl ItemsSource="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Alerts}"
-                          Margin="0 3 0 0">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Expander>
-                            <Expander.Header>
-                                <StackPanel Orientation="Horizontal" Margin="0 2">
-                                    <asyncImageLoader:AdvancedImage  Width="24" Height="24"
-                                                    Margin="0 0 8 0"
-                                                    VerticalAlignment="Center"
-                                                    Source="{Binding Images[icon]}" />
-                                    <TextBlock VerticalAlignment="Center">
-                                        <Run Text="{Binding Title}" />
+            <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+                    Padding="16"
+                    CornerRadius="8"
+                    Margin="0 0 0 8">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="Auto, *, Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                            <controls2:WeatherPackIconControl Width="48" Height="48"
+                                                              Code="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Weather}"
+                                                              VerticalAlignment="Center" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock FontSize="28" FontWeight="SemiBold">
+                                    <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}" />
+                                    <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" FontSize="18" />
+                                </TextBlock>
+                                <TextBlock Classes="l-instructive"
+                                           Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.UpdateTime, StringFormat='更新于 {0:HH:mm}'}" />
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" Spacing="24">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="湿度" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <ci:FluentIcon Glyph="&#xE794;" Margin="0 0 4 0" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock VerticalAlignment="Center" FontWeight="Medium">
+                                        <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}" />
+                                        <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" FontSize="10"/>
                                     </TextBlock>
                                 </StackPanel>
-                            </Expander.Header>
-                            <TextBlock Text="{Binding Detail}" TextWrapping="Wrap"
-                                       FontSize="12"
-                                       Margin="32 0 24 0" />
-                        </Expander>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                            </StackPanel>
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="空气质量" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <ci:FluentIcon Glyph="&#xEA7D;" Margin="0 0 4 0" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}" VerticalAlignment="Center" FontWeight="Medium"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="风力" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <ci:FluentIcon Glyph="&#xF43B;" Margin="0 0 4 0" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock VerticalAlignment="Center" FontWeight="Medium">
+                                        <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value}" />
+                                        <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" FontSize="10"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                        <Button Grid.Column="2" 
+                                Content="{ci:FluentIcon &#xE0B5;}" 
+                                ToolTip.Tip="刷新"
+                                Theme="{StaticResource TransparentButton}"
+                                Click="ButtonRefreshWeather_OnClick"
+                                VerticalAlignment="Center" />
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Alerts}"
+                                  IsVisible="{Binding !!ViewModel.SettingsService.Settings.LastWeatherInfo.Alerts.Count}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Expander Margin="0 4 0 0" Padding="12 8">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <asyncImageLoader:AdvancedImage Width="22" Height="22"
+                                                                            Source="{Binding Images[icon]}" />
+                                            <TextBlock Text="{Binding Title}" VerticalAlignment="Center" FontWeight="Medium" />
+                                        </StackPanel>
+                                    </Expander.Header>
+                                    <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" FontSize="13" Margin="32 4 8 8" Opacity="0.8"/>
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
 
             <Separator Margin="0 12 0 8" />
             <controls1:IconText Glyph="&#xEF27;" Text="设置" Margin="0 0 0 4" />
