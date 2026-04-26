@@ -80,37 +80,39 @@
                             <controls2:WeatherPackIconControl Width="48" Height="48"
                                                               Code="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Weather}"
                                                               VerticalAlignment="Center" />
-                            <StackPanel VerticalAlignment="Center">
+                            <StackPanel VerticalAlignment="Center" Spacing="0">
                                 <TextBlock FontSize="28" FontWeight="SemiBold">
                                     <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}" />
-                                    <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" FontSize="18" />
+                                    <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" FontSize="16" />
                                 </TextBlock>
                                 <TextBlock Classes="l-instructive"
+                                           FontSize="11"
+                                           Opacity="0.6"
                                            Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.UpdateTime, StringFormat='更新于 {0:HH:mm}'}" />
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" Spacing="24">
-                            <StackPanel Spacing="2">
-                                <TextBlock Text="湿度" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <ci:FluentIcon Glyph="&#xE794;" Margin="0 0 4 0" FontSize="14" VerticalAlignment="Center"/>
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="湿度" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+                                    <ci:FluentIcon Glyph="&#xE794;" FontSize="14" VerticalAlignment="Center"/>
                                     <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}" />
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" FontSize="10"/>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
-                            <StackPanel Spacing="2">
-                                <TextBlock Text="空气质量" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <ci:FluentIcon Glyph="&#xEA7D;" Margin="0 0 4 0" FontSize="14" VerticalAlignment="Center"/>
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="空气质量" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+                                    <ci:FluentIcon Glyph="&#xEA7D;" FontSize="14" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}" VerticalAlignment="Center" FontWeight="Medium"/>
                                 </StackPanel>
                             </StackPanel>
-                            <StackPanel Spacing="2">
-                                <TextBlock Text="风力" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <ci:FluentIcon Glyph="&#xF43B;" Margin="0 0 4 0" FontSize="14" VerticalAlignment="Center"/>
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="风力" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+                                    <ci:FluentIcon Glyph="&#xF43B;" FontSize="14" VerticalAlignment="Center"/>
                                     <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value}" />
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" FontSize="10"/>
@@ -118,12 +120,17 @@
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
-                        <Button Grid.Column="2" 
-                                Content="{ci:FluentIcon &#xE0B5;}" 
-                                ToolTip.Tip="刷新"
-                                Theme="{StaticResource TransparentButton}"
-                                Click="ButtonRefreshWeather_OnClick"
-                                VerticalAlignment="Center" />
+                        <Grid Grid.Column="2" VerticalAlignment="Center">
+                            <Button Content="{ci:FluentIcon &#xE0B5;}" 
+                                    ToolTip.Tip="刷新"
+                                    Width="40" Height="40"
+                                    Theme="{StaticResource TransparentButton}"
+                                    Click="ButtonRefreshWeather_OnClick"
+                                    IsVisible="{Binding !ViewModel.IsRefreshingWeather}" />
+                            <controls3:ProgressRing Width="40" Height="40"
+                                                  IsIndeterminate="True"
+                                                  IsVisible="{Binding ViewModel.IsRefreshingWeather}" />
+                        </Grid>
                     </Grid>
                     <ItemsControl ItemsSource="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Alerts}"
                                   IsVisible="{Binding !!ViewModel.SettingsService.Settings.LastWeatherInfo.Alerts.Count}">
