@@ -352,7 +352,6 @@
             </DataGrid>
         </Grid>
         <converters:LargeNumberToFriendlyNumberConverter x:Key="LargeNumberToFriendlyNumberConverter" />
-        <converters:BooleanNotConverter x:Key="BooleanNotConverter" />
         <DataTemplate x:Key="InstallPluginConfirmTemplate">
             <DockPanel>
                 <Border DockPanel.Dock="Bottom"
@@ -782,7 +781,7 @@
                                    HorizontalAlignment="Center"
                                    FontSize="80"
                                    Margin="0 0 0 4"/>
-                    <ci:FluentIcon IsVisible="{Binding ViewModel.IsDragInstallValid, Converter={StaticResource BooleanNotConverter}}"
+                    <ci:FluentIcon IsVisible="{Binding !ViewModel.IsDragInstallValid}"
                                    Glyph="&#xEA39;"
                                    HorizontalAlignment="Center"
                                    FontSize="80"
