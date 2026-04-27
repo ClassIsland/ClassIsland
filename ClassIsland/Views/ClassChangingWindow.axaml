@@ -15,12 +15,11 @@
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         mc:Ignorable="d"
         Title="换课" 
-        Height="250" Width="600"
-        MinWidth="730"
         MinHeight="175"
         Icon="/Assets/AppLogo.png"
         EnableMicaWindow="True"
         SizeToContent="WidthAndHeight"
+        CanResize="False"
         d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
         WindowStartupLocation="CenterScreen"
         Unloaded="Control_OnUnloaded">
@@ -46,226 +45,268 @@
         <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
         <converters1:InvertBooleanOrExpressionMultiConverter x:Key="InvertBooleanOrExpressionMultiConverter" />
     </controls1:MyWindow.Resources>
-    <Grid RowDefinitions="Auto,*,Auto,Auto" MinWidth="730" MinHeight="175">
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
 
         <!-- Content -->
         <Carousel Grid.Row="1" SelectedIndex="{Binding ViewModel.SlideIndex}">
             <Carousel.PageTransition>
                 <CompositePageTransition>
-                    <PageSlide Duration="0:0:0.3" Orientation="Horizontal"
-                               SlideOutEasing="0.76, 0, 0.24, 1"
-                               SlideInEasing="0.76, 0, 0.24, 1"/>
-                    <CrossFade Duration="0:0:0.3"/>
+                    <PageSlide Duration="0:0:0.35" Orientation="Horizontal">
+                        <PageSlide.SlideInEasing>
+                            <CircularEaseOut />
+                        </PageSlide.SlideInEasing>
+                        <PageSlide.SlideOutEasing>
+                            <CircularEaseOut />
+                        </PageSlide.SlideOutEasing>
+                    </PageSlide>
+                    <CrossFade Duration="0:0:0.2"/>
                 </CompositePageTransition>
             </Carousel.PageTransition>
             <Carousel.Items>
-                <Grid>
-                    <ci:LessonsListBox VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"
-                                       Margin="0 8"
-                                       ClassPlan="{Binding ClassPlan, Mode=OneWay}"
-                                       SelectedIndex="{Binding ViewModel.SourceIndex}"
-                                       DiscardHidingDefault="True"
-                                       Subjects="{Binding ViewModel.ProfileService.Profile.Subjects, Mode=OneWay}"
-                                       SelectionChanged="Selector_OnSelectionChanged">
-                    </ci:LessonsListBox>
+                <Grid RowDefinitions="Auto, *">
+                    <StackPanel Margin="24 16 24 8">
+                        <TextBlock Text="第一步：选择课程" Theme="{StaticResource SubtitleTextBlockStyle}" />
+                        <TextBlock Text="请在下方课表中选择一个想要调换的课程。" Theme="{StaticResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                    <Grid Grid.Row="1" Margin="24 0 24 16">
+                        <ci:LessonsListBox VerticalAlignment="Center"
+                                           HorizontalAlignment="Left"
+                                           ClassPlan="{Binding ClassPlan, Mode=OneWay}"
+                                           SelectedIndex="{Binding ViewModel.SourceIndex}"
+                                           DiscardHidingDefault="True"
+                                           Subjects="{Binding ViewModel.ProfileService.Profile.Subjects, Mode=OneWay}"
+                                           SelectionChanged="Selector_OnSelectionChanged">
+                        </ci:LessonsListBox>
+                    </Grid>
                 </Grid>
-                <Grid Margin="8" VerticalAlignment="Center" ColumnDefinitions="Auto,Auto,*"
-                      >
-                    <ci:LessonControlExpanded
-                        VerticalAlignment="Center"
-                        Grid.Column="0"
-                        ci:LessonControlBase.ClassPlan="{Binding ClassPlan}"
-                        IsLiveUpdatingEnabled="False"
-                        CurrentTimeLayoutItem="{Binding ViewModel.SelectedTimeLayoutItem}"
-                        ClassInfo="{Binding ViewModel.SelectedClassInfo}"
-                        Subjects="{Binding ViewModel.ProfileService.Profile.Subjects}"
-                        Height="40"/>
-                    <TabStrip Grid.Column="1" Theme="{StaticResource TabStripStyle}"
-                              SelectedIndex="{Binding ViewModel.SettingsService.Settings.IsSwapMode, Converter={x:Static converters:ClassChangeIsSwapModeOnToSwapModeIndexConverter.Instance}}"
-                              Classes="compact toggle"
-                              Margin="4 0">
-                        <TabStripItem>
-                            <ci:AnimatedIconButton Glyph="&#xe131;" Text="替换" 
-                                                   IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"
-                                                   Classes="display-role"/>
-                        </TabStripItem>
-                        <TabStripItem>
-                            <ci:AnimatedIconButton Glyph="&#xe15f;" Text="交换" 
-                                                   IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"
-                                                   Classes="display-role"/>
-                        </TabStripItem>
-                    </TabStrip>
-                    <Carousel Grid.Column="2"
-                             VerticalAlignment="Center"
-                             HorizontalAlignment="Stretch"
-                             SelectedIndex="{Binding ViewModel.SettingsService.Settings.IsSwapMode, Converter={x:Static converters:ClassChangeIsSwapModeOnToSwapModeIndexConverter.Instance}}">
-                        <CompositePageTransition>
-                            <PageSlide Duration="0:0:0.3" Orientation="Vertical"
-                                       SlideOutEasing="0.76, 0, 0.24, 1"
-                                       SlideInEasing="0.76, 0, 0.24, 1"/>
-                            <CrossFade Duration="0:0:0.3"/>
-                        </CompositePageTransition>
-                        <Carousel.Items>
-                            <Border>
-                                <controls1:Field Label="换课成…">
-                                    <ComboBox HorizontalAlignment="Left"
-                                              MinWidth="100"
-                                              VerticalAlignment="Center"
-                                              ItemsSource="{Binding ViewModel.Subjects.List, UpdateSourceTrigger=PropertyChanged}"
-                                              SelectedValueBinding="{Binding Key}"
-                                              SelectedValue="{Binding ViewModel.TargetSubjectIndex}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Value.Name}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </controls1:Field>
+                <Grid RowDefinitions="Auto, *">
+                    <StackPanel Margin="24 16 24 8">
+                        <TextBlock Text="第二步：选择调换方式" Theme="{StaticResource SubtitleTextBlockStyle}" />
+                        <TextBlock Text="选择如何调换该课程。您可以将其替换为另一科目，或者与另一节课交换位置。" Theme="{StaticResource CaptionTextBlockStyle}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                    
+                    <Grid Grid.Row="1" Margin="24 0 24 16" ColumnDefinitions="Auto, *, Auto">
+                        <Button Grid.Column="0" Click="ButtonPrev_OnClick" Padding="0" Background="Transparent" BorderThickness="0"
+                                Theme="{StaticResource TransparentButton}" ToolTip.Tip="返回上一步" Cursor="Hand">
+                            <Border VerticalAlignment="Stretch" Width="220" Padding="16"
+                                    Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                    CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                                <Grid RowDefinitions="Auto, Auto, Auto">
+                                    <TextBlock Grid.Row="0" Text="当前选择" Theme="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    <ci:LessonControlExpanded
+                                        Grid.Row="1"
+                                        ci:LessonControlBase.ClassPlan="{Binding ClassPlan}" IsLiveUpdatingEnabled="False"
+                                        CurrentTimeLayoutItem="{Binding ViewModel.SelectedTimeLayoutItem}"
+                                        ClassInfo="{Binding ViewModel.SelectedClassInfo}"
+                                        Subjects="{Binding ViewModel.ProfileService.Profile.Subjects}"
+                                        Margin="0 16 0 10"/>
+                                </Grid>
                             </Border>
-                            <Border>
-                                <ci:LessonsListBox VerticalAlignment="Center"
-                                                   HorizontalAlignment="Center"
-                                                   Margin="0 8"
-                                                   ClassPlan="{Binding ClassPlan, Mode=OneWay}"
-                                                   DiscardHidingDefault="True"
-                                                   Subjects="{Binding ViewModel.ProfileService.Profile.Subjects, Mode=OneWay}"
-                                                   SelectedIndex="{Binding ViewModel.SwapModeTargetIndex}">
-                                </ci:LessonsListBox>
-                            </Border>
-                        </Carousel.Items>
-                    </Carousel>
+                        </Button>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16 0" Spacing="12">
+                            <ci:FluentIcon FontSize="24" Foreground="{DynamicResource AccentFillColorDefaultBrush}" HorizontalAlignment="Center">
+                                <ci:FluentIcon.Styles>
+                                    <Style Selector="ci|FluentIcon">
+                                        <Setter Property="Glyph" Value="&#xe131;"/>
+                                    </Style>
+                                    <Style Selector="ci|FluentIcon[Tag=True]">
+                                        <Setter Property="Glyph" Value="&#xe15f;"/>
+                                    </Style>
+                                </ci:FluentIcon.Styles>
+                                <ci:FluentIcon.Tag>
+                                    <Binding Path="ViewModel.SettingsService.Settings.IsSwapMode"/>
+                                </ci:FluentIcon.Tag>
+                            </ci:FluentIcon>
+
+                            <TabStrip Theme="{StaticResource TabStripStyle}"
+                                      SelectedIndex="{Binding ViewModel.SettingsService.Settings.IsSwapMode, Converter={x:Static converters:ClassChangeIsSwapModeOnToSwapModeIndexConverter.Instance}}"
+                                      Classes="compact toggle"
+                                      HorizontalAlignment="Center">
+                                <TabStripItem ToolTip.Tip="替换为选定科目">
+                                    <ci:AnimatedIconButton Glyph="&#xe131;" Text="替换" 
+                                                           IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"
+                                                           Classes="display-role"/>
+                                </TabStripItem>
+                                <TabStripItem ToolTip.Tip="与另一节课交换">
+                                    <ci:AnimatedIconButton Glyph="&#xe15f;" Text="交换" 
+                                                           IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"
+                                                           Classes="display-role"/>
+                                </TabStripItem>
+                            </TabStrip>
+                        </StackPanel>
+                        <Border Grid.Column="2" VerticalAlignment="Stretch" MinWidth="220" Padding="16"
+                                Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+                            <Carousel SelectedIndex="{Binding ViewModel.SettingsService.Settings.IsSwapMode, Converter={x:Static converters:ClassChangeIsSwapModeOnToSwapModeIndexConverter.Instance}}">
+                                <Carousel.PageTransition>
+                                    <CrossFade Duration="0:0:0.2"/>
+                                </Carousel.PageTransition>
+                                <Carousel.Items>
+                                    <Grid RowDefinitions="Auto, *">
+                                        <TextBlock Grid.Row="0" Text="替换为" Theme="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0 0 0 4"/>
+                                        <ComboBox Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0 0 0 -4"
+                                                  PlaceholderText="选择科目..."
+                                                  ItemsSource="{Binding ViewModel.Subjects.List, UpdateSourceTrigger=PropertyChanged}"
+                                                  SelectedValueBinding="{Binding Key}"
+                                                  SelectedValue="{Binding ViewModel.TargetSubjectIndex}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Value.Name}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </Grid>
+                                    <Grid RowDefinitions="Auto, *, Auto">
+                                        <TextBlock Grid.Row="0" Text="与之交换" Theme="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0 0 0 4"/>
+                                        <ci:LessonsListBox Grid.Row="1" 
+                                                           VerticalAlignment="Center"
+                                                           HorizontalAlignment="Left"
+                                                           Margin="0 0 0 -4"
+                                                           ClassPlan="{Binding ClassPlan, Mode=OneWay}"
+                                                           DiscardHidingDefault="True"
+                                                           Subjects="{Binding ViewModel.ProfileService.Profile.Subjects, Mode=OneWay}"
+                                                           SelectedIndex="{Binding ViewModel.SwapModeTargetIndex}">
+                                        </ci:LessonsListBox>
+                                    </Grid>
+                                </Carousel.Items>
+                            </Carousel>
+                        </Border>
+                    </Grid>
                 </Grid>
             </Carousel.Items>
         </Carousel>
 
-        <!-- Separator -->
-        <Separator Grid.Row="2" Margin="0 8 0 0" />
-
-        <!-- Bottom -->
-        <Grid Grid.Row="3" ColumnDefinitions="Auto, *, Auto" 
-              Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}">
-            <StackPanel Grid.Column="0"
-                    Orientation="Horizontal"
-                    VerticalAlignment="Bottom"
-                    Margin="6">
-                <Button Margin="0 0 4 0"
-                        IsCancel="True"
-                        Click="ButtonCancel_OnClick"
-                        ToolTip.Tip="取消换课操作。">
-                    <controls1:IconText Glyph="&#xe671;" Text="取消" />
-                </Button>
-                <Button Margin="0 0 4 0"
-                        Click="ButtonPrev_OnClick"
-                        ToolTip.Tip="返回上一步。">
-                    <Button.IsVisible>
-                        <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
-                            <Binding.ConverterParameter>
-                                <system:Int32>1</system:Int32>
-                            </Binding.ConverterParameter>
-                        </Binding>
-                    </Button.IsVisible>
-                    <controls1:IconText Glyph="&#xe109;" Text="上一步" />
-                </Button>
-            </StackPanel>
-            <StackPanel Grid.Column="2"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Bottom"
-                        Margin="6">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.IsVisible>
-                        <MultiBinding Converter="{x:Static BoolConverters.And}">
-                            <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.NotEqual}">
+        <Border Grid.Row="3" Padding="16 12" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                    <Button Click="ButtonCancel_OnClick" Theme="{StaticResource TransparentButton}">
+                        <controls1:IconText Glyph="&#xe671;" Text="取消" />
+                    </Button>
+                    <Button Click="ButtonPrev_OnClick">
+                        <Button.IsVisible>
+                            <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
                                 <Binding.ConverterParameter>
                                     <system:Int32>1</system:Int32>
                                 </Binding.ConverterParameter>
                             </Binding>
-                            <Binding Path="ViewModel.SourceIndex" Converter="{x:Static ObjectConverters.NotEqual}">
-                                <Binding.ConverterParameter>
-                                    <system:Int32>-1</system:Int32>
-                                </Binding.ConverterParameter>
-                            </Binding>
-                        </MultiBinding>
-                    </StackPanel.IsVisible>
-                    <Button Margin="12 0 0 0" Click="ButtonNext_OnClick"
-                            ToolTip.Tip="进入下一步。" Classes="accent">
+                        </Button.IsVisible>
+                        <controls1:IconText Glyph="&#xe109;" Text="上一步" />
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <Button Click="ButtonNext_OnClick" Classes="accent">
+                        <Button.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                    <Binding.ConverterParameter>
+                                        <system:Int32>0</system:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                                <Binding Path="ViewModel.SourceIndex" Converter="{x:Static ObjectConverters.NotEqual}">
+                                    <Binding.ConverterParameter>
+                                        <system:Int32>-1</system:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </MultiBinding>
+                        </Button.IsVisible>
                         <controls1:IconText Glyph="&#xe131;" Text="下一步" />
                     </Button>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <StackPanel.IsVisible>
+                            <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                <Binding.ConverterParameter>
+                                    <system:Int32>1</system:Int32>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                        </StackPanel.IsVisible>
+                        <CheckBox Content="永久换课"
+                                  ToolTip.Tip="直接应用到原课表上，不创建临时层。"
+                                  IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
+                                  IsVisible="{Binding !ClassPlan.IsOverlay}">
+                            <CheckBox.IsEnabled>
+                                <MultiBinding Converter="{StaticResource InvertBooleanOrExpressionMultiConverter}" Mode="OneWay">
+                                    <Binding Path="ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing" Mode="OneWay"/>
+                                    <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing" Mode="OneWay"/>
+                                </MultiBinding>
+                            </CheckBox.IsEnabled>
+                        </CheckBox>
+                        <Button Click="ButtonConfirmClassChanging_OnClick" Classes="accent" IsEnabled="{Binding ViewModel.CanCompleteClassChanging}">
+                            <controls1:IconText Glyph="&#xe424;" Text="确认换课" />
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" IsVisible="{Binding ViewModel.CanCompleteClassChanging}">
-                    <CheckBox Margin="4 -8 0 -8"
-                              Content="永久换课"
-                              ToolTip.Tip="如果选择，将不会在换课时创建临时层课表，而会直接应用到原课表上。"
-                              IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
-                              IsVisible="{Binding !ClassPlan.IsOverlay}">
-                        <CheckBox.IsEnabled>
-                            <MultiBinding Converter="{StaticResource InvertBooleanOrExpressionMultiConverter}" Mode="OneWay">
-                                <Binding Path="ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing" Mode="OneWay"/>
-                                <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing" Mode="OneWay"/>
-                            </MultiBinding>
-                        </CheckBox.IsEnabled>
-                    </CheckBox>
-                    <Button Margin="12 0 0 0" ToolTip.Tip="确认并应用换课。"
-                            Click="ButtonConfirmClassChanging_OnClick"
-                            Classes="accent">
-                        <controls1:IconText Glyph="&#xe424;" Text="确认换课" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="0" Padding="16 12" Background="{DynamicResource LayerOnMicaBaseAltFillColorDefaultBrush}" BorderThickness="0 0 0 1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <TextBlock Text="快捷换课" Theme="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
+                    <Border Background="{DynamicResource ControlStrokeColorDefaultBrush}" Width="1" Height="16" VerticalAlignment="Center"/>
+                    <Button Click="ButtonTemporaryClassPlan_OnClick" Theme="{StaticResource TransparentButton}" Padding="4 2">
+                        <ci:IconText Glyph="&#xe6b1;" Text="{Binding ClassPlan.Name}" FontSize="12"/>
                     </Button>
                 </StackPanel>
-            </StackPanel>
-        </Grid>
-
-        <!-- AppBar -->
-        <Border Grid.Row="0" 
-                Padding="8">
-            <StackPanel Orientation="Horizontal" Margin="4 0">
-                <TextBlock Text="换课" Theme="{StaticResource TitleTextBlockStyle}"
-                           HorizontalAlignment="Center"
-                           FontWeight="Medium"
-                           VerticalAlignment="Center" Margin="0,0,16,0" />
-                <Button
-                    ToolTip.Tip="要换课的课表"
-                    Click="ButtonTemporaryClassPlan_OnClick"
-                    VerticalAlignment="Center"
-                    Theme="{StaticResource TransparentButton}">
-                    <ci:IconText Glyph="&#xe6b1;" Text="{Binding ClassPlan.Name}"></ci:IconText>
-                </Button>
-                <ci:FluentIcon Glyph="&#xe131;"
-                               VerticalAlignment="Center"
-                               Margin="4 0" />
-                <TextBlock VerticalAlignment="Center" Text="选择要调换的课程。">
-                    <TextBlock.IsVisible>
-                        <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
-                            <Binding.ConverterParameter>
-                                <system:Int32>0</system:Int32>
-                            </Binding.ConverterParameter>
-                        </Binding>
-                    </TextBlock.IsVisible>
-                </TextBlock>
-                <TextBlock VerticalAlignment="Center" Text="选择要与刚刚选择的课程调换的课程。点击复选框可以切换调换模式。">
-                    <TextBlock.IsVisible>
-                        <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
-                            <Binding.ConverterParameter>
-                                <system:Int32>1</system:Int32>
-                            </Binding.ConverterParameter>
-                        </Binding>
-                    </TextBlock.IsVisible>
-                </TextBlock>
                 
-            </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Ellipse Width="8" Height="8">
+                        <Ellipse.Styles>
+                            <Style Selector="Ellipse">
+                                <Setter Property="Fill" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+                                <Setter Property="Transitions">
+                                    <Transitions>
+                                        <BrushTransition Property="Fill" Duration="0:0:0.2"/>
+                                    </Transitions>
+                                </Setter>
+                            </Style>
+                            <Style Selector="Ellipse[Tag=True]">
+                                <Setter Property="Fill" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                            </Style>
+                        </Ellipse.Styles>
+                        <Ellipse.Tag>
+                            <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                <Binding.ConverterParameter>
+                                    <system:Int32>0</system:Int32>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                        </Ellipse.Tag>
+                    </Ellipse>
+                    <Ellipse Width="8" Height="8">
+                        <Ellipse.Styles>
+                            <Style Selector="Ellipse">
+                                <Setter Property="Fill" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+                                <Setter Property="Transitions">
+                                    <Transitions>
+                                        <BrushTransition Property="Fill" Duration="0:0:0.2"/>
+                                    </Transitions>
+                                </Setter>
+                            </Style>
+                            <Style Selector="Ellipse[Tag=True]">
+                                <Setter Property="Fill" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                            </Style>
+                        </Ellipse.Styles>
+                        <Ellipse.Tag>
+                            <Binding Path="ViewModel.SlideIndex" Converter="{x:Static ObjectConverters.Equal}">
+                                <Binding.ConverterParameter>
+                                    <system:Int32>1</system:Int32>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                        </Ellipse.Tag>
+                    </Ellipse>
+                </StackPanel>
+            </Grid>
         </Border>
 
         <!-- Loading -->
         <Border Grid.Row="0" Grid.RowSpan="4"
-                Margin="-1"
-                Padding="1"
-                d:Visibility="Visible"
                 Cursor="Wait"
                 x:Name="LoadingOverlay"
                 Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
-                IsVisible="{Binding Converter={x:Static ObjectConverters.IsNull}}">
-            <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                        Margin="0 0 36 24">
+                IsVisible="{Binding ViewModel, Converter={x:Static ObjectConverters.IsNull}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16">
                 <controls1:TeyvatLoadingControl/>
+                <TextBlock Text="正在准备换课..." HorizontalAlignment="Center" Theme="{StaticResource BodyTextBlockStyle}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
             </StackPanel>
         </Border>
     </Grid>
