@@ -22,4 +22,9 @@ public interface INotificationPlaybackService
     /// 取消指定消费者的所有提醒播放。
     /// </summary>
     void CancelAll(INotificationConsumer consumer);
+
+    /// <summary>
+    /// 移除指定的消费者并清理其播放会话。
+    /// </summary>
+    void RemoveConsumer(INotificationConsumer consumer);
 }

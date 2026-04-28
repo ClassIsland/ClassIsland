@@ -197,8 +197,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
     {
         get => GetValue(IsLineFadedProperty);
         set => SetValue(IsLineFadedProperty, value);
-    
-}
+    }
 
     public static readonly StyledProperty<MainWindowLineSettings> SettingsProperty = AvaloniaProperty.Register<MainWindowLine, MainWindowLineSettings>(
         nameof(Settings));
