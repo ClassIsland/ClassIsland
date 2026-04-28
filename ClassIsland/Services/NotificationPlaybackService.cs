@@ -80,6 +80,15 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
         }
     }
 
+    public void RemoveConsumer(INotificationConsumer consumer)
+    {
+        CancelAll(consumer);
+        lock (_syncLock)
+        {
+            _sessions.Remove(consumer);
+        }
+    }
+
     private async Task StartPlaybackAsync(INotificationConsumer consumer, PlaybackSession session)
     {
         try

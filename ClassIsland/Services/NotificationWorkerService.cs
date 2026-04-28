@@ -206,19 +206,19 @@ public class NotificationWorkerService : INotificationWorkerService
                     if (string.IsNullOrWhiteSpace(settings.NotificationSoundPath))
                     {
                         _ = Task.Run(async () =>
-        {
-            try
-            {
-                using var stream = AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri);
-                await AudioService.PlayAudioAsync(stream,
-                    (float)SettingsService.Settings.NotificationSoundVolume, audioCancellationToken);
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception ex)
-            {
-                Logger.LogWarning(ex, "音效播放失败");
-            }
-        }, audioCancellationToken);
+                        {
+                           try
+                           {
+                               using var stream = AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri);
+                               await AudioService.PlayAudioAsync(stream,
+                                   (float)SettingsService.Settings.NotificationSoundVolume, audioCancellationToken);
+                           }
+                           catch (OperationCanceledException) { }
+                           catch (Exception ex)
+                           {
+                               Logger.LogWarning(ex, "音效播放失败");
+                           }
+                        }, audioCancellationToken);
                     }
                     else
                     {
@@ -302,10 +302,7 @@ public class NotificationWorkerService : INotificationWorkerService
             {
                 PlayingRequests.Remove(tuple);
             }
-            if (cancellationToken.IsCancellationRequested)
-            {
-                cancellationCompletedSource.TrySetResult();
-            }
+            cancellationCompletedSource.TrySetResult();
         }
     }
     

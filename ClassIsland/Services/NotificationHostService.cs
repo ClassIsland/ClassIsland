@@ -15,11 +15,12 @@ using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Services.Registry;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Profile;
-using ClassIsland.Models;
 using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
@@ -401,33 +402,34 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 return [];
             }
 
-            if (RequestQueue.Count <= 0)
+            while (RequestQueue.Count > 0)
             {
-                return [];
-            }
-
-            var head = RequestQueue.Peek();
-            if (PoppedRequests.Contains(head))
-            {
-                RequestQueue.Dequeue();
-                EnqueuedRequests.Remove(head);
-                return PullNotificationRequests(consumer); // 下一个
-            }
-
-            var requests = CollectChainedRequestsInternal(head);
-            var tickets = requests.Select(CreateTicket).ToList();
-            var targetConsumer = NotificationRouter.Route(tickets, RegisteredConsumers);
-            if (targetConsumer?.Consumer == consumer)
-            {
-                RequestQueue.Dequeue();
-                EnqueuedRequests.Remove(head);
-                foreach (var r in requests)
+                var head = RequestQueue.Peek();
+                if (PoppedRequests.Contains(head))
                 {
-                    PoppedRequests.Add(r);
-                    PlayingNotifications.Add(r);
+                    RequestQueue.Dequeue();
+                    EnqueuedRequests.Remove(head);
+                    continue; // 下一个
                 }
-                UpdateNotificationPlayingState();
-                return tickets;
+
+                var requests = CollectChainedRequestsInternal(head);
+                var tickets = requests.Select(CreateTicket).ToList();
+                var targetConsumer = NotificationRouter.Route(tickets, RegisteredConsumers);
+                if (targetConsumer?.Consumer == consumer)
+                {
+                    RequestQueue.Dequeue();
+                    EnqueuedRequests.Remove(head);
+                    foreach (var r in requests)
+                    {
+                        PoppedRequests.Add(r);
+                        PlayingNotifications.Add(r);
+                    }
+
+                    UpdateNotificationPlayingState();
+                    return tickets;
+                }
+
+                return [];
             }
 
             return [];
@@ -438,40 +440,34 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     {
         lock (_syncLock)
         {
-            while (CanDispatchRequests)
+            if (!CanDispatchRequests)
             {
-                if (RequestQueue.Count <= 0)
-                {
-                    break;
-                }
+                return;
+            }
 
+            while (RequestQueue.Count > 0)
+            {
                 var head = RequestQueue.Peek();
                 if (PoppedRequests.Contains(head))
                 {
                     RequestQueue.Dequeue();
                     EnqueuedRequests.Remove(head);
-                    continue;
+                    continue; // 下一个
                 }
 
                 var requests = CollectChainedRequestsInternal(head);
                 var tickets = requests.Select(CreateTicket).ToList();
-                var consumerInfo = NotificationRouter.Route(tickets, RegisteredConsumers);
-                if (consumerInfo != null)
+                if (PushNotificationRequests(tickets))
                 {
                     RequestQueue.Dequeue();
                     EnqueuedRequests.Remove(head);
                     foreach (var r in requests)
                     {
                         PoppedRequests.Add(r);
-                        PlayingNotifications.Add(r);
-                        Logger.LogTrace("推送提醒：{}", r);
                     }
-                    UpdateNotificationPlayingState();
-                    consumerInfo.Consumer.ReceiveNotifications(tickets);
                 }
                 else
                 {
-                    Logger.LogTrace("没有合适的消费者处理提醒。");
                     break;
                 }
             }
@@ -533,6 +529,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
             RegisteredConsumers.Remove(registerInfo);
         }
+        IAppHost.GetService<INotificationPlaybackService>().RemoveConsumer(consumer);
     }
 
     public bool IsNotificationsPlaying
