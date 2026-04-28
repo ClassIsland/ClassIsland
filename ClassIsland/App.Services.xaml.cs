@@ -61,6 +61,8 @@ public partial class App
         // services.AddSingleton<WallpaperPickingService>();
         services.AddSingleton<INotificationHostService, NotificationHostService>();
         services.AddSingleton<INotificationWorkerService, NotificationWorkerService>();
+        services.AddSingleton<INotificationRouter, NotificationRouter>();
+        services.AddSingleton<INotificationPlaybackService, NotificationPlaybackService>();
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<MiniInfoProviderHostService>();
         services.AddSingleton<IWeatherService, WeatherService>();

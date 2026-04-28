@@ -65,7 +65,7 @@ namespace ClassIsland.Controls;
 [TemplatePart(Name = "PART_GridWrapper", Type = typeof(Grid))]
 [PseudoClasses(":dock-left", ":dock-right", ":dock-center", ":dock-top", ":dock-bottom",
     ":faded", ":mask-anim", ":overlay-anim", ":mask-in", ":overlay-in", ":mask-out", ":overlay-out")]
-public class MainWindowLine : ContentControl, INotificationConsumer
+public class MainWindowLine : ContentControl, INotificationConsumer, INotificationPlaybackHandler
 {
     public static readonly StyledProperty<bool> HideOnRuleProperty = AvaloniaProperty.Register<MainWindowLine, bool>(
         nameof(HideOnRule));
@@ -256,9 +256,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private INotificationHostService NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
 
-    private Queue<NotificationPlayingTicket> _notificationQueue = new();
-
-    private List<NotificationPlayingTicket> _notificationPlayingTickets = [];
+    private INotificationPlaybackService NotificationPlaybackService { get; } = IAppHost.GetService<INotificationPlaybackService>();
 
     private bool _isLoadCompleted = false;
 
@@ -432,7 +430,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateHiddenState();
         UpdateFadeStatus();
-        NotificationHostService.RegisterNotificationConsumer(this, Settings.IsMainLine ? -1 : LineNumber);
+        NotificationHostService.RegisterNotificationConsumer(this, Settings.IsMainLine ? -1 : 0, LineNumber);
         if (Settings != null)
         {
             Settings.PropertyChanged -= MySettingsOnPropertyChanged;
@@ -455,13 +453,32 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         {
             Settings.PropertyChanged -= MySettingsOnPropertyChanged;
         }
-        foreach (var ticket in _notificationPlayingTickets)
+        NotificationPlaybackService.CancelAll(this);
+        _isLoadCompleted = true;
+    }
+
+    private void PreProcessNotificationContent(NotificationContent content)
+    {
+        if (content.ContentTemplateResourceKey != null &&
+            this.TryFindResource(content.ContentTemplateResourceKey, out var template))
         {
-            ticket.Cancel();
-            Logger.LogTrace("Cancelled ticket id={}, {}", ticket.GetHashCode(), ticket.Request);
+            content.ContentTemplate = template as DataTemplate;
         }
-        _notificationQueue.Clear();
-        _notificationPlayingTickets.Clear();
+    }
+
+    private PixelPoint GetCenter()
+    {
+        // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
+        var c = GridWrapper;
+        if (c == null || !c.IsAttachedToVisualTree())
+            return _centerPointCache;
+        if (c.Bounds.Width <= 0 || c.Bounds.Height <= 0)
+            return _centerPointCache;
+        var p = c.PointToScreen(
+            new Point(c.Bounds.Width / 2, c.Bounds.Height / 2)
+        );
+
+        return _centerPointCache = p;
     }
     
     private void MySettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -640,170 +657,98 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             }
             return;
         }
-        foreach (var newRequest in notificationRequests)
-        {
-            _notificationQueue.Enqueue(newRequest);
-            _notificationPlayingTickets.Add(newRequest);
-        }
-
-        ProcessNotification();
-    }
-    
-    private void PreProcessNotificationContent(NotificationContent content)
-    {
-        if (content.ContentTemplateResourceKey != null && 
-            this.TryFindResource(content.ContentTemplateResourceKey, out var template))
-        {
-            content.ContentTemplate = template as DataTemplate;
-        }
-    }
-    
-    private PixelPoint GetCenter()
-    {
-        // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
-        if (GridWrapper?.GetVisualRoot() == null)
-        {
-            return _centerPointCache;
-        }
-        var p = GridWrapper?.PointToScreen(new Point(GridWrapper.Bounds.Width / 2, GridWrapper.Bounds.Height / 2));
-        if (p == null)
-        {
-            return _centerPointCache;
-        }
-        return _centerPointCache = p.Value;
+        NotificationPlaybackService.EnqueueAndPlay(this, this, notificationRequests);
     }
 
-    private async void ProcessNotification()
+    public async Task OnPlayMaskAsync(NotificationRequest request, INotificationSettings settings)
     {
-        if (_isUnloading)
+        await Dispatcher.UIThread.InvokeAsync(() =>
         {
-            return;
-        }
-        if (_isOverlayOpen)
-        {
-            return;
-        }
-        _isOverlayOpen = true;  // 上锁
-
-        var notificationsShowed = false;
-
-        if (_firstProcessNotificationsTime == DateTime.MinValue)
-            _firstProcessNotificationsTime = ExactTimeService.GetCurrentLocalDateTime();
-        if (!SettingsService.Settings.IsNotificationEnabled ||
-            (ExactTimeService.GetCurrentLocalDateTime() - _firstProcessNotificationsTime <= TimeSpan.FromSeconds(10) &&
-             App.ApplicationCommand.Quiet) // 静默启动
-           )
-        {
-            NotificationHostService.RequestQueue.Clear();
-        }
-
-        CancellationTokenSource? stopNotificationSoundCts = null;
-        while (_notificationQueue.Count > 0)
-        {
-            var ticket = _notificationQueue.Dequeue();
-            _notificationPlayingTickets.Add(ticket);
-            var request = CurrentNotificationRequest = ticket.Request;
-            var settings = ticket.Settings;
-            Logger.LogTrace("nid = {notificationId}, tid={ticketId}", request.GetHashCode(), ticket.GetHashCode());
-            
-            var mask = request.MaskContent;
-            var overlay = request.OverlayContent;
-            Logger.LogInformation("处理通知请求：{} {}", request.MaskContent, request.OverlayContent);
-            var cancellationToken = request.CancellationTokenSource.Token;
-
-            PreProcessNotificationContent(mask);
-            
-            try
+            if (_firstProcessNotificationsTime == DateTime.MinValue)
+                _firstProcessNotificationsTime = ExactTimeService.GetCurrentLocalDateTime();
+            if (!SettingsService.Settings.IsNotificationEnabled ||
+                (ExactTimeService.GetCurrentLocalDateTime() - _firstProcessNotificationsTime <= TimeSpan.FromSeconds(10) &&
+                 App.ApplicationCommand.Quiet) // 静默启动
+               )
             {
-                if (request.MaskContent.Duration > TimeSpan.Zero && !cancellationToken.IsCancellationRequested)
-                {
-                    PseudoClasses.Set(":mask-anim", false);
-                    PseudoClasses.Set(":overlay-out", false);
-                    PseudoClasses.Set(":mask-in", false);
-                    PseudoClasses.Set(":mask-out", false);
-                    notificationsShowed = true;
-                    MaskContent = request.MaskContent;  // 加载 Mask 元素
-                    if (settings.IsNotificationTopmostEnabled && SettingsService.Settings.AllowNotificationTopmost)
-                    {
-                        MainWindow.AcquireTopmostLock(TopmostLock);
-                    }
-                    else
-                    {
-                        MainWindow.ReleaseTopmostLock(TopmostLock);
-                    }
-                    
-                    PseudoClasses.Set(":mask-anim", true);
-                    PseudoClasses.Set(":mask-in", true);
-                    PseudoClasses.Set(":overlay-anim", false);
-
-                    // 播放提醒特效
-                    if (settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
-                        !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible && !request.MaskSession.HasSoundsPlayed)
-                    {
-                        var center = GetCenter();
-                        TopmostEffectWindow.PlayEffect(new RippleEffect(center, MaskContent.Color));
-                    }
-
-                    await ticket.ProcessMask();
-                    if (overlay is null || cancellationToken.IsCancellationRequested || overlay.Duration <= TimeSpan.Zero)
-                    {
-                        PseudoClasses.Set(":overlay-anim", true);
-                        PseudoClasses.Set(":mask-in", false);
-                        PseudoClasses.Set(":mask-out", true);
-                        PseudoClasses.Set(":overlay-in", false);
-                        PseudoClasses.Set(":overlay-out", true);
-                    }
-                    else
-                    {
-                        PreProcessNotificationContent(overlay);
-                        OverlayContent = overlay;
-                        PseudoClasses.Set(":mask-out", true);
-                        PseudoClasses.Set(":mask-in", false);
-                        PseudoClasses.Set(":overlay-out", false);
-                        PseudoClasses.Set(":overlay-in", true);
-                        await ticket.ProcessOverlay();
-                    }
-                }
-            }
-            catch (TaskCanceledException)
-            {
-                Logger.LogTrace("CANCELLED! tid={ticketId}, {}", ticket.GetHashCode(), request);
+                NotificationHostService.RequestQueue.Clear();
+                request.Cancel();
+                return;
             }
 
-            if (_isUnloading)
+            CurrentNotificationRequest = request;
+            PreProcessNotificationContent(request.MaskContent);
+
+            PseudoClasses.Set(":mask-anim", false);
+            PseudoClasses.Set(":overlay-out", false);
+            PseudoClasses.Set(":mask-in", false);
+            PseudoClasses.Set(":mask-out", false);
+            MaskContent = request.MaskContent; // 加载 Mask 元素
+
+            if (settings.IsNotificationTopmostEnabled && SettingsService.Settings.AllowNotificationTopmost)
             {
-                break;
+                MainWindow.AcquireTopmostLock(TopmostLock);
+            }
+            else
+            {
+                MainWindow.ReleaseTopmostLock(TopmostLock);
             }
 
-            if (NotificationHostService.RequestQueue.Count + _notificationQueue.Count < 1 && notificationsShowed)
+            PseudoClasses.Set(":mask-anim", true);
+            PseudoClasses.Set(":mask-in", true);
+            PseudoClasses.Set(":overlay-anim", false);
+
+            // 播放提醒特效
+            if (settings.IsNotificationEffectEnabled && SettingsService.Settings.AllowNotificationEffect &&
+                !IsAllComponentsHid && SettingsService.Settings.IsMainWindowVisible && !request.MaskSession.HasSoundsPlayed)
+            {
+                var center = GetCenter();
+                TopmostEffectWindow.PlayEffect(new RippleEffect(center, MaskContent.Color));
+            }
+        });
+    }
+
+    public async Task OnPlayOverlayAsync(NotificationRequest request, INotificationSettings settings)
+    {
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (request.OverlayContent == null)
             {
                 PseudoClasses.Set(":overlay-anim", true);
-                PseudoClasses.Set(":mask-out", true);
                 PseudoClasses.Set(":mask-in", false);
-                PseudoClasses.Set(":overlay-out", true);
+                PseudoClasses.Set(":mask-out", true);
                 PseudoClasses.Set(":overlay-in", false);
+                PseudoClasses.Set(":overlay-out", true);
+                return;
             }
-            
-            _notificationPlayingTickets.Remove(ticket);
-            var notifications = NotificationHostService.PullNotificationRequests();
-            foreach (var newRequest in notifications)
-            {
-                _notificationQueue.Enqueue(newRequest);
-                _notificationPlayingTickets.Add(newRequest);
-            }
-        }
 
-        OverlayContent = null;
-        MaskContent = null;
-        _isOverlayOpen = false;
-        if (stopNotificationSoundCts?.IsCancellationRequested == false)
-        {
-            await stopNotificationSoundCts.CancelAsync();
-        }
-        stopNotificationSoundCts?.Dispose();
-        MainWindow.ReleaseTopmostLock(TopmostLock);
+            PreProcessNotificationContent(request.OverlayContent);
+            OverlayContent = request.OverlayContent;
+            PseudoClasses.Set(":mask-out", true);
+            PseudoClasses.Set(":mask-in", false);
+            PseudoClasses.Set(":overlay-out", false);
+            PseudoClasses.Set(":overlay-in", true);
+        });
     }
 
-    public int QueuedNotificationCount => _notificationQueue.Count;
-    public bool AcceptsNotificationRequests => IsNotificationEnabled && !IsAllComponentsHid && !_isOverlayOpen && !_isUnloading;
+    public void OnPlaybackCompleted()
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            PseudoClasses.Set(":overlay-anim", true);
+            PseudoClasses.Set(":mask-out", true);
+            PseudoClasses.Set(":mask-in", false);
+            PseudoClasses.Set(":overlay-out", true);
+            PseudoClasses.Set(":overlay-in", false);
+
+            OverlayContent = null;
+            MaskContent = null;
+            MainWindow.ReleaseTopmostLock(TopmostLock);
+        });
+    }
+
+    public int QueuedNotificationCount => NotificationPlaybackService.GetQueuedCount(this);
+    
+    public bool AcceptsNotificationRequests => IsNotificationEnabled && !IsAllComponentsHid && !IsOverlayOpen && !_isUnloading;
+
 }
