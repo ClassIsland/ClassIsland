@@ -43,6 +43,7 @@ public class NotificationWorkerService : INotificationWorkerService
     private ILessonsService LessonsService { get; }
     private ILogger<NotificationWorkerService> Logger { get; }
 
+    private readonly Lock _playingRequestsLock = new();
     private List<(NotificationRequest request, bool overlay)> PlayingRequests { get; } = [];
     
     public NotificationWorkerService(ISpeechService speechService,
@@ -65,9 +66,15 @@ public class NotificationWorkerService : INotificationWorkerService
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
         var now = ExactTimeService.GetCurrentLocalDateTime();
-        foreach (var (request, overlay) in PlayingRequests)
+        List<(NotificationRequest request, bool overlay)> requests;
+        lock (_playingRequestsLock)
         {
-            if (!overlay || request.OverlayContent is not {} content)
+            requests = [.. PlayingRequests];
+        }
+
+        foreach (var (request, overlay) in requests)
+        {
+            if (!overlay || request.OverlayContent is not { } content)
             {
                 continue;
             }
@@ -109,17 +116,7 @@ public class NotificationWorkerService : INotificationWorkerService
     public NotificationPlayingTicket CreateTicket(NotificationRequest request)
     {
         var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(request.CancellationToken);
-        INotificationSettings settings = SettingsService.Settings;
-        foreach (var i in new List<NotificationSettings?>([
-                         request.ChannelSettings,
-                         request.ProviderSettings,
-                         request.RequestNotificationSettings
-                     ]).OfType<NotificationSettings>()
-                     .Where(i => i.IsSettingsEnabled))
-        {
-            settings = i;
-            break;
-        }
+        var settings = GetEffectiveSettings(request);
 
         var cancellationCompletedSource = new TaskCompletionSource();
         cancellationTokenSource.Token.Register(() =>
@@ -142,6 +139,25 @@ public class NotificationWorkerService : INotificationWorkerService
             CancellationCompletedCompletionSource = cancellationCompletedSource
         };
         return ticket;
+    }
+
+    private INotificationSettings GetEffectiveSettings(NotificationRequest request)
+    {
+        INotificationSettings settings = SettingsService.Settings;
+        var candidates = new[]
+        {
+            request.ChannelSettings,
+            request.ProviderSettings,
+            request.RequestNotificationSettings
+        };
+
+        foreach (var candidate in candidates.OfType<NotificationSettings>().Where(i => i.IsSettingsEnabled))
+        {
+            settings = candidate;
+            break;
+        }
+
+        return settings;
     }
 
     private Func<Task> CreateMaskProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings, TaskCompletionSource cancellationCompletedSource, CancellationTokenSource soundsCts) => async () =>
@@ -171,7 +187,10 @@ public class NotificationWorkerService : INotificationWorkerService
         var duration = SetupNotificationSessionTiming(id, content, session);
         request.State = NotificationState.Playing;
         var tuple = (request, !isMask);
-        PlayingRequests.Add(tuple);
+        lock (_playingRequestsLock)
+        {
+            PlayingRequests.Add(tuple);
+        }
         Logger.LogTrace("[{id}] Start session, isMask={isMask}, duration={duration}", id, isMask, duration);
         try
         {
@@ -238,7 +257,10 @@ public class NotificationWorkerService : INotificationWorkerService
             session.TimingStopwatch.Reset();
             session.SessionPlayedTime += playedTime;
             Logger.LogTrace("[{id}] END session, isMask={isMask}, playedTime={playedTime}", id, isMask, playedTime);
-            PlayingRequests.Remove(tuple);
+            lock (_playingRequestsLock)
+            {
+                PlayingRequests.Remove(tuple);
+            }
             if (cancellationToken.IsCancellationRequested)
             {
                 await soundsCts.CancelAsync();
