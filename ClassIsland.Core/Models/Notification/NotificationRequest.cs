@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Shared.Models.Notification;
@@ -17,6 +17,7 @@ public class NotificationRequest : ObservableRecipient
     private NotificationContent? _overlayContent;
     private NotificationContent _maskContent = NotificationContent.Empty;
     private double _leftProgress = 1.0;
+    private int? _targetLineNumber;
 
     /// <summary>
     /// 初始化一个 <see cref="NotificationRequest"/> 实例。
@@ -31,6 +32,20 @@ public class NotificationRequest : ObservableRecipient
         {
             Completed?.Invoke(this, EventArgs.Empty);
         });
+    }
+
+    /// <summary>
+    /// 目标行号。如果为 null，则由系统自动路由。
+    /// </summary>
+    public int? TargetLineNumber
+    {
+        get => _targetLineNumber;
+        set
+        {
+            if (value == _targetLineNumber) return;
+            _targetLineNumber = value;
+            OnPropertyChanged();
+        }
     }
 
     /// <summary>
@@ -174,11 +189,33 @@ public class NotificationRequest : ObservableRecipient
     public NotificationPlayingSessionInfo OverlaySession { get; } = new();
 
     /// <summary>
-    /// 取消当前提醒。
+    /// 取消提醒。
     /// </summary>
     public void Cancel()
     {
         CancellationTokenSource.Cancel();
+    }
+
+    /// <summary>
+    /// 暂停提醒。
+    /// </summary>
+    public void Pause()
+    {
+        if (State == NotificationState.Playing)
+        {
+            State = NotificationState.Paused;
+        }
+    }
+
+    /// <summary>
+    /// 恢复提醒。
+    /// </summary>
+    public void Resume()
+    {
+        if (State == NotificationState.Paused)
+        {
+            State = NotificationState.Playing;
+        }
     }
 
     /// <inheritdoc />

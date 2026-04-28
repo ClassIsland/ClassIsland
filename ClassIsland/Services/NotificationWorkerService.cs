@@ -43,7 +43,7 @@ public class NotificationWorkerService : INotificationWorkerService
     private ILessonsService LessonsService { get; }
     private ILogger<NotificationWorkerService> Logger { get; }
 
-    private readonly Lock _playingRequestsLock = new();
+    private readonly object _playingRequestsLock = new();
     private List<(NotificationRequest request, bool overlay)> PlayingRequests { get; } = [];
     
     public NotificationWorkerService(ISpeechService speechService,
@@ -126,13 +126,10 @@ public class NotificationWorkerService : INotificationWorkerService
                 cancellationCompletedSource.TrySetResult();
             }
         });
-        // 提醒音效的取消令牌，与整个提醒请求的取消令牌关联，
-        // 使音效在整个提醒（遮罩+正文）播放完毕或被打断时才取消，而非在遮罩阶段结束时就取消。
-        var soundsCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token);
         var ticket = new NotificationPlayingTicket()
         {
-            ProcessMask = CreateMaskProcessor(request, cancellationTokenSource.Token, settings, cancellationCompletedSource, soundsCts),
-            ProcessOverlay = CreateOverlayProcessor(request, cancellationTokenSource.Token, settings, cancellationCompletedSource, soundsCts),
+            ProcessMask = CreateMaskProcessor(request, cancellationTokenSource.Token, settings, cancellationCompletedSource),
+            ProcessOverlay = CreateOverlayProcessor(request, cancellationTokenSource.Token, settings, cancellationCompletedSource),
             Request = request,
             Settings = settings,
             CancellationTokenSource = cancellationTokenSource,
@@ -160,18 +157,18 @@ public class NotificationWorkerService : INotificationWorkerService
         return settings;
     }
 
-    private Func<Task> CreateMaskProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings, TaskCompletionSource cancellationCompletedSource, CancellationTokenSource soundsCts) => async () =>
+    private Func<Task> CreateMaskProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings, TaskCompletionSource cancellationCompletedSource) => async () =>
     {
-        await ProcessNotificationSessionCore(request, request.MaskContent, request.MaskSession, true, cancellationToken, settings, cancellationCompletedSource, soundsCts);
+        await ProcessNotificationSessionCore(request, request.MaskContent, request.MaskSession, true, cancellationToken, settings, cancellationCompletedSource);
     };
     
-    private Func<Task> CreateOverlayProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings, TaskCompletionSource cancellationCompletedSource, CancellationTokenSource soundsCts) => async () =>
+    private Func<Task> CreateOverlayProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings, TaskCompletionSource cancellationCompletedSource) => async () =>
     {
         if (request.OverlayContent == null)
         {
             return;
         }
-        await ProcessNotificationSessionCore(request, request.OverlayContent, request.OverlaySession, false, cancellationToken, settings, cancellationCompletedSource, soundsCts);
+        await ProcessNotificationSessionCore(request, request.OverlayContent, request.OverlaySession, false, cancellationToken, settings, cancellationCompletedSource);
     };
 
     private async Task ProcessNotificationSessionCore(NotificationRequest request,
@@ -180,8 +177,7 @@ public class NotificationWorkerService : INotificationWorkerService
         bool isMask,
         CancellationToken cancellationToken, 
         INotificationSettings settings,
-        TaskCompletionSource cancellationCompletedSource,
-        CancellationTokenSource soundsCts)
+        TaskCompletionSource cancellationCompletedSource)
     {
         var id = Guid.NewGuid();
         var duration = SetupNotificationSessionTiming(id, content, session);
@@ -205,19 +201,29 @@ public class NotificationWorkerService : INotificationWorkerService
                 try
                 {
                     Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
+                    // 音效播放使用请求的取消令牌，音效在切换配置或通知显示结束后仍然播放完整，除非通知被取消。
+                    var audioCancellationToken = request.CancellationToken;
                     if (string.IsNullOrWhiteSpace(settings.NotificationSoundPath))
                     {
                         _ = Task.Run(async () =>
-                        {
-                            using var stream = AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri);
-                            await AudioService.PlayAudioAsync(stream,
-                                (float)SettingsService.Settings.NotificationSoundVolume, soundsCts.Token);
-                        }, soundsCts.Token);
+        {
+            try
+            {
+                using var stream = AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri);
+                await AudioService.PlayAudioAsync(stream,
+                    (float)SettingsService.Settings.NotificationSoundVolume, audioCancellationToken);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "音效播放失败");
+            }
+        }, audioCancellationToken);
                     }
                     else
                     {
                         _ = AudioService.PlayAudioAsync(settings.NotificationSoundPath,
-                            (float)SettingsService.Settings.NotificationSoundVolume, soundsCts.Token);
+                            (float)SettingsService.Settings.NotificationSoundVolume, audioCancellationToken);
                     }
                 }
                 catch (Exception e)
@@ -227,23 +233,58 @@ public class NotificationWorkerService : INotificationWorkerService
             }
             
             session.HasSoundsPlayed = true;
-            await Task.Delay(duration, cancellationToken);
+            // await Task.Delay(duration, cancellationToken);
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var now = ExactTimeService.GetCurrentLocalDateTime();
+                if (request.State == NotificationState.Paused)
+                {
+                    if (session.TimingStopwatch.IsRunning)
+                    {
+                        session.TimingStopwatch.Stop();
+                    }
+
+                    await Task.Delay(100, cancellationToken);
+                    continue;
+                }
+
+                if (!session.TimingStopwatch.IsRunning)
+                {
+                    session.TimingStopwatch.Start();
+                }
+
+                var remaining = session.IsExplicitEndTime
+                    ? content.EndTime!.Value - now
+                    : content.Duration - (session.SessionPlayedTime + session.TimingStopwatch.Elapsed);
+                if (remaining <= TimeSpan.Zero)
+                {
+                    break;
+                }
+
+                await Task.Delay((int)Math.Min(100, remaining.TotalMilliseconds), cancellationToken);
+            }
             if (request.OverlayContent == null || !isMask)
             {
                 request.State = NotificationState.Completed;
                 SpeechService.ClearSpeechQueue();
-                await soundsCts.CancelAsync();
                 await request.CompletedTokenSource.CancelAsync();
             }
 
             session.IsCompleted = true;
         }
-        catch (TaskCanceledException)
+        catch (OperationCanceledException)
         {
             Logger.LogInformation("提醒请求 {request} 取消播放", request.GetHashCode());
-            request.State = request.CancellationToken.IsCancellationRequested
-                ? NotificationState.Cancelled
-                : NotificationState.Paused;
+            if (request.CancellationToken.IsCancellationRequested)
+            {
+                request.State = NotificationState.Cancelled;
+                request.CompletedTokenSource.Cancel();
+            }
+            else
+            {
+                request.State = NotificationState.Paused;
+            }
             throw;
         }
         catch
@@ -263,7 +304,6 @@ public class NotificationWorkerService : INotificationWorkerService
             }
             if (cancellationToken.IsCancellationRequested)
             {
-                await soundsCts.CancelAsync();
                 cancellationCompletedSource.TrySetResult();
             }
         }

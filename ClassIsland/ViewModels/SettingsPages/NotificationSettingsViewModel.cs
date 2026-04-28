@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Edge_tts_sharp.Model;
 using Edge_tts_sharp;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Models;
-using ClassIsland.Models.Notification;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Services;
 using ClassIsland.Shared.Abstraction.Models.Notification;
 using ClassIsland.Shared.Interfaces;
