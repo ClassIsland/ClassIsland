@@ -15,9 +15,7 @@ public class NotificationRouter(ILogger<NotificationRouter> logger) : INotificat
         if (requests.Count <= 0)
             return null;
 
-        var targetLine = requests.Count > 0
-            ? requests[0].Request.TargetLineNumber
-            : null;
+        var targetLine = requests[0].Request.TargetLineNumber;
         var consumer = consumers
             .FirstOrDefault(x => x.Consumer.AcceptsNotificationRequests && 
                                  x.Consumer.QueuedNotificationCount <= 0 &&
