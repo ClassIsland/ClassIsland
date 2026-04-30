@@ -1,0 +1,40 @@
+name: Build Flatpak Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Flatpak package
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Flatpak tooling
+        run: |
+          dnf -y update
+          dnf -y install flatpak flatpak-builder
+          flatpak --version
+          flatpak-builder --version
+
+      - name: Configure Flathub remote
+        run: |
+          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak remotes
+
+      - name: Build Flatpak package
+        run: |
+          chmod +x tools/flatpak/build-flatpak.sh
+          tools/flatpak/build-flatpak.sh
+
+      - name: Upload Flatpak artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-package
+          path: |
+            *.flatpak
+            **/*.flatpak
