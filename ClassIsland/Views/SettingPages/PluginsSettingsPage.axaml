@@ -45,13 +45,12 @@
                         <WrapPanel Orientation="Horizontal" Margin="0 0 0 2">
                             <TextBlock VerticalAlignment="Center">
                                 <Run Text="{Binding Manifest.Version}"/>
-                                <Run Text=" | "/>
+                                <Run Text=" | " Classes="l-decoration"/>
                                 <ci:NavHyperlink NavTarget="{Binding Manifest.Url}">项目主页</ci:NavHyperlink>
-                                <Run Text=" | "/>
+                                <Run Text=" | " Classes="l-decoration"/>
                                 <Run Text="{Binding Manifest.Author}"/>
                             </TextBlock>
-                            
-                            <TextBlock Text=" | " VerticalAlignment="Center" Margin="0 0 4 0"/>
+                            <TextBlock Text=" |" Classes="l-decoration" VerticalAlignment="Center" Margin="0 0 4 0"/>
                             <WrapPanel Orientation="Horizontal">
                                 <Border Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}"
                                         CornerRadius="999"
@@ -151,18 +150,6 @@
                                 <ci:IconText Glyph="&#xE1A0;" Text="更新"/>
                             </Button>
                             <Button VerticalAlignment="Center"
-                                    Click="ButtonRestart_OnClick"
-                                    Classes="accent"
-                                    Margin="0 0 6 0">
-                                <Button.IsVisible>
-                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                        <Binding Path="IsLocal"/>
-                                        <Binding Path="RestartRequired"/>
-                                    </MultiBinding>
-                                </Button.IsVisible>
-                                <ci:IconText Glyph="&#xE0BD;" Text="重启以应用更改"/>
-                            </Button>
-                            <Button VerticalAlignment="Center"
                                     Margin="0 0 6  0"
                                     Click="ButtonUninstall_OnClick"
                                     IsVisible="{Binding !IsUninstalling}">
@@ -187,6 +174,16 @@
                             </WrapPanel.IsVisible>
                             <Button Click="ButtonInstallPlugin_OnClick" Classes="accent">
                                 <ci:IconText Glyph="&#xE0D3;" Text="安装"/>
+                            </Button>
+                        </WrapPanel>
+                        <WrapPanel Orientation="Horizontal"
+                                   Margin="0 0 0 4">
+                            <Button VerticalAlignment="Center"
+                                    Click="ButtonRestart_OnClick"
+                                    Classes="accent"
+                                    Margin="0 0 6 0"
+                                    IsVisible="{Binding RestartRequired}">
+                                <ci:IconText Glyph="&#xE0BD;" Text="重启以应用更改"/>
                             </Button>
                         </WrapPanel>
                         <controls2:InfoBar Message="此插件未声明支持当前所运行的操作系统。此插件可能不能正常按预期工作。"
