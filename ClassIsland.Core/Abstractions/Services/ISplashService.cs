@@ -17,7 +17,7 @@ public interface ISplashService : INotifyPropertyChanged, INotifyPropertyChangin
     /// </summary>
     /// <param name="message">要设置的详细状态消息</param>
     void SetDetailedStatus(string message);
-    
+
     /// <summary>
     /// 当前启动进度
     /// </summary>

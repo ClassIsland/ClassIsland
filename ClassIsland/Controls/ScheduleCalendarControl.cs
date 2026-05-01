@@ -21,10 +21,10 @@ public class ScheduleCalendarControl : Calendar
 
     private static void SetClassPlanList(Control obj, SyncDictionaryList<Guid, ClassPlan> value) => obj.SetValue(ClassPlanListProperty, value);
     public static SyncDictionaryList<Guid, ClassPlan> GetClassPlanList(Control obj) => obj.GetValue(ClassPlanListProperty);
-    
+
     private List<IDisposable> _updateObservers = [];
-    
-    public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>(); 
+
+    public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
 
     public void UpdateSchedule()
     {
@@ -37,7 +37,7 @@ public class ScheduleCalendarControl : Calendar
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
     }
-    
+
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         UpdateObservers();
@@ -75,5 +75,5 @@ public class ScheduleCalendarControl : Calendar
         }
         _updateObservers.Clear();
     }
-    
+
 }

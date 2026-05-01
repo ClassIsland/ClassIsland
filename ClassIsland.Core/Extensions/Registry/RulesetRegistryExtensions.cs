@@ -37,7 +37,7 @@ public static class RulesetRegistryExtensions
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings>(this IServiceCollection services, string id, string name = "",
-        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle=null)
+        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
         var info = Register(id, name, iconGlyph, onHandle);
         info.SettingsType = typeof(TSettings);
@@ -56,7 +56,7 @@ public static class RulesetRegistryExtensions
     /// <typeparam name="TSettingsControl">规则设置控件类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings, TSettingsControl>(this IServiceCollection services, string id, string name = "",
-        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate ? onHandle = null) where TSettingsControl : RuleSettingsControlBase
+        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null) where TSettingsControl : RuleSettingsControlBase
     {
         var info = Register(id, name, iconGlyph, onHandle);
         services.AddKeyedTransient<RuleSettingsControlBase, TSettingsControl>(id);
@@ -77,7 +77,7 @@ public static class RulesetRegistryExtensions
         var info = new RuleRegistryInfo(id, name, iconGlyph);
         info.Handle += onHandle;
         IRulesetService.Rules.Add(id, info);
-        
+
         return info;
     }
 }

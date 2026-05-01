@@ -21,10 +21,10 @@ public class StickyScrollViewer : ContentControl
 
     public static FuncValueConverter<Vector, Thickness> ScrollViewerOffsetToHeaderMarginConverter { get; } =
         new(x => new Thickness(0, -x.Y, 0, 0));
-    
+
     public static FuncValueConverter<double, Thickness> DoubleToHeaderMarginConverter { get; } =
         new(x => new Thickness(0, -x, 0, 0));
-    
+
     public static FuncValueConverter<double, GridLength> DoubleToGridLengthConverter { get; } =
         new(x => new GridLength(x, GridUnitType.Pixel));
 
@@ -33,7 +33,7 @@ public class StickyScrollViewer : ContentControl
 
     public static void SetHeaderFadingOpacity(Control obj, double value) => obj.SetValue(HeaderFadingOpacityProperty, value);
     public static double GetHeaderFadingOpacity(Control obj) => obj.GetValue(HeaderFadingOpacityProperty);
-    
+
     public static readonly StyledProperty<double> CollapsedHeightProperty = AvaloniaProperty.Register<StickyScrollViewer, double>(
         nameof(CollapsedHeight), 150);
 
@@ -54,7 +54,7 @@ public class StickyScrollViewer : ContentControl
 
     public static readonly StyledProperty<IDataTemplate?> HeaderTemplateProperty = AvaloniaProperty.Register<StickyScrollViewer, IDataTemplate?>(
         nameof(HeaderTemplate));
-    
+
     public IDataTemplate? HeaderTemplate
     {
         get => GetValue(HeaderTemplateProperty);
@@ -84,12 +84,12 @@ public class StickyScrollViewer : ContentControl
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        if (this.GetTemplateChildren().OfType<ScrollViewer>().FirstOrDefault(x => x.Name == MainScrollViewerName) is {} scrollViewer)
+        if (this.GetTemplateChildren().OfType<ScrollViewer>().FirstOrDefault(x => x.Name == MainScrollViewerName) is { } scrollViewer)
         {
             _mainScrollViewer = scrollViewer;
             _mainScrollViewer.ScrollChanged += MainScrollViewerOnScrollChanged;
         }
-        if (this.GetTemplateChildren().OfType<ContentPresenter>().FirstOrDefault(x => x.Name == HeaderName) is {} header)
+        if (this.GetTemplateChildren().OfType<ContentPresenter>().FirstOrDefault(x => x.Name == HeaderName) is { } header)
         {
             _header = header;
             _header.SizeChanged += HeaderOnSizeChanged;

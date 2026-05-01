@@ -24,7 +24,7 @@ public static class ProfileTransferProviderRegisterExtensions
     /// <param name="funcHandler">提供方处理器</param>
     /// <param name="icon">提供方图标表达式</param>
     /// <returns>原来的<see cref="IServiceCollection"/>对象。</returns>
-    public static IServiceCollection AddProfileTransferProvider(this IServiceCollection services, string id, string name, ProfileTransferProviderType type ,Action<TopLevel> funcHandler,
+    public static IServiceCollection AddProfileTransferProvider(this IServiceCollection services, string id, string name, ProfileTransferProviderType type, Action<TopLevel> funcHandler,
         string? icon = null)
     {
         RegisterCore(new ProfileTransferProviderInfo()
@@ -33,7 +33,7 @@ public static class ProfileTransferProviderRegisterExtensions
             Name = name,
             Type = type,
             FunctionHandler = funcHandler,
-            Icon = IconExpressionHelper.TryParseOrNull(icon ?? "\ue68f") 
+            Icon = IconExpressionHelper.TryParseOrNull(icon ?? "\ue68f")
         });
         return services;
     }
@@ -71,8 +71,8 @@ public static class ProfileTransferProviderRegisterExtensions
         {
             throw new InvalidOperationException($"已存在 id 为 {info.Id} 的迁移提供方");
         }
-        
-        
+
+
         IProfileTransferService.Providers.Add(info);
     }
 }

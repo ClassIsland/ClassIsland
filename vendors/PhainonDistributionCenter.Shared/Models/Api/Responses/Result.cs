@@ -22,7 +22,7 @@ public class Result
     /// </summary>
     public Result()
     {
-        
+
     }
 
     /// <summary>
@@ -58,11 +58,11 @@ public class Result<T> : Result
     {
         Content = content;
     }
-    
+
     /// <inheritdoc />
     public Result() : base()
     {
-        
+
     }
 
     /// <summary>

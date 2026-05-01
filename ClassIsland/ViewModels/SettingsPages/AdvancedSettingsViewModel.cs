@@ -8,7 +8,7 @@ namespace ClassIsland.ViewModels.SettingsPages;
 public partial class AdvancedSettingsViewModel(SettingsService settingsService) : ObservableObject
 {
     public SettingsService SettingsService { get; } = settingsService;
-    
+
     public int RenderingModeSelectedIndex
     {
         get => int.TryParse(GlobalStorageService.GetValue("Win32RenderingMode") ?? "", out var v1)
@@ -20,7 +20,7 @@ public partial class AdvancedSettingsViewModel(SettingsService settingsService) 
             OnPropertyChanged();
         }
     }
-    
+
     public bool UseNativeTitlebar
     {
         get => bool.TryParse(GlobalStorageService.GetValue("UseNativeTitlebar"), out var v)
@@ -30,9 +30,9 @@ public partial class AdvancedSettingsViewModel(SettingsService settingsService) 
         {
             GlobalStorageService.SetValue("UseNativeTitlebar", value.ToString());
             OnPropertyChanged();
-        } 
+        }
     }
-    
+
     public bool IgnoreQtScaling
     {
         get => GlobalStorageService.GetValue("IgnoreQtScaling") == "1";
@@ -40,6 +40,6 @@ public partial class AdvancedSettingsViewModel(SettingsService settingsService) 
         {
             GlobalStorageService.SetValue("IgnoreQtScaling", value ? "1" : "0");
             OnPropertyChanged();
-        } 
+        }
     }
 }

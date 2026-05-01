@@ -18,9 +18,9 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
 {
     internal PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; }
     internal ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; }
-    
+
     internal NotificationRequest? CurrentRequest { get; set; }
-    
+
     internal NotificationRequest GetRequest();
 
     /// <summary>
@@ -83,7 +83,7 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     /// </remarks>
     /// <returns>获得的提醒</returns>
     public IList<NotificationPlayingTicket> PullNotificationRequests();
-    
+
     /// <summary>
     /// 当前是否正在播放提醒
     /// </summary>

@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace ClassIsland.ViewModels.SettingsPages;
 
 public partial class RefreshingSettingsViewModel(
-    SettingsService settingsService, 
+    SettingsService settingsService,
     ITutorialService tutorialService,
     IRefreshingService refreshingService) : ObservableObject
 {

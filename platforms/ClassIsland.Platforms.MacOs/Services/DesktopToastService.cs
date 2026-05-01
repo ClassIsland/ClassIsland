@@ -9,14 +9,14 @@ public class DesktopToastService : NSUserNotificationCenterDelegate, IDesktopToa
     private Dictionary<string, Action> ActivationActions { get; } = new();
 
     private Dictionary<DesktopToastContent, List<string>> ActivationActionIds { get; } = new();
-    
+
     private Dictionary<NSUserNotification, DesktopToastContent> ActiveNotifications { get; } = new();
-    
+
     public DesktopToastService()
     {
         NSUserNotificationCenter.DefaultUserNotificationCenter.Delegate = this;
     }
-    
+
     public Task ShowToastAsync(DesktopToastContent content)
     {
         var notificationId = Guid.NewGuid().ToString();
@@ -41,7 +41,7 @@ public class DesktopToastService : NSUserNotificationCenterDelegate, IDesktopToa
         ActiveNotifications[notification] = content;
         NSUserNotificationCenter.DefaultUserNotificationCenter.DeliverNotification(notification);
         return Task.CompletedTask;
-    }   
+    }
 
     public async Task ShowToastAsync(string title, string body, Action? activated = null)
     {
@@ -56,7 +56,7 @@ public class DesktopToastService : NSUserNotificationCenterDelegate, IDesktopToa
 
     public void ActivateNotificationAction(Guid id)
     {
-        
+
     }
 
     public override void DidActivateNotification(NSUserNotificationCenter center, NSUserNotification notification)
@@ -92,7 +92,7 @@ public class DesktopToastService : NSUserNotificationCenterDelegate, IDesktopToa
             CleanupNotification(content);
         });
     }
-    
+
     private void CleanupNotification(DesktopToastContent toast)
     {
         if (!ActivationActionIds.TryGetValue(toast, out var actions))

@@ -33,8 +33,8 @@ public partial class IconText : UserControl
         get => GetValue(SpacingProperty);
         set => SetValue(SpacingProperty, value);
     }
-    
-    
+
+
     public IconText()
     {
         InitializeComponent();

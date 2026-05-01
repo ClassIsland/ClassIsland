@@ -45,7 +45,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         get => GetValue(HideOnRuleProperty);
         set => SetValue(HideOnRuleProperty, value);
     }
-    
+
     public static readonly StyledProperty<Models.Ruleset.Ruleset?> HidingRulesProperty = AvaloniaProperty.Register<ComponentPresenter, Models.Ruleset.Ruleset?>(
         nameof(HidingRules));
 
@@ -54,7 +54,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         get => GetValue(HidingRulesProperty);
         set => SetValue(HidingRulesProperty, value);
     }
-    
+
     public static readonly StyledProperty<bool> IsOnMainWindowProperty = AvaloniaProperty.Register<ComponentPresenter, bool>(
         nameof(IsOnMainWindow));
 
@@ -203,7 +203,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 
     internal static void SetIsMainWindowLoaded(Control obj, bool value) => obj.SetValue(IsMainWindowLoadedProperty, value);
     public static bool GetIsMainWindowLoaded(Control obj) => obj.GetValue(IsMainWindowLoadedProperty);
-    
+
     static ComponentPresenter()
     {
         SettingsProperty.Changed.AddClassHandler<ComponentPresenter>(PropertyChangedCallback);
@@ -227,7 +227,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         {
             return;
         }
-        
+
         var compositionVisual = ElementComposition.GetElementVisual(control);
         if (compositionVisual == null)
         {

@@ -44,7 +44,7 @@ public class IpcService : IIpcService
         ConnectedPeers.Remove(null);
         foreach (var i in ConnectedPeers)
         {
-            if (i?.JsonPeerProxy != null) 
+            if (i?.JsonPeerProxy != null)
                 await i.JsonPeerProxy.NotifyAsync(id);
         }
     }
@@ -54,7 +54,7 @@ public class IpcService : IIpcService
         ConnectedPeers.Remove(null);
         foreach (var i in ConnectedPeers)
         {
-            if (i?.JsonPeerProxy != null) 
+            if (i?.JsonPeerProxy != null)
                 await i.JsonPeerProxy.NotifyAsync(id, obj);
         }
     }

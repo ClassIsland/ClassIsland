@@ -17,7 +17,7 @@ namespace ClassIsland.Controls.Components;
 public partial class TextComponent : ComponentBase<TextComponentSettings>
 {
     private IDisposable? _useCustomFontColorObserver;
-    
+
     public TextComponent()
     {
         InitializeComponent();

@@ -98,5 +98,5 @@ public class WebRequestHelper(Uri? baseUri = null, bool phainon = false)
         ConfigureFileHelper.SaveConfig(path, j);
         return j;
     }
-    
+
 }

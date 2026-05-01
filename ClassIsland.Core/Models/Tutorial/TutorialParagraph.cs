@@ -25,12 +25,12 @@ public partial class TutorialParagraph : ObservableObject, IXmlnsAttached
     /// 段落描述
     /// </summary>
     [ObservableProperty] private string _description = "";
-    
+
     /// <summary>
     /// 此段落教程附加的 <see cref="TopLevel"/> 类名称
     /// </summary>
     [ObservableProperty] private string _topLevelClassName = "";
-    
+
     /// <summary>
     /// 初始化动作
     /// </summary>
@@ -40,7 +40,7 @@ public partial class TutorialParagraph : ObservableObject, IXmlnsAttached
     /// 教程语句列表
     /// </summary>
     [ObservableProperty] private ObservableCollection<TutorialSentence> _content = [];
-    
+
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
-    
+
 }

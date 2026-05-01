@@ -93,7 +93,7 @@ public partial class AuthorizeWindow : MyWindow
             this.ShowErrorToast("认证方式的设置验证失败，请检查认证方式配置。");
             return;
         }
-        
+
         DialogResult = true;
         Close();
     }

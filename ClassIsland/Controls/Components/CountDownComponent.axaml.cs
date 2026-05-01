@@ -45,7 +45,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         if (percentage <= 0) return null;
 
         double angle = (percentage / 100) * 360;
-            
+
         // 计算起点和终点
         var startPoint = new Point(
             center.X,
@@ -70,7 +70,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
                 IsStroked = true
             }
         };
-            
+
         var figure = new PathFigure
         {
             StartPoint = startPoint,
@@ -80,10 +80,10 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
 
         var geometry = new PathGeometry();
         geometry.Figures?.Add(figure);
-            
+
         return geometry;
     });
-    
+
     private string _daysLeft = "";
     private double _percent = 0.0;
     private ILessonsService LessonsService { get; }
@@ -141,7 +141,8 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
             UpdateStyleClasses();
             LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         };
-        DetachedFromVisualTree += (_, _) => {
+        DetachedFromVisualTree += (_, _) =>
+        {
             observer1?.Dispose();
             observer2?.Dispose();
             observer3?.Dispose();
@@ -167,7 +168,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
     {
         return (Settings.StartTime, Settings.OverTime);
     }
-    
+
     private (DateTime start, DateTime end) GetTimeRangeForCycle(DateTime now)
     {
         var start = Settings.CycleStartTime;
@@ -185,7 +186,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         var timingStart = start + (cycles * totalDuration) + before;
         return (timingStart, timingStart + duration);
     }
-    
+
     private (DateTime start, DateTime end) GetTimeRangeForToday(DateTime now)
     {
         var today = now.Date;
@@ -201,7 +202,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
         var end = today + tl?.LastOrDefault(x => x.TimeType is 0 or 1)?.EndTime ?? fallbackEnd;
         return (start, end);
     }
-    
+
     private (DateTime start, DateTime end) GetTimeRangeForWeek(DateTime now)
     {
         var today = now.Date;

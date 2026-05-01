@@ -14,18 +14,18 @@ namespace ClassIsland.Platforms.Linux.Services;
 public class WindowPlatformService : IWindowPlatformService
 {
     private List<EventHandler<ForegroundWindowChangedEventArgs>> _handlers = [];
-    
+
     private nint _display;
     private nint _root;
     private nint _atomActiveWindow;
 
     private static WindowPlatformService self = null!;
-    
+
     public delegate int XErrorHandlerDelegate(IntPtr display, IntPtr errorEvent);
 
     private static CancellationToken _stopToken;
 
-    
+
     private static int XErrorHandler(IntPtr display, IntPtr errorEvent)
     {
         if (display != self?._display)
@@ -38,22 +38,22 @@ public class WindowPlatformService : IWindowPlatformService
     }
 
     private static Delegate _xErrorHandlerDelegate = new XErrorHandlerDelegate(XErrorHandler);
-    
+
     public WindowPlatformService(CancellationToken stopToken)
     {
         _stopToken = stopToken;
-        
+
         XInitThreads();
-        
+
         _display = XOpenDisplay(null);
         self = this;
-        
+
         XExtensions.Init(_display);
-        
+
         XSetErrorHandler(Marshal.GetFunctionPointerForDelegate(_xErrorHandlerDelegate));
         _root = XDefaultRootWindow(_display);
         _atomActiveWindow = XInternAtom(_display, "_NET_ACTIVE_WINDOW", false);
-        
+
     }
 
     ~WindowPlatformService()
@@ -65,11 +65,11 @@ public class WindowPlatformService : IWindowPlatformService
     {
         new Task(XEventLoop, _stopToken).Start();
     }
-    
+
     private static void XEventLoop()
     {
         XInitThreads();
-        
+
         var display = XOpenDisplay(null);
         var root = XDefaultRootWindow(display);
         var atomActiveWindow = XInternAtom(display, "_NET_ACTIVE_WINDOW", false);
@@ -78,7 +78,7 @@ public class WindowPlatformService : IWindowPlatformService
         {
             while (!_stopToken.IsCancellationRequested)
             {
-                var status  = XNextEvent(display, out var ev);
+                var status = XNextEvent(display, out var ev);
                 if (status != 0)
                 {
                     continue;
@@ -105,10 +105,10 @@ public class WindowPlatformService : IWindowPlatformService
                     out bytesAfter,
                     out propPtr
                 );
-                
+
                 var winId = Marshal.ReadIntPtr(propPtr);
                 XFree(propPtr);
-                
+
                 _ = Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     self.ForegroundWindowHandle = winId;
@@ -124,7 +124,7 @@ public class WindowPlatformService : IWindowPlatformService
             Console.WriteLine(e);
         }
     }
-    
+
     public void SetWindowFeature(TopLevel toplevel, WindowFeatures features, bool state)
     {
         var handle = toplevel.TryGetPlatformHandle()?.Handle ?? nint.Zero;
@@ -132,7 +132,7 @@ public class WindowPlatformService : IWindowPlatformService
         {
             return;
         }
-        
+
         if ((features & WindowFeatures.Transparent) > 0)
         {
             var region = state ? XFixesCreateRegion(_display, 0, 0) : nint.Zero;
@@ -185,7 +185,7 @@ public class WindowPlatformService : IWindowPlatformService
                 });
             }
         }
-        
+
     }
 
     public WindowFeatures GetWindowFeatures(TopLevel topLevel)
@@ -212,8 +212,8 @@ public class WindowPlatformService : IWindowPlatformService
             IntPtr atomWmName = XInternAtom(_display, "WM_NAME", false);
             XGetTextProperty(_display, handle, out textProp, atomWmName);
         }
-        var title = textProp.value != IntPtr.Zero 
-            ? Marshal.PtrToStringAnsi(textProp.value) ?? "" 
+        var title = textProp.value != IntPtr.Zero
+            ? Marshal.PtrToStringAnsi(textProp.value) ?? ""
             : "";
 
         return title;
@@ -224,7 +224,7 @@ public class WindowPlatformService : IWindowPlatformService
         if (XGetClassHint(_display, handle, out var hint) == 0)
             throw new Exception("无法获取 ClassHint");
 
-        var cls   = Marshal.PtrToStringAnsi(hint.res_class);
+        var cls = Marshal.PtrToStringAnsi(hint.res_class);
 
         XFree(hint.res_class);
 
@@ -242,7 +242,7 @@ public class WindowPlatformService : IWindowPlatformService
     }
 
     public bool IsForegroundWindowFullscreen(Screen screen)
-    {  
+    {
         return XExtensions.GetWindowState(ForegroundWindowHandle) == WindowState.FullScreen;
     }
 
@@ -272,14 +272,14 @@ public class WindowPlatformService : IWindowPlatformService
     public IntPtr ForegroundWindowHandle { get; set; }
     public int GetWindowPid(IntPtr handle)
     {
-        IntPtr pidAtom       = XInternAtom(_display, "_NET_WM_PID",    false);
-        IntPtr cardinalAtom  = XInternAtom(_display, "CARDINAL",       false);
+        IntPtr pidAtom = XInternAtom(_display, "_NET_WM_PID", false);
+        IntPtr cardinalAtom = XInternAtom(_display, "CARDINAL", false);
         if (pidAtom == IntPtr.Zero || cardinalAtom == IntPtr.Zero)
             return -1;
 
         IntPtr actualType;
-        int    actualFormat;
-        ulong  nItems, bytesAfter;
+        int actualFormat;
+        ulong nItems, bytesAfter;
         IntPtr propPid;
 
         int status = XGetWindowProperty(
@@ -315,7 +315,7 @@ public class WindowPlatformService : IWindowPlatformService
 
         XClearWindow(_display, handle);
     }
-    
+
     private void ChangeWMAtoms(nint window, bool enable, params IntPtr[] atoms)
     {
         var wmState = X.XInternAtom(_display, "_NET_WM_STATE", true);

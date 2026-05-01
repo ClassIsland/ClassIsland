@@ -12,7 +12,7 @@ public class TimeSpanToStringConverter : IValueConverter
     private const string DefaultTimeSpanFormat = @"d\:hh\:mm\:ss";
 
     public static readonly TimeSpanToStringConverter Instance = new();
-    
+
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         return value is not TimeSpan timeSpan

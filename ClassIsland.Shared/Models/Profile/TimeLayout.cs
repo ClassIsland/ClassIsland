@@ -93,7 +93,7 @@ public class TimeLayout : AttachableSettingsObject
         var ci = -1;
         if (item.TimeType == 0)
         {
-            ci = (from i in Layouts where i.TimeType==0 select i).ToList().IndexOf(item);
+            ci = (from i in Layouts where i.TimeType == 0 select i).ToList().IndexOf(item);
         }
         LayoutItemChanged?.Invoke(this, new TimeLayoutUpdateEventArgs()
         {

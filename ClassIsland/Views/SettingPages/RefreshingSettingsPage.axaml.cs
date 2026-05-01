@@ -19,7 +19,7 @@ namespace ClassIsland.Views.SettingPages;
 public partial class RefreshingSettingsPage : SettingsPageBase
 {
     public RefreshingSettingsViewModel ViewModel { get; } = IAppHost.GetService<RefreshingSettingsViewModel>();
-    
+
     public RefreshingSettingsPage()
     {
         DataContext = this;
@@ -72,7 +72,7 @@ public partial class RefreshingSettingsPage : SettingsPageBase
     }
 
     private void ButtonClearLeftToastCount_OnClick(object? sender, RoutedEventArgs e)
-    {   
+    {
         ViewModel.SettingsService.Settings.LeftRefreshingToastCounts = 0;
         ViewModel.SettingsService.Settings.RefreshingToastIsOnboardingGuide = false;
     }

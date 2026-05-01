@@ -27,7 +27,7 @@ public class AnimatedIconButton : Button
 {
     public AnimatedIconButton()
     {
-        
+
     }
 
     public static FuncValueConverter<double, Thickness> TextBlockPaddingFuncConverter { get; } =
@@ -87,14 +87,14 @@ public class AnimatedIconButton : Button
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        
+
         Initialize();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-        
+
         PointerExited -= Leaved;
         PointerEntered -= Entered;
 
@@ -122,7 +122,7 @@ public class AnimatedIconButton : Button
         TargetWidth = _ghostIconOnlyIconText.Bounds.Width;
         FullWidth = _iconText.Bounds.Width;
         TargetHeight = _iconText.Bounds.Height;
-        
+
         Duration = TimeSpan.FromMilliseconds(Math.Max((int)((FullWidth - TargetWidth) * 1 + 220), 0));
     }
 
@@ -143,7 +143,7 @@ public class AnimatedIconButton : Button
         PseudoClasses.Set(":expanded", IsKeepingExpanded || _isExpandedByMouse);
     }
 
-    
+
     protected override Type StyleKeyOverride => typeof(AnimatedIconButton);
 
     public static readonly StyledProperty<string> GlyphProperty =

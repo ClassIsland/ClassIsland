@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 namespace ClassIsland.Services.Automation.Actions;
 
-[ActionInfo("classisland.showNotification", "显示提醒", "\ue02b", addDefaultToMenu:false)]
+[ActionInfo("classisland.showNotification", "显示提醒", "\ue02b", addDefaultToMenu: false)]
 public class NotificationAction : ActionBase<NotificationActionSettings>
 {
     static ActionNotificationProvider ActionNotificationProvider { get; } =

@@ -44,13 +44,13 @@ public class EdgeTtsService : ISpeechService
     private bool IsPlaying { get; set; } = false;
 
     private EdgeTtsPlayInfo? _currentPlayInfo;
-    
+
     public EdgeTtsService(IAudioService audioService, ILogger<EdgeTtsService> logger, SettingsService settingsService)
     {
         AudioService = audioService;
         Logger = logger;
         SettingsService = settingsService;
-        
+
         Logger.LogInformation("初始化了EdgeTTS服务。");
     }
 
@@ -82,7 +82,7 @@ public class EdgeTtsService : ISpeechService
         {
             task = GenerateSpeechAsync(text, cache, cancellationTokenSource.Token);
         }
-        
+
         if (cancellationTokenSource.IsCancellationRequested)
         {
             cancellationTokenSource.Dispose();

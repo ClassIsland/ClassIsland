@@ -31,7 +31,7 @@ public partial class AnnouncementControl : UserControl
     }
 
     public static FuncValueConverter<Severity, InfoBarSeverity> AnnouncementSeverityToInfoBarSeverityConverter =
-        new (x => x switch
+        new(x => x switch
         {
             Severity.Announcement => InfoBarSeverity.Informational,
             Severity.Info => InfoBarSeverity.Informational,
@@ -51,7 +51,7 @@ public partial class AnnouncementControl : UserControl
             _ => throw new ArgumentOutOfRangeException()
         };
         readStateStorage.Add(Announcement.Guid);
-        
+
     }
 
     private void ButtonDetails_OnClick(object? sender, RoutedEventArgs e)

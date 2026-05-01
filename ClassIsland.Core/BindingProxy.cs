@@ -9,7 +9,7 @@ public class BindingProxy : AvaloniaObject
 {
     private BindingProxy()
     {
-        
+
     }
 }
 
@@ -19,7 +19,7 @@ public class BindingProxy : AvaloniaObject
 /// <typeparam name="T">绑定数据类型</typeparam>
 public class BindingProxy<T> : AvaloniaObject
 {
-    
+
     public static readonly StyledProperty<T> DataProperty = AvaloniaProperty.Register<BindingProxy, T>(
         nameof(Data));
 

@@ -47,7 +47,8 @@ public partial class ActionItem : ObservableRecipient
     /// <summary>
     /// 行动项设置。
     /// </summary>
-    [ObservableProperty] [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [ObservableProperty]
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     object? _settings;
 
     /// <summary>
@@ -82,17 +83,17 @@ public partial class ActionItem : ObservableRecipient
     /// <summary>
     /// 行动项错误。无则为 null。
     /// </summary>
-    [ObservableProperty] [property: JsonIgnore] string? _exception;
+    [ObservableProperty][property: JsonIgnore] string? _exception;
 
     /// <summary>
     /// 行动项是否正在运行。
     /// </summary>
-    [ObservableProperty] [property: JsonIgnore] bool _isWorking = false;
+    [ObservableProperty][property: JsonIgnore] bool _isWorking = false;
 
     /// <summary>
     /// 行动项运行进度。范围 0~100。未报告则为 null。
     /// </summary>
-    [ObservableProperty] [property: JsonIgnore] double? _progress = null;
+    [ObservableProperty][property: JsonIgnore] double? _progress = null;
 
     /// （数据驱动用属性。）
     [JsonIgnore] internal bool IsNewAdded { get; set; } = false;

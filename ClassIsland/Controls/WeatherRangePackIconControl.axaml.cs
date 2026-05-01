@@ -22,7 +22,7 @@ public partial class WeatherRangePackIconControl : UserControl, INotifyPropertyC
         get => GetValue(ValueProperty);
         set => SetValue(ValueProperty, value);
     }
-    
+
 
     private bool _hasSecondIcon = false;
 

@@ -106,14 +106,14 @@ public class NotificationContent : ObservableRecipient
     /// <summary>
     /// 代表空内容
     /// </summary>
-    public static readonly NotificationContent Empty = new ();
+    public static readonly NotificationContent Empty = new();
 
     /// <summary>
     /// 初始化一个 <see cref="NotificationContent"/> 对象
     /// </summary>
     public NotificationContent()
     {
-        
+
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ public class NotificationContent : ObservableRecipient
     /// <param name="factory">提醒内容处理工厂</param>
     /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
     public static NotificationContent CreateTwoIconsMask(string text,
-        string leftIcon = "lucide(\ue0ff)", string rightIcon = "lucide(\ue224)", bool hasRightIcon=true,
+        string leftIcon = "lucide(\ue0ff)", string rightIcon = "lucide(\ue224)", bool hasRightIcon = true,
         Action<NotificationContent>? factory = null)
     {
         var content = new NotificationContent
@@ -194,7 +194,7 @@ public class NotificationContent : ObservableRecipient
     /// <param name="factory">提醒内容处理工厂</param>
     /// <param name="duration">提醒显示时长</param>
     /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
-    public static NotificationContent CreateRollingTextContent(string text, TimeSpan? duration=null, int repeatCount=2,
+    public static NotificationContent CreateRollingTextContent(string text, TimeSpan? duration = null, int repeatCount = 2,
         Action<NotificationContent>? factory = null)
     {
         duration ??= TimeSpan.FromSeconds(20);

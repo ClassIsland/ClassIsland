@@ -31,7 +31,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
     private SettingsService SettingsService { get; }
 
     private Settings Settings => SettingsService.Settings;
-    private string Schema =>  Settings.NoTLSWeatherRequests ? "http" : "https";
+    private string Schema => Settings.NoTLSWeatherRequests ? "http" : "https";
     public List<XiaomiWeatherStatusCodeItem> WeatherStatusList { get; set; } = new();
 
     private ILogger<WeatherService> Logger { get; }
@@ -94,7 +94,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
         var baseTime = (settings.IsRemainingTime ? -1.0 : 1.0) * Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes;
         return baseTime > 0 && baseTime <= settings.RainTimeMinutes;
-        
+
     }
 
     private bool SunRiseSetRuleHandler(object? o)
@@ -153,7 +153,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         }
 
         return IsWeatherRefreshed &&
-               (settings.IsFuzzyMatch 
+               (settings.IsFuzzyMatch
                    ? IsWeatherCodeMatched(Settings.LastWeatherInfo.Current.Weather, settings.WeatherId.ToString())
                    : settings.WeatherId.ToString() == Settings.LastWeatherInfo.Current.Weather);
     }
@@ -172,7 +172,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
 
         var tomorrowWeather = Settings.LastWeatherInfo.ForecastDaily.Weather.Value[1];
         var targetWeather = settings.WeatherId.ToString();
-        
+
         if (settings.IsFuzzyMatch)
         {
             return IsWeatherCodeMatched(tomorrowWeather.From, targetWeather) ||
@@ -244,10 +244,10 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
                 Logger.LogError(exception, "无法获取当前位置");
             }
         }
-        
+
         var cityLatitude = string.Empty;
         var cityLongitude = string.Empty;
-        
+
         // 获取城市信息
         try
         {
@@ -280,7 +280,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         {
             Logger.LogError(ex, "获取城市信息失败。");
         }
-        
+
         // 请求天气信息
         try
         {
@@ -326,8 +326,8 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
     public string GetWeatherTextByCode(string code)
     {
         var c = (from i in WeatherStatusList
-                where i.Code.ToString() == code
-                select i.Weather)
+                 where i.Code.ToString() == code
+                 select i.Weather)
             .ToList();
         return c.Count > 0 ? c[0] : "未知";
     }
@@ -337,7 +337,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
         var uri = new Uri($"{Schema}://weatherapi.market.xiaomi.com/wtr-v3/location/city/hots?locale=zh_cn");
         var logText = "获取热门城市信息";
 
-        if (name != string.Empty )
+        if (name != string.Empty)
         {
             uri = new Uri(
                 $"{Schema}://weatherapi.market.xiaomi.com/wtr-v3/location/city/search?name={Uri.EscapeDataString(name)}&locale=zh_cn");
@@ -349,7 +349,7 @@ public class WeatherService : ObservableRecipient, IHostedService, IWeatherServi
             Logger.LogInformation("{}： {}", logText, uri);
 
             var cityInfoList = await WebRequestHelper.Default.GetJson<List<CityInfo>>(uri);
-            
+
             var cities = cityInfoList?.Select(cityInfo => new City
             {
                 Name = $"{cityInfo.Name} ({cityInfo.Affiliation})",

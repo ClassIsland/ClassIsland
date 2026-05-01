@@ -30,7 +30,7 @@ public static class SelectorHelpers
     /// </remarks>
     public static Selector Parse(string expr, IDictionary<string, string> xmlns)
     {
-        var xml = 
+        var xml =
             $"""
              <Style 
              xmlns="https://github.com/avaloniaui"
@@ -45,5 +45,5 @@ public static class SelectorHelpers
         var style = (Style)AvaloniaRuntimeXamlLoader.Load(xml);
         return style.Selector ?? throw new InvalidOperationException("样式返回了空的选择器");
     }
-    
+
 }

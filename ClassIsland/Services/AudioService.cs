@@ -42,7 +42,7 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
     public AudioPlaybackDevice? TryInitializeDefaultPlaybackDevice() =>
         TryInitializeDefaultPlaybackDeviceAsync().Result;
 
-    public Task<AudioPlaybackDevice?> TryInitializeDefaultPlaybackDeviceAsync() => 
+    public Task<AudioPlaybackDevice?> TryInitializeDefaultPlaybackDeviceAsync() =>
         Task.Run(TryInitializeDefaultPlaybackDeviceInternal);
 
     public Task<RefCounted<AudioPlaybackDevice>.Lease?> TryInitializeDefaultPlaybackDeviceSafeAsync() => Task.Run(() =>
@@ -89,7 +89,7 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
             Logger.LogError(ex, "初始化音频设备失败");
             return null;
         }
-        
+
     }
 
     public Task PlayAudioAsync(Stream audio, float volume, CancellationToken? cancellationToken = null) => Task.Run(async () =>

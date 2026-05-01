@@ -29,7 +29,7 @@ public partial class SplashWindow : SplashWindowBase
     private IDisposable? _splashStatusObserver;
 
     private double _lastProgress = 0;
-    
+
     public SplashWindow()
     {
         InitializeComponent();
@@ -68,12 +68,12 @@ public partial class SplashWindow : SplashWindowBase
         {
             return;
         }
-        
+
         var currentOffset = visualProgressBarFill.Offset;
         var compositor = visualProgressBarFill.Compositor;
         var progressAnimation = compositor.CreateVector3DKeyFrameAnimation();
         progressAnimation.InsertKeyFrame(1.0f, currentOffset with { X = -400 * (1 - value / 100) }, new CubicEaseOut());
-        var duration = isFinal ? TimeSpan.FromSeconds(0.15) : TimeSpan.FromSeconds(Math.Max((value - _lastProgress ) / 8, 0.5));
+        var duration = isFinal ? TimeSpan.FromSeconds(0.15) : TimeSpan.FromSeconds(Math.Max((value - _lastProgress) / 8, 0.5));
         progressAnimation.Duration = duration;
         visualProgressBarFill.StartAnimation(nameof(visualProgressBarFill.Offset), progressAnimation);
         _lastProgress = value;

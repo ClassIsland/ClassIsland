@@ -16,8 +16,8 @@ public class GuidToNotificationProviderConverter : IValueConverter
         }
         var id = (string)value;
         var l = (from i in App.GetService<INotificationHostService>().NotificationProviders
-            where i.ProviderGuid.ToString() == id
-            select i)
+                 where i.ProviderGuid.ToString() == id
+                 select i)
             .ToList();
         return l.FirstOrDefault();
     }

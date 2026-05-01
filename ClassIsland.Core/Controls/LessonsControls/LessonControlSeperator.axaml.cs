@@ -15,7 +15,7 @@ public partial class LessonControlSeparator : LessonControlBase
         get => GetValue(LessonControlSettingsProperty);
         set => SetValue(LessonControlSettingsProperty, value);
     }
-    
+
     public LessonControlSeparator()
     {
         InitializeComponent();

@@ -14,8 +14,8 @@ public class TimeTypeToIconGlyphConverter : IValueConverter
     /// </summary>
     public static readonly TimeTypeToIconGlyphConverter Instance = new();
 
-    private TimeTypeToIconGlyphConverter() {}
-    
+    private TimeTypeToIconGlyphConverter() { }
+
     /// <inheritdoc />
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

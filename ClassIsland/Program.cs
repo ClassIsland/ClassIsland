@@ -32,7 +32,7 @@ public static class Program
     {
         AppDomain.CurrentDomain.UnhandledException += DiagnosticService.ProcessDomainUnhandledException;
         AppBase.CurrentLifetime = ApplicationLifetime.EarlyLoading;
-        
+
         ConfigureFileHelper.SerializerOptions.Converters.Add(new ColorHexJsonConverter());
         ConfigureFileHelper.SerializerOptions.Converters.Add(new GuidEmptyFallbackConverter());
 
@@ -62,7 +62,7 @@ public static class Program
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);
-        
+
         GlobalStorageService.InitializeGlobalStorage();
 
         if (App.ApplicationCommand.Diagnostic)
@@ -104,11 +104,12 @@ public static class Program
         }
 
         var sentryEnabled = GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
-        if (sentryEnabled )
+        if (sentryEnabled)
         {
             SentrySdk.Init(ConfigureSentry);
         }
-        try {
+        try
+        {
             if (Environment.GetEnvironmentVariable("ClassIsland_ProcessPriority") is { } priorityStr && uint.TryParse(priorityStr, out uint priority))
             {
                 SetProcessPriority(priority);
@@ -127,7 +128,7 @@ public static class Program
             IsSentryEnabled = sentryEnabled
         };
     }
-    
+
     /// <summary>
     /// 用于在发现另一个实例正在运行时，将启动 URI 通过 IPC 发送给已运行实例并退出当前进程。
     /// 此方法在启动参数包含 URI 时被调用以支持单实例的 URI 导航。
@@ -147,7 +148,7 @@ public static class Program
             // ignored
         }
     }
-    
+
     /// <summary>
     /// 配置 Sentry SDK 的运行时选项。
     /// 在启用 Sentry 时由 <see cref="AppEntry"/> 调用以初始化全局监控参数。
@@ -184,7 +185,7 @@ public static class Program
         options.EnableMetrics = true;
         options.SetBeforeSendLog(log => log.Level < SentryLogLevel.Info || log is { Template: "当前内存使用: {}" } ? null : log);
     }
-    
+
     /// <summary>
     /// 设置应用程序的 <see cref="ProcessPriorityClass"/>。
     /// 无效值将回退到 <see cref="ProcessPriorityClass.Normal"/>。

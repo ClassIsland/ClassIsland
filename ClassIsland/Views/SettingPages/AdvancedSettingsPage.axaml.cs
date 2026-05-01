@@ -15,7 +15,7 @@ namespace ClassIsland.Views.SettingPages;
 public partial class AdvancedSettingsPage : SettingsPageBase
 {
     public AdvancedSettingsViewModel ViewModel { get; } = IAppHost.GetService<AdvancedSettingsViewModel>();
-    
+
     public AdvancedSettingsPage()
     {
         DataContext = this;

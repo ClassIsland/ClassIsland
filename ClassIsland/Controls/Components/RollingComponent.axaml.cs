@@ -73,7 +73,7 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
 
     private CompositionAnimation? _currentScrollingAnimation;
     private CancellationTokenSource? _animationCancellationSource;
-    
+
     private bool _isStopRuleSatisfied = false;
     private double _pausePos = 0;
 
@@ -109,9 +109,9 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
         anim.IterationBehavior = AnimationIterationBehavior.Forever;
         anim.InsertKeyFrame(0f, visual.Offset with { X = 0 }, new LinearEasing());
         anim.InsertKeyFrame((float)(pauseSeconds / totalSeconds), visual.Offset with { X = -pausePos }, new LinearEasing());
-        anim.InsertKeyFrame((float)((pauseSeconds + durationSeconds) / totalSeconds), visual.Offset with { X = -( width + pausePos ) },
+        anim.InsertKeyFrame((float)((pauseSeconds + durationSeconds) / totalSeconds), visual.Offset with { X = -(width + pausePos) },
             new LinearEasing());
-        anim.InsertKeyFrame((float)((pauseSeconds + durationSeconds) / totalSeconds), visual.Offset with { X = OuterContainerWidth }, 
+        anim.InsertKeyFrame((float)((pauseSeconds + durationSeconds) / totalSeconds), visual.Offset with { X = OuterContainerWidth },
             new LinearEasing());
         anim.InsertKeyFrame(1f, visual.Offset with { X = 0 }, new LinearEasing());
         anim.Target = nameof(visual.Offset);

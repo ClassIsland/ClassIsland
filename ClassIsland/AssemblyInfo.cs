@@ -8,4 +8,4 @@ using System.Windows;
 // [assembly: AssemblyProduct("ClassIsland")]
 // [assembly: SupportedOSPlatform("Windows")]
 
-[assembly:InternalsVisibleTo("ClassIsland.Desktop")]
+[assembly: InternalsVisibleTo("ClassIsland.Desktop")]

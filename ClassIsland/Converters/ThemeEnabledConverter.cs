@@ -20,7 +20,7 @@ public class ThemeEnabledConverter : AvaloniaObject, IValueConverter
         get => _source;
         set => SetAndRaise(SourceProperty, ref _source, value);
     }
-    
+
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (Source == null || value is not string id)

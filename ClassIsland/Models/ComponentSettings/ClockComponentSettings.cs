@@ -2,7 +2,7 @@
 
 namespace ClassIsland.Models.ComponentSettings;
 
-public class ClockComponentSettings: ObservableRecipient
+public class ClockComponentSettings : ObservableRecipient
 {
     private bool _showSeconds = false;
 

@@ -103,7 +103,7 @@ public partial class TopmostEffectWindow : Window, ITopmostEffectPlayer
         //    return;
         var fullscreen = App.GetService<MainWindow>().ViewModel.IsForegroundFullscreen;
         var bounds = fullscreen ? screen.Bounds : screen.WorkingArea;
-        Width = bounds.Width * scale - (fullscreen ? 1 : 0) ;  // 防止因全屏导致的奇奇怪怪的问题
+        Width = bounds.Width * scale - (fullscreen ? 1 : 0);  // 防止因全屏导致的奇奇怪怪的问题
         Height = bounds.Height * scale;
         Position = new PixelPoint((int)(bounds.X * scale), (int)(bounds.Y * scale));
         // Logger.LogTrace("Updated Window Pos: w:{} h:{} x:{} y:{}", Width, Height, Position.X, Position.Y);
@@ -124,13 +124,13 @@ public partial class TopmostEffectWindow : Window, ITopmostEffectPlayer
         ShowInTaskbar = false;
         Topmost = true;
         base.Show();
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, 
+        PlatformServices.WindowPlatformService.SetWindowFeature(this,
             WindowFeatures.Transparent | WindowFeatures.ToolWindow | WindowFeatures.Topmost | WindowFeatures.SkipManagement, true);
     }
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        
+
     }
 }
 

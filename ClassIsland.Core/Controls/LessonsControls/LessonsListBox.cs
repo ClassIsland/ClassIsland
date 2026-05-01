@@ -41,7 +41,7 @@ public class LessonsListBox : ListBox
     }
 
     public static readonly AttachedProperty<ObservableDictionary<Guid, Subject>> SubjectsProperty =
-        AvaloniaProperty.RegisterAttached<LessonsListBox, Control, ObservableDictionary<Guid, Subject>>("Subjects", inherits:true);
+        AvaloniaProperty.RegisterAttached<LessonsListBox, Control, ObservableDictionary<Guid, Subject>>("Subjects", inherits: true);
 
     public static void SetSubjects(Control obj, ObservableDictionary<Guid, Subject> value) => obj.SetValue(SubjectsProperty, value);
     public static ObservableDictionary<Guid, Subject> GetSubjects(Control obj) => obj.GetValue(SubjectsProperty);
@@ -51,7 +51,7 @@ public class LessonsListBox : ListBox
 
     public static void SetIsLiveUpdatingEnabled(Control obj, bool value) => obj.SetValue(IsLiveUpdatingEnabledProperty, value);
     public static bool GetIsLiveUpdatingEnabled(Control obj) => obj.GetValue(IsLiveUpdatingEnabledProperty);
-    
+
 
     public static readonly StyledProperty<bool> HighlightChangedClassProperty =
         AvaloniaProperty.Register<LessonsListBox, bool>(

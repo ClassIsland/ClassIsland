@@ -20,7 +20,7 @@ public partial class ComponentsSettingsViewModel : ObservableRecipient
     public SettingsService SettingsService { get; }
 
     public ComponentsSettingsPageDropHandler DropHandler { get; }
-    
+
     [ObservableProperty] private ComponentSettings? _selectedComponentSettings;
     [ObservableProperty] private string _createProfileName = "";
     [ObservableProperty] private int _settingsTabControlIndex = 0;

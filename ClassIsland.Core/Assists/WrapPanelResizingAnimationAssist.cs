@@ -24,7 +24,7 @@ public class WrapPanelResizingAnimationAssist
 
     private static void SetIsAnimationAttached(Visual obj, bool value) => obj.SetValue(IsAnimationAttachedProperty, value);
     public static bool GetIsAnimationAttached(Visual obj) => obj.GetValue(IsAnimationAttachedProperty);
-    
+
     static WrapPanelResizingAnimationAssist()
     {
         IsResizingAnimationEnabledProperty.Changed.AddClassHandler<Panel>(HandleIsResizingAnimationEnabledChanged);
@@ -37,7 +37,7 @@ public class WrapPanelResizingAnimationAssist
     public static bool GetIsLoadedHandlerAttached(Control obj) => obj.GetValue(IsLoadedHandlerAttachedProperty);
 
     public static readonly AttachedProperty<Easing> EasingProperty =
-        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationAssist, Visual, Easing>("Easing", new CubicEaseInOut(), inherits:true);
+        AvaloniaProperty.RegisterAttached<WrapPanelResizingAnimationAssist, Visual, Easing>("Easing", new CubicEaseInOut(), inherits: true);
 
     public static void SetEasing(Visual obj, Easing value) => obj.SetValue(EasingProperty, value);
     public static Easing GetEasing(Visual obj) => obj.GetValue(EasingProperty);
@@ -47,7 +47,7 @@ public class WrapPanelResizingAnimationAssist
 
     public static void SetDuration(Visual obj, TimeSpan value) => obj.SetValue(DurationProperty, value);
     public static TimeSpan GetDuration(Visual obj) => obj.GetValue(DurationProperty);
-    
+
     private static void HandleIsResizingAnimationEnabledChanged(Panel panel, AvaloniaPropertyChangedEventArgs args)
     {
         if (IThemeService.AnimationLevel < 2)
@@ -144,7 +144,7 @@ public class WrapPanelResizingAnimationAssist
         {
             return;
         }
-        
+
         ClearControlAnimation(control);
     }
 

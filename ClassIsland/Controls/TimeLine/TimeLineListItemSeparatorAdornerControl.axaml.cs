@@ -55,7 +55,7 @@ public partial class TimeLineListItemSeparatorAdornerControl : UserControl
         add => AddHandler(SeparatorLikeTimePointMovedEvent, value);
         remove => RemoveHandler(SeparatorLikeTimePointMovedEvent, value);
     }
-    
+
     private TimeSpan _initStartTime = TimeSpan.Zero;
 
     public TimeLineListItemSeparatorAdornerControl()

@@ -66,7 +66,7 @@ public abstract partial class GenericImportProviderBase : ProfileTransferProvide
     public List<FilePickerFileType> FileTypes { get; init; } = [];
 
     private IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
-    
+
     protected GenericImportProviderBase()
     {
         DataContext = this;

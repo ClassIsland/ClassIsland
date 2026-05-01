@@ -27,7 +27,7 @@ public class WindowRuleService : IWindowRuleService
     {
         Logger = logger;
         RulesetService = rulesetService;
-        
+
         ForegroundWindowChanged += ((_, _) => RulesetService.NotifyStatusChanged());
         PlatformServices.WindowPlatformService.RegisterForegroundWindowChangedEvent((_, e) => ForegroundWindowChanged?.Invoke(this, e));
 

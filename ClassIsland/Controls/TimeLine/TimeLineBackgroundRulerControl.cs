@@ -24,7 +24,7 @@ public class TimeLineBackgroundRulerControl : Control
 
     static TimeLineBackgroundRulerControl()
     {
-        
+
     }
 
     public override void Render(DrawingContext drawingContext)
@@ -69,7 +69,7 @@ public class TimeLineBackgroundRulerControl : Control
                 new Typeface(fontFamily), 12, body);
             drawingContext.DrawText(text, new Point(0, y - 8));
 
-            done:
+        done:
             ts += BaseSpan;
             c++;
         } while (ts < TimeSpan.FromHours(24));

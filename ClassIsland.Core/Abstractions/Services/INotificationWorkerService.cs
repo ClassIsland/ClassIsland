@@ -8,5 +8,5 @@ namespace ClassIsland.Core.Abstractions.Services;
 public interface INotificationWorkerService
 {
     internal NotificationPlayingTicket CreateTicket(NotificationRequest request);
-    
+
 }

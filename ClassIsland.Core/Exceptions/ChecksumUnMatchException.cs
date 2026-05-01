@@ -6,7 +6,7 @@ namespace ClassIsland.Core.Exceptions;
 public class ChecksumUnMatchException : Exception
 {
     /// <inheritdoc />
-    public ChecksumUnMatchException() 
+    public ChecksumUnMatchException()
     {
     }
 

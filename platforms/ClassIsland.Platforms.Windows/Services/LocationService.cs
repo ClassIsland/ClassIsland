@@ -19,7 +19,7 @@ public class LocationService : ILocationService
                 watcher.TryStart(false, TimeSpan.FromSeconds(10));
                 while (watcher.Status != GeoPositionStatus.Ready && !cancel.IsCancellationRequested)
                 {
-                    
+
                 }
             }, cancel.Token);
             var coord = watcher.Position.Location;

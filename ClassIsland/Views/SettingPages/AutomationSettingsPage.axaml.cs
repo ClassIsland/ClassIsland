@@ -124,7 +124,8 @@ public partial class AutomationSettingsPage : SettingsPageBase
         {
             ActionSet = new ActionSet
             {
-                Name = "新自动化", IsRevertEnabled = true
+                Name = "新自动化",
+                IsRevertEnabled = true
             }
         };
         ViewModel.AutomationService.Workflows.Insert(index, workflow);

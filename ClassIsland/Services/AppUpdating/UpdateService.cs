@@ -64,9 +64,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private static string UpdateDistributionInfoPath { get; } = Path.Combine(UpdateCachePath, "DistributionInfo.json");
     private static string UpdateDistributionMetadataPath { get; } = Path.Combine(UpdateCachePath, "DistributionMetadata.json");
-    
+
     private const string AppComponentName = "app";
-    
+
     private const string LauncherComponentName = "launcher";
 
     private static readonly string[] Components = [AppComponentName, LauncherComponentName];
@@ -121,7 +121,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private string MetadataPublisherPublicKey { get; }
 
     public event EventHandler? UpdateInfoUpdated;
-    
+
     private WebRequestHelper RequestHelper { get; }
 
     public int DownloadingCountTotal
@@ -157,8 +157,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         var keyStream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute));
         MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
 
-        RequestHelper = new WebRequestHelper(AppBase.Current.IsDevelopmentBuild 
-                                             && !string.IsNullOrWhiteSpace(Settings.DebugPhainonRootUrlOverride) 
+        RequestHelper = new WebRequestHelper(AppBase.Current.IsDevelopmentBuild
+                                             && !string.IsNullOrWhiteSpace(Settings.DebugPhainonRootUrlOverride)
                                              && Uri.TryCreate(Settings.DebugPhainonRootUrlOverride, UriKind.Absolute, out var u1)
             ? u1
             : new Uri(PhainonRootUrl), true);
@@ -184,7 +184,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             return false;
         }
-        
+
         _ = AppStartupBackground();
         return false;
     }
@@ -198,7 +198,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 $"应用已更新到 {AppBase.AppVersion}，点击以查看详细信息。", UpdateNotificationClickedCallback);
             Settings.LastUpdateStatus = UpdateStatus.UpToDate;
         }
-        
+
         await CheckUpdateAsync();
 
         if (Settings.UpdateMode < 2)
@@ -241,7 +241,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     }
 
 
-    public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)
+    public async Task CheckUpdateAsync(bool isForce = false, bool isCancel = false)
     {
         if (!AllowedPackageTypes.Contains(AppBase.Current.PackagingType))
         {
@@ -279,7 +279,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 UpdateDistributionInfoPath);
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             await PlatformServices.DesktopToastService.ShowToastAsync("发现新版本",
-                $"{Assembly.GetExecutingAssembly().GetName().Version} -> {latest.Version}" +Environment.NewLine+
+                $"{Assembly.GetExecutingAssembly().GetName().Version} -> {latest.Version}" + Environment.NewLine +
                 "点击以查看详细信息。", UpdateNotificationClickedCallback);
 
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
@@ -574,9 +574,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             return;
         }
-        await CheckUpdateAsync(isCancel:true);
+        await CheckUpdateAsync(isCancel: true);
     }
-    
+
 
     public async Task ExtractUpdateAsync()
     {
@@ -617,16 +617,16 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             }
 
             Logger.LogInformation("正在解压并检验文件完整性");
-            
+
             var root = CommonDirectories.AppPackageRoot;
-            
+
             Logger.LogTrace("DeployRoot = {}", root);
             var extractedPath = Path.Combine(UpdateTempPath, "extracted");
             if (!Directory.Exists(extractedPath))
             {
                 Directory.CreateDirectory(extractedPath);
             }
-            
+
             foreach (var (id, component) in fileMap.Components)
             {
                 if (!Components.Contains(id))
@@ -665,7 +665,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     }
                 }
             }
-            
+
             Logger.LogTrace("正在检查文件目录");
 
             var num = 0;
@@ -676,14 +676,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 num++;
                 fileMap.Variables["number"] = num.ToString();
             }
-            
+
             foreach (var (id, component) in fileMap.Components)
             {
                 if (!Components.Contains(id))
                 {
                     continue;
                 }
-                
+
                 var compRoot = Path.Combine(root,
                     VariableStringHelpers.ExpandString(component.Root, fileMap.Variables));
 
@@ -697,7 +697,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             }
 
             Logger.LogInformation("正在准备部署");
-            
+
             Logger.LogInformation("Variables: {}", JsonSerializer.Serialize(fileMap.Variables));
 
             var appPath = Path.Combine(root,
@@ -707,14 +707,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 Directory.CreateDirectory(appPath);
                 await File.WriteAllTextAsync(Path.Combine(appPath, ".partial"), "");
             }
-            
+
             foreach (var (id, component) in fileMap.Components)
             {
                 if (!Components.Contains(id))
                 {
                     continue;
                 }
-                
+
                 var existedFiles = deploymentLock.ExistedFiles.GetValueOrDefault(id, []);
                 var compRoot = Path.Combine(root,
                     VariableStringHelpers.ExpandString(component.Root, fileMap.Variables));
@@ -727,7 +727,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     {
                         Directory.CreateDirectory(dir);
                     }
-                    
+
                     if (component.AllowDiffUpdate && existedFiles.Contains(path) && id is "app")
                     {
                         var existedFileRoot = id switch
@@ -736,12 +736,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                             _ => throw new ArgumentOutOfRangeException()
                         };
                         var existedPath = Path.Combine(existedFileRoot, path);
-                        
+
                         Logger.LogTrace("Deploy Copy EXISTED {} -> {}", existedPath, targetPath);
                         File.Copy(existedPath, targetPath, true);
                         continue;
                     }
-                    
+
                     var hashHex = Convert.ToHexString(fileInfo.FileSha512);
                     var fullPath = Path.Combine(extractedPath, hashHex[..2], hashHex);
                     Logger.LogTrace("Deploy Copy {} -> {}", fullPath, targetPath);
@@ -764,14 +764,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 }
             }
             File.Copy(Path.Combine(UpdateTempPath, "FileMap.json"), Path.Combine(appPath, "files.json"));
-            
+
             Logger.LogInformation("正在激活新的部署");
-            
+
             await File.WriteAllTextAsync(Path.Combine(appPath, ".current"), "");
             await File.WriteAllTextAsync(Path.Combine(Environment.CurrentDirectory, ".destroy"), "");
             File.Delete(Path.Combine(appPath, ".partial"));
             foreach (var deployment in Directory.GetDirectories(root)
-                         .Where(x => Path.GetFileName(x).StartsWith("app") 
+                         .Where(x => Path.GetFileName(x).StartsWith("app")
                                      && Path.GetFullPath(Path.Combine(root, x)) != Path.GetFullPath(Environment.CurrentDirectory)
                                      && File.Exists(Path.Combine(x, ".current"))))
             {
@@ -797,7 +797,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         var root = CommonDirectories.AppPackageRoot;
         foreach (var deployment in Directory.GetDirectories(root)
-                     .Where(x => Path.GetFileName(x).StartsWith("app") 
+                     .Where(x => Path.GetFileName(x).StartsWith("app")
                                  && Path.GetFullPath(Path.Combine(root, x)) != Path.GetFullPath(Environment.CurrentDirectory)
                                  && File.Exists(Path.Combine(x, ".destroy"))))
         {

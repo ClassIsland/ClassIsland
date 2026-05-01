@@ -24,8 +24,8 @@ public static class XExtensions
         _atomNetWmStateFullscreen = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", false);
 
     }
-    
-    
+
+
     public static WindowState GetWindowState(IntPtr window)
     {
         var maxVert = false;
@@ -39,7 +39,7 @@ public static class XExtensions
             out IntPtr actualType, out int actualFormat,
             out ulong nitems, out ulong bytesAfter, out prop);
 
-        if (result != 0 || prop == IntPtr.Zero || nitems <= 0) 
+        if (result != 0 || prop == IntPtr.Zero || nitems <= 0)
             return WindowState.Normal;
         // 读取原子列表
         var atoms = new IntPtr[nitems];

@@ -67,7 +67,7 @@ public partial class RootAttachedSettingsDependencyControl : UserControl, INotif
             .Subscribe(new AnonymousObserver<AttachedSettingsControlInfo?>(_ => Update()));
     }
 
-    public RootAttachedSettingsDependencyControl(AttachedSettingsControlInfo controlInfo, bool isDrawerMode=false) : this()
+    public RootAttachedSettingsDependencyControl(AttachedSettingsControlInfo controlInfo, bool isDrawerMode = false) : this()
     {
         ControlInfo = controlInfo;
         IsDrawerMode = isDrawerMode;
@@ -99,7 +99,7 @@ public partial class RootAttachedSettingsDependencyControl : UserControl, INotif
         OnPropertyChanged(propertyName);
         return true;
     }
-    
+
 
     #endregion
 

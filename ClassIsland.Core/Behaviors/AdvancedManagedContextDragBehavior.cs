@@ -341,13 +341,13 @@ public class AdvancedManagedContextDragBehavior : StyledElementBehavior<Control>
         _isTouch = e.Pointer.Type == PointerType.Touch;
         var isFromDragThumb = (e.Source as Control)?.FindAncestorOfType<TouchDragThumb>() is not null;
         var isFromCurrentThumb = e.Source is Control c1 && UITreeHelper.HasParent(c1, AssociatedObject);
-        if ((e.Source as Control)?.FindAncestorOfType<ISelectable>() is {} selectable && !Equals(selectable, AssociatedObject))
+        if ((e.Source as Control)?.FindAncestorOfType<ISelectable>() is { } selectable && !Equals(selectable, AssociatedObject))
         {
             isFromCurrentThumb = false;
         }
         var isTouchMode = e.Pointer.Type == PointerType.Touch;
         // AssociatedObject?.ShowToast($"(debug) {isFromDragThumb} {isFromCurrentThumb} {isTouchMode}");
-        if ((((!CanDragWithoutDragThumb && isTouchMode) || AllowDragFromDragThumbOnly) && !isFromDragThumb) 
+        if ((((!CanDragWithoutDragThumb && isTouchMode) || AllowDragFromDragThumbOnly) && !isFromDragThumb)
             || (isFromDragThumb && !isFromCurrentThumb))
         {
             return;

@@ -129,7 +129,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 break;
         }
     }
-    
+
 
     private void ButtonUninstall_OnClick(object sender, RoutedEventArgs e)
     {
@@ -160,7 +160,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
             SuggestedFileName = ViewModel.SelectedPluginInfo.Manifest.Id + IPluginService.PluginPackageExtension
         }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
         PopupHelper.RestoreAllPopups();
-        
+
         if (file == null)
             return;
         try
@@ -249,7 +249,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 }
                 catch (InvalidDataException)
                 {
-                Logger.LogWarning("不是有效插件包：{File}", fileName);
+                    Logger.LogWarning("不是有效插件包：{File}", fileName);
                 }
                 catch (Exception ex)
                 {
@@ -391,7 +391,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
         }
         else if (failed > 0)
         {
-        this.ShowWarningToast($"安装失败：{failed} 个插件。");
+            this.ShowWarningToast($"安装失败：{failed} 个插件。");
         }
     }
 
@@ -478,8 +478,8 @@ public partial class PluginsSettingsPage : SettingsPageBase
             var result = await new ContentDialog()
             {
                 Title = "缺少依赖项",
-                Content = "此插件的部分必选依赖项未安装且无法从市场获取。如果继续安装此插件，此插件将可能无法工作。您要继续安装此插件吗？" +Environment.NewLine +Environment.NewLine +
-                          "未找到的必选依赖项："+Environment.NewLine + string.Join(Environment.NewLine, missingPlugins),
+                Content = "此插件的部分必选依赖项未安装且无法从市场获取。如果继续安装此插件，此插件将可能无法工作。您要继续安装此插件吗？" + Environment.NewLine + Environment.NewLine +
+                          "未找到的必选依赖项：" + Environment.NewLine + string.Join(Environment.NewLine, missingPlugins),
                 SecondaryButtonText = "取消",
                 PrimaryButtonText = "继续",
                 DefaultButton = ContentDialogButton.Secondary
@@ -561,7 +561,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         ViewModel.UpdateMergedPlugins();
     }
-    
+
 
     private void TextBoxFilter_OnKeyDown(object sender, KeyEventArgs e)
     {

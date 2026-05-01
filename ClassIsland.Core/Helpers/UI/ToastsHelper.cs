@@ -30,7 +30,7 @@ public static class ToastsHelper
         control.RaiseEvent(new ShowToastEventArgs(message));
         return message;
     }
-    
+
     /// <summary>
     /// 显示一条 Toast 消息
     /// </summary>
@@ -75,7 +75,7 @@ public static class ToastsHelper
             Severity = InfoBarSeverity.Warning
         });
     }
-    
+
     /// <summary>
     /// 显示一条错误等级的 Toast 消息
     /// </summary>
@@ -100,7 +100,7 @@ public static class ToastsHelper
             Duration = TimeSpan.FromSeconds(10)
         });
     }
-    
+
     /// <summary>
     /// 显示一条成功等级的 Toast 消息
     /// </summary>
@@ -124,7 +124,7 @@ public static class ToastsHelper
             Severity = InfoBarSeverity.Success
         });
     }
-    
+
     /// <summary>
     /// 显示一条错误等级的 Toast 消息，并将异常信息作为正文内容。
     /// </summary>

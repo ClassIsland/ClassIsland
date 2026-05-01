@@ -30,7 +30,7 @@ public class AdvancedCanvasDragBehavior : StyledElementBehavior<Control>
         get => GetValue(AllowDragFromDragThumbOnlyProperty);
         set => SetValue(AllowDragFromDragThumbOnlyProperty, value);
     }
-    
+
     private bool _enableDrag;
     private Point _start;
     private Control? _parent;
@@ -75,7 +75,7 @@ public class AdvancedCanvasDragBehavior : StyledElementBehavior<Control>
             [AdornerLayer.AdornedElementProperty] = control
         };
 
-        ((ISetLogicalParent) _adorner).SetParent(control);
+        ((ISetLogicalParent)_adorner).SetParent(control);
         layer.Children.Add(_adorner);
     }
 
@@ -88,7 +88,7 @@ public class AdvancedCanvasDragBehavior : StyledElementBehavior<Control>
         }
 
         layer.Children.Remove(_adorner);
-        ((ISetLogicalParent) _adorner).SetParent(null);
+        ((ISetLogicalParent)_adorner).SetParent(null);
         _adorner = null;
     }
 
@@ -96,7 +96,7 @@ public class AdvancedCanvasDragBehavior : StyledElementBehavior<Control>
     {
         var isFromDragThumb = (e.Source as Control)?.FindAncestorOfType<TouchDragThumb>() is not null;
         var isFromCurrentThumb = e.Source is Control c1 && UITreeHelper.HasParent(c1, AssociatedObject);
-        if ((e.Source as Control)?.FindAncestorOfType<ISelectable>() is {} selectable && !Equals(selectable, AssociatedObject))
+        if ((e.Source as Control)?.FindAncestorOfType<ISelectable>() is { } selectable && !Equals(selectable, AssociatedObject))
         {
             isFromCurrentThumb = false;
         }
@@ -107,7 +107,7 @@ public class AdvancedCanvasDragBehavior : StyledElementBehavior<Control>
             return;
         }
         var properties = e.GetCurrentPoint(AssociatedObject).Properties;
-        if (properties.IsLeftButtonPressed 
+        if (properties.IsLeftButtonPressed
             && AssociatedObject?.Parent is Control parent && IsEnabled)
         {
             _enableDrag = true;

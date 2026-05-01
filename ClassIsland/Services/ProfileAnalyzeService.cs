@@ -36,11 +36,11 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
             var keyClassPlan = new AttachableObjectAddress(i.Key);
             var nodeClassPlan = Nodes.GetOrCreateDefault(keyClassPlan,
                 new AttachableObjectNode()
-            {
-                Object = i.Value,
-                Target = AttachedSettingsTargets.ClassPlan,
-                Address = keyClassPlan
-            });
+                {
+                    Object = i.Value,
+                    Target = AttachedSettingsTargets.ClassPlan,
+                    Address = keyClassPlan
+                });
 
 
             var keyTimeLayout = new AttachableObjectAddress(i.Value.TimeLayoutId);
@@ -144,7 +144,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         {
             mermaid.AppendLine(
                 $"    n_{node.Key.Guid}_{node.Key.Index}[\"{node.Value.Target}_{node.Key.Guid}_{node.Key.Index}\"]");
-            
+
             foreach (var i in node.Value.NextNodes)
             {
                 mermaid.AppendLine(
@@ -155,7 +155,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         return mermaid.ToString();
     }
 
-    public void Walk(AttachableObjectNode? node, ICollection<AttachableObjectNode> foundNodes, bool isUp, bool isInit=false)
+    public void Walk(AttachableObjectNode? node, ICollection<AttachableObjectNode> foundNodes, bool isUp, bool isInit = false)
     {
         if (node == null)
         {
@@ -176,7 +176,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         }
     }
 
-    public List<AttachableObjectNode> FindNextObjects(AttachableObjectAddress address, Guid id, bool requiresEnabled=true)
+    public List<AttachableObjectNode> FindNextObjects(AttachableObjectAddress address, Guid id, bool requiresEnabled = true)
     {
         var results = new List<AttachableObjectNode>();
         Walk(Nodes[address], results, false, true);

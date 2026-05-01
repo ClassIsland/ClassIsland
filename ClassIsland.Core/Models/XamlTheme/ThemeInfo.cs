@@ -194,7 +194,7 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
             OnPropertyChanged();
         }
     }
-    
+
     /// <summary>
     /// 主题下载量
     /// </summary>

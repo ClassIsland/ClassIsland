@@ -10,7 +10,7 @@ namespace ClassIsland.Behaviors;
 public class ComboBoxEmptyFixBehavior : Behavior<ComboBox>
 {
     public static readonly StyledProperty<Guid> NullKeyProperty = AvaloniaProperty.Register<ComboBoxEmptyFixBehavior, Guid>(
-        nameof(NullKey), defaultValue:Guid.Empty);
+        nameof(NullKey), defaultValue: Guid.Empty);
 
     public Guid NullKey
     {
@@ -31,7 +31,7 @@ public class ComboBoxEmptyFixBehavior : Behavior<ComboBox>
         _selectedValueObserver = AssociatedObject.GetObservable(SelectingItemsControl.SelectedValueProperty)
             .Skip(1)
             .Subscribe(OnSelectedValueChanged);
-        
+
         UpdateSelectedValue();
         base.OnAttached();
     }

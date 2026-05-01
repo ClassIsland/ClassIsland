@@ -14,20 +14,21 @@ namespace ClassIsland.Core.Helpers.Native;
 
 public static class NativeWindowHelper
 {
-    public struct WINDOWPOS {
+    public struct WINDOWPOS
+    {
         public nint hwnd;
         public nint hwndInsertAfter;
-        public int  x;
-        public int  y;
-        public int  cx;
-        public int  cy;
+        public int x;
+        public int y;
+        public int cx;
+        public int cy;
         public uint flags;
     }
 
     public static int SWP_NOZORDER = 0x0004;
     public static nint HWND_TOPMOST = -1;
     public static nint HWND_BOTTOM = 1;
-    
+
     public static bool IsOccupied(string filePath)
     {
         try
@@ -51,7 +52,7 @@ public static class NativeWindowHelper
 
     public static Color GetColor(int argb) =>
         Color.FromArgb((byte)(argb >> 24), (byte)(argb >> 16), (byte)(argb >> 8), (byte)(argb));
-    
+
 #if false
     public static IntPtr FindWindowByClass(string className)
     {

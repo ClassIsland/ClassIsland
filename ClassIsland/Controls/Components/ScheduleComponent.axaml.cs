@@ -52,7 +52,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         get => _showEmptyPlaceholder;
         set => SetAndRaise(ShowEmptyPlaceholderProperty, ref _showEmptyPlaceholder, value);
     }
-    
+
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isAfterSchool = false;
     private ClassPlan? _tomorrowClassPlan;
@@ -115,7 +115,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         SettingsService = settingsService;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
-        
+
         AttachedToVisualTree += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         AttachedToVisualTree += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged;
         AttachedToVisualTree += (_, _) => LessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
@@ -133,7 +133,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         _tomorrowScheduleShowModeObserver?.Dispose();
         _hideFinishedClassObserver?.Dispose();
         _showEmptyPlaceholderObserver?.Dispose();
-        
+
         _tomorrowScheduleShowModeObserver = null;
         _hideFinishedClassObserver = null;
         _showEmptyPlaceholderObserver = null;

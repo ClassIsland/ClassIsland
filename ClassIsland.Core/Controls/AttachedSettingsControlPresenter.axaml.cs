@@ -252,7 +252,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
                 _ => AttachedSettingsTargets.None
             };
         }
-        
+
         ContentObject = control;
         //if (ContentObject is IAttachedSettingsControlBase c)
         //{

@@ -42,22 +42,22 @@ public interface IMainWindowCustomizableNodeSettings : INotifyPropertyChanged
     /// 自定义前景色
     /// </summary>
     public Color ForegroundColor { get; set; }
-    
+
     /// <summary>
     /// 自定义背景不透明度
     /// </summary>
     public double BackgroundOpacity { get; set; }
-    
+
     /// <summary>
     /// 是否启用自定义背景不透明度
     /// </summary>
     public bool IsCustomBackgroundOpacityEnabled { get; set; }
-    
+
     /// <summary>
     /// 自定义背景色
     /// </summary>
     public Color BackgroundColor { get; set; }
-    
+
     /// <summary>
     /// 是否启用自定义背景色
     /// </summary>
@@ -67,12 +67,12 @@ public interface IMainWindowCustomizableNodeSettings : INotifyPropertyChanged
     /// 自定义圆角半径
     /// </summary>
     public double CustomCornerRadius { get; set; }
-    
+
     /// <summary>
     /// 是否启用自定义圆角半径
     /// </summary>
     public bool IsCustomCornerRadiusEnabled { get; set; }
-    
+
     /// <summary>
     /// 元素不透明度
     /// </summary>

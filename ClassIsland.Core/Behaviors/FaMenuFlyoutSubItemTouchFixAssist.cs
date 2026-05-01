@@ -30,15 +30,15 @@ public class FaMenuFlyoutSubItemTouchFixAssist
     private static void IsRepairAppliedChanged(MenuFlyoutSubItem control, AvaloniaPropertyChangedEventArgs args)
     {
         control.Loaded += ControlOnLoaded;
-        
+
         return;
-        
+
         void ControlOnLoaded(object? sender, RoutedEventArgs e)
         {
             control.Unloaded += ControlOnUnloaded;
             control.PointerReleased += ControlOnPointerReleased;
         }
-        
+
         void ControlOnUnloaded(object? o, RoutedEventArgs routedEventArgs)
         {
             control.Loaded -= ControlOnLoaded;
@@ -50,7 +50,7 @@ public class FaMenuFlyoutSubItemTouchFixAssist
         {
             var itemsControl = control.FindAncestorOfType<StackPanel>();
             foreach (var other in itemsControl?.Children.OfType<MenuFlyoutSubItem>()
-                         .Where(x => x != control)?? [])
+                         .Where(x => x != control) ?? [])
             {
                 MenuFlyoutSubItemCloseMethod?.Invoke(other, [false]);
             }

@@ -56,7 +56,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
     {
     }
 
-    public static void CopyFolder(string source, string destination, bool overwrite=false)
+    public static void CopyFolder(string source, string destination, bool overwrite = false)
     {
         if (!Directory.Exists(destination))
         {
@@ -109,7 +109,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         foreach (var i in outdatedBackups)
         {
             File.Delete(i);
-        }        
+        }
     }
 
     public static async Task CreateBackupAsync(bool isAuto = false, string? filename = null, string? rootPath = null)

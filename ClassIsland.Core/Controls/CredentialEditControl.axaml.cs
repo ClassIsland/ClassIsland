@@ -17,7 +17,7 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public partial class CredentialEditControl : UserControl
 {
-    
+
     /// <summary>
     /// 认证字符串的依赖属性
     /// </summary>

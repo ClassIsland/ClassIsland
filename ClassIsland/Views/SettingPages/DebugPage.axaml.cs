@@ -110,7 +110,8 @@ public partial class DebugPage : SettingsPageBase
         var result = await new ContentDialog()
         {
             Title = "修改设置版本",
-            Content = new StackPanel() {
+            Content = new StackPanel()
+            {
                 Children =
                 {
                     new TextBlock()
@@ -128,7 +129,7 @@ public partial class DebugPage : SettingsPageBase
         {
             return;
         }
-        if (!Version.TryParse(textBox.Text, out var version)) 
+        if (!Version.TryParse(textBox.Text, out var version))
             return;
         ViewModel.SettingsService.Settings.LastAppVersion = version;
         RequestRestart();
@@ -142,7 +143,7 @@ public partial class DebugPage : SettingsPageBase
         await CommonTaskDialogs.ShowDialog("Dump",
             $"转储成功。已保存到 {Path.GetFullPath(Path.Combine(CommonDirectories.AppRootFolderPath, "Profile-dump.mmd"))} 。");
     }
-    
+
 
     private void MenuItemCrashOnTask_OnClick(object sender, RoutedEventArgs e)
     {
@@ -230,7 +231,7 @@ public partial class DebugPage : SettingsPageBase
         ViewModel.TargetTime = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         ViewModel.IsTargetTimeLoaded = true;
     }
-    
+
     private void ButtonReset_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.SettingsService.Settings.DebugTimeOffsetSeconds = 0;

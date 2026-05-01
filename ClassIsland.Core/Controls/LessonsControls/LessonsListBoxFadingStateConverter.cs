@@ -30,13 +30,13 @@ internal class LessonsListBoxFadingStateConverter : IMultiValueConverter
         {
             return false;
         }
-        
+
         var currentItem = values[1] as TimeLayoutItem;
         var selectedItem = values[2] as TimeLayoutItem;
         // var currentItemIndex = validTimePoints.IndexOf(currentItem);
         // var selectedItemIndex = validTimePoints.IndexOf(selectedItem);
         var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartTime : currentItem?.EndTime;
-        if ((itemDateTime < selectedItem?.StartTime 
+        if ((itemDateTime < selectedItem?.StartTime
              || itemDateTime.HasValue && itemDateTime.Value <
              IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().TimeOfDay))
         {

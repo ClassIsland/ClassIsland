@@ -36,7 +36,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
 
     // [搜索城市或地区] 防抖定时器
     private DispatcherTimer SearchDebounceTimer { get; set; } = null!;
-    
+
     public SettingsService SettingsService { get; }
 
     public WeatherSettingsPage(SettingsService settingsService, IWeatherService weatherService, ILocationService locationService, ILogger<WeatherSettingsPage> logger)
@@ -77,7 +77,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
         SearchDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
         SearchDebounceTimer.Tick += SearchDebounceTimer_Tick;
         SearchDebounceTimer.Stop();
-        
+
         ViewModel.CitySearchResults = await ViewModel.WeatherService.GetCitiesByName(string.Empty);
     }
 
@@ -143,7 +143,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
         try
         {
             var pos = await ViewModel.LocationService.GetLocationAsync();
-            ViewModel.SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4); 
+            ViewModel.SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4);
             ViewModel.SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
             ViewModel.IsRefreshingWeather = true;
             try
@@ -173,7 +173,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
     {
         ViewModel.HideLocationPos = false;
     }
-    
+
     private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
         if (args.PropertyName == nameof(SettingsService.Settings.NoTLSWeatherRequests))

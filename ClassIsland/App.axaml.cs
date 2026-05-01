@@ -125,7 +125,7 @@ public partial class App : AppBase, IAppHost
     ;
 
     public override string OperatingSystem { get; internal set; } = "unknown";
-    
+
     public override string BuildType { get; } = BuildTypeInternal;
 
     public override string PackagingType { get; internal set; } = "folderClassic";
@@ -142,9 +142,9 @@ public partial class App : AppBase, IAppHost
 #elif PLATFORM_Any
     "any"
 #else
-    #if PublishBuilding
-    #error "在发布构建中不应出现未知架构"
-    #endif
+#if PublishBuilding
+#error "在发布构建中不应出现未知架构"
+#endif
     "unknown"
 #endif
         ;
@@ -169,7 +169,7 @@ public partial class App : AppBase, IAppHost
         var packageTypeDir = Path.Combine(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? exeDir,
             "PackageType");
         var fallbackPackageTypeDir = Path.Combine(exeDir, "../", "PackageType");
-        var packagingRoot = Path.GetFullPath(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? 
+        var packagingRoot = Path.GetFullPath(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ??
                                              Path.Combine(exeDir, "../"));
         if (File.Exists(packageTypeDir))
         {
@@ -251,9 +251,9 @@ public partial class App : AppBase, IAppHost
         IconExpressionHelper.RegisterHandler("bitmap", args => new BitmapIconSource
         {
             UriSource = new Uri(args[0]),
-            ShowAsMonochrome = args.Length >= 2  && bool.TryParse(args[2], out var r1) && r1
+            ShowAsMonochrome = args.Length >= 2 && bool.TryParse(args[2], out var r1) && r1
         });
-        IconExpressionHelper.RegisterHandler("sticker", args => 
+        IconExpressionHelper.RegisterHandler("sticker", args =>
             IAppHost.TryGetService<IManagementService>()?.Policy.DisableEasterEggs == true
             ? args.Length >= 2 ? IconExpressionHelper.TryParseOrNull(args[1]) : new FontIconSource()
             : new AdvancedImageIconSource()
@@ -337,7 +337,7 @@ public partial class App : AppBase, IAppHost
         Stop();
     }
 
-    internal async void ProcessUnhandledException(Exception e, bool critical=false)
+    internal async void ProcessUnhandledException(Exception e, bool critical = false)
     {
 #if DEBUG
         // if (e.GetType() == typeof(ResourceReferenceKeyNotFoundException))
@@ -376,12 +376,12 @@ public partial class App : AppBase, IAppHost
             var crashInfo = e.ToString();
             if (plugins.Count > 0)
             {
-                var pluginsWarning = "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题："+Environment.NewLine
+                var pluginsWarning = "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：" + Environment.NewLine
                                      + string.Join(Environment.NewLine, plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id},{x.Manifest.Version}]"))
                                      + (disabled
-                                         ? Environment.NewLine+"以上异常插件已自动禁用，重启应用后生效。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。"
+                                         ? Environment.NewLine + "以上异常插件已自动禁用，重启应用后生效。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。"
                                          : "")
-                    +Environment.NewLine+ "================================"+Environment.NewLine;
+                    + Environment.NewLine + "================================" + Environment.NewLine;
                 crashInfo = pluginsWarning + crashInfo;
             }
             if (traceId != null)
@@ -453,8 +453,8 @@ public partial class App : AppBase, IAppHost
         }
         else
         {
-            IThemeService.UseNativeTitlebar = !System.OperatingSystem.IsWindows() 
-                                              || AvaloniaUnsafeAccessorHelpers.GetActiveWin32CompositionMode() 
+            IThemeService.UseNativeTitlebar = !System.OperatingSystem.IsWindows()
+                                              || AvaloniaUnsafeAccessorHelpers.GetActiveWin32CompositionMode()
                                                     != Win32CompositionMode.WinUIComposition;
         }
     }
@@ -481,8 +481,8 @@ public partial class App : AppBase, IAppHost
         DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        
-        
+
+
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-CN");
         Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-CN");
 
@@ -527,7 +527,7 @@ public partial class App : AppBase, IAppHost
         }
         catch (Exception ex)
         {
-            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入当前目录：{ex.Message}"+Environment.NewLine+Environment.NewLine+"请将本软件解压到一个合适的位置后再运行。");
+            await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入当前目录：{ex.Message}" + Environment.NewLine + Environment.NewLine + "请将本软件解压到一个合适的位置后再运行。");
             Environment.Exit(0);
             return;
         }
@@ -538,7 +538,7 @@ public partial class App : AppBase, IAppHost
             : 1;
         if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
-            Logger?.LogDebug("应用多次启动失败。startupCount={startupCount}",startupCount);
+            Logger?.LogDebug("应用多次启动失败。startupCount={startupCount}", startupCount);
             var dialog = new TaskDialog()
             {
                 Title = "进入恢复模式",
@@ -567,7 +567,7 @@ public partial class App : AppBase, IAppHost
             {
                 File.Delete(startupCountFilePath);
             }
-            
+
             var recoveryWindow = new RecoveryWindow();
             recoveryWindow.Show();
             transaction.Finish();
@@ -579,7 +579,7 @@ public partial class App : AppBase, IAppHost
         AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
 
         var spanProcessUpdate = spanPreInit.StartChild("startup-process-update");
-        
+
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
             //MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
@@ -607,7 +607,7 @@ public partial class App : AppBase, IAppHost
         }
         foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Error))
         {
-            Logger.LogWarning("插件加载失败:{PluginName}({PluginID},{PluginVersion}):{PluginLoadException}", plugin.Manifest.Name,plugin.Manifest.Id, plugin.Manifest.Version, plugin.Exception);
+            Logger.LogWarning("插件加载失败:{PluginName}({PluginID},{PluginVersion}):{PluginLoadException}", plugin.Manifest.Name, plugin.Manifest.Id, plugin.Manifest.Version, plugin.Exception);
         }
         Logger.LogInformation(
             PluginService.PluginLoadedStatus.Any(p => p.LoadStatus == PluginLoadStatus.Loaded) ? "此次会话已加载插件:{loadedPlugin}" : "此次会话没有加载插件。",
@@ -662,9 +662,9 @@ public partial class App : AppBase, IAppHost
         {
             Settings.DiagnosticMemoryKillCount++;
             Settings.DiagnosticLastMemoryKillTime = DateTime.Now;
-            #if !DEBUG
+#if !DEBUG
             Logger.LogWarning($"上次会话因MLE结束。MemoryKillCount={Settings.DiagnosticMemoryKillCount}");
-            #endif
+#endif
         }
         spanLoadingSettings.Finish();
         //OverrideFocusVisualStyle();
@@ -714,7 +714,7 @@ public partial class App : AppBase, IAppHost
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = IAppHost.Host.StartAsync();
         IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
-        
+
         if (!Settings.IsWelcomeWindowShowed || ApplicationCommand.Refreshing || ApplicationCommand.Onboarding)
         {
             if (Settings.IsSplashEnabled)
@@ -771,10 +771,10 @@ public partial class App : AppBase, IAppHost
         }
 
         // 如果不是开发构建, 则自动重置部分可能影响使用的调试选项
-        #if !DEBUG
+#if !DEBUG
         Settings.IsMainWindowDebugEnabled = false;
-        #endif
-        
+#endif
+
         var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
         Logger.LogInformation("正在初始化MainWindow。");
         GetService<ISplashService>().SetDetailedStatus("正在启动主界面所需的服务");
@@ -908,7 +908,7 @@ public partial class App : AppBase, IAppHost
                 uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update"));
             await PlatformServices.DesktopToastService.ShowToastAsync(content);
         }
-        
+
         var needsStop = await IAppHost.GetService<IRefreshingService>().Initialize();
         if (needsStop)
         {
@@ -928,7 +928,7 @@ public partial class App : AppBase, IAppHost
             SystemDecorations = SystemDecorations.None,
             ShowInTaskbar = false,
             Background = Brushes.Transparent,
-            TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ],
+            TransparencyLevelHint = [WindowTransparencyLevel.Transparent],
             Title = "PhonyRootWindow"
         };
         PhonyRootWindow.Closing += (sender, args) =>
@@ -990,7 +990,7 @@ public partial class App : AppBase, IAppHost
         var dialog = new TaskDialog()
         {
             Title = "ClassIsland 已在运行",
-            Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行设置等操作。" +Environment.NewLine+Environment.NewLine+
+            Content = "ClassIsland 已经启动，请通过任务栏托盘图标进行设置等操作。" + Environment.NewLine + Environment.NewLine +
                       "如果您无法看到主界面，可能是因为您在托盘图标菜单中选择了【隐藏主界面】，或者有隐藏主界面的规则或行动正在生效。",
             XamlRoot = GetRootWindow(),
             Buttons =
@@ -1019,7 +1019,7 @@ public partial class App : AppBase, IAppHost
             var proc = Process.GetProcessesByName(System.OperatingSystem.IsWindows()
                 ? Path.GetFileNameWithoutExtension(Environment.ProcessPath)
                 : Environment.ProcessPath?.Replace(".dll", ""))
-                .Where(x=>x.Id != Environment.ProcessId);
+                .Where(x => x.Id != Environment.ProcessId);
             foreach (var i in proc)
             {
                 i.Kill(true);
@@ -1032,7 +1032,7 @@ public partial class App : AppBase, IAppHost
         }
         catch (Exception e)
         {
-            await CommonTaskDialogs.ShowDialog("重启失败", "无法重新启动应用，可能当前运行的实例正在以管理员身份运行。请使用任务管理器终止正在运行的实例，然后再试一次。"+Environment.NewLine+Environment.NewLine+$"{e.Message}");
+            await CommonTaskDialogs.ShowDialog("重启失败", "无法重新启动应用，可能当前运行的实例正在以管理员身份运行。请使用任务管理器终止正在运行的实例，然后再试一次。" + Environment.NewLine + Environment.NewLine + $"{e.Message}");
         }
     }
 
@@ -1095,7 +1095,7 @@ public partial class App : AppBase, IAppHost
     public override event EventHandler? AppStarted;
     public override event EventHandler? AppStopping;
 
-    public override void Restart(bool quiet=false)
+    public override void Restart(bool quiet = false)
     {
         if (quiet)
         {
@@ -1112,7 +1112,7 @@ public partial class App : AppBase, IAppHost
     {
         Restart(parameters, false);
     }
-    
+
     public override void Restart(string[] parameters, bool restartToLauncher)
     {
         Stop();

@@ -24,7 +24,7 @@ public partial class UpdateSettingsPage : SettingsPageBase
 {
     private IDisposable? _updateSettingsObserver;
     private IDisposable? _newVersionChangeLogObserver;
-    
+
     public UpdateSettingsPageViewModel ViewModel { get; } = IAppHost.GetService<UpdateSettingsPageViewModel>();
 
     public static readonly FuncValueConverter<UpdateStatus, string> UpdateStatusToIconGlyphConverter =
@@ -36,17 +36,17 @@ public partial class UpdateSettingsPage : SettingsPageBase
             UpdateStatus.UpdateDeployed => "\ue163",
             _ => ""
         });
-    
+
     public static readonly FuncValueConverter<UpdateStatus, string> UpdateStatusToMessageConverter =
         new(x => x switch
         {
             UpdateStatus.UpToDate => "您已更新到最新版本。",
-            UpdateStatus.UpdateAvailable => "检测到更新。" ,
+            UpdateStatus.UpdateAvailable => "检测到更新。",
             UpdateStatus.UpdateDownloaded => "已准备好安装更新。",
             UpdateStatus.UpdateDeployed => "更新已就绪。",
             _ => ""
         });
-    
+
     public static readonly FuncValueConverter<UpdateWorkingStatus, string> UpdateWorkingStatusToMessageConverter =
         new(x => x switch
         {
@@ -66,13 +66,13 @@ public partial class UpdateSettingsPage : SettingsPageBase
             DownloadState.Error => "错误",
             _ => "???"
         });
-    
+
     public UpdateSettingsPage()
     {
         DataContext = this;
         InitializeComponent();
     }
-    
+
     private async void ButtonCheckUpdate_OnClick(object sender, RoutedEventArgs e)
     {
         await ViewModel.UpdateService.CheckUpdateAsync();
@@ -111,7 +111,7 @@ public partial class UpdateSettingsPage : SettingsPageBase
         _newVersionChangeLogObserver ??= ViewModel.UpdateService
             .WhenAnyPropertyChanged()
             .Subscribe(_ => UpdateNewVersionChangeLog());
-        
+
     }
 
 

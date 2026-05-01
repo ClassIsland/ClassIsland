@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
-public partial class WeatherSettingsViewModel(SettingsService settingsService, 
-    ILocationService locationService, 
+public partial class WeatherSettingsViewModel(SettingsService settingsService,
+    ILocationService locationService,
     IWeatherService weatherService,
     ILogger<WeatherSettingsPage> logger) : ObservableRecipient
 {
@@ -24,5 +24,5 @@ public partial class WeatherSettingsViewModel(SettingsService settingsService,
     [ObservableProperty] private bool _isRefreshingWeather = false;
     [ObservableProperty] private bool _hideLocationPos = true;
     [ObservableProperty] private bool _isLocationUpdating = false;
-    
+
 }

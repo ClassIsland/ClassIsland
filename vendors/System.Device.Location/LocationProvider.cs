@@ -283,7 +283,7 @@ namespace System.Device.Location
         #region IDisposable
 
         [SecuritySafeCritical]
-        public void Dispose() 
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -331,10 +331,10 @@ namespace System.Device.Location
         /// <typeparam name="T">The <see cref="T:System.EventArgs"/> type identifying the type of object that gets raised with the event"/></typeparam>
         /// <param name="callback">The protected virtual method that will raise the event.</param>
         /// <param name="e">The <see cref="T:System.EventArgs"/> object that should be passed to the protected virtual method raising the event.</param>
-        private void PostEvent<T>(EventRaiser<T> callback, T e) where T : EventArgs 
+        private void PostEvent<T>(EventRaiser<T> callback, T e) where T : EventArgs
         {
             Debug.Assert(m_synchronizationContext != null);
-            m_synchronizationContext.Post(delegate(Object state) { callback((T)state); }, e);
+            m_synchronizationContext.Post(delegate (Object state) { callback((T)state); }, e);
         }
     }
 

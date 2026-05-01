@@ -28,7 +28,7 @@ public class NotNaNConverter : IValueConverter
 
     private NotNaNConverter()
     {
-        
+
     }
 
     /// <summary>

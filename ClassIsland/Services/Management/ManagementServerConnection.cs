@@ -41,22 +41,22 @@ public class ManagementServerConnection : IManagementServerConnection
 {
     // Cyrene_MSP, aka. "CMSP" or "Cyrene Management Server Protocol" 
     private const string ProtocolName = "Cyrene_MSP";
-    
+
     private const string ProtocolVersion = "2.0.0.0";
 
     private static string ServerPublicKeyPath =>
         Path.Combine(ManagementService.ManagementConfigureFolderPath, "ServerKey.asc");
 
     private string? CurrentSessionId { get; set; }
-    
+
     private ILogger<ManagementServerConnection> Logger { get; } = App.GetService<ILogger<ManagementServerConnection>>();
 
     private Guid ClientGuid { get; }
 
     private string Id { get; }
-    
+
     private string ManifestUrl { get; }
-    
+
     private string Host { get; }
 
     private GrpcChannel? Channel { get; set; }
@@ -65,25 +65,27 @@ public class ManagementServerConnection : IManagementServerConnection
     {
         Interval = TimeSpan.FromSeconds(10)
     };
-    
-    private AsyncDuplexStreamingCall<ClientCommandDeliverScReq, ClientCommandDeliverScRsp>? CommandListeningCall { get;
+
+    private AsyncDuplexStreamingCall<ClientCommandDeliverScReq, ClientCommandDeliverScRsp>? CommandListeningCall
+    {
+        get;
         set;
     }
 
     private CancellationTokenSource CommandListeningCallCancellationTokenSource { get; set; } = new();
-    
+
     private ManagementSettings ManagementSettings { get; }
-    
-    private string GetNetworkInterfaceMac() => NetworkInterface 
-            .GetAllNetworkInterfaces() 
+
+    private string GetNetworkInterfaceMac() => NetworkInterface
+            .GetAllNetworkInterfaces()
             .First(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback &&      // 非回环 
                         n.OperationalStatus == OperationalStatus.Up &&                  // 活动中 
-                        n.GetIPProperties().UnicastAddresses.Any(ip => 
+                        n.GetIPProperties().UnicastAddresses.Any(ip =>
                             ip.Address.AddressFamily == AddressFamily.InterNetwork))
             .GetPhysicalAddress()
             .ToString()
             .ToUpper();
-    
+
 
     private Grpc.Core.Metadata GetMetadata(bool outOfSession = false)
     {
@@ -101,7 +103,7 @@ public class ManagementServerConnection : IManagementServerConnection
         };
     }
 
-    
+
     public ManagementServerConnection(ManagementSettings settings, Guid clientUid, bool lightConnect)
     {
         ClientGuid = clientUid;
@@ -110,7 +112,7 @@ public class ManagementServerConnection : IManagementServerConnection
         ManagementSettings = settings;
         ManifestUrl = $"{Host}/api/v1/client/{clientUid}/manifest";
         CommandConnectionAliveTimer.Tick += CommandConnectionAliveTimerOnTick;
-        
+
         Logger.LogInformation("初始化管理服务器连接。");
         if (lightConnect)
         {
@@ -134,7 +136,7 @@ public class ManagementServerConnection : IManagementServerConnection
         {
             return;
         }
-        
+
         Logger.LogInformation("集控请求上传配置：{} {}", payload.RequestGuid, payload.ConfigType);
         var uploadPayload = payload.ConfigType switch
         {
@@ -210,7 +212,7 @@ public class ManagementServerConnection : IManagementServerConnection
         var header = GetMetadata(true);
         var mac = GetNetworkInterfaceMac();
         var handShakeClient = new Handshake.HandshakeClient(Channel);
-        
+
         await using var publicKeyStream = File.OpenRead(ServerPublicKeyPath);
         await using var decodeStream = PgpUtilities.GetDecoderStream(publicKeyStream);
         var pgpPub = new PgpPublicKeyRing(decodeStream);
@@ -256,7 +258,7 @@ public class ManagementServerConnection : IManagementServerConnection
         Logger.LogInformation("与 {} 握手成功，SessionId：{}", ManagementSettings.ManagementServerGrpc, completeRsp.SessionId);
         return true;
     }
-    
+
     private async Task ListenCommands()
     {
         if (CommandListeningCall != null)
@@ -275,7 +277,7 @@ public class ManagementServerConnection : IManagementServerConnection
                 Logger.LogInformation("由于对方服务器不信任，不再尝试与服务器握手和进一步连接。");
                 return;
             }
-            
+
             var client = new ClientCommandDeliver.ClientCommandDeliverClient(Channel);
             var call = client.ListenCommand(GetMetadata());
             CommandListeningCallCancellationTokenSource = new CancellationTokenSource();
@@ -337,7 +339,7 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private void InstallAuditHooks()
     {
-        
+
     }
 
     internal void LogAuditEvent(AuditEvents eventType, IBufferMessage payload)
@@ -359,7 +361,7 @@ public class ManagementServerConnection : IManagementServerConnection
             }
         });
     }
-    
+
     public async Task<ManagementManifest> GetManifest()
     {
         return await WebRequestHelper.Default.GetJson<ManagementManifest>(new Uri(ManifestUrl));

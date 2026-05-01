@@ -87,13 +87,15 @@ public class ModifyAppSettingsAction : ActionBase<ModifyAppSettingsActionSetting
         }
     }
 
-    [Pure] public static bool IsTypeSupported(Type type)
+    [Pure]
+    public static bool IsTypeSupported(Type type)
     {
         type = GetUnderlyingType(type);
         return SupportedTypes.Contains(type) || type.IsEnum;
     }
 
-    [Pure] public static Type GetUnderlyingType(Type type) =>
+    [Pure]
+    public static Type GetUnderlyingType(Type type) =>
         Nullable.GetUnderlyingType(type) ?? type;
 
     public static readonly JsonSerializerOptions FriendlyJsonSerializerOptions = new()

@@ -15,7 +15,7 @@ partial class Build
     string RuntimeIdentifier = "";
     AbsolutePath AppPublishArtifactPath;
     bool IsSecretFilled = false;
-    
+
     Target RestoreDesktopApp => _ => _
         .Before(CompileApp)
         .DependsOn(GenerateMetadata)
@@ -28,7 +28,7 @@ partial class Build
                 .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                 .SetProperty("ClassIsland_PlatformTarget", Arch));
         });
-    
+
     Target CleanDesktopApp => _ => _
         .Before(CompileApp)
         .DependsOn(CleanOutputDir)
@@ -48,7 +48,7 @@ partial class Build
     Target GenerateSecrets => t => t
         .Executes(() =>
         {
-            var content = 
+            var content =
                $$""""
                  namespace ClassIsland.Services.SpeechService{
                      public static partial class GptSovitsSecrets
@@ -69,7 +69,7 @@ partial class Build
                  """";
             File.WriteAllText(AppSecretsPath, content);
         });
-    
+
     Target CompileApp => t => t
         .DependsOn(GenerateSecrets)
         .DependsOn(GenerateMetadata)
@@ -125,6 +125,6 @@ partial class Build
         .DependsOn(CompileApp)
         .DependsOn(GenerateAppZipArchive)
         .DependsOn(PostCleanup);
-    
-    
+
+
 }

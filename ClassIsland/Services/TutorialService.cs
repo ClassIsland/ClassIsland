@@ -35,13 +35,13 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private SettingsService SettingsService { get; }
     private IActionService ActionService { get; }
     private IUriNavigationService UriNavigationService { get; }
-    
+
     private TutorialSettings Settings { get; }
 
     [ObservableProperty] private Tutorial? _currentTutorial;
     [ObservableProperty] private TutorialParagraph? _currentParagraph;
-    
-    [ObservableProperty] 
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsTutorialRunning))]
     private TutorialSentence? _currentSentence;
 
@@ -49,11 +49,11 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private int ParagraphIndex { get; set; } = -1;
 
     private List<Control> AttachedAdorners { get; } = [];
-    
+
     private TeachingTip? CurrentTeachingTip { get; set; }
-    
+
     private Border? CurrentDimBorder { get; set; }
-    
+
     private TutorialControllerWindow? ControllerWindow { get; set; }
 
     private bool _useDimPrev;
@@ -109,7 +109,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         {
             return;
         }
-        
+
         JumpToParagraph(tutorial, null);
     }
 
@@ -125,7 +125,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         }
 
         var result = ParseParagraphPath(path, false);
-        if (result is not {} v)
+        if (result is not { } v)
         {
             return;
         }
@@ -158,7 +158,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     public void PushToNextSentence(string? paragraphPath = null)
     {
-        if (paragraphPath != null && GetCurrentParagraphPath() is {} currentPath && paragraphPath != currentPath)
+        if (paragraphPath != null && GetCurrentParagraphPath() is { } currentPath && paragraphPath != currentPath)
         {
             return;
         }
@@ -167,7 +167,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         {
             return;
         }
-        
+
         TryStartNextSentence();
     }
 
@@ -177,7 +177,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         {
             return;
         }
-        
+
         TryStartNextSentence();
     }
 
@@ -272,7 +272,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         {
             return;
         }
-        
+
         CurrentSentence = sentence;
         InvokeActions(sentence.InitializeActions, true);
         var targetControl = !string.IsNullOrWhiteSpace(sentence.TargetSelector)
@@ -324,7 +324,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
             AttachAdorner(spotlight, targetControl ?? AttachedToplevel);
         }
         _useDimPrev = useDim;
-        
+
         if (sentence.HighlightTarget && targetControl != null)
         {
             var highlightControl = new TutorialHighlightControl();
@@ -364,7 +364,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     private void TrySetCurrentParagraphCompleted()
     {
-        if (CurrentParagraph != null && SentenceIndex + 1 >= CurrentParagraph.Content.Count && GetCurrentParagraphPath() is {} path) 
+        if (CurrentParagraph != null && SentenceIndex + 1 >= CurrentParagraph.Content.Count && GetCurrentParagraphPath() is { } path)
             Settings.CompletedTutorials.Add(path);
     }
 
@@ -406,7 +406,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
     private string? GetCurrentParagraphPath()
     {
-        if (CurrentTutorial != null && CurrentParagraph != null )
+        if (CurrentTutorial != null && CurrentParagraph != null)
         {
             return $"{CurrentTutorial.Id}/{CurrentParagraph.Id}";
         }
@@ -425,10 +425,10 @@ public partial class TutorialService : ObservableObject, ITutorialService
         CurrentTutorial = null;
         TutorialStateChanged?.Invoke(this, EventArgs.Empty);
     }
-    
+
     public void SkipTutorial()
     {
-        if (GetCurrentParagraphPath() is {} path)
+        if (GetCurrentParagraphPath() is { } path)
         {
             SetIsTutorialCompleted(path, true);
         }
@@ -536,12 +536,12 @@ public partial class TutorialService : ObservableObject, ITutorialService
         {
             return false;
         }
-        
+
         TrySetCurrentParagraphCompleted();
         StartParagraph(CurrentTutorial, CurrentTutorial.Paragraphs[++ParagraphIndex]);
         return true;
     }
-    
+
     private bool TryStartPreviousParagraph()
     {
         if (CurrentTutorial == null)
@@ -552,7 +552,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         {
             return false;
         }
-        
+
         TrySetCurrentParagraphCompleted();
         StartParagraph(CurrentTutorial, CurrentTutorial.Paragraphs[--ParagraphIndex]);
         return true;

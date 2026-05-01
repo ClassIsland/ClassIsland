@@ -19,12 +19,12 @@ public class DesktopToastContent
     /// 通知头图
     /// </summary>
     public Uri? HeroImageUri { get; set; }
-    
+
     /// <summary>
     /// 通知内容图片
     /// </summary>
     public Uri? InlineImageUri { get; set; }
-    
+
     /// <summary>
     /// 通知 Logo 图片 Uri
     /// </summary>

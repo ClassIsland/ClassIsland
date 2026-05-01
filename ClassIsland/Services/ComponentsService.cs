@@ -94,7 +94,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         {
             return;
         }
-        
+
         IsManagementMode = true;
         try
         {
@@ -116,7 +116,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                     .ManagementComponentsPath);
         }
         LoadConfig();
-    
+
     }
 
     private void LoadConfig()
@@ -133,7 +133,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                 CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentProfile>(SelectedConfigFullPath);
             }
         }
-        
+
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
         CurrentComponents.Lines.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
 
@@ -146,7 +146,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                     LoadComponentSettings(i, i.AssociatedComponentInfo.ComponentType.BaseType!);
                 continue;
             }
-            
+
             Logger.LogInformation("迁移组件 {} -> {}", i.Id, targetGuid);
             i.IsMigrated = true;
             i.MigrationSource = new Guid(i.Id);
@@ -223,7 +223,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                 component.SettingsInternal = componentSettings;
             }
             component.OnMigrated(settings.MigrationSource, settings.Settings);
-        } 
+        }
         if (baseType?.GetGenericArguments().Length > 0 && !migrated)
         {
             var componentSettings = LoadComponentSettings(settings, baseType);

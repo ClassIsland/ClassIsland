@@ -35,7 +35,7 @@ public partial class EditModeViewModel(
     [ObservableProperty] private string _createProfileName = "";
     [ObservableProperty] private IList<ComponentSettings>? _targetComponentsList;
     [ObservableProperty] private ComponentInfo? _selectedComponentInfo;
-    
+
     [ObservableProperty] private object? _secondaryDrawerContent;
     [ObservableProperty] private object? _secondaryDrawerTitle;
     [ObservableProperty] private VerticalDrawerOpenState _secondaryDrawerState;

@@ -67,7 +67,7 @@ public partial class CrashWindow : MyWindow
     {
         var uri = new UriBuilder(
             $"https://github.com/ClassIsland/ClassIsland/issues/new");
-        uri.Query = 
+        uri.Query =
             $"template=BugReport.yml&stacktrace={HttpUtility.UrlEncode(CrashInfo)}&app_version={HttpUtility.UrlEncode(App.AppVersionLong)}&os_version={HttpUtility.UrlEncode(Environment.OSVersion.Version.ToString())}";
         Process.Start(new ProcessStartInfo()
         {

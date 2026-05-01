@@ -21,7 +21,7 @@ public class WorkflowProgressIndicatorControl : TemplatedControl
     }
 
     private IDisposable? _observer1;
-    
+
     private IDisposable? _observer2;
     private IDisposable? _observer3;
 
@@ -36,7 +36,7 @@ public class WorkflowProgressIndicatorControl : TemplatedControl
         _observer1?.Dispose();
         _observer1 = this.GetObservable(WorkflowProperty).Subscribe(_ => UpdateContent());
     }
-    
+
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
         _observer1?.Dispose();

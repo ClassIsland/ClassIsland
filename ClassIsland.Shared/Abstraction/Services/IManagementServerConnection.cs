@@ -5,7 +5,7 @@ namespace ClassIsland.Shared.Abstraction.Services;
 /// <summary>
 /// 集控服务器连接接口
 /// </summary>
-public interface IManagementServerConnection 
+public interface IManagementServerConnection
 {
     /// <summary>
     /// 获取集控清单

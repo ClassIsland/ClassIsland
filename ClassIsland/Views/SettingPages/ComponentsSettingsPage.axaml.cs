@@ -38,7 +38,7 @@ namespace ClassIsland.Views.SettingPages;
 public partial class ComponentsSettingsPage : SettingsPageBase
 {
     public ComponentsSettingsViewModel ViewModel { get; } = IAppHost.GetService<ComponentsSettingsViewModel>();
-    
+
     public ComponentsSettingsPage()
     {
         InitializeComponent();
@@ -47,7 +47,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
             .ObservableForProperty(x => x.CurrentComponentConfig)
             .Subscribe(_ => ClearSelectedComponents());
     }
-    
+
     private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
     {
         ClearSelectedComponents();
@@ -97,7 +97,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.SelectedComponentSettings = null;
         UpdateSettingsVisibility();
     }
-    
+
     private void SelectorComponents_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings)
@@ -118,7 +118,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         }
         UpdateSettingsVisibility();
     }
-    
+
     private void UpdateSettingsVisibility()
     {
         if (ViewModel.SelectedComponentSettings == null)
@@ -150,7 +150,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
             UseShellExecute = true
         });
     }
-    
+
     private void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)
     {
         var remove = ViewModel.SelectedComponentSettings;
@@ -170,17 +170,18 @@ public partial class ComponentsSettingsPage : SettingsPageBase
                     break;
                 }
             }
-        } else if (ViewModel.SelectedComponentSettingsChild != null)
+        }
+        else if (ViewModel.SelectedComponentSettingsChild != null)
         {
             ViewModel.SelectedComponentContainerChildren.Remove(remove);
         }
     }
-    
+
     private void ButtonChildrenViewClose_OnClick(object sender, RoutedEventArgs e)
     {
         CloseComponentChildrenView();
     }
-    
+
     private void CloseComponentChildrenView()
     {
         ViewModel.IsComponentChildrenViewOpen = false;
@@ -189,31 +190,31 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.SelectedComponentContainerChildren = [];
         ViewModel.SelectedRootComponent = null;
     }
-    
+
     private void ButtonOpenRuleset_OnClick(object sender, RoutedEventArgs e)
     {
         if (this.FindResource("RulesetControl") is not RulesetControl control ||
-            ViewModel.SelectedComponentSettings == null) 
+            ViewModel.SelectedComponentSettings == null)
             return;
         control.Ruleset = ViewModel.SelectedComponentSettings.HidingRules;
         OpenDrawer("RulesetControl");
     }
-    
+
     private void ButtonOpenMainWindowLineRuleset_OnClick(object sender, RoutedEventArgs e)
     {
         if (this.FindResource("RulesetControl") is not RulesetControl control ||
-            ViewModel.SelectedMainWindowLineSettings == null) 
+            ViewModel.SelectedMainWindowLineSettings == null)
             return;
         control.Ruleset = ViewModel.SelectedMainWindowLineSettings.HidingRules;
         OpenDrawer("RulesetControl");
     }
-    
+
     private void ButtonShowChildrenComponents_OnClick(object sender, RoutedEventArgs e)
     {
         SetCurrentSelectedComponentContainer(ViewModel.SelectedComponentSettings);
     }
 
-    private void SetCurrentSelectedComponentContainer(ComponentSettings? componentSettings, bool isBack=false)
+    private void SetCurrentSelectedComponentContainer(ComponentSettings? componentSettings, bool isBack = false)
     {
         if (componentSettings?.AssociatedComponentInfo?.IsComponentContainer != true)
         {
@@ -233,7 +234,8 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         {
             ViewModel.ChildrenComponentSettingsNavigationStack.Clear();
             ViewModel.SelectedRootComponent = componentSettings;
-        } else if (ViewModel.SelectedContainerComponent != null && !isBack)
+        }
+        else if (ViewModel.SelectedContainerComponent != null && !isBack)
         {
             ViewModel.ChildrenComponentSettingsNavigationStack.Push(ViewModel.SelectedContainerComponent);
         }
@@ -295,7 +297,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         if (button.IsChecked == false)
         {
             var firstLine = ViewModel.ComponentsService.CurrentComponents.Lines.FirstOrDefault();
-            if (firstLine != null) 
+            if (firstLine != null)
                 firstLine.IsMainLine = true;
             this.ShowToast("已将第一行设置为主要行。");
         }
@@ -348,7 +350,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         {
             listBox.SelectedItem = null;
         }
-        
+
         ViewModel.SelectedComponentSettingsChild = settings;
         ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsChild;
         ViewModel.SelectedComponentSettingsMain = null;
@@ -378,7 +380,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         }
         ViewModel.SelectedComponentSettings = newSettings;
     }
-    
+
     [RelayCommand]
     private void CreateContainerComponent(ComponentInfo container)
     {
@@ -441,7 +443,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         for (var i = 0; i < ViewModel.ComponentsService.CurrentComponents.Lines.Count; i++)
         {
             var line = ViewModel.ComponentsService.CurrentComponents.Lines[i];
-            if (line.Children != list) 
+            if (line.Children != list)
                 continue;
             index = i;
         }
@@ -468,7 +470,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.ComponentsService.CurrentComponents.Lines.Insert(0, newLine);
         this.ShowToast("已向上创建新主界面行。");
     }
-    
+
     [RelayCommand]
     private void MoveComponentToNextLine(ComponentSettings settings)
     {
@@ -482,7 +484,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         for (var i = 0; i < ViewModel.ComponentsService.CurrentComponents.Lines.Count; i++)
         {
             var line = ViewModel.ComponentsService.CurrentComponents.Lines[i];
-            if (line.Children != list) 
+            if (line.Children != list)
                 continue;
             index = i;
         }
@@ -518,13 +520,13 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         {
             return;
         }
-        
+
         if (settings == ViewModel.SelectedRootComponent)
         {
             this.ShowWarningToast("不能将容器组件移动到自身（或其子级）的子组件中。");
             return;
         }
-        
+
         list.Remove(settings);
         ViewModel.SelectedComponentContainerChildren.Add(settings);
         Dispatcher.UIThread.InvokeAsync(() =>
@@ -556,13 +558,13 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         {
             return;
         }
-        
+
         var componentSettings = new ComponentSettings()
         {
             Id = info.Guid.ToString()
         };
         selectedList.Add(componentSettings);
         ComponentsService.LoadComponentSettings(componentSettings,
-            componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!); 
+            componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!);
     }
 }

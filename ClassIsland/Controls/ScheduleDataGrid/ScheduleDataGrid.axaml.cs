@@ -30,7 +30,7 @@ public partial class ScheduleDataGrid : TemplatedControl
     {
         Name = ""
     };
-    
+
     public static readonly StyledProperty<DateTime> SelectedDateProperty = AvaloniaProperty.Register<ScheduleDataGrid, DateTime>(
         nameof(SelectedDate), DateTime.Now);
 
@@ -142,7 +142,7 @@ public partial class ScheduleDataGrid : TemplatedControl
         get => GetValue(IsReadonlyProperty);
         set => SetValue(IsReadonlyProperty, value);
     }
-    
+
     public event EventHandler<ScheduleDataGridClassPlanEventArgs> OpenClassPlanSettingsRequested
     {
         add => AddHandler(OpenClassPlanSettingsRequestedEvent, value);
@@ -150,22 +150,22 @@ public partial class ScheduleDataGrid : TemplatedControl
     }
 
     public event EventHandler<CreateClassPlanEventArgs>? CreateClassPlanEvent;
-    
+
     public ObservableCollection<WeekClassPlanRow> WeekClassPlanRows { get; } = [];
     public ObservableCollection<DateTime> WeekDayDates { get; } = [default, default, default, default, default, default, default];
 
     public ObservableCollection<ClassPlan> ClassPlansCache { get; } = [EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan, EmptyClassPlan];
 
     private List<IDisposable> _updateObservers = [];
-    
-    public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>(); 
-    public ILessonsService LessonsService { get; } = IAppHost.GetService<ILessonsService>(); 
+
+    public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
+    public ILessonsService LessonsService { get; } = IAppHost.GetService<ILessonsService>();
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
 
     private DataGrid? _mainDataGrid;
 
     private int _rowIndexPrev = -1;
-    
+
     public ScheduleDataGrid()
     {
         AddHandler(ScheduleDataGridCellControl.ScheduleDataGridSelectionChangedEvent, DataGridWeekSchedule_OnScheduleDataGridSelectionChanged, RoutingStrategies.Bubble);
@@ -179,7 +179,7 @@ public partial class ScheduleDataGrid : TemplatedControl
         this.GetObservable(SelectedClassInfoIndexProperty).Skip(1).Subscribe(_ => UpdateSelectedClassInfoByIndex());
         Loaded += Control_OnLoaded;
         Unloaded += OnUnloaded;
-        
+
     }
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
@@ -237,7 +237,7 @@ public partial class ScheduleDataGrid : TemplatedControl
         RefreshWeekScheduleRows();
         Dispatcher.UIThread.Post(() => IsLoading = false);
     }
-    
+
     private (DataGridCell?, int) GetDataGridSelectedCell(DataGrid dataGrid)
     {
         var currentRow = dataGrid.FindDescendantOfType<DataGridRowsPresenter>()?
@@ -295,7 +295,7 @@ public partial class ScheduleDataGrid : TemplatedControl
                 if (_mainDataGrid != null) _mainDataGrid.SelectedIndex = SelectedClassInfoIndex;
             }
         }
-        
+
         UpdateUiSelection();
 
         return;
@@ -332,8 +332,8 @@ public partial class ScheduleDataGrid : TemplatedControl
         {
             row.TimePoint = TimeLayoutItem.Empty;
         }
-        var classPlan = SelectedClassPlan 
-                        ?? ClassPlansCache[1] 
+        var classPlan = SelectedClassPlan
+                        ?? ClassPlansCache[1]
                         ?? ClassPlansCache.FirstOrDefault(x => x != null);
         if (classPlan == null)
         {
@@ -345,7 +345,7 @@ public partial class ScheduleDataGrid : TemplatedControl
             WeekClassPlanRows[i].TimePoint = classPlan.Classes[i].CurrentTimeLayoutItem;
         }
     }
-    
+
     private void ButtonRefreshScheduleAdjustmentView_OnClick(object sender, RoutedEventArgs e)
     {
         RefreshWeekScheduleRows();

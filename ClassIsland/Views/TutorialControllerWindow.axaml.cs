@@ -15,11 +15,11 @@ namespace ClassIsland.Views;
 public partial class TutorialControllerWindow : Window
 {
     private const double BottomGapDip = 16;
-    
+
     public ITutorialService TutorialService { get; } = IAppHost.GetService<ITutorialService>();
-    
+
     private IWindowRuleService WindowRuleService { get; } = IAppHost.GetService<IWindowRuleService>();
-    
+
     public TutorialControllerWindow()
     {
         DataContext = this;

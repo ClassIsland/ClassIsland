@@ -40,7 +40,7 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
         get => GetValue(KeyProperty);
         set => SetValue(KeyProperty, value);
     }
-    
+
     private bool _isRenaming = false;
 
     private IProfileService ProfileService { get; } = App.GetService<IProfileService>();

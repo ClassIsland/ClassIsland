@@ -51,10 +51,10 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
     private IDisposable? _pluginsUpdateProgressObserver;
-    private readonly OSPlatform _currentOSPlatform = 
+    private readonly OSPlatform _currentOSPlatform =
         OperatingSystem.IsWindows() ? OSPlatform.Windows :
-        OperatingSystem.IsLinux()   ? OSPlatform.Linux :
-        OperatingSystem.IsMacOS()   ? OSPlatform.OSX :
+        OperatingSystem.IsLinux() ? OSPlatform.Linux :
+        OperatingSystem.IsMacOS() ? OSPlatform.OSX :
         OSPlatform.Create("Unknown");
 
     public PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger)
@@ -62,7 +62,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         SettingsService = settingsService;
         PluginService = pluginService;
         Logger = logger;
-        
+
         if (DateTime.Now - SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
         {
             _ = RefreshPluginSourceAsync();
@@ -151,7 +151,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                     if (args.Error != null)
                     {
                         throw new Exception($"无法加载插件源：{args.Error.Message}", args.Error);
-                    } 
+                    }
                     var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, indexInfo.Id);
                     if (Directory.Exists(indexFolderPath))
                     {
@@ -218,7 +218,7 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
         });
     }
 
-    public void UpdateAllPlugins(bool discardDisabled=false)
+    public void UpdateAllPlugins(bool discardDisabled = false)
     {
         var toUpdate = MergedPlugins
             .Where(x => x.Value is { IsUpdateAvailable: true, RestartRequired: false }
@@ -247,8 +247,9 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                             {
                                 { "立即重启", () => AppBase.Current.Restart() }
                             }
-                        });    
-                    } else if (success > 0 && success < toUpdate.Count)
+                        });
+                    }
+                    else if (success > 0 && success < toUpdate.Count)
                     {
                         PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
                         {
@@ -268,13 +269,13 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                             Body = $"无法更新插件。请检查您的网络设置，或更换插件镜像源，然后再试一遍。"
                         });
                     }
-                    
+
                 }
 
                 _pluginsUpdateProgressObserver?.Dispose();
                 _pluginsUpdateProgressObserver = null;
             });
-        
+
         foreach (var (id, _) in toUpdate)
         {
             RequestDownloadPlugin(id);

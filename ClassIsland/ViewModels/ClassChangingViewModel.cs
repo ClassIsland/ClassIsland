@@ -23,13 +23,13 @@ public partial class ClassChangingViewModel : ObservableRecipient
     [ObservableProperty] private bool _canCompleteClassChanging = false;
     [ObservableProperty] private ClassInfo? _selectedClassInfo;
     [ObservableProperty] private TimeLayoutItem? _selectedTimeLayoutItem;
-    
+
     public SettingsService SettingsService { get; }
 
     public IProfileService ProfileService { get; }
 
     public IManagementService ManagementService { get; }
-    
+
     public SyncDictionaryList<Guid, Subject> Subjects { get; }
 
     public ClassChangingViewModel(IProfileService profileService, IManagementService managementService, SettingsService settingsService)

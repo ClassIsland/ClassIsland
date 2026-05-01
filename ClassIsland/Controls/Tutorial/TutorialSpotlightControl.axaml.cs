@@ -27,7 +27,7 @@ public partial class TutorialSpotlightControl : UserControl
     }
 
     public event EventHandler? Clicked;
-    
+
     public TutorialSpotlightControl()
     {
         InitializeComponent();

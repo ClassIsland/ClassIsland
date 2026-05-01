@@ -18,16 +18,16 @@ namespace ClassIsland.Views;
 public partial class TutorialCenterWindow : MyWindow
 {
     public TutorialCenterViewModel ViewModel { get; } = IAppHost.GetService<TutorialCenterViewModel>();
-    
+
     private bool IsOpened { get; set; } = false;
-    
+
     public TutorialCenterWindow()
     {
         DataContext = this;
         InitializeComponent();
-        
+
     }
-    
+
     public void Open()
     {
         if (!IsOpened)
@@ -55,14 +55,14 @@ public partial class TutorialCenterWindow : MyWindow
 
     private void ButtonPlaySelectedTutorial_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedTutorial != null) 
+        if (ViewModel.SelectedTutorial != null)
             ViewModel.TutorialService.BeginTutorial(ViewModel.SelectedTutorial);
     }
 
     [RelayCommand]
     private void PlaySelectedParagraph(TutorialParagraph paragraph)
     {
-        if (ViewModel.SelectedTutorial != null) 
+        if (ViewModel.SelectedTutorial != null)
             ViewModel.TutorialService.JumpToParagraph(ViewModel.SelectedTutorial, paragraph);
     }
 

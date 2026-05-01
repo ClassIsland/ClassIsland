@@ -21,7 +21,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
     private static readonly object _hookLock = new();
 
     private static WINEVENTPROC? _eventProc;
-    
+
     private List<EventHandler<ForegroundWindowChangedEventArgs>> _changedEventHandlers = [];
 
     private bool _isMoving = false;
@@ -50,7 +50,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             GC.SuppressFinalize(this);
         }
     }
-    
+
     private void InitEventHook()
     {
         lock (_hookLock)
@@ -78,7 +78,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             _hooks.Add(hook);
         }
     }
-    
+
     private void PfnWinEventProc(HWINEVENTHOOK hook, uint @event, HWND hwnd, int idObject, int child, uint thread, uint time)
     {
         if (hwnd == HWND.Null || new HandleRef(null, hwnd).Handle == IntPtr.Zero)
@@ -118,7 +118,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             }
         });
     }
-    
+
     public void SetWindowFeature(TopLevel toplevel, WindowFeatures features, bool state)
     {
         var handle = toplevel.TryGetPlatformHandle()?.Handle ?? nint.Zero;
@@ -147,7 +147,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             if (state)
             {
                 SetWindowPos((HWND)handle, HWND.HWND_BOTTOM, 0, 0, 0, 0,
-                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
+                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
                     | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
             }
         }
@@ -156,7 +156,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             if (state)
             {
                 SetWindowPos((HWND)handle, HWND.HWND_TOPMOST, 0, 0, 0, 0,
-                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE 
+                    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE
                     | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER | SET_WINDOW_POS_FLAGS.SWP_NOREPOSITION);
             }
         }
@@ -177,7 +177,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             }
             var r = SetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
         }
-        
+
     }
 
     public WindowFeatures GetWindowFeatures(TopLevel topLevel)
@@ -296,7 +296,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
         GetCursorPos(out var ptr);
         return new Point(ptr.X, ptr.Y);
     }
-    
+
     public unsafe int GetWindowPid(IntPtr handle)
     {
         uint pid = 0;
@@ -306,6 +306,6 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
 
     public void ClearWindow(TopLevel topLevel)
     {
-        
+
     }
 }

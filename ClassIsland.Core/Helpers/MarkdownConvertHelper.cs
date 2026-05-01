@@ -14,11 +14,12 @@ namespace ClassIsland.Core.Helpers;
 public static class MarkdownConvertHelper
 {
     private static Markdown.Avalonia.Markdown? _engine;
-    
+
     /// <summary>
     /// 获取 Markdown 引擎。
     /// </summary>
-    public static Markdown.Avalonia.Markdown Engine {
+    public static Markdown.Avalonia.Markdown Engine
+    {
         get
         {
             _engine ??= CreateEngine();

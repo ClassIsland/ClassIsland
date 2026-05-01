@@ -37,7 +37,7 @@ class Program
             Console.WriteLine("[*] 请附加一个调试器，然后按 Enter 继续。".Pastel("#01fffd"));
             Console.ReadLine();
             Debugger.Break();
-        }    
+        }
 #endif
         var stopTokenSource = new CancellationTokenSource();
         ActivatePlatforms(out var postInit, stopTokenSource.Token);
@@ -45,8 +45,8 @@ class Program
         var renderingMode = int.TryParse(GlobalStorageService.GetValue("Win32RenderingMode") ?? "", out var v1)
             ? v1
             : 0;
-        
-        var r =  AppBuilder.Configure<App>(() =>
+
+        var r = AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
 #if Platforms_Windows
@@ -91,7 +91,7 @@ class Program
 
         return r.StartWithClassicDesktopLifetime(args);
     }
-    
+
     // AppBuilder for designer
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
         .UsePlatformDetect()
@@ -113,7 +113,7 @@ class Program
                 OSKIntegration.Integrate();
             };
         };
-        if (RuntimeInformation.OSArchitecture == Architecture.X64 || RuntimeInformation.OSArchitecture==Architecture.X86) PatcherEntrance.InstallPatchers();
+        if (RuntimeInformation.OSArchitecture == Architecture.X64 || RuntimeInformation.OSArchitecture == Architecture.X86) PatcherEntrance.InstallPatchers();
 #endif
 #if Platforms_Linux
         var windowPlatformService = new WindowPlatformService(stopToken);

@@ -12,7 +12,7 @@ public class WizardOption : AvaloniaObject
     {
         get => GetValue(HeaderProperty);
         set => SetValue(HeaderProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<string> ContentProperty = AvaloniaProperty.Register<WizardOption, string>(
@@ -21,7 +21,7 @@ public class WizardOption : AvaloniaObject
     {
         get => GetValue(ContentProperty);
         set => SetValue(ContentProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<ICommand> InvokeCommandProperty = AvaloniaProperty.Register<WizardOption, ICommand>(
@@ -30,7 +30,7 @@ public class WizardOption : AvaloniaObject
     {
         get => GetValue(InvokeCommandProperty);
         set => SetValue(InvokeCommandProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<object> InvokeCommandParameterProperty = AvaloniaProperty.Register<WizardOption, object>(
@@ -39,6 +39,6 @@ public class WizardOption : AvaloniaObject
     {
         get => GetValue(InvokeCommandParameterProperty);
         set => SetValue(InvokeCommandParameterProperty, value);
-    
+
     }
 }

@@ -36,7 +36,7 @@ public partial class EditModeView : UserControl
 
     private IDisposable? _selectedComponentObserver;
     private IDisposable? _mainDrawerStateObserver;
-    
+
     public EditModeView()
     {
         InitializeComponent();
@@ -108,8 +108,8 @@ public partial class EditModeView : UserControl
         ViewModel.MainDrawerTitle = title;
         ViewModel.MainDrawerState = VerticalDrawerOpenState.Opened;
     }
-    
-    
+
+
     private void CommandBindingOpenDrawer_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
         ViewModel.SecondaryDrawerContent = e.Parameter;
@@ -130,7 +130,7 @@ public partial class EditModeView : UserControl
         ViewModel.ComponentInfos = ComponentRegistryService.Registered;
         ViewModel.TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.componentsLib.open");
     }
-    
+
     public void OpenAppearanceSettingsDrawer()
     {
         OpenDrawer("AppearanceSettingsDrawer", "外观");
@@ -142,7 +142,7 @@ public partial class EditModeView : UserControl
         {
             return;
         }
-        
+
         ViewModel.MainDrawerState = VerticalDrawerOpenState.Opened;
         ViewModel.IsDrawerTempCollapsed = false;
     }
@@ -157,7 +157,7 @@ public partial class EditModeView : UserControl
         ViewModel.MainDrawerState = VerticalDrawerOpenState.Collapsed;
         ViewModel.IsDrawerTempCollapsed = true;
     }
-    
+
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
         ManagedDragDropService.Instance.DragStarted += InstanceOnDragStarted;
@@ -181,19 +181,19 @@ public partial class EditModeView : UserControl
 
     public void ShowComponentSettings()
     {
-        OpenDrawerCore(this.FindResource("ComponentSettingsDrawer"), 
+        OpenDrawerCore(this.FindResource("ComponentSettingsDrawer"),
             this.FindResource("ComponentSettingsDrawerTitle"));
         UpdateComponentSettingsTabIndex();
         ViewModel.TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.componentSettings.open");
     }
-    
+
     public void OpenChildComponents(ComponentSettings? settings, IReadOnlyList<ComponentSettings> stack, Point pos)
     {
         if (settings == null)
         {
             return;
         }
-        var info = new EditModeContainerComponentInfo(settings, [..stack, settings])
+        var info = new EditModeContainerComponentInfo(settings, [.. stack, settings])
         {
             X = pos.X,
             Y = pos.Y
@@ -209,11 +209,11 @@ public partial class EditModeView : UserControl
             ViewModel.TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.childrenComponent.open");
         });
     }
-    
+
     private void ButtonOpenRulesetForComponent_OnClick(object? sender, RoutedEventArgs e)
     {
         if (this.FindResource("RulesetControl") is not RulesetControl control ||
-            ViewModel.MainViewModel.SelectedComponentSettings == null) 
+            ViewModel.MainViewModel.SelectedComponentSettings == null)
             return;
         control.Ruleset = ViewModel.MainViewModel.SelectedComponentSettings.HidingRules;
         SettingsPageBase.OpenDrawerCommand.Execute(control);
@@ -224,7 +224,7 @@ public partial class EditModeView : UserControl
     private void ButtonOpenRulesetForMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
     {
         if (this.FindResource("RulesetControl") is not RulesetControl control ||
-            ViewModel.SelectedMainWindowLineSettings == null) 
+            ViewModel.SelectedMainWindowLineSettings == null)
             return;
         control.Ruleset = ViewModel.SelectedMainWindowLineSettings.HidingRules;
         SettingsPageBase.OpenDrawerCommand.Execute(control);
@@ -249,7 +249,7 @@ public partial class EditModeView : UserControl
         ViewModel.SelectedMainWindowLineSettings = settings;
         OpenDrawerCore(this.FindResource("MainWindowLineSettingsDrawer"), this.FindResource("MainWindowLineSettingsDrawerTitle"));
     }
-    
+
     [RelayCommand]
     private void ComponentLayoutSelectionRadioButtonToggled(string name)
     {

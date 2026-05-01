@@ -43,7 +43,7 @@ public class AfterSchoolNotificationProvider : NotificationProviderBase<AfterSch
         ShowNotification(new NotificationRequest
         {
             MaskContent = NotificationContent.CreateTwoIconsMask("放学", rightIcon: "\ued34"),
-            OverlayContent = NotificationContent.CreateSimpleTextContent(settings.NotificationMsg, x => x.Duration=TimeSpan.FromSeconds(30))
+            OverlayContent = NotificationContent.CreateSimpleTextContent(settings.NotificationMsg, x => x.Duration = TimeSpan.FromSeconds(30))
         });
     }
 

@@ -81,7 +81,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
     }
 
-#region 时间点行动
+    #region 时间点行动
 
     /// <summary>
     /// 时间点行动：自动触发行动。
@@ -107,9 +107,9 @@ public class AutomationService : ObservableRecipient, IAutomationService
         }
     }
 
-#endregion
+    #endregion
 
-#region 自动化工作流
+    #region 自动化工作流
 
     /// <summary>
     /// 自动化工作流：触发器触发，（规则集满足），触发行动。
@@ -158,7 +158,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         if (!SettingsService.Settings.IsAutomationEnabled) return;
 
         foreach (var workflow in Workflows.Where(x => x is
-                     { ActionSet: { Status: ActionSetStatus.IsOn, IsRevertEnabled: true }, IsConditionEnabled: true }))
+        { ActionSet: { Status: ActionSetStatus.IsOn, IsRevertEnabled: true }, IsConditionEnabled: true }))
         {
             if (RulesetService.IsRulesetSatisfied(workflow.Ruleset) || workflow.ActionSet.Status != ActionSetStatus.IsOn)
                 continue;
@@ -166,9 +166,9 @@ public class AutomationService : ObservableRecipient, IAutomationService
         }
     }
 
-#endregion
+    #endregion
 
-#region 配置文件
+    #region 配置文件
 
     void LoadConfig()
     {
@@ -230,9 +230,9 @@ public class AutomationService : ObservableRecipient, IAutomationService
         }
     }
 
-#endregion
+    #endregion
 
-#region 加载工作流
+    #region 加载工作流
 
     void WorkflowsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
@@ -327,9 +327,9 @@ public class AutomationService : ObservableRecipient, IAutomationService
         }
     }
 
-#endregion
+    #endregion
 
-#region 加载触发器
+    #region 加载触发器
 
     void LoadTrigger(Workflow workflow, TriggerSettings trigger, bool registerUnloading = true)
     {
@@ -435,7 +435,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         return trigger;
     }
 
-#endregion
+    #endregion
 
     ObservableCollection<Workflow> _workflows = [];
     public ObservableCollection<Workflow> Workflows

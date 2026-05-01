@@ -19,20 +19,20 @@ namespace ClassIsland.Views;
 public partial class RefreshingScopesConfigDialog : MyWindow
 {
     public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
-    
+
     public required RefreshingScopes Scopes { get; init; }
-    
+
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
     public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
 
     private bool _isSyncingClassPlansSelection;
     private bool _isSyncingTimeLayoutsSelection;
-    
+
     public RefreshingScopesConfigDialog()
     {
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
         TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);
-        
+
         DataContext = this;
         InitializeComponent();
     }
@@ -76,7 +76,7 @@ public partial class RefreshingScopesConfigDialog : MyWindow
             HookScopesReservedClassPlansCollection();
             SyncReservedClassPlansToSelection();
         }
-        
+
         if (e.PropertyName == nameof(RefreshingScopes.ReservedTimeLayouts))
         {
             UnhookScopesReservedTimeLayoutsCollection();

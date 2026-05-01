@@ -27,7 +27,7 @@ public abstract class SplashWindowBase : Window, ISplashProvider
     {
         Close();
     }
-    
+
     /// <summary>
     /// 尝试以阻塞的形式推动 Dispatcher 运行，当禁用动画等待时此方法不生效。
     /// </summary>
@@ -40,7 +40,7 @@ public abstract class SplashWindowBase : Window, ISplashProvider
 
         Dispatcher.UIThread.RunJobs();
     }
-    
+
     /// <summary>
     /// 尝试以异步的形式推动 Dispatcher 运行，当禁用动画等待时此方法不生效。
     /// </summary>

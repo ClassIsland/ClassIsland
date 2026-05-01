@@ -11,12 +11,12 @@ public class DistributionInfoClient
     /// 友好版本号，如 2.0-Khaslana Release 1
     /// </summary>
     public string FriendlyVersion { get; set; } = "";
-    
+
     /// <summary>
     /// 友好短版本号，如 2.0-Khaslana R1
     /// </summary>
     public string FriendlyVersionShort { get; set; } = "";
-    
+
     /// <summary>
     /// 具体版本，如 2.0.0.0
     /// </summary>
@@ -36,7 +36,7 @@ public class DistributionInfoClient
     /// 对应发行子频道的文件图
     /// </summary>
     public string FileMapJson { get; set; } = "";
-    
+
     /// <summary>
     /// 对应发行子频道的文件图签名
     /// </summary>

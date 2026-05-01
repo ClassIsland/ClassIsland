@@ -26,7 +26,7 @@ public class OSPlatformTypeConverter : IYamlTypeConverter
 
         return OSPlatform.Create(value);
     }
-    
+
     public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
         if (value is not OSPlatform platform)

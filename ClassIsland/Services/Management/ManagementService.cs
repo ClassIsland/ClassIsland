@@ -70,7 +70,7 @@ public class ManagementService : IManagementService
     public ManagementPolicy Policy { get; set; } = new();
     public ManagementCredentialConfig CredentialConfig { get; set; } = new();
 
-    public ManagementClientPersistConfig Persist { get;}
+    public ManagementClientPersistConfig Persist { get; }
 
     private ILogger<ManagementService> Logger { get; }
     public IAuthorizeService AuthorizeService { get; }
@@ -122,14 +122,14 @@ public class ManagementService : IManagementService
         switch (e.Type)
         {
             case CommandTypes.RestartApp:
-            {
-                AppBase.Current.Restart(true);
-                break;
-            }
+                {
+                    AppBase.Current.Restart(true);
+                    break;
+                }
             case CommandTypes.DataUpdated:
                 Logger.LogInformation("Received DataUpdated command.");
                 _ = ReloadManagementAsync();
-            break;
+                break;
         }
     }
 
@@ -284,7 +284,7 @@ public class ManagementService : IManagementService
         }
         if (!Policy.AllowExitManagement)
             throw new Exception("您的组织不允许您退出集控。");
-        
+
         var dialog = new TaskDialog
         {
             Title = "ClassIsland",

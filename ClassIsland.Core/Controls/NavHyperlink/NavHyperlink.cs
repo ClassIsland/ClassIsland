@@ -32,7 +32,7 @@ public class NavHyperlink : HyperlinkButton
 
     private void OnClick(object? sender, RoutedEventArgs e)
     {
-        if (Uri.TryCreate(NavTarget,UriKind.Absolute ,out var uri))
+        if (Uri.TryCreate(NavTarget, UriKind.Absolute, out var uri))
         {
             IAppHost.TryGetService<IUriNavigationService>()?.NavigateWrapped(uri);
         }

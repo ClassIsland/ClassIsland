@@ -33,6 +33,6 @@ public class Thing : TemplatedControl
         get => GetValue(DescriptionProperty);
         set => SetValue(DescriptionProperty, value);
     }
-    
-    
+
+
 }

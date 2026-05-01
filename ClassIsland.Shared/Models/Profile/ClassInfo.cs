@@ -50,7 +50,8 @@ public class ClassInfo : AttachableSettingsObject
     /// <summary>
     /// 课程对应的时间点
     /// </summary>
-    [JsonIgnore] public TimeLayoutItem CurrentTimeLayoutItem
+    [JsonIgnore]
+    public TimeLayoutItem CurrentTimeLayoutItem
     {
         get
         {
@@ -106,7 +107,7 @@ public class ClassInfo : AttachableSettingsObject
             OnPropertyChanged();
         }
     }
-    
+
     /// <summary>
     /// 当前<see cref="ClassInfo"/>是否为空
     /// </summary>

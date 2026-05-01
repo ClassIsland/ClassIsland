@@ -13,7 +13,7 @@ partial class Build
 {
     [Parameter("IsRelease")] readonly bool IsRelease;
     string NupkgVersion;
-    
+
     Target CleanNupkg => _ => _
         .DependsOn(CleanOutputDir)
         .Executes(() =>
@@ -21,8 +21,8 @@ partial class Build
             DotNetClean(s => s
                 .SetProject(NupkgEntryProject));
         });
-    
-    
+
+
     Target PopulateNupkgVersion => _ => _
         .DependsOn(PopulateGitVersion)
         .Executes(() =>
@@ -55,6 +55,6 @@ partial class Build
         .DependsOn(BuildNupkg)
         .Executes(() =>
         {
-            
+
         });
 }

@@ -16,11 +16,11 @@ using FluentAvalonia.UI.Navigation;
 namespace ClassIsland.Views.SettingPages;
 
 [HidePageTitle]
-[SettingsPageInfo("_error", "出错啦！", category:SettingsPageCategory.About, hideDefault:true)]
+[SettingsPageInfo("_error", "出错啦！", category: SettingsPageCategory.About, hideDefault: true)]
 public partial class ErrorSettingsPage : SettingsPageBase
 {
     public ErrorSettingsViewModel ViewModel { get; } = IAppHost.GetService<ErrorSettingsViewModel>();
-    
+
     public ErrorSettingsPage()
     {
         DataContext = this;

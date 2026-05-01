@@ -25,7 +25,7 @@ namespace ClassIsland.Controls;
 public partial class WeekOffsetSettingsControl : UserControl
 {
     public event EventHandler CloseRequested;
-    
+
     /// <summary>
     /// 更新 <see cref="WeekOffsetSettingsControl"/> 中的数据。
     /// </summary>
@@ -37,24 +37,24 @@ public partial class WeekOffsetSettingsControl : UserControl
 
     void UpdateIndexes() => ViewModel.CyclePositionIndexes =
             new(LessonsService.GetCyclePositionsByDate().Select(x => x - 1));
-    
+
     private void GenerateWeekContentPanel()
     {
-         if (ContentPanel.Children.Count == SettingsService.Settings.MultiWeekRotationMaxCycle - 1) return;
-         
-         ContentPanel.Children.Clear();
-         for (var week = 2; week <= SettingsService.Settings.MultiWeekRotationMaxCycle; week++)
-         {
-             var weekSelectorPanel = CreateWeekSelectorPanel(week);
-             ContentPanel.Children.Add(weekSelectorPanel);
-         }
-         
-         _ = Dispatcher.UIThread.InvokeAsync(() =>
-         {
-             ContentScrollViewer.Offset = new Vector(0, 0);
-         }, DispatcherPriority.ContextIdle);
+        if (ContentPanel.Children.Count == SettingsService.Settings.MultiWeekRotationMaxCycle - 1) return;
+
+        ContentPanel.Children.Clear();
+        for (var week = 2; week <= SettingsService.Settings.MultiWeekRotationMaxCycle; week++)
+        {
+            var weekSelectorPanel = CreateWeekSelectorPanel(week);
+            ContentPanel.Children.Add(weekSelectorPanel);
+        }
+
+        _ = Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            ContentScrollViewer.Offset = new Vector(0, 0);
+        }, DispatcherPriority.ContextIdle);
     }
-    
+
 
     StackPanel CreateWeekSelectorPanel(int cycleWeeks) =>
         new()

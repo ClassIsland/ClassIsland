@@ -47,7 +47,7 @@ public static class WeatherConverters
         "302" => "\uf45b", // 雪
         "99" or _ => "\uee31", // 未知
     });
-    
+
     public static readonly FuncValueConverter<string, string> WeatherTypeToLucideIconGlyphConverter = new(x => x switch
     {
         "0" => "\ue2b1", // 晴

@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;
 
-public class SplashService: ObservableRecipient, ISplashService
+public class SplashService : ObservableRecipient, ISplashService
 {
     private string _splashStatus = "正在启动…";
     private double _currentProgress = 0.0;
@@ -89,5 +89,5 @@ public class SplashService: ObservableRecipient, ISplashService
     public void ResetSplashText()
     {
         SplashStatus = SettingsService.Settings.SplashCustomText == "" ? DefaultText : SettingsService.Settings.SplashCustomText;
-    }       
+    }
 }

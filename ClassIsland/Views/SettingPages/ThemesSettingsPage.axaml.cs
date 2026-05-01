@@ -108,7 +108,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
         await ViewModel.PluginMarketService.RefreshPluginSourceAsync();
         ViewModel.UpdateMergedThemes();
     }
-    
+
 
     [RelayCommand]
     private void UninstallTheme(ThemeInfo info)

@@ -114,7 +114,7 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
     {
         var isFromDragThumb = (e.Source as Control)?.FindAncestorOfType<TouchDragThumb>() is not null;
         var isFromCurrentThumb = e.Source is Control c1 && UITreeHelper.HasParent(c1, AssociatedObject);
-        if ((e.Source as Control)?.FindAncestorOfType<ISelectable>() is {} selectable && !Equals(selectable, AssociatedObject))
+        if ((e.Source as Control)?.FindAncestorOfType<ISelectable>() is { } selectable && !Equals(selectable, AssociatedObject))
         {
             isFromCurrentThumb = false;
         }
@@ -125,7 +125,7 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
             return;
         }
         var properties = e.GetCurrentPoint(AssociatedObject).Properties;
-        if (properties.IsLeftButtonPressed 
+        if (properties.IsLeftButtonPressed
             && AssociatedObject?.Parent is ItemsControl itemsControl)
         {
             _enableDrag = true;
@@ -229,9 +229,9 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
             {
                 SetTranslateTransform(container, 0, 0);
             }
-  
+
             i++;
-        }  
+        }
     }
 
     private void RemoveTransforms(ItemsControl? itemsControl)
@@ -250,9 +250,9 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
             {
                 SetTranslateTransform(container, 0, 0);
             }
-  
+
             i++;
-        }  
+        }
     }
 
     private void MoveDraggedItem(ItemsControl? itemsControl, int draggedIndex, int targetIndex)
@@ -270,7 +270,7 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
         }
         else
         {
-            if (itemsControl?.Items is {IsReadOnly: false} itemCollection)
+            if (itemsControl?.Items is { IsReadOnly: false } itemCollection)
             {
                 var draggedItem = itemCollection[draggedIndex];
                 itemCollection.RemoveAt(draggedIndex);
@@ -279,7 +279,7 @@ public class AdvancedItemDragBehavior : StyledElementBehavior<Control>
                 if (itemsControl is SelectingItemsControl selectingItemsControl)
                 {
                     selectingItemsControl.SelectedIndex = targetIndex;
-                } 
+                }
             }
         }
     }

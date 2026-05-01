@@ -15,12 +15,12 @@ public abstract class LessonControlBase : UserControl
 {
     public static readonly StyledProperty<ClassInfo> ClassInfoProperty = AvaloniaProperty.Register<LessonControlBase, ClassInfo>(
         nameof(ClassInfo), new ClassInfo());
-    
+
     public ClassInfo ClassInfo
     {
         get => GetValue(ClassInfoProperty);
         set => SetValue(ClassInfoProperty, value);
-    
+
     }
 
     public static readonly AttachedProperty<ClassPlan?> ClassPlanProperty =
@@ -28,7 +28,7 @@ public abstract class LessonControlBase : UserControl
 
     public static void SetClassPlan(Control obj, ClassPlan? value) => obj.SetValue(ClassPlanProperty, value);
     public static ClassPlan? GetClassPlan(Control obj) => obj.GetValue(ClassPlanProperty);
-    
+
 
     public static readonly StyledProperty<ObservableDictionary<Guid, Subject>> SubjectsProperty = AvaloniaProperty.Register<LessonControlBase, ObservableDictionary<Guid, Subject>>(
         nameof(Subjects));
@@ -47,7 +47,7 @@ public abstract class LessonControlBase : UserControl
         get => GetValue(CurrentTimeLayoutItemProperty);
         set => SetValue(CurrentTimeLayoutItemProperty, value);
     }
-    
+
     public static readonly AttachedProperty<ILessonControlSettings> DefaultLessonControlSettingsProperty =
         AvaloniaProperty.RegisterAttached<LessonControlBase, Control, ILessonControlSettings>("DefaultLessonControlSettings", new LessonControlAttachedSettings(), true);
 

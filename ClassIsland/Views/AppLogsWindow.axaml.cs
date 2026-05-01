@@ -41,7 +41,7 @@ public partial class AppLogsWindow : MyWindow
         LogLevel.None => "\uEDF6;",
         _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
     });
-    
+
     public static readonly FuncValueConverter<LogLevel, string> LogLevelToNameConverter = new(x => x switch
     {
         LogLevel.Trace => "追踪",
@@ -53,7 +53,7 @@ public partial class AppLogsWindow : MyWindow
         LogLevel.None => "？？？",
         _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
     });
-    
+
     public AppLogsViewModel ViewModel { get; } = IAppHost.GetService<AppLogsViewModel>();
 
     private bool _isOpened = false;
@@ -64,7 +64,7 @@ public partial class AppLogsWindow : MyWindow
         DataContext = this;
 
         // ViewModel.AppLogService.Log.Subscribe(_ =>
-            // DataGridMain.ScrollIntoView(ViewModel.Logs[^1], DataGridMain.Columns.Last()));
+        // DataGridMain.ScrollIntoView(ViewModel.Logs[^1], DataGridMain.Columns.Last()));
         // ViewModel.ObservableForProperty(x => x.Logs)
         //     .Subscribe(_ => );
         RefreshView();
@@ -119,7 +119,7 @@ public partial class AppLogsWindow : MyWindow
 
     private void RefreshView()
     {
-        
+
     }
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

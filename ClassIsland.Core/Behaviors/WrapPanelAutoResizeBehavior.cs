@@ -18,7 +18,7 @@ public class WrapPanelAutoResizeBehavior : Behavior<WrapPanel>
         get => GetValue(TargetWidthProperty);
         set => SetValue(TargetWidthProperty, value);
     }
-    
+
     /// <inheritdoc />
     protected override void OnAttached()
     {
@@ -27,10 +27,10 @@ public class WrapPanelAutoResizeBehavior : Behavior<WrapPanel>
             return;
         }
         AssociatedObject.SizeChanged += AssociatedObjectOnSizeChanged;
-        
+
         base.OnAttached();
     }
-    
+
     /// <inheritdoc />
     protected override void OnDetaching()
     {
@@ -41,7 +41,7 @@ public class WrapPanelAutoResizeBehavior : Behavior<WrapPanel>
         AssociatedObject.SizeChanged -= AssociatedObjectOnSizeChanged;
         base.OnDetaching();
     }
-    
+
     private void AssociatedObjectOnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
         if (AssociatedObject == null)

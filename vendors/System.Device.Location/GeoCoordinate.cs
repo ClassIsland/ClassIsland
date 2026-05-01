@@ -37,9 +37,9 @@ namespace System.Device.Location
         //
         // private constructor for creating single instance of GeoCoordinate.Unknown
         //
-        public GeoCoordinate() {}
+        public GeoCoordinate() { }
 
-        public GeoCoordinate(Double latitude, Double longitude) 
+        public GeoCoordinate(Double latitude, Double longitude)
             : this(latitude, longitude, Double.NaN)
         {
         }
@@ -67,7 +67,7 @@ namespace System.Device.Location
 
         #region Properties
 
-        public Double Latitude 
+        public Double Latitude
         {
             get
             {
@@ -128,7 +128,7 @@ namespace System.Device.Location
             }
         }
 
-        public Double VerticalAccuracy 
+        public Double VerticalAccuracy
         {
             get
             {
@@ -175,8 +175,8 @@ namespace System.Device.Location
                 m_course = value;
             }
         }
-        
-        public Boolean IsUnknown 
+
+        public Boolean IsUnknown
         {
             get
             {
@@ -192,13 +192,13 @@ namespace System.Device.Location
         {
             //  The Haversine formula according to Dr. Math.
             //  http://mathforum.org/library/drmath/view/51879.html
-                
+
             //  dlon = lon2 - lon1
             //  dlat = lat2 - lat1
             //  a = (sin(dlat/2))^2 + cos(lat1) * cos(lat2) * (sin(dlon/2))^2
             //  c = 2 * atan2(sqrt(a), sqrt(1-a)) 
             //  d = R * c
-                
+
             //  Where
             //    * dlon is the change in longitude
             //    * dlat is the change in latitude
@@ -208,7 +208,7 @@ namespace System.Device.Location
             //        spherical coordinates (longitude and 
             //        latitude) are lon1,lat1 and lon2, lat2.
 
-            if (Double.IsNaN(this.Latitude)  || Double.IsNaN(this.Longitude) ||
+            if (Double.IsNaN(this.Latitude) || Double.IsNaN(this.Longitude) ||
                 Double.IsNaN(other.Latitude) || Double.IsNaN(other.Longitude))
             {
                 throw new ArgumentException(SR.GetString(SR.Argument_LatitudeOrLongitudeIsNotANumber));
@@ -225,8 +225,8 @@ namespace System.Device.Location
             double dLat = dLat2 - dLat1;
 
             // Intermediate result a.
-            double a = Math.Pow(Math.Sin(dLat / 2.0), 2.0) + 
-                       Math.Cos(dLat1) * Math.Cos(dLat2) * 
+            double a = Math.Pow(Math.Sin(dLat / 2.0), 2.0) +
+                       Math.Cos(dLat1) * Math.Cos(dLat2) *
                        Math.Pow(Math.Sin(dLon / 2.0), 2.0);
 
             // Intermediate result c (great circle distance in Radians).

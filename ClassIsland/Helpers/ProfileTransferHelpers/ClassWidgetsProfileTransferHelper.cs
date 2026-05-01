@@ -18,7 +18,7 @@ public static class ClassWidgetsProfileTransferHelper
         var profileCw = ConfigureFileHelper.LoadConfigUnWrapped<CwProfile>(path);
         var templateJson = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/default-subjects.json"))).ReadToEnd();
         profile ??= JsonSerializer.Deserialize<Profile>(templateJson)!;
-        
+
         // Subjects
         var subjectsCache = profile.Subjects.ToDictionary(x => x.Value.Name, x => x.Key);
         foreach (var subjectName in profileCw.Schedule.Values.ToList().SelectMany(x => x))
@@ -36,18 +36,18 @@ public static class ClassWidgetsProfileTransferHelper
                 Name = name
             });
         }
-        
+
         // TimeLayouts
         // 注意！cw 课表结构中，计数从周一（0）开始。
         var parts = new Dictionary<string, CwProfileTimeSpan?>();
-        
-        
+
+
         foreach (var (index, value) in profileCw.Part.OrderBy(x => int.Parse(x.Key)))
         {
-            if (value.Count < 3 || value[0] is not JsonElement { ValueKind: JsonValueKind.Number } startHour 
-                                || value[1] is not JsonElement { ValueKind: JsonValueKind.Number } endHour 
-                                || value[2] is not JsonElement { ValueKind: JsonValueKind.String } type 
-                                || profileCw.PartName.GetValueOrDefault(index) is not {} name)
+            if (value.Count < 3 || value[0] is not JsonElement { ValueKind: JsonValueKind.Number } startHour
+                                || value[1] is not JsonElement { ValueKind: JsonValueKind.Number } endHour
+                                || value[2] is not JsonElement { ValueKind: JsonValueKind.String } type
+                                || profileCw.PartName.GetValueOrDefault(index) is not { } name)
             {
                 parts.Add(index, null);
                 continue;
@@ -75,7 +75,7 @@ public static class ClassWidgetsProfileTransferHelper
         {
             profile.TimeLayouts[timeLayoutsMapEven[id]] = timeLayout;
         }
-        
+
         // ClassPlans
         // 注意！cw 课表结构中，计数从周一（0）开始。
         List<string> days = ["6", "0", "1", "2", "3", "4", "5"];
@@ -130,7 +130,7 @@ public static class ClassWidgetsProfileTransferHelper
                 profile.ClassPlans.TryAdd(Guid.NewGuid(), cpEven);
                 evenAdded = true;
             }
-            
+
             if (!shouldSplitClassPlans || !evenValid || !oddValid)
             {
                 continue;
@@ -150,7 +150,7 @@ public static class ClassWidgetsProfileTransferHelper
         {
             cp.RefreshClassesList();
         }
-        
+
         return profile;
 
         (Dictionary<string, TimeLayout> results, Dictionary<string, Guid> map) ImportCwTimeLine(Dictionary<string, List<List<JsonElement>>> timeLines, string description)
@@ -168,8 +168,8 @@ public static class ClassWidgetsProfileTransferHelper
                 var timeLineNormalized = timeLine
                     .Where(x => x is
                                 [
-                                    { ValueKind: JsonValueKind.Number }, { ValueKind: JsonValueKind.String },
-                                    { ValueKind: JsonValueKind.Number }, { ValueKind: JsonValueKind.Number }
+                                { ValueKind: JsonValueKind.Number }, { ValueKind: JsonValueKind.String },
+                                { ValueKind: JsonValueKind.Number }, { ValueKind: JsonValueKind.Number }
                                 ]
                                 && parts.GetValueOrDefault(x[1].GetString() ?? "") != null)
                     .OrderBy(x => parts[x[1].GetString() ?? ""]?.StartTime)

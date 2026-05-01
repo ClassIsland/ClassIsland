@@ -13,17 +13,17 @@ public partial class AppToastAdorner : UserControl
 {
     private TopLevel TopLevel { get; }
     public ObservableCollection<ToastMessage> Messages { get; } = [];
-    
+
     public static readonly RoutedEvent<ShowToastEventArgs> ShowToastEvent =
         RoutedEvent.Register<AppToastAdorner, ShowToastEventArgs>(nameof(ShowToast), RoutingStrategies.Bubble);
 
     // Provide CLR accessors for the event
     public event EventHandler<ShowToastEventArgs> ShowToast
-    { 
+    {
         add => AddHandler(ShowToastEvent, value);
         remove => RemoveHandler(ShowToastEvent, value);
     }
-    
+
     public AppToastAdorner(TopLevel topLevel)
     {
         TopLevel = topLevel;

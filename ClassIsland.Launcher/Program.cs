@@ -16,7 +16,8 @@ string executableName;
 if (OperatingSystem.IsWindows())
 {
     executableName = "ClassIsland.Desktop.exe";
-} else if (OperatingSystem.IsLinux())
+}
+else if (OperatingSystem.IsLinux())
 {
     executableName = "ClassIsland.Desktop";
 }

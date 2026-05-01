@@ -91,7 +91,7 @@ public partial class TypingControl : UserControl
 
         _isFirstUpdate = false;
 
-        DisplayingText = Text;  
+        DisplayingText = Text;
         IsBusy = false;
     }
 }

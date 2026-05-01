@@ -21,7 +21,7 @@ public class RefreshingService(SettingsService settingsService, IExactTimeServic
     public const string DefaultRefreshingToastTitle = "翻新 ClassIsland";
 
     public const string DefaultRefreshingToastBody = "ClassIsland 似乎已经有一个长假没有启动了，部分设置可能已经过期。要跟随欢迎向导重新设置如学期开始时间等设置吗？";
-    
+
     public SettingsService SettingsService { get; } = settingsService;
     public IExactTimeService ExactTimeService { get; } = exactTimeService;
 
@@ -72,7 +72,7 @@ public class RefreshingService(SettingsService settingsService, IExactTimeServic
         });
     }
 
-    public async Task<bool> ShowOnboardingDialog(bool isTest=false)
+    public async Task<bool> ShowOnboardingDialog(bool isTest = false)
     {
         var r = await new TaskDialog()
         {
@@ -102,11 +102,11 @@ public class RefreshingService(SettingsService settingsService, IExactTimeServic
         {
             return false;
         }
-        
+
         return await BeginRefresh(true);
     }
 
-    public async Task<bool> BeginRefresh(bool isOnboarding=false)
+    public async Task<bool> BeginRefresh(bool isOnboarding = false)
     {
         var welcomeWin = IAppHost.GetService<WelcomeWindow>();
         welcomeWin.ViewModel.RefreshingScopes =

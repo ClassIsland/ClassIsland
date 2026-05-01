@@ -19,7 +19,7 @@ public interface IXamlThemeService
     /// 内置主题
     /// </summary>
     public static ObservableCollection<ThemeInfo> IntegratedThemes { get; } = [];
-    
+
     /// <summary>
     /// 已加载的主题列表
     /// </summary>
@@ -59,16 +59,16 @@ public interface IXamlThemeService
     /// <param name="outputPath">输出路径</param>
     /// <returns></returns>
     Task PackageThemeAsync(string id, string outputPath);
-    
+
     /// <summary>
     /// 已启用的主题。主题将按照此列表的顺序加载，靠后的主题会覆盖前面的主题样式。
     /// </summary>
     ObservableCollection<string> EnabledThemes { get; }
-    
+
     /// <summary>
     /// 当前竖直方向的安全区大小（PX）
     /// </summary>
     double ActualVerticalSafeAreaPx { get; }
-    
+
     internal Window? MainWindow { get; set; }
 }

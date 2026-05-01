@@ -63,7 +63,7 @@ public static class MainWindowCustomizableNodeHelper
             control.ClearValue(MainWindowStylesAssist.BackgroundOpacityProperty);
         }
 
-        ControlColorHelper.SetControlForegroundColor(control, settings.ForegroundColor, 
+        ControlColorHelper.SetControlForegroundColor(control, settings.ForegroundColor,
             settings.IsCustomForegroundColorEnabled);
     }
 }

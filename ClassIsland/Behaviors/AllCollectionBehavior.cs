@@ -17,7 +17,7 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
     {
         get => GetValue(AllCollectionProperty);
         set => SetValue(AllCollectionProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<string> CurrentValueProperty = AvaloniaProperty.Register<AllCollectionBehavior, string>(
@@ -26,9 +26,9 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
     {
         get => GetValue(CurrentValueProperty);
         set => SetValue(CurrentValueProperty, value);
-    
+
     }
-    
+
     private IDisposable? Subscription { get; set; }
 
     protected override void OnAttached()
@@ -83,5 +83,5 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
         }
         base.OnPropertyChanged(e);
     }
-    
+
 }

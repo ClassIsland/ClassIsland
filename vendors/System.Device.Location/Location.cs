@@ -72,11 +72,11 @@ namespace System.Device.Location
 
         #region Properties
 
-        public GeoCoordinate Coordinate { get; private set;}
-        public Double Heading {get; private set; }
+        public GeoCoordinate Coordinate { get; private set; }
+        public Double Heading { get; private set; }
         public Double Speed { get; private set; }
         public CivicAddress Address { get; private set; }
-        public DateTimeOffset Timestamp {get; private set; }
+        public DateTimeOffset Timestamp { get; private set; }
 
         #endregion
     }

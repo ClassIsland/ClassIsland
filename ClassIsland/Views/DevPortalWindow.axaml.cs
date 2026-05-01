@@ -22,12 +22,12 @@ namespace ClassIsland.Views;
 public partial class DevPortalWindow : MyWindow
 {
     public DevPortalViewModel ViewModel { get; } = IAppHost.GetService<DevPortalViewModel>();
-    
+
     public DevPortalWindow()
     {
         DataContext = this;
         InitializeComponent();
-        
+
         MarkdownEditor.Text = ViewModel.MarkdownText;
     }
 
@@ -57,7 +57,7 @@ public partial class DevPortalWindow : MyWindow
             }
         ], new Guid("4B12F124-8585-43C7-AFC5-7BBB7CBE60D6"), Guid.Empty);
     }
-    
+
     private void ButtonReset_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.SettingsService.Settings.DebugTimeOffsetSeconds = 0;
@@ -106,7 +106,7 @@ public partial class DevPortalWindow : MyWindow
             Title = ViewModel.ToastTitle,
             Message = ViewModel.ToastMessage,
             CanUserClose = ViewModel.ToastCanUserClose,
-            ActionContent = ViewModel.ToastHaveActions ? new Button() {Content = "Test"} : null
+            ActionContent = ViewModel.ToastHaveActions ? new Button() { Content = "Test" } : null
         });
     }
 
@@ -165,7 +165,7 @@ public partial class DevPortalWindow : MyWindow
                         {
                             Kind = TutorialActionKind.InvokeUri,
                             StringParameter = "classisland://app/profile/timeLayouts"
-                        }  
+                        }
                     },
                     Content =
                     {

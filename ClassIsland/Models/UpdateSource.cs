@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
 
-public class UpdateSource: ObservableRecipient
+public class UpdateSource : ObservableRecipient
 {
     private string _name = "";
     private List<string> _speedTestSources = new();

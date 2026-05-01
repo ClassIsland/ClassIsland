@@ -132,7 +132,7 @@ public static class OSKIntegration
         {
             uiHostNoLaunch = new();
         }
-        catch(COMException e)
+        catch (COMException e)
         {
             if ((uint)e.HResult == HRESULT.REGDB_E_CLASSNOTREG)
             {

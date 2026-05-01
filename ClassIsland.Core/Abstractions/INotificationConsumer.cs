@@ -18,12 +18,12 @@ public interface INotificationConsumer
     /// </remarks>
     /// <param name="notificationRequests">推送的提醒</param>
     public void ReceiveNotifications(IReadOnlyList<NotificationPlayingTicket> notificationRequests);
-    
+
     /// <summary>
     /// 待处理的提醒数量
     /// </summary>
     public int QueuedNotificationCount { get; }
-    
+
     /// <summary>
     /// 是否接受提醒请求。如果为 false，提醒主机将不会像此消费者推送提醒请求。
     /// </summary>

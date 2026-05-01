@@ -76,7 +76,7 @@ public class PopupIntroAnimationBehavior
         animationOpacity.InsertKeyFrame(0f, 0f);
         animationOpacity.InsertKeyFrame(1f, 1f, Easing.Parse("0.22, 1, 0.36, 1"));
         visual.StartAnimation(nameof(visual.Opacity), animationOpacity);
-        
+
         var origin = GetOriginFromPlacement(popup?.Placement ?? PlacementMode.Pointer, control.Bounds, visual.CenterPoint);
         visual.CenterPoint = origin;
         var animationScale = compositor.CreateVector3DKeyFrameAnimation();

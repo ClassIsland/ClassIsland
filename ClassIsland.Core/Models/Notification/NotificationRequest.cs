@@ -125,7 +125,7 @@ public class NotificationRequest : ObservableRecipient
     /// 提醒播放状态
     /// </summary>
     public NotificationState State { get; internal set; } = NotificationState.None;
-    
+
     /// <summary>
     /// 提醒播放剩余进度
     /// </summary>
@@ -156,7 +156,7 @@ public class NotificationRequest : ObservableRecipient
 
     internal CancellationTokenSource? RootCancellationTokenSource { get; set; }
     internal CancellationTokenSource? RootCompletedTokenSource { get; set; }
-    
+
     internal bool NotificationSetupCompleted { get; set; }
 
     internal NotificationRequest? ChainedHeadRequest { get; set; }
@@ -167,7 +167,7 @@ public class NotificationRequest : ObservableRecipient
     /// 提醒遮罩播放会话
     /// </summary>
     public NotificationPlayingSessionInfo MaskSession { get; } = new();
-    
+
     /// <summary>
     /// 提醒正文播放会话
     /// </summary>

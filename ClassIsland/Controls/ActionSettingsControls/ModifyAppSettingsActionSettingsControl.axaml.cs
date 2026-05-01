@@ -99,7 +99,8 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
             UpdateSuggestions();
             if (prevTemplateName != ViewModel.ControlTemplateName || ViewModel.ControlTemplateName == ".enums")
             {
-                try {
+                try
+                {
                     ViewModel._inputValueLock = true;
                     ResetInputer();
                     ViewModel._inputValueLock = false;
@@ -180,7 +181,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
     bool IsCustomizedControlTemplateSupported(string name) =>
         ControlTemplateSelector.Templates.ContainsKey(name);
 
-#region 选择应用设置部分
+    #region 选择应用设置部分
 
     TextBox? GlobalSearchSettingsTextBox;
 
@@ -253,9 +254,9 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         }
     }
 
-#endregion
+    #endregion
 
-#region 控件模版选择部分
+    #region 控件模版选择部分
 
     ModifyAppSettingsActionControlTemplateSelector? _controlTemplateSelector;
     ModifyAppSettingsActionControlTemplateSelector ControlTemplateSelector => _controlTemplateSelector ??=
@@ -320,9 +321,9 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
     }
 
 
-#endregion
+    #endregion
 
-#region 填充字段部分
+    #region 填充字段部分
 
     void FillCurrentValueButton_OnClick(object? sender, RoutedEventArgs e) => FillCurrentValue();
 
@@ -416,7 +417,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         }
     }
 
-#endregion
+    #endregion
 }
 
 public partial class ModifyAppSettingsActionSettingsControlViewModel : ObservableRecipient

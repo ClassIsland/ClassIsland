@@ -11,7 +11,7 @@ namespace ClassIsland.Shared.Models.Profile;
 public class TimeLayoutItem : AttachableSettingsObject, IComparable
 {
     private string _startSecond = "";
-    private string _endSecond =  "";
+    private string _endSecond = "";
     private int _timeType = 0;
     private bool _isHideDefault = false;
     private Guid _defaultClassId = Guid.Empty;

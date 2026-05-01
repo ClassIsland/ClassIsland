@@ -11,7 +11,7 @@ public class NativeMenuIconsStyle : Styles
 {
     private static Selector NativeMenuItemPresenterSelector { get; } = Selectors.Is(null,
         typeof(MenuItem));
-    
+
     public NativeMenuIconsStyle()
     {
         var style = new Style()

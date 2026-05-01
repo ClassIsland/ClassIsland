@@ -18,7 +18,7 @@ public class AttachableObjectNode : ObservableRecipient
 
     public AttachedSettingsTargets Target { get; set; } = AttachedSettingsTargets.None;
 
-    public AttachableObjectNodeDictionary PreviousNodes { get;set; } = new(); 
+    public AttachableObjectNodeDictionary PreviousNodes { get; set; } = new();
 
     public AttachableObjectNodeDictionary NextNodes { get; set; } = new();
 

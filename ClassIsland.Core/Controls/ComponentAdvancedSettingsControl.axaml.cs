@@ -27,22 +27,22 @@ public partial class ComponentAdvancedSettingsControl : UserControl
         get => GetValue(IsRootComponentProperty);
         set => SetValue(IsRootComponentProperty, value);
     }
-    
+
     public ComponentAdvancedSettingsControl()
     {
         InitializeComponent();
     }
-    
+
     public static readonly RoutedEvent<RoutedEventArgs> RequestOpenHideRulesEvent =
         RoutedEvent.Register<RoutedEventArgs>(
             nameof(RequestOpenHideRules), RoutingStrategies.Bubble, typeof(ComponentAdvancedSettingsControl));
-     
+
     public event EventHandler<RoutedEventArgs> RequestOpenHideRules
     {
         add => AddHandler(RequestOpenHideRulesEvent, value);
         remove => RemoveHandler(RequestOpenHideRulesEvent, value);
     }
-    
+
     private void ButtonOpenRuleset_OnClick(object sender, RoutedEventArgs e)
     {
         RaiseEvent(new RoutedEventArgs(RequestOpenHideRulesEvent));

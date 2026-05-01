@@ -8,7 +8,7 @@ namespace ClassIsland.Services;
 public class BootService : IHostedService
 {
     private MainWindow MainWindow { get; }
-    public BootService(MainWindow mainWindow, 
+    public BootService(MainWindow mainWindow,
         MiniInfoProviderHostService miniInfoProviderHostService)
     {
         MainWindow = mainWindow;

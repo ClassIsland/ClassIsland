@@ -16,7 +16,7 @@ public static class IconExpressionHelper
     /// </summary>
     public static IReadOnlyDictionary<string, Func<string[], IconSource?>> IconExpressionHandlers =>
         _iconExpressionHandlers;
-    
+
     private static Dictionary<string, Func<string[], IconSource?>> _iconExpressionHandlers = [];
 
     /// <summary>
@@ -74,7 +74,7 @@ public static class IconExpressionHelper
             throw new InvalidOperationException($"表达式 {expr} 解析失败");
         }
         return result;
-        
+
     }
 
     /// <summary>

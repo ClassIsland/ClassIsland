@@ -77,5 +77,5 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// <summary>
     /// 更新全部插件。
     /// </summary>
-    public void UpdateAllPlugins(bool discardDisabled=false);
+    public void UpdateAllPlugins(bool discardDisabled = false);
 }

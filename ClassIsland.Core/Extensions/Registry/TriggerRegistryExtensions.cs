@@ -39,7 +39,7 @@ public static class TriggerRegistryExtensions
         return services;
     }
 
-    private static TriggerInfo Register(Type triggerType, Type? settingsType=null)
+    private static TriggerInfo Register(Type triggerType, Type? settingsType = null)
     {
         if (triggerType.GetCustomAttributes(false).FirstOrDefault(x => x is TriggerInfo) is not TriggerInfo info)
         {

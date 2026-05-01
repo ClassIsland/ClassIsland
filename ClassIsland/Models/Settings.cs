@@ -549,7 +549,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     /// </value>
     /// <remarks>Windows平台上默认值为0，其他平台上默认值为4</remarks>
 
-    [SettingsInfo("点击托盘图标行为", "\uE5C1", enums: ["打开主菜单", "打开档案编辑窗口", "显示/隐藏主界面", "打开换课窗口","打开设置窗口"], order: 2)]
+    [SettingsInfo("点击托盘图标行为", "\uE5C1", enums: ["打开主菜单", "打开档案编辑窗口", "显示/隐藏主界面", "打开换课窗口", "打开设置窗口"], order: 2)]
     public int TaskBarIconClickBehavior
     {
         get => _taskBarIconClickBehavior;
@@ -977,7 +977,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Appearence
 
-    [SettingsInfo("应用主题", "\uE5CB", enums:["跟随系统", "明亮", "黑暗"], order: 1)]
+    [SettingsInfo("应用主题", "\uE5CB", enums: ["跟随系统", "明亮", "黑暗"], order: 1)]
     public int Theme
     {
         get => _theme;

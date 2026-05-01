@@ -13,12 +13,12 @@ namespace ClassIsland.Views;
 public partial class DataTransferWindow : MyWindow
 {
     public int ImportStage { init; get; } = -1;
-    
+
     public string? ImportName { get; init; }
 
     private DataTransferPage _dataTransferPage;
-    
-    
+
+
     public DataTransferWindow()
     {
         InitializeComponent();
@@ -41,7 +41,7 @@ public partial class DataTransferWindow : MyWindow
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        
+
     }
 
     public void ImportComplete(bool importV1)

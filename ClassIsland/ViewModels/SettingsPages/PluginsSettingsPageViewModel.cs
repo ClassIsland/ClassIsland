@@ -19,7 +19,7 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
     public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
     public ILogger<PluginsSettingsPage> Logger { get; }
-    
+
     [ObservableProperty] private PluginInfo? _selectedPluginInfo;
     [ObservableProperty] private string _readmeDocument = "";
     [ObservableProperty] private bool _isPluginOperationsPopupOpened = false;
@@ -54,7 +54,7 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         SettingsService.Settings
             .ObservableForProperty(x => x.OfficialIndexMirrors)
             .Subscribe(_ => UpdateOfficialPluginSources());
-        
+
         UpdateMergedPlugins();
         UpdateOfficialPluginSources();
     }
@@ -72,7 +72,7 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         OfficialPluginMirrors =
             new SyncDictionaryList<string, string>(SettingsService.Settings.OfficialIndexMirrors, () => "");
     }
-    
+
     private bool PluginSourceFilter(KeyValuePair<string, PluginInfo> kvp)
     {
         var info = kvp.Value;
@@ -84,7 +84,7 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         {
             return false;
         }
-        
+
         var filter = PluginFilterText;
         if (string.IsNullOrWhiteSpace(filter))
             return true;

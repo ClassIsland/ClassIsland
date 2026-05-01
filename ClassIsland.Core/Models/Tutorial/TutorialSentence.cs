@@ -17,12 +17,12 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// 语句标题
     /// </summary>
     [ObservableProperty] private string _title = "";
-    
+
     /// <summary>
     /// 语句正文
     /// </summary>
     [ObservableProperty] private string _content = "";
-    
+
     /// <summary>
     /// 语句图标表达式
     /// </summary>
@@ -60,7 +60,7 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// 教程提示框会指向目标控件
     /// </summary>
     [ObservableProperty] private bool _pointToTarget = true;
-    
+
     /// <summary>
     /// 右侧按钮文字，留空代表没有这个按钮
     /// </summary>
@@ -69,13 +69,14 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// <summary>
     /// 右侧按钮点击动作
     /// </summary>
-    [ObservableProperty] private ObservableCollection<TutorialAction> _rightButtonActions = [
+    [ObservableProperty]
+    private ObservableCollection<TutorialAction> _rightButtonActions = [
         new()
         {
             Kind = TutorialActionKind.NextSentence
         }
     ];
-    
+
     /// <summary>
     /// 左侧按钮文字，留空代表没有这个按钮
     /// </summary>
@@ -84,13 +85,14 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// <summary>
     /// 左侧按钮点击动作
     /// </summary>
-    [ObservableProperty] private ObservableCollection<TutorialAction> _leftButtonActions = [
+    [ObservableProperty]
+    private ObservableCollection<TutorialAction> _leftButtonActions = [
         new()
         {
             Kind = TutorialActionKind.PreviousSentence
         }
     ];
-    
+
     /// <summary>
     /// 初始化动作
     /// </summary>
@@ -100,7 +102,7 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// 是否等待外部手动推进教程进度
     /// </summary>
     [ObservableProperty] private bool _waitForNextCommand = false;
-    
+
     /// <summary>
     /// 使用 LightDismiss 代替右侧按钮的行为
     /// </summary>
@@ -116,6 +118,6 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// </summary>
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     [ObservableProperty] private TeachingTipPlacementMode _placementMode;
-    
+
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
 }

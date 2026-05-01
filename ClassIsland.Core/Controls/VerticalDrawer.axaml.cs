@@ -21,10 +21,10 @@ public class VerticalDrawer : ContentControl
 {
     public static FuncValueConverter<double, double> ContainerHeightToClosedCanvasBottomPosConverter { get; } =
         new(x => -x - 2);
-    
+
     public static FuncValueConverter<double, double> ContainerHeightToCollapsedCanvasBottomPosConverter { get; } =
         new(x => -x + 40);
-    
+
     public static readonly StyledProperty<object?> TitleProperty = AvaloniaProperty.Register<VerticalDrawer, object?>(
         nameof(Title));
 
@@ -138,7 +138,7 @@ public class VerticalDrawer : ContentControl
         {
             return;
         }
-        
+
         if (e.Key == Key.Escape)
         {
             Dismiss();
@@ -156,7 +156,7 @@ public class VerticalDrawer : ContentControl
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-        
+
         if (_dismissLayer != null)
         {
             _dismissLayer.PointerPressed -= DismissLayerOnPointerPressed;
@@ -170,7 +170,7 @@ public class VerticalDrawer : ContentControl
         {
             _canvas.SizeChanged -= CanvasOnSizeChanged;
         }
-        
+
         _dismissLayer = this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == "PART_DismissLayer");
         _backgroundElement = this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == "PART_BackgroundElement");
         _canvas = this.GetTemplateChildren().OfType<Canvas>().FirstOrDefault(x => x.Name == "PART_Canvas");
@@ -213,7 +213,7 @@ public class VerticalDrawer : ContentControl
         {
             return;
         }
-        
+
         ContainerHeight = _canvas.Bounds.Height * ContentHeightRatio;
     }
 

@@ -165,9 +165,9 @@ public partial class RunActionSettingsControl : ActionSettingsControlBase<RunAct
 
     List<FilePickerFileType>? FileTypes { get; set; } = [];
 
-#region PropertyChanged
+    #region PropertyChanged
     public new event PropertyChangedEventHandler? PropertyChanged;
     void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-#endregion
+    #endregion
 }

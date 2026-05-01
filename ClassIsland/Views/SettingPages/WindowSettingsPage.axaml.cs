@@ -30,7 +30,7 @@ public partial class WindowSettingsPage : SettingsPageBase
     {
         InitializeComponent();
         DataContext = this;
-        
+
         var taskbarTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -40,7 +40,7 @@ public partial class WindowSettingsPage : SettingsPageBase
         TaskbarTimer_Tick();
         ViewModel.SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         ViewModel.Screens = new ObservableCollection<Screen>(AppBase.Current.MainWindow!.Screens.All);
-    }   
+    }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -69,7 +69,7 @@ public partial class WindowSettingsPage : SettingsPageBase
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        
+
     }
 
     private void Control_OnUnloaded(object? sender, RoutedEventArgs e)

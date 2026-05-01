@@ -41,15 +41,15 @@ namespace ClassIsland.Views;
 public partial class DataTransferPage : UserControl
 {
     public DataTransferViewModel ViewModel { get; } = IAppHost.GetService<DataTransferViewModel>();
-    
+
     public DataTransferPage()
     {
         InitializeComponent();
     }
-    
+
     private async void SettingsExpanderBrowse_OnClick(object? sender, RoutedEventArgs e)
     {
-        
+
         if (ViewModel.BrowseAction == null || ViewModel.PerformImportAction == null)
         {
             return;
@@ -62,14 +62,14 @@ public partial class DataTransferPage : UserControl
 
         await ViewModel.PerformImportAction();
     }
-    
+
     private void ButtonTurnBack_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.PageIndex--;
     }
 
     #region ClassIsland
-    
+
     private async void SettingsExpanderImportFromClassIsland1_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.BrowseAction = BrowseClassIslandData;
@@ -166,11 +166,11 @@ public partial class DataTransferPage : UserControl
         }
         ConfigureFileHelper.SaveConfig(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), settings);
     }
-    
+
     private void ImportConfig(string root)
     {
         Directory.Delete(Path.Combine(CommonDirectories.AppRootFolderPath, "Plugins"), true);
-        
+
         FileFolderService.CopyFolder(Path.Combine(root, "Config"),
             Path.Combine(CommonDirectories.AppRootFolderPath, "Config"), true);
         FileFolderService.CopyFolder(Path.Combine(root, "Plugins"),
@@ -199,7 +199,7 @@ public partial class DataTransferPage : UserControl
             ConfigureFileHelper.SaveConfig(Path.Combine(ComponentsService.ComponentSettingsPath, Path.GetFileName(path)), newConfig);
         }
     }
-    
+
     [Obsolete]
     private void ImportProfile(string root)
     {
@@ -234,7 +234,7 @@ public partial class DataTransferPage : UserControl
                     ImportProfile(root);
                 }
             });
-            
+
             AppBase.Current.Restart(["-m", "--importComplete", "--importV1Complete"]);
         }
         catch (Exception e)
@@ -249,17 +249,17 @@ public partial class DataTransferPage : UserControl
 
     #region Class Widgets
 
-    private double TryGetDoubleFromSection(PropertyCollection? dictionary, string key, double fallback) 
+    private double TryGetDoubleFromSection(PropertyCollection? dictionary, string key, double fallback)
     {
         if (dictionary == null)
         {
             return fallback;
         }
-        
+
         return dictionary[key] != null ? (double.TryParse(dictionary[key], out var r2) ? r2 : fallback) : fallback;
     }
-    
-    private bool TryGetBooleanFromSection(PropertyCollection? dictionary, string key, bool fallback) 
+
+    private bool TryGetBooleanFromSection(PropertyCollection? dictionary, string key, bool fallback)
     {
         if (dictionary == null)
         {
@@ -268,8 +268,8 @@ public partial class DataTransferPage : UserControl
 
         return dictionary[key] != null ? (int.TryParse(dictionary[key], out var r2) ? r2 == 1 : fallback) : fallback;
     }
-    
-    private string TryGetStringFromSection(PropertyCollection? dictionary, string key, string fallback) 
+
+    private string TryGetStringFromSection(PropertyCollection? dictionary, string key, string fallback)
     {
         if (dictionary == null)
         {
@@ -278,8 +278,8 @@ public partial class DataTransferPage : UserControl
 
         return dictionary[key] != null ? dictionary[key] : fallback;
     }
-    
-    private int TryGetIntFromSection(PropertyCollection? dictionary, string key, int fallback) 
+
+    private int TryGetIntFromSection(PropertyCollection? dictionary, string key, int fallback)
     {
         if (dictionary == null)
         {
@@ -297,7 +297,7 @@ public partial class DataTransferPage : UserControl
         ViewModel.ImportSourcePath = "";
         ViewModel.ImportDescription = "支持从 Class Widgets 1 导入全部课表信息和大部分配置。";
     }
-    
+
     private async Task BrowseClassWidgetsData()
     {
         var topLevel = TopLevel.GetTopLevel(this);
@@ -316,7 +316,7 @@ public partial class DataTransferPage : UserControl
         {
             return;
         }
-        
+
         ViewModel.ImportSourcePath = file[0];
     }
 
@@ -328,15 +328,15 @@ public partial class DataTransferPage : UserControl
         var profile =
             ClassWidgetsProfileTransferHelper.ConvertClassWidgets1ProfileToClassIslandProfile(Path.Combine(root,
                 "config", "schedule", profileName));
-        
+
         ConfigureFileHelper.SaveConfig(Path.Combine(ProfileService.ProfilePath, $"cw_{profileName}"), profile);
     }
-    
+
     private void ImportClassWidgetsSettings(string root, IniData ini)
     {
         var settingsService = IAppHost.GetService<SettingsService>();
         var settings = settingsService.Settings;
-        
+
         // General
         var general = ini["General"];
         settings.Scale = TryGetDoubleFromSection(general, "scale", 1.0);
@@ -356,7 +356,7 @@ public partial class DataTransferPage : UserControl
             1 => 2,
             _ => 0
         };
-        
+
         // Weather
         var weather = ini["Weather"];
         if (TryGetStringFromSection(weather, "api", "xiaomi_weather") == "xiaomi_weather")
@@ -364,7 +364,7 @@ public partial class DataTransferPage : UserControl
             settings.CityId = TryGetStringFromSection(weather, "city", "weathercn:101010100");
             settings.WeatherLocationSource = 0;
         }
-        
+
         // Toast
         var toast = ini["Toast"];
         settings.IsNotificationEnabled = true;
@@ -386,19 +386,19 @@ public partial class DataTransferPage : UserControl
             ?? new AfterSchoolNotificationProviderSettings();
         afterSchoolSettings.IsEnabled = TryGetBooleanFromSection(toast, "after_school", true);
         settings.NotificationProvidersSettings["8FBC3A26-6D20-44DD-B895-B9411E3DDC51".ToLower()] = afterSchoolSettings;
-        
+
         // Time
         var time = ini["Time"];
         settings.IsExactTimeEnabled = TryGetStringFromSection(time, "type", "ntp") == "ntp";
         settings.ExactTimeServer = TryGetStringFromSection(time, "ntp_server", "ntp.aliyun.com");
         settings.TimeOffsetSeconds = TryGetDoubleFromSection(time, "time_offset", 0);
-        
+
         // Date
         var date = ini["Date"];
         settings.SingleWeekStartTime = DateOnly.TryParse(TryGetStringFromSection(date, "start_date", ""), out var d)
             ? d.ToDateTime(TimeOnly.MinValue)
             : DateTime.Now;
-        
+
         // Audio
         var audio = ini["Audio"];
         settings.NotificationSoundVolume = TryGetDoubleFromSection(audio, "volume", 100) / 100.0;
@@ -412,7 +412,7 @@ public partial class DataTransferPage : UserControl
         settings.IsWelcomeWindowShowed = true;
 
         return;
-        
+
         void SetNotificationChannelSound(string channelId, string cwPath)
         {
             var chanelSettings =
@@ -467,7 +467,7 @@ public partial class DataTransferPage : UserControl
         var settings = settingsService.Settings;
         settings.CurrentComponentConfig = Path.GetFileNameWithoutExtension(name);
     }
-    
+
     private async Task PerformClassWidgetsImportAction()
     {
         if (string.IsNullOrWhiteSpace(ViewModel.ImportSourcePath))
@@ -553,5 +553,5 @@ public partial class DataTransferPage : UserControl
         ViewModel.PageIndex++;
     }
 
-    
+
 }

@@ -11,12 +11,12 @@ namespace ClassIsland.Core.Extensions.UI;
 /// </summary>
 public static class VisualsExtensions
 {
-    private static readonly MethodInfo? MatchMethod = typeof(Selector).GetMethod("Match", 
+    private static readonly MethodInfo? MatchMethod = typeof(Selector).GetMethod("Match",
         BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-    
-    private static readonly MethodInfo? GetIsMatchMethod = typeof(Selector).Assembly.GetType("Avalonia.Styling.SelectorMatch")?.GetMethod("get_IsMatch", 
+
+    private static readonly MethodInfo? GetIsMatchMethod = typeof(Selector).Assembly.GetType("Avalonia.Styling.SelectorMatch")?.GetMethod("get_IsMatch",
         BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-    
+
     /// <summary>
     /// 按照选择器查找子级 <see cref="Visual"/>
     /// </summary>
@@ -32,7 +32,7 @@ public static class VisualsExtensions
 
         return FindDescendantBySelectorCore(visual, selector);
     }
-    
+
     private static Visual? FindDescendantBySelectorCore(Visual visual, Selector selector)
     {
         var visualChildren = visual.GetVisualChildren().ToArray();
@@ -58,6 +58,6 @@ public static class VisualsExtensions
 
         return null;
     }
-    
-    
+
+
 }

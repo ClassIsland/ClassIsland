@@ -11,19 +11,19 @@ namespace ClassIsland.Core.Converters;
 public class CustomKeyDictionaryValueConverter : AvaloniaObject
 {
     private IDictionary? _dictionary;
-    
+
     public static readonly DirectProperty<CustomKeyDictionaryValueConverter, IDictionary?>
         DictionaryProperty =
             AvaloniaProperty.RegisterDirect<CustomKeyDictionaryValueConverter, IDictionary?>(
                 nameof(Dictionary), o => o.Dictionary, (o, v) => o.Dictionary = v);
-    
+
     public IDictionary? Dictionary
     {
         get => _dictionary;
         set => SetAndRaise(DictionaryProperty, ref _dictionary, value);
     }
-    
-    internal CustomKeyDictionaryValueConverter() {}
+
+    internal CustomKeyDictionaryValueConverter() { }
 }
 
 /// <summary>
@@ -61,7 +61,7 @@ public class CustomKeyDictionaryValueConverter<TKey, TValue> : CustomKeyDictiona
 
         return null;
     }
-    
+
     object? IValueConverter.Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is not TKey key)
@@ -69,7 +69,7 @@ public class CustomKeyDictionaryValueConverter<TKey, TValue> : CustomKeyDictiona
             return null;
         }
 
-        if (Dictionary is not IDictionary<TKey, TValue> dictionary) 
+        if (Dictionary is not IDictionary<TKey, TValue> dictionary)
             return null;
         dictionary.TryGetValue(key, out var o1);
         return o1;

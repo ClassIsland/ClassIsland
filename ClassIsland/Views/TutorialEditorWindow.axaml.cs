@@ -30,12 +30,12 @@ public partial class TutorialEditorWindow : MyWindow
 {
     public static FuncValueConverter<TutorialActionKind, int> TutorialActionKindToIntConverter { get; } =
         new(x => (int)x, x => (TutorialActionKind)x);
-    
+
     public static FuncValueConverter<TeachingTipPlacementMode, int> TeachingTipPlacementModeToIntConverter { get; } =
         new(x => (int)x, x => (TeachingTipPlacementMode)x);
-    
+
     public TutorialEditorViewModel ViewModel { get; } = IAppHost.GetService<TutorialEditorViewModel>();
-    
+
     public TutorialEditorWindow()
     {
         InitializeComponent();
@@ -43,7 +43,7 @@ public partial class TutorialEditorWindow : MyWindow
 
         SetupEventHandlers();
     }
-    
+
     [AvaloniaHotReload]
     private void SetupEventHandlers()
     {
@@ -54,7 +54,7 @@ public partial class TutorialEditorWindow : MyWindow
         DataGridParagraphContent.SelectionChanged += DataGridParagraphContent_OnGotFocus;
         DataGridParagraphContent.GotFocus += DataGridParagraphContent_OnGotFocus;
     }
-    
+
     private void ButtonAddTutorial_OnClick(object? sender, RoutedEventArgs e)
     {
         var tutorial = new Tutorial()
@@ -70,7 +70,7 @@ public partial class TutorialEditorWindow : MyWindow
         if (ViewModel.CurrentTutorial != null)
             ViewModel.CurrentTutorialGroup.Tutorials.Add(ConfigureFileHelper.CopyObject(ViewModel.CurrentTutorial));
     }
-    
+
     private void ButtonDeleteTutorial_OnClick(object? sender, RoutedEventArgs e)
     {
         if (ViewModel.CurrentTutorial != null)
@@ -81,7 +81,7 @@ public partial class TutorialEditorWindow : MyWindow
     {
         ViewModel.SelectedDetailObject = ViewModel.CurrentTutorial;
     }
-    
+
 
     private void ButtonAddParagraph_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -95,16 +95,16 @@ public partial class TutorialEditorWindow : MyWindow
 
     private void ButtonDuplicateParagraph_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel.CurrentParagraph != null) 
+        if (ViewModel.CurrentParagraph != null)
             ViewModel.CurrentTutorial?.Paragraphs.Add(ConfigureFileHelper.CopyObject(ViewModel.CurrentParagraph));
     }
-    
+
     private void ButtonDeleteParagraph_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel.CurrentParagraph != null) 
+        if (ViewModel.CurrentParagraph != null)
             ViewModel.CurrentTutorial?.Paragraphs.Remove(ViewModel.CurrentParagraph);
     }
-    
+
     private void ListBoxParagraphs_OnGotFocus(object? sender, RoutedEventArgs e)
     {
         ViewModel.SelectedDetailObject = ViewModel.CurrentParagraph;
@@ -119,16 +119,16 @@ public partial class TutorialEditorWindow : MyWindow
 
     private void ButtonDuplicateSentence_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel.CurrentSentence != null) 
+        if (ViewModel.CurrentSentence != null)
             ViewModel.CurrentParagraph?.Content.Add(ConfigureFileHelper.CopyObject(ViewModel.CurrentSentence));
     }
-    
+
     private void ButtonDeleteSentence_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel.CurrentSentence != null) 
+        if (ViewModel.CurrentSentence != null)
             ViewModel.CurrentParagraph?.Content.Remove(ViewModel.CurrentSentence);
     }
-    
+
     private void DataGridParagraphContent_OnGotFocus(object? sender, RoutedEventArgs e)
     {
         ViewModel.SelectedDetailObject = ViewModel.CurrentSentence ?? ViewModel.SelectedDetailObject;
@@ -136,13 +136,13 @@ public partial class TutorialEditorWindow : MyWindow
 
     private void MenuItemRunCurrentTutorial_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel.CurrentTutorial != null) 
+        if (ViewModel.CurrentTutorial != null)
             ViewModel.TutorialService.BeginTutorial(ViewModel.CurrentTutorial);
     }
 
     private void MenuItemRunCurrentParagraph_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel.CurrentTutorial != null) 
+        if (ViewModel.CurrentTutorial != null)
             ViewModel.TutorialService.JumpToParagraph(ViewModel.CurrentTutorial, ViewModel.CurrentParagraph);
     }
 
@@ -167,7 +167,7 @@ public partial class TutorialEditorWindow : MyWindow
         ViewModel.CurrentTutorialGroup = ConfigureFileHelper.LoadConfig<TutorialGroup>(path, false);
         this.ShowToast($"已打开 {path}");
         var id = ViewModel.CurrentTutorialGroup.Id;
-        if (ITutorialService.RegisteredTutorialGroups.FirstOrDefault(x => x.Id == id) is not {} existed)
+        if (ITutorialService.RegisteredTutorialGroups.FirstOrDefault(x => x.Id == id) is not { } existed)
         {
             return;
         }
@@ -181,7 +181,7 @@ public partial class TutorialEditorWindow : MyWindow
         await SaveTutorialGroupFull();
     }
 
-    private async Task SaveTutorialGroupFull(bool saveAs=false)
+    private async Task SaveTutorialGroupFull(bool saveAs = false)
     {
         if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath) || saveAs)
         {

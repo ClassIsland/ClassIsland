@@ -97,10 +97,10 @@ public class TimeLineListItemBehavior : Behavior<Control>
         RemoveAdorner();
     }
 
-    private void RemoveAdorner(object? o=null)
+    private void RemoveAdorner(object? o = null)
     {
         var owner = AssociatedObject ?? o as Visual;
-        if (owner == null )
+        if (owner == null)
         {
             return;
         }
@@ -128,7 +128,7 @@ public class TimeLineListItemBehavior : Behavior<Control>
         {
             return;
         }
-        
+
         _adorner = new TemplatedControl()
         {
             Template = ThumbTemplate,

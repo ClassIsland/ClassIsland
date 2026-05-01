@@ -10,7 +10,7 @@ namespace ClassIsland.Core.Controls;
 public partial class StarRailLoadingControl : UserControl
 {
     private bool _isPlayed = false;
-    
+
 
     public StarRailLoadingControl()
     {

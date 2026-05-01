@@ -13,7 +13,7 @@ public interface IAudioService : IDisposable
     /// 默认的音频格式
     /// </summary>
     public static readonly AudioFormat DefaultAudioFormat = AudioFormat.Dvd;
-    
+
     /// <summary>
     /// 当前的音频引擎。
     /// </summary>
@@ -29,14 +29,14 @@ public interface IAudioService : IDisposable
     /// <returns>初始化的音频设备。</returns>
     [Obsolete("请使用 TryInitializeDefaultPlaybackDeviceSafeAsync 方法")]
     AudioPlaybackDevice? TryInitializeDefaultPlaybackDevice();
-    
+
     /// <summary>
     /// 尝试初始化默认的音频设备。如果初始化失败，则返回 null。
     /// </summary>
     /// <returns>初始化的音频设备。</returns>
     [Obsolete("请使用 TryInitializeDefaultPlaybackDeviceSafeAsync 方法")]
     Task<AudioPlaybackDevice?> TryInitializeDefaultPlaybackDeviceAsync();
-    
+
     /// <summary>
     /// 尝试初始化默认的音频设备。如果初始化失败，则返回 null。
     /// </summary>

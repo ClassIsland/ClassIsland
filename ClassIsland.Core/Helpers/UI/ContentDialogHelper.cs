@@ -56,9 +56,9 @@ public static class ContentDialogHelper
             return false;
         }
 
-        if (!enablesConfirmation) 
+        if (!enablesConfirmation)
             return true;
-        if (textBox.Text == confirmation) 
+        if (textBox.Text == confirmation)
             return true;
         root?.ShowWarningToast("验证结果不正确，请重新输入。");
         return false;

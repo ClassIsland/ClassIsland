@@ -25,7 +25,7 @@ public partial class JoinManagementDialog : MyWindow
             Patterns =["*.json"]
         }
     ];
-    
+
     public JoinManagementViewModel ViewModel { get; } = new();
 
     public IManagementService ManagementService { get; } = IAppHost.GetService<IManagementService>();
@@ -73,7 +73,7 @@ public partial class JoinManagementDialog : MyWindow
     {
         ViewModel.IsWorking = true;
         try
-        { 
+        {
             await ManagementService.JoinManagementAsync(ViewModel.ManagementSettings);
         }
         catch (Exception exception)

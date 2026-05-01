@@ -16,19 +16,19 @@ namespace ClassIsland.Services.NotificationProviders;
 public class ManagementNotificationProvider : NotificationProviderBase
 {
     private INotificationHostService NotificationHostService { get; }
-    
+
     private IManagementService ManagementService { get; }
-    
+
     private ILogger<ManagementNotificationProvider> Logger { get; }
 
-    public ManagementNotificationProvider(INotificationHostService notificationHostService, 
+    public ManagementNotificationProvider(INotificationHostService notificationHostService,
         IManagementService managementService,
         ILogger<ManagementNotificationProvider> logger) : base(false)
     {
         NotificationHostService = notificationHostService;
         ManagementService = managementService;
         Logger = logger;
-        
+
         if (!ManagementService.IsManagementEnabled)
             return;
         NotificationHostService.RegisterNotificationProvider(this);

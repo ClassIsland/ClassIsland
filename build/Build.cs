@@ -24,12 +24,12 @@ partial class Build : NukeBuild
     ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
     ///   - Microsoft VSCode           https://nuke.build/vscode
 
-    public static int Main () => Execute<Build>(x => x.CompileApp);
-    
+    public static int Main() => Execute<Build>(x => x.CompileApp);
+
     [Solution] readonly Solution Solution;
-    
+
     [PathVariable] readonly Tool Git;
-    
+
     [Parameter("Arch")] readonly string Arch;
     [Parameter("OsName")] readonly string OsName;
     [Parameter("Package")] readonly string Package;
@@ -38,7 +38,7 @@ partial class Build : NukeBuild
     [Parameter("API_SIGNING_KEY")] readonly string ApiSigningKey;
     [Parameter("API_SIGNING_KEY_PS")] readonly string ApiSigningKeyPs;
     [Parameter] readonly string AppVersion;
-    
+
     string PublishArtifactName;
 
     readonly AbsolutePath DesktopAppEntryProject = RootDirectory / "ClassIsland.Desktop" / "ClassIsland.Desktop.csproj";
@@ -52,11 +52,11 @@ partial class Build : NukeBuild
     readonly AbsolutePath AppSecretsPath = RootDirectory / "ClassIsland" / "secrets.g.cs";
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = Configuration.Release ;
-    
+    readonly Configuration Configuration = Configuration.Release;
+
     Version GitVersion;
     int GitCommitCount;
-    
+
     Target GenerateMetadata => _ => _
         .Requires(() => OsName)
         .Requires(() => Arch)
@@ -68,7 +68,7 @@ partial class Build : NukeBuild
             var osRid = OsName switch
             {
                 "windows" => "win",
-                "linux" => "linux", 
+                "linux" => "linux",
                 "macos" => "osx",
                 _ => throw new InvalidOperationException($"不支持的平台：{OsName}")
             };
@@ -77,7 +77,7 @@ partial class Build : NukeBuild
             IsSecretFilled = !(string.IsNullOrEmpty(ApiSigningKey) || string.IsNullOrEmpty(ApiSigningKeyPs));
             AppPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
             LauncherPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
-            
+
             Log.Information("AppVersion = {AppVersion}", AppVersion);
             Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
             Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
@@ -85,7 +85,7 @@ partial class Build : NukeBuild
             Log.Information("AppPublishArtifactPath = {AppPublishArtifactPath}", AppPublishArtifactPath);
             Log.Information("LauncherPublishArtifactPath = {LauncherPublishArtifactPath}", LauncherPublishArtifactPath);
         });
-    
+
     Target PopulateGitVersion => _ => _
         .Executes(() =>
         {
@@ -122,6 +122,6 @@ partial class Build : NukeBuild
                 File.Delete(file);
             }
         });
-    
+
     static string PlatformExecutableExtension => OperatingSystem.IsWindows() ? ".exe" : "";
 }

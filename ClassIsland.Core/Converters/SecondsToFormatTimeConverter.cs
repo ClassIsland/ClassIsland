@@ -32,7 +32,8 @@ public class SecondsToFormatTimeConverter : AvaloniaObject, IValueConverter
     {
         var withSeconds = parameter as bool? ?? false;
 
-        if (withSeconds) {
+        if (withSeconds)
+        {
             var v = TimeSpan.FromSeconds(value as long? ?? value as int? ?? 0);
             return v.TotalSeconds switch // 显示秒数
             {

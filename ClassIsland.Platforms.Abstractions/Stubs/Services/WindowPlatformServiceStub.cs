@@ -14,9 +14,9 @@ public class WindowPlatformServiceStub : IWindowPlatformService
 {
     internal WindowPlatformServiceStub()
     {
-        
+
     }
-    
+
     /// <inheritdoc />
     public void SetWindowFeature(TopLevel toplevel, WindowFeatures features, bool state)
     {

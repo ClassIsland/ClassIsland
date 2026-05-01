@@ -20,7 +20,7 @@ public static class FlyoutHelper
         {
             return;
         }
-        
+
         var presenter = visual
             .GetVisualAncestors()
             .OfType<FlyoutPresenter>()

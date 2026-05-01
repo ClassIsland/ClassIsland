@@ -21,17 +21,17 @@ public partial class AuthorizeProviderPresenter : UserControl
 
     public static readonly RoutedEvent<RequestValidateAuthorizationProviderEventArgs> RequestValidateAuthorizationProvidersEvent =
         RoutedEvent.Register<AuthorizeProviderPresenter, RequestValidateAuthorizationProviderEventArgs>(nameof(RequestValidateAuthorizationProviders), RoutingStrategies.Direct);
-    
+
     public event EventHandler<RequestValidateAuthorizationProviderEventArgs> RequestValidateAuthorizationProviders
-    { 
+    {
         add => AddHandler(RequestValidateAuthorizationProvidersEvent, value);
         remove => RemoveHandler(RequestValidateAuthorizationProvidersEvent, value);
     }
 
     #endregion
-    
+
     #region Props
-    
+
 
     public static readonly StyledProperty<CredentialItem?> CredentialItemProperty = AvaloniaProperty.Register<AuthorizeProviderPresenter, CredentialItem?>(
         nameof(CredentialItem));
@@ -85,7 +85,7 @@ public partial class AuthorizeProviderPresenter : UserControl
         {
             return;
         }
-        
+
         DisplayingContent = visual;
     }
 
@@ -101,7 +101,7 @@ public partial class AuthorizeProviderPresenter : UserControl
         _window = TopLevel.GetTopLevel(this) as AuthorizeWindow;
         _window?.AddHandler(RequestValidateAuthorizationProvidersEvent, RequestValidateAuthorizationProvidersEventHandler);
     }
-    
+
     private void Control_OnUnloaded(object? sender, RoutedEventArgs e)
     {
         _window?.RemoveHandler(RequestValidateAuthorizationProvidersEvent, RequestValidateAuthorizationProvidersEventHandler);
@@ -117,5 +117,5 @@ public partial class AuthorizeProviderPresenter : UserControl
 
         args.IsError = !DisplayingContent.ValidateAuthorizeSettings();
     }
-    
+
 }

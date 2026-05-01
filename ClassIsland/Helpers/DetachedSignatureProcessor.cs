@@ -100,7 +100,7 @@ public static class DetachedSignatureProcessor
     {
         Stream outputStreamRaw = new MemoryStream();
         Stream outputStream = new ArmoredOutputStream(outputStreamRaw);
-        
+
 
         var pgpSec = new EncryptionKeys(keyIn, passPhrase);
         PgpPrivateKey pgpPrivKey = pgpSec.PrivateKey;

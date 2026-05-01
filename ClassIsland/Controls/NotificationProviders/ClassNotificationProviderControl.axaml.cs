@@ -98,7 +98,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         if (_key is "ClassPrepareNotifyOverlay" or "ClassOffOverlay")
         {
             Timer.Start();
-        }        
+        }
         Timer.Tick += TimerOnTick;
         MainListBox.SelectedIndex = SlideIndex;
     }
@@ -139,7 +139,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         if (span.TotalSeconds <= 0) return "0 分钟";
 
         var parts = new List<string>(3);
-        
+
         if (span.Hours > 0) parts.Add($"{span.Hours} 小时");
         if (span.Minutes > 0)
         {
@@ -147,7 +147,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
             else parts.Add($"{span.Minutes} 分钟");
         }
         if (span.Seconds > 0) parts.Add($"{span.Seconds} 秒");
-    
+
         return string.Join(" ", parts);
     }
 }

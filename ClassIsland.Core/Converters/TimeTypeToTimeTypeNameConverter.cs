@@ -14,8 +14,8 @@ public class TimeTypeToTimeTypeNameConverter : IValueConverter
     /// </summary>
     public static readonly TimeTypeToTimeTypeNameConverter Instance = new();
 
-    private TimeTypeToTimeTypeNameConverter() {}
-    
+    private TimeTypeToTimeTypeNameConverter() { }
+
     /// <inheritdoc />
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

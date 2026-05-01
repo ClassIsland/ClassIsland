@@ -43,11 +43,11 @@ namespace System.Device.Location
         private ManualResetEvent m_eventCreateDone;
         private ManualResetEvent m_eventGetLocDone;
 
-        private ReportStatus m_latLongStatus   = ReportStatus.NotSupported; 
+        private ReportStatus m_latLongStatus = ReportStatus.NotSupported;
         private ReportStatus m_civicAddrStatus = ReportStatus.NotSupported;
 
-        private GeoLocationStatus m_curStatus  = GeoLocationStatus.Disabled;
-        private GeoLocation m_curLocation      = GeoLocation.Unknown;
+        private GeoLocationStatus m_curStatus = GeoLocationStatus.Disabled;
+        private GeoLocation m_curLocation = GeoLocation.Unknown;
 
         /// <summary>
         /// Thread pool callback used to ensure location COM API is instantiated from
@@ -131,7 +131,7 @@ namespace System.Device.Location
             // Create the native location object on a worker thread, so that it exists
             // in a multithreaded apartment.
             //
-            m_eventCreateDone = new ManualResetEvent(false); 
+            m_eventCreateDone = new ManualResetEvent(false);
 
             ThreadPool.QueueUserWorkItem(new WaitCallback(this.CreateHandler), desiredAccuracy);
 #if _DEBUG
@@ -149,12 +149,12 @@ namespace System.Device.Location
         #endregion
 
         #region GeoLocationProviderBase overrides
-        public override GeoLocationStatus Status 
-        { 
-           get 
-           {
+        public override GeoLocationStatus Status
+        {
+            get
+            {
                 return ((m_curStatus == GeoLocationStatus.Ready) && (m_curLocation == GeoLocation.Unknown)) ? GeoLocationStatus.NoData : m_curStatus;
-           }
+            }
         }
 
         public override GeoLocation Location
@@ -334,7 +334,7 @@ namespace System.Device.Location
 
         #region Helpers
         // Report status to GeoLocation status look-up table
-        private static GeoLocationStatus[] m_geoStatusMap = new GeoLocationStatus[] 
+        private static GeoLocationStatus[] m_geoStatusMap = new GeoLocationStatus[]
         {
             GeoLocationStatus.NoData,           // ReportStatus.NotSupported = 0,
             GeoLocationStatus.NoData,           // ReportStatus.Error = 1,
@@ -346,7 +346,7 @@ namespace System.Device.Location
         private void HandleLocationChangedEvent(ILocationReport locationReport)
         {
             const double KnotsToMetersPerSec = 463.0 / 900.0;
- 
+
             GeoCoordinate coordinate = GeoCoordinate.Unknown;
             CivicAddress address = CivicAddress.Unknown;
 
@@ -371,7 +371,7 @@ namespace System.Device.Location
                     }
                 }
             }
-            
+
             //
             // Now see if there is civic address data in the report. We do this for both latlong and civic address
             // reports to handle the case of one sensor providing both types of data. Only generate a report if
@@ -381,16 +381,16 @@ namespace System.Device.Location
             string countryRegion = GetStringProperty(locationReport, LocationPropertyKey.CountryRegion);
             if (countryRegion != String.Empty)
             {
-                string address1      = GetStringProperty(locationReport, LocationPropertyKey.AddressLine1);
-                string address2      = GetStringProperty(locationReport, LocationPropertyKey.AddressLine2);
-                string city          = GetStringProperty(locationReport, LocationPropertyKey.City);
-                string postalCode    = GetStringProperty(locationReport, LocationPropertyKey.PostalCode);
+                string address1 = GetStringProperty(locationReport, LocationPropertyKey.AddressLine1);
+                string address2 = GetStringProperty(locationReport, LocationPropertyKey.AddressLine2);
+                string city = GetStringProperty(locationReport, LocationPropertyKey.City);
+                string postalCode = GetStringProperty(locationReport, LocationPropertyKey.PostalCode);
                 string stateProvince = GetStringProperty(locationReport, LocationPropertyKey.StateProvince);
 
-                if (address1 != String.Empty || address2 != String.Empty || city != String.Empty || 
+                if (address1 != String.Empty || address2 != String.Empty || city != String.Empty ||
                     postalCode != String.Empty || stateProvince != String.Empty)
                 {
-                    address = new CivicAddress(address1, address2,  String.Empty, city, countryRegion, String.Empty, postalCode, stateProvince);
+                    address = new CivicAddress(address1, address2, String.Empty, city, countryRegion, String.Empty, postalCode, stateProvince);
                 }
             }
 
@@ -501,7 +501,7 @@ namespace System.Device.Location
                 // (Note: Check m_curStatus rather than Status because Status won't be Ready
                 // if there is no location data.) 
                 //
-                if (prevStatus == GeoLocationStatus.NoPermissions && m_curStatus == GeoLocationStatus.Ready) 
+                if (prevStatus == GeoLocationStatus.NoPermissions && m_curStatus == GeoLocationStatus.Ready)
                 {
                     ThreadPool.QueueUserWorkItem(new WaitCallback(this.GetLocationData), null);
                 }
@@ -563,7 +563,7 @@ namespace System.Device.Location
 
         #region IDisposable
 
-        public void Dispose() 
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

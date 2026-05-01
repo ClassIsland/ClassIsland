@@ -18,7 +18,7 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
     private NSObject? _observer;
 
     private List<WindowInfo> _cachedWindowList = [];
-    
+
     public WindowPlatformServices()
     {
         NSApplication.Init();
@@ -34,12 +34,13 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
     {
         // 获取应用的进程ID
         var targetPid = app.ProcessIdentifier;
-        
+
         // 获取所有屏幕上的窗口信息
         var windowList = API.CGWindowListCopyWindowInfo(
             CGWindowListOption.OnScreenOnly | CGWindowListOption.ExcludeDesktopElements, 0);
-        
-        if (Runtime.GetNSObject(windowList) is not NSArray windows){
+
+        if (Runtime.GetNSObject(windowList) is not NSArray windows)
+        {
             API.CFRelease(windowList);
             return nint.Zero;
         }
@@ -58,14 +59,14 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
             return new WindowInfo(winId?.Int64Value ?? 0, processName?.ToString() ?? "", pid?.Int32Value ?? 0, windowName?.ToString() ?? "", rect, windowLevel?.Int32Value ?? 0);
         }).ToList();
         API.CFRelease(windowList);
-        
+
         foreach (var windowInfo in _cachedWindowList)
         {
             // 检查窗口所属的进程ID是否匹配
             if (windowInfo.Pid == targetPid)
             {
                 var level = windowInfo.WindowLevel;
-                
+
                 // 找到层级最高的窗口
                 if (level > highestLevel)
                 {
@@ -74,7 +75,7 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
                 }
             }
         }
-        
+
         return frontmostWindow;
     }
 
@@ -114,7 +115,7 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
         }
         return new NSWindow(handle);
     }
-    
+
     public void SetWindowFeature(TopLevel toplevel, WindowFeatures features, bool state)
     {
         try
@@ -210,7 +211,7 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
         {
             return false;
         }
-        var fgRect = new PixelRect((int)foreground.Bounds.X.Value, (int)foreground.Bounds.Y.Value, (int)foreground.Bounds.Width.Value, (int)foreground.Bounds.Height.Value);        
+        var fgRect = new PixelRect((int)foreground.Bounds.X.Value, (int)foreground.Bounds.Y.Value, (int)foreground.Bounds.Width.Value, (int)foreground.Bounds.Height.Value);
         return fgRect.Contains(screen.Bounds);
     }
 
@@ -222,7 +223,7 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
         {
             return false;
         }
-        var fgRect = new PixelRect((int)foreground.Bounds.X.Value, (int)foreground.Bounds.Y.Value, (int)foreground.Bounds.Width.Value, (int)foreground.Bounds.Height.Value);        
+        var fgRect = new PixelRect((int)foreground.Bounds.X.Value, (int)foreground.Bounds.Y.Value, (int)foreground.Bounds.Width.Value, (int)foreground.Bounds.Height.Value);
         return fgRect.Contains(screen.WorkingArea);
     }
 
@@ -253,9 +254,9 @@ public class WindowPlatformServices : IWindowPlatformService, IDisposable
             _observer = null;
         }
     }
-    
+
     public void ClearWindow(TopLevel topLevel)
     {
-        
+
     }
 }

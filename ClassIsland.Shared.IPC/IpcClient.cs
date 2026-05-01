@@ -27,7 +27,7 @@ public class IpcClient
     /// JSON IPC 提供方。
     /// </summary>
     public JsonIpcDirectRoutedProvider JsonIpcProvider { get; }
-    
+
     /// <summary>
     /// 初始化一个 <see cref="IpcClient"/> 对象。
     /// </summary>

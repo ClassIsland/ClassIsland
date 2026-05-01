@@ -85,7 +85,7 @@ public partial class PasswordAuthorizeProvider : AuthorizeProviderControlBase<Pa
         {
             return;
         }
-        
+
         var saltBytes = RandomNumberGenerator.GetBytes(16).ToList();
         var passwordBytes = Encoding.UTF8.GetBytes(password).ToList();
         passwordBytes.AddRange(saltBytes);

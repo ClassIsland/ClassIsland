@@ -24,5 +24,5 @@ public static class WeatherIconTemplateRegistryExtensions
     {
         IWeatherService.RegisteredTemplates.Add(new WeatherIconTemplateRegistryInfo(id, name, template));
         return services;
-    } 
+    }
 }

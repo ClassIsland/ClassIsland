@@ -31,8 +31,9 @@ namespace ClassIsland.Services;
 
 public class ProfileService : IProfileService, INotifyPropertyChanged
 {
-    public string CurrentProfilePath { 
-        get; 
+    public string CurrentProfilePath
+    {
+        get;
         set;
     } = "Default.json";
 
@@ -47,7 +48,8 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public static readonly string ProfilePath = Path.Combine(CommonDirectories.AppRootFolderPath, "Profiles");
 
-    public Profile Profile {
+    public Profile Profile
+    {
         get;
         set;
     } = new Profile();
@@ -128,7 +130,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Logger.LogError(exp, "拉取档案失败。");
         }
 
-        
+
         //Profile = ConfigureFileHelper.CopyObject(Profile);
         Profile.Subjects = CopyObject(Profile.Subjects);
         Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
@@ -234,7 +236,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         return JsonSerializer.Deserialize<T>(json)!;
     }
 
-    public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId=null, DateTime? enableDateTime = null)
+    public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId = null, DateTime? enableDateTime = null)
     {
         Logger.LogInformation("创建临时层：{}", id);
         var date = enableDateTime ?? IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
@@ -292,7 +294,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
         foreach (var (key, _) in Profile.ClassPlans.Where(x => x.Value.IsOverlay).ToList())
         {
-            if (orderedSchedules.Contains(key)) 
+            if (orderedSchedules.Contains(key))
                 continue;
             Profile.ClassPlans.Remove(key);
             Logger.LogInformation("清理没有被引用的过期临时层课表：{}", key);

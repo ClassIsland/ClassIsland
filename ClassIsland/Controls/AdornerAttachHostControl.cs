@@ -15,7 +15,7 @@ public class AdornerAttachHostControl : ContentControl
     {
         get => GetValue(AdornerTemplateProperty);
         set => SetValue(AdornerTemplateProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<object> AdornerDataContextProperty = AvaloniaProperty.Register<AdornerAttachHostControl, object>(
@@ -24,7 +24,7 @@ public class AdornerAttachHostControl : ContentControl
     {
         get => GetValue(AdornerDataContextProperty);
         set => SetValue(AdornerDataContextProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<bool> IsAttachedProperty = AvaloniaProperty.Register<AdornerAttachHostControl, bool>(
@@ -39,17 +39,17 @@ public class AdornerAttachHostControl : ContentControl
     private Control? _adorner;
     private AdornerLayer? _layer;
     private IDisposable? _isAttachedObserver;
-    
-    
+
+
     public AdornerAttachHostControl()
     {
-        
+
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        
+
         _isAttachedObserver?.Dispose();
         _isAttachedObserver = this.GetObservable(IsAttachedProperty).Subscribe(_ =>
         {
@@ -67,7 +67,7 @@ public class AdornerAttachHostControl : ContentControl
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-        
+
         _isAttachedObserver?.Dispose();
         RemoveAdorner();
     }
@@ -97,7 +97,7 @@ public class AdornerAttachHostControl : ContentControl
             ClipToBounds = false,
             Template = AdornerTemplate
         };
-        
+
         AdornerLayer.SetIsClipEnabled(_adorner, false);
         layer?.Children.Add(_adorner);
         AdornerLayer.SetAdornedElement(_adorner, this);

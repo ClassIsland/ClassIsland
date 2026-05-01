@@ -31,5 +31,5 @@ public interface IPlatformFilePickerService
     /// <param name="root">根窗口</param>
     /// <returns>选择的文件夹完整路径列表</returns>
     Task<List<string>> OpenFoldersPickerAsync(FolderPickerOpenOptions options, TopLevel root);
-    
+
 }

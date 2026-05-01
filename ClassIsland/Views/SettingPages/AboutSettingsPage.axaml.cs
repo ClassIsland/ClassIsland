@@ -40,7 +40,7 @@ namespace ClassIsland.Views.SettingPages;
 public partial class AboutSettingsPage : SettingsPageBase
 {
     public static string DisplayVersion => $"{AppBase.AppVersion} (Codename {AppBase.AppCodeName})";
-    
+
     public AboutSettingsViewModel ViewModel { get; } = IAppHost.GetService<AboutSettingsViewModel>();
 
     public AboutSettingsPage()
@@ -169,7 +169,7 @@ public partial class AboutSettingsPage : SettingsPageBase
             var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/Tellings.txt"));
 
             var sayings = await new StreamReader(stream).ReadToEndAsync();
-            string[] sayingsArray= sayings.Split(Environment.NewLine);
+            string[] sayingsArray = sayings.Split(Environment.NewLine);
             var collection = new ObservableCollection<string>(sayingsArray);
             var countRaw = collection.Count;
             for (var i = 0; i < countRaw; i++)

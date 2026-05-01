@@ -12,7 +12,7 @@ partial class Build
 {
     readonly AbsolutePath LinuxUserProfile = AbsolutePath.Create(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
     readonly AbsolutePath MacOsProfile = AbsolutePath.Create(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)) / ".zprofile";
-    
+
     Target RestorePluginDevDesktopApp => _ => _
         .Before(CompilePluginDevDesktopApp)
         .Before(CleanPluginDevDesktopApp)
@@ -22,7 +22,7 @@ partial class Build
                 .SetProjectFile(DesktopAppEntryProject)
                 .SetPlatform("Any CPU"));
         });
-    
+
     Target CleanPluginDevDesktopApp => _ => _
         .DependsOn(RestorePluginDevDesktopApp)
         .DependsOn(CleanOutputDir)
@@ -36,7 +36,7 @@ partial class Build
                 Directory.Delete(PluginDevAppPublishPath, true);
             }
         });
-    
+
     Target CompilePluginDevDesktopApp => _ => _
         .DependsOn(RestorePluginDevDesktopApp)
         .DependsOn(CleanPluginDevDesktopApp)
@@ -69,16 +69,16 @@ partial class Build
                 UpdateEnvProfile(LinuxUserProfile / ".bash_login");
                 UpdateEnvProfile(LinuxUserProfile / ".xprofile");
             }
-            
+
             Log.Warning("⚠️环境变量已设置，重启计算机以生效。");
         });
-    
+
     Target InitPluginDevEnv => _ => _
         .DependsOn(CompilePluginDevDesktopApp)
         .DependsOn(SetupPluginDevEnvEnvironmentVariables)
         .Executes(() =>
         {
-            
+
         });
 
     void UpdateEnvProfile(string profilePath)
@@ -86,7 +86,7 @@ partial class Build
         var text = File.Exists(profilePath)
             ? File.ReadAllText(profilePath)
             : string.Empty;
-        var profileBlock = 
+        var profileBlock =
             $"""
             #BEGIN_ClassIsland_Dev_EnvVars
             # 此部分内容由 ClassIsland 插件开发环境初始化脚本自动添加
@@ -95,7 +95,7 @@ partial class Build
             #END_ClassIsland_Dev_EnvVars
             """;
         var blockRegex = BlockRegex();
-        
+
         string newText;
         if (!blockRegex.IsMatch(text))
         {

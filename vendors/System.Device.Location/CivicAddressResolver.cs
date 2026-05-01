@@ -30,16 +30,16 @@ namespace System.Device.Location
         //
         public CivicAddress()
         {
-            AddressLine1  = String.Empty;
-            AddressLine2  = String.Empty;
-            Building      = String.Empty;
-            City          = String.Empty;
+            AddressLine1 = String.Empty;
+            AddressLine2 = String.Empty;
+            Building = String.Empty;
+            City = String.Empty;
             CountryRegion = String.Empty;
-            FloorLevel    = String.Empty;
-            PostalCode    = String.Empty;
+            FloorLevel = String.Empty;
+            PostalCode = String.Empty;
             StateProvince = String.Empty;
         }
-            
+
         public CivicAddress(String addressLine1, String addressLine2, String building, String city, String countryRegion, String floorLevel, String postalCode, String stateProvince)
             : this()
         {
@@ -102,7 +102,7 @@ namespace System.Device.Location
         public String PostalCode { get; set; }
         public String StateProvince { get; set; }
 
-        public Boolean IsUnknown 
+        public Boolean IsUnknown
         {
             get
             {
@@ -123,12 +123,12 @@ namespace System.Device.Location
     public class ResolveAddressCompletedEventArgs : AsyncCompletedEventArgs
     {
         public ResolveAddressCompletedEventArgs(CivicAddress address, Exception error, Boolean cancelled, Object userState)
-                 : base(error, cancelled, userState) 
+                 : base(error, cancelled, userState)
         {
             Address = address;
         }
 
-        public CivicAddress Address { get; private set;}
+        public CivicAddress Address { get; private set; }
     }
 
     public sealed class CivicAddressResolver : ICivicAddressResolver
@@ -197,11 +197,11 @@ namespace System.Device.Location
         /// <typeparam name="T">The <see cref="T:System.EventArgs"/> type identifying the type of object that gets raised with the event"/></typeparam>
         /// <param name="callback">The protected virtual method that will raise the event.</param>
         /// <param name="e">The <see cref="T:System.EventArgs"/> object that should be passed to the protected virtual method raising the event.</param>
-        private void PostEvent<T>(EventRaiser<T> callback, T e) where T : EventArgs 
+        private void PostEvent<T>(EventRaiser<T> callback, T e) where T : EventArgs
         {
             if (m_synchronizationContext != null)
             {
-                m_synchronizationContext.Post(delegate(Object state) { callback((T)state); }, e);
+                m_synchronizationContext.Post(delegate (Object state) { callback((T)state); }, e);
             }
         }
 

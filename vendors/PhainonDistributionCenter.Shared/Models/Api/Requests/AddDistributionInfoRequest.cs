@@ -26,17 +26,17 @@ public class AddDistributionInfoRequest
         /// 子频道的目标 OS，如 windows
         /// </summary>
         public string Os { get; set; } = "unknown";
-    
+
         /// <summary>
         /// 子频道的目标 CPU 架构，如 x64
         /// </summary>
         public string Arch { get; set; } = "unknown";
-    
+
         /// <summary>
         /// 子频道的目标打包方式，如 folder（文件夹打包）
         /// </summary>
         public string Package { get; set; } = "unknown";
-    
+
         /// <summary>
         /// 子频道的目标构建方式，如 full（完整构建）
         /// </summary>

@@ -124,7 +124,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         PlayingNotifications.Remove(request);
         UpdateNotificationPlayingState();
     }
-    
+
     private void SetupNotificationRequest(NotificationRequest request, Guid providerGuid, Guid channelGuid)
     {
         if (request.NotificationSetupCompleted)
@@ -139,7 +139,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             request.InitialQueueIndex = Interlocked.Increment(ref _queueIndex);
         }
-        
+
         if (channelGuid != Guid.Empty && request.ChannelId == Guid.Empty)
         {
             request.ChannelId = channelGuid;
@@ -181,7 +181,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             return;
         }
-        
+
         RequestQueue.Enqueue(request,
             new NotificationPriority(
                 Settings.NotificationProvidersPriority.IndexOf(request.NotificationSourceGuid.ToString()),
@@ -285,12 +285,12 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return new Task(()=>{});
+        return new Task(() => { });
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return new Task(()=>{});
+        return new Task(() => { });
     }
 
     /// <summary>
@@ -382,7 +382,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             }
             head = RequestQueue.Dequeue();
             EnqueuedRequests.Remove(head);
-            if (head.ChainedHeadRequest is {} chainedHead)
+            if (head.ChainedHeadRequest is { } chainedHead)
             {
                 // EnqueuedRequests.Remove(chainedHead);
                 if (chainedHead != head)
@@ -397,7 +397,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             return [];
         }
-        
+
         List<NotificationRequest> requests = [];
 
         while (head != null)
@@ -411,7 +411,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             }
             head = head.ChainedNextRequest;
         }
-        
+
         UpdateNotificationPlayingState();
         return requests
             .Select(CreateTicket)
@@ -441,12 +441,12 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
             for (var i = 0; i < RegisteredConsumers.Count; i++)
             {
-                if (RegisteredConsumers[i].Priority <= registerInfo.Priority) 
+                if (RegisteredConsumers[i].Priority <= registerInfo.Priority)
                     continue;
                 RegisteredConsumers.Insert(i, registerInfo);
                 return;
             }
-            
+
             RegisteredConsumers.Add(registerInfo);  // 当列表中什么都没有或者插入项的优先级比列表里所有元素都大时，插入到最后一项。
         }
         finally
@@ -520,9 +520,9 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         request.CompletedToken.Register(() => PlayingTickets.Remove(ticket));
         return ticket;
     }
-    
+
     #region PropertyChanged
-    
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

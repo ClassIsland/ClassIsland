@@ -27,11 +27,11 @@ namespace ClassIsland.Views;
 
 public partial class WelcomeWindow : MyWindow, INavigationPageFactory
 {
-   
+
     public static readonly ICommand WelcomeNavigateBackCommand = new RoutedCommand(nameof(WelcomeNavigateBackCommand));
-    
+
     public static readonly ICommand WelcomeNavigateForwardCommand = new RoutedCommand(nameof(WelcomeNavigateForwardCommand));
-    
+
     public static readonly ICommand FinishWelcomeWizardCommand = new RoutedCommand(nameof(FinishWelcomeWizardCommand));
 
     public WelcomeViewModel ViewModel { get; } = IAppHost.GetService<WelcomeViewModel>();
@@ -41,10 +41,10 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
     public bool IsOnboarding { get; set; } = false;
 
     public bool IsRefreshing { get; set; } = false;
-    
+
     private Dictionary<Type, object?> PageCache { get; } = new();
 
-    
+
     public WelcomeWindow()
     {
         InitializeComponent();
@@ -61,7 +61,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
 
     public void SetWelcomeExperience(bool isRefreshing, bool isOnboarding, bool isRefreshCompleted)
     {
-        Pages = [   
+        Pages = [
             typeof(WelcomePage),
             typeof(LicensePage),
             typeof(RefreshingPage),
@@ -84,11 +84,11 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         {
             Pages.Remove(typeof(SystemPage));
         }
-        
+
         ViewModel.IsOnboarding = IsOnboarding = isOnboarding;
         IsRefreshing = isRefreshing;
     }
-    
+
     // Create a page based on a Type, but you can create it however you want
     public Control? GetPage(Type srcType)
     {
@@ -96,7 +96,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         {
             return control;
         }
-        var page =  Activator.CreateInstance(srcType);
+        var page = Activator.CreateInstance(srcType);
         if (page is IWelcomePage welcomePage)
         {
             welcomePage.ViewModel = ViewModel;
@@ -119,7 +119,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         {
             ViewModel.CreateStartupShortcut = false;
         }
-        
+
         MainFrame.Navigate(Pages[0]);
     }
 
@@ -161,7 +161,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         if (ViewModel is { CreateClassSwapShortcut: true, RegisterUrlScheme: true })
             await ShortcutHelpers.CreateClassSwapShortcutAsync();
     }
-    
+
     private async Task CreateShortcutsFreedesktop()
     {
         var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
@@ -213,7 +213,7 @@ public partial class WelcomeWindow : MyWindow, INavigationPageFactory
         {
             ViewModel.SettingsService.Settings.LeftRefreshingToastCounts = 0;
         }
-        
+
         Close();
     }
 

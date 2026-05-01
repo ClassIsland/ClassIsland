@@ -18,7 +18,7 @@ namespace ClassIsland.Core.Controls;
 public class Shimmer : TemplatedControl
 {
     private const string MainBorderName = "PART_MainBorder";
-    
+
     public static readonly StyledProperty<object?> ContentProperty = AvaloniaProperty.Register<Shimmer, object?>(
         nameof(Content));
 
@@ -80,7 +80,7 @@ public class Shimmer : TemplatedControl
         anim.InsertKeyFrame(1f, 0.5f, Easing.Parse("0.60, 0.00, 0.20, 1.00"));
         visual.StartAnimation(nameof(visual.Opacity), anim);
     }
-    
+
     private void EndAnimation(Border border)
     {
         var visual = ElementComposition.GetElementVisual(border);
@@ -100,7 +100,7 @@ public class Shimmer : TemplatedControl
     /// <inheritdoc />
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        if (this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == MainBorderName) is {} border)
+        if (this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == MainBorderName) is { } border)
         {
             _mainBorder = border;
             _mainBorder.Loaded += MainBorderOnLoaded;

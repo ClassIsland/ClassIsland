@@ -37,21 +37,21 @@ public partial class EditableComponentsListBox : ListBox
         get => GetValue(ShowComponentSettingsCommandProperty);
         set => SetValue(ShowComponentSettingsCommandProperty, value);
     }
-    
+
     public static readonly RoutedEvent<EditableComponentsListBoxEventArgs> RequestOpenChildComponentsEvent =
         RoutedEvent.Register<EditableComponentsListBoxEventArgs>(
             nameof(OpenChildComponents), RoutingStrategies.Bubble, typeof(EditableComponentsListBox));
-     
+
     public event EventHandler<EditableComponentsListBoxEventArgs> RequestOpenChildComponents
     {
         add => AddHandler(RequestOpenChildComponentsEvent, value);
         remove => RemoveHandler(RequestOpenChildComponentsEvent, value);
     }
-    
+
     public static readonly RoutedEvent<RequestAddComponentEventArgs> RequestAddComponentEvent =
         RoutedEvent.Register<RequestAddComponentEventArgs>(
             nameof(RequestAddComponent), RoutingStrategies.Bubble, typeof(EditableComponentsListBox));
-     
+
     public event EventHandler<RequestAddComponentEventArgs> RequestAddComponent
     {
         add => AddHandler(RequestAddComponentEvent, value);
@@ -114,7 +114,7 @@ public partial class EditableComponentsListBox : ListBox
 
         components.Remove(componentSettings);
     }
-    
+
     [RelayCommand]
     private void CreateContainerComponent(ComponentInfo container)
     {
@@ -150,7 +150,7 @@ public partial class EditableComponentsListBox : ListBox
         SelectedItem = newComp;
         OpenChildComponents(newComp);
     }
-    
+
     [RelayCommand]
     private void DuplicateComponent(ComponentSettings settings)
     {

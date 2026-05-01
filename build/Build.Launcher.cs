@@ -12,7 +12,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 partial class Build
 {
     AbsolutePath LauncherPublishArtifactPath;
-    
+
     Target CleanLauncher => _ => _
         .DependsOn(GenerateMetadata)
         .Executes(() =>
@@ -27,7 +27,7 @@ partial class Build
                 File.Delete(LauncherPublishArtifactPath);
             }
         });
-    
+
     Target CompileLauncher => _ => _
         .DependsOn(GenerateMetadata)
         .DependsOn(CleanLauncher)

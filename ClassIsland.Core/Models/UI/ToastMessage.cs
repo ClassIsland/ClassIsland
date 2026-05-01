@@ -19,7 +19,7 @@ public class ToastMessage : ObservableRecipient
     /// </summary>
     public ToastMessage() : this("")
     {
-        
+
     }
 
     /// <summary>
@@ -27,9 +27,9 @@ public class ToastMessage : ObservableRecipient
     /// </summary>
     public ToastMessage(string message) : this("", message)
     {
-        
+
     }
-    
+
     /// <summary>
     /// 初始化一个 <see cref="ToastMessage"/> 实例。
     /// </summary>
@@ -74,7 +74,7 @@ public class ToastMessage : ObservableRecipient
         get => _actionContent;
         set => SetProperty(ref _actionContent, value);
     }
-    
+
     /// <summary>
     /// 消息持续时间。只有在<see cref="AutoClose"/>属性为 true 时，这个属性才会生效。
     /// </summary>

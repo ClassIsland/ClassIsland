@@ -16,7 +16,7 @@ public class TrayMenuTrigger(TrayMenuTriggerHandlerService trayMenuTriggerHandle
     private NativeMenuItem MenuItem { get; } = new("");
 
     private IDisposable? _headerUpdateObserver;
-    
+
     public override void Loaded()
     {
         MenuItem.Click += MenuItemOnClick;
@@ -37,7 +37,7 @@ public class TrayMenuTrigger(TrayMenuTriggerHandlerService trayMenuTriggerHandle
     {
         MenuItem.Header = Settings.Header;
     }
-    
+
     private void MenuItemOnClick(object? sender, EventArgs e)
     {
         if (Settings.IsRevert)

@@ -35,7 +35,7 @@ public class SliderDragTooltipAssist
 
         internal SliderAutoTooltipStringConverter()
         {
-            
+
         }
     }
 }

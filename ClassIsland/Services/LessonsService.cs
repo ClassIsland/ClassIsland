@@ -174,7 +174,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 var group = x.Value.AssociatedGroup;
                 var matchGlobal = group == ClassPlanGroup.GlobalGroupGuid;
                 var matchDefault = group == Profile.SelectedClassPlanGroupId;
-                if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null } 
+                if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null }
                     || Profile.TempClassPlanGroupExpireTime.Date < date.Date)
                     return matchDefault || matchGlobal;
                 var matchTemp = group == Profile.TempClassPlanGroupId;
@@ -289,7 +289,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private void CurrentClassPlanOnClassesChanged(object? sender, EventArgs e)
     {
-        
+
     }
 
     private bool CurrentSubjectHandler(object? settings)
@@ -530,7 +530,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private int GetClassIndex(int index)
     {
-        if (index < 0 || index >= CurrentClassPlan?.TimeLayout?.Layouts.Count )
+        if (index < 0 || index >= CurrentClassPlan?.TimeLayout?.Layouts.Count)
         {
             return -1;
         }
@@ -561,13 +561,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
         // 检测是否启用课表加载
         if (!IsClassPlanEnabled)
-        {   
+        {
             CurrentClassPlan = null;
             return;
         }
 
         CurrentClassPlan = GetClassPlanByDate(currentTime);
-        if (Profile.OrderedSchedules.TryGetValue(currentTime.Date, out var orderedSchedule) 
+        if (Profile.OrderedSchedules.TryGetValue(currentTime.Date, out var orderedSchedule)
             && Profile.ClassPlans.TryGetValue(orderedSchedule.ClassPlanId, out var classPlan)
             && classPlan.IsOverlay)
         {

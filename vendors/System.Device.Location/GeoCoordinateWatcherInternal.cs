@@ -25,7 +25,7 @@ using System.Globalization;
 
 namespace System.Device.Location
 {
-    internal sealed class GeoCoordinateWatcherInternal : 
+    internal sealed class GeoCoordinateWatcherInternal :
         GeoCoordinateWatcherBase, ILocationEvents, IDisposable
     {
         private object m_lock;
@@ -43,11 +43,11 @@ namespace System.Device.Location
 
         private ManualResetEvent m_eventGetLocDone;
 
-        private ReportStatus m_latLongStatus   = ReportStatus.NotSupported; 
+        private ReportStatus m_latLongStatus = ReportStatus.NotSupported;
         private ReportStatus m_civicAddrStatus = ReportStatus.NotSupported;
 
         private GeoPositionPermission m_permission = GeoPositionPermission.Unknown;
-        private GeoPositionStatus m_curStatus  = GeoPositionStatus.NoData;
+        private GeoPositionStatus m_curStatus = GeoPositionStatus.NoData;
         private GeoPosition<GeoCoordinate> m_position = new GeoPosition<GeoCoordinate>(DateTimeOffset.MinValue, GeoCoordinate.Unknown);
 
         /// <summary>
@@ -179,18 +179,18 @@ namespace System.Device.Location
             }
         }
 
-        public override GeoPositionStatus Status 
-        { 
-           get 
-           {
-               if (!IsStarted ||
-                   ((m_curStatus == GeoPositionStatus.Ready) && m_position.Location.IsUnknown))
-               {
-                   return GeoPositionStatus.NoData;
-               }
+        public override GeoPositionStatus Status
+        {
+            get
+            {
+                if (!IsStarted ||
+                    ((m_curStatus == GeoPositionStatus.Ready) && m_position.Location.IsUnknown))
+                {
+                    return GeoPositionStatus.NoData;
+                }
 
-               return m_curStatus;
-           }
+                return m_curStatus;
+            }
         }
 
         public override GeoPosition<GeoCoordinate> Position
@@ -328,8 +328,9 @@ namespace System.Device.Location
         {
             if (!EnterProcessing())
                 return;
-                
-            try {
+
+            try
+            {
                 if (IsStarted)
                 {
                     if (reportType.Equals(LocationReportKey.LatLongReport) ||
@@ -337,8 +338,10 @@ namespace System.Device.Location
                     {
                         HandleLocationChangedEvent(locationReport);
                     }
-                }                
-            } finally {
+                }
+            }
+            finally
+            {
                 ExitProcessing();
             }
         }
@@ -352,8 +355,9 @@ namespace System.Device.Location
         {
             if (!EnterProcessing())
                 return;
-                
-            try {
+
+            try
+            {
                 if (reportType.Equals(LocationReportKey.LatLongReport) ||
                     reportType.Equals(LocationReportKey.CivicAddressReport))
                 {
@@ -368,7 +372,9 @@ namespace System.Device.Location
 
                     HandleLocationStatusChangedEvent(newStatus);
                 }
-            } finally {
+            }
+            finally
+            {
                 ExitProcessing();
             }
         }
@@ -376,7 +382,7 @@ namespace System.Device.Location
 
         #region Helpers
         // Report status to GeoPosition status look-up table
-        private static GeoPositionStatus[] m_geoStatusMap = new GeoPositionStatus[] 
+        private static GeoPositionStatus[] m_geoStatusMap = new GeoPositionStatus[]
         {
             GeoPositionStatus.NoData,       // ReportStatus.NotSupported = 0,
             GeoPositionStatus.NoData,       // ReportStatus.Error = 1,
@@ -388,7 +394,7 @@ namespace System.Device.Location
         private void HandleLocationChangedEvent(ILocationReport locationReport)
         {
             const double KnotsToMetersPerSec = 463.0 / 900.0;
- 
+
             GeoCoordinate coordinate = GeoCoordinate.Unknown;
             CivicAddress address = CivicAddress.Unknown;
 
@@ -424,7 +430,7 @@ namespace System.Device.Location
                     }
                 }
             }
-            
+
             //
             // Now see if there is civic address data in the report. We do this for both latlong and civic address
             // reports to handle the case of one sensor providing both types of data. Only generate a report if
@@ -434,16 +440,16 @@ namespace System.Device.Location
             string countryRegion = GetStringProperty(locationReport, LocationPropertyKey.CountryRegion);
             if (countryRegion != String.Empty)
             {
-                string address1      = GetStringProperty(locationReport, LocationPropertyKey.AddressLine1);
-                string address2      = GetStringProperty(locationReport, LocationPropertyKey.AddressLine2);
-                string city          = GetStringProperty(locationReport, LocationPropertyKey.City);
-                string postalCode    = GetStringProperty(locationReport, LocationPropertyKey.PostalCode);
+                string address1 = GetStringProperty(locationReport, LocationPropertyKey.AddressLine1);
+                string address2 = GetStringProperty(locationReport, LocationPropertyKey.AddressLine2);
+                string city = GetStringProperty(locationReport, LocationPropertyKey.City);
+                string postalCode = GetStringProperty(locationReport, LocationPropertyKey.PostalCode);
                 string stateProvince = GetStringProperty(locationReport, LocationPropertyKey.StateProvince);
 
-                if (address1 != String.Empty || address2 != String.Empty || city != String.Empty || 
+                if (address1 != String.Empty || address2 != String.Empty || city != String.Empty ||
                     postalCode != String.Empty || stateProvince != String.Empty)
                 {
-                    address = new CivicAddress(address1, address2,  String.Empty, city, countryRegion, String.Empty, postalCode, stateProvince);
+                    address = new CivicAddress(address1, address2, String.Empty, city, countryRegion, String.Empty, postalCode, stateProvince);
                 }
             }
 
@@ -523,7 +529,7 @@ namespace System.Device.Location
             }
 
             GeoPositionStatus prevStatus = Status;
-            
+
             //
             // Update current status
             //
@@ -624,17 +630,17 @@ namespace System.Device.Location
         //
         private bool EnterProcessing()
         {
-        
+
             // If clean-up has started, do not process any more events:
             if (m_dontProcessPositionEvents)
                 return false;
-            
+
             // Increment in-flight counter so we know how many events need to complete before we can start shut-down:
             if (Interlocked.Increment(ref m_positionEventsProcessingCount) == Int32.MaxValue - 1)
             {
                 // Protect against counter overflow:
                 Interlocked.Decrement(ref m_positionEventsProcessingCount);
-                return false;                
+                return false;
             }
 
             return true;
@@ -644,7 +650,7 @@ namespace System.Device.Location
         {
             Interlocked.Decrement(ref m_positionEventsProcessingCount);
         }
-        
+
 #if !SILVERLIGHT
         // On Desktop, SpinWait.SpinUntil is available and we can use that to
         // spin until m_positionEventsProcessingCount is 0. This private method 
@@ -683,12 +689,12 @@ namespace System.Device.Location
             }                        
         }        
 #endif  // !SILVERLIGHT
-        
+
         #endregion
 
         #region IDisposable
 
-        public void Dispose() 
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -702,7 +708,7 @@ namespace System.Device.Location
         private void Dispose(Boolean disposing)
         {
             Utility.Trace("GeoCoordinateWatcherInternal.Dispose(disposing=)" + disposing.ToString() + ")");
-            
+
             // Do not notify user of any position events that may occur concurrently with the cleanup:
             m_dontProcessPositionEvents = true;
 
@@ -725,7 +731,7 @@ namespace System.Device.Location
 #else
             SpinUntil_NoPositionEventsCurrentlyProcessing();
 #endif  // !SILVERLIGHT
-                        
+
             lock (this.InternalSyncObject)
             {
                 if (m_location != null)

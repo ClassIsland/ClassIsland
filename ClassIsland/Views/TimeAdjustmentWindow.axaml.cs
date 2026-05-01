@@ -30,8 +30,8 @@ public partial class TimeAdjustmentWindow : MyWindow
 
     private static readonly Guid ClassNotificationProviderGuid = new Guid("08F0D9C3-C770-4093-A3D0-02F3D90C24BC");
 
-    public TimeAdjustmentWindow(IExactTimeService exactTimeService, 
-        ILessonsService lessonsService, 
+    public TimeAdjustmentWindow(IExactTimeService exactTimeService,
+        ILessonsService lessonsService,
         SettingsService settingsService,
         INotificationHostService notificationHostService)
     {
@@ -48,7 +48,7 @@ public partial class TimeAdjustmentWindow : MyWindow
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
         ViewModel.CurrentTime = ExactTimeService.GetCurrentLocalDateTime();
-        
+
     }
 
     private void TimeAdjustmentWindow_OnClosed(object? sender, EventArgs e)
@@ -60,7 +60,7 @@ public partial class TimeAdjustmentWindow : MyWindow
     {
         var now = ExactTimeService.GetCurrentLocalDateTime();
         var offset = ViewModel.TargetTime - now;
-        SettingsService.Settings.TimeOffsetSeconds = Math.Round(SettingsService.Settings.TimeOffsetSeconds + offset.TotalSeconds , 2);
+        SettingsService.Settings.TimeOffsetSeconds = Math.Round(SettingsService.Settings.TimeOffsetSeconds + offset.TotalSeconds, 2);
     }
 
     private void SetTargetTime(bool force)
@@ -94,18 +94,18 @@ public partial class TimeAdjustmentWindow : MyWindow
                 ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.CurrentTimeLayoutItem.EndTime));
                 return;
             case TimeState.Breaking:
-            {
-                var nextPrepOnClassDeltaSeconds = classNotificationProvider.GetSettingsDeltaTime();
-                var onClassTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(
-                    LessonsService.NextClassTimeLayoutItem.StartTime));
-                var prepOnClassTime = onClassTime - TimeSpanHelper.FromSecondsSafe(nextPrepOnClassDeltaSeconds);
-                if (now <= prepOnClassTime)
                 {
-                    ViewModel.TargetTime = prepOnClassTime;
+                    var nextPrepOnClassDeltaSeconds = classNotificationProvider.GetSettingsDeltaTime();
+                    var onClassTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(
+                        LessonsService.NextClassTimeLayoutItem.StartTime));
+                    var prepOnClassTime = onClassTime - TimeSpanHelper.FromSecondsSafe(nextPrepOnClassDeltaSeconds);
+                    if (now <= prepOnClassTime)
+                    {
+                        ViewModel.TargetTime = prepOnClassTime;
+                        return;
+                    }
+                    ViewModel.TargetTime = onClassTime;
                     return;
-                }
-                ViewModel.TargetTime = onClassTime;
-                return;
                 }
             case TimeState.None when LessonsService.NextClassTimeLayoutItem != TimeLayoutItem.Empty:
                 ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(

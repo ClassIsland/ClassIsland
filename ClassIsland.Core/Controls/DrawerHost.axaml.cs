@@ -96,17 +96,17 @@ public class DrawerHost : ContentControl
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        if (_drawerContentBorder != null) 
+        if (_drawerContentBorder != null)
             _drawerContentBorder.SizeChanged -= DrawerContentBorderOnSizeChanged;
-        if (_ignoreLayer != null) 
+        if (_ignoreLayer != null)
             _ignoreLayer.PointerPressed -= IgnoreLayerOnPointerPressed;
 
         _ignoreLayer = this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == "PART_IgnoreLayer");
         _drawerContentBorder = this.GetTemplateChildren().OfType<Border>().FirstOrDefault(x => x.Name == "PART_DrawerContentBorder");
 
-        if (_drawerContentBorder != null) 
+        if (_drawerContentBorder != null)
             _drawerContentBorder.SizeChanged += DrawerContentBorderOnSizeChanged;
-        if (_ignoreLayer != null) 
+        if (_ignoreLayer != null)
             _ignoreLayer.PointerPressed += IgnoreLayerOnPointerPressed;
 
         base.OnApplyTemplate(e);

@@ -89,7 +89,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     private bool _isFirstNavigated = false;
 
     private readonly Dictionary<string, SettingsPageBase?> _cachedPages = new();
-    
+
     public static readonly FuncValueConverter<object?, double> ControlToWidthConverter = new(x =>
     {
         if (x is Control control)
@@ -176,7 +176,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
                 if (i.GroupId != null && SettingsWindowRegistryService.Groups.TryGetValue(i.GroupId, out var group))
                 {
-                    
+
                     item = new NavigationViewItem()
                     {
                         IconSource = group.IconSource,
@@ -185,7 +185,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                         // IsExpanded = true
                     };
 
-                    if (groups.FirstOrDefault(x => x.Key == i.GroupId) is {} groupItems)
+                    if (groups.FirstOrDefault(x => x.Key == i.GroupId) is { } groupItems)
                     {
                         List<NavigationViewItem> children =
                         [
@@ -212,16 +212,16 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                     };
                     ViewModel.FlattenNavigationItemsCache.Add(item);
                 }
-                
+
                 NavigationView.MenuItems.Add(item);
-                
+
             }
-            
+
             if (info == infos.Last())
             {
                 continue;
             }
-            
+
             NavigationView.MenuItems.Add(new NavigationViewItemSeparator());
         }
     }
@@ -236,7 +236,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        
+
     }
 
     protected override async void OnOpened(EventArgs e)
@@ -266,7 +266,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/Tellings.txt"));
 
             var sayings = await new StreamReader(stream).ReadToEndAsync();
-            ViewModel.EchoCaveTextsAll = [..sayings.Split(Environment.NewLine)];
+            ViewModel.EchoCaveTextsAll = [.. sayings.Split(Environment.NewLine)];
         }
         if (ViewModel.EchoCaveTexts.Count <= 0)
         {
@@ -375,7 +375,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             {
                 await UpdateEchoCaveAsync();
             }
-            
+
             HangService.AssumeHang();
             // 清空抽屉
             ViewModel.IsDrawerOpen = false;
@@ -769,7 +769,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         {
             this.ShowErrorToast("无法创建快捷换课图标", exception);
         }
-        
+
     }
 
     private async void MenuItemRestartToRecovery_OnClick(object sender, RoutedEventArgs e)
@@ -853,10 +853,11 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         if (NavigationView.MenuItems.Contains(item))
         {
             NavigationView.SelectedItem = item;
-        } else if (NavigationView.MenuItems
+        }
+        else if (NavigationView.MenuItems
                    .OfType<NavigationViewItem>()
                    .FirstOrDefault(x => x.MenuItems.Contains(item))
-                   is {} parent)
+                   is { } parent)
         {
             parent.IsChildSelected = true;
             var isFirstNavigated = _isFirstNavigated;
@@ -869,7 +870,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 NavigationView.SelectedItem = item;
             });
         }
-        
+
         foreach (var i in ViewModel.FlattenNavigationItemsCache.Where(x => !Equals(x.Tag, info)))
         {
             i.IsSelected = false;
@@ -877,7 +878,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     }
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
-    {   
-        
+    {
+
     }
 }

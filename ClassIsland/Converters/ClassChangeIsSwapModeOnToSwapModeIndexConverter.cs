@@ -25,8 +25,8 @@ public class ClassChangeIsSwapModeOnToSwapModeIndexConverter : IValueConverter
 
         return i == 1;
     }
-    
-    private ClassChangeIsSwapModeOnToSwapModeIndexConverter() {}
+
+    private ClassChangeIsSwapModeOnToSwapModeIndexConverter() { }
 
     public static readonly ClassChangeIsSwapModeOnToSwapModeIndexConverter Instance = new();
 }

@@ -20,7 +20,7 @@ public class RulesetService : IRulesetService
         NotifyStatusChanged();
     }
 
-    
+
 
     public event EventHandler? ForegroundWindowChanged;
 

@@ -16,7 +16,7 @@ namespace ClassIsland.Controls;
 public partial class OobeIntroAnimationControl : UserControl
 {
     public event EventHandler? AnimationEnd;
-    
+
     public OobeIntroAnimationControl()
     {
         InitializeComponent();
@@ -50,7 +50,7 @@ public partial class OobeIntroAnimationControl : UserControl
             }
             await Task.Delay(
                 TimeSpan.FromMilliseconds(delay));
-            
+
         }
 
         if (last != null)
@@ -59,7 +59,7 @@ public partial class OobeIntroAnimationControl : UserControl
         }
         Texts.Classes.Add("anim");
         AnimationEnd?.Invoke(this, EventArgs.Empty);
-        
+
         return;
 
         Animation BuildAnimation1(double timeMs, bool willHide)
@@ -93,7 +93,7 @@ public partial class OobeIntroAnimationControl : UserControl
                     {
                         KeyTime = TimeSpan.FromMilliseconds(timeMs + 1),
                         Setters =
-                        { 
+                        {
                             new Setter(OpacityProperty, willHide ? 0.0 : 1.0)
                         }
                     },
@@ -101,7 +101,7 @@ public partial class OobeIntroAnimationControl : UserControl
                     {
                         KeyTime = TimeSpan.FromMilliseconds(timeMs + 750),
                         Setters =
-                        { 
+                        {
                             new Setter(OpacityProperty, willHide ? 0.0 : 1.0),
                             new Setter(Rotate3DTransform.AngleXProperty, 0.0)
                         }
@@ -116,13 +116,13 @@ public partial class OobeIntroAnimationControl : UserControl
                         },
                         KeySpline = KeySpline.Parse("0.32, 0, 0.67, 0", CultureInfo.CurrentUICulture)
                     }
-                    
+
                 }
             };
 
             return animation;
         }
-        
+
         Animation BuildAnimation2(double timeMs)
         {
             var animation = new Animation()
@@ -150,7 +150,7 @@ public partial class OobeIntroAnimationControl : UserControl
                         },
                         KeySpline = KeySpline.Parse("0.33, 1, 0.68, 1", CultureInfo.CurrentUICulture)
                     }
-                    
+
                 }
             };
 

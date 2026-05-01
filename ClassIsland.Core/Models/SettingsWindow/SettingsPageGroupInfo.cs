@@ -17,7 +17,7 @@ public class SettingsPageGroupInfo
     /// 分类图标源
     /// </summary>
     public IconSource? IconSource => IconExpressionHelper.TryParseOrNull(IconExpression);
-    
+
     /// <summary>
     /// 分类名称
     /// </summary>

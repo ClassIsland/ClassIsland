@@ -11,7 +11,7 @@ public class RefCounted<T> : IDisposable where T : class, IDisposable
     /// 存储的值是否已经被释放
     /// </summary>
     public bool IsValueDisposed => _value == null;
-    
+
     /// <summary>
     /// 底层被管理的资源。
     /// </summary>

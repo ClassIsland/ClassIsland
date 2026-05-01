@@ -71,7 +71,7 @@ public class NotificationChannel : INotificationSender, INotificationProvider
 
         __NotificationHostService.RegisterNotificationChannel(this);
 
-        if (info.SettingsControlType == null) 
+        if (info.SettingsControlType == null)
             return;
         var settings = provider.SettingsInternal;
         SettingsElement = NotificationProviderControlBase.GetInstance(info, ref settings);

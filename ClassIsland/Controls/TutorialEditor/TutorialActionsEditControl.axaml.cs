@@ -29,7 +29,7 @@ public partial class TutorialActionsEditControl : UserControl
         get => GetValue(SelectedItemProperty);
         set => SetValue(SelectedItemProperty, value);
     }
-    
+
     public TutorialActionsEditControl()
     {
         InitializeComponent();
@@ -42,13 +42,13 @@ public partial class TutorialActionsEditControl : UserControl
 
     private void ButtonDuplicate_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (SelectedItem != null) 
+        if (SelectedItem != null)
             TutorialActions.Add(ConfigureFileHelper.CopyObject(SelectedItem));
     }
 
     private void ButtonDelete_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (SelectedItem != null) 
+        if (SelectedItem != null)
             TutorialActions.Remove(SelectedItem);
     }
 

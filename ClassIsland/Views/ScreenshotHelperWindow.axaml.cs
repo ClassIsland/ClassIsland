@@ -18,7 +18,7 @@ namespace ClassIsland.Views;
 public partial class ScreenshotHelperWindow : MyWindow
 {
     public ScreenshotHelperViewModel ViewModel { get; } = IAppHost.GetService<ScreenshotHelperViewModel>();
-    
+
     public ScreenshotHelperWindow()
     {
         DataContext = this;
@@ -29,8 +29,8 @@ public partial class ScreenshotHelperWindow : MyWindow
     private void RefreshWindows()
     {
         ViewModel.Windows =
-            [..AppBase.Current.DesktopLifetime!.Windows.Select(x => new ScreenshotHelperViewModel.WindowInfo(x))];
-        
+            [.. AppBase.Current.DesktopLifetime!.Windows.Select(x => new ScreenshotHelperViewModel.WindowInfo(x))];
+
     }
 
     private void ButtonRefresh_OnClick(object? sender, RoutedEventArgs e)
@@ -50,15 +50,15 @@ public partial class ScreenshotHelperWindow : MyWindow
         var filePath = Path.Combine(ViewModel.ImageBasePath, Guid.NewGuid().ToString() + ".png");
         var width = (int)(visual.Bounds.Width * ViewModel.Scale);
         var height = (int)(visual.Bounds.Height * ViewModel.Scale);
- 
+
         var visualBrush = new VisualBrush(visual)
         {
-            
+
         };
- 
+
         var renderTargetBitmap = new RenderTargetBitmap(new PixelSize(width, height));
         using var canvas = renderTargetBitmap.CreateDrawingContext(false);
- 
+
         canvas.DrawRectangle(visualBrush, null, new Rect(0, 0, width, height));
         if (!Directory.Exists(Path.GetDirectoryName(filePath)))
         {

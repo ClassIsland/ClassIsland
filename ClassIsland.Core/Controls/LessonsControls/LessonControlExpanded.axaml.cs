@@ -174,7 +174,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         _attachedToVisualTree = true;
         UpdateLiveUpdateSettings();
     }
-    
+
     private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         _attachedToVisualTree = false;
@@ -207,7 +207,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
             TotalSeconds = (long)CurrentTimeLayoutItem.Last.TotalSeconds;
             Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - CurrentTimeLayoutItem.StartTime).TotalSeconds;
             LeftSeconds = TotalSeconds - Seconds;
-            
+
             var progressTick = MainWindowStylesAssist.GetIsProgressAccuracyReduced(this)
                 ? Math.Max(5.0, TotalSeconds / 1000.0)
                 : 1.0;
@@ -215,7 +215,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
             ProgressPercent = TotalSeconds == 0 ? 0 : secondsTicked / TotalSeconds;
         }
 
-        if (SettingsSource == null) 
+        if (SettingsSource == null)
             return;
         MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&
                          SettingsSource.IsCountdownEnabled &&
@@ -231,7 +231,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
             DetailIndex = IsLiveUpdatingEnabled ? SettingsSource.ExtraInfoType : 0;
         }
 
-        
+
     }
 
     #region INotifyPropertyChanged Impletion
@@ -250,7 +250,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         OnPropertyChanged(propertyName);
         return true;
     }
-    
+
 
     #endregion
 

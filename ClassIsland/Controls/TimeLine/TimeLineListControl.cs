@@ -27,7 +27,7 @@ public class TimeLineListControl : ListBox
 
     static TimeLineListControl()
     {
-        
+
     }
 
     public static readonly StyledProperty<bool> IsReadonlyProperty = AvaloniaProperty.Register<TimeLineListControl, bool>(

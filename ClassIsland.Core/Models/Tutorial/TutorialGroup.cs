@@ -13,7 +13,7 @@ public partial class TutorialGroup : ObservableObject, IXmlnsAttached
     /// 章节 ID
     /// </summary>
     [ObservableProperty] private string _id = "";
-    
+
     /// <summary>
     /// 章节标题
     /// </summary>
@@ -28,6 +28,6 @@ public partial class TutorialGroup : ObservableObject, IXmlnsAttached
     /// 此章节包含的教程。
     /// </summary>
     [ObservableProperty] private ObservableCollection<Tutorial> _tutorials = [];
-    
+
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
 }

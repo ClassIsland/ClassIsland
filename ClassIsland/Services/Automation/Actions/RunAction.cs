@@ -9,7 +9,7 @@ using ClassIsland.Models.Actions;
 using static ClassIsland.Models.Actions.RunActionSettings.RunActionRunType;
 namespace ClassIsland.Services.Automation.Actions;
 
-[ActionInfo("classisland.os.run", "运行", "\uec2e", addDefaultToMenu:false)]
+[ActionInfo("classisland.os.run", "运行", "\uec2e", addDefaultToMenu: false)]
 public class RunAction : ActionBase<RunActionSettings>
 {
     protected override async Task OnInvoke()
@@ -18,60 +18,60 @@ public class RunAction : ActionBase<RunActionSettings>
         switch (Settings.RunType)
         {
             case Application:
-            {
-                Process.Start(new ProcessStartInfo
                 {
-                    FileName = Settings.Value,
-                    Arguments = Settings.Args,
-                    UseShellExecute = true
-                });
-                break;
-            }
-            case File:
-            case Folder:
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = Settings.Value,
-                    UseShellExecute = true
-                });
-                break;
-            }
-            case Url:
-            {
-                var path = Settings.Value;
-                if (!string.IsNullOrWhiteSpace(path) && !path.Contains(':') && !path.StartsWith('\\'))
-                    path = "https://" + path;
-
-                if (OperatingSystem.IsWindows())
-                {
-                    Process.Start(new ProcessStartInfo(path)
+                    Process.Start(new ProcessStartInfo
                     {
+                        FileName = Settings.Value,
+                        Arguments = Settings.Args,
                         UseShellExecute = true
                     });
+                    break;
                 }
-                else if (OperatingSystem.IsLinux())
+            case File:
+            case Folder:
                 {
-                    Process.Start(new ProcessStartInfo("xdg-open", path)
+                    Process.Start(new ProcessStartInfo
                     {
-                        UseShellExecute = false
+                        FileName = Settings.Value,
+                        UseShellExecute = true
                     });
+                    break;
                 }
-                else if (OperatingSystem.IsMacOS())
+            case Url:
                 {
-                    Process.Start(new ProcessStartInfo("open", path)
-                    {
-                        UseShellExecute = false
-                    });
-                }
+                    var path = Settings.Value;
+                    if (!string.IsNullOrWhiteSpace(path) && !path.Contains(':') && !path.StartsWith('\\'))
+                        path = "https://" + path;
 
-                break;
-            }
+                    if (OperatingSystem.IsWindows())
+                    {
+                        Process.Start(new ProcessStartInfo(path)
+                        {
+                            UseShellExecute = true
+                        });
+                    }
+                    else if (OperatingSystem.IsLinux())
+                    {
+                        Process.Start(new ProcessStartInfo("xdg-open", path)
+                        {
+                            UseShellExecute = false
+                        });
+                    }
+                    else if (OperatingSystem.IsMacOS())
+                    {
+                        Process.Start(new ProcessStartInfo("open", path)
+                        {
+                            UseShellExecute = false
+                        });
+                    }
+
+                    break;
+                }
             case Command:
-            {
-                await RunCommandAsync(Settings.Value, InterruptCancellationToken);
-                break;
-            }
+                {
+                    await RunCommandAsync(Settings.Value, InterruptCancellationToken);
+                    break;
+                }
             default:
                 throw new NotSupportedException();
         }
@@ -123,7 +123,7 @@ public class RunAction : ActionBase<RunActionSettings>
         if (process.ExitCode != 0)
         {
             throw new InvalidOperationException(
-                $"命令执行失败 (退出代码: {process.ExitCode})。" +Environment.NewLine+
+                $"命令执行失败 (退出代码: {process.ExitCode})。" + Environment.NewLine +
                 $"标准输出：{(stdoutBuilder.Length == 0 ? "(空)" : stdoutBuilder)}" + Environment.NewLine +
                 $"错误输出：{(stderrBuilder.Length == 0 ? "(空)" : stderrBuilder)}");
         }

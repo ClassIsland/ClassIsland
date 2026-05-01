@@ -16,7 +16,7 @@ public class AdvancedImageIconSource : IconSource
         get => GetValue(UriProperty);
         set => SetValue(UriProperty, value);
     }
-    
+
     static AdvancedImageIconSource()
     {
         IconHelpers.RegisterCustomIconSourceFactory(typeof(AdvancedImageIconSource), x => x switch

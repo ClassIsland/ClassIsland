@@ -14,11 +14,11 @@ public class DesktopToastService : IDesktopToastService
     private Dictionary<string, Action> ActivationActions { get; } = new();
 
     private Dictionary<DesktopToastContent, List<string>> ActivationActionIds { get; } = new();
-    
-     private const string NotificationsService = "org.freedesktop.Notifications";
+
+    private const string NotificationsService = "org.freedesktop.Notifications";
 
     private static readonly ObjectPath NotificationsPath = new ObjectPath("/org/freedesktop/Notifications");
-    
+
 
     private readonly Dictionary<uint, DesktopToastContent> _activeNotifications = new();
     private IDisposable? _notificationActionSubscription;
@@ -65,7 +65,7 @@ public class DesktopToastService : IDesktopToastService
         // TODO: 在 kde 中向提醒里加入 <img/> 会导致图片大小异常，目前没有比较好的解决方案，
         // 先暂时禁用图片显示功能。
         return "";
-        
+
         if (!_capbilities.Contains("body-images"))
         {
             return "";
@@ -83,7 +83,7 @@ public class DesktopToastService : IDesktopToastService
                 
                 """;
     }
-    
+
 
     private async Task<string> GenerateNotificationBody(DesktopToastContent notification)
     {
@@ -106,9 +106,9 @@ public class DesktopToastService : IDesktopToastService
         {
             return;
         }
-        
 
-        CleanupNotification(notification);CleanupNotification(notification);
+
+        CleanupNotification(notification); CleanupNotification(notification);
     }
 
     private static void OnNotificationActionInvokedError(Exception obj)
@@ -133,7 +133,7 @@ public class DesktopToastService : IDesktopToastService
 
             CleanupNotification(notification);
         });
-    
+
     private static void OnNotificationClosedError(Exception obj)
     {
         throw obj;
@@ -143,10 +143,10 @@ public class DesktopToastService : IDesktopToastService
     {
         await Initialize();
     }
-    
+
     public async Task ShowToastAsync(DesktopToastContent content)
     {
-        
+
         List<string> actions = [];
         List<string> actionsDbus = ["default", ""];
 
@@ -174,7 +174,7 @@ public class DesktopToastService : IDesktopToastService
         ActivationActionIds[content] = actions;
         _activeNotifications[id] = content;
     }
-    
+
     void CleanupNotification(DesktopToastContent toast)
     {
         if (!ActivationActionIds.TryGetValue(toast, out var actions))
@@ -199,14 +199,14 @@ public class DesktopToastService : IDesktopToastService
         desktopToastContent.Activated += (_, _) => activated?.Invoke();
         await ShowToastAsync(desktopToastContent);
     }
-    
+
     private async Task<Uri?> PrepareToastImageResourceAsync(Uri? sourceUri)
     {
         if (sourceUri == null)
         {
             return null;
         }
-        
+
         try
         {
             switch (sourceUri.Scheme)
@@ -214,22 +214,22 @@ public class DesktopToastService : IDesktopToastService
                 case "file":
                     return new Uri(sourceUri.AbsolutePath);
                 case "avares":
-                {
-                    var stream = AssetLoader.Open(sourceUri);
-                    var imagePath = Path.GetTempFileName();
-                    await using var fileStream = File.Create(imagePath);
-                    await stream.CopyToAsync(fileStream);
-                    return new Uri(imagePath);
-                }
+                    {
+                        var stream = AssetLoader.Open(sourceUri);
+                        var imagePath = Path.GetTempFileName();
+                        await using var fileStream = File.Create(imagePath);
+                        await stream.CopyToAsync(fileStream);
+                        return new Uri(imagePath);
+                    }
                 case "http" or "https":
-                {
-                    var imagePath = Path.GetTempFileName();
-                    var client = new HttpClient();
-                    var stream = await client.GetStreamAsync(sourceUri);
-                    await using var fileStream = File.Create(imagePath);
-                    await stream.CopyToAsync(fileStream);
-                    return new Uri(imagePath);
-                }
+                    {
+                        var imagePath = Path.GetTempFileName();
+                        var client = new HttpClient();
+                        var stream = await client.GetStreamAsync(sourceUri);
+                        await using var fileStream = File.Create(imagePath);
+                        await stream.CopyToAsync(fileStream);
+                        return new Uri(imagePath);
+                    }
             }
         }
         catch (Exception)
@@ -241,6 +241,6 @@ public class DesktopToastService : IDesktopToastService
 
     public void ActivateNotificationAction(Guid id)
     {
-        
+
     }
 }

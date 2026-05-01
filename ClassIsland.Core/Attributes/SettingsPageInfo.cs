@@ -17,12 +17,12 @@ public class SettingsPageInfo : Attribute
     public bool UseFullWidth { get; internal set; } = false;
 
     public bool HidePageTitle { get; internal set; } = false;
-    
+
     public string? GroupId { get; internal set; }
 
     public SettingsPageCategory Category { get; } = SettingsPageCategory.External;
-    
-    public SettingsPageInfo(string id, string name, SettingsPageCategory category=SettingsPageCategory.External)
+
+    public SettingsPageInfo(string id, string name, SettingsPageCategory category = SettingsPageCategory.External)
     {
         Id = id;
         Name = name;

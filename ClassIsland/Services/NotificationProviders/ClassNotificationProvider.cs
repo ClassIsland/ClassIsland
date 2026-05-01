@@ -20,7 +20,7 @@ using Microsoft.Extensions.Hosting;
 namespace ClassIsland.Services.NotificationProviders;
 
 [NotificationProviderInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "上下课提醒", "\uE958", "在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。")]
-[NotificationChannelInfo(PrepareOnClassChannelId, "准备上课提醒", "\ue21a", description:"在上课前指定时间发出提醒。")]
+[NotificationChannelInfo(PrepareOnClassChannelId, "准备上课提醒", "\ue21a", description: "在上课前指定时间发出提醒。")]
 [NotificationChannelInfo(OnClassChannelId, "上课提醒", "\uE479", description: "在上课时发出提醒。")]
 [NotificationChannelInfo(OnBreakingChannelId, "下课提醒", "\ue4c3", description: "在下课时发出提醒。")]
 public class ClassNotificationProvider : NotificationProviderBase<ClassNotificationSettings>
@@ -49,7 +49,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
     private IExactTimeService ExactTimeService { get; }
 
-    public ClassNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService , ILessonsService lessonsService, IExactTimeService exactTimeService)
+    public ClassNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService, ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         NotificationHostService = notificationHostService;
         LessonsService = lessonsService;
@@ -154,7 +154,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             },
             ChannelId = Guid.Parse(PrepareOnClassChannelId)
         };
-        
+
         //prepareOnClassNotificationRequest.CancellationToken.Register(prepareClassOnEndCallback);
         //prepareOnClassNotificationRequest.CompletedToken.Register(PrepareClassOnEndCallback);
         return prepareOnClassNotificationRequest;
@@ -181,7 +181,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
                 : Settings.ClassOnPreparingText);
         return message;
     }
-    
+
     private string GetNotificationMaskMessage(IClassNotificationSettings? settingsSource)
     {
         if (settingsSource is null)
@@ -219,7 +219,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
                 ShowTeacherName = Settings.ShowTeacherName
             })
             {
-                Duration = isNextClassEmpty? TimeSpan.FromSeconds(5) : TimeSpan.FromSeconds(2),
+                Duration = isNextClassEmpty ? TimeSpan.FromSeconds(5) : TimeSpan.FromSeconds(2),
                 SpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
             },
@@ -234,7 +234,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
             }
         });
-        
+
     }
 
     private void OnClass(object? sender, EventArgs e)
@@ -250,8 +250,8 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
     private void ShowOnClassNotificationCore()
     {
         var settings = GetAttachedSettings();
-        var settingsIsClassOnNotificationEnabled = settings?.IsAttachSettingsEnabled == true ? 
-            settings.IsClassOnNotificationEnabled 
+        var settingsIsClassOnNotificationEnabled = settings?.IsAttachSettingsEnabled == true ?
+            settings.IsClassOnNotificationEnabled
             : Settings.IsClassOnNotificationEnabled;
         var settingsSource = (IClassNotificationSettings?)(settings?.IsAttachSettingsEnabled == true ? settings : Settings) ?? Settings;
 
@@ -317,7 +317,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return new Task(() => {});
+        return new Task(() => { });
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

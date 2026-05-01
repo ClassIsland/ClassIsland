@@ -37,13 +37,13 @@ internal class UriNavigationNode(string name)
             case <= 0:
                 throw new ArgumentException($"无效的路径：{paths}");
             case 1:
-            {
-                var node = new UriNavigationNode(paths[0])
                 {
-                    NavigatedAction = onNavigated
-                };
-                return Children[paths[0]] = node;
-            }
+                    var node = new UriNavigationNode(paths[0])
+                    {
+                        NavigatedAction = onNavigated
+                    };
+                    return Children[paths[0]] = node;
+                }
         }
 
         if (!Children.ContainsKey(paths[0]))

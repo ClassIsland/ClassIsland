@@ -14,27 +14,27 @@ public interface ITutorialService : INotifyPropertyChanged
     /// 已注册的教程组
     /// </summary>
     public static ObservableCollection<TutorialGroup> RegisteredTutorialGroups { get; } = [];
-    
+
     /// <summary>
     /// 当前正在进行的教程
     /// </summary>
     Tutorial? CurrentTutorial { get; }
-    
+
     /// <summary>
     /// 当前正在进行的教程段落
     /// </summary>
     TutorialParagraph? CurrentParagraph { get; }
-    
+
     /// <summary>
     /// 当前正在进行的教程句
     /// </summary>
     TutorialSentence? CurrentSentence { get; }
-    
+
     /// <summary>
     /// 当前是否有教程正在运行
     /// </summary>
     bool IsTutorialRunning { get; }
-    
+
     /// <summary>
     /// 当前附加到的 <see cref="TopLevel"/>
     /// </summary>
@@ -80,7 +80,7 @@ public interface ITutorialService : INotifyPropertyChanged
     /// </summary>
     /// <param name="paragraphPath">限定生效的教程段落路径。设置此参数后，仅在教程段落路径为这个值时此方法才起作用</param>
     void PushToNextSentence(string? paragraphPath = null);
-    
+
     /// <summary>
     /// 手动按标签将当前教程向前推动一个语句。仅在当前语句设置了 <see cref="TutorialSentence.WaitForNextCommand"/> 为 true 时生效。
     /// </summary>

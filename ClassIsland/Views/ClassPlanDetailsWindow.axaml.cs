@@ -64,17 +64,17 @@ public partial class ClassPlanDetailsWindow : MyWindow
             switch (i.TimeType)
             {
                 case 0 when cIndex + 1 < ViewModel.ClassPlan.Classes.Count:
-                {
-                    cIndex++;
-                    var classInfo = ViewModel.ClassPlan.Classes[cIndex];
-                    if (ProfileService.Profile.Subjects.TryGetValue(classInfo.SubjectId, out var subject))
                     {
-                        info.Subject = subject;
-                        info.SubjectId = classInfo.SubjectId;
+                        cIndex++;
+                        var classInfo = ViewModel.ClassPlan.Classes[cIndex];
+                        if (ProfileService.Profile.Subjects.TryGetValue(classInfo.SubjectId, out var subject))
+                        {
+                            info.Subject = subject;
+                            info.SubjectId = classInfo.SubjectId;
+                        }
+                        ViewModel.Classes.Add(info);
+                        break;
                     }
-                    ViewModel.Classes.Add(info);
-                    break;
-                }
                 case 1:
                     info.Subject = new()
                     {
@@ -144,7 +144,7 @@ public partial class ClassPlanDetailsWindow : MyWindow
                 Address = i.Key,
                 Node = node
             };
-            
+
             if (!i.Value.AttachedObjects.TryGetValue(id, out var settings))
             {
                 item.State = AttachedSettingsControlState.Disabled;
@@ -154,15 +154,21 @@ public partial class ClassPlanDetailsWindow : MyWindow
             if (IAttachedSettings.GetIsEnabled(settings))
             {
                 item.State = AttachedSettingsControlState.Enabled;
-                ViewModel.Summary = $"小结：将使用在{
-                    node.Target switch {
-                        AttachedSettingsTargets.None => "???", AttachedSettingsTargets.Lesson => "课程", AttachedSettingsTargets.Subject => "科目", AttachedSettingsTargets.TimePoint => "时间点", AttachedSettingsTargets.ClassPlan => "课表", AttachedSettingsTargets.TimeLayout => "时间表", _ => "???" }
-                }的设置。";
+                ViewModel.Summary = $"小结：将使用在{node.Target switch
+                {
+                    AttachedSettingsTargets.None => "???",
+                    AttachedSettingsTargets.Lesson => "课程",
+                    AttachedSettingsTargets.Subject => "科目",
+                    AttachedSettingsTargets.TimePoint => "时间点",
+                    AttachedSettingsTargets.ClassPlan => "课表",
+                    AttachedSettingsTargets.TimeLayout => "时间表",
+                    _ => "???"
+                }}的设置。";
             }
             else
                 item.State = AttachedSettingsControlState.Disabled;
 
-            finish:
+        finish:
             ViewModel.Nodes.Add(item);
         }
 

@@ -35,7 +35,7 @@ namespace ClassIsland.Services;
 
 public class NotificationWorkerService : INotificationWorkerService
 {
-    
+
     private ISpeechService SpeechService { get; }
     private IAudioService AudioService { get; }
     private SettingsService SettingsService { get; }
@@ -44,9 +44,9 @@ public class NotificationWorkerService : INotificationWorkerService
     private ILogger<NotificationWorkerService> Logger { get; }
 
     private List<(NotificationRequest request, bool overlay)> PlayingRequests { get; } = [];
-    
+
     public NotificationWorkerService(ISpeechService speechService,
-        IAudioService audioService, 
+        IAudioService audioService,
         SettingsService settingsService,
         IExactTimeService exactTimeService,
         ILessonsService lessonsService,
@@ -58,7 +58,7 @@ public class NotificationWorkerService : INotificationWorkerService
         ExactTimeService = exactTimeService;
         LessonsService = lessonsService;
         Logger = logger;
-        
+
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
     }
 
@@ -67,7 +67,7 @@ public class NotificationWorkerService : INotificationWorkerService
         var now = ExactTimeService.GetCurrentLocalDateTime();
         foreach (var (request, overlay) in PlayingRequests)
         {
-            if (!overlay || request.OverlayContent is not {} content)
+            if (!overlay || request.OverlayContent is not { } content)
             {
                 continue;
             }
@@ -78,7 +78,7 @@ public class NotificationWorkerService : INotificationWorkerService
                 : 1 - (session.SessionPlayedTime + session.TimingStopwatch.Elapsed) / content.Duration;
         }
     }
-    
+
     private TimeSpan SetupNotificationSessionTiming(Guid sid, NotificationContent content, NotificationPlayingSessionInfo session)
     {
         var now = ExactTimeService.GetCurrentLocalDateTime();
@@ -148,7 +148,7 @@ public class NotificationWorkerService : INotificationWorkerService
     {
         await ProcessNotificationSessionCore(request, request.MaskContent, request.MaskSession, true, cancellationToken, settings, cancellationCompletedSource, soundsCts);
     };
-    
+
     private Func<Task> CreateOverlayProcessor(NotificationRequest request, CancellationToken cancellationToken, INotificationSettings settings, TaskCompletionSource cancellationCompletedSource, CancellationTokenSource soundsCts) => async () =>
     {
         if (request.OverlayContent == null)
@@ -162,7 +162,7 @@ public class NotificationWorkerService : INotificationWorkerService
         NotificationContent content,
         NotificationPlayingSessionInfo session,
         bool isMask,
-        CancellationToken cancellationToken, 
+        CancellationToken cancellationToken,
         INotificationSettings settings,
         TaskCompletionSource cancellationCompletedSource,
         CancellationTokenSource soundsCts)
@@ -180,7 +180,7 @@ public class NotificationWorkerService : INotificationWorkerService
             {
                 SpeechService.EnqueueSpeechQueue(content.SpeechContent);
             }
-            
+
             if (!session.HasSoundsPlayed && isMask && settings.IsNotificationSoundEnabled && SettingsService.Settings.AllowNotificationSound)
             {
                 try
@@ -206,7 +206,7 @@ public class NotificationWorkerService : INotificationWorkerService
                     Logger.LogError(e, "无法播放提醒音效：{}", settings.NotificationSoundPath);
                 }
             }
-            
+
             session.HasSoundsPlayed = true;
             await Task.Delay(duration, cancellationToken);
             if (request.OverlayContent == null || !isMask)
@@ -246,5 +246,5 @@ public class NotificationWorkerService : INotificationWorkerService
             }
         }
     }
-    
+
 }

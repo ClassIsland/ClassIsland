@@ -33,8 +33,8 @@ public static class NotificationProviderRegistryExtensions
     /// <typeparam name="TNotificationProviderSettingsControl">提醒提供方设置控件类型</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 服务集合</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
-    public static IServiceCollection AddNotificationProvider<TNotificationProvider, TNotificationProviderSettingsControl>(this IServiceCollection services) 
-        where TNotificationProvider : NotificationProviderBase 
+    public static IServiceCollection AddNotificationProvider<TNotificationProvider, TNotificationProviderSettingsControl>(this IServiceCollection services)
+        where TNotificationProvider : NotificationProviderBase
         where TNotificationProviderSettingsControl : NotificationProviderControlBase
     {
         var info = Register(services, typeof(TNotificationProvider), typeof(TNotificationProviderSettingsControl));
@@ -55,7 +55,7 @@ public static class NotificationProviderRegistryExtensions
             throw new ArgumentException($"此提醒提供方id {info.Guid} 已经被占用。");
         }
 
-        
+
         info.ProviderType = notificationProvider;
         if (notificationProvider.BaseType?.GenericTypeArguments.Length > 0)
         {
@@ -73,7 +73,7 @@ public static class NotificationProviderRegistryExtensions
             info.SettingsType = settings;
         }
         NotificationProviderRegistryService.RegisteredProviders.Add(info);
-        
+
         return info;
     }
 }

@@ -40,7 +40,7 @@ public abstract class AttachedSettingsControlBase : UserControl, INotifyProperty
         get => GetValue(AttachedTimePointTimeTypeProperty);
         set => SetValue(AttachedTimePointTimeTypeProperty, value);
     }
-    
+
     [NotNull]
     internal object? SettingsInternal { get; set; }
 

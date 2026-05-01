@@ -103,7 +103,7 @@ public class ConfigureFileHelper
     /// <param name="backupEnabled">是否启用备份。如果没有填写此参数，将使用默认值。</param>
     /// <param name="isLoadingBackup">是否正在加载备份。如果是，在加载失败时将不会尝试加载备份。</param>
     /// <returns>加载的配置文件对象</returns>
-    public static T LoadConfig<T>(string path, bool? backupEnabled=null, bool isLoadingBackup=false)
+    public static T LoadConfig<T>(string path, bool? backupEnabled = null, bool isLoadingBackup = false)
     {
         try
         {

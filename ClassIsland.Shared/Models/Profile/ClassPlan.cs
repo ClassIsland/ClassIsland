@@ -142,27 +142,27 @@ public class ClassPlan : AttachableSettingsObject
         switch (e.PropertyName)
         {
             case nameof(TimeLayout):
-            {
-                if (TimeLayout != null)
                 {
-                    TimeLayout.LayoutObjectChanged -= TimeLayoutOnLayoutObjectChanged;
-                    TimeLayout.LayoutItemChanged -= TimeLayoutOnLayoutItemChanged;
-                    TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
-                }
+                    if (TimeLayout != null)
+                    {
+                        TimeLayout.LayoutObjectChanged -= TimeLayoutOnLayoutObjectChanged;
+                        TimeLayout.LayoutItemChanged -= TimeLayoutOnLayoutItemChanged;
+                        TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
+                    }
 
-                NotifyClassesChanged();
-                break;
-            }
+                    NotifyClassesChanged();
+                    break;
+                }
             case nameof(Classes):
-            {
-                Classes.CollectionChanged -= ClassesOnCollectionChanged;
-                foreach (var i in Classes)
                 {
-                    i.PropertyChanged -= ClassInfoOnPropertyChanged;
-                }
+                    Classes.CollectionChanged -= ClassesOnCollectionChanged;
+                    foreach (var i in Classes)
+                    {
+                        i.PropertyChanged -= ClassInfoOnPropertyChanged;
+                    }
 
-                break;
-            }
+                    break;
+                }
         }
     }
 
@@ -229,37 +229,37 @@ public class ClassPlan : AttachableSettingsObject
         switch (e.PropertyName)
         {
             case nameof(TimeLayout):
-            // case nameof(TimeLayoutId):
-            {
-                if (TimeLayout != null)
+                // case nameof(TimeLayoutId):
                 {
-                    RefreshClassesList();
-                    TimeLayout.LayoutObjectChanged -= TimeLayoutOnLayoutObjectChanged;
-                    TimeLayout.LayoutItemChanged -= TimeLayoutOnLayoutItemChanged;
-                    TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
-                    TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
-                    TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
-                    TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
-                }
+                    if (TimeLayout != null)
+                    {
+                        RefreshClassesList();
+                        TimeLayout.LayoutObjectChanged -= TimeLayoutOnLayoutObjectChanged;
+                        TimeLayout.LayoutItemChanged -= TimeLayoutOnLayoutItemChanged;
+                        TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
+                        TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
+                        TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
+                        TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+                    }
 
-                NotifyClassesChanged();
-                break;
-            }
+                    NotifyClassesChanged();
+                    break;
+                }
             case nameof(Classes):
-            {
-                Classes.CollectionChanged -= ClassesOnCollectionChanged;
-                foreach (var i in Classes)
                 {
-                    i.PropertyChanged -= ClassInfoOnPropertyChanged;
-                }
-                Classes.CollectionChanged += ClassesOnCollectionChanged;
-                foreach (var i in Classes)
-                {
-                    i.PropertyChanged += ClassInfoOnPropertyChanged;
-                }
+                    Classes.CollectionChanged -= ClassesOnCollectionChanged;
+                    foreach (var i in Classes)
+                    {
+                        i.PropertyChanged -= ClassInfoOnPropertyChanged;
+                    }
+                    Classes.CollectionChanged += ClassesOnCollectionChanged;
+                    foreach (var i in Classes)
+                    {
+                        i.PropertyChanged += ClassInfoOnPropertyChanged;
+                    }
 
-                break;
-            }
+                    break;
+                }
         }
     }
 
@@ -430,7 +430,7 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
-    internal void RefreshClassesList(bool isDiffMode=false)
+    internal void RefreshClassesList(bool isDiffMode = false)
     {
         //App.GetService<ILogger<ClassPlan>>().LogTrace("Calling Refresh ClassesList: \n{}", new StackTrace());
         // 对齐长度

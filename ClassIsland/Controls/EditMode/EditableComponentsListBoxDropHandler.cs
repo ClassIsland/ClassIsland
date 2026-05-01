@@ -25,7 +25,7 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
     {
         var pos = e.GetPosition(listBox);
         if (listBox.GetVisualAt(pos) is Control targetControl
-            && targetControl.FindAncestorOfType<ListBoxItem>() is {} listBoxItem
+            && targetControl.FindAncestorOfType<ListBoxItem>() is { } listBoxItem
             && listBoxItem.DataContext is ComponentSettings targetItem)
         {
             var rPos = e.GetPosition(listBoxItem);
@@ -39,7 +39,7 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
 
         return (items.Count > 0 ? items.Count - 1 : -1, items.Count > 0);
     }
-    
+
     private bool ValidateCore(EditableComponentsListBox listBox, DragEventArgs e, object? sourceContext, object? targetContext, bool execute, ListBoxItem? listBoxItem)
     {
         e.Handled = true;
@@ -51,52 +51,52 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
         {
             return false;
         }
-        
+
         if (data.ComponentSettings == null && data.ComponentInfo == null)
             return false;
-        if (data.ComponentSettings is {} settings1 && listBox.ContainerComponentStack.Contains(settings1))
+        if (data.ComponentSettings is { } settings1 && listBox.ContainerComponentStack.Contains(settings1))
         {
             return false;
         }
-        
+
         var (targetIndex, foundTargetIndex) = GetTargetIndex(listBox, e, targetList, listBoxItem);
         var insertIndex = foundTargetIndex ? targetIndex + 1 : targetList.Count;
 
         switch (e.DragEffects)
         {
-            case DragDropEffects.Copy when data.ComponentSettings is {} settings:
-            {
-                if (execute)
+            case DragDropEffects.Copy when data.ComponentSettings is { } settings:
                 {
-                    var clone = ConfigureFileHelper.CopyObject(settings);
-                    InsertItem(targetList, clone, insertIndex);
+                    if (execute)
+                    {
+                        var clone = ConfigureFileHelper.CopyObject(settings);
+                        InsertItem(targetList, clone, insertIndex);
+                    }
+                    return true;
                 }
-                return true;
-            }
-            case DragDropEffects.Move when data is { ComponentSettings: {} settings, SourceList: { } sourceItems }:
-            {
-                if (execute)
+            case DragDropEffects.Move when data is { ComponentSettings: { } settings, SourceList: { } sourceItems }:
                 {
-                    var sourceIndex = sourceItems.IndexOf(settings);
-                    if (sourceIndex < 0)
+                    if (execute)
                     {
-                        return false;
+                        var sourceIndex = sourceItems.IndexOf(settings);
+                        if (sourceIndex < 0)
+                        {
+                            return false;
+                        }
+
+                        if (ReferenceEquals(sourceItems, targetList))
+                        {
+                            var moveIndex = foundTargetIndex ? targetIndex : targetList.Count - 1;
+                            var newIndex = sourceIndex > moveIndex ? moveIndex + 1 : moveIndex;
+                            Console.WriteLine($"ti={targetIndex}, ni={newIndex}");
+                            MoveItem(targetList, sourceIndex, Math.Clamp(newIndex, 0, targetList.Count - 1));
+                        }
+                        else
+                        {
+                            MoveItem(sourceItems, targetList, sourceIndex, insertIndex);
+                        }
                     }
-                    
-                    if (ReferenceEquals(sourceItems, targetList))
-                    {
-                        var moveIndex = foundTargetIndex ? targetIndex : targetList.Count - 1;
-                        var newIndex = sourceIndex > moveIndex ? moveIndex + 1 : moveIndex;
-                        Console.WriteLine($"ti={targetIndex}, ni={newIndex}");
-                        MoveItem(targetList, sourceIndex, Math.Clamp(newIndex, 0, targetList.Count - 1));
-                    }
-                    else
-                    {
-                        MoveItem(sourceItems, targetList, sourceIndex, insertIndex);
-                    }
+                    return true;
                 }
-                return true;
-            }
             case DragDropEffects.None:
             case DragDropEffects.Link:
             default:
@@ -105,14 +105,14 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
 
         return false;
     }
-        
+
     private bool ValidateCoreComponentInfo(EditableComponentsListBox listBox, DragEventArgs e, ComponentInfo data, object? targetContext, bool execute, ListBoxItem? listBoxItem)
     {
         if (listBox.ItemsSource is not IList<ComponentSettings> targetList)
         {
             return false;
         }
-        
+
         var (targetIndex, foundTargetIndex) = GetTargetIndex(listBox, e, targetList, listBoxItem);
         var insertIndex = foundTargetIndex ? targetIndex + 1 : targetList.Count;
 
@@ -134,7 +134,7 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
         return true;
 
     }
-    
+
     public override bool Validate(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
     {
         if (e.Handled)

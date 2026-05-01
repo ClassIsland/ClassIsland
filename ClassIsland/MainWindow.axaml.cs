@@ -138,13 +138,13 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private Stopwatch RawInputUpdateStopWatch { get; } = new();
 
     private ClassChangingWindow? ClassChangingWindow { get; set; }
-    
+
     private IUriNavigationService UriNavigationService { get; }
     public IRulesetService RulesetService { get; }
     public IWindowRuleService WindowRuleService { get; }
     public IManagementService ManagementService { get; }
     public TopmostEffectWindow TopmostEffectWindow { get; }
-    
+
     public IXamlThemeService XamlThemeService { get; }
     private ITutorialService TutorialService { get; }
 
@@ -174,13 +174,13 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         get => GetValue(NotificationProgressBarValueProperty);
         set => SetValue(NotificationProgressBarValueProperty, value);
-    
+
     }
 
     public const string DefaultFontFamilyKey =
         "avares://ClassIsland/Assets/Fonts/#HarmonyOS Sans SC, avares://ClassIsland.Core/Assets/Fonts/#FluentSystemIcons-Resizable";
-    
-    public static FontFamily DefaultFontFamily { get; }=
+
+    public static FontFamily DefaultFontFamily { get; } =
         FontFamily.Parse(DefaultFontFamilyKey);
 
     public NativeMenu MoreOptionsMenu { get; } = [];
@@ -188,12 +188,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Initialization
-    public MainWindow(SettingsService settingsService, 
+    public MainWindow(SettingsService settingsService,
         IProfileService profileService,
-        INotificationHostService notificationHostService, 
+        INotificationHostService notificationHostService,
         ITaskBarIconService taskBarIconService,
-        IThemeService themeService, 
-        ILogger<MainWindow> logger, 
+        IThemeService themeService,
+        ILogger<MainWindow> logger,
         ISpeechService speechService,
         IExactTimeService exactTimeService,
         IComponentsService componentsService,
@@ -227,10 +227,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel = new MainViewModel();
         DataContext = this;
         InitializeComponent();
-        
+
         RenderOptions.SetTextRenderingMode(this, TextRenderingMode.Antialias);
         RenderOptions.SetBitmapInterpolationMode(this, BitmapInterpolationMode.HighQuality);
-        
+
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         XamlThemeService.MainWindow = this;
         SettingsService.PropertyChanged += (sender, args) =>
@@ -246,7 +246,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TaskBarIconService.MoreOptionsMenu = MoreOptionsMenu;
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
-        
+
         PointerStateAssist.SetIsTouchMode(this, true);  // DEBUG
 
         if (Environment.OSVersion.Version <= WindowsVersions.Win10V1809)
@@ -350,7 +350,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         AppBase.Current.AppStopping += (sender, args) => AppBase.Current.PlatformSettings!.ColorValuesChanged -= OnSystemEventsOnUserPreferenceChanged;
         span?.Finish();
     }
-    
+
     private void InitializeRawInputHandler()
     {
         if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("RawInput仅在Windows平台受支持。");
@@ -395,7 +395,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Event Handlers
-    
+
     private void HighFreqTopmostRecheckTimerOnTick(object? sender, EventArgs e)
     {
         if (ViewModel.Settings.WindowTopmostRecheckMode == 3)
@@ -505,7 +505,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             UpdateTheme();
             _ = Dispatcher.UIThread.InvokeAsync(UpdateTheme);
         }
-        
+
         if (e.PropertyName == nameof(ViewModel.IsWindowMode))
         {
             PseudoClasses.Set(":windowed", ViewModel.IsWindowMode);
@@ -547,7 +547,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        
+
     }
 
     private void LayoutContainerGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
@@ -582,14 +582,14 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 }
                 // Get this tray icon's implementation
                 ITrayIconImpl? impl = (ITrayIconImpl?)typeof(TrayIcon)
-                    .GetProperty ("Impl", BindingFlags.NonPublic | BindingFlags.Instance)?
-                    .GetValue (TaskBarIconService.MainTaskBarIcon);
+                    .GetProperty("Impl", BindingFlags.NonPublic | BindingFlags.Instance)?
+                    .GetValue(TaskBarIconService.MainTaskBarIcon);
 
                 // Get the Windows tray icon implementation type
-                Type? type = AppDomain.CurrentDomain.GetAssemblies ()
-                    .Where (a => a.FullName?.StartsWith ("Avalonia.Win32") ?? false)
-                    .SelectMany (a => a.GetTypes ())
-                    .FirstOrDefault (t => t.Name == "TrayIconImpl");
+                Type? type = AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => a.FullName?.StartsWith("Avalonia.Win32") ?? false)
+                    .SelectMany(a => a.GetTypes())
+                    .FirstOrDefault(t => t.Name == "TrayIconImpl");
 
                 // If the Implementation and type are not null
                 if (impl != null && type != null)
@@ -627,7 +627,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         if (!OperatingSystem.IsWindows())
         {
             return nint.Zero;
-        } 
+        }
         if (msg == 0x00FF) // WM_INPUT
         {
             if (RawInputUpdateStopWatch.ElapsedMilliseconds < 20)
@@ -639,7 +639,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             var data = RawInputData.FromHandle(lParam);
             RawInputEvent?.Invoke(this, new RawInputEventArgs(data));
         }
-        
+
         if (msg == 0x0047) // WM_WINDOWPOSCHANGED
         {
             var pos = Marshal.PtrToStructure<NativeWindowHelper.WINDOWPOS>(lParam);
@@ -651,7 +651,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 {
                     ReCheckTopmostState();
                 }
-        
+
                 if (pos.hwndInsertAfter != NativeWindowHelper.HWND_BOTTOM)
                 {
                     SetBottom();
@@ -664,12 +664,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Theme & Settings
-    
+
     public void SaveProfile()
     {
         ProfileService.SaveProfile(ViewModel.CurrentProfilePath);
     }
-    
+
     private void UpdateFadeStatus()
     {
         ViewModel.IsMainWindowFaded =
@@ -691,7 +691,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             ViewModel.Settings.IsMouseClickingEnabled = false;
             await PlatformServices.DesktopToastService.ShowToastAsync("已禁用不支持的设置", "【启用鼠标点击】设置项目不再受到支持并已自动禁用，感谢您的支持与理解。");
         }
-        
+
         UpdateWindowPos();
         UpdateWindowFeatures();
         UpdateWindowLayer();
@@ -743,7 +743,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         UpdateWindowPos();
     }
-    
+
     private void ReCheckTopmostState()
     {
         if (ViewModel.IsWindowMode || ViewModel.IsEditMode)
@@ -758,15 +758,15 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
     }
 
-    
+
     internal Screen? GetSelectedScreenSafe()
     {
-        return ViewModel.Settings.WindowDockingMonitorIndex < Screens.ScreenCount 
+        return ViewModel.Settings.WindowDockingMonitorIndex < Screens.ScreenCount
                && ViewModel.Settings.WindowDockingMonitorIndex >= 0
             ? Screens.All[ViewModel.Settings.WindowDockingMonitorIndex]
             : Screens.Primary;
     }
-    
+
     private void SetBottom()
     {
         if (ViewModel.Settings.WindowLayer != 0)
@@ -829,7 +829,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var scale = ViewModel.Settings.Scale;
         ViewModel.GridRootLeft = Width / 10 * (scale - 1);
         ViewModel.GridRootTop = Height / 10 * (scale - 1);
-        
+
         var screen = GetSelectedScreenSafe();
         if (screen == null)
             return;
@@ -842,7 +842,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var oy = ViewModel.Settings.WindowDockingOffsetY;
         Width = screen.WorkingArea.Width / dpiX;
         //Height = GridRoot.ActualHeight * scale;
-        
+
         var dockingTop = ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2;
         var verticalSafeAreaPx = XamlThemeService.ActualVerticalSafeAreaPx;
         if (TutorialService.IsTutorialRunning && TutorialService.AttachedToplevel == this)
@@ -853,7 +853,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var safeB = Math.Max(dockingTop ? verticalSafeAreaPx : Math.Min(verticalSafeAreaPx, -oy), 0) * scale;
         var x = screen.WorkingArea.X + ox;
         // 和 WPF 不同，Avalonia 定位窗口用的基于物理屏幕的像素坐标，而非逻辑坐标，无需 dpi 转换。
-        var y = dockingTop 
+        var y = dockingTop
             ? offsetAreaTop + oy - safeT
             : offsetAreaBottom - ah + oy + safeB;
         var clientBoundsRelative = new PixelRect(0, (int)safeT, (int)aw, (int)ah)
@@ -872,7 +872,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             Position = newPos;
         }
         WindowState = WindowState.Normal;
-        
+
         if (updateEffectWindow)
         {
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
@@ -913,7 +913,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var clientBoundsRelative = new PixelRect(relativeX, relativeY, width, height)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
-        if (LayoutContainerGrid != null) 
+        if (LayoutContainerGrid != null)
         {
             LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
             LayoutContainerGrid.Height = Height = (screen.Bounds.Height - 1)  // 防止 Windows 发电误以为是全屏
@@ -927,8 +927,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             Position = newPos;
         }
     }
-    
-    private void UpdateWindowPos(bool updateEffectWindow=false)
+
+    private void UpdateWindowPos(bool updateEffectWindow = false)
     {
         if (ViewModel.IsEditMode)
         {
@@ -939,8 +939,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             OldWindowPosUpdateImpl(updateEffectWindow);
         }
     }
-    
-    public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)
+
+    public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual = null)
     {
         dpiX = _latestDpiX;
         dpiY = _latestDpiY;
@@ -954,7 +954,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             dpiX = screen?.Scaling ?? 1.0;
             dpiY = screen?.Scaling ?? 1.0;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Logger.LogError(ex, "无法获取当前dpi");
         }
@@ -976,7 +976,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         SetBottom();
     }
-    
+
     public void AcquireTopmostLock(object o)
     {
         var prevEmpty = TopmostLocks.Count <= 0;
@@ -1006,7 +1006,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             return;
         }
-        
+
         if (ViewModel.IsNotificationWindowExplicitShowed)
         {
             ViewModel.IsNotificationWindowExplicitShowed = false;
@@ -1017,7 +1017,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Menu Items
-    
+
 
     private void ButtonSettings_OnClick(object sender, EventArgs e)
     {
@@ -1041,7 +1041,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             return;
         }
-        
+
         ViewModel.IsClosing = true;
         Close();
         AppBase.Current.Stop();
@@ -1050,13 +1050,13 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         AppBase.Current.Restart();
     }
-    
+
     private void MenuItemTemporaryClassPlan_OnClick(object sender, EventArgs e)
     {
         App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
         OpenProfileSettingsWindow();
     }
-    
+
     private void MenuItemAbout_OnClick(object sender, EventArgs e)
     {
         App.GetService<SettingsWindowNew>().Open("about");
@@ -1111,8 +1111,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         OpenClassSwapWindow();
     }
-    
-    
+
+
 
     private void NativeMenuItemDebugDevTools_OnClick(object? sender, EventArgs e)
     {
@@ -1163,7 +1163,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         IAppHost.GetService<DevPortalWindow>().Show();
     }
-    
+
     private void NativeMenuItemDebugOpenWelcomeWindow_OnClick(object? sender, EventArgs e)
     {
         IAppHost.GetService<WelcomeWindow>().Show();
@@ -1174,7 +1174,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel.Settings.IsWelcomeWindowShowed = false;
         AppBase.Current.Restart();
     }
-    
+
     private void NativeMenuItemOpenTutorialEditor_OnClick(object? sender, EventArgs e)
     {
         IAppHost.GetService<TutorialEditorWindow>().Show();
@@ -1184,7 +1184,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         IAppHost.GetService<ScreenshotHelperWindow>().Show();
     }
-    
+
     private void NativeMenuItemTutorials_OnClick(object? sender, EventArgs e)
     {
         IAppHost.GetService<TutorialCenterWindow>().Open();
@@ -1192,7 +1192,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     #endregion
 
     #region Gateways
-    
+
     public void OpenProfileSettingsWindow(Uri? uri = null)
     {
         App.GetService<ProfileSettingsWindow>().Open(uri);
@@ -1215,7 +1215,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             return;
         }
-        
+
         // ViewModel.IsBusy = true;
         ClassChangingWindow = new ClassChangingWindow()
         {
@@ -1226,7 +1226,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ClassChangingWindow = null;
         // ViewModel.IsBusy = false;
     }
-    
+
     #endregion
 
     #region Effects
@@ -1353,7 +1353,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             ViewModel.ComponentsListBoxCache.Remove(listBox);
         }
     }
-    
+
     private void ListBoxContainerComponent_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         if (sender is not EditableComponentsListBox { Tag: EditModeContainerComponentInfo settings } listBox)
@@ -1387,12 +1387,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             ViewModel.ComponentsListBoxCache.Remove(listBox);
         }
     }
-    
+
     private void SelectorComponents_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (!ViewModel.IsEditMode 
-            || e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings 
-            || sender is not EditableComponentsListBox { ItemsSource: IList<ComponentSettings> list } 
+        if (!ViewModel.IsEditMode
+            || e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings
+            || sender is not EditableComponentsListBox { ItemsSource: IList<ComponentSettings> list }
             || !list.Contains(settings))
         {
             // UpdateSettingsVisibility();
@@ -1420,7 +1420,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         ViewModel.EditModeView?.CloseContainerComponent(info);
     }
-    
+
     private void EditableComponentsListBox_OnRequestOpenChildComponents(object? sender, EditableComponentsListBoxEventArgs e)
     {
         ViewModel.EditModeView?.OpenChildComponents(e.Settings, e.ComponentStack, GetContainerComponentEditContainerInitPos(e.ItemPosition));
@@ -1430,12 +1430,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         var transform = this.TransformToVisual(ContainerComponentsEditHost);
         var pointInCanvas = transform?.Transform(pos);
-        if (pointInCanvas == null) 
+        if (pointInCanvas == null)
             return new Point();
         var newPoint = new Point(pointInCanvas.Value.X, pointInCanvas.Value.Y + 48);
         return newPoint;
     }
-    
+
     private void ToggleButtonIsMainLine_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
     {
         if (sender is not ToggleButton button)
@@ -1451,7 +1451,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         if (button.IsChecked == false)
         {
             var firstLine = ComponentsService.CurrentComponents.Lines.FirstOrDefault();
-            if (firstLine != null) 
+            if (firstLine != null)
                 firstLine.IsMainLine = true;
             this.ShowToast("已将第一行设置为主要行。");
         }
@@ -1486,18 +1486,18 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         if (settings != null) ViewModel.EditModeView?.OpenMainWindowLineSettings(settings);
     }
-    
+
     private void ButtonNewMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
     {
         ComponentsService.CurrentComponents.Lines.Add(new MainWindowLineSettings());
         TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.mainWindowLine.create");
     }
-    
+
     private void ButtonManageComponentLayouts_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.EditModeView?.OpenComponentLayoutsManagerDrawer();
     }
-    
+
     private void EditableComponentsListBox_OnRequestAddComponent(object? sender, RequestAddComponentEventArgs e)
     {
         ViewModel.EditModeView?.OpenComponentsLibDrawer(e.ComponentList);
@@ -1508,12 +1508,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         ViewModel.EditModeTutorialPhase = phase;
     }
-    
+
     private void ButtonShowTutorial_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.EditModeTutorialPhase = 0;
     }
-    
+
     private void TeachingTipEditModeP4_OnCloseButtonClick(TeachingTip sender, EventArgs args)
     {
         ViewModel.Settings.HasEditModeTutorialShown = true;

@@ -138,9 +138,9 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         {
             return;
         }
-        
-        if (Settings.LastAppVersion < Version.Parse("2.0.0.2") 
-            || (Settings.LastAppVersion >= Version.Parse("2.0.1.0") && Settings.LastAppVersion < Version.Parse("2.0.1.2")) )
+
+        if (Settings.LastAppVersion < Version.Parse("2.0.0.2")
+            || (Settings.LastAppVersion >= Version.Parse("2.0.1.0") && Settings.LastAppVersion < Version.Parse("2.0.1.2")))
         {
             if (PlatformServices.DesktopService.IsUrlSchemeRegistered)
             {
@@ -148,13 +148,13 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             }
             Logger.LogInformation("成功迁移了 2.0.0.2 以前的设置。");
         }
-        
-        if (Settings.LastAppVersion < Version.Parse("2.0.3.0") )
+
+        if (Settings.LastAppVersion < Version.Parse("2.0.3.0"))
         {
             WillMigrateInitTutorial = true;
             Logger.LogInformation("成功迁移了 2.0.3.0 以前的设置。");
         }
-        
+
     }
 #pragma warning restore CS0612 // 类型或成员已过时
 

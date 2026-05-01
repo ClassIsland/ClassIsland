@@ -31,7 +31,7 @@ public interface IWindowPlatformService
     /// </summary>
     /// <param name="handler">事件处理器</param>
     public void RegisterForegroundWindowChangedEvent(EventHandler<ForegroundWindowChangedEventArgs> handler);
-    
+
     /// <summary>
     /// 取消注册前台窗口变化事件。
     /// </summary>
@@ -58,7 +58,7 @@ public interface IWindowPlatformService
     /// <param name="handle">窗口句柄</param>
     /// <returns>返回指定窗口是否为最大化状态</returns>
     public bool IsWindowMaximized(nint handle);
-    
+
     /// <summary>
     /// 获取窗口是否最小化。
     /// </summary>
@@ -85,7 +85,7 @@ public interface IWindowPlatformService
     /// </summary>
     /// <returns>指针位置</returns>
     public Point GetMousePos();
-    
+
     /// <summary>
     /// 获取当前前台窗口句柄
     /// </summary>

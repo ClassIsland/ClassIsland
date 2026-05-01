@@ -33,7 +33,7 @@ namespace ClassIsland.Services;
 public class XamlThemeService : ObservableRecipient, IXamlThemeService
 {
     private static readonly FieldInfo? s_stylesAppliedField = typeof(StyledElement).GetField("_stylesApplied", BindingFlags.Instance | BindingFlags.NonPublic);
-    
+
     public ILogger<XamlThemeService> Logger { get; }
     public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
@@ -41,7 +41,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
     private Styles RootStyles { get; set; } = [];
 
     public Window? MainWindow { get; set; }
-    
+
     private Border? ResourceLoaderBorder { get; set; }
 
     public static readonly string ThemesPath = Path.Combine(CommonDirectories.AppConfigPath, "Themes");
@@ -62,7 +62,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     public ObservableCollection<string> EnabledThemes { get; }
 
-    
+
     private ObservableDictionary<string, ThemeInfo> _mergedThemes = [];
 
     public event EventHandler? RestartRequested;
@@ -88,7 +88,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         {
             return;
         }
-        
+
         ProcessThemeInstall();
         // LoadAllThemes();
         //LoadThemeSource();
@@ -105,7 +105,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         ResourceLoaderBorder ??= MainWindow?.FindControl<Border>("ResourceLoaderBorder");
         RootStyles.Clear();
         ResourceLoaderBorder?.Styles.Remove(RootStyles);
-        s_stylesAppliedField?.SetValue(ResourceLoaderBorder, false); 
+        s_stylesAppliedField?.SetValue(ResourceLoaderBorder, false);
         RootStyles = [];
         ResourceLoaderBorder?.Styles.Add(RootStyles);
         var actualSafeAreaPx = 0.0;
@@ -146,7 +146,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         }
         RootStyles.Add(styles);
     }
-    
+
     private void LoadThemeFromResource(Uri uri)
     {
         Logger.LogInformation("正在从资源加载主题 {}", uri);
@@ -160,7 +160,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         PluginMarketService.LoadPluginSource();
         var merged = new ObservableDictionary<string, ThemeInfo>();
         Indexes.Clear();
-        
+
         foreach (var themeLocal in Themes)
         {
             var id = themeLocal.Manifest.Id;

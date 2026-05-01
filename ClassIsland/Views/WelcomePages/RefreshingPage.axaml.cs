@@ -29,7 +29,7 @@ public partial class RefreshingPage : UserControl, IWelcomePage
     private IComponentsService ComponentsService { get; } = IAppHost.GetService<IComponentsService>();
     private IAutomationService AutomationService { get; } = IAppHost.GetService<IAutomationService>();
     private SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
-    
+
     public RefreshingPage()
     {
         InitializeComponent();
@@ -69,7 +69,7 @@ public partial class RefreshingPage : UserControl, IWelcomePage
                 if (scope.ProfileTimeLayouts)
                 {
                     foreach (var (key, _) in profile.TimeLayouts
-                                 .Where(x => !scope.ReservedTimeLayouts.Contains(x.Key) 
+                                 .Where(x => !scope.ReservedTimeLayouts.Contains(x.Key)
                                              && !requiredTimeLayouts.Contains(x.Key))
                                  .ToDictionary())
                     {
@@ -116,7 +116,7 @@ public partial class RefreshingPage : UserControl, IWelcomePage
                     plugin.IsEnabled = false;
                 }
             }
-            
+
             if (!restartRequired)
             {
                 this.ShowToast("翻新成功。");

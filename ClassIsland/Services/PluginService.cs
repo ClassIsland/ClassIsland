@@ -42,12 +42,12 @@ public class PluginService : IPluginService
 
     public static readonly string PluginConfigsFolderPath = Path.Combine(CommonDirectories.AppConfigPath, "Plugins");
 
-    public static List<PluginInfo> PluginLoadedStatus { get; internal set; } =new();
+    public static List<PluginInfo> PluginLoadedStatus { get; internal set; } = new();
 
     internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
 
     internal static List<PluginManifest> InstalledPlugins { get; } = [];
-    
+
     internal static List<PluginManifest> UninstalledPlugins { get; } = [];
 
     /// <summary>
@@ -212,7 +212,7 @@ public class PluginService : IPluginService
                 // Console.WriteLine($"Failed to initialize plugin {manifest.Name}:"+ex);
             }
         }
-        
+
         AppBase.Current.AppStarted += CurrentOnAppStarted;
     }
 
@@ -269,7 +269,7 @@ public class PluginService : IPluginService
         var nodes = plugins
             .Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded)
             .ToDictionary(
-            x => x.Manifest.Id, 
+            x => x.Manifest.Id,
             x => new DependencyNode(x));
         foreach (var i in nodes)
         {

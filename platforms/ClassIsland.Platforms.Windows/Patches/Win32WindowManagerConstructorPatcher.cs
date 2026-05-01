@@ -15,7 +15,7 @@ public class Win32WindowManagerConstructorPatcher
         var type = AccessTools.TypeByName("FluentAvalonia.UI.Windowing.Win32WindowManager");
         return AccessTools.Constructor(type, [typeof(AppWindow)]);
     }
-    
+
     static bool Prefix(AppWindow window)
     {
         return !IThemeService.UseNativeTitlebar;

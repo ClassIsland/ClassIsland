@@ -16,7 +16,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : AvaloniaObject, IMulti
     {
         get => GetValue(MinimizedDataTemplateProperty);
         set => SetValue(MinimizedDataTemplateProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<DataTemplate> ExpandedDataTemplateProperty = AvaloniaProperty.Register<LessonsListBoxItemTemplateMultiConverter, DataTemplate>(
@@ -25,7 +25,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : AvaloniaObject, IMulti
     {
         get => GetValue(ExpandedDataTemplateProperty);
         set => SetValue(ExpandedDataTemplateProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<DataTemplate> SeparatorDataTemplateProperty = AvaloniaProperty.Register<LessonsListBoxItemTemplateMultiConverter, DataTemplate>(
@@ -34,7 +34,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : AvaloniaObject, IMulti
     {
         get => GetValue(SeparatorDataTemplateProperty);
         set => SetValue(SeparatorDataTemplateProperty, value);
-    
+
     }
 
     public DataTemplate BlankDataTemplate { get; } = new();
@@ -80,7 +80,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : AvaloniaObject, IMulti
         }
 
         var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartTime : currentItem?.EndTime;
-        if ((itemDateTime < selectedItem?.StartTime 
+        if ((itemDateTime < selectedItem?.StartTime
              || itemDateTime.HasValue && itemDateTime.Value <
                 IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().TimeOfDay) && hideFinishedClass)
         {

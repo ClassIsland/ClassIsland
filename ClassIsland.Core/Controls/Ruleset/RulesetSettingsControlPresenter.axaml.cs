@@ -35,7 +35,7 @@ public partial class RulesetSettingsControlPresenter : UserControl
     public RulesetSettingsControlPresenter()
     {
         InitializeComponent();
-        
+
         this.GetObservable(RuleIdProperty).Subscribe(new AnonymousObserver<string>(_ => UpdateContent()));
         this.GetObservable(RuleProperty).Subscribe(new AnonymousObserver<Rule?>(_ => UpdateContent()));
     }

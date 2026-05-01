@@ -11,12 +11,12 @@ public interface IExactTimeService : INotifyPropertyChanged, INotifyPropertyChan
     /// 时间同步状态信息
     /// </summary>
     string SyncStatusMessage { get; set; }
-    
+
     /// <summary>
     /// 立刻同步时间。
     /// </summary>
     void Sync();
-    
+
     /// <summary>
     /// 获取当前精确当地时间。
     /// </summary>

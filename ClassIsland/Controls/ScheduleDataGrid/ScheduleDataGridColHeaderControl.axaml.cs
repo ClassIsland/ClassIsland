@@ -77,7 +77,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
 
         _buttonOpenClassPlanSettings = e.NameScope.Find<Button>("PART_ButtonOpenClassPlanSettings");
         _buttonCreateClassPlan = e.NameScope.Find<Button>("PART_ButtonCreateClassPlan");
-        
+
         if (_buttonOpenClassPlanSettings != null)
         {
             _buttonOpenClassPlanSettings.Click += ButtonOpenClassPlanSettingsOnClick;
@@ -147,7 +147,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         }
 
         ViewModel.SuggestedClassPlanName = sb.ToString();
-        
+
         return;
 
         static string ToWeek(int index) => index switch
@@ -167,7 +167,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
     {
         if (ViewModel.ClassPlanTimeRule.WeekCountDiv == 0 && ViewModel.ClassPlanTimeRule.WeekCountDivTotal <= 2)
         {
-            return;            
+            return;
         }
         var baseDate = Date.AddDays(-(int)Date.DayOfWeek);
         var weekIndex =
@@ -195,7 +195,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
             this.ShowWarningToast("请选择一个有效要复制的课表。");
             return;
         }
-        
+
         var cp = ViewModel.CopyFromClassPlan
             ? ConfigureFileHelper.CopyObject(profileService.Profile.ClassPlans[ViewModel.CopyClassPlanSource])
             : new ClassPlan();
@@ -213,13 +213,13 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
         FlyoutHelper.CloseAncestorFlyout(o);
         Dispatcher.UIThread.Post(() => IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("classisland.sdg.header.creationPopup.complete"));
 
-        if (_scheduleDataGrid == null) 
+        if (_scheduleDataGrid == null)
             return;
         _scheduleDataGrid.SelectedDate = Date;
         _scheduleDataGrid.SelectedClassInfoIndex = 0;
         _scheduleDataGrid.UpdateUiSelection();
     }
-    
+
     private void ScheduleDataGridOnOpenClassPlanSettingsRequested(object? sender, CreateClassPlanEventArgs e)
     {
         if (e.Date != Date)
@@ -232,7 +232,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
             InitClassPlanCreationExp();
             var flyout = _buttonCreateClassPlan.Flyout;
             flyout?.ShowAt(_buttonCreateClassPlan);
-            
+
         }
     }
 
@@ -285,7 +285,7 @@ public partial class ScheduleDataGridColHeaderControl : TemplatedControl
     {
         ViewModel.IsOverlayCreatingPopupOpen = true;
     }
-    
+
     [RelayCommand]
     private void CompleteCreateOverlay(object o)
     {

@@ -23,7 +23,7 @@ public class DesktopToastService : IDesktopToastService, IDisposable
     private string AumId { get; }
 
     private Dictionary<string, Action> ActivationActions { get; } = new();
-    
+
     public async Task ShowToastAsync(DesktopToastContent content)
     {
         var toastBuilder = new ToastContentBuilder()
@@ -84,12 +84,12 @@ public class DesktopToastService : IDesktopToastService, IDisposable
         {
             CleanUpActions();
         };
-        
+
         var notifier = ToastNotificationManagerCompat.CreateToastNotifier();
         notifier.Show(toast);
 
         return;
-        
+
         void CleanUpActions()
         {
             foreach (var action in registeredActions)
@@ -123,22 +123,22 @@ public class DesktopToastService : IDesktopToastService, IDisposable
                 case "file":
                     return sourceUri;
                 case "avares":
-                {
-                    var stream = AssetLoader.Open(sourceUri);
-                    var imagePath = Path.GetTempFileName();
-                    await using var fileStream = File.Create(imagePath);
-                    await stream.CopyToAsync(fileStream);
-                    return new Uri(imagePath);
-                }
+                    {
+                        var stream = AssetLoader.Open(sourceUri);
+                        var imagePath = Path.GetTempFileName();
+                        await using var fileStream = File.Create(imagePath);
+                        await stream.CopyToAsync(fileStream);
+                        return new Uri(imagePath);
+                    }
                 case "http" or "https":
-                {
-                    var imagePath = Path.GetTempFileName();
-                    var client = new HttpClient();
-                    var stream = await client.GetStreamAsync(sourceUri);
-                    await using var fileStream = File.Create(imagePath);
-                    await stream.CopyToAsync(fileStream);
-                    return new Uri(imagePath);
-                }
+                    {
+                        var imagePath = Path.GetTempFileName();
+                        var client = new HttpClient();
+                        var stream = await client.GetStreamAsync(sourceUri);
+                        await using var fileStream = File.Create(imagePath);
+                        await stream.CopyToAsync(fileStream);
+                        return new Uri(imagePath);
+                    }
             }
         }
         catch (Exception)
@@ -150,7 +150,7 @@ public class DesktopToastService : IDesktopToastService, IDisposable
 
     public void ActivateNotificationAction(Guid id)
     {
-        
+
     }
 
     public void Dispose()

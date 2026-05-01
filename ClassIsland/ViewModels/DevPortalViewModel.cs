@@ -20,11 +20,11 @@ public partial class DevPortalViewModel(
     public ITutorialService TutorialService { get; } = tutorialService;
 
     [ObservableProperty] private string _notificationMaskText = "";
-    
+
     [ObservableProperty] private string _notificationOverlayText = "";
 
     [ObservableProperty] private DateTime _targetDate = DateTime.Now;
-    
+
     [ObservableProperty] private TimeSpan _targetTime = TimeSpan.Zero;
 
     [ObservableProperty] private bool _isTargetDateLoaded = false;
@@ -36,7 +36,8 @@ public partial class DevPortalViewModel(
     [ObservableProperty] private bool _toastHaveActions = false;
     [ObservableProperty] private bool _toastCanUserClose = true;
     [ObservableProperty] private object? _oobeIntroControlContent = new Border();
-    [ObservableProperty] private string _markdownText =
+    [ObservableProperty]
+    private string _markdownText =
         """
         # Welcome to ClassIsland!
         

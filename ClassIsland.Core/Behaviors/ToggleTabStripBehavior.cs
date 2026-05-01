@@ -14,7 +14,7 @@ public class ToggleTabStripBehavior : Behavior<TabStrip>
 {
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_PseudoClasses")]
     private static extern IPseudoClasses GetPseudoClasses(StyledElement element);
-    
+
     protected override void OnAttached()
     {
         if (AssociatedObject != null)

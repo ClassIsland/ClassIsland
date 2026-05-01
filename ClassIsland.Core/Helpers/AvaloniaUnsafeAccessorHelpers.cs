@@ -15,7 +15,7 @@ internal static class AvaloniaUnsafeAccessorHelpers
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "GetService")]
     static extern object? GetAvaloniaDependencyService(IAvaloniaDependencyResolver? avaloniaLocator, Type serviceType);
 
-    private static IAvaloniaDependencyResolver? AvaloniaLocator { get; }= GetCurrentAvaloniaLocator(null);
+    private static IAvaloniaDependencyResolver? AvaloniaLocator { get; } = GetCurrentAvaloniaLocator(null);
 
     internal static T? GetAvaloniaLocatorService<T>()
         where T : class
@@ -25,7 +25,7 @@ internal static class AvaloniaUnsafeAccessorHelpers
         object? result = GetAvaloniaDependencyService(AvaloniaLocator, typeof(T));
         return result as T;
     }
-    
+
     public static Win32CompositionMode? GetActiveWin32CompositionMode()
     {
         var renderTimer = GetAvaloniaLocatorService<IRenderTimer>();

@@ -34,7 +34,7 @@ public static class CommonDirectories
     /// <summary>
     /// 应用缓存目录
     /// </summary>
-    public static string AppCacheFolderPath => string.IsNullOrWhiteSpace(OverrideAppCacheFolderPath) 
+    public static string AppCacheFolderPath => string.IsNullOrWhiteSpace(OverrideAppCacheFolderPath)
         ? Path.Combine(AppRootFolderPath, "Cache") : OverrideAppCacheFolderPath;
 
     /// <summary>

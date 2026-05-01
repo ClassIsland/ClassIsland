@@ -1,4 +1,5 @@
 namespace ClassIsland.Core.Models.Weather;
+
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -10,12 +11,12 @@ public class CityInfo
     /// Name 城市或地区名称。
     /// </summary>
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Affiliation 城市或地区所属的国家或地区。
     /// </summary>
     [JsonPropertyName("affiliation")] public string Affiliation { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// LocationKey 城市或地区的唯一标识符。
     /// </summary>
@@ -25,7 +26,7 @@ public class CityInfo
     /// Longitude 城市或地区的经度。
     /// </summary>
     [JsonPropertyName("latitude")] public string Latitude { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Latitude 城市或地区的纬度。
     /// </summary>

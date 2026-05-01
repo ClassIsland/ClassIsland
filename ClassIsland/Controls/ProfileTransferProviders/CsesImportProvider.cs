@@ -26,7 +26,7 @@ namespace ClassIsland.Controls.ProfileTransferProviders;
 public partial class CsesImportProvider : GenericImportProviderBase
 {
     private IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
-    
+
     public CsesImportProvider() : base()
     {
         ImportFileHeader = "CESE 文件路径";

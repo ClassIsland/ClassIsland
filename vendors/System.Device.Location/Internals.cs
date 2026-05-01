@@ -52,7 +52,7 @@ namespace System.Device.Location.Internal
     // The equivalent of PROPVARIANT struct defined in propidl.h
     // Only double and LPWSTR are used in Location platform
     //
-    [StructLayout(LayoutKind.Explicit, Size=24)]
+    [StructLayout(LayoutKind.Explicit, Size = 24)]
     internal class PROPVARIANT : IDisposable
     {
         [FieldOffset(0)] public VarEnum vt = VarEnum.VT_EMPTY;
@@ -124,13 +124,13 @@ namespace System.Device.Location.Internal
     //
     internal struct LocationPropertyKey
     {
-        public static readonly PROPERTYKEY Speed         = new PROPERTYKEY(6);
-        public static readonly PROPERTYKEY Heading       = new PROPERTYKEY(7);
-        public static readonly PROPERTYKEY AddressLine1  = new PROPERTYKEY(23);
-        public static readonly PROPERTYKEY AddressLine2  = new PROPERTYKEY(24);
-        public static readonly PROPERTYKEY City          = new PROPERTYKEY(25);
+        public static readonly PROPERTYKEY Speed = new PROPERTYKEY(6);
+        public static readonly PROPERTYKEY Heading = new PROPERTYKEY(7);
+        public static readonly PROPERTYKEY AddressLine1 = new PROPERTYKEY(23);
+        public static readonly PROPERTYKEY AddressLine2 = new PROPERTYKEY(24);
+        public static readonly PROPERTYKEY City = new PROPERTYKEY(25);
         public static readonly PROPERTYKEY StateProvince = new PROPERTYKEY(26);
-        public static readonly PROPERTYKEY PostalCode    = new PROPERTYKEY(27);
+        public static readonly PROPERTYKEY PostalCode = new PROPERTYKEY(27);
         public static readonly PROPERTYKEY CountryRegion = new PROPERTYKEY(28);
 
     }
@@ -161,10 +161,10 @@ namespace System.Device.Location.Internal
     internal enum ReportStatus
     {
         NotSupported = 0,
-        Error        = 1,
+        Error = 1,
         AccessDenied = 2,
         Initializing = 3,
-        Running      = 4
+        Running = 4
     }
 
     internal enum DesiredAccuracy

@@ -47,7 +47,7 @@ public class GptSoVitsService : ISpeechService
         AudioService = audioService;
         Logger = logger;
         SettingsService = settingsService;
-        
+
         Logger.LogInformation("初始化了 GPTSoVITS 服务。");
     }
 
@@ -199,7 +199,7 @@ public class GptSoVitsService : ISpeechService
                         Logger.LogError("语音文件不存在：{FilePath}", playInfo.FilePath);
                         continue;
                     }
-                    
+
                     Logger.LogDebug("开始播放 {FilePath}", playInfo.FilePath);
                     await AudioService.PlayAudioAsync(playInfo.FilePath,
                         (float)SettingsService.Settings.SpeechVolume, playInfo.CancellationTokenSource.Token);

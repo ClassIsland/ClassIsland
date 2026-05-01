@@ -34,10 +34,10 @@ public class PluginLoadContext : AssemblyLoadContext
     public PluginInfo Info { get; }
 
     private bool UseMacOsPluginLoadingBehavior =>
-        _suppressMacPluginLoader || RuntimeInformation.IsOSPlatform(OSPlatform.OSX); 
+        _suppressMacPluginLoader || RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 
     private AssemblyDependencyResolver? CoreResolver { get; }
-    
+
     private MacPluginAssemblyResolver? MacResolver { get; }
 
     private static IReadOnlyList<string> WinRTDeps { get; } = [
@@ -71,10 +71,10 @@ public class PluginLoadContext : AssemblyLoadContext
                 return assembly;
             }
         }
-        
+
         string? assemblyPath;
         assemblyPath = UseMacOsPluginLoadingBehavior ? MacResolver?.ResolveAssemblyToPath(assemblyName) : CoreResolver?.ResolveAssemblyToPath(assemblyName);
-        
+
         if (assemblyPath != null)
         {
             return LoadFromAssemblyPath(assemblyPath);
@@ -131,14 +131,14 @@ public class MacPluginAssemblyResolver(string componentAssemblyPath)
             _pluginDirectory,
             Path.Combine(_pluginDirectory, "runtimes", "osx", "native")
         };
-        
+
         var arch = RuntimeInformation.ProcessArchitecture switch
         {
             Architecture.X64 => "x64",
             Architecture.Arm64 => "arm64",
             _ => null
         };
-        
+
         if (arch != null)
         {
             searchPaths.Add(Path.Combine(_pluginDirectory, "runtimes", $"osx-{arch}", "native"));
@@ -147,10 +147,10 @@ public class MacPluginAssemblyResolver(string componentAssemblyPath)
         foreach (var path in searchPaths)
         {
             if (!Directory.Exists(path)) continue;
-            
+
             var p1 = Path.Combine(path, $"lib{unmanagedDllName}.dylib");
             if (File.Exists(p1)) return p1;
-            
+
             var p2 = Path.Combine(path, $"{unmanagedDllName}.dylib");
             if (File.Exists(p2)) return p2;
 

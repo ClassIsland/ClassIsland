@@ -18,5 +18,5 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace System.Device.Location
 {
-    
+
 }

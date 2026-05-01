@@ -72,7 +72,7 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
         {
             Logger.LogError(e, "刷新公告失败");
         }
-        
+
     }
 
     public ObservableCollection<Guid> ReadAnnouncementsLocal

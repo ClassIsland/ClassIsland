@@ -28,7 +28,7 @@ public interface IUriNavigationService : IPublicUriNavigationService
 
     internal void HandleAppNavigation(string path, Action<UriNavigationEventArgs> onNavigated);
 
-    
+
     /// <summary>
     /// 注册插件导航主机下的导航处理程序。
     /// </summary>

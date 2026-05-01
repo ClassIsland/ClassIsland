@@ -7,7 +7,7 @@
 /// <param name="name">触发器名称</param>
 /// <param name="iconGlyph">触发器图表类型</param>
 [AttributeUsage(AttributeTargets.Class)]
-public class TriggerInfo(string id, string name, string iconGlyph="\uED55") : Attribute
+public class TriggerInfo(string id, string name, string iconGlyph = "\uED55") : Attribute
 {
     /// <summary>
     /// 触发器 ID

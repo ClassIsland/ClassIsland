@@ -17,7 +17,7 @@ public static class PlatformServices
     /// 平台定位服务
     /// </summary>
     public static ILocationService LocationService { get; internal set; } = new LocationServiceStub();
-    
+
     /// <summary>
     /// 平台桌面服务
     /// </summary>
@@ -37,7 +37,7 @@ public static class PlatformServices
     /// 桌面通知服务
     /// </summary>
     public static IDesktopToastService DesktopToastService { get; internal set; } = new DesktopToastServiceStub();
-    
+
     /// <summary>
     /// 平台文件选取服务
     /// </summary>

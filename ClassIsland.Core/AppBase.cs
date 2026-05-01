@@ -22,7 +22,7 @@ public abstract class AppBase : Application, IAppHost
     /// 重启应用程序。
     /// </summary>
     /// <param name="quiet">是否静默重启</param>
-    public abstract void Restart(bool quiet=false);
+    public abstract void Restart(bool quiet = false);
 
     /// <summary>
     /// 重启应用程序。
@@ -83,7 +83,7 @@ public abstract class AppBase : Application, IAppHost
     /// 应用二进制文件面向的操作系统
     /// </summary>
     public abstract string OperatingSystem { get; internal set; }
-    
+
     /// <summary>
     /// 应用二进制文件的构建类型
     /// </summary>
@@ -114,17 +114,17 @@ public abstract class AppBase : Application, IAppHost
     /// 应用长版本号
     /// </summary>
     public static string AppVersionLong =>
-        #if NIX
+#if NIX
         $"{AppVersion}-{AppCodeName}-NIXBUILD_COMMIT(NIXBUILD_BRANCH) (Core {IAppHost.CoreVersion})";
-        #else
+#else
         $"{AppVersion}-{AppCodeName}-{GitInfo.CommitHash[..7]}({GitInfo.Branch}) (Core {IAppHost.CoreVersion})";
-        #endif
-    
+#endif
+
     /// <summary>
     /// 应用当前生命周期状态
     /// </summary>
     public static ApplicationLifetime CurrentLifetime { get; internal set; } = Enums.ApplicationLifetime.None;
-    
+
     /// <summary>
     /// 应用当前的主窗口
     /// </summary>
@@ -145,12 +145,12 @@ public abstract class AppBase : Application, IAppHost
     /// Lucide Icons 字体
     /// </summary>
     public static FontFamily LucideIconsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#lucide");
-    
+
     /// <summary>
     /// SF Symbols 字体
     /// </summary>
     public static FontFamily SFSymbolsFontFamily { get; } = new FontFamily("avares://ClassIsland.Core/Assets/Fonts/#SF-Symbols");
-    
+
     /// <summary>
     /// 虚根窗口
     /// </summary>
@@ -162,11 +162,11 @@ public abstract class AppBase : Application, IAppHost
     /// <returns>优先返回当前激活的窗口。如果没有激活的窗口，则返回虚窗口。</returns>
     public Window GetRootWindow()
     {
-        var w =  Current.DesktopLifetime?.Windows
-            .Where(x => x.GetType().Name != "TrayPopupRoot" && x is { IsActive: true, IsVisible: true,  PlatformImpl: not null })
+        var w = Current.DesktopLifetime?.Windows
+            .Where(x => x.GetType().Name != "TrayPopupRoot" && x is { IsActive: true, IsVisible: true, PlatformImpl: not null })
             .OrderBy(x => x == MainWindow ? 1 : 0)  // 将主窗口的优先级下降，防止出现因主界面置底导致内容子窗口的问题
             .FirstOrDefault();
-        if (w != null) 
+        if (w != null)
             return w;
         w = PhonyRootWindow;
         w.Activate();

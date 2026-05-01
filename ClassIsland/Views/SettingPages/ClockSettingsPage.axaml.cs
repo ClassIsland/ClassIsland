@@ -17,7 +17,7 @@ namespace ClassIsland.Views.SettingPages;
 public partial class ClockSettingsPage : SettingsPageBase
 {
     public ClockSettingsViewModel ViewModel { get; } = IAppHost.GetService<ClockSettingsViewModel>();
-    
+
     public ClockSettingsPage()
     {
         DataContext = this;

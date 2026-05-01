@@ -36,7 +36,7 @@ public static class ComponentRegistryExtensions
         return services;
     }
 
-    private static ComponentInfo Register(IServiceCollection services, Type component, Type? settings = null) 
+    private static ComponentInfo Register(IServiceCollection services, Type component, Type? settings = null)
     {
         if (component.GetCustomAttributes(false).FirstOrDefault(x => x is ComponentInfo) is not ComponentInfo info)
         {

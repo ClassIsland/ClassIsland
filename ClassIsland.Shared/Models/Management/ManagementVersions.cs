@@ -29,12 +29,12 @@ public class ManagementVersions
     /// 策略版本
     /// </summary>
     public int PolicyVersion { get; set; } = 0;
-    
+
     /// <summary>
     /// 凭据版本
     /// </summary>
     public int CredentialVersion { get; set; } = 0;
-    
+
     /// <summary>
     /// 组件版本
     /// </summary>

@@ -21,15 +21,15 @@ public partial class DebugPageViewModel(
     public ILessonsService LessonsService { get; } = lessonsService;
     public IProfileAnalyzeService ProfileAnalyzeService { get; } = profileAnalyzeService;
     public ILocationService LocationService { get; } = locationService;
-    
+
     [ObservableProperty] private DateTime _targetDate = DateTime.Now;
-    
+
     [ObservableProperty] private TimeSpan _targetTime = TimeSpan.Zero;
 
     [ObservableProperty] private bool _isTargetDateLoaded = false;
 
     [ObservableProperty] private bool _isTargetTimeLoaded = false;
-    
+
     public bool IsTargetDateTimeLoaded => IsTargetDateLoaded && IsTargetTimeLoaded;
-    
+
 }

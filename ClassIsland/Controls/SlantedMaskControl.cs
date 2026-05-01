@@ -147,7 +147,7 @@ public class SlantedMaskControl : Control
     public async void Open()
     {
         await StartSequence(open: true);
-    }   
+    }
 
     /// <summary>关闭遮罩（中间 -> 两边）</summary>
     public async void Close()
@@ -169,7 +169,7 @@ public class SlantedMaskControl : Control
         try
         {
             var animation = new Animation
-            { 
+            {
                 Duration = TimeSpan.FromMilliseconds(stag + dur),
                 FillMode = FillMode.Forward,
                 Easing = open ? new QuarticEaseOut() : new QuadraticEaseIn()// 如果你的 Avalonia 版本没有 Easing 属性，可以移除或改为适配的写法
@@ -177,28 +177,28 @@ public class SlantedMaskControl : Control
             if (open)
             {
                 Region0Progress = Region1Progress = Region2Progress = Region3Progress = Region4Progress = 0;
-                
+
                 animation.Children.AddRange(BuildRegionAnimKeyframe(0, 0, dur, true));
                 animation.Children.AddRange(BuildRegionAnimKeyframe(4, 0, dur, true));
-                
+
                 animation.Children.AddRange(BuildRegionAnimKeyframe(1, (int)(stag * 0.75), dur, true));
                 animation.Children.AddRange(BuildRegionAnimKeyframe(3, (int)(stag * 0.75), dur, true));
-                
+
                 animation.Children.AddRange(BuildRegionAnimKeyframe(2, (int)(stag * 1), dur, true));
             }
             else
             {
                 Region0Progress = Region1Progress = Region2Progress = Region3Progress = Region4Progress = 1;
-                
+
                 animation.Children.AddRange(BuildRegionAnimKeyframe(2, 0, dur, false));
-                
+
                 animation.Children.AddRange(BuildRegionAnimKeyframe(1, (int)(stag * 0.75), dur, false));
                 animation.Children.AddRange(BuildRegionAnimKeyframe(3, (int)(stag * 0.75), dur, false));
-                
+
                 animation.Children.AddRange(BuildRegionAnimKeyframe(0, (int)(stag * 1), dur, false));
                 animation.Children.AddRange(BuildRegionAnimKeyframe(4, (int)(stag * 1), dur, false));
             }
-            
+
             await animation.RunAsync(this, token);
         }
         catch (TaskCanceledException)
@@ -221,8 +221,8 @@ public class SlantedMaskControl : Control
 
         return;
     }
-    
-    private IList<KeyFrame> BuildRegionAnimKeyframe(int regionIndex, int delayMs, int durationMs, bool forward, bool last=false)
+
+    private IList<KeyFrame> BuildRegionAnimKeyframe(int regionIndex, int delayMs, int durationMs, bool forward, bool last = false)
     {
         var targetProperty = GetRegionProperty(regionIndex);
         double from = forward ? 0.0 : 1.0;
@@ -249,8 +249,8 @@ public class SlantedMaskControl : Control
 
         return [kf0, kf1];
     }
-    
-    
+
+
 
     // 辅助：根据 index 返回对应的 StyledProperty<double>
     private static AvaloniaProperty<double> GetRegionProperty(int idx)
@@ -321,7 +321,7 @@ public class SlantedMaskControl : Control
             double fullW = totalW * weight[i + 1] + 0.5;
             double currentW = fullW * prog;
             if (currentW < 0.0001) continue;
-            
+
             var p1 = new Point(rCenter - currentW / 2.0, 0);
             var p2 = new Point(rCenter + currentW / 2.0, 0);
             var p3 = new Point(rCenter + currentW / 2.0 - offset, h);

@@ -12,8 +12,8 @@ public interface IDesktopToastService
     /// </summary>
     /// <param name="content">通知内容</param>
     Task ShowToastAsync(DesktopToastContent content);
-    
-    
+
+
     /// <summary>
     /// 显示一条桌面通知。
     /// </summary>

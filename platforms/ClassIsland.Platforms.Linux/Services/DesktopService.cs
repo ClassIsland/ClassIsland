@@ -9,7 +9,7 @@ public class DesktopService : IDesktopService
 {
     private static string StartupPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         ".config/autostart/cn.classisland.app.desktop");
-    
+
     public bool IsAutoStartEnabled
     {
         get =>
@@ -26,7 +26,8 @@ public class DesktopService : IDesktopService
                 if (value)
                 {
                     _ = ShortcutHelpers.CreateFreedesktopShortcutAsync(startupPath);
-                } else if (File.Exists(startupPath))
+                }
+                else if (File.Exists(startupPath))
                 {
                     File.Delete(startupPath);
                 }
@@ -40,6 +41,6 @@ public class DesktopService : IDesktopService
 
     public bool IsUrlSchemeRegistered
     {
-        get => false;set{} 
+        get => false; set { }
     }
 }

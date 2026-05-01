@@ -18,7 +18,8 @@ public static class ListExtensions
     /// var list = new List&lt;int&gt; { 1, 2, 3 };<br/>
     /// list.GetValueOrDefault(5, -1); // 返回 -1
     /// </example>
-    [Pure] public static T? GetValueOrDefault<T>(this IReadOnlyList<T>? source, int index, T? defaultValue = default)
+    [Pure]
+    public static T? GetValueOrDefault<T>(this IReadOnlyList<T>? source, int index, T? defaultValue = default)
     {
         if (source == null) return defaultValue;
         return index >= 0 && index < source.Count

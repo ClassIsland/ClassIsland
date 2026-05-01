@@ -17,7 +17,7 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
     public TaskBarIconService(ILogger<TaskBarIconService> logger)
     {
         Logger = logger;
-        
+
         AppBase.Current.AppStopping += CurrentOnAppStopping;
     }
 
@@ -38,7 +38,7 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
     };
 
     public IList<NativeMenuItemBase> MoreOptionsMenuItems => MoreOptionsMenu!.Items;
-    
+
     public NativeMenu? MoreOptionsMenu { get; set; }
 
     public async Task StartAsync(CancellationToken cancellationToken)

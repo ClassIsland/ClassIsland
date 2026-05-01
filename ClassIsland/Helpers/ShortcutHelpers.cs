@@ -53,8 +53,8 @@ public static class ShortcutHelpers
             await CopyFreeDesktopIconAsync();
         }
     }
-    
-    public static async Task CreateClassSwapShortcutAsync(string path="")
+
+    public static async Task CreateClassSwapShortcutAsync(string path = "")
     {
         var desktopPath = string.IsNullOrEmpty(path) ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "快捷换课.url") : path;
         var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/ClassSwap.url"));
@@ -100,7 +100,7 @@ public static class ShortcutHelpers
 
     public static void SetUnixExecutePermission(string path)
     {
-        if (!OperatingSystem.IsLinux()) 
+        if (!OperatingSystem.IsLinux())
             return;
         var unixFileInfo = new UnixFileInfo(path);
         unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute |

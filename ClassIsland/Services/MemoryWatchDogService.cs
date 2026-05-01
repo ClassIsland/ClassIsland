@@ -51,7 +51,7 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
         var size = GetMemoryUsage();
         var formatted = Helpers.StorageSizeHelper.FormatSize((ulong)size);
         Logger.LogInformation("当前内存使用: {} ({} Bytes)", formatted, size);
-        if (size < MemoryLimitBytes) 
+        if (size < MemoryLimitBytes)
             return;
         var limitFormatted = Helpers.StorageSizeHelper.FormatSize((ulong)MemoryLimitBytes);
         Logger.LogCritical("达到内存使用上限！ {} ({} Bytes) / {} ({} Bytes)",

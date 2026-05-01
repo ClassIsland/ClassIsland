@@ -14,8 +14,8 @@ public class GuidEmptyFallbackConverter : JsonConverter<Guid>
     public override Guid Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var str = reader.GetString();
-        return string.IsNullOrWhiteSpace(str) ? 
-            Guid.Empty : 
+        return string.IsNullOrWhiteSpace(str) ?
+            Guid.Empty :
             Guid.Parse(str);
     }
 

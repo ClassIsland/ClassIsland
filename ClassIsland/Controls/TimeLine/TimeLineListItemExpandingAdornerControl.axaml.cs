@@ -13,7 +13,7 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
 {
     private static readonly TimeSpan MinTime = TimeSpan.Zero;
     private static readonly TimeSpan MaxTime = new TimeSpan(23, 59, 59);
-    
+
     public TimeLineListItemExpandingAdornerControl() => InitializeComponent();
 
     public static readonly StyledProperty<TimeLayoutItem> TimePointProperty = AvaloniaProperty.Register<TimeLineListItemExpandingAdornerControl, TimeLayoutItem>(
@@ -60,7 +60,7 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
         get => GetValue(IsStickyProperty);
         set => SetValue(IsStickyProperty, value);
     }
-    
+
     private TimeSpan _initStartTime = TimeSpan.Zero;
     private TimeSpan _initEndTime = TimeSpan.Zero;
 

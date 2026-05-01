@@ -12,12 +12,12 @@ public class PopupHelper
     /// 请求禁用全部 Popup 时触发。
     /// </summary>
     public static event EventHandler? DisablePopupsRequested;
-    
+
     /// <summary>
     /// 请求恢复全部 Popup 时触发。
     /// </summary>
     public static event EventHandler? RestorePopupsRequested;
-    
+
     /// <summary>
     /// 禁用全部 Popup
     /// </summary>
@@ -25,7 +25,7 @@ public class PopupHelper
     {
         DisablePopupsRequested?.Invoke(null, EventArgs.Empty);
     }
-    
+
     /// <summary>
     /// 恢复全部 Popup
     /// </summary>

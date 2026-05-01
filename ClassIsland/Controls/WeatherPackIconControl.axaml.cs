@@ -18,7 +18,7 @@ namespace ClassIsland.Controls;
 public partial class WeatherPackIconControl : UserControl, INotifyPropertyChanged
 {
     private string _weatherName = "";
-    
+
     public static readonly StyledProperty<string> CodeProperty = AvaloniaProperty.Register<WeatherPackIconControl, string>(
         nameof(Code));
 
@@ -74,7 +74,7 @@ public partial class WeatherPackIconControl : UserControl, INotifyPropertyChange
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-    
+
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

@@ -67,7 +67,7 @@ public class TutorialStateProvider : ContentControl
         {
             return;
         }
-        
+
         TutorialService.SetIsTutorialCompleted(path, IsCompleted);
     }
 
@@ -76,12 +76,12 @@ public class TutorialStateProvider : ContentControl
         TutorialService.TutorialStateChanged += TutorialServiceOnTutorialStateChanged;
         UpdateContent();
     }
-    
+
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         TutorialService.TutorialStateChanged -= TutorialServiceOnTutorialStateChanged;
     }
-    
+
     private void TutorialServiceOnTutorialStateChanged(object? sender, EventArgs e)
     {
         UpdateContent();
@@ -94,12 +94,12 @@ public class TutorialStateProvider : ContentControl
             IsCompleted = false;
             return;
         }
-        
+
         var completedCount = Tutorial.Paragraphs
             .Select(paragraph => $"{Tutorial.Id}/{paragraph.Id}")
             .Count(paragraphPath => TutorialService.GetIsTutorialCompleted(paragraphPath));
         CompletedParagraphs = completedCount;
-        
+
         var path = $"{Tutorial.Id}/{Paragraph?.Id}";
         var completed = TutorialService.GetIsTutorialCompleted(path);
         if (completed == IsCompleted)

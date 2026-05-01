@@ -16,7 +16,7 @@ public class AdornerAttachingBehavior : StyledElementBehavior<Control>
     {
         get => GetValue(AdornerTemplateProperty);
         set => SetValue(AdornerTemplateProperty, value);
-    
+
     }
 
     public static readonly StyledProperty<object> AdornerDataContextProperty = AvaloniaProperty.Register<AdornerAttachingBehavior, object>(
@@ -25,7 +25,7 @@ public class AdornerAttachingBehavior : StyledElementBehavior<Control>
     {
         get => GetValue(AdornerDataContextProperty);
         set => SetValue(AdornerDataContextProperty, value);
-    
+
     }
 
     private Control? _adorner;
@@ -46,12 +46,12 @@ public class AdornerAttachingBehavior : StyledElementBehavior<Control>
         base.OnDetaching();
     }
 
-    
+
 
     private void RemoveAdorner()
     {
         var owner = AssociatedObject;
-        if (owner == null )
+        if (owner == null)
         {
             return;
         }
@@ -80,7 +80,7 @@ public class AdornerAttachingBehavior : StyledElementBehavior<Control>
             ClipToBounds = false,
             Template = AdornerTemplate
         };
-        
+
         AdornerLayer.SetIsClipEnabled(_adorner, false);
         layer?.Children.Add(_adorner);
         AdornerLayer.SetAdornedElement(_adorner, AssociatedObject);

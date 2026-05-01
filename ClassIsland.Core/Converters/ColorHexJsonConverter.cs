@@ -60,7 +60,7 @@ public class ColorHexJsonConverter : JsonConverter<Color>
 
             return new Color(a, r, g, b);
         }
-        
+
         reader.Skip();
         return default;
     }
@@ -68,6 +68,6 @@ public class ColorHexJsonConverter : JsonConverter<Color>
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, Color value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(ColorToHexConverter.ToHexString(value, AlphaComponentPosition.Trailing, includeSymbol:true));
+        writer.WriteStringValue(ColorToHexConverter.ToHexString(value, AlphaComponentPosition.Trailing, includeSymbol: true));
     }
 }

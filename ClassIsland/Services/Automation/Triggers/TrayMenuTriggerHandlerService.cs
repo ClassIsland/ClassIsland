@@ -22,7 +22,7 @@ public class TrayMenuTriggerHandlerService
         [NativeMenuItemAssist.IconSourceProperty] = new FluentIconSource("\uedbf")
     };
     private NativeMenu SubMenu { get; } = [];
-    
+
     public TrayMenuTriggerHandlerService(ITaskBarIconService taskBarIconService)
     {
         TaskBarIconService = taskBarIconService;
@@ -47,14 +47,14 @@ public class TrayMenuTriggerHandlerService
         {
             SubMenu.Items.Clear();
         }
-        
+
         SubMenu.Items.Add(item);
     }
-    
+
     public void RemoveMenuItem(NativeMenuItem item)
     {
         SubMenu.Items.Remove(item);
-        
+
         if (SubMenu.Items.Count == 0)
         {
             SubMenu.Items.Add(EmptyItem);

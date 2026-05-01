@@ -9,7 +9,7 @@ public class FileRepoItem
     /// 代表这个文件本身的 SHA512 校验值
     /// </summary>
     public byte[] FileSha512 { get; set; } = [];
-    
+
     /// <summary>
     /// 代表这个文件的压缩档的 SHA512 校验值
     /// </summary>

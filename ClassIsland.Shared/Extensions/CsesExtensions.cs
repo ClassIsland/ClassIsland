@@ -20,7 +20,7 @@ public static class CsesExtensions
     /// <param name="profile">CSES 格式课表</param>
     /// <param name="mergeProfile">需要合并的 ClassIsland 课表</param>
     /// <returns>ClassIsland 格式课表</returns>
-    public static Profile ToClassIslandObject(this CsesSharp.Models.Profile profile, Profile? mergeProfile=null)
+    public static Profile ToClassIslandObject(this CsesSharp.Models.Profile profile, Profile? mergeProfile = null)
     {
         var result = mergeProfile ?? new Profile();
         var subjectsCache = new Dictionary<string, Guid>();
@@ -140,7 +140,7 @@ public static class CsesExtensions
 
         profile.RefreshTimeLayouts();
         foreach (var i in profile.ClassPlans.Where(x => x.Value is
-                     { TimeLayout: not null, IsEnabled: true, TimeRule.WeekCountDivTotal: <= 2, TimeRule.WeekCountDiv: <= 2 }).ToList())
+        { TimeLayout: not null, IsEnabled: true, TimeRule.WeekCountDivTotal: <= 2, TimeRule.WeekCountDiv: <= 2 }).ToList())
         {
             i.Value.RefreshClassesList();
             var schedule = new Schedule()

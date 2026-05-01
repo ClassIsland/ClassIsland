@@ -8,12 +8,12 @@ namespace ClassIsland.Converters;
 public class StringPreventEmptyConverter : IValueConverter
 {
     public static StringPreventEmptyConverter Instance { get; } = new();
-    
+
     private StringPreventEmptyConverter()
     {
-        
+
     }
-    
+
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         return value;

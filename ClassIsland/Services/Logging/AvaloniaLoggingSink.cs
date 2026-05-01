@@ -11,7 +11,7 @@ namespace ClassIsland.Services.Logging;
 public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
 {
     private LogEventLevel Level { get; } = level;
-    
+
     ILogger<AvaloniaLoggingSink>? _logger;
 
     ILogger<AvaloniaLoggingSink>? Logger
@@ -38,7 +38,7 @@ public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
         {
             return;
         }
-        
+
         var message = Format<object, object, object>(area, messageTemplate, source, null);
 
         switch (level)
@@ -74,7 +74,7 @@ public class AvaloniaLoggingSink(LogEventLevel level) : ILogSink
         {
             return;
         }
-        
+
         var message = Format<object, object, object>(area, messageTemplate, source, propertyValues);
 
         switch (level)

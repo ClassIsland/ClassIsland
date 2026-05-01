@@ -49,7 +49,7 @@ public class FileLoggerProvider : ILoggerProvider
             {
                 AutoFlush = true
             };
-            _ = Task.Run(() =>  ProcessPreviousLogs(logs, currentLogFile));
+            _ = Task.Run(() => ProcessPreviousLogs(logs, currentLogFile));
         }
         catch (Exception e)
         {

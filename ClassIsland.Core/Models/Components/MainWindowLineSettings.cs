@@ -25,7 +25,7 @@ public partial class MainWindowLineSettings : ObservableObject, IMainWindowCusto
     /// 是否启用提醒
     /// </summary>
     [ObservableProperty] private bool _isNotificationEnabled = true;
-    
+
     [ObservableProperty] private bool _isResourceOverridingEnabled;
     [ObservableProperty] private double _mainWindowSecondaryFontSize = 14;
     [ObservableProperty] private double _mainWindowBodyFontSize = 16;
@@ -40,7 +40,7 @@ public partial class MainWindowLineSettings : ObservableObject, IMainWindowCusto
     [ObservableProperty] private double _customCornerRadius;
     [ObservableProperty] private bool _isCustomCornerRadiusEnabled;
     [ObservableProperty] private double _opacity = 1.0;
-    
+
     [ObservableProperty] private bool _isVisible = true;
     [ObservableProperty] private bool _hideOnRule = false;
     [ObservableProperty] private Ruleset.Ruleset _hidingRules = new();

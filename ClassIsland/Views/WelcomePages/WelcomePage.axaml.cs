@@ -15,7 +15,7 @@ namespace ClassIsland.Views.WelcomePages;
 public partial class WelcomePage : UserControl, IWelcomePage
 {
     public WelcomeViewModel ViewModel { get; set; } = null!;
-    
+
     public WelcomePage()
     {
         InitializeComponent();
@@ -53,7 +53,7 @@ public partial class WelcomePage : UserControl, IWelcomePage
 
         welcomeWindow.Pages.Clear();
         welcomeWindow.Pages.AddRange([typeof(WelcomePage), typeof(LicensePage), typeof(DataTransferPage)]);
-        
+
         NavigateNext();
     }
 

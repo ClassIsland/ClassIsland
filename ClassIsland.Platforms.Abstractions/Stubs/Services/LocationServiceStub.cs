@@ -10,9 +10,9 @@ public class LocationServiceStub : ILocationService
 {
     internal LocationServiceStub()
     {
-        
+
     }
-    
+
     public async Task<LocationCoordinate> GetLocationAsync()
     {
         return new LocationCoordinate()

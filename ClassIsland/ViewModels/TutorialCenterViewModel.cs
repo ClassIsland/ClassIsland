@@ -9,11 +9,11 @@ namespace ClassIsland.ViewModels;
 
 public partial class TutorialCenterViewModel(SettingsService settingsService, ITutorialService tutorialService) : ObservableObject
 {
-   public SettingsService SettingsService { get; } = settingsService;
-   public ITutorialService TutorialService { get; } = tutorialService;
+    public SettingsService SettingsService { get; } = settingsService;
+    public ITutorialService TutorialService { get; } = tutorialService;
 
-   [ObservableProperty] private TutorialGroup? _selectedTutorialGroup;
-   [ObservableProperty] private Tutorial? _selectedTutorial;
-   
-   public ObservableCollection<object> NavigationViewItems { get; } = [];
+    [ObservableProperty] private TutorialGroup? _selectedTutorialGroup;
+    [ObservableProperty] private Tutorial? _selectedTutorial;
+
+    public ObservableCollection<object> NavigationViewItems { get; } = [];
 }

@@ -16,8 +16,8 @@ public partial class StorageSettingsViewModel(
     public SettingsService SettingsService { get; } = settingsService;
     public ILogger<StorageSettingsPage> Logger { get; } = logger;
     public IManagementService ManagementService { get; } = managementService;
-    
+
     [ObservableProperty] private bool _isBackingUp = false;
     [ObservableProperty] private bool _isBackupFinished = false;
-    
+
 }

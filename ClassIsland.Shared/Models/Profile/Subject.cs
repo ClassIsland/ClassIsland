@@ -70,8 +70,8 @@ public class Subject : AttachableSettingsObject
             OnPropertyChanged();
         }
     }
-    
-    
+
+
 
     /// <summary>
     /// 代表后备科目。
@@ -81,7 +81,7 @@ public class Subject : AttachableSettingsObject
         Initial = "?",
         Name = "???"
     };
-    
+
     /// <summary>
     /// 代表一个空白科目。
     /// </summary>

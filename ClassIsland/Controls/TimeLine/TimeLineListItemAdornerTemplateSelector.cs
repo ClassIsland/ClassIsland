@@ -12,7 +12,7 @@ public class TimeLineListItemAdornerTemplateSelector : AvaloniaObject, IControlT
 {
     public const string ExpandingTimePointAdornerKey = "ExpandingTimePointAdorner";
     public const string LineTimePointAdornerKey = "LineTimePointAdorner";
-    
+
     [Content]
     public Dictionary<string, ControlTemplate> Templates { get; set; } = new();
 
@@ -26,7 +26,7 @@ public class TimeLineListItemAdornerTemplateSelector : AvaloniaObject, IControlT
         get => _timeType;
         set => SetAndRaise(TimeTypeProperty, ref _timeType, value);
     }
-    
+
     public TemplateResult<Control>? Build(TemplatedControl param)
     {
         return TimeType switch

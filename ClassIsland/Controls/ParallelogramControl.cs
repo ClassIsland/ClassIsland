@@ -104,6 +104,6 @@ public class ParallelogramControl : Control
 
         context.DrawGeometry(Fill, pen, geometry);
     }
-    
-    
+
+
 }

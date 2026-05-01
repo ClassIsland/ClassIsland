@@ -36,9 +36,9 @@ public abstract class SettingsPageBase : UserControl
     /// <param name="key">抽屉资源键名</param>
     /// <param name="useGlobalDataContext">是否使用设置界面的数据上下文，为false时则使用本页面的数据上下文。</param>
     /// <param name="dataContext">抽屉元素的数据上下文</param>
-    protected void OpenDrawer(string key, bool useGlobalDataContext=false, object? dataContext=null)
+    protected void OpenDrawer(string key, bool useGlobalDataContext = false, object? dataContext = null)
     {
-        OpenDrawer(this.FindResource(key)!, useGlobalDataContext,  dataContext);
+        OpenDrawer(this.FindResource(key)!, useGlobalDataContext, dataContext);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public abstract class SettingsPageBase : UserControl
     /// <param name="o">要在抽屉中显示的对象</param>
     /// <param name="useGlobalDataContext">是否使用设置界面的数据上下文，为false时则使用本页面的数据上下文。</param>
     /// <param name="dataContext">抽屉元素的数据上下文</param>
-    protected void OpenDrawer(object o, bool useGlobalDataContext=false, object? dataContext=null)
+    protected void OpenDrawer(object o, bool useGlobalDataContext = false, object? dataContext = null)
     {
         if (o is Control e && !useGlobalDataContext)
         {
@@ -71,7 +71,7 @@ public abstract class SettingsPageBase : UserControl
     {
         RequestRestartCommand.Execute(null);
     }
-    
+
     /// <summary>
     /// 导航到本设置页面时使用的 Uri（如有）
     /// </summary>

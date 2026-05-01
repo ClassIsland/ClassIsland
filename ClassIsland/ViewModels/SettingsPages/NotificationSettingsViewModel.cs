@@ -82,7 +82,7 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
     private INotificationSenderRegisterInfo? _selectedRegisterInfo;
     private string? _notificationSettingsSelectedChannel;
     private object? _speechProviderSettingsControl;
-    
+
     [ObservableProperty] private ObservableCollection<string> _notificationProvidersFiltered = null!;
 
     public NotificationSettingsViewModel(SettingsService settingsService,

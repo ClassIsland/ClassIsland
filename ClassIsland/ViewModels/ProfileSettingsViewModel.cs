@@ -90,7 +90,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isTransferring;
     [ObservableProperty] private int _selectedClassIndex2 = -1;
 
-/// <inheritdoc/>
+    /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
         SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
         IActionService actionService,

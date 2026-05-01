@@ -12,10 +12,10 @@ public class AppWindowInitializeAppWindowPatcher
 {
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_PseudoClasses")]
     private static extern IPseudoClasses GetPseudoClasses(StyledElement window);
-    
+
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "set_IsWindows")]
     private static extern void SetIsWindowsProperty(AppWindow window, bool v);
-    
+
     static void Postfix(AppWindow __instance)
     {
         if (!IThemeService.UseNativeTitlebar) return;

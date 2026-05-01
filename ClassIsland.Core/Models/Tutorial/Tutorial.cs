@@ -13,7 +13,7 @@ public partial class Tutorial : ObservableObject, IXmlnsAttached
     /// 教程 ID
     /// </summary>
     [ObservableProperty] private string _id = "";
-    
+
     /// <summary>
     /// 教程标题
     /// </summary>
@@ -47,6 +47,6 @@ public partial class Tutorial : ObservableObject, IXmlnsAttached
     /// 包含的段落
     /// </summary>
     [ObservableProperty] private ObservableCollection<TutorialParagraph> _paragraphs = [];
-    
+
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
 }

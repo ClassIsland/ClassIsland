@@ -12,7 +12,8 @@ public class AppStartupTrigger : TriggerBase
 {
     public override void Loaded()
     {
-        if (AppBase.CurrentLifetime < ApplicationLifetime.Running) {
+        if (AppBase.CurrentLifetime < ApplicationLifetime.Running)
+        {
             Trigger();
         }
     }

@@ -26,12 +26,12 @@ public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewM
     private ListBox? _sourceListBox;
 
     private ListBoxItem? _sourceListBoxItem;
-    
+
     private static (int index, bool found) GetTargetIndex(ListBox listBox, DragEventArgs e, IList<ComponentSettings> items, ListBoxItem? explicitTarget)
     {
         var pos = e.GetPosition(listBox);
         if (listBox.GetVisualAt(pos) is Control targetControl
-            && targetControl.FindAncestorOfType<ListBoxItem>() is {} listBoxItem
+            && targetControl.FindAncestorOfType<ListBoxItem>() is { } listBoxItem
             && listBoxItem.DataContext is ComponentSettings targetItem)
         {
             var rPos = e.GetPosition(listBoxItem);
@@ -46,7 +46,7 @@ public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewM
         var half = pos.X > listBox.Bounds.Width / 2;
         return (items.Count > 0 ? (half ? items.Count - 1 : -1) : -1, items.Count > 0);
     }
-    
+
     public override void Enter(object? sender, DragEventArgs e, object? sourceContext, object? targetContext)
     {
         e.DragEffects = sourceContext switch
@@ -56,7 +56,7 @@ public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewM
             _ => DragDropEffects.None
         };
     }
-    
+
 
     public override void Drop(object? sender, DragEventArgs e, object? sourceContext, object? targetContext)
     {
@@ -78,7 +78,7 @@ public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewM
                 ComponentsService.LoadComponentSettings(componentSettings,
                     componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!);
                 break;
-            case EditableComponentsListBoxDragData { ComponentSettings: {} settings, SourceList: {} sourceList }:
+            case EditableComponentsListBoxDragData { ComponentSettings: { } settings, SourceList: { } sourceList }:
                 var oldIndex = components.IndexOf(settings);
                 if (settings == ViewModel.SelectedRootComponent && components == ViewModel.SelectedComponentContainerChildren)
                 {
@@ -87,9 +87,9 @@ public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewM
                 var sourceIndex = sourceList.IndexOf(settings);
                 if (sourceIndex < 0)
                 {
-                    return ;
+                    return;
                 }
-                    
+
                 if (ReferenceEquals(sourceList, components))
                 {
                     var moveIndex = foundTargetIndex ? targetIndex : components.Count - 1;
@@ -104,13 +104,13 @@ public class ComponentsSettingsPageDropHandler(ComponentsSettingsViewModel viewM
         }
 
     }
-    
+
     public override bool Validate(object? sender, DragEventArgs e, object? sourceContext, object? targetContext, object? state)
     {
         if (sourceContext is not ComponentInfo && sourceContext is not ComponentSettings)
             return false;
         if (sourceContext is ComponentSettings settings1 && targetContext is ObservableCollection<ComponentSettings> components
-                                                        && settings1 == ViewModel.SelectedRootComponent 
+                                                        && settings1 == ViewModel.SelectedRootComponent
                                                         && Equals(components, ViewModel.SelectedComponentContainerChildren))
         {
             return false;

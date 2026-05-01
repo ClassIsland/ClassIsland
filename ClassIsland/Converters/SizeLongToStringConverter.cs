@@ -11,7 +11,8 @@ public class SizeLongToStringConverter : IValueConverter
         if (value is double d)
         {
             return Helpers.StorageSizeHelper.FormatSize((ulong)d);
-        } else if (value is long d2)
+        }
+        else if (value is long d2)
         {
             return Helpers.StorageSizeHelper.FormatSize((ulong)d2);
         }

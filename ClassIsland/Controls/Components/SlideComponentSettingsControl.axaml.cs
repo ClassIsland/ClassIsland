@@ -30,7 +30,7 @@ public partial class SlideComponentSettingsControl : ComponentBase<SlideComponen
 
     private void ButtonOpenPauseRuleset_OnClick(object sender, RoutedEventArgs e)
     {
-        if (this.FindResource("RulesetControl") is RulesetControl rulesetControl) 
+        if (this.FindResource("RulesetControl") is RulesetControl rulesetControl)
             rulesetControl.Ruleset = Settings.PauseRule;
         OpenDrawer("RulesetControl");
     }

@@ -17,7 +17,7 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
     IDictionary where TKey : notnull
 {
     private const string IndexerName = "Item";
-    
+
     private Dictionary<TKey, TValue> _inner;
 
     /// <summary>
@@ -198,9 +198,9 @@ public class ObservableDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
 
     /// <inheritdoc/>
 #if NETCOREAPP
-    public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) 
+    public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
 #else
-    public bool TryGetValue(TKey key, out TValue value) 
+    public bool TryGetValue(TKey key, out TValue value)
 #endif
         => _inner.TryGetValue(key, out value);
 

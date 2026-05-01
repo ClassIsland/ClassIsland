@@ -119,13 +119,13 @@ public partial class ScheduleDayControl : UserControl
         UpdateData();
         e.Handled = true;
     }
-    
+
     private void ButtonCloseSchedulePopup_OnClick(object sender, RoutedEventArgs e)
     {
         FlyoutHelper.CloseAncestorFlyout(sender);
         e.Handled = true;
     }
-    
+
 
     private void ButtonOrderSchedule_OnClick(object sender, RoutedEventArgs e)
     {

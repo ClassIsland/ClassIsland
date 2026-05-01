@@ -35,7 +35,7 @@ public partial class NotificationProviderSettingsIndicatorControl : UserControl
         get => GetValue(IsSettingsEnabledProperty);
         set => SetValue(IsSettingsEnabledProperty, value);
     }
-    
+
     public NotificationProviderSettingsIndicatorControl()
     {
         InitializeComponent();

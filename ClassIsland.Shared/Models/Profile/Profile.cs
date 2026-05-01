@@ -108,7 +108,7 @@ public class Profile : ObservableRecipient
             throw new ArgumentException("不能解散默认课表群和全局课表群。", nameof(id));
         }
 
-        foreach (var i in ClassPlans   
+        foreach (var i in ClassPlans
                      .Where(x => x.Value.AssociatedGroup == id))
         {
             i.Value.AssociatedGroup = ClassPlanGroup.DefaultGroupGuid;
@@ -136,7 +136,7 @@ public class Profile : ObservableRecipient
         ClassPlanGroups.Remove(id);
     }
 
-    private void UpdateEditingSubjects(NotifyCollectionChangedEventArgs? e=null)
+    private void UpdateEditingSubjects(NotifyCollectionChangedEventArgs? e = null)
     {
         if (e != null)
         {
@@ -207,7 +207,7 @@ public class Profile : ObservableRecipient
 
         foreach (var i in Subjects)
         {
-            Console.WriteLine($"{i.Key} {i.Value.Name}" );
+            Console.WriteLine($"{i.Key} {i.Value.Name}");
         }
     }
 
@@ -260,7 +260,7 @@ public class Profile : ObservableRecipient
             if (Equals(value, _classPlans)) return;
             _classPlans = value;
             OnPropertyChanged();
-            _classPlans.CollectionChanged += delegate(object? sender, NotifyCollectionChangedEventArgs args)
+            _classPlans.CollectionChanged += delegate (object? sender, NotifyCollectionChangedEventArgs args)
             {
                 RefreshTimeLayouts();
             };

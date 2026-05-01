@@ -10,7 +10,7 @@ namespace ClassIsland.Core.Controls;
 public static class CommonTaskDialogs
 {
     private static Window PhonyXamlRootWindow { get; } = new();
-    
+
     /// <summary>
     /// 显示基本提示框
     /// </summary>
@@ -32,7 +32,7 @@ public static class CommonTaskDialogs
             },
             XamlRoot = xamlRoot ?? AppBase.Current.GetRootWindow()
         };
-        
+
         return await dialog.ShowAsync();
     }
 }

@@ -102,7 +102,7 @@ public partial class RulesetControl : UserControl
     {
         Dispatcher.UIThread.Post(() =>
         {
-            if (MainListBox.Scroll != null) 
+            if (MainListBox.Scroll != null)
                 MainListBox.Scroll.Offset = new Vector(0, 0);
         });
     }

@@ -30,7 +30,7 @@ public class NotificationPriority : IComparable
     /// 提醒是否插队。
     /// </summary>
     public bool IsPriorityOverride { get; }
-    
+
     /// <summary>
     /// 提醒是否已经播放
     /// </summary>
@@ -43,7 +43,7 @@ public class NotificationPriority : IComparable
         {
             return -1;
         }
-        
+
         if (IsPriorityOverride)
         {
             return 1;

@@ -123,7 +123,7 @@ public partial class ProfileSettingsWindow : MyWindow
         if (TimeLineListControl?.SelectedItem != null)
             TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
     }
-    
+
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
         BuildTransferNavigationItems();
@@ -192,7 +192,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
             Activate();
         }
-        
+
         ViewModel.TutorialService.PushToNextSentenceByTag("classisland.profileSettingsWindow.open");
 
         if (uri == null || uri.Segments.Length < 3)
@@ -201,7 +201,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
 
         var page = uri.Segments[2];
-        ViewModel.MasterPageTabSelectIndex = page.ToLower() switch 
+        ViewModel.MasterPageTabSelectIndex = page.ToLower() switch
         {
             "classplans" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 0,
             "timelayouts" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 1,
@@ -224,7 +224,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.ProfileService.SaveProfile();
         Hide();
     }
-    
+
     private void MasterTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         Dispatcher.UIThread.Post(() =>
@@ -236,7 +236,7 @@ public partial class ProfileSettingsWindow : MyWindow
             }
         });
     }
-    
+
     private void ButtonHelp_OnClick(object? sender, RoutedEventArgs e)
     {
         UriNavigationCommands.UriNavigationCommand.Execute("https://docs.classisland.tech/app/profile/");
@@ -250,8 +250,8 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         ViewModel.Profiles = new ObservableCollection<string>
         (from i in Directory.GetFiles(Services.ProfileService.ProfilePath)
-            where i.EndsWith(".json")
-            select Path.GetFileName(i));
+         where i.EndsWith(".json")
+         select Path.GetFileName(i));
     }
 
     private async void ButtonTrustProfile_OnClick(object? sender, RoutedEventArgs e)
@@ -398,7 +398,7 @@ public partial class ProfileSettingsWindow : MyWindow
             SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.remove", 1,
                 [
                     new KeyValuePair<string, object>("Reason", "正在删除已加载或将要加载的档案。"),
-                    new KeyValuePair<string, object>("IsSuccess", "false" ) 
+                    new KeyValuePair<string, object>("IsSuccess", "false" )
                 ]
                 );
             this.ShowToast(new ToastMessage("无法删除已加载或将要加载的档案。")
@@ -472,7 +472,7 @@ public partial class ProfileSettingsWindow : MyWindow
             ActionContent = action
         });
     }
-    
+
     private void ButtonOpenProfileImportPage_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.MasterPageTabSelectIndex = 5;
@@ -481,7 +481,7 @@ public partial class ProfileSettingsWindow : MyWindow
     #endregion
 
     #region TempClassPlan
-    
+
     private void ButtonOpenTempClassPlans_OnClick(object? sender, RoutedEventArgs e)
     {
         OpenDrawer("TemporaryClassPlan");
@@ -491,12 +491,12 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         ViewModel.ProfileService.ClearTempClassPlan();
     }
-    
+
     private void ButtonClearTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.ProfileService.Profile.TempClassPlanId = null;
     }
-    
+
     private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         ViewModel.ProfileService.Profile.TempClassPlanSetupTime = ViewModel.ExactTimeService.GetCurrentLocalDateTime();
@@ -505,7 +505,7 @@ public partial class ProfileSettingsWindow : MyWindow
     #endregion
 
     #region ClassPlanGroups
-    
+
     private void ButtonClassPlansGroup_OnClick(object sender, RoutedEventArgs e)
     {
         OpenDrawer("ClassPlanGroups");
@@ -515,7 +515,7 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         ViewModel.ProfileService.ClearTempClassPlanGroup();
     }
-    
+
     private void ButtonNewClassPlanGroups_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.ProfileService.Profile.ClassPlanGroups.Add(Guid.NewGuid(), new ClassPlanGroup());
@@ -535,7 +535,7 @@ public partial class ProfileSettingsWindow : MyWindow
         details.ViewModel.ClassPlan = ViewModel.SelectedClassPlan;
         _ = details.ShowDialog(this);
     }
-    
+
     private void UpdateClassPlanInfoEditorTimeLayoutComboBox()
     {
         if (ViewModel.SelectedClassPlan?.TimeLayout == null)
@@ -548,12 +548,12 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.ClassPlanInfoSelectedTimeLayoutKvp = kvp;
         }
     }
-    
+
     private void SelectingItemsControlClassPlans_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         ViewModel.CurrentClassPlanEditDoneToast?.Close();
     }
-    
+
     private void ButtonCreateTempOverlayClassPlan_OnClick(object? sender, RoutedEventArgs e)
     {
         var key = ViewModel.ProfileService.Profile.ClassPlans
@@ -620,7 +620,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.OverlayEnableDateTime = ViewModel.ExactTimeService.GetCurrentLocalDateTime().Date;
         ViewModel.TempOverlayClassPlanTimeLayoutId = ViewModel.SelectedClassPlan.TimeLayoutId;
     }
-    
+
     private void ButtonDuplicateClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
         var s = ConfigureFileHelper.CopyObject(ViewModel.SelectedClassPlan);
@@ -635,21 +635,21 @@ public partial class ProfileSettingsWindow : MyWindow
         OpenDrawer("ClassPlansInfoEditor");
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.classPlan.duplicate", 1);
     }
-    
+
     private void ButtonGoToTimeLayoutsPage_OnClick(object? sender, RoutedEventArgs e)
     {
         ViewModel.MasterPageTabSelectIndex = 1;
     }
-    
+
     private void InputElementSubjectItem_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (ViewModel.SelectedClassInfo != null && sender is Border { DataContext: KeyValuePair<Guid, Subject> kvp })
         {
             ViewModel.SelectedClassInfo.SubjectId = kvp.Key;
         }
-        
+
     }
-    
+
     private void InputElementSubjectItem_OnTapped(object? sender, PointerReleasedEventArgs pointerReleasedEventArgs)
     {
         if (!ViewModel.SettingsService.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled)
@@ -712,18 +712,19 @@ public partial class ProfileSettingsWindow : MyWindow
         if (DataGridClassPlans.IsLoaded && ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 0)
         {
             DataGridClassPlans.ScrollIntoView(DataGridClassPlans.SelectedItem, DataGridClassPlans.Columns.LastOrDefault());
-        } else if (ScheduleDataGrid.IsLoaded && ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 1)
+        }
+        else if (ScheduleDataGrid.IsLoaded && ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 1)
         {
             ScheduleDataGrid.ScrollIntoCurrentView();
         }
     }
-    
+
     private void ButtonRefreshScheduleDataGrid_OnClick(object? sender, RoutedEventArgs e)
     {
         ScheduleDataGrid.RefreshWeekScheduleRows();
         ScheduleCalendarControl2.UpdateSchedule();
     }
-    
+
     private void ScheduleDataGrid_OnOpenClassPlanSettingsRequested(object? sender, ScheduleDataGridClassPlanEventArgs e)
     {
         ViewModel.SelectedClassPlan = e.ClassPlan;
@@ -735,7 +736,7 @@ public partial class ProfileSettingsWindow : MyWindow
     #endregion
 
     #region TimeLayouts
-    
+
     public void UpdateTimeLayout()
     {
         var timeLayout = ViewModel.SelectedTimeLayout;
@@ -762,7 +763,7 @@ public partial class ProfileSettingsWindow : MyWindow
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timeLayout.create", 1);
         ViewModel.TutorialService.PushToNextSentence("classisland.getStarted.profileEditing/setup-timeLayout");
     }
-    
+
     private void ButtonDuplicateTimeLayout_OnClick(object sender, RoutedEventArgs e)
     {
         var s = ConfigureFileHelper.CopyObject(ViewModel.SelectedTimeLayout);
@@ -776,7 +777,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.SelectedTimeLayout = s;
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timeLayout.duplicate", 1);
     }
-    
+
     private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
     {
         var key = ViewModel.ProfileService.Profile.TimeLayouts
@@ -803,7 +804,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.ProfileService.Profile.TimeLayouts.Remove(key);
         FlyoutHelper.CloseAncestorFlyout(sender);
     }
-    
+
     private void AddTimePoint(TimeLayoutItem item)
     {
         var timeLayout = ViewModel.SelectedTimeLayout;
@@ -821,17 +822,17 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         timeLayout.InsertTimePoint(l.Count, item);
     }
-    
+
     private void AddTimeLayoutItem(int timeType)
     {
         var timeLayout = ViewModel.SelectedTimeLayout;
-        var selected   = ViewModel.SelectedTimePoint;
-        var baseSec    = (timeType is 0 or 1 ? selected?.EndTime : selected?.StartTime) ?? 
+        var selected = ViewModel.SelectedTimePoint;
+        var baseSec = (timeType is 0 or 1 ? selected?.EndTime : selected?.StartTime) ??
                          // 根据有关规定，中学最早上课时间不得早于 8:00，故将默认的最早时间设定为这个值。
                          // 虽然这么说，但至少我上过和见过的学校里，很少有能履行这一规定的。
                          new TimeSpan(8, 00, 0);
-        var settings   = ViewModel.SettingsService.Settings;
-        var lastTime   = TimeSpan.FromMinutes(timeType switch
+        var settings = ViewModel.SettingsService.Settings;
+        var lastTime = TimeSpan.FromMinutes(timeType switch
         {
             0 => settings.DefaultOnClassTimePointMinutes,  // 上课
             1 => settings.DefaultBreakingTimePointMinutes, // 课间休息
@@ -854,10 +855,10 @@ public partial class ProfileSettingsWindow : MyWindow
             }*/
             if (timeType != 2 && timeType != 3 && index < timeLayout.Layouts.Count - 1)
             {
-                var nexts = (from i 
-                            in timeLayout.Layouts.Skip(index + 1) 
-                        where i.TimeType != 2 
-                        select i)
+                var nexts = (from i
+                            in timeLayout.Layouts.Skip(index + 1)
+                             where i.TimeType != 2
+                             select i)
                     .ToList();
                 if (nexts.Count > 0)
                 {
@@ -920,27 +921,27 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.TutorialService.PushToNextSentence();
     }
 
-    
+
     private void ButtonAddClassTime_OnClick(object sender, RoutedEventArgs e)
     {
         AddTimeLayoutItem(0);
     }
-    
+
     private void ButtonAddBreakTime_OnClick(object sender, RoutedEventArgs e)
     {
         AddTimeLayoutItem(1);
     }
-    
+
     private void ButtonAddSeparator_OnClick(object sender, RoutedEventArgs e)
     {
         AddTimeLayoutItem(2);
     }
-    
+
     private void ButtonAddActionTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
         AddTimeLayoutItem(3);
     }
-    
+
     private void ButtonRemoveTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
         RemoveSelectedTimePoint();
@@ -948,7 +949,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void RemoveSelectedTimePoint()
     {
-        if (ViewModel.SelectedTimePoint == null) 
+        if (ViewModel.SelectedTimePoint == null)
             return;
         var timePoint = ViewModel.SelectedTimePoint;
         var timeLayout = ViewModel.SelectedTimeLayout;
@@ -980,7 +981,7 @@ public partial class ProfileSettingsWindow : MyWindow
         });
         ViewModel.ObservableForProperty(x => x.SelectedTimeLayout).Subscribe(_ => message.Close());
         this.ShowToast(message);
-        
+
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.remove", 1);
         return;
 
@@ -995,13 +996,13 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         UpdateTimeLayout();
     }
-    
+
     private void ButtonEditTimeLayoutInfo_OnClick(object sender, RoutedEventArgs e)
     {
         OpenDrawer("TimeLayoutInfoEditor");
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timeLayout.edit", 1);
     }
-    
+
     private void ButtonOverwriteClasses_OnClick(object sender, RoutedEventArgs e)
     {
         if (ViewModel.SelectedTimePoint == null)
@@ -1013,7 +1014,7 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.SelectedTimePoint,
             ViewModel.SelectedTimePoint.DefaultClassId);
     }
-    
+
     private void CommandBindingRemoveTimePoint_OnExecuted(object? sender, ExecutedRoutedEventArgs e)
     {
         RemoveSelectedTimePoint();
@@ -1028,7 +1029,7 @@ public partial class ProfileSettingsWindow : MyWindow
                 .Where(n => !string.IsNullOrEmpty(n)));
         // Console.WriteLine(string.Join(" ", ViewModel.CurrentProfileBreakNames));
     }
-    
+
     private void ButtonZoomOut_OnClick(object sender, RoutedEventArgs e)
     {
         if (ViewModel.TimeLineScale > 1.0)
@@ -1073,9 +1074,9 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
     {
         //DataGridSubjects.CancelEdit();
-        
+
         var isCreating = DataGridSubjects.SelectedIndex == ViewModel.ProfileService.Profile.Subjects.Count;
-        
+
         DataGridSubjects.CancelEdit();
         DataGridSubjects.IsReadOnly = true;
         ViewModel.ProfileService.Profile.EditingSubjects.Add(new Subject());
@@ -1084,7 +1085,7 @@ public partial class ProfileSettingsWindow : MyWindow
         //TextBoxSubjectName.Focus();
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.subject.create", 1);
     }
-    
+
     private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
     {
         DataGridSubjects.CancelEdit();
@@ -1152,7 +1153,7 @@ public partial class ProfileSettingsWindow : MyWindow
     #endregion
 
     #region ClassPlanAdjustment
-    
+
     private void ButtonRefreshScheduleAdjustmentView_OnClick(object sender, RoutedEventArgs e)
     {
         ScheduleDataGridAdjustment.RefreshWeekScheduleRows();
@@ -1287,7 +1288,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             targetClassPlan.Classes[index].IsChangedClass = true;
         }
-        
+
         ScheduleCalendarControl.UpdateSchedule();
     }
 
@@ -1327,19 +1328,19 @@ public partial class ProfileSettingsWindow : MyWindow
                         ProfileTransferProviderType.Export => "导出",
                         _ => "？？？"
                     }
-                });    
+                });
             }
-            
+
             TransferNavigationView.MenuItems.AddRange(info.Select(x => new NavigationViewItem()
             {
                 IconSource = x.Icon,
                 Content = x.Name,
                 Tag = x
             }));
-            
+
         }
     }
-    
+
     private void TransferNavigationView_OnItemInvoked(object? sender, NavigationViewItemInvokedEventArgs e)
     {
         if (e.InvokedItemContainer is not NavigationViewItem { Tag: ProfileTransferProviderInfo info })
@@ -1408,9 +1409,9 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.IsTransferring = false;
         }
     }
-    
+
     #endregion
 
 
-    
+
 }

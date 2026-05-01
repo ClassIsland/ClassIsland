@@ -9,8 +9,8 @@ public class SystemEventsService : ISystemEventsService
 
     public SystemEventsService()
     {
-        
+
         SystemEvents.TimeChanged += (sender, args) => TimeChanged?.Invoke(sender, args);
     }
-    
+
 }

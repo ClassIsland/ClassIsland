@@ -30,7 +30,7 @@ namespace ClassIsland.Core.Controls;
 [PseudoClasses(":no-easter-eggs")]
 public class MyWindow : AppWindow
 {
-    
+
     private bool _isAdornerAdded;
 
     /// <summary>
@@ -61,7 +61,7 @@ public class MyWindow : AppWindow
         set => SetAndRaise(IsMicaSupportedProperty, ref _isMicaSupported, value);
     }
 
-    
+
     /// <summary>
     /// 启用云母窗口背景
     /// </summary>
@@ -86,8 +86,8 @@ public class MyWindow : AppWindow
         {
             // ignored
         }
-        
-        IsMicaSupported = OperatingSystem.IsWindows() 
+
+        IsMicaSupported = OperatingSystem.IsWindows()
                           && Environment.OSVersion.Version >= WindowsVersions.Win11V21H2
                           && AvaloniaUnsafeAccessorHelpers.GetActiveWin32CompositionMode() == Win32CompositionMode.WinUIComposition;
         Initialized += OnInitialized;
@@ -102,7 +102,7 @@ public class MyWindow : AppWindow
         }
         // PointerMoved += OnPointerUpdated;
     }
-    
+
     private void OnPointerUpdated(object? sender, PointerEventArgs e)
     {
         PointerStateAssist.SetIsTouchMode(this, _suppressTouchMode || e.Pointer.Type == PointerType.Touch);
@@ -113,26 +113,26 @@ public class MyWindow : AppWindow
         switch (e.Key)
         {
             case Key.F3:
-            {
-                if (_debugGraphState == 0)
                 {
-                    _debugGraphState = (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ? 2 : 1;
-                }
-                else
-                {
-                    _debugGraphState = 0;
-                }
+                    if (_debugGraphState == 0)
+                    {
+                        _debugGraphState = (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ? 2 : 1;
+                    }
+                    else
+                    {
+                        _debugGraphState = 0;
+                    }
 
-                RendererDiagnostics.DebugOverlays = _debugGraphState switch
-                {
-                    0 => RendererDebugOverlays.None,
-                    1 => RendererDebugOverlays.Fps,
-                    2 => RendererDebugOverlays.Fps | RendererDebugOverlays.LayoutTimeGraph |
-                         RendererDebugOverlays.RenderTimeGraph,
-                    _ => RendererDebugOverlays.None
-                };
-                break;
-            }
+                    RendererDiagnostics.DebugOverlays = _debugGraphState switch
+                    {
+                        0 => RendererDebugOverlays.None,
+                        1 => RendererDebugOverlays.Fps,
+                        2 => RendererDebugOverlays.Fps | RendererDebugOverlays.LayoutTimeGraph |
+                             RendererDebugOverlays.RenderTimeGraph,
+                        _ => RendererDebugOverlays.None
+                    };
+                    break;
+                }
             case Key.F6:
                 if (PointerStateAssist.GetIsTouchMode(this))
                 {
@@ -185,7 +185,7 @@ public class MyWindow : AppWindow
         var appToastAdorner = _appToastAdorner = new AppToastAdorner(this);
         layer?.Children.Add(appToastAdorner);
         AdornerLayer.SetAdornedElement(appToastAdorner, this);
-        
+
         if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark))
         {
             var adorner = new DevelopmentBuildAdorner(AppBase.Current.IsDevelopmentBuild, ShowOssWatermark);

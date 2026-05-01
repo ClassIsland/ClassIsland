@@ -27,7 +27,7 @@ public class ThemeService : IHostedService, IThemeService
     public async Task StopAsync(CancellationToken cancellationToken)
     {
     }
-    
+
 
     public ILogger<ThemeService> Logger { get; }
 
@@ -49,7 +49,7 @@ public class ThemeService : IHostedService, IThemeService
         {
             return;
         }
-        
+
         AppBase.Current.RequestedThemeVariant = themeMode switch
         {
             0 => ThemeVariant.Default,
@@ -61,7 +61,7 @@ public class ThemeService : IHostedService, IThemeService
         faTheme.CustomAccentColor = primary;
         faTheme.PreferUserAccentColor = primary == null;
         faTheme.PreferSystemTheme = themeMode == 0;
-        
+
         // 计算应用画刷
         var brush = AppBase.Current.TryFindResource("AccentFillColorSelectedTextBackgroundBrush",
             ThemeVariant.Default, out var v)

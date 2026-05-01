@@ -52,7 +52,7 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         get => GetValue(EllipseSizeProperty);
         set => SetValue(EllipseSizeProperty, value);
     }
-    
+
     private PixelPoint CenterPoint { get; }
 
     public RippleEffect(PixelPoint center, IBrush? brush = null)
@@ -65,7 +65,7 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
 
 
     public async void Play()
-    { 
+    {
         // 计算到达四个顶点的距离，取其最大值作为圆的最大半径。
         var (cx, cy) = this.PointToClient(CenterPoint);
         CenterX = cx;
@@ -73,9 +73,9 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         var topLevel = TopLevel.GetTopLevel(this);
         var r11 = Math.Sqrt(Math.Pow(cx, 2) + Math.Pow(cy, 2));
         var r12 = Math.Sqrt(Math.Pow(topLevel?.Width ?? 0 - cx, 2) + Math.Pow(cy, 2));
-        var r21 = Math.Sqrt(Math.Pow(cx, 2) + Math.Pow(topLevel?.Height ?? 0  - cy, 2));
-        var r22 = Math.Sqrt(Math.Pow(topLevel?.Width ?? 0  - cx, 2) + Math.Pow(topLevel?.Height ?? 0  - cy, 2));
-        var r = Math.Ceiling(((List<double>) [r11, r12, r21, r22]).Max());
+        var r21 = Math.Sqrt(Math.Pow(cx, 2) + Math.Pow(topLevel?.Height ?? 0 - cy, 2));
+        var r22 = Math.Sqrt(Math.Pow(topLevel?.Width ?? 0 - cx, 2) + Math.Pow(topLevel?.Height ?? 0 - cy, 2));
+        var r = Math.Ceiling(((List<double>)[r11, r12, r21, r22]).Max());
 
         EllipseSize = EllipseMain.Width = EllipseMain.Height = r * 2;
         var visual = ElementComposition.GetElementVisual(EllipseMain);
@@ -104,7 +104,7 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         animationOpacity.InsertKeyFrame(1f, 0f, new SineEaseIn());
         animationOpacity.Duration = TimeSpan.FromMilliseconds(600);
         visual.StartAnimation(nameof(visual.Opacity), animationOpacity);
-        
+
         await Task.Delay(750);
         EffectCompleted?.Invoke(this, EventArgs.Empty);
     }

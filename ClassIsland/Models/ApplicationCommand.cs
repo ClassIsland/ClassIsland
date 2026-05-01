@@ -9,7 +9,7 @@ public class ApplicationCommand
         get;
         set;
     }
-    
+
     public string? UpdateDeleteTarget
     {
         get;

@@ -19,16 +19,16 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
     /// 公开的用于进行绑定的列表。
     /// </summary>
     public ObservableCollection<KeyValuePair<TKey, TValue>> List { get; } = [];
-    
+
     /// <summary>
     /// 要向列表中添加的默认值。此默认值不会同步回字典。
     /// </summary>
-    public KeyValuePair<TKey, TValue>? DefaultValue { get; } 
-    
+    public KeyValuePair<TKey, TValue>? DefaultValue { get; }
+
     /// <summary>
     /// 初始化一个 <see cref="SyncDictionaryList{TKey,TValue}"/> 对象。
     /// </summary>
-    public SyncDictionaryList(IDictionary<TKey, TValue> dictionary, Func<TKey> newKey, KeyValuePair<TKey, TValue>? defaultValue=null)
+    public SyncDictionaryList(IDictionary<TKey, TValue> dictionary, Func<TKey> newKey, KeyValuePair<TKey, TValue>? defaultValue = null)
     {
         _dictionary = dictionary;
         _newKey = newKey;
@@ -96,7 +96,7 @@ public class SyncDictionaryList<TKey, TValue> : INotifyPropertyChanged where TKe
         finally
         {
             _isProcessing = false;
-        }    
+        }
     }
 
     private void ListOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

@@ -25,10 +25,11 @@ public class DesktopService : IDesktopService
             {
                 File.Delete(path);
             }
-            
+
         }
     }
-    public bool IsUrlSchemeRegistered{
+    public bool IsUrlSchemeRegistered
+    {
         get => UriProtocolRegisterHelper.IsRegistered();
         set
         {

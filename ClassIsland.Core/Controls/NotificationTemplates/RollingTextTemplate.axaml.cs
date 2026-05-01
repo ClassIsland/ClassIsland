@@ -57,13 +57,13 @@ public partial class RollingTextTemplate : UserControl
         anim.InsertKeyFrame((float)(1 - completedPercent), visual.Offset with { X = -Description.Bounds.Width }, new LinearEasing());
         anim.InsertKeyFrame((float)(1 - completedPercent), visual.Offset with { X = RootCanvas.Bounds.Width }, new LinearEasing());
         anim.InsertKeyFrame(1f, visual.Offset with { X = RootCanvas.Bounds.Width - completedPercent * width }, new LinearEasing());
-        
+
         visual.StartAnimation(nameof(visual.Offset), anim);
     }
 
     private void RootCanvas_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        
+
     }
 
     private void Control_OnUnloaded(object? sender, RoutedEventArgs e)

@@ -94,7 +94,7 @@ public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
             else
             {
                 File.Delete(path);
-            }   
+            }
             OnPropertyChanged();
         }
     }

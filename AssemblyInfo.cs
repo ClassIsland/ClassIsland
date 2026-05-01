@@ -18,4 +18,4 @@ using ClassIsland;
 #if Platforms_MacOs
 [assembly:SupportedOSPlatform("macos")]
 #endif
- 
+

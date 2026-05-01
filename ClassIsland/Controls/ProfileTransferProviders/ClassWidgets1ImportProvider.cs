@@ -16,7 +16,7 @@ namespace ClassIsland.Controls.ProfileTransferProviders;
 public class ClassWidgets1ImportProvider : GenericImportProviderBase
 {
     private IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
-    
+
     public ClassWidgets1ImportProvider() : base()
     {
         ImportFileHeader = "Class Widgets 1 课表文件路径";

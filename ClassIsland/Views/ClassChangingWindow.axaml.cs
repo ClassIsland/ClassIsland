@@ -38,7 +38,7 @@ public partial class ClassChangingWindow : MyWindow
         get => _classPlan;
         set => SetAndRaise(ClassPlanProperty, ref _classPlan, value);
     }
-    
+
     private int GetSubjectIndex(int index)
     {
         var k = ClassPlan?.TimeLayout?.Layouts[index];
@@ -63,7 +63,7 @@ public partial class ClassChangingWindow : MyWindow
         }
         ViewModel.SelectedClassInfo = ClassPlan.Classes[aI];
         ViewModel.SelectedTimeLayoutItem = ClassPlan.TimeLayout?.Layouts[ViewModel.SourceIndex];
-            if (ViewModel.IsAutoNextStep)
+        if (ViewModel.IsAutoNextStep)
             return;
         ViewModel.IsAutoNextStep = true;
         ViewModel.SlideIndex = 1;
