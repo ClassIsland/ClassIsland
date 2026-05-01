@@ -815,7 +815,6 @@ public partial class ProfileSettingsWindow : MyWindow
         });
     }
 
-    
     private void ButtonAddClassTime_OnClick(object sender, RoutedEventArgs e)
     {
         AddTimeLayoutItem(0);

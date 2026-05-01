@@ -75,7 +75,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         }
     }
 
-
     private async Task MergeManagementProfileAsync()
     {
         var span = SentrySdk.GetSpan();

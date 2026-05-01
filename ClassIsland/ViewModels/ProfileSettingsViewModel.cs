@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
@@ -17,7 +17,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
-
 
 namespace ClassIsland.ViewModels;
 
@@ -39,7 +38,6 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public SyncDictionaryList<DateTime, OrderedSchedule> OrderedSchedules { get; }
 
     public IObservableList<KeyValuePair<Guid, ClassPlan>> TempClassPlanList { get; }
-
 
     [ObservableProperty] private ObservableCollection<object> _transferNavigationViewItems = [];
     [ObservableProperty] private object _drawerContent = new();
