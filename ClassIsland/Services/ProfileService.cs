@@ -128,7 +128,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Logger.LogError(exp, "拉取档案失败。");
         }
 
-        
         //Profile = ConfigureFileHelper.CopyObject(Profile);
         Profile.Subjects = CopyObject(Profile.Subjects);
         Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
