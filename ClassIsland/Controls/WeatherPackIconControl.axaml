@@ -13,14 +13,14 @@
         </Style>
     </UserControl.Styles>
     <Grid>
-        <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                          ContentTemplate="{Binding WeatherService.SelectedWeatherIconTemplate, RelativeSource={RelativeSource AncestorType=local:WeatherPackIconControl}}"
-                          Content="{Binding Code, RelativeSource={RelativeSource AncestorType=local:WeatherPackIconControl}}"
-                          Width="{Binding Width, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                          Height="{Binding Height, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                          ToolTip.Tip="{Binding WeatherName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                          Tag="{Binding Tag, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                          x:Name="MainContentPresenter">
-        </ContentPresenter>
+        <Viewbox Stretch="Uniform" StretchDirection="Both">
+            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                              ContentTemplate="{Binding WeatherService.SelectedWeatherIconTemplate, RelativeSource={RelativeSource AncestorType=local:WeatherPackIconControl}}"
+                              Content="{Binding Code, RelativeSource={RelativeSource AncestorType=local:WeatherPackIconControl}}"
+                              ToolTip.Tip="{Binding WeatherName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                              Tag="{Binding Tag, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                              x:Name="MainContentPresenter">
+            </ContentPresenter>
+        </Viewbox>
     </Grid>
 </UserControl>

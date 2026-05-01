@@ -47,7 +47,15 @@ public partial class WeatherSettingsPage : SettingsPageBase
 
     private async void ButtonRefreshWeather_OnClick(object sender, RoutedEventArgs e)
     {
-        await ViewModel.WeatherService.QueryWeatherAsync();
+        ViewModel.IsRefreshingWeather = true;
+        try
+        {
+            await ViewModel.WeatherService.QueryWeatherAsync();
+        }
+        finally
+        {
+            ViewModel.IsRefreshingWeather = false;
+        }
     }
 
     private void ButtonEditCurrentCity_OnClick(object sender, RoutedEventArgs e)
@@ -114,7 +122,15 @@ public partial class WeatherSettingsPage : SettingsPageBase
             return;
         }
         ViewModel.SettingsService.Settings.CityName = city.Name;
-        await ViewModel.WeatherService.QueryWeatherAsync();
+        ViewModel.IsRefreshingWeather = true;
+        try
+        {
+            await ViewModel.WeatherService.QueryWeatherAsync();
+        }
+        finally
+        {
+            ViewModel.IsRefreshingWeather = false;
+        }
     }
 
     private async void ButtonGetCurrentPos_OnClick(object sender, RoutedEventArgs e)
@@ -124,7 +140,15 @@ public partial class WeatherSettingsPage : SettingsPageBase
             var pos = await ViewModel.LocationService.GetLocationAsync();
             ViewModel.SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4); 
             ViewModel.SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
-            await ViewModel.WeatherService.QueryWeatherAsync();
+            ViewModel.IsRefreshingWeather = true;
+            try
+            {
+                await ViewModel.WeatherService.QueryWeatherAsync();
+            }
+            finally
+            {
+                ViewModel.IsRefreshingWeather = false;
+            }
         }
         catch (Exception exception)
         {
