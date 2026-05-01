@@ -234,7 +234,12 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         return JsonSerializer.Deserialize<T>(json)!;
     }
 
-    public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId=null, DateTime? enableDateTime = null, bool createTempTimeLayout = false)
+    public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId=null, DateTime? enableDateTime = null)
+    {
+        return CreateTempClassPlan(id, timeLayoutId, enableDateTime, false);
+    }
+
+    public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId, DateTime? enableDateTime, bool createTempTimeLayout)
     {
         Logger.LogInformation("创建临时层：{}", id);
         var date = enableDateTime ?? IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
