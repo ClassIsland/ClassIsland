@@ -114,70 +114,91 @@ public static class ShortcutHelpers
     /// </summary>
     public static async Task CheckAndUpdateAutostartShortcutAsync()
     {
+        var shortcutInfo = GetAutostartShortcutInfo();
+        if (shortcutInfo == null)
+            return;
+
+        if (!File.Exists(shortcutInfo.Path))
+            return;
+
+        var needsUpdate = await CheckShortcutNeedsUpdateAsync(shortcutInfo);
+        if (!needsUpdate)
+            return;
+
+        RefreshAutostartSettings();
+    }
+
+    private static AutostartShortcutInfo? GetAutostartShortcutInfo()
+    {
         if (OperatingSystem.IsWindows())
         {
-            var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
-            if (!File.Exists(startupPath))
-                return;
-
-            try
-            {
-                using var shortcut = WindowsShortcut.Load(startupPath);
-                // 检查参数是否包含 --autostartup
-                if (!string.IsNullOrWhiteSpace(shortcut.Arguments) && shortcut.Arguments.Contains("--autostartup"))
-                    return;
-
-                // 重新设置自启动，这样会自动创建带有正确参数的快捷方式
-                var isEnabled = PlatformServices.DesktopService.IsAutoStartEnabled;
-                if (isEnabled)
-                {
-                    PlatformServices.DesktopService.IsAutoStartEnabled = false;
-                    PlatformServices.DesktopService.IsAutoStartEnabled = true;
-                }
-            }
-            catch
-            {
-                // 如果读取失败，尝试重新设置自启动
-                try
-                {
-                    var isEnabled = PlatformServices.DesktopService.IsAutoStartEnabled;
-                    if (isEnabled)
-                    {
-                        PlatformServices.DesktopService.IsAutoStartEnabled = false;
-                        PlatformServices.DesktopService.IsAutoStartEnabled = true;
-                    }
-                }
-                catch
-                {
-                    // 忽略错误
-                }
-            }
+            return new AutostartShortcutInfo(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk"),
+                AutostartShortcutType.Windows);
         }
         else if (OperatingSystem.IsLinux())
         {
-            var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config/autostart/cn.classisland.app.desktop");
-            if (!File.Exists(startupPath))
-                return;
+            return new AutostartShortcutInfo(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config/autostart/cn.classisland.app.desktop"),
+                AutostartShortcutType.Linux);
+        }
+        return null;
+    }
 
-            try
+    private static async Task<bool> CheckShortcutNeedsUpdateAsync(AutostartShortcutInfo shortcutInfo)
+    {
+        try
+        {
+            if (shortcutInfo.Type == AutostartShortcutType.Windows)
             {
-                var content = await File.ReadAllTextAsync(startupPath);
-                // 检查 Exec 行是否包含 --autostartup
-                if (content.Contains("Exec=") && content.Contains("--autostartup"))
-                    return;
-
-                // 重新设置自启动
-                var isEnabled = PlatformServices.DesktopService.IsAutoStartEnabled;
-                if (isEnabled)
-                {
-                    PlatformServices.DesktopService.IsAutoStartEnabled = false;
-                    PlatformServices.DesktopService.IsAutoStartEnabled = true;
-                }
+                using var shortcut = WindowsShortcut.Load(shortcutInfo.Path);
+                return string.IsNullOrWhiteSpace(shortcut.Arguments) || !shortcut.Arguments.Contains("--autostartup");
             }
-            catch
+            else if (shortcutInfo.Type == AutostartShortcutType.Linux)
             {
-                // 忽略错误
+                var content = await File.ReadAllTextAsync(shortcutInfo.Path);
+                return !content.Contains("Exec=") || !content.Contains("--autostartup");
+            }
+            return false;
+        }
+        catch
+        {
+            return true; // 如果读取失败，假设需要更新
+        }
+    }
+
+    private static void RefreshAutostartSettings()
+    {
+        try
+        {
+            var isEnabled = PlatformServices.DesktopService.IsAutoStartEnabled;
+            if (isEnabled)
+            {
+                PlatformServices.DesktopService.IsAutoStartEnabled = false;
+                PlatformServices.DesktopService.IsAutoStartEnabled = true;
             }
         }
+        catch
+        {
+            // 忽略错误
+        }
+    }
+
+    private class AutostartShortcutInfo
+    {
+        public string Path { get; }
+        public AutostartShortcutType Type { get; }
+
+        public AutostartShortcutInfo(string path, AutostartShortcutType type)
+        {
+            Path = path;
+            Type = type;
+        }
+    }
+
+    private enum AutostartShortcutType
+    {
+        Windows,
+        Linux
     }
 }
