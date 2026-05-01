@@ -386,6 +386,49 @@
             </DataGrid>
         </Grid>
         <converters:LargeNumberToFriendlyNumberConverter x:Key="LargeNumberToFriendlyNumberConverter" />
+        <DataTemplate x:Key="InstallPluginConfirmTemplate">
+            <DockPanel>
+                <Border DockPanel.Dock="Bottom"
+                        Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                        CornerRadius="6"
+                        Padding="10"
+                        Margin="0 10 0 0">
+                    <StackPanel Spacing="6" Orientation="Horizontal">
+                        <ci:FluentIcon Glyph="&#xF430;" VerticalAlignment="Center"/>
+                        <TextBlock Text="安装未知来源的插件可能存在风险。"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+                <ScrollViewer MaxHeight="400">
+                    <ItemsControl ItemsSource="{Binding}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="local:PluginsSettingsPage+PluginInstallPreviewItem">
+                                <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Margin="0 0 0 8"
+                                        Padding="12">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <Border Grid.Column="0" Width="48" Height="48" 
+                                                CornerRadius="4" ClipToBounds="True"
+                                                VerticalAlignment="Top" Margin="0 0 12 0">
+                                            <Image Source="{Binding IconBitmap}"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Spacing="2">
+                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16"/>
+                                            <TextBlock Text="{Binding Description}" FontSize="12" Opacity="0.7" TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding Version, StringFormat='v{0}'}" FontSize="10" Opacity="0.5"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </DataTemplate>
 
         <ControlTemplate x:Key="BlankListBoxTemplate">
             <Grid>
@@ -433,10 +476,11 @@
             </Grid>
         </ControlTemplate>
     </ci:SettingsPageBase.Resources>
-    <Grid Margin="8 12 0 12">
-        <controls1:ListDetailView IsEnabled="{Binding ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
-                                  IsPanelOpened="{Binding ViewModel.IsDetailsShown, Mode=TwoWay}"
-                                  IsVisible="{Binding !ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible}">
+    <Grid DragDrop.AllowDrop="True" DragDrop.DragEnter="Grid_DragEnter" DragDrop.DragOver="Grid_DragEnter" DragDrop.Drop="Grid_Drop" DragDrop.DragLeave="Grid_DragLeave">
+        <Grid Margin="8 12 0 12">
+            <controls1:ListDetailView IsEnabled="{Binding ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
+                                      IsPanelOpened="{Binding ViewModel.IsDetailsShown, Mode=TwoWay}"
+                                      IsVisible="{Binding !ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible}">
             <controls1:ListDetailView.TitleElement>
                 <TextBlock Text="插件详细" VerticalAlignment="Center"
                            Theme="{StaticResource SubtitleTextBlockStyle}"/>
@@ -692,8 +736,8 @@
                                       ContentTemplate="{StaticResource PluginDetailDataTemplate}"/>
                 </Grid>
             </controls1:ListDetailView.RightContent>
-        </controls1:ListDetailView>
-        <Border IsVisible="{Binding ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible}">
+            </controls1:ListDetailView>
+            <Border IsVisible="{Binding ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible}">
             <ScrollViewer>
                 <StackPanel VerticalAlignment="Center"
                             HorizontalAlignment="Center">
@@ -748,20 +792,65 @@
                         <ci:IconText Glyph="&#xE424;" Text="同意并开始使用插件"/>
                     </Button>
                 </StackPanel></ScrollViewer>
-        </Border>
-        <!-- <Grid Grid.Row="0" -->
-        <!--       IsVisible="{Binding ViewModel.IsDragEntering}"> -->
-        <!--     <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}" -->
-        <!--             Opacity="0.75"/> -->
-        <!--     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"> -->
-        <!--         <ci:FluentIcon Kind="FileImport" -->
-        <!--                          HorizontalAlignment="Center" -->
-        <!--                          Height="64" Width="64" -->
-        <!--                          Margin="0 0 0 8"/> -->
-        <!--         <TextBlock Text="将插件拖入到此处，松手即可安装。" -->
-        <!--            FontSize="14" -->
-        <!--            VerticalAlignment="Center"/> -->
-        <!--     </StackPanel> -->
-        <!-- </Grid> -->
+            </Border>
+        </Grid>
+        <Grid IsVisible="{Binding ViewModel.IsInstallingLocalPlugin}">
+            <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    Opacity="0.8"/>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <controls2:ProgressRing IsIndeterminate="True" Width="64" Height="64" />
+                <TextBlock Text="正在解析..." 
+                           Margin="0 16 0 0" 
+                           HorizontalAlignment="Center"
+                           FontSize="16"/>
+            </StackPanel>
+        </Grid>
+        <Grid IsVisible="{Binding ViewModel.IsDragEntering}">
+            <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    Opacity="0.75"/>
+
+            <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="20"
+                    MaxWidth="420"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <StackPanel Spacing="8">
+                    <ci:FluentIcon IsVisible="{Binding ViewModel.IsDragInstallValid}"
+                                   Glyph="&#xE162;"
+                                   HorizontalAlignment="Center"
+                                   FontSize="80"
+                                   Margin="0 0 0 4"/>
+                    <ci:FluentIcon IsVisible="{Binding !ViewModel.IsDragInstallValid}"
+                                   Glyph="&#xEA39;"
+                                   HorizontalAlignment="Center"
+                                   FontSize="80"
+                                   Margin="0 0 0 4"/>
+
+                    <TextBlock Text="{Binding ViewModel.DragInstallHintText}"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{Binding ViewModel.DragInstallSubHintText}"
+                               Opacity="0.7"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Opacity="0.55"
+                               FontSize="12"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center">
+                        <Run Text="共 "/>
+                        <Run Text="{Binding ViewModel.DragInstallTotalCount}"/>
+                        <Run Text=" 个文件，识别到 "/>
+                        <Run Text="{Binding ViewModel.DragInstallSupportedCount}"/>
+                        <Run Text=" 个插件包"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </ci:SettingsPageBase>

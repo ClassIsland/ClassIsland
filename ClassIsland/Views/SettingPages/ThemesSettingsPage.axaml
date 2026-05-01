@@ -75,7 +75,8 @@
     </ci:SettingsPageBase.Resources>
     <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
         <controls:InfoBar Grid.Row="0" Message="在启用了支持的主题（如 Fluent）后，您可以在直接【外观】设置中开启【分体主界面】选项使主界面分开。在没有开启此选项时，即使启用了支持的主题，主界面也不会分开。"
-                          IsOpen="{Binding ViewModel.SettingsService.Settings.IsThemeSeparateInfoVisible, Mode=TwoWay}">
+                          IsOpen="{Binding ViewModel.SettingsService.Settings.IsThemeSeparateInfoVisible, Mode=TwoWay}" 
+                          IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
             <controls:InfoBar.ActionButton>
                 <HyperlinkButton Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
                                  CommandParameter="classisland://app/settings/appearance">前往【外观】设置</HyperlinkButton>

@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Models.Weather;
+using ClassIsland.Core.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using ClassIsland.Core.Abstractions.Services;
@@ -21,6 +21,8 @@ public partial class WeatherSettingsViewModel(SettingsService settingsService,
 
     [ObservableProperty] private List<City> _citySearchResults = new();
     [ObservableProperty] private bool _isSearchingWeather = false;
+    [ObservableProperty] private bool _isRefreshingWeather = false;
     [ObservableProperty] private bool _hideLocationPos = true;
+    [ObservableProperty] private bool _isLocationUpdating = false;
     
 }
