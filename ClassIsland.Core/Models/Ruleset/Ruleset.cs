@@ -15,6 +15,7 @@ public class Ruleset : ObservableRecipient
     private bool _isReversed = false;
     private ObservableCollection<RuleGroup> _groups = [new() { Rules = [new()] }];
     private int _state = 0;
+    private Guid? _namedRulesetId;
 
     /// <summary>
     /// 逻辑模式。
@@ -54,6 +55,20 @@ public class Ruleset : ObservableRecipient
         {
             if (Equals(value, _groups)) return;
             _groups = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 引用的命名规则集 ID。如果设置了此值，将优先使用命名规则集进行判断。
+    /// </summary>
+    public Guid? NamedRulesetId
+    {
+        get => _namedRulesetId;
+        set
+        {
+            if (value == _namedRulesetId) return;
+            _namedRulesetId = value;
             OnPropertyChanged();
         }
     }

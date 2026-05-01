@@ -40,6 +40,13 @@ public interface IRulesetService
     public void RegisterRuleHandler(string id, RuleRegistryInfo.HandleDelegate handler);
 
     /// <summary>
+    /// 解析并判断指定的规则集是否成立。如果规则集包含对命名规则集的引用，会先解析命名规则集。
+    /// </summary>
+    /// <param name="ruleset">要检验的规则集。</param>
+    /// <returns>如果成立，则返回 true。</returns>
+    public bool IsRulesetSatisfiedWithNamedReference(Ruleset ruleset);
+
+    /// <summary>
     /// 通知当前状态发生变化，需要重新判定规则集。
     /// </summary>
     public void NotifyStatusChanged();

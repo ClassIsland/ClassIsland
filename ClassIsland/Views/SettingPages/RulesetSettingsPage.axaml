@@ -1,0 +1,162 @@
+<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.RulesetSettingsPage"
+                     xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                     xmlns:controls="clr-namespace:ClassIsland.Controls"
+                     xmlns:ruleset="clr-namespace:ClassIsland.Core.Controls.Ruleset;assembly=ClassIsland.Core"
+                     xmlns:models="clr-namespace:ClassIsland.Core.Models.Ruleset;assembly=ClassIsland.Core"
+                     mc:Ignorable="d"
+                     d:DesignHeight="450" d:DesignWidth="800">
+    <ci:SettingsPageBase.Resources>
+        <ci:PreventNullConverter x:Key="PreventNullConverter" />
+    </ci:SettingsPageBase.Resources>
+    <Panel>
+        <controls:ListDetailView Margin="12 12 0 0"
+                              IsPanelOpened="{Binding ViewModel.IsPanelOpened, Mode=TwoWay}"
+                              ShowTitleWhenNotCompressed="True">
+            <!-- 左侧：命名规则集列表 -->
+            <controls:ListDetailView.LeftContent>
+                <Grid RowDefinitions="Auto,*,Auto" Classes="animated-intro">
+                    <Grid Grid.Row="0"
+                          Margin="0 0 0 6"
+                          ColumnDefinitions="*,Auto">
+                        <TextBlock Text="共享规则集"
+                                   Theme="{StaticResource SubtitleTextBlockStyle}"
+                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Margin="6"
+                                Command="{Binding $parent[local:RulesetSettingsPage].AddNamedRulesetCommand}"
+                                Theme="{StaticResource TransparentButton}"
+                                Classes="accent">
+                            <ci:IconText Glyph="&#xE00D;"
+                                         Text="添加"
+                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                        </Button>
+                    </Grid>
+
+                    <!-- 规则集列表 -->
+                    <ScrollViewer Grid.Row="1">
+                        <ListBox ItemsSource="{Binding ViewModel.NamedRulesetService.NamedRulesets}"
+                                 SelectedItem="{Binding ViewModel.SelectedRuleset, Mode=TwoWay}"
+                                 SelectionMode="Single">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:NamedRuleset">
+                                    <Grid Margin="3 0"
+                                          Background="Transparent"
+                                          ColumnDefinitions="Auto,*,Auto"
+                                          Height="42">
+                                        <Ellipse Grid.Column="0"
+                                                 Width="8" Height="8"
+                                                 Margin="8 0"
+                                                 VerticalAlignment="Center"
+                                                 Classes="rule-state-indicator"
+                                                 DataContext="{Binding State}"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontSize="13"
+                                                       FontWeight="Medium"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding Description}"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       IsVisible="{Binding Description, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+
+                    <!-- 底部提示 -->
+                    <TextBlock Grid.Row="2"
+                               Margin="4 8 4 4"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                               Text="共享规则集可以在自动化等需要规则集的地方引用，实现一处配置、多处使用。"
+                               TextWrapping="Wrap" />
+                </Grid>
+            </controls:ListDetailView.LeftContent>
+
+            <!-- 右侧标题区域 -->
+            <controls:ListDetailView.TitleElement>
+                <WrapPanel DataContext="{Binding ViewModel.SelectedRuleset}"
+                           Margin="0 0 0 4"
+                           Classes="animated-resize"
+                           IsVisible="{Binding Converter={x:Static ObjectConverters.IsNotNull}}"
+                           Orientation="Horizontal">
+                    <TextBox MinWidth="150"
+                             Margin="2 2 6 2"
+                             HorizontalAlignment="Left"
+                             Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="15"
+                             FontWeight="Medium"
+                             Watermark="规则集名称"
+                             ToolTip.Tip="规则集名称。" />
+                    <TextBox MinWidth="200"
+                             Margin="2 2 6 2"
+                             HorizontalAlignment="Left"
+                             Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                             Watermark="规则集描述（可选）"
+                             ToolTip.Tip="规则集描述。" />
+                    <StackPanel Margin="4 0 0 0" Orientation="Horizontal">
+                        <Separator Width="1"
+                                   Height="25"
+                                   Margin="4 0"
+                                   Foreground="{DynamicResource TextFillColorDisabledBrush}" />
+                        <ci:AnimatedIconButton Glyph="&#xE58B;"
+                                               Text="复制"
+                                               Command="{Binding $parent[local:RulesetSettingsPage].DuplicateNamedRulesetCommand}"
+                                               CommandParameter="{Binding}"
+                                               Theme="{StaticResource TransparentButton}"
+                                               ToolTip.Tip="创建该规则集的副本。" />
+                        <ci:AnimatedIconButton Glyph="&#xE61D;"
+                                               Text="删除"
+                                               Command="{Binding $parent[local:RulesetSettingsPage].DeleteNamedRulesetCommand}"
+                                               CommandParameter="{Binding}"
+                                               Foreground="IndianRed"
+                                               Theme="{StaticResource TransparentButton}"
+                                               ToolTip.Tip="删除该规则集。" />
+                    </StackPanel>
+                </WrapPanel>
+            </controls:ListDetailView.TitleElement>
+
+            <!-- 右侧：规则集编辑区 -->
+            <controls:ListDetailView.RightContent>
+                <Panel>
+                    <ci:Emptiable Content="{Binding ViewModel.SelectedRuleset}">
+                        <ci:Emptiable.ContentTemplate>
+                            <DataTemplate x:DataType="models:NamedRuleset">
+                                <ScrollViewer>
+                                    <StackPanel Classes="animated-intro" Spacing="12">
+                                        <ruleset:RulesetControl Ruleset="{Binding Ruleset}"
+                                                                ShowTitle="False" />
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </DataTemplate>
+                        </ci:Emptiable.ContentTemplate>
+                        <ci:Emptiable.EmptyContent>
+                            <StackPanel VerticalAlignment="Center">
+                                <ci:StickerControl Width="75" Height="75"
+                                                   StickerSource="avares://ClassIsland/Assets/HoYoStickers/光辉矢愿_瞄准.png"
+                                                   FallbackIcon="{ci:FluentIconSource &#xEF5B;, FontSize=75}"/>
+                                <TextBlock Text="在左侧添加或选择一个共享规则集，然后在此处进行设置。"
+                                           Margin="0 8 0 0"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="共享规则集创建后，可以在自动化工作流等场景中引用。"
+                                           Margin="0 4 0 0"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                            </StackPanel>
+                        </ci:Emptiable.EmptyContent>
+                    </ci:Emptiable>
+                </Panel>
+            </controls:ListDetailView.RightContent>
+        </controls:ListDetailView>
+    </Panel>
+</ci:SettingsPageBase>

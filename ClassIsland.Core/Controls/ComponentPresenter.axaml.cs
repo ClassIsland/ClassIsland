@@ -5,7 +5,6 @@ using Avalonia;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
-using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Reactive;
@@ -22,7 +21,6 @@ namespace ClassIsland.Core.Controls;
 /// <summary>
 /// ComponentPresenter.xaml 的交互逻辑
 /// </summary>
-[PseudoClasses(":has-settings", ":container")]
 public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 {
     public static readonly StyledProperty<ComponentSettings?> SettingsProperty = AvaloniaProperty.Register<ComponentPresenter, ComponentSettings?>(
@@ -86,15 +84,6 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         remove { RemoveHandler(ComponentVisibilityChangedEvent, value); }
     }
 
-    public static readonly StyledProperty<bool> IsVisibleInternalProperty = AvaloniaProperty.Register<ComponentPresenter, bool>(
-        nameof(IsVisibleInternal));
-
-    public bool IsVisibleInternal
-    {
-        get => GetValue(IsVisibleInternalProperty);
-        set => SetValue(IsVisibleInternalProperty, value);
-    }
-
     private static void PropertyChangedCallback(ComponentPresenter d, AvaloniaPropertyChangedEventArgs e)
     {
         if (d.IsOnMainWindow && !GetIsMainWindowLoaded(d))
@@ -140,8 +129,6 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         }
 
         PresentingContent = content;
-        PseudoClasses.Set(":has-settings", Settings.AssociatedComponentInfo.SettingsType != null);
-        PseudoClasses.Set(":container", Settings.AssociatedComponentInfo.IsComponentContainer);
         UpdateTheme();
         if (isInit)
         {
@@ -236,8 +223,8 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         var compositor = compositionVisual.Compositor;
         var anim = compositor.CreateScalarKeyFrameAnimation();
         anim.InsertKeyFrame(0f, 0f);
-        anim.InsertKeyFrame(1f, 1f, Easing.Parse(".65,0,.35,1.0"));
-        anim.Duration = TimeSpan.FromMilliseconds(300);
+        anim.InsertKeyFrame(1f, 1f, Easing.Parse("0.25, 1, 0.5, 1"));
+        anim.Duration = TimeSpan.FromMilliseconds(250);
         anim.Target = nameof(compositionVisual.Opacity);
         compositionVisual.StartAnimation(nameof(compositionVisual.Opacity), anim);
     }
@@ -275,7 +262,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         else
         {
             RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
-            IsVisibleInternal = true;
+            IsVisible = true;
         }
         UpdateComponentHidState();
     }
@@ -292,13 +279,13 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         {
             return;
         }
-        if (HidingRules != null && RulesetService.IsRulesetSatisfied(HidingRules))
+        if (HidingRules != null && RulesetService.IsRulesetSatisfiedWithNamedReference(HidingRules))
         {
-            IsVisibleInternal = false;
+            IsVisible = false;
         }
         else
         {
-            IsVisibleInternal = true;
+            IsVisible = true;
         }
     }
 
@@ -327,7 +314,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     {
         var visibleStatePrev = Settings?.IsVisible;
         _isAllComponentsHid = Settings?.Children != null && Settings.Children.FirstOrDefault(x => x.IsVisible) == null;
-        if (Settings != null) Settings.IsVisible = IsVisibleInternal && !_isAllComponentsHid;
+        if (Settings != null) Settings.IsVisible = IsVisible && !_isAllComponentsHid;
         if (Settings?.IsVisible != visibleStatePrev)
         {
             RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));
