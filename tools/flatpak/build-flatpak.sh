@@ -8,6 +8,8 @@ FLATPAK_DOTNET_GENERATOR_URL="https://github.com/flatpak/flatpak-builder-tools/r
 FLATPAK_MANIFEST="org.classisland.ClassIsland.json"
 
 echo "ClassIsland Flatpak Build Script"
+echo "WARNING:EXPERIMENTAL: The Flatpak support is still in early stages and may not work correctly. Please report any issues you encounter."
+echo ""
 
 if [ "$(uname -s)" != "Linux" ]; then
     echo "Error: This script must be run on Linux."
