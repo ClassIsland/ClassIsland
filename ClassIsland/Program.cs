@@ -50,7 +50,7 @@ public static class Program
             new Option<bool>(["--verbose", "-v"], "启用详细输出"),
             new Option<bool>(["--showOssWatermark", "-ossw"], "显示开源地址水印"),
             new Option<bool>(["--recovery", "-r"], "启动时进入恢复模式"),
-            new Option<bool>(["--diagnostic", "-d"], "启用诊断模式"),
+            new Option<bool>(["--diagnostic", "-d"], "启用诊断模式(包括详细输出)"),
             new Option<bool>(["--safe", "-s"], "启用安全模式"),
             new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动"),
             new Option<string>(["--importV1"], "指定要导入的 ClassIsland 1.7 配置目录"),
@@ -67,6 +67,7 @@ public static class Program
 
         if (App.ApplicationCommand.Diagnostic)
         {
+            App.ApplicationCommand.Verbose = true;
             // TODO: 实现 AllocConsole
             // AllocConsole();
         }
