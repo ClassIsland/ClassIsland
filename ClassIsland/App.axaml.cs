@@ -34,6 +34,7 @@ using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Shared.Helpers;
+using ClassIsland.Helpers;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
@@ -665,6 +666,9 @@ public partial class App : AppBase, IAppHost
         Settings = GetService<SettingsService>().Settings;
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
         Settings.DiagnosticStartupCount++;
+
+        // 检查并更新自启动快捷方式
+        _ = ShortcutHelpers.CheckAndUpdateAutostartShortcutAsync();
         // 记录MLE
         if (ApplicationCommand.PrevSessionMemoryKilled)
         {

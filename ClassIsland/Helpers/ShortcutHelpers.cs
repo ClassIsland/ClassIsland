@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Platform;
 using ClassIsland.Core;
+using ClassIsland.Platforms.Abstraction;
 using Mono.Unix;
 using WindowsShortcutFactory;
 
@@ -106,5 +107,77 @@ public static class ShortcutHelpers
         var unixFileInfo = new UnixFileInfo(path);
         unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute |
                                               FileAccessPermissions.OtherExecute;
+    }
+
+    /// <summary>
+    /// 检查并更新自启动快捷方式，确保包含 --autostartup 参数
+    /// </summary>
+    public static async Task CheckAndUpdateAutostartShortcutAsync()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
+            if (!File.Exists(startupPath))
+                return;
+
+            try
+            {
+                using var shortcut = WindowsShortcut.Load(startupPath);
+                // 检查参数是否包含 --autostartup
+                if (!string.IsNullOrWhiteSpace(shortcut.Arguments) && shortcut.Arguments.Contains("--autostartup"))
+                    return;
+
+                // 重新设置自启动，这样会自动创建带有正确参数的快捷方式
+                var isEnabled = PlatformServices.DesktopService.IsAutoStartEnabled;
+                if (isEnabled)
+                {
+                    PlatformServices.DesktopService.IsAutoStartEnabled = false;
+                    PlatformServices.DesktopService.IsAutoStartEnabled = true;
+                }
+            }
+            catch
+            {
+                // 如果读取失败，尝试重新设置自启动
+                try
+                {
+                    var isEnabled = PlatformServices.DesktopService.IsAutoStartEnabled;
+                    if (isEnabled)
+                    {
+                        PlatformServices.DesktopService.IsAutoStartEnabled = false;
+                        PlatformServices.DesktopService.IsAutoStartEnabled = true;
+                    }
+                }
+                catch
+                {
+                    // 忽略错误
+                }
+            }
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config/autostart/cn.classisland.app.desktop");
+            if (!File.Exists(startupPath))
+                return;
+
+            try
+            {
+                var content = await File.ReadAllTextAsync(startupPath);
+                // 检查 Exec 行是否包含 --autostartup
+                if (content.Contains("Exec=") && content.Contains("--autostartup"))
+                    return;
+
+                // 重新设置自启动
+                var isEnabled = PlatformServices.DesktopService.IsAutoStartEnabled;
+                if (isEnabled)
+                {
+                    PlatformServices.DesktopService.IsAutoStartEnabled = false;
+                    PlatformServices.DesktopService.IsAutoStartEnabled = true;
+                }
+            }
+            catch
+            {
+                // 忽略错误
+            }
+        }
     }
 }
