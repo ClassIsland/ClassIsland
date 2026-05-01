@@ -49,11 +49,18 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
     {
         lock (_audioPlaybackDeviceInitializeLock)
         {
-            if (_sharedAudioPlaybackDevice?.IsValueDisposed == false)
+            if (_sharedAudioPlaybackDevice != null)
             {
-                var lease = _sharedAudioPlaybackDevice.Rent();
-                Logger.LogDebug("使用了缓存的音频设备 {} (Id={})", lease.Value.Info?.Name, lease.Value.Info?.Id);
-                return lease;
+                try
+                {
+                    var lease = _sharedAudioPlaybackDevice.Rent();
+                    Logger.LogDebug("使用了缓存的音频设备 {} (Id={})", lease.Value.Info?.Name, lease.Value.Info?.Id);
+                    return lease;
+                }
+                catch (ObjectDisposedException)
+                {
+                    _sharedAudioPlaybackDevice = null;
+                }
             }
 
             if (TryInitializeDefaultPlaybackDeviceInternal() is not { } device)
@@ -62,7 +69,6 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
             }
             _sharedAudioPlaybackDevice = new RefCounted<AudioPlaybackDevice>(device);
             var lease2 = _sharedAudioPlaybackDevice.Rent();
-            _sharedAudioPlaybackDevice.Dispose();
             return lease2;
         }
     });
@@ -137,6 +143,7 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
 
     public void Dispose()
     {
+        _sharedAudioPlaybackDevice?.Dispose();
         AudioEngine.Dispose();
         GC.SuppressFinalize(this);
     }
