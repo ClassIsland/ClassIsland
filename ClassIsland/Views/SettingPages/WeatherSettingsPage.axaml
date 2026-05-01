@@ -1,4 +1,4 @@
-﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WeatherSettingsPage"
+<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WeatherSettingsPage"
       xmlns="https://github.com/avaloniaui"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -13,7 +13,7 @@
       xmlns:classIsland="clr-namespace:ClassIsland"
       xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
       xmlns:ci="http://classisland.tech/schemas/xaml/core"
-      xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      xmlns:controls3="using:FluentAvalonia.UI.Controls"
       xmlns:system="clr-namespace:System;assembly=System.Runtime"
       xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
       xmlns:abstraction="clr-namespace:ClassIsland.Platforms.Abstraction;assembly=ClassIsland.Platforms.Abstractions"
@@ -233,12 +233,14 @@
                                     <ci:Field Prefix="经度" Suffix="°" Margin="0 0 2 0"
                                               VerticalAlignment="Center">
                                         <TextBox
+                                            IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
                                             Text="{Binding ViewModel.SettingsService.Settings.WeatherLongitude, Converter={StaticResource IntToStringConverter}}"
                                             MinWidth="75"/>
                                     </ci:Field>
                                     <ci:Field Prefix="纬度" Suffix="°" Margin="2 0 6 0"
                                               VerticalAlignment="Center">
                                         <TextBox
+                                            IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
                                             Text="{Binding ViewModel.SettingsService.Settings.WeatherLatitude, Converter={StaticResource IntToStringConverter}}"
                                             MinWidth="75"/>
                                     </ci:Field>
@@ -246,6 +248,7 @@
                                 <Button Theme="{StaticResource TransparentButton}"
                                         VerticalAlignment="Center" HorizontalAlignment="Center"
                                         Click="ButtonShowPos_OnClick"
+                                        IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
                                         IsVisible="{Binding ViewModel.HideLocationPos}">
                                     <controls1:IconText Glyph="&#xE813;" Text="显示坐标"/>
                                 </Button>
@@ -253,6 +256,7 @@
                             <Button Theme="{StaticResource TransparentButton}"
                                     Content="{ci:FluentIcon &#xEBD2;}"
                                     ToolTip.Tip="定位"
+                                    IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
                                     Click="ButtonGetCurrentPos_OnClick" />
                         </StackPanel>
                     </controls3:SettingsExpanderItem.Footer>
