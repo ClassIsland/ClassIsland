@@ -30,7 +30,6 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     public IExactTimeService ExactTimeService { get; }
     public IActionService ActionService { get; }
     public ILogger<ProfileSettingsWindow> Logger { get; }
-    public ITutorialService TutorialService { get; }
 
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
     public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
@@ -58,6 +57,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
     [ObservableProperty] private Guid _tempOverlayClassPlanTimeLayoutId = Guid.Empty;
+    [ObservableProperty] private bool _tempOverlayCreateTimeLayout = false;
     [ObservableProperty] private ClassInfo? _selectedClassInfo;
     [ObservableProperty] private int _selectedClassIndex = -1;
     [ObservableProperty] private ClassPlan? _selectedClassPlan = null;
@@ -67,10 +67,13 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private TimeLayoutItem? _previousTrackedTimeLayoutItem;
     [ObservableProperty] private DateTime _scheduleCalendarSelectedDate = DateTime.Today;
     [ObservableProperty] private DateTime _overlayEnableDateTime = DateTime.Today;
+    [ObservableProperty] private ObservableCollection<WeekClassPlanRow> _weekClassPlanRows = [];
     [ObservableProperty] private bool _isProfileImportMenuOpened = false;
     [ObservableProperty] private bool _isInScheduleSwappingMode = false;
+    [ObservableProperty] private WeekClassPlanRow? _selectedWeekClassPlanRow;
     [ObservableProperty] private ScheduleClassPosition _classSwapEndPosition = ScheduleClassPosition.Zero;
     [ObservableProperty] private ScheduleClassPosition _classSwapStartPosition = ScheduleClassPosition.Zero;
+    [ObservableProperty] private DateTime _scheduleWeekViewBaseDate = DateTime.Now;
     [ObservableProperty] private bool _isTempSwapMode = true;
     [ObservableProperty] private int _dataGridWeekRowsWeekIndex = 0;
     [ObservableProperty] private bool _isClassPlanTempEditPopupOpen = false;
@@ -88,14 +91,12 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isProfileTransferInvoked;
     [ObservableProperty] private ProfileTransferProviderInfo? _selectedTransferInfo;
     [ObservableProperty] private bool _isTransferring;
-    [ObservableProperty] private int _selectedClassIndex2 = -1;
 
 /// <inheritdoc/>
     public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
         SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
         IActionService actionService,
-        ILogger<ProfileSettingsWindow> logger,
-        ITutorialService tutorialService)
+        ILogger<ProfileSettingsWindow> logger)
     {
         ProfileService = profileService;
         ManagementService = managementService;
@@ -104,7 +105,6 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         ExactTimeService = exactTimeService;
         ActionService = actionService;
         Logger = logger;
-        TutorialService = tutorialService;
 
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
         TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);

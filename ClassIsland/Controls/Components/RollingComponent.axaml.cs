@@ -167,7 +167,7 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
     private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
     {
         var prevStopState = _isStopRuleSatisfied;
-        _isStopRuleSatisfied = Settings.StopOnRule && RulesetService.IsRulesetSatisfied(Settings.StopRule);
+        _isStopRuleSatisfied = Settings.StopOnRule && RulesetService.IsRulesetSatisfiedWithNamedReference(Settings.StopRule);
 
         if (prevStopState != _isStopRuleSatisfied)
         {

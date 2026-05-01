@@ -12,15 +12,15 @@ namespace ClassIsland.Services;
 public class RulesetService : IRulesetService
 {
     public ILogger<RulesetService> Logger { get; }
+    public INamedRulesetService NamedRulesetService { get; }
 
 
-    public RulesetService(ILogger<RulesetService> logger)
+    public RulesetService(ILogger<RulesetService> logger, INamedRulesetService namedRulesetService)
     {
         Logger = logger;
+        NamedRulesetService = namedRulesetService;
         NotifyStatusChanged();
     }
-
-    
 
     public event EventHandler? ForegroundWindowChanged;
 
@@ -144,6 +144,25 @@ public class RulesetService : IRulesetService
         isSatisfied ^= ruleset.IsReversed;
         ruleset.State = BoolToRuleObjectState(isSatisfied);
         return isSatisfied;
+    }
+
+    public bool IsRulesetSatisfiedWithNamedReference(Ruleset ruleset)
+    {
+        if (ruleset.NamedRulesetId != null)
+        {
+            var namedRuleset = NamedRulesetService.GetNamedRuleset(ruleset.NamedRulesetId.Value);
+            if (namedRuleset != null)
+            {
+                var result = IsRulesetSatisfied(namedRuleset.Ruleset);
+                namedRuleset.State = BoolToRuleObjectState(result);
+                ruleset.State = BoolToRuleObjectState(result);
+                return result;
+            }
+
+            Logger.LogWarning("找不到引用的命名规则集 {}，回退到内联规则集判断。", ruleset.NamedRulesetId);
+        }
+
+        return IsRulesetSatisfied(ruleset);
     }
 
     public void RegisterRuleHandler(string id, RuleRegistryInfo.HandleDelegate handler)

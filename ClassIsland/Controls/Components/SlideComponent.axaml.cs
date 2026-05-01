@@ -82,7 +82,7 @@ public partial class SlideComponent : ComponentBase<SlideComponentSettings>
             ShowNext();
             if (!flag[SelectedIndex]
                 && Settings.Children[SelectedIndex].HideOnRule
-                && RulesetService.IsRulesetSatisfied(Settings.Children[SelectedIndex].HidingRules))
+                && RulesetService.IsRulesetSatisfiedWithNamedReference(Settings.Children[SelectedIndex].HidingRules))
             {
                 flag[SelectedIndex] = true;
                 count++;
@@ -183,8 +183,8 @@ public partial class SlideComponent : ComponentBase<SlideComponentSettings>
 
     private void RefreshRules()
     {
-        var isStop = RulesetService.IsRulesetSatisfied(Settings.StopRule) && Settings.IsStopOnRuleEnabled;
-        var isPause = RulesetService.IsRulesetSatisfied(Settings.PauseRule) && Settings.IsPauseOnRuleEnabled;
+        var isStop = RulesetService.IsRulesetSatisfiedWithNamedReference(Settings.StopRule) && Settings.IsStopOnRuleEnabled;
+        var isPause = RulesetService.IsRulesetSatisfiedWithNamedReference(Settings.PauseRule) && Settings.IsPauseOnRuleEnabled;
         if (isStop)
         {
             Timer.Stop();

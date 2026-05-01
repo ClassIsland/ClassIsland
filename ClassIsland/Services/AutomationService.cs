@@ -127,7 +127,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         }
 
         Logger.LogTrace("工作流 {} 由触发器 {} 触发", workflow.ActionSet.Name, trigger);
-        if (workflow.IsConditionEnabled && !RulesetService.IsRulesetSatisfied(workflow.Ruleset))
+        if (workflow.IsConditionEnabled && !RulesetService.IsRulesetSatisfiedWithNamedReference(workflow.Ruleset))
             return;
         ActionService.InvokeActionSetAsync(workflow.ActionSet);
     }
@@ -160,7 +160,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         foreach (var workflow in Workflows.Where(x => x is
                      { ActionSet: { Status: ActionSetStatus.IsOn, IsRevertEnabled: true }, IsConditionEnabled: true }))
         {
-            if (RulesetService.IsRulesetSatisfied(workflow.Ruleset) || workflow.ActionSet.Status != ActionSetStatus.IsOn)
+            if (RulesetService.IsRulesetSatisfiedWithNamedReference(workflow.Ruleset) || workflow.ActionSet.Status != ActionSetStatus.IsOn)
                 continue;
             ActionService.RevertActionSetAsync(workflow.ActionSet);
         }

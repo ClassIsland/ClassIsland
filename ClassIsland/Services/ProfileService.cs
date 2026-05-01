@@ -234,7 +234,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         return JsonSerializer.Deserialize<T>(json)!;
     }
 
-    public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId=null, DateTime? enableDateTime = null)
+    public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId=null, DateTime? enableDateTime = null, bool createTempTimeLayout = false)
     {
         Logger.LogInformation("创建临时层：{}", id);
         var date = enableDateTime ?? IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
@@ -247,6 +247,18 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         var cp = Profile.ClassPlans[id];
         timeLayoutId ??= cp.TimeLayoutId;
         var newCp = DuplicateJson(cp);
+
+        if (createTempTimeLayout && Profile.TimeLayouts.TryGetValue(timeLayoutId.Value, out var sourceLayout))
+        {
+            var newLayout = DuplicateJson(sourceLayout);
+            newLayout.IsOverlay = true;
+            newLayout.OverlaySourceId = timeLayoutId.Value;
+            newLayout.Name += "（临时层）";
+            var newLayoutId = Guid.NewGuid();
+            Profile.TimeLayouts.Add(newLayoutId, newLayout);
+            timeLayoutId = newLayoutId;
+            Logger.LogInformation("同时创建临时时间表：{} -> {}", sourceLayout.Name, newLayoutId);
+        }
 
         newCp.IsOverlay = true;
         newCp.TimeLayoutId = timeLayoutId.Value;
@@ -297,6 +309,24 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Profile.ClassPlans.Remove(key);
             Logger.LogInformation("清理没有被引用的过期临时层课表：{}", key);
         }
+
+        var activeTimeLayoutIds = Profile.ClassPlans.Values
+            .Where(x => !x.IsOverlay || orderedSchedules.Contains(GetKey(x)))
+            .Select(x => x.TimeLayoutId)
+            .ToHashSet();
+
+        foreach (var (key, layout) in Profile.TimeLayouts.Where(x => x.Value.IsOverlay).ToList())
+        {
+            if (activeTimeLayoutIds.Contains(key))
+                continue;
+            Profile.TimeLayouts.Remove(key);
+            Logger.LogInformation("清理没有被引用的过期临时层时间表：{}", key);
+        }
+    }
+
+    private Guid GetKey(ClassPlan cp)
+    {
+        return Profile.ClassPlans.FirstOrDefault(x => x.Value == cp).Key;
     }
 
     //[Obsolete]
@@ -322,6 +352,13 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             return;
         }
         classPlan.IsOverlay = false;
+
+        if (Profile.TimeLayouts.TryGetValue(classPlan.TimeLayoutId, out var layout) && layout.IsOverlay)
+        {
+            layout.IsOverlay = false;
+            layout.Name = layout.Name.Replace("（临时层）", "");
+            Logger.LogInformation("同时将临时层时间表转换为普通时间表：{}", classPlan.TimeLayoutId);
+        }
     }
 
     public void SetupTempClassPlanGroup(Guid key, DateTime? expireTime = null)

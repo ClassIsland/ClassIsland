@@ -36,8 +36,9 @@ public interface IPublicProfileService
     /// <param name="id">源课表ID</param>
     /// <param name="timeLayoutId">要使用的时间表ID,留null将使用源课表的时间表</param>
     /// <param name="enableDateTime">临时层的预定启用时间</param>
+    /// <param name="createTempTimeLayout">是否同时创建临时层时间表</param>
     /// <returns>如果创建成功，则返回临时层课表的ID，否则返回null。</returns>
-    Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId = null, DateTime? enableDateTime = null);
+    Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId = null, DateTime? enableDateTime = null, bool createTempTimeLayout = false);
 
     /// <summary>
     /// 清空临时层课表
