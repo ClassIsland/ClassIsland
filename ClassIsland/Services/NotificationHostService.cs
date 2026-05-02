@@ -176,7 +176,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             SetupNotificationRequest(request, providerGuid, channelGuid);
             request.CompletedToken.Register(() => FinishNotificationPlaying(request));
         }
-        if (pushNotifications && PushNotificationRequests([CreateTicket(request)]))
+        if (pushNotifications && PushNotificationRequests([request]))
         {
             return;
         }
@@ -259,7 +259,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             request.CompletedToken.Register(() => FinishNotificationPlaying(request));
         }
 
-        if (PushNotificationRequests(requests.Select(CreateTicket).ToList()))
+        if (PushNotificationRequests(requests))
         {
             return;
         }
@@ -357,7 +357,21 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
     }
 
-    private bool PushNotificationRequests(List<NotificationPlayingTicket> requests)
+    private NotificationConsumerRegisterInfo? RouteRequests(IReadOnlyList<NotificationRequest> requests)
+    {
+        if (requests.Count <= 0)
+        {
+            return null;
+        }
+
+        var targetLine = requests[0].TargetLineNumber;
+        return RegisteredConsumers
+            .FirstOrDefault(x => x.Consumer.AcceptsNotificationRequests &&
+                                 x.Consumer.QueuedNotificationCount <= 0 &&
+                                 (targetLine == null || x.LineNumber == targetLine));
+    }
+
+    private bool PushNotificationRequests(IReadOnlyList<NotificationRequest> requests)
     {
         Logger.LogTrace("开始推送提醒 ({})", requests.Count);
         if (requests.Count <= 0)
@@ -373,18 +387,19 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 return false;
             }
 
-            var consumer = NotificationRouter.Route(requests, RegisteredConsumers);
+            var consumer = RouteRequests(requests);
             if (consumer != null)
             {
+                var tickets = requests.Select(CreateTicket).ToList();
                 Logger.LogTrace("将推送的提醒消费者：{}(#{})", consumer.Consumer, consumer.Consumer.GetHashCode());
                 foreach (var request in requests)
                 {
-                    PlayingNotifications.Add(request.Request);
+                    PlayingNotifications.Add(request);
                     Logger.LogTrace("将推送提醒 {}", request);
                 }
 
                 UpdateNotificationPlayingState();
-                consumer.Consumer.ReceiveNotifications(requests);
+                consumer.Consumer.ReceiveNotifications(tickets);
                 return true;
             }
         }
@@ -413,10 +428,10 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 }
 
                 var requests = CollectChainedRequestsInternal(head);
-                var tickets = requests.Select(CreateTicket).ToList();
-                var targetConsumer = NotificationRouter.Route(tickets, RegisteredConsumers);
+                var targetConsumer = RouteRequests(requests);
                 if (targetConsumer?.Consumer == consumer)
                 {
+                    var tickets = requests.Select(CreateTicket).ToList();
                     RequestQueue.Dequeue();
                     EnqueuedRequests.Remove(head);
                     foreach (var r in requests)
@@ -456,8 +471,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 }
 
                 var requests = CollectChainedRequestsInternal(head);
-                var tickets = requests.Select(CreateTicket).ToList();
-                if (PushNotificationRequests(tickets))
+                if (PushNotificationRequests(requests))
                 {
                     RequestQueue.Dequeue();
                     EnqueuedRequests.Remove(head);
