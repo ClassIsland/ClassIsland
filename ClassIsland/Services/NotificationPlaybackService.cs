@@ -25,6 +25,21 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
         public INotificationPlaybackHandler? Handler { get; set; }
     }
 
+    private static bool ContainsRequest(PlaybackSession session, NotificationRequest request) =>
+        session.PlayingTickets.Any(x => x.Request == request) ||
+        session.Queue.Any(x => x.Request == request);
+
+    private void EnqueueTicketsNoDuplicate(PlaybackSession session, IEnumerable<NotificationPlayingTicket> tickets)
+    {
+        foreach (var ticket in tickets)
+        {
+            if (ContainsRequest(session, ticket.Request))
+                continue;
+
+            session.Queue.Enqueue(ticket);
+        }
+    }
+
     public void EnqueueAndPlay(INotificationConsumer consumer, INotificationPlaybackHandler handler, IEnumerable<NotificationPlayingTicket> tickets)
     {
         PlaybackSession session;
@@ -36,10 +51,7 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
                 _sessions[consumer] = session;
             }
             session.Handler = handler;
-            foreach (var ticket in tickets)
-            {
-                session.Queue.Enqueue(ticket);
-            }
+            EnqueueTicketsNoDuplicate(session, tickets);
 
             if (session.IsPlaying)
             {
@@ -131,10 +143,7 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
                 {
                     lock (_syncLock)
                     {
-                        foreach (var t in newTickets)
-                        {
-                            session.Queue.Enqueue(t);
-                        }
+                        EnqueueTicketsNoDuplicate(session, newTickets);
                     }
                 }
             }

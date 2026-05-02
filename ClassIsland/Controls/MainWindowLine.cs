@@ -675,6 +675,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
                 return;
             }
 
+            _isOverlayOpen = true;
             CurrentNotificationRequest = request;
             PreProcessNotificationContent(request.MaskContent);
 
@@ -734,6 +735,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
     {
         Dispatcher.UIThread.Post(() =>
         {
+            _isOverlayOpen = false;
             PseudoClasses.Set(":overlay-anim", true);
             PseudoClasses.Set(":mask-out", true);
             PseudoClasses.Set(":mask-in", false);
