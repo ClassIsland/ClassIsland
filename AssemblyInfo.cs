@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.Versioning;
 using ClassIsland;
 
 #if NIX
