@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Platform;
 using ClassIsland.Core;
-using ClassIsland.Platforms.Abstraction;
 using Mono.Unix;
 using WindowsShortcutFactory;
 
@@ -107,98 +106,5 @@ public static class ShortcutHelpers
         var unixFileInfo = new UnixFileInfo(path);
         unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute |
                                               FileAccessPermissions.OtherExecute;
-    }
-
-    /// <summary>
-    /// 检查并更新自启动快捷方式，确保包含 --autostartup 参数
-    /// </summary>
-    public static async Task CheckAndUpdateAutostartShortcutAsync()
-    {
-        var shortcutInfo = GetAutostartShortcutInfo();
-        if (shortcutInfo == null)
-            return;
-
-        if (!File.Exists(shortcutInfo.Path))
-            return;
-
-        var needsUpdate = await CheckShortcutNeedsUpdateAsync(shortcutInfo);
-        if (!needsUpdate)
-            return;
-
-        RefreshAutostartSettings();
-    }
-
-    private static AutostartShortcutInfo? GetAutostartShortcutInfo()
-    {
-        if (OperatingSystem.IsWindows())
-        {
-            return new AutostartShortcutInfo(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk"),
-                AutostartShortcutType.Windows);
-        }
-        else if (OperatingSystem.IsLinux())
-        {
-            return new AutostartShortcutInfo(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config/autostart/cn.classisland.app.desktop"),
-                AutostartShortcutType.Linux);
-        }
-        return null;
-    }
-
-    private static async Task<bool> CheckShortcutNeedsUpdateAsync(AutostartShortcutInfo shortcutInfo)
-    {
-        try
-        {
-            if (shortcutInfo.Type == AutostartShortcutType.Windows)
-            {
-                using var shortcut = WindowsShortcut.Load(shortcutInfo.Path);
-                return string.IsNullOrWhiteSpace(shortcut.Arguments) || !shortcut.Arguments.Contains("--autostartup");
-            }
-            else if (shortcutInfo.Type == AutostartShortcutType.Linux)
-            {
-                var content = await File.ReadAllTextAsync(shortcutInfo.Path);
-                return !content.Contains("Exec=") || !content.Contains("--autostartup");
-            }
-            return false;
-        }
-        catch
-        {
-            return true; // 如果读取失败，假设需要更新
-        }
-    }
-
-    private static void RefreshAutostartSettings()
-    {
-        try
-        {
-            var isEnabled = PlatformServices.DesktopService.IsAutoStartEnabled;
-            if (isEnabled)
-            {
-                PlatformServices.DesktopService.IsAutoStartEnabled = false;
-                PlatformServices.DesktopService.IsAutoStartEnabled = true;
-            }
-        }
-        catch
-        {
-            // 忽略错误
-        }
-    }
-
-    private class AutostartShortcutInfo
-    {
-        public string Path { get; }
-        public AutostartShortcutType Type { get; }
-
-        public AutostartShortcutInfo(string path, AutostartShortcutType type)
-        {
-            Path = path;
-            Type = type;
-        }
-    }
-
-    private enum AutostartShortcutType
-    {
-        Windows,
-        Linux
     }
 }
