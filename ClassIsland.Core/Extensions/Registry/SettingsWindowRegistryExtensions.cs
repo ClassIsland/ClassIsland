@@ -3,7 +3,6 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.SettingsWindow;
 using ClassIsland.Core.Services.Registry;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Core.Extensions.Registry;
 

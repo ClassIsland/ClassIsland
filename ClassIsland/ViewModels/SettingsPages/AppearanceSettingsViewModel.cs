@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Avalonia.Media;
-using ClassIsland.Core;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using ClassIsland.Core.Models.Plugin;
 
 namespace ClassIsland.Core.Models.XamlTheme;
 

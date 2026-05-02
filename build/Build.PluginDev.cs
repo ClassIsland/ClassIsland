@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
 using Nuke.Common;
 using Nuke.Common.IO;

@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Numerics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;

@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using ClassIsland.Core.Helpers.UI;
+﻿using ClassIsland.Core.Helpers.UI;
 using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Attributes;

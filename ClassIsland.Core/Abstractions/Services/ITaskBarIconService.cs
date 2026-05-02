@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Avalonia.Controls;
 
 namespace ClassIsland.Core.Abstractions.Services;

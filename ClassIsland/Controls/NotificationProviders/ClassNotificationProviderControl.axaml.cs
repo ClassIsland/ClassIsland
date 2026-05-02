@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;

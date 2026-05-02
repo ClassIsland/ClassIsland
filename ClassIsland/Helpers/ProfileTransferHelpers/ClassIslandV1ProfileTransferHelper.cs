@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 

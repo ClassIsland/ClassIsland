@@ -1,10 +1,7 @@
-using System;
 using Avalonia.Controls;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls;
-using ClassIsland.Core.Enums;
 
 namespace ClassIsland.Services.Automation.Triggers;
 

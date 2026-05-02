@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 
 #if Platforms_Windows
 using Windows.Win32;

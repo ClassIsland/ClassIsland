@@ -1,7 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Documents;
-using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.Styling;
 using ClassIsland.Core.Assists;
 

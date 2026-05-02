@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
@@ -15,7 +12,6 @@ using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
-using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Views;
 

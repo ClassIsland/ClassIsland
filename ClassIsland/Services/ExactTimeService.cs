@@ -11,7 +11,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using GuerrillaNtp;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
 
 namespace ClassIsland.Services;
 

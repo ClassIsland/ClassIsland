@@ -1,9 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using ClassIsland.Models;
 using ClassIsland.Shared.Abstraction.Models;
-using ClassIsland.Shared.Models.Notification;
 
 namespace ClassIsland.Controls;
 

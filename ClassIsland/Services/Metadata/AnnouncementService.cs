@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using Avalonia.Platform;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Metadata;

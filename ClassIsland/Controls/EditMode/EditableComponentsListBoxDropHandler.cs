@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -9,13 +8,9 @@ using Avalonia.Xaml.Interactions.DragAndDrop;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
-using ClassIsland.Core.Models.UI;
-using ClassIsland.Platforms.Abstraction;
-using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
-using DynamicData;
 
 namespace ClassIsland.Controls.EditMode;
 

@@ -1,26 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.Reactive;
-using ClassIsland.Core;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
-using ClassIsland.Core.Models.Logging;
-using ClassIsland.Services.Logging;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using DynamicData;
-using DynamicData.Binding;
-using FluentAvalonia.UI.Data;
 using Microsoft.Extensions.Logging;
-using ReactiveUI;
-using WebSocketSharp;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace ClassIsland.Views;

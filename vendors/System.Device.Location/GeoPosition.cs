@@ -11,10 +11,6 @@
 **
 =============================================================================*/
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-
 namespace System.Device.Location
 {
     public class GeoPosition<T>

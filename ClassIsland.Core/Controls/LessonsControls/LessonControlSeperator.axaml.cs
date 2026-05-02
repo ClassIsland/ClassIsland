@@ -1,6 +1,4 @@
 using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using ClassIsland.Shared.Abstraction.Models;
 
 namespace ClassIsland.Core.Controls.LessonsControls;

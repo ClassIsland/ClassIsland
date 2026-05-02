@@ -1,19 +1,10 @@
-using System.Buffers.Text;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Xml;
 using Windows.UI.Notifications;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
-using ClassIsland.Shared;
-using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
-using Microsoft.Win32;
-using SoundFlow.Enums;
 using XmlDocument = Windows.Data.Xml.Dom.XmlDocument;
 
 namespace ClassIsland.Platform.Windows.Services;

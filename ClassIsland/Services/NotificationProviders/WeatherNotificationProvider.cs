@@ -4,17 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Models.Actions;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
-using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Shared;
-
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Attributes;

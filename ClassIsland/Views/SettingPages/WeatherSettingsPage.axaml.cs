@@ -1,13 +1,11 @@
 using System;
 using System.ComponentModel;
-using System.Windows;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
@@ -16,7 +14,6 @@ using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
-using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views.SettingPages;

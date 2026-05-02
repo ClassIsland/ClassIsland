@@ -1,24 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
-using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Controls.ProfileTransferProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
-using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Extensions;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 using CsesSharp;
-using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Controls.ProfileTransferProviders;

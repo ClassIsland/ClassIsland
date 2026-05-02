@@ -1,15 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
-using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.Tutorial;
@@ -22,7 +18,6 @@ using ClassIsland.ViewModels;
 using DynamicData;
 using FluentAvalonia.UI.Controls;
 using HotAvalonia;
-using Mono.Unix;
 
 namespace ClassIsland.Views;
 

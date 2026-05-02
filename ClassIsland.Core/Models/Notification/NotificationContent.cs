@@ -1,12 +1,9 @@
-﻿using System.Runtime.InteropServices;
-using System.Windows;
-using Avalonia.Markup.Xaml.Templates;
+﻿using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Media;
 using ClassIsland.Core.Controls.NotificationTemplates;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification.Templates;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Google.Protobuf.WellKnownTypes;
 
 namespace ClassIsland.Core.Models.Notification;
 

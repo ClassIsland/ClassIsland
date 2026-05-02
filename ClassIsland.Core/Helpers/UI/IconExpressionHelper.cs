@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.SimpleExpression;
 using FluentAvalonia.UI.Controls;

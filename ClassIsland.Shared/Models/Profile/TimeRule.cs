@@ -1,8 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-using System.Collections.ObjectModel;
-using System.Text.Json.Serialization;
-
 namespace ClassIsland.Shared.Models.Profile;
 
 /// <summary>

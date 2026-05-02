@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Enums;
-using ClassIsland.Shared.Interfaces;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Shared.Models.Profile;
-using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services.NotificationProviders;
 

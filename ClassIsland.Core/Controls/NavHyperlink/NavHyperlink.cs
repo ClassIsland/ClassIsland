@@ -1,9 +1,7 @@
-using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Commands;
 using ClassIsland.Shared;
 
 namespace ClassIsland.Core.Controls.NavHyperlink;

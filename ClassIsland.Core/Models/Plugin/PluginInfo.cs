@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.Json.Serialization;
 using ClassIsland.Core.Abstractions.Models.Marketplace;
 using ClassIsland.Core.Enums;

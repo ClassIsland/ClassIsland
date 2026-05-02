@@ -1,6 +1,3 @@
-using Avalonia;
-using ClassIsland.Shared.Abstraction.Models;
-
 namespace ClassIsland.Core.Controls.LessonsControls;
 
 /// <summary>

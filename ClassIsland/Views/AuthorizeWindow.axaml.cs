@@ -1,9 +1,5 @@
-using System;
 using System.Linq;
-using System.Windows;
-using System.Windows.Input;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
 using ClassIsland.Core.Controls;

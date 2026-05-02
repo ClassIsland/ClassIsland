@@ -1,6 +1,5 @@
 ﻿using Avalonia.Media;
 using ClassIsland.Core.Models.Theming;
-using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Core.Abstractions.Services;
 

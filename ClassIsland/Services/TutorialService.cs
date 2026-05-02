@@ -25,7 +25,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
 using ReactiveUI;
-using Tmds.DBus.Protocol;
 
 namespace ClassIsland.Services;
 

@@ -1,5 +1,3 @@
-using ClassIsland.Enums;
-
 namespace ClassIsland.Models;
 
 public class ApplicationCommand

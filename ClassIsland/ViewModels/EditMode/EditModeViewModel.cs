@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using ClassIsland.Controls.EditMode;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;

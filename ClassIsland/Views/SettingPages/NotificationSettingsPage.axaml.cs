@@ -3,32 +3,20 @@ using ClassIsland.Core.Abstractions.Controls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Services;
-using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using System.Diagnostics;
-using System.Windows.Input;
 using Avalonia.Controls;
-using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Models;
 using ClassIsland.Shared;
-using ClassIsland.Shared.Helpers;
-using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Views.SettingPages;
-
-using GptSoVitsSpeechSettingsList = ObservableCollection<GptSoVitsSpeechSettings>;
-
 /// <summary>
 /// NotificationSettingsPage.xaml 的交互逻辑
 /// </summary>

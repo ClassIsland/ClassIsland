@@ -1,7 +1,6 @@
 using System;
 using ClassIsland.Enums.AppUpdating;
 using CommunityToolkit.Mvvm.ComponentModel;
-using PhainonDistributionCenter.Shared.Models.FileMap;
 
 namespace ClassIsland.Models.AppUpdating;
 

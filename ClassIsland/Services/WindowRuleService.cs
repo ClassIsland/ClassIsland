@@ -1,13 +1,9 @@
 ﻿using System;
 using ClassIsland.Core.Abstractions.Services;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Diagnostics;
-using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models.Ruleset;
-using ClassIsland.Core;
 using ClassIsland.Models.Rules;
-using Avalonia.Threading;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models;
 

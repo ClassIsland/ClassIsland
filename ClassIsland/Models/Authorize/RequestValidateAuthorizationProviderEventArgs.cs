@@ -1,6 +1,5 @@
 using Avalonia.Interactivity;
 using ClassIsland.Controls;
-using ClassIsland.Views;
 
 namespace ClassIsland.Models.Authorize;
 

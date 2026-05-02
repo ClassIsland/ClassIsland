@@ -1,12 +1,8 @@
 using System;
-using System.Windows;
 using Avalonia;
-using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
-using ClassIsland.Core.Models.SettingsWindow;
-using FluentAvalonia.UI.Navigation;
 
 namespace ClassIsland.Views.SettingPages;
 

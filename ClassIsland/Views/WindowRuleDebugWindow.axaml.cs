@@ -1,12 +1,8 @@
 using System;
 using System.Diagnostics;
-using System.Windows;
-using Avalonia.Controls;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.ViewModels;
 using Avalonia.Interactivity;
-using Avalonia.Platform;
 using ClassIsland.Core.Controls;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models;

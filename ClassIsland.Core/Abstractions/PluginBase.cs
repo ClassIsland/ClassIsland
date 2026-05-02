@@ -1,8 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using ClassIsland.Core.Models.Plugin;
+﻿using ClassIsland.Core.Models.Plugin;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace ClassIsland.Core.Abstractions;
 

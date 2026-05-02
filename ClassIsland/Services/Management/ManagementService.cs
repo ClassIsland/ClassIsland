@@ -7,17 +7,13 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
-using ClassIsland.Core.Enums;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.Helpers;
-using ClassIsland.Models.Authorize;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Protobuf.AuditEvent;
-using ClassIsland.Shared.Protobuf.Client;
-using ClassIsland.Shared.Protobuf.Service;
 using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 

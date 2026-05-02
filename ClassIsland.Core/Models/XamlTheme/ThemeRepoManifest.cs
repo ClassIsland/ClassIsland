@@ -1,5 +1,4 @@
 using ClassIsland.Core.Abstractions.Models.Marketplace;
-using ClassIsland.Core.Models.XamlTheme;
 
 namespace ClassIsland.Core.Models.XamlTheme;
 

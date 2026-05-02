@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using Avalonia.Controls.Converters;
-using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 
 namespace ClassIsland.Core.Converters;

@@ -1,9 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
-using ReactiveUI;
 
 namespace ClassIsland.Core.Behaviors;
 

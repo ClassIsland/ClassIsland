@@ -17,11 +17,8 @@ using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
-using Sentry;
 
 namespace ClassIsland.Services;
-
-using ComponentSettingsList = ObservableCollection<ComponentSettings>;
 
 public class ComponentsService : ObservableRecipient, IComponentsService
 {

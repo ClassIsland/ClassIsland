@@ -1,8 +1,6 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using FluentAvalonia.UI.Controls;
-using ShimSkiaSharp;
 
 namespace ClassIsland.Core.Helpers.UI;
 

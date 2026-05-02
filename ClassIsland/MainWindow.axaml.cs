@@ -5,16 +5,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Documents;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
-using Avalonia.Data.Core;
-using Avalonia.Diagnostics;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -31,16 +25,10 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
-using ClassIsland.Core.Models.Notification;
-using ClassIsland.Helpers;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Platforms.Abstraction.Models;
-using ClassIsland.Shared.Abstraction.Models;
-using ClassIsland.Shared.Abstraction.Services;
-using ClassIsland.Shared.Interfaces;
-using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces.Controls;
@@ -49,11 +37,9 @@ using ClassIsland.Views;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
 
 using Sentry;
 using Linearstar.Windows.RawInput;
-using YamlDotNet.Core;
 
 
 

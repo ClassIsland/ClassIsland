@@ -8,7 +8,6 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Services;
-using ClassIsland.Views;
 using ClassIsland.Views.SettingPages;
 using CommunityToolkit.Mvvm.ComponentModel;
 

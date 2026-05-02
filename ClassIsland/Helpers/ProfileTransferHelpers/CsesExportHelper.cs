@@ -7,12 +7,9 @@ using Avalonia.Platform.Storage;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
-using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Extensions;
-using ClassIsland.Views;
 using CsesSharp;
-using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Helpers.ProfileTransferHelpers;

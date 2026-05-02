@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.ComponentModels;
-using ClassIsland.Core.Models.Plugin;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Services;

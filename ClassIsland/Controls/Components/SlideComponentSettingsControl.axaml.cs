@@ -1,4 +1,3 @@
-using System.Windows;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;

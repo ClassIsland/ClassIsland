@@ -1,16 +1,10 @@
-using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Tutorial;
-using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using CommunityToolkit.Mvvm.Input;
-using FluentAvalonia.UI.Controls;
-using FluentAvalonia.UI.Windowing;
 using Sentry;
 
 namespace ClassIsland.Views;

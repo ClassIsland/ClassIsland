@@ -1,25 +1,19 @@
 ﻿using ClassIsland.Models;
 using System;
-using System.Collections.Generic;
 using System.CommandLine.NamingConventionBinder;
 using System.CommandLine;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia;
-using ClassIsland;
 using ClassIsland.Core;
 using ClassIsland.Core.Converters;
 using ClassIsland.Core.Enums;
-using ClassIsland.Extensions;
 using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
-using HotAvalonia;
 using Sentry;
 using System.Diagnostics;
-using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.JsonConverters;
 

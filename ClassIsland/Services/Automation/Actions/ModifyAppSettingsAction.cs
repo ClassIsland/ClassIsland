@@ -11,7 +11,6 @@ using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Converters;
 using ClassIsland.Models.Actions;
-using ClassIsland.Shared.Helpers;
 using Microsoft.Extensions.Logging;
 namespace ClassIsland.Services.Automation.Actions;
 

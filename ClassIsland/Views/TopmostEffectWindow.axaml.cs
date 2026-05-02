@@ -1,15 +1,9 @@
-using System;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform;
-using Avalonia.Rendering;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Shared.Interfaces.Controls;

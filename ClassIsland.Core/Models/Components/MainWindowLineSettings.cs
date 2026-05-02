@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Text.Json.Serialization;
 using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Models.Components;
 using CommunityToolkit.Mvvm.ComponentModel;

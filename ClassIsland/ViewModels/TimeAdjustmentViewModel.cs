@@ -1,5 +1,4 @@
 ﻿using System;
-using Avalonia.Data.Converters;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;

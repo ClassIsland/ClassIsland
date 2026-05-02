@@ -6,7 +6,6 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Metadata;
 using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Core.Controls;

@@ -1,6 +1,5 @@
 ﻿using System;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Models;
 using ClassIsland.Models.Refreshing;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;

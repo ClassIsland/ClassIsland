@@ -11,17 +11,13 @@ using ClassIsland.Platforms.MacOs.Services;
 #endif
 using System.Diagnostics;
 using Avalonia;
-using Avalonia.Logging;
 using Avalonia.Media;
 using ClassIsland.Core;
 using ClassIsland.Core.Services;
 using ClassIsland.Extensions;
-using ClassIsland.Models;
 using ClassIsland.Platforms.Abstraction;
-using ClassIsland.Shared.Helpers;
 using Pastel;
 using System.Runtime.InteropServices;
-using System.Reflection;
 
 
 namespace ClassIsland.Desktop;

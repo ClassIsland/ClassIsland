@@ -1,8 +1,5 @@
-using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
-using Avalonia.VisualTree;
-using ClassIsland.Core.Abstractions.Models;
 
 namespace ClassIsland.Core.Helpers.UI;
 

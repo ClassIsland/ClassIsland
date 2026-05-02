@@ -1,17 +1,9 @@
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Templates;
 using Avalonia.Interactivity;
-using Avalonia.LogicalTree;
-using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Models.Actions;
-using ClassIsland.Views;
-using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Controls.ActionSettingsControls;
 

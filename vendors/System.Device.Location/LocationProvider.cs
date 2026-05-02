@@ -11,14 +11,9 @@
 **
 =============================================================================*/
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.ComponentModel;
-using System.Threading;
 using System.Device.Location.Internal;
 using System.Diagnostics;
-using System.Globalization;
 using System.Security;
 using Strings.Resources;
 

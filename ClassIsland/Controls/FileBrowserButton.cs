@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
-using Microsoft.Win32;
 
 namespace ClassIsland.Controls;
 

@@ -1,4 +1,3 @@
-using System.Windows;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -8,7 +7,6 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.ViewModels.SettingsPages;
-using FluentAvalonia.UI.Controls;
 using Net.Codecrete.QrCodeGenerator;
 
 namespace ClassIsland.Views.SettingPages;

@@ -11,11 +11,6 @@
 **
 =============================================================================*/
 
-using System;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-
 namespace System.Device.Location
 {
 

@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core;
-using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.RecoveryPages;
@@ -13,7 +12,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.RecoveryPages;

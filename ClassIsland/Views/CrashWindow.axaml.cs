@@ -1,12 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.Web;
-using System.Windows;
 using Avalonia;
 using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Controls;
-using ClassIsland.Services;
 
 namespace ClassIsland.Views;
 

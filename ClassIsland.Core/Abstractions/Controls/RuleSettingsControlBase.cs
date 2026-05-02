@@ -4,10 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 using Avalonia.Controls;
-using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Shared;
-using ClassIsland.Shared.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Abstractions.Controls;

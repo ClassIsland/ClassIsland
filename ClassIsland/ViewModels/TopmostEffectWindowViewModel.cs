@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 

@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using ClassIsland.Shared.JsonConverters;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Profile;
 

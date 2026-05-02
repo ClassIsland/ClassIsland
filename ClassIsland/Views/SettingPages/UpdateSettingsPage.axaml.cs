@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Net.Mime;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.Platform;
@@ -9,7 +8,6 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Enums.AppUpdating;
-using ClassIsland.Services.AppUpdating;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using ClassIsland.ViewModels.SettingsPages;

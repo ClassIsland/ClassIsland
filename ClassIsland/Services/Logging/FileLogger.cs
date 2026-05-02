@@ -6,7 +6,6 @@ using System.Threading;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Models.Logging;
 using Microsoft.Extensions.Logging;
-using Pastel;
 
 namespace ClassIsland.Services.Logging;
 

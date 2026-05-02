@@ -1,6 +1,4 @@
 using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using ClassIsland.Core.Abstractions.Controls.IconSources;
 
 namespace ClassIsland.Core.Controls.IconSources;

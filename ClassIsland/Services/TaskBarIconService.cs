@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using Avalonia.Controls;
-using Avalonia.Controls.Notifications;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using Microsoft.Extensions.Hosting;

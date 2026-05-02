@@ -7,7 +7,6 @@ using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Logging;
 using ClassIsland.Models.Logging;
 using Microsoft.Extensions.Logging;
-using Pastel;
 
 namespace ClassIsland.Services.Logging;
 

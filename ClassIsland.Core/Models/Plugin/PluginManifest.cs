@@ -1,8 +1,6 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using ClassIsland.Core.Abstractions.Models.Marketplace;
 using CommunityToolkit.Mvvm.ComponentModel;
-using YamlDotNet.Serialization;
 
 namespace ClassIsland.Core.Models.Plugin;
 

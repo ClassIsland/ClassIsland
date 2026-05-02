@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using ClassIsland.Core.ComponentModels;
-using ClassIsland.Shared;
 using ClassIsland.Shared.ComponentModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 

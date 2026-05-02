@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using ClassIsland.Core.Enums;
 
 namespace ClassIsland.Core.Attributes;

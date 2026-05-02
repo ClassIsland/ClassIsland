@@ -1,6 +1,4 @@
-﻿using ClassIsland.Core.Models.Plugin;
-
-namespace ClassIsland.Core.Models.XamlTheme;
+﻿namespace ClassIsland.Core.Models.XamlTheme;
 
 /// <summary>
 /// 代表一个主题的索引信息。

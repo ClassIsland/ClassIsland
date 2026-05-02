@@ -1,5 +1,3 @@
-using System.IO;
-
 namespace ClassIsland.Core.Extensions;
 
 /// <summary>

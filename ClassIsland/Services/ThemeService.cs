@@ -2,10 +2,8 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Media;
 using Avalonia.Styling;
 using ClassIsland.Core;
@@ -14,7 +12,6 @@ using ClassIsland.Core.Models.Theming;
 using FluentAvalonia.Styling;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
 
 namespace ClassIsland.Services;
 

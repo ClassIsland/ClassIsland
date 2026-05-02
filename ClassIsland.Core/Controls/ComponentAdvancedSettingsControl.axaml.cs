@@ -1,9 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using ClassIsland.Core.Abstractions.Controls;
-using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Core.Models.Components;
 
 namespace ClassIsland.Core.Controls;

@@ -1,8 +1,4 @@
-﻿using System.Windows;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Markup.Xaml.Templates;
+﻿using Avalonia.Controls.Primitives;
 
 namespace ClassIsland.Core.Controls;
 

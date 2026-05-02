@@ -1,11 +1,5 @@
-using System;
 using ClassIsland.Core.Abstractions.Controls;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Abstractions.Services.Management;
-using ClassIsland.Core.ComponentModels;
 using ClassIsland.Models.Rules;
-using ClassIsland.Services;
-using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 
 namespace ClassIsland.Controls.RuleSettingsControls;

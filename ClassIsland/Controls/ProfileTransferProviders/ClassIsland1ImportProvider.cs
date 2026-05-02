@@ -6,7 +6,6 @@ using ClassIsland.Core.Abstractions.Controls.ProfileTransferProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Helpers.ProfileTransferHelpers;
-using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using Microsoft.Extensions.Logging;

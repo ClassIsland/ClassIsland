@@ -1,4 +1,3 @@
-using System.Web;
 using ClassIsland.Core.Attributes;
 
 namespace ClassIsland.Core.Models.SettingsWindow;

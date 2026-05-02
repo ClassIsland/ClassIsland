@@ -10,18 +10,11 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Shared.Abstraction.Services;
 
 using Edge_tts_sharp;
 using Edge_tts_sharp.Model;
 
 using Microsoft.Extensions.Logging;
-
-using SoundFlow.Backends.MiniAudio;
-using SoundFlow.Components;
-using SoundFlow.Enums;
-using SoundFlow.Providers;
-using SoundFlow.Structs;
 
 namespace ClassIsland.Services.SpeechService;
 

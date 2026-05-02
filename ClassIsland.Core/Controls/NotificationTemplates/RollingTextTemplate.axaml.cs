@@ -1,13 +1,9 @@
 using System.Diagnostics;
-using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
-using Avalonia.Data.Core;
 using Avalonia.Interactivity;
 using Avalonia.Rendering.Composition;
 using Avalonia.Rendering.Composition.Animations;
-using Avalonia.Styling;
-using Avalonia.Threading;
 using ClassIsland.Core.Models.Notification.Templates;
 
 namespace ClassIsland.Core.Controls.NotificationTemplates;

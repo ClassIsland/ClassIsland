@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Shared.Models.Notification;
 using CommunityToolkit.Mvvm.ComponentModel;

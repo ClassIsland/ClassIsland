@@ -1,8 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Platform.Storage;
-using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Plugin;
-using ClassIsland.Shared;
 
 namespace ClassIsland.Core.Abstractions.Services;
 

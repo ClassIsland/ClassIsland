@@ -1,7 +1,6 @@
 
 using System;
 using System.Linq;
-using System.Windows;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;

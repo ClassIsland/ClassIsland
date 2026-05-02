@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using ClassIsland.Shared.Enums;
+﻿using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
 using dotnetCampus.Ipc.CompilerServices.Attributes;
 

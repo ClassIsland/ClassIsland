@@ -1,6 +1,5 @@
 using ClassIsland.Services;
 using ClassIsland.Services.AppUpdating;
-using ClassIsland.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 using PhainonDistributionCenter.Shared.Models.Client;

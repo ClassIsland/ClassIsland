@@ -1,8 +1,6 @@
-﻿using System.IO;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using ClassIsland.Core.Abstractions.Models.Marketplace;
 using CommunityToolkit.Mvvm.ComponentModel;
-using YamlDotNet.Serialization;
 
 namespace ClassIsland.Core.Models.XamlTheme;
 

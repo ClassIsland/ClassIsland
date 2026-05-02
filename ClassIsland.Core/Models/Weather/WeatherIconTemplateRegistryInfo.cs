@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using Avalonia.Controls.Templates;
-using Avalonia.Markup.Xaml.Templates;
+﻿using Avalonia.Controls.Templates;
 
 namespace ClassIsland.Core.Models.Weather;
 

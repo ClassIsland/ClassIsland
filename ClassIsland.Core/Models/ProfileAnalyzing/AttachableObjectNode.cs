@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
 using ClassIsland.Shared.ComponentModels;

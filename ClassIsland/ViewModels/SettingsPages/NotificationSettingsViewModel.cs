@@ -9,12 +9,8 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Models;
-using ClassIsland.Models.Notification;
 using ClassIsland.Services;
 using ClassIsland.Shared.Abstraction.Models.Notification;
-using ClassIsland.Shared.Interfaces;
-using DynamicData;
-using DynamicData.Binding;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 

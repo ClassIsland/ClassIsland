@@ -1,14 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;

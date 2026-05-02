@@ -1,5 +1,3 @@
-using System.IO;
-
 namespace PhainonDistributionCenter.Shared.Models.Client;
 
 /// <summary>

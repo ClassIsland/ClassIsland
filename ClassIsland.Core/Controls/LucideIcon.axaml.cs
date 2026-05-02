@@ -1,6 +1,3 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Controls;

@@ -3,7 +3,6 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;
-using DesktopNotifications;
 using DesktopNotifications.FreeDesktop;
 using Tmds.DBus;
 

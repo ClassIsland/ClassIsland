@@ -1,7 +1,3 @@
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using Windows.Win32;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -19,7 +15,6 @@ using ClassIsland.Core.Assists;
 using ClassIsland.Core.Commands;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
-using ClassIsland.Core.Models.Theming;
 using FluentAvalonia.UI.Windowing;
 
 namespace ClassIsland.Core.Controls;

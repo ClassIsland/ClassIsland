@@ -3,22 +3,18 @@
 //
 // Modified by HelloWRC, 2025
 
-using System;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
-using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
 using Avalonia.Xaml.Interactivity;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
-using ClassIsland.Core.Models.UI;
 using Point = Avalonia.Point;
 
 namespace ClassIsland.Core.Behaviors;

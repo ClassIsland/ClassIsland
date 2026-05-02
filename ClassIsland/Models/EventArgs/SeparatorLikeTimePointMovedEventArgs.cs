@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using Avalonia.Interactivity;
-using ClassIsland.Controls;
+﻿using Avalonia.Interactivity;
 using ClassIsland.Controls.TimeLine;
 using ClassIsland.Shared.Models.Profile;
 

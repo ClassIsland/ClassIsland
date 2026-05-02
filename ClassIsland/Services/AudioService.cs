@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -11,9 +10,7 @@ using SoundFlow.Abstracts;
 using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Components;
-using SoundFlow.Enums;
 using SoundFlow.Providers;
-using SoundFlow.Structs;
 
 namespace ClassIsland.Services;
 

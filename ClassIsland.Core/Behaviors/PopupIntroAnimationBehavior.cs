@@ -2,7 +2,6 @@ using Avalonia;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Interactivity;
 using Avalonia.Rendering.Composition;
 using ClassIsland.Core.Abstractions.Services;
 

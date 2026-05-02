@@ -1,8 +1,6 @@
 using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using ClassIsland.Controls;
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers.UI;

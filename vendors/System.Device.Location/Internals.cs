@@ -11,11 +11,9 @@
 **
 =============================================================================*/
 
-using System;
 using System.Security;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 
 namespace System.Device.Location.Internal
 {

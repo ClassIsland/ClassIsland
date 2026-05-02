@@ -1,9 +1,7 @@
 ﻿using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Services.Registry;
-using ClassIsland.Shared.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Extensions.Registry;

@@ -13,15 +13,9 @@
 **
 =============================================================================*/
 
-using System;
 using System.Security;
-using System.Diagnostics;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.ComponentModel;
-using System.Threading;
 using System.Device.Location.Internal;
-using System.Globalization;
 
 namespace System.Device.Location
 {

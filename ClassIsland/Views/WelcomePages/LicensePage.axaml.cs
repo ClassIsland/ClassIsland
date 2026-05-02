@@ -1,9 +1,7 @@
 using System;
 using System.IO;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using ClassIsland.Core.Controls;
 using FluentAvalonia.UI.Controls;

@@ -1,7 +1,6 @@
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel;
 using ClassIsland.Core.Services.Registry;
 
 namespace ClassIsland.Core.Extensions.Registry;

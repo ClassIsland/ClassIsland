@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Windows;
 using Avalonia.Platform;
 using Pastel;
 

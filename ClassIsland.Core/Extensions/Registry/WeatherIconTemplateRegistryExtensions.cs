@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using Avalonia.Controls.Templates;
-using Avalonia.Markup.Xaml.Templates;
+﻿using Avalonia.Controls.Templates;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Weather;
 using Microsoft.Extensions.DependencyInjection;

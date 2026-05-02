@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using ClassIsland.Core;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Markup.Xaml.Templates;

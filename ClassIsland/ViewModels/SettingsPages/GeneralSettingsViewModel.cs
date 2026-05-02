@@ -1,7 +1,6 @@
 ﻿using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.Metadata;
-using ClassIsland.Core.Services;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 

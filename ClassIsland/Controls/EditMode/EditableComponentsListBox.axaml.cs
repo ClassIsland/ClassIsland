@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;

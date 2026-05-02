@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reactive.Linq;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -10,7 +9,6 @@ using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
 using ClassIsland.Services;
-using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Views;
 using CommunityToolkit.Mvvm.ComponentModel;

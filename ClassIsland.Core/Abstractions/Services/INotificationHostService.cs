@@ -2,10 +2,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Models.Notification;
-using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
-using ClassIsland.Shared.Models.Profile;
 using Microsoft.Extensions.Hosting;
 using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
 

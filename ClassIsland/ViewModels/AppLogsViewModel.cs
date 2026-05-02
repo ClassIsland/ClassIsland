@@ -4,7 +4,6 @@ using ClassIsland.Core.Models.Logging;
 using ClassIsland.Services.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
-using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 

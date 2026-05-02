@@ -12,7 +12,6 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
-using FluentAvalonia.Core;
 using Visual = Avalonia.Visual;
 
 namespace ClassIsland.Views.SettingPages;

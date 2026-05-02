@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
-using Avalonia.Threading;
+﻿using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services.Logging;
 using ClassIsland.Core.Models.Logging;
 using DynamicData;

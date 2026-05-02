@@ -1,9 +1,7 @@
 ﻿using System.Reactive.Linq;
-using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using ClassIsland.Core.Models.AttachedSettings;
-using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Models.Profile;

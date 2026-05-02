@@ -24,7 +24,6 @@ using ClassIsland.Core.Models.Logging;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Helpers.ProfileTransferHelpers;
-using ClassIsland.Models.Actions;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Models.Rules;
 using ClassIsland.Platforms.Abstraction;

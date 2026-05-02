@@ -1,11 +1,7 @@
 using ClassIsland.Core.Abstractions.Controls;
-using System;
-using System.Windows;
-using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Shared;

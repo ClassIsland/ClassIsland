@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace ClassIsland.Core.Models.Plugin;
 
 /// <summary>

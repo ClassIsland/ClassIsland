@@ -1,16 +1,11 @@
 using System;
 using System.Linq;
-using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Shared.Models.Profile;
-using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Protobuf.AuditEvent;

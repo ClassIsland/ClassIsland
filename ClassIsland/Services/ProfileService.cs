@@ -7,7 +7,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Windows;
 using Avalonia.Platform;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;

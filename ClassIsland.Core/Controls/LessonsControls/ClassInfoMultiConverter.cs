@@ -1,7 +1,5 @@
 using System.Globalization;
 using Avalonia.Data.Converters;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Controls.LessonsControls;

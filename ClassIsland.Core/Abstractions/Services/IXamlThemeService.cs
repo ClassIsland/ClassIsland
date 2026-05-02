@@ -1,8 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Controls;
-using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.XamlTheme;
-using ClassIsland.Shared;
 using ClassIsland.Shared.ComponentModels;
 
 namespace ClassIsland.Core.Abstractions.Services;

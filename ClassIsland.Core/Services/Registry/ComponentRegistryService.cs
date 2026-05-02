@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Reflection.Metadata;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 

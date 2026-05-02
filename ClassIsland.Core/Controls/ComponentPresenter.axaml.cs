@@ -4,16 +4,13 @@ using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
-using Avalonia.Controls.Documents;
 using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonia.Reactive;
 using Avalonia.Rendering.Composition;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Shared;
 

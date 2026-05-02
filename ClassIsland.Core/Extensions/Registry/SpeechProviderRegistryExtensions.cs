@@ -1,9 +1,7 @@
 ﻿using ClassIsland.Core.Abstractions.Controls;
-using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Services.Registry;
-using ClassIsland.Shared.Abstraction.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Extensions.Registry;

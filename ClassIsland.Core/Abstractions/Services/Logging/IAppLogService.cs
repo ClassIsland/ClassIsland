@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using ClassIsland.Core.Models.Logging;
 using DynamicData;
 

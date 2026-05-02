@@ -1,6 +1,5 @@
 ﻿using System.Windows.Input;
 using Avalonia.Labs.Input;
-using CommunityToolkit.Mvvm.Input;
 
 namespace ClassIsland.Core.Commands;
 

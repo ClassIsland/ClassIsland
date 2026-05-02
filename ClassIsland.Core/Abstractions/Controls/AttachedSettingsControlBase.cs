@@ -7,7 +7,6 @@ using Avalonia.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
-using ClassIsland.Shared.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Abstractions.Controls;

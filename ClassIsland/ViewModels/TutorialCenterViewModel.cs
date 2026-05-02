@@ -3,7 +3,6 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
-using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.ViewModels;
 

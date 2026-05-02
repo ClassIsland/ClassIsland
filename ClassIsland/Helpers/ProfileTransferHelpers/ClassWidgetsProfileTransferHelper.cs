@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.Json;
 using Avalonia.Platform;
 using ClassIsland.Models.External.ClassWidgets;
-using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 

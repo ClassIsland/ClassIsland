@@ -1,14 +1,4 @@
 using System.Drawing;
-using System.Runtime.InteropServices;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using ClassIsland.Core.Models;
-using ClassIsland.Shared;
-using Microsoft.Extensions.Logging;
-using System.IO;
-using Avalonia;
-using Avalonia.Platform;
-using Timer = System.Threading.Timer;
 
 namespace ClassIsland.Core.Helpers.Native;
 

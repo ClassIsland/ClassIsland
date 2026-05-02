@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Documents;
 using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Assists;

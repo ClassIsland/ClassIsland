@@ -1,10 +1,4 @@
-﻿using System;
-using System.Windows;
-using Avalonia.Media;
-using Avalonia.Styling;
-using ClassIsland.Core.Commands;
-using Markdown.Avalonia;
-using Markdown.Avalonia.SyntaxHigh;
+﻿using ClassIsland.Core.Commands;
 
 namespace ClassIsland.Core.Helpers;
 

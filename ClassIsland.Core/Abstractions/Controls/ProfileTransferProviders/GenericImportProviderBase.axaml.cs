@@ -1,18 +1,11 @@
-using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
-using ClassIsland.Shared.Extensions;
-using ClassIsland.Shared.Helpers;
-using ClassIsland.Shared.Models.Profile;
-using CsesSharp;
-using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Core.Abstractions.Controls.ProfileTransferProviders;
 

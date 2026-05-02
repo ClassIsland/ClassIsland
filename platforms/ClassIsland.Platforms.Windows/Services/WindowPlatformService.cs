@@ -1,11 +1,9 @@
 using System.Runtime.InteropServices;
-using Windows.Win32;
 using Windows.Win32.UI.Accessibility;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Threading;
-using ClassIsland.Core.Controls;
 using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Platforms.Abstraction.Services;

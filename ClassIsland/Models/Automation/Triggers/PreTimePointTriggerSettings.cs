@@ -1,5 +1,4 @@
-﻿using ClassIsland.Core.Attributes;
-using ClassIsland.Shared.Enums;
+﻿using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.Automation.Triggers;

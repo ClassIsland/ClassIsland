@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows;
 using Avalonia.Controls.Templates;
-using Avalonia.Markup.Xaml.Templates;
 using ClassIsland.Core.Models.Weather;
 
 namespace ClassIsland.Core.Abstractions.Services;

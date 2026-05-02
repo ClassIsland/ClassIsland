@@ -7,9 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
-using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Services;
@@ -19,7 +17,6 @@ using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 using DynamicData.Binding;
-using ReactiveUI;
 
 namespace ClassIsland.Controls.ScheduleDataGrid;
 

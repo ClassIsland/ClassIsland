@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Avalonia.Data.Converters;
-using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Converters;
 

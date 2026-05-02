@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using ClassIsland.Core.Models.UI;
 using CommunityToolkit.Mvvm.Input;
