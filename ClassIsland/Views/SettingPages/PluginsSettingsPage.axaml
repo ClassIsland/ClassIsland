@@ -49,7 +49,7 @@
                                 <ci:NavHyperlink NavTarget="{Binding Manifest.Url}">项目主页</ci:NavHyperlink>
                                 <Run Text=" | " Classes="l-decoration"/>
                                 <Run Text="{Binding Manifest.Author}"/>
-                                <Run Text=" | " Classes="l-decoration" Margin="0 0 4 0"/>
+                                <Run Text=" | " Classes="l-decoration"/>
                             </TextBlock>
                             <WrapPanel Orientation="Horizontal">
                                 <Border Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}"
