@@ -1,0 +1,17 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ClassIsland.Core.Controls.Tutorial">
+    <Design.PreviewWith>
+        <controls:TutorialBarrier />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|TutorialBarrier">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"/>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

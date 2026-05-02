@@ -135,6 +135,8 @@
                                 <TextBox Text="{Binding TopLevelClassName}" 
                                          AcceptsReturn="True" TextWrapping="Wrap"/>
                             </ci:Field>
+                            
+                            <CheckBox Content="启用屏障" IsChecked="{Binding IsBarrierEnabled}"/>
                     
                         </StackPanel>
                     </ScrollViewer>
@@ -199,7 +201,7 @@
                             <Separator />
                             
                             <CheckBox IsChecked="{Binding WaitForNextCommand}" Content="可等待被外部推动" />
-                            <ci:Field Label="Tag" IsVisible="{Binding WaitForNextCommand}">
+                            <ci:Field Label="Tag">
                                 <TextBox Text="{Binding Tag}" />
                             </ci:Field>
                             
