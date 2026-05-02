@@ -109,12 +109,23 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
                     session.PlayingTickets.Add(ticket);
                     handler = session.Handler!;
                 }
-                await PlayTicketAsync(ticket, handler);
-
-                lock (_syncLock)
+                try
                 {
-                    session.PlayingTickets.Remove(ticket);
+                    await PlayTicketAsync(ticket, handler);
                 }
+                catch (OperationCanceledException)
+                {
+                    Logger.LogInformation("提醒票据已取消 tid={ticketId}, request={requestId}",
+                        ticket.GetHashCode(), ticket.Request.GetHashCode());
+                }
+                finally
+                {
+                    lock (_syncLock)
+                    {
+                        session.PlayingTickets.Remove(ticket);
+                    }
+                }
+
                 var newTickets = NotificationHostService.PullNotificationRequests(consumer);
                 if (newTickets.Any())
                 {
@@ -126,14 +137,6 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
                         }
                     }
                 }
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            Logger.LogInformation("提醒播放会话已取消。");
-            lock (_syncLock)
-            {
-                session.IsPlaying = false;
             }
         }
         catch (Exception ex)
