@@ -46,6 +46,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -83,6 +84,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -126,6 +128,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -165,6 +168,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -322,6 +326,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -413,6 +418,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -680,6 +686,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -806,6 +813,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -933,6 +941,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         }
       ],
@@ -1147,6 +1156,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -1214,7 +1224,7 @@
               "InitializeActions": [],
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
-              "Tag": "",
+              "Tag": "classisland.profileSettingsWindow.timeLayouts.add",
               "PlacementMode": 7,
               "Xmlns": {}
             },
@@ -1325,7 +1335,7 @@
               "InitializeActions": [],
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
-              "Tag": "",
+              "Tag": "classisland.profileSettingsWindow.timeLayouts.timePoints.add",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -1469,7 +1479,7 @@
               "InitializeActions": [],
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
-              "Tag": "",
+              "Tag": "classisland.profileSettingsWindow.timeLayouts.timePoints.add",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -1587,6 +1597,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -1967,6 +1978,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -2592,6 +2604,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         }
       ],
@@ -2853,6 +2866,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -3118,6 +3132,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -3357,6 +3372,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -3540,6 +3556,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -3838,6 +3855,7 @@
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         }
       ],

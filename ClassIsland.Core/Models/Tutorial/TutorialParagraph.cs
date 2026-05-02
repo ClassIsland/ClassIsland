@@ -40,6 +40,11 @@ public partial class TutorialParagraph : ObservableObject, IXmlnsAttached
     /// 教程语句列表
     /// </summary>
     [ObservableProperty] private ObservableCollection<TutorialSentence> _content = [];
+
+    /// <summary>
+    /// 是否为此段落的教程启用屏障，防止用户跳转到其它页面。
+    /// </summary>
+    [ObservableProperty] private bool _isBarrierEnabled = true;
     
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
     
