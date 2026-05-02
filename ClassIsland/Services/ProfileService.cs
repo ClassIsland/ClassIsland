@@ -313,9 +313,9 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Logger.LogInformation("清理没有被引用的过期临时层课表：{}", key);
         }
 
-        var activeTimeLayoutIds = Profile.ClassPlans.Values
-            .Where(x => !x.IsOverlay || orderedSchedules.Contains(GetKey(x)))
-            .Select(x => x.TimeLayoutId)
+        var activeTimeLayoutIds = Profile.ClassPlans
+            .Where(x => !x.Value.IsOverlay || orderedSchedules.Contains(x.Key))
+            .Select(x => x.Value.TimeLayoutId)
             .ToHashSet();
 
         foreach (var (key, layout) in Profile.TimeLayouts.Where(x => x.Value.IsOverlay).ToList())
@@ -325,11 +325,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Profile.TimeLayouts.Remove(key);
             Logger.LogInformation("清理没有被引用的过期临时层时间表：{}", key);
         }
-    }
-
-    private Guid GetKey(ClassPlan cp)
-    {
-        return Profile.ClassPlans.FirstOrDefault(x => x.Value == cp).Key;
     }
 
     //[Obsolete]
