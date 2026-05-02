@@ -747,7 +747,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
     }
 
     public int QueuedNotificationCount => NotificationPlaybackService.GetQueuedCount(this);
-    
-    public bool AcceptsNotificationRequests => IsNotificationEnabled && !IsAllComponentsHid && !IsOverlayOpen && !_isUnloading;
+
+    public bool AcceptsNotificationRequests => IsNotificationEnabled && !IsAllComponentsHid &&  !_isOverlayOpen && !_isUnloading;
 
 }
