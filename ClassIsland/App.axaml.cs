@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -208,7 +207,7 @@ public partial class App : AppBase, IAppHost
         CommonDirectories.AppRootFolderPath = PackagingType switch
         {
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
-            "installer" or "deb" or "appImage" or "pkg" or "msix" => Path.GetFullPath(Path.Combine(
+            "installer" or "deb" or "appImage" or "pkg" or "msix" or "flatpak" => Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
             _ => System.OperatingSystem.IsMacOS() ? Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")) :
@@ -1142,5 +1141,4 @@ public partial class App : AppBase, IAppHost
         Stop();
     }
 }
-
 
