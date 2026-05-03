@@ -465,6 +465,8 @@
                         HorizontalAlignment="Stretch"
                         SelectedDate="{Binding ViewModel.OverlayEnableDateTime}" />
                 </ci:Field>
+                <CheckBox IsChecked="{Binding ViewModel.TempOverlayCreateTimeLayout}"
+                          Content="同时创建临时时间表" />
                 <Button HorizontalAlignment="Right"
                         Click="ButtonCreateTempOverlayClassPlan_OnClick"
                         Classes="accent">

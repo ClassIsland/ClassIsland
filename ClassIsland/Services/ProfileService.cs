@@ -75,7 +75,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         }
     }
 
-
     private async Task MergeManagementProfileAsync()
     {
         var span = SentrySdk.GetSpan();
@@ -128,7 +127,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Logger.LogError(exp, "拉取档案失败。");
         }
 
-        
         //Profile = ConfigureFileHelper.CopyObject(Profile);
         Profile.Subjects = CopyObject(Profile.Subjects);
         Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
@@ -236,6 +234,11 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId=null, DateTime? enableDateTime = null)
     {
+        return CreateTempClassPlan(id, timeLayoutId, enableDateTime, false);
+    }
+
+    public Guid? CreateTempClassPlan(Guid id, Guid? timeLayoutId, DateTime? enableDateTime, bool createTempTimeLayout)
+    {
         Logger.LogInformation("创建临时层：{}", id);
         var date = enableDateTime ?? IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
         if (Profile.OrderedSchedules.TryGetValue(date, out var orderedSchedule)
@@ -247,6 +250,18 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         var cp = Profile.ClassPlans[id];
         timeLayoutId ??= cp.TimeLayoutId;
         var newCp = DuplicateJson(cp);
+
+        if (createTempTimeLayout && Profile.TimeLayouts.TryGetValue(timeLayoutId.Value, out var sourceLayout))
+        {
+            var newLayout = DuplicateJson(sourceLayout);
+            newLayout.IsOverlay = true;
+            newLayout.OverlaySourceId = timeLayoutId.Value;
+            newLayout.Name += "（临时层）";
+            var newLayoutId = Guid.NewGuid();
+            Profile.TimeLayouts.Add(newLayoutId, newLayout);
+            timeLayoutId = newLayoutId;
+            Logger.LogInformation("同时创建临时时间表：{} -> {}", sourceLayout.Name, newLayoutId);
+        }
 
         newCp.IsOverlay = true;
         newCp.TimeLayoutId = timeLayoutId.Value;
@@ -297,6 +312,19 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Profile.ClassPlans.Remove(key);
             Logger.LogInformation("清理没有被引用的过期临时层课表：{}", key);
         }
+
+        var activeTimeLayoutIds = Profile.ClassPlans
+            .Where(x => !x.Value.IsOverlay || orderedSchedules.Contains(x.Key))
+            .Select(x => x.Value.TimeLayoutId)
+            .ToHashSet();
+
+        foreach (var (key, layout) in Profile.TimeLayouts.Where(x => x.Value.IsOverlay).ToList())
+        {
+            if (activeTimeLayoutIds.Contains(key))
+                continue;
+            Profile.TimeLayouts.Remove(key);
+            Logger.LogInformation("清理没有被引用的过期临时层时间表：{}", key);
+        }
     }
 
     //[Obsolete]
@@ -322,6 +350,13 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             return;
         }
         classPlan.IsOverlay = false;
+
+        if (Profile.TimeLayouts.TryGetValue(classPlan.TimeLayoutId, out var layout) && layout.IsOverlay)
+        {
+            layout.IsOverlay = false;
+            layout.Name = layout.Name.Replace("（临时层）", "");
+            Logger.LogInformation("同时将临时层时间表转换为普通时间表：{}", classPlan.TimeLayoutId);
+        }
     }
 
     public void SetupTempClassPlanGroup(Guid key, DateTime? expireTime = null)

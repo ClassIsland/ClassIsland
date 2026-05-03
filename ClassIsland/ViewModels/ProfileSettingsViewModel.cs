@@ -67,6 +67,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private TimeLayoutItem? _previousTrackedTimeLayoutItem;
     [ObservableProperty] private DateTime _scheduleCalendarSelectedDate = DateTime.Today;
     [ObservableProperty] private DateTime _overlayEnableDateTime = DateTime.Today;
+    [ObservableProperty] private bool _tempOverlayCreateTimeLayout = false;
     [ObservableProperty] private bool _isProfileImportMenuOpened = false;
     [ObservableProperty] private bool _isInScheduleSwappingMode = false;
     [ObservableProperty] private ScheduleClassPosition _classSwapEndPosition = ScheduleClassPosition.Zero;
