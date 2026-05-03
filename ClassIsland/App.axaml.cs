@@ -493,6 +493,14 @@ public partial class App : AppBase, IAppHost
             {
                 spanPreInit.Finish();
                 transaction.Finish();
+                
+                if (ApplicationCommand.Autostartup)
+                {
+                    // 自启动模式，直接退出
+                    Environment.Exit(0);
+                    return;
+                }
+                
                 await ProcessInstanceExisted();
                 Environment.Exit(0);
                 return;
@@ -657,6 +665,7 @@ public partial class App : AppBase, IAppHost
         Settings = GetService<SettingsService>().Settings;
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
         Settings.DiagnosticStartupCount++;
+
         // 记录MLE
         if (ApplicationCommand.PrevSessionMemoryKilled)
         {

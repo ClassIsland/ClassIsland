@@ -18,6 +18,7 @@ public class DesktopService : IDesktopService
             {
                 using var shortcut = new WindowsShortcut();
                 shortcut.Path = AppBase.ExecutingEntrance;
+                shortcut.Arguments = "--autostartup";
                 shortcut.WorkingDirectory = Path.GetDirectoryName(AppBase.ExecutingEntrance);
                 shortcut.Save(path);
             }
