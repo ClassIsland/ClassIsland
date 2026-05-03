@@ -19,23 +19,29 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Models.Tutorial;
 using ClassIsland.Shared;
+using ClassIsland.Shared.ComponentModels;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
+using Microsoft.Extensions.Logging;
+using MoonSharp.Interpreter;
 using ReactiveUI;
 using Tmds.DBus.Protocol;
+using WebSocketSharp;
 
 namespace ClassIsland.Services;
 
 // TutorialService 或有潜力成为继 NotificationHostService 来的下个 shi 山
+[MoonSharpUserData]
 public partial class TutorialService : ObservableObject, ITutorialService
 {
     private SettingsService SettingsService { get; }
     private IActionService ActionService { get; }
     private IUriNavigationService UriNavigationService { get; }
-    
+    private ILogger<TutorialService> Logger { get; set; }
+
     private TutorialSettings Settings { get; }
 
     [ObservableProperty] private Tutorial? _currentTutorial;
@@ -59,17 +65,20 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private bool _useDimPrev;
 
     private bool _isInvokingActions;
+    
+    private Script? CurrentScript { get; set; }
 
     [ObservableProperty] private TopLevel? _attachedToplevel;
 
     public event EventHandler? TutorialStateChanged;
 
     /// <inheritdoc/>
-    public TutorialService(SettingsService settingsService, IActionService actionService, IUriNavigationService uriNavigationService)
+    public TutorialService(SettingsService settingsService, IActionService actionService, IUriNavigationService uriNavigationService, ILogger<TutorialService> logger)
     {
         SettingsService = settingsService;
         ActionService = actionService;
         UriNavigationService = uriNavigationService;
+        Logger = logger;
 
         Settings = ConfigureFileHelper.LoadConfig<TutorialSettings>(Path.Combine(CommonDirectories.AppConfigPath,
             "Tutorial.json"));
@@ -89,6 +98,8 @@ public partial class TutorialService : ObservableObject, ITutorialService
         }
     }
 
+    public ObservableDictionary<string, object?> Context { get; } = [];
+    
     public bool IsTutorialRunning => CurrentSentence != null;
 
     private void SaveConfig()
@@ -124,13 +135,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
             return;
         }
 
-        var result = ParseParagraphPath(path, false);
-        if (result is not {} v)
-        {
-            return;
-        }
-        var (tutorial, paragraph) = v;
-        JumpToParagraph(tutorial, paragraph);
+        JumpToParagraph(path);
     }
 
     public void BeginNotCompletedTutorials(params string[] paths)
@@ -141,6 +146,17 @@ public partial class TutorialService : ObservableObject, ITutorialService
             return;
         }
         BeginTutorial(target);
+    }
+
+    public void JumpToParagraph(string path)
+    {
+        var result = ParseParagraphPath(path, false);
+        if (result is not {} v)
+        {
+            return;
+        }
+        var (tutorial, paragraph) = v;
+        JumpToParagraph(tutorial, paragraph);
     }
 
     public void JumpToParagraph(Tutorial tutorial, TutorialParagraph? paragraph)
@@ -249,6 +265,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
 
         CurrentTeachingTip = null;
         AttachedAdorners.Clear();
+        CurrentScript = null;
     }
 
     private void AttachAdorner(Control adorner, Control target)
@@ -274,7 +291,14 @@ public partial class TutorialService : ObservableObject, ITutorialService
         }
         
         CurrentSentence = sentence;
+        InitializeSentenceScript();
+        if (!TryRunSentenceHook("onInitializing"))
+        {
+            return;
+        }
+
         InvokeActions(sentence.InitializeActions, true);
+        TryRunSentenceHook("onInitialized");
         var targetControl = !string.IsNullOrWhiteSpace(sentence.TargetSelector)
             ? AttachedToplevel.FindDescendantBySelector(SelectorHelpers.Parse(sentence.TargetSelector,
                 IXmlnsAttached.Combine([CurrentTutorial, CurrentParagraph, CurrentSentence]))) as Control
@@ -301,16 +325,16 @@ public partial class TutorialService : ObservableObject, ITutorialService
         if (!string.IsNullOrEmpty(sentence.LeftButtonText) && !sentence.UseLightDismiss)
         {
             teachingTip.ActionButtonContent = sentence.LeftButtonText;
-            teachingTip.ActionButtonCommandParameter = sentence.LeftButtonActions;
+            teachingTip.ActionButtonCommandParameter = 0;
         }
         if (!string.IsNullOrEmpty(sentence.RightButtonText) && !sentence.UseLightDismiss)
         {
             teachingTip.CloseButtonContent = sentence.RightButtonText;
-            teachingTip.CloseButtonCommandParameter = sentence.RightButtonActions;
+            teachingTip.CloseButtonCommandParameter = 1;
         }
 
 
-        teachingTip.ActionButtonCommand = teachingTip.CloseButtonCommand = InvokeActionsCommand;
+        teachingTip.ActionButtonCommand = teachingTip.CloseButtonCommand = PostSentenceWorksCommand;
 
         AttachAdorner(teachingTip, AttachedToplevel);
         var useDim = sentence.ModalTarget;
@@ -341,25 +365,70 @@ public partial class TutorialService : ObservableObject, ITutorialService
             AttachAdorner(CurrentDimBorder, AttachedToplevel);
         }
         (AttachedToplevel as Window)?.Activate();
-        Dispatcher.UIThread.Post(() => teachingTip.IsOpen = true);
+        Dispatcher.UIThread.Post(() =>
+        {
+            teachingTip.IsOpen = true;
+            TryRunSentenceHook("onPostInitialized");
+        });
+    }
+
+    private void InitializeSentenceScript()
+    {
+        if (CurrentSentence is not { IsScriptEnabled: true })
+        {
+            return;
+        }
+        try
+        {
+            CurrentScript = new Script
+            {
+                Globals =
+                {
+                    ["service"] = this,
+                    ["context"] = Context
+                }
+            };
+            CurrentScript.DoString(CurrentSentence.Script);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "无法初始化教程语句的 lua 脚本");
+            AttachedToplevel?.ShowErrorToast( "无法初始化教程语句的 lua 脚本", e);
+            CurrentScript = null;
+        }
+    }
+
+    private bool TryRunSentenceHook(string hook)
+    {
+        if (CurrentScript == null)  // 未初始化脚本时，默认返回 true
+        {
+            return true;
+        }
+        try
+        {
+            if (CurrentScript.Globals.Get(hook) is not { Type: DataType.Function } func)
+            {
+                return true;
+            }
+            var r = CurrentScript.Call(func);
+            return r?.Boolean == true;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "执行钩子 {} 失败", hook);
+            AttachedToplevel?.ShowErrorToast( $"执行钩子 {hook} 失败", e);
+        }
+        return false;
     }
 
     private void CurrentSpotlightOnClicked(object? sender, EventArgs e)
     {
-        if (CurrentSentence == null)
-        {
-            return;
-        }
-        InvokeActions(CurrentSentence.RightButtonActions);
+        PostSentenceWorks(1);
     }
 
     private void TeachingTipOnClosed(TeachingTip sender, TeachingTipClosedEventArgs args)
     {
-        if (CurrentSentence == null)
-        {
-            return;
-        }
-        InvokeActions(CurrentSentence.RightButtonActions);
+        PostSentenceWorks(1);
     }
 
     private void TrySetCurrentParagraphCompleted()
@@ -433,6 +502,21 @@ public partial class TutorialService : ObservableObject, ITutorialService
             SetIsTutorialCompleted(path, true);
         }
         StopTutorial();
+    }
+
+    [RelayCommand]
+    public void PostSentenceWorks(int type)
+    {
+        if (CurrentSentence is null)
+        {
+            return;
+        }
+
+        if (!TryRunSentenceHook(type == 0 ? "onLeftButtonClicked" : "onRightButtonClicked"))
+        {
+            return;
+        }
+        InvokeActions(type == 0 ? CurrentSentence.LeftButtonActions : CurrentSentence.RightButtonActions);
     }
 
     [RelayCommand]
@@ -511,7 +595,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         }
     }
 
-    private void TryStartNextSentence()
+    public void TryStartNextSentence()
     {
         if (CurrentParagraph != null && SentenceIndex + 1 < CurrentParagraph.Content.Count)
         {
@@ -526,7 +610,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         StopTutorial();
     }
 
-    private bool TryStartNextParagraph()
+    public bool TryStartNextParagraph()
     {
         if (CurrentTutorial == null)
         {
@@ -542,7 +626,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         return true;
     }
     
-    private bool TryStartPreviousParagraph()
+    public bool TryStartPreviousParagraph()
     {
         if (CurrentTutorial == null)
         {

@@ -3,12 +3,14 @@ using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MoonSharp.Interpreter;
 
 namespace ClassIsland.Core.Models.Tutorial;
 
 /// <summary>
 /// 代表一个教程中的段落。
 /// </summary>
+[MoonSharpUserData]
 public partial class TutorialParagraph : ObservableObject, IXmlnsAttached
 {
     /// <summary>

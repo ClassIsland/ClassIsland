@@ -44,6 +44,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -72,6 +73,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -99,6 +101,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -162,6 +165,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -189,6 +193,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
@@ -228,6 +233,8 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "function onInitializing()\r\n\t\r\nend",
+              "IsScriptEnabled": true,
               "PlacementMode": 8,
               "Xmlns": {}
             },
@@ -256,6 +263,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
@@ -296,6 +304,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 7,
               "Xmlns": {}
             }

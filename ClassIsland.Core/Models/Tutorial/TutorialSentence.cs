@@ -5,12 +5,14 @@ using ClassIsland.Core.Enums.Tutorial;
 using ClassIsland.Core.Helpers.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FluentAvalonia.UI.Controls;
+using MoonSharp.Interpreter;
 
 namespace ClassIsland.Core.Models.Tutorial;
 
 /// <summary>
 /// 代表教程中的一句话。
 /// </summary>
+[MoonSharpUserData]
 public partial class TutorialSentence : ObservableObject, IXmlnsAttached
 {
     /// <summary>
@@ -111,6 +113,17 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// </summary>
     [ObservableProperty] private string _tag = "";
 
+    /// <summary>
+    /// 教学脚本
+    /// </summary>
+    [ObservableProperty] private string _script = "";
+
+    /// <summary>
+    /// 是否启用教学脚本
+    /// </summary>
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [ObservableProperty] private bool _isScriptEnabled;
+        
     /// <summary>
     /// 教学提示拜访位置
     /// </summary>

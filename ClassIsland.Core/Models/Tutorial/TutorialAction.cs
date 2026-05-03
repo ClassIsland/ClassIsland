@@ -2,12 +2,14 @@ using System.Text.Json.Serialization;
 using ClassIsland.Core.Enums.Tutorial;
 using ClassIsland.Shared.Models.Automation;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MoonSharp.Interpreter;
 
 namespace ClassIsland.Core.Models.Tutorial;
 
 /// <summary>
 /// 代表教程进行的动作
 /// </summary>
+[MoonSharpUserData]
 public partial class TutorialAction : ObservableObject
 {
     /// <summary>

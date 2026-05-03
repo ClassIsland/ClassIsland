@@ -225,6 +225,14 @@
                 <TabItem Header="右按钮事件">
                     <tutorialEditor:TutorialActionsEditControl TutorialActions="{Binding RightButtonActions}"/>
                 </TabItem>
+                <TabItem Header="脚本">
+                    <StackPanel Margin="8" Spacing="6">
+                        <ci:IconText Glyph="&#xE943;" Text="教程脚本" />
+                        <CheckBox IsChecked="{Binding IsScriptEnabled}" Content="启用脚本" />
+                        <TextBlock Text="使用独立编辑器编辑此语句的 Lua 脚本。" TextWrapping="Wrap" />
+                        <Button Content="编辑脚本…" Click="ButtonEditSentenceScript_OnClick" />
+                    </StackPanel>
+                </TabItem>
             </TabControl>
         </DataTemplate>
     </ci:MyWindow.DataTemplates>

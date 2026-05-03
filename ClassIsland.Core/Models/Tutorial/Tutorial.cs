@@ -1,12 +1,14 @@
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Abstractions.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MoonSharp.Interpreter;
 
 namespace ClassIsland.Core.Models.Tutorial;
 
 /// <summary>
 /// 代表一个教程条目。
 /// </summary>
+[MoonSharpUserData]
 public partial class Tutorial : ObservableObject, IXmlnsAttached
 {
     /// <summary>

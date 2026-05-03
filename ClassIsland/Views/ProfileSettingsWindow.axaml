@@ -988,6 +988,7 @@
                                  
                                 <scheduleDataGrid:ScheduleDataGrid Grid.Row="1" Grid.Column="0"
                                                                    x:Name="ScheduleDataGrid"
+                                                                   TutorialContextId="profileSettingsWindow.classPlans"
                                                                    IsReadonly="{Binding ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                                                    OpenClassPlanSettingsRequested="ScheduleDataGrid_OnOpenClassPlanSettingsRequested"
                                                                    SelectedClassInfo="{Binding ViewModel.SelectedClassInfo, Mode=TwoWay}"
@@ -1820,6 +1821,7 @@
 
                                     <scheduleDataGrid:ScheduleDataGrid Grid.Row="1" Grid.Column="0"
                                                                        x:Name="ScheduleDataGridAdjustment"
+                                                                       TutorialContextId="profileSettingsWindow.adjustment"
                                                                        IsReadonly="True"
                                                                        SelectedClassInfo="{Binding ViewModel.SelectedClassInfo, Mode=TwoWay}"
                                                                        SelectedClassInfoIndex="{Binding ViewModel.SelectedClassIndex2, Mode=TwoWay}"

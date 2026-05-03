@@ -35,6 +35,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MoonSharp" Version="2.0.0" />
 
     <PackageReference Include="Octokit" Version="9.1.0" />
 
