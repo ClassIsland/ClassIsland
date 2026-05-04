@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -73,19 +72,11 @@ public class FluentIconsMappingGenerator : IIncrementalGenerator
 
     private List<(string Key, string Name, int CodePoint)> ParseIcons(string jsonContent)
     {
-        using var doc = JsonDocument.Parse(jsonContent);
-        
-        return doc.RootElement.EnumerateObject()
-            .Select(prop =>
-            {
-                // ic_fluent_access_time_20_regular → access_time_regular
-                var name = prop.Name
-                    .Replace("ic_fluent_", "")
-                    .Replace("_20_", "_");
-                var codePoint = prop.Value.GetInt32();
-                return (prop.Name, name, codePoint);
-            })
-            .ToList();
+        return HardDecoder.ParseJson(jsonContent).Select(prop => (
+                                                             prop.Key, 
+                                                             prop.Key.Replace("ic_fluent_", "")
+                                                                 .Replace("_20_", "_"),
+                                                             prop.Value)).ToList();
     }
 
     private string GenerateFluentIconsClass(List<(string Key, string Name, int CodePoint)> icons)
