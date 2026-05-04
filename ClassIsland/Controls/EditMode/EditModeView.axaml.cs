@@ -199,14 +199,14 @@ public partial class EditModeView : UserControl
             Y = pos.Y
         };
         var success = ViewModel.ContainerComponentCache.TryAdd(settings, info);
-        if (!success)
+        if (success)
         {
-            return;
+            ViewModel.MainViewModel.ContainerComponents.Add(info);
         }
-        ViewModel.MainViewModel.ContainerComponents.Add(info);
         Dispatcher.UIThread.Post(() =>
         {
-            ViewModel.TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.childrenComponent.open");
+            ViewModel.TutorialService.PushToNextSentenceByTag(
+                "classisland.mainwindow.editMode.childrenComponent.open");
         });
     }
     

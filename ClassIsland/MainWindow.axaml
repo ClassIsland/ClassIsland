@@ -305,7 +305,8 @@
                                     </Border.Resources>
                                     <Grid
                                         editMode:EditableComponentsListBox.RequestOpenChildComponents="EditableComponentsListBox_OnRequestOpenChildComponents"
-                                        editMode:EditableComponentsListBox.RequestAddComponent="EditableComponentsListBox_OnRequestAddComponent">
+                                        editMode:EditableComponentsListBox.RequestAddComponent="EditableComponentsListBox_OnRequestAddComponent"
+                                        editMode:EditableComponentsListBox.ComponentDeleted="EditableComponentsListBox_OnComponentDeleted">
                                         <StackPanel>
                                             <ItemsControl Grid.Column="0"
                                                           x:Name="RootMainWindowLinesItemsControl"
