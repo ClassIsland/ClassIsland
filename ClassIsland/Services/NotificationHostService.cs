@@ -424,6 +424,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 {
                     RequestQueue.Dequeue();
                     EnqueuedRequests.Remove(head);
+                    PoppedRequests.Remove(head);
                     continue; // 下一个
                 }
 
@@ -467,6 +468,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 {
                     RequestQueue.Dequeue();
                     EnqueuedRequests.Remove(head);
+                    PoppedRequests.Remove(head);
                     continue; // 下一个
                 }
 

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Platform;
-using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Enums.Notification;
@@ -201,30 +200,11 @@ public class NotificationWorkerService : INotificationWorkerService
                 try
                 {
                     Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
-                    // 音效播放使用请求的取消令牌，音效在切换配置或通知显示结束后仍然播放完整，除非通知被取消。
-                    var audioCancellationToken = request.CancellationToken;
-                    if (string.IsNullOrWhiteSpace(settings.NotificationSoundPath))
-                    {
-                        _ = Task.Run(async () =>
-                        {
-                           try
-                           {
-                               using var stream = AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri);
-                               await AudioService.PlayAudioAsync(stream,
-                                   (float)SettingsService.Settings.NotificationSoundVolume, audioCancellationToken);
-                           }
-                           catch (OperationCanceledException) { }
-                           catch (Exception ex)
-                           {
-                               Logger.LogWarning(ex, "音效播放失败");
-                           }
-                        }, audioCancellationToken);
-                    }
-                    else
-                    {
-                        _ = AudioService.PlayAudioAsync(settings.NotificationSoundPath,
-                            (float)SettingsService.Settings.NotificationSoundVolume, audioCancellationToken);
-                    }
+                    // 音效是独立的后台播放任务，但生命周期跟随提醒本身。
+                    var audioCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
+                        request.CancellationToken,
+                        request.CompletedToken);
+                    _ = PlayNotificationSoundAsync(settings, audioCancellationTokenSource);
                 }
                 catch (Exception e)
                 {
@@ -303,6 +283,33 @@ public class NotificationWorkerService : INotificationWorkerService
                 PlayingRequests.Remove(tuple);
             }
             cancellationCompletedSource.TrySetResult();
+        }
+    }
+
+    private async Task PlayNotificationSoundAsync(INotificationSettings settings, CancellationTokenSource cancellationTokenSource)
+    {
+        using var _ = cancellationTokenSource;
+        try
+        {
+            var cancellationToken = cancellationTokenSource.Token;
+            if (string.IsNullOrWhiteSpace(settings.NotificationSoundPath))
+            {
+                using var stream = AssetLoader.Open(INotificationProvider.DefaultNotificationSoundUri);
+                await AudioService.PlayAudioAsync(stream,
+                    (float)SettingsService.Settings.NotificationSoundVolume, cancellationToken);
+            }
+            else
+            {
+                await AudioService.PlayAudioAsync(settings.NotificationSoundPath,
+                    (float)SettingsService.Settings.NotificationSoundVolume, cancellationToken);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "音效播放失败");
         }
     }
     

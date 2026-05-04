@@ -14,7 +14,7 @@ public interface INotificationPlaybackService
     void EnqueueAndPlay(INotificationConsumer consumer, INotificationPlaybackHandler handler, IEnumerable<NotificationPlayingTicket> tickets);
 
     /// <summary>
-    /// 获取指定消费者的待播放提醒数量。
+    /// 获取指定消费者正在播放和待播放的提醒数量。
     /// </summary>
     int GetQueuedCount(INotificationConsumer consumer);
 

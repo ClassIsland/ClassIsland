@@ -55,7 +55,10 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
     {
         lock (_syncLock)
         {
-            return _sessions.TryGetValue(consumer, out var session) ? session.Queue.Count : 0;
+            // 路由层用这个值判断消费者是否空闲。
+            return _sessions.TryGetValue(consumer, out var session)
+                ? session.Queue.Count + session.PlayingTickets.Count
+                : 0;
         }
     }
 
