@@ -15,6 +15,15 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup> -->
 
+  <PropertyGroup>
+    <FluentIconMappingFile>Assets/Fonts/FluentSystemIcons-Resizable.json</FluentIconMappingFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="FluentIconMappingFile" />
+    <AdditionalFiles Include="$(MSBuildProjectDirectory)\$(FluentIconMappingFile)" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Remove="NativeMethods.json" />
     <None Remove="NativeMethods.txt" />
@@ -24,6 +33,8 @@
     <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared.IPC\ClassIsland.Shared.IPC.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
+    <ProjectReference Include="..\roslyn\FluentIconsMappingGenerator\FluentIconsMappingGenerator.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,7 +81,7 @@
     <Compile Update="Controls\TeyvatLoadingControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <AvaloniaResource Include="Assets/**"/>
+    <AvaloniaResource Include="Assets/**" Exclude="Assets/Fonts/FluentSystemIcons-Resizable.json"/>
     <Compile Update="Controls\LucideIcon.axaml.cs">
       <DependentUpon>LucideIcon.axaml</DependentUpon>
       <SubType>Code</SubType>
