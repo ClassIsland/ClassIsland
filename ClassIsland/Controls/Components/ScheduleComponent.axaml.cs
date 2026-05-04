@@ -9,9 +9,12 @@ using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Enums;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Core.Models.AttachedSettings;
@@ -55,11 +58,22 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
     
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isAfterSchool = false;
+    private bool _isDynamicIslandCompactModeActive;
+    private bool _isDynamicIslandOnClassModeActive;
+    private bool _hasNextLessonCompactBadge;
+    private string _nextLessonInitialShort = "?";
+    private PrivacyIndicatorState _privacyIndicatorState = PrivacyIndicatorState.None;
+    private static readonly IBrush CameraIndicatorBrush = new SolidColorBrush(Colors.LimeGreen);
+    private static readonly IBrush MicrophoneIndicatorBrush = new SolidColorBrush(Colors.Orange);
+    private static readonly IBrush LocationIndicatorBrush = new SolidColorBrush(Colors.DeepSkyBlue);
+    private static readonly IBrush EmptyIndicatorBrush = new SolidColorBrush(Colors.Transparent);
     private ClassPlan? _tomorrowClassPlan;
     private ClassPlan? _tomorrowClassPlan1;
     public ILessonsService LessonsService { get; }
 
     public SettingsService SettingsService { get; }
+    public INotificationHostService NotificationHostService { get; }
+    public IPrivacyIndicatorsService PrivacyIndicatorsService { get; }
 
     public IProfileService ProfileService { get; }
     public IExactTimeService ExactTimeService { get; }
@@ -98,6 +112,68 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         }
     }
 
+    public bool IsDynamicIslandCompactModeActive
+    {
+        get => _isDynamicIslandCompactModeActive;
+        set
+        {
+            if (value == _isDynamicIslandCompactModeActive) return;
+            _isDynamicIslandCompactModeActive = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsDynamicIslandRightBadgeVisible));
+        }
+    }
+
+    public bool HasNextLessonCompactBadge
+    {
+        get => _hasNextLessonCompactBadge;
+        set
+        {
+            if (value == _hasNextLessonCompactBadge) return;
+            _hasNextLessonCompactBadge = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsDynamicIslandRightBadgeVisible));
+        }
+    }
+
+    public string NextLessonInitialShort
+    {
+        get => _nextLessonInitialShort;
+        set
+        {
+            if (value == _nextLessonInitialShort) return;
+            _nextLessonInitialShort = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public PrivacyIndicatorState PrivacyIndicatorState
+    {
+        get => _privacyIndicatorState;
+        set
+        {
+            if (value == _privacyIndicatorState) return;
+            _privacyIndicatorState = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(PrivacyIndicatorBrush));
+            OnPropertyChanged(nameof(IsPrivacyIndicatorVisible));
+            OnPropertyChanged(nameof(IsDynamicIslandRightBadgeVisible));
+        }
+    }
+
+    public IBrush PrivacyIndicatorBrush => PrivacyIndicatorState switch
+    {
+        PrivacyIndicatorState.Camera => CameraIndicatorBrush,
+        PrivacyIndicatorState.Microphone => MicrophoneIndicatorBrush,
+        PrivacyIndicatorState.Location => LocationIndicatorBrush,
+        _ => EmptyIndicatorBrush
+    };
+
+    public bool IsPrivacyIndicatorVisible => PrivacyIndicatorState != PrivacyIndicatorState.None;
+
+    public bool IsDynamicIslandRightBadgeVisible => IsDynamicIslandCompactModeActive &&
+                                                    (HasNextLessonCompactBadge || IsPrivacyIndicatorVisible);
+
     public ClassPlan? TomorrowClassPlan
     {
         get => _tomorrowClassPlan1;
@@ -109,12 +185,19 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         }
     }
 
-    public ScheduleComponent(ILessonsService lessonsService, SettingsService settingsService, IProfileService profileService, IExactTimeService exactTimeService)
+    public ScheduleComponent(ILessonsService lessonsService,
+        SettingsService settingsService,
+        IProfileService profileService,
+        IExactTimeService exactTimeService,
+        INotificationHostService notificationHostService,
+        IPrivacyIndicatorsService privacyIndicatorsService)
     {
         LessonsService = lessonsService;
         SettingsService = settingsService;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
+        NotificationHostService = notificationHostService;
+        PrivacyIndicatorsService = privacyIndicatorsService;
         
         AttachedToVisualTree += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         AttachedToVisualTree += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged;
@@ -133,6 +216,7 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         _tomorrowScheduleShowModeObserver?.Dispose();
         _hideFinishedClassObserver?.Dispose();
         _showEmptyPlaceholderObserver?.Dispose();
+        PrivacyIndicatorsService.PropertyChanged -= PrivacyIndicatorsServiceOnPropertyChanged;
         
         _tomorrowScheduleShowModeObserver = null;
         _hideFinishedClassObserver = null;
@@ -160,7 +244,21 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
         HideFinishedClass = Settings.HideFinishedClass;
         ShowEmptyPlaceholder = Settings.ShowPlaceholderOnEmptyClassPlan;
         MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex;
+        PrivacyIndicatorsService.PropertyChanged -= PrivacyIndicatorsServiceOnPropertyChanged;
+        PrivacyIndicatorsService.PropertyChanged += PrivacyIndicatorsServiceOnPropertyChanged;
+        UpdateDynamicIslandState();
+        UpdateNextLessonInitialShort();
+        UpdatePrivacyIndicatorState();
         UpdateTomorrowVisibility();
+        LessonsServiceOnPostMainTimerTicked(this, EventArgs.Empty);
+    }
+
+    private void PrivacyIndicatorsServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IPrivacyIndicatorsService.CurrentState))
+        {
+            UpdatePrivacyIndicatorState();
+        }
     }
 
     private void CheckTomorrowClassShowMode()
@@ -182,6 +280,8 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
     private void OnLessonsServiceOnCurrentTimeStateChanged(object? o, EventArgs eventArgs)
     {
         CurrentTimeStateChanged();
+        UpdateDynamicIslandState();
+        UpdateNextLessonInitialShort();
         UpdateTomorrowVisibility();
     }
 
@@ -212,10 +312,63 @@ public partial class ScheduleComponent : ComponentBase<LessonControlSettings>, I
                 LessonsService.CurrentClassPlan,
                 LessonsService.CurrentClassPlan?.TimeLayout) ??
             Settings;
-        ShowCurrentLessonOnlyOnClass = settingsSource.ShowCurrentLessonOnlyOnClass;
+        UpdateDynamicIslandState();
+        if (_isDynamicIslandOnClassModeActive)
+        {
+            ShowCurrentLessonOnlyOnClass = IsDynamicIslandCompactModeActive;
+            HideFinishedClass = IsDynamicIslandCompactModeActive;
+        }
+        else
+        {
+            ShowCurrentLessonOnlyOnClass = settingsSource.ShowCurrentLessonOnlyOnClass;
+            HideFinishedClass = Settings.HideFinishedClass;
+        }
+        UpdateNextLessonInitialShort();
+        UpdatePrivacyIndicatorState();
         TomorrowClassPlan = LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1));
         MainLessonsListBox.SelectedIndex = LessonsListBoxSelectedIndex;
         UpdateTomorrowVisibility();
+    }
+
+    private void UpdateDynamicIslandState()
+    {
+        var state = DynamicIslandDisplayStateHelper.GetCurrentState(
+            SettingsService.Settings,
+            LessonsService,
+            ExactTimeService,
+            NotificationHostService);
+        _isDynamicIslandOnClassModeActive = state.IsOnClassModeActive;
+        IsDynamicIslandCompactModeActive = state.IsCompactModeActive;
+    }
+
+    private void UpdateNextLessonInitialShort()
+    {
+        var hasNextLesson = LessonsService.NextClassTimeLayoutItem != TimeLayoutItem.Empty &&
+                            !ReferenceEquals(LessonsService.NextClassSubject, Subject.Fallback);
+        if (!hasNextLesson)
+        {
+            HasNextLessonCompactBadge = false;
+            NextLessonInitialShort = string.Empty;
+            return;
+        }
+
+        var initial = LessonsService.NextClassSubject?.Initial;
+        if (string.IsNullOrWhiteSpace(initial))
+        {
+            var name = LessonsService.NextClassSubject?.Name;
+            initial = string.IsNullOrWhiteSpace(name) ? null : name.Substring(0, 1);
+        }
+        if (string.IsNullOrWhiteSpace(initial))
+        {
+            initial = "?";
+        }
+        HasNextLessonCompactBadge = true;
+        NextLessonInitialShort = initial.Trim().Substring(0, 1);
+    }
+
+    private void UpdatePrivacyIndicatorState()
+    {
+        PrivacyIndicatorState = PrivacyIndicatorsService.CurrentState;
     }
 
     private void UpdateTomorrowVisibility()

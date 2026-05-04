@@ -95,6 +95,7 @@ public partial class App
         services.AddSingleton<TrayMenuTriggerHandlerService>();
         services.AddSingleton<IAnnouncementService, AnnouncementService>();
         services.AddSingleton<ILocationService>(PlatformServices.LocationService);
+        services.AddSingleton<IPrivacyIndicatorsService, PrivacyIndicatorsService>();
         services.AddSingleton<IXamlThemeService, XamlThemeService>();
         services.AddSingleton<IAudioService, AudioService>();
         services.AddSingleton<ITutorialService, TutorialService>();

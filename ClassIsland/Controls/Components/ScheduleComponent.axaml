@@ -75,7 +75,7 @@
             </Style>
         </Style>
     </ci:ComponentBase.Styles>
-    <Grid ColumnDefinitions="Auto,*" DataContext="{Binding RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}">
+    <Grid ColumnDefinitions="Auto,*,Auto" DataContext="{Binding RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}">
         <Border 
             Grid.Column="0"
             Margin="0 0 2 0"
@@ -92,7 +92,7 @@
                            LessonControlSettings="{Binding Settings, Mode=OneWay}"
                            ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}"
                            HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}"
-                           HideFinishedClass="{Binding Settings.HideFinishedClass, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"
+                           HideFinishedClass="{Binding HideFinishedClass, Mode=OneWay}"
                            x:Name="MainLessonsListBox"
                            FadeCompletedClasses="{Binding Settings.FadeCompletedClasses, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:ScheduleComponent}}"
                            IsLiveUpdatingEnabled="True"/>
@@ -102,7 +102,27 @@
                            IsLiveUpdatingEnabled="False"
                            HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}"
                            x:Name="TomorrowLessonsListBox"/>
-        <Grid Grid.Column="0" Grid.ColumnSpan="2">
+        <Border Grid.Column="2"
+                Margin="6 0 0 0"
+                Padding="6 0"
+                VerticalAlignment="Center"
+                CornerRadius="10"
+                Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                IsVisible="{Binding IsDynamicIslandRightBadgeVisible}">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="4"
+                        Classes="items-valign-center">
+                <TextBlock Text="{Binding NextLessonInitialShort}"
+                           IsVisible="{Binding HasNextLessonCompactBadge}"
+                           FontWeight="SemiBold"
+                           FontSize="{DynamicResource MainWindowSecondaryFontSize}" />
+                <Ellipse Width="8"
+                         Height="8"
+                         Fill="{Binding PrivacyIndicatorBrush}"
+                         IsVisible="{Binding IsPrivacyIndicatorVisible}" />
+            </StackPanel>
+        </Border>
+        <Grid Grid.Column="0" Grid.ColumnSpan="3">
             <TextBlock VerticalAlignment="Center" x:Name="EmptyPlaceholder"/>
         </Grid>
         <!-- <StackPanel Grid.Column="1"> -->
