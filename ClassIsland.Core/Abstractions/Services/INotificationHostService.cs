@@ -67,7 +67,8 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     /// </summary>
     /// <param name="consumer">要注册的提醒消费者</param>
     /// <param name="priority">提醒消费者优先级</param>
-    public void RegisterNotificationConsumer(INotificationConsumer consumer, int priority);
+    /// <param name="lineNumber">提醒消费者所属的行号</param>
+    public void RegisterNotificationConsumer(INotificationConsumer consumer, int priority, int? lineNumber = null);
 
     /// <summary>
     /// 取消注册提醒消费者。
@@ -76,13 +77,11 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     public void UnregisterNotificationConsumer(INotificationConsumer consumer);
 
     /// <summary>
-    /// 拉取要播放的提醒。
+    /// 拉取下一个可用的提醒请求。
     /// </summary>
-    /// <remarks>
-    /// 此方法一般情况下只会返回一个要显示的提醒。如果有成链的提醒，会将这些提醒一并返回。请在显示完上次显示的提醒后再调用此方法。
-    /// </remarks>
-    /// <returns>获得的提醒</returns>
-    public IList<NotificationPlayingTicket> PullNotificationRequests();
+    /// <param name="consumer">正在拉取提醒的消费者</param>
+    /// <returns>提醒票据列表</returns>
+    public IList<NotificationPlayingTicket> PullNotificationRequests(INotificationConsumer consumer);
     
     /// <summary>
     /// 当前是否正在播放提醒
