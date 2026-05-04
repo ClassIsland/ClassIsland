@@ -58,6 +58,7 @@ public class ClassPlan : AttachableSettingsObject
         var timeLayoutMap = Classes.ToDictionary(x => x.CurrentTimeLayoutItem, x => x);
         var displayTimePoints = TimeLayout.Layouts
             .Where(x => x.TimeType is 0 or 1 or 2)
+            .OrderBy(x => x.StartTime)
             .ToList();
         ObservableCollection<TimeLayoutItem> items = [.. displayTimePoints.Select(x => x)];
         List<TimeLayoutItem> remove = [];
@@ -101,7 +102,6 @@ public class ClassPlan : AttachableSettingsObject
     /// 当课程表更新时触发
     /// </summary>
     public event EventHandler? ClassesChanged;
-
 
     private void NotifyClassesChanged()
     {
@@ -439,7 +439,8 @@ public class ClassPlan : AttachableSettingsObject
             return;
         }
 
-        var c = (from i in TimeLayout.Layouts where i.TimeType == 0 select i).ToList();
+        var c = (from i in TimeLayout.Layouts where i.TimeType == 0 select i.OrderBy(x => x.StartTime)
+            .ToList();
         var l = c.Count;
         //Debug.WriteLine(l);
         if (Classes.Count < l)
