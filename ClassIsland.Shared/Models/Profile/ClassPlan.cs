@@ -439,8 +439,7 @@ public class ClassPlan : AttachableSettingsObject
             return;
         }
 
-        var c = (from i in TimeLayout.Layouts where i.TimeType == 0 select i.OrderBy(x => x.StartTime)
-            .ToList();
+        var c = (from i in TimeLayout.Layouts where i.TimeType == 0 select i).ToList();
         var l = c.Count;
         //Debug.WriteLine(l);
         if (Classes.Count < l)
