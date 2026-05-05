@@ -63,6 +63,16 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     public NotificationRequest? CurrentRequest { get; set; }
 
+    
+    public NotificationRequest GetRequest()
+    {
+        lock (_syncLock)
+        {
+            CurrentRequest = RequestQueue.Dequeue();
+            return CurrentRequest;
+        }
+    }
+
     /// <summary>
     /// 注册提醒服务。
     /// </summary>
