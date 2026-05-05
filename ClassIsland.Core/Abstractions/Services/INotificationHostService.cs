@@ -84,6 +84,11 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     public IList<NotificationPlayingTicket> PullNotificationRequests(INotificationConsumer consumer);
     
     /// <summary>
+    /// 分发队列中提醒请求。
+    /// </summary>
+    public void PopRequestsToConsumers();
+    
+    /// <summary>
     /// 当前是否正在播放提醒
     /// </summary>
     public bool IsNotificationsPlaying { get; }
