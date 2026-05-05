@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
@@ -92,4 +93,12 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     /// 当前是否正在播放提醒
     /// </summary>
     public bool IsNotificationsPlaying { get; }
+
+    /// <summary>
+    /// 集中管理提醒请求的状态转换，同时更新内部跟踪集合。
+    /// 所有对 NotificationRequest.State 的修改都应通过此方法进行。
+    /// </summary>
+    /// <param name="request">要更新状态的提醒请求</param>
+    /// <param name="newState">目标状态</param>
+    public void TransitionRequestState(NotificationRequest request, NotificationState newState);
 }

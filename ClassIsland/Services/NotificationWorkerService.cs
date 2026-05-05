@@ -10,6 +10,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Core.Models.Notification;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
@@ -60,6 +61,11 @@ public class NotificationWorkerService : INotificationWorkerService
         Logger = logger;
         
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+    }
+
+    private void TransitionState(NotificationRequest request, NotificationState newState)
+    {
+        IAppHost.GetService<INotificationHostService>().TransitionRequestState(request, newState);
     }
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
@@ -184,7 +190,7 @@ public class NotificationWorkerService : INotificationWorkerService
     {
         var id = Guid.NewGuid();
         var duration = SetupNotificationSessionTiming(id, content, session);
-        request.State = NotificationState.Playing;
+        TransitionState(request, NotificationState.Playing);
         var tuple = (request, !isMask);
         lock (_playingRequestsLock)
         {
@@ -250,7 +256,7 @@ public class NotificationWorkerService : INotificationWorkerService
             }
             if (request.OverlayContent == null || !isMask)
             {
-                request.State = NotificationState.Completed;
+                TransitionState(request, NotificationState.Completed);
                 SpeechService.ClearSpeechQueue();
                 await request.CompletedTokenSource.CancelAsync();
             }
@@ -262,18 +268,18 @@ public class NotificationWorkerService : INotificationWorkerService
             Logger.LogInformation("提醒请求 {request} 取消播放", request.GetHashCode());
             if (request.CancellationToken.IsCancellationRequested)
             {
-                request.State = NotificationState.Cancelled;
+                TransitionState(request, NotificationState.Cancelled);
                 request.CompletedTokenSource.Cancel();
             }
             else
             {
-                request.State = NotificationState.Paused;
+                TransitionState(request, NotificationState.Paused);
             }
             throw;
         }
         catch
         {
-            request.State = NotificationState.Paused;
+            TransitionState(request, NotificationState.Paused);
             throw;
         }
         finally
