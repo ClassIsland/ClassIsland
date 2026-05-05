@@ -49,8 +49,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     private List<NotificationConsumerRegisterInfo> RegisteredConsumers { get; } = [];
 
-    private HashSet<NotificationRequest> PlayingNotifications { get; } = [];
-
     private HashSet<NotificationRequest> PoppedRequests { get; } = [];
 
     private HashSet<NotificationRequest> EnqueuedRequests { get; } = [];
@@ -127,7 +125,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     private void UpdateNotificationPlayingState()
     {
-        IsNotificationsPlaying = PlayingNotifications.Count > 0;
+        IsNotificationsPlaying = PlayingTickets.Count > 0;
     }
 
     private void FinishNotificationPlaying(NotificationRequest request)
@@ -135,9 +133,23 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         Logger.LogTrace("提醒 #{} 已播放完成", request.GetHashCode());
         lock (_syncLock)
         {
-            PlayingNotifications.Remove(request);
-            PoppedRequests.Remove(request);
-            EnqueuedRequests.Remove(request);
+            UpdateNotificationPlayingState();
+        }
+    }
+
+    public void TransitionRequestState(NotificationRequest request, NotificationState newState)
+    {
+        lock (_syncLock)
+        {
+            request.State = newState;
+            switch (newState)
+            {
+                case NotificationState.Completed:
+                case NotificationState.Cancelled:
+                    PoppedRequests.Remove(request);
+                    EnqueuedRequests.Remove(request);
+                    break;
+            }
             UpdateNotificationPlayingState();
         }
     }
@@ -167,7 +179,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         var channel =
             request.NotificationSource?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid == channelGuid);
         request.ChannelSettings = channel?.ProviderSettings;
-        request.State = NotificationState.Queued;
+        TransitionRequestState(request, NotificationState.Queued);
         request.NotificationSetupCompleted = true;
     }
 
@@ -353,7 +365,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     public void CancelAllNotifications()
     {
         List<NotificationRequest> queuedRequests;
-        List<NotificationRequest> playingRequests;
+        List<NotificationPlayingTicket> playingTickets;
         
         lock (_syncLock)
         {
@@ -362,20 +374,20 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             {
                 queuedRequests.Add(RequestQueue.Dequeue());
             }
-            playingRequests = PlayingNotifications.ToList();
+            playingTickets = [.. PlayingTickets];
             EnqueuedRequests.Clear();
             PoppedRequests.Clear();
-            PlayingNotifications.Clear();
+            PlayingTickets.Clear();
             UpdateNotificationPlayingState();
         }
         foreach (var r in queuedRequests)
         {
             r.CompletedTokenSource.Cancel();
         }
-        foreach (var request in playingRequests)
+        foreach (var ticket in playingTickets)
         {
-            request.CancellationTokenSource.Cancel();
-            request.CompletedTokenSource.Cancel();
+            ticket.Request.CancellationTokenSource.Cancel();
+            ticket.Request.CompletedTokenSource.Cancel();
         }
     }
 
@@ -436,12 +448,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
             tickets = requests.Select(CreateTicket).ToList();
             Logger.LogTrace("将推送的提醒消费者：{}(#{})", consumer.Consumer, consumer.Consumer.GetHashCode());
-            foreach (var request in requests)
-            {
-                PlayingNotifications.Add(request);
-                Logger.LogTrace("将推送提醒 {}", request);
-            }
-
             UpdateNotificationPlayingState();
         }
         consumer.Consumer.ReceiveNotifications(tickets);
@@ -487,7 +493,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 foreach (var r in requests)
                 {
                     PoppedRequests.Add(r);
-                    PlayingNotifications.Add(r);
                 }
 
                 UpdateNotificationPlayingState();
@@ -500,6 +505,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
 
     public void PopRequestsToConsumers()
     {
+        List<(NotificationConsumerRegisterInfo consumer, List<NotificationPlayingTicket> tickets)> batches = [];
+        
         lock (_syncLock)
         {
             if (!CanDispatchRequests)
@@ -524,20 +531,24 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 }
 
                 var requests = CollectChainedRequestsInternal(head);
-                if (PushNotificationRequests(requests))
-                {
-                    RequestQueue.Dequeue();
-                    EnqueuedRequests.Remove(head);
-                    foreach (var r in requests)
-                    {
-                        PoppedRequests.Add(r);
-                    }
-                }
-                else
-                {
+                var consumer = RouteRequests(requests);
+                if (consumer == null)
                     break;
+                var tickets = requests.Select(CreateTicket).ToList();
+                RequestQueue.Dequeue();
+                EnqueuedRequests.Remove(head);
+                foreach (var r in requests)
+                {
+                    PoppedRequests.Add(r);
                 }
+                UpdateNotificationPlayingState();
+                batches.Add((consumer, tickets));
             }
+        }
+        
+        foreach (var (consumer, tickets) in batches)
+        {
+            consumer.Consumer.ReceiveNotifications(tickets);
         }
     }
 
@@ -618,8 +629,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             lock (_syncLock)
             {
                 PlayingTickets.Remove(ticket);
-                PlayingNotifications.Remove(request);
-                PoppedRequests.Remove(request);
                 UpdateNotificationPlayingState();
             }
 
@@ -652,6 +661,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             lock (_syncLock)
             {
                 PlayingTickets.Remove(ticket);
+                UpdateNotificationPlayingState();
             }
         });
         return ticket;
