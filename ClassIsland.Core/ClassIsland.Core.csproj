@@ -17,11 +17,14 @@
 
   <PropertyGroup>
     <FluentIconMappingFile>Assets/Fonts/FluentSystemIcons-Resizable.json</FluentIconMappingFile>
+    <LucideIconMappingFile>Assets/Fonts/lucide.json</LucideIconMappingFile>
   </PropertyGroup>
 
   <ItemGroup>
     <CompilerVisibleProperty Include="FluentIconMappingFile" />
     <AdditionalFiles Include="$(MSBuildProjectDirectory)\$(FluentIconMappingFile)" />
+    <CompilerVisibleProperty Include="LucideIconMappingFile" />
+    <AdditionalFiles Include="$(MSBuildProjectDirectory)\$(LucideIconMappingFile)" />
   </ItemGroup>
 
   <ItemGroup>
