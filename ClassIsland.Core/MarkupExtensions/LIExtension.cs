@@ -4,7 +4,7 @@ using ClassIsland.Core.Icons;
 namespace ClassIsland.Core.MarkupExtensions;
 
 /// <summary>
-/// XAML 标记扩展，用法：<c>{ci:LucideIcon access_time_regular</c>
+/// XAML 标记扩展，用法：<c>{ci:LI AArrowDown}</c>
 /// </summary>
 public class LIExtension
 {
