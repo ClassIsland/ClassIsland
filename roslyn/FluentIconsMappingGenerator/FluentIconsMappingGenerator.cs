@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
 namespace FluentIconsMappingGenerator;
@@ -10,21 +11,25 @@ namespace FluentIconsMappingGenerator;
 [Generator]
 public class FluentIconsMappingGenerator : IIncrementalGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context) 
     {
-        var jsonFileProvider = context.AdditionalTextsProvider
+        RegisterSource(context, GetProvider(context,"FluentIconMappingFile"), "FluentIcon");
+        RegisterSource(context, GetProvider(context,"LucideIconMappingFile"), "LucideIcon");
+    }
+
+    private IncrementalValuesProvider<(AdditionalText File, GenerateOptions Options)> GetProvider(
+        IncrementalGeneratorInitializationContext context, 
+        string propName)
+    {
+        return context.AdditionalTextsProvider
             .Combine(context.AnalyzerConfigOptionsProvider)
             .Select((pair, _) =>
             {
-                var (additionalFile, optionsProvider) = pair;
-                var fileOptions = optionsProvider.GetOptions(additionalFile);
-                fileOptions.TryGetValue("build_property.FluentIconMappingFile", out var filePath);
+                (AdditionalText? additionalFile, AnalyzerConfigOptionsProvider? optionsProvider) = pair;
+                AnalyzerConfigOptions fileOptions = optionsProvider.GetOptions(additionalFile);
+                fileOptions.TryGetValue($"build_property.{propName}", out string? filePath);
 
-                return new
-                {
-                    File = additionalFile,
-                    Options = new GenerateOptions(FilePath: filePath ?? "")
-                };
+                return (File: additionalFile, Options: new GenerateOptions(FilePath: filePath ?? ""));
             })
             .Where(tuple =>
             {
@@ -32,29 +37,33 @@ public class FluentIconsMappingGenerator : IIncrementalGenerator
                     string.IsNullOrWhiteSpace(tuple.File.Path))
                     return false;
 
-                var expectedNorm = tuple.Options.FilePath.Replace('\\', '/');
-                var actualNorm = tuple.File.Path.Replace('\\', '/');
+                string expectedNorm = tuple.Options.FilePath.Replace('\\', '/');
+                string actualNorm = tuple.File.Path.Replace('\\', '/');
                 return actualNorm.EndsWith(expectedNorm, StringComparison.OrdinalIgnoreCase);
             });
+    }
 
-        context.RegisterSourceOutput(jsonFileProvider, (spc, input) =>
+    private void RegisterSource(IncrementalGeneratorInitializationContext context, 
+        IncrementalValuesProvider<(AdditionalText File, GenerateOptions Options)> provider, 
+        string iconBrand) 
+    {
+        context.RegisterSourceOutput(provider, (spc, input) =>
         {
             var additionalFile = input.File;
-            var options = input.Options;
 
             var sourceText = additionalFile.GetText();
             if (sourceText == null)
             {
                 var diagnostic = Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        "FMG001",
-                        "Cannot read mapping file",
-                        "无法读取图标映射文件 '{0}'",
-                        "FluentIconsMappingGenerator",
-                        DiagnosticSeverity.Error,
-                        true),
-                    Location.None,
-                    additionalFile.Path);
+                                                   new DiagnosticDescriptor(
+                                                                            "FMG001",
+                                                                            "Cannot read mapping file",
+                                                                            "无法读取图标映射文件 '{0}'",
+                                                                            "FluentIconsMappingGenerator",
+                                                                            DiagnosticSeverity.Error,
+                                                                            true),
+                                                   Location.None,
+                                                   additionalFile.Path);
                 spc.ReportDiagnostic(diagnostic);
                 return;
             }
@@ -62,14 +71,14 @@ public class FluentIconsMappingGenerator : IIncrementalGenerator
             var jsonContent = sourceText.ToString();
             var icons = ParseIcons(jsonContent);
 
-            var fiClassCode = GenerateIconsClass(icons, "FluentIcons");
-            spc.AddSource("FluentIcons.g.cs", SourceText.From(fiClassCode, Encoding.UTF8));
+            var fiClassCode = GenerateIconsClass(icons, $"{iconBrand}s");
+            spc.AddSource($"{iconBrand}s.g.cs", SourceText.From(fiClassCode, Encoding.UTF8));
 
-            var enumCode = GenerateIconKindEnum(icons, "FluentIconKind");
-            spc.AddSource("FluentIcon.g.cs", SourceText.From(enumCode, Encoding.UTF8));
+            var enumCode = GenerateIconKindEnum(icons, $"{iconBrand}Kind");
+            spc.AddSource($"{iconBrand}.g.cs", SourceText.From(enumCode, Encoding.UTF8));
         });
     }
-
+    
     private List<(string Key, string Name, int CodePoint)> ParseIcons(string jsonContent)
     {
         return HardDecoder.ParseJson(jsonContent).Select(prop => (
