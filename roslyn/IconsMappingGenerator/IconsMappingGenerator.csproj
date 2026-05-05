@@ -8,9 +8,7 @@
 
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <IsRoslynComponent>true</IsRoslynComponent>
-        
-        <RootNamespace>FluentIconsMappingGenerator</RootNamespace>
-        <PackageId>FluentIconsMappingGenerator</PackageId>
+        <PackageId>IconsMappingGenerator</PackageId>
     </PropertyGroup>
     
     <ItemGroup>

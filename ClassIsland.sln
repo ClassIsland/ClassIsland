@@ -73,7 +73,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhainonDistributionCenter.S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{4562293F-ACE4-46E5-BA7A-2E5EF562C4F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentIconsMappingGenerator", "roslyn\FluentIconsMappingGenerator\FluentIconsMappingGenerator.csproj", "{969D6A56-EE22-4670-935C-1EFFD9F9F553}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconsMappingGenerator", "roslyn\IconsMappingGenerator\IconsMappingGenerator.csproj", "{969D6A56-EE22-4670-935C-1EFFD9F9F553}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

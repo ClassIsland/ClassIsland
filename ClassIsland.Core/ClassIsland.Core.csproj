@@ -36,8 +36,7 @@
     <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared.IPC\ClassIsland.Shared.IPC.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
-    <ProjectReference Include="..\roslyn\FluentIconsMappingGenerator\FluentIconsMappingGenerator.csproj"
-                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\roslyn\IconsMappingGenerator\IconsMappingGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
-namespace FluentIconsMappingGenerator;
+namespace IconsMappingGenerator;
 
 [Generator]
 public class FluentIconsMappingGenerator : IIncrementalGenerator
@@ -59,7 +59,7 @@ public class FluentIconsMappingGenerator : IIncrementalGenerator
                                                                             "FMG001",
                                                                             "Cannot read mapping file",
                                                                             "无法读取图标映射文件 '{0}'",
-                                                                            "FluentIconsMappingGenerator",
+                                                                            "IconsMappingGenerator",
                                                                             DiagnosticSeverity.Error,
                                                                             true),
                                                    Location.None,

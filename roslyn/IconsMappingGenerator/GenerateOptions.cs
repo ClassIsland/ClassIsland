@@ -1,4 +1,4 @@
-namespace FluentIconsMappingGenerator;
+namespace IconsMappingGenerator;
 
 public record GenerateOptions(string FilePath)
 {

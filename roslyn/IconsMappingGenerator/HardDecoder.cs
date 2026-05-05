@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FluentIconsMappingGenerator;
+namespace IconsMappingGenerator;
 
 public static class HardDecoder {
     static readonly char[] TrimList = [' ','"',','];
