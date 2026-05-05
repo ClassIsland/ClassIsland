@@ -81,11 +81,16 @@ public class FluentIconsMappingGenerator : IIncrementalGenerator
     
     private List<(string Key, string Name, int CodePoint)> ParseIcons(string jsonContent)
     {
-        return HardDecoder.ParseJson(jsonContent).Select(prop => (
-                                                             prop.Key, 
-                                                             prop.Key.Replace("ic_fluent_", "")
-                                                                 .Replace("_20_", "_"),
-                                                             prop.Value)).ToList();
+        return HardDecoder.ParseJson(jsonContent).Select(prop => {
+            string name = prop.Key.Replace("ic_fluent_","")
+                .Replace("_20_","_")
+                .Replace("-","_");
+            StringBuilder builder = new StringBuilder();
+            foreach (string s in name.Split(['_'], StringSplitOptions.RemoveEmptyEntries)) {
+                builder.Append(char.ToUpper(s[0]) + s.Substring(1));
+            }
+            return (prop.Key, builder.ToString(), prop.Value);
+        }).ToList();
     }
 
     private string GenerateIconsClass(List<(string Key, string Name, int CodePoint)> icons, string className)
