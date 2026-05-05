@@ -83,7 +83,7 @@
     <Compile Update="Controls\TeyvatLoadingControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <AvaloniaResource Include="Assets/**" Exclude="Assets/Fonts/FluentSystemIcons-Resizable.json"/>
+    <AvaloniaResource Include="Assets/**" Exclude="Assets/Fonts/*.json"/>
     <Compile Update="Controls\LucideIcon.axaml.cs">
       <DependentUpon>LucideIcon.axaml</DependentUpon>
       <SubType>Code</SubType>
