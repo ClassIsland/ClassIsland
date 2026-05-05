@@ -136,10 +136,31 @@ public class NotificationRequest : ObservableRecipient
     /// </summary>
     public Guid ChannelId { get; set; }
 
+    private readonly object _stateLock = new();
+    private NotificationState _state = NotificationState.None;
+    
     /// <summary>
     /// 提醒播放状态
     /// </summary>
-    public NotificationState State { get; internal set; } = NotificationState.None;
+    public NotificationState State
+    {
+        get
+        {
+            lock (_stateLock)
+            {
+                return _state;
+            }
+        }
+        internal set
+        {
+            lock (_stateLock)
+            {
+                if (_state == value) return;
+                _state = value;
+            }
+            OnPropertyChanged();
+        }
+    }
     
     /// <summary>
     /// 提醒播放剩余进度

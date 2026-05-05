@@ -79,6 +79,9 @@ public class NotificationWorkerService : INotificationWorkerService
             }
 
             var session = request.OverlaySession;
+            if (request.State == NotificationState.Paused)
+                continue;
+            
             request.LeftProgress = session.IsExplicitEndTime
                 ? 1 - (now - session.SessionStartTime) / content.Duration
                 : 1 - (session.SessionPlayedTime + session.TimingStopwatch.Elapsed) / content.Duration;
@@ -114,7 +117,8 @@ public class NotificationWorkerService : INotificationWorkerService
 
     public NotificationPlayingTicket CreateTicket(NotificationRequest request)
     {
-        var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(request.CancellationToken);
+        var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
+            request.CancellationToken);
         var settings = GetEffectiveSettings(request);
 
         var cancellationCompletedSource = new TaskCompletionSource();
@@ -202,8 +206,7 @@ public class NotificationWorkerService : INotificationWorkerService
                     Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
                     // 音效是独立的后台播放任务，但生命周期跟随提醒本身。
                     var audioCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
-                        request.CancellationToken,
-                        request.CompletedToken);
+                        request.CancellationToken);
                     _ = PlayNotificationSoundAsync(settings, audioCancellationTokenSource);
                 }
                 catch (Exception e)
@@ -213,7 +216,6 @@ public class NotificationWorkerService : INotificationWorkerService
             }
             
             session.HasSoundsPlayed = true;
-            // await Task.Delay(duration, cancellationToken);
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -223,6 +225,8 @@ public class NotificationWorkerService : INotificationWorkerService
                     if (session.TimingStopwatch.IsRunning)
                     {
                         session.TimingStopwatch.Stop();
+                        session.SessionPlayedTime += session.TimingStopwatch.Elapsed;
+                        session.TimingStopwatch.Reset();
                     }
 
                     await Task.Delay(100, cancellationToken);
@@ -236,7 +240,7 @@ public class NotificationWorkerService : INotificationWorkerService
 
                 var remaining = session.IsExplicitEndTime
                     ? content.EndTime!.Value - now
-                    : content.Duration - (session.SessionPlayedTime + session.TimingStopwatch.Elapsed);
+                    : content.Duration - session.SessionPlayedTime - session.TimingStopwatch.Elapsed;
                 if (remaining <= TimeSpan.Zero)
                 {
                     break;
@@ -274,10 +278,13 @@ public class NotificationWorkerService : INotificationWorkerService
         }
         finally
         {
-            var playedTime = session.TimingStopwatch.Elapsed;
-            session.TimingStopwatch.Reset();
-            session.SessionPlayedTime += playedTime;
-            Logger.LogTrace("[{id}] END session, isMask={isMask}, playedTime={playedTime}", id, isMask, playedTime);
+            if (session.TimingStopwatch.IsRunning)
+            {
+                var playedTime = session.TimingStopwatch.Elapsed;
+                session.TimingStopwatch.Reset();
+                session.SessionPlayedTime += playedTime;
+            }
+            Logger.LogTrace("[{id}] END session, isMask={isMask}, playedTime={playedTime}", id, isMask, session.SessionPlayedTime);
             lock (_playingRequestsLock)
             {
                 PlayingRequests.Remove(tuple);

@@ -104,8 +104,22 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
                 {
                     if (session.Queue.Count == 0)
                     {
+                        var pulledTickets = NotificationHostService.PullNotificationRequests(consumer);
+                        if (pulledTickets.Count > 0)
+                        {
+                            foreach (var t in pulledTickets)
+                            {
+                                session.Queue.Enqueue(t);
+                            }
+                        }
+                    }
+                    if (session.Queue.Count == 0)
+                    {
                         session.IsPlaying = false;
-                        session.Handler?.OnPlaybackCompleted();
+                        var h = session.Handler;
+                        _sessions.Remove(consumer);
+                        h?.OnPlaybackCompleted();
+                        NotificationHostService.PopRequestsToConsumers();
                         return;
                     }
                     ticket = session.Queue.Dequeue();
@@ -127,18 +141,7 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
                     {
                         session.PlayingTickets.Remove(ticket);
                     }
-                }
-
-                var newTickets = NotificationHostService.PullNotificationRequests(consumer);
-                if (newTickets.Any())
-                {
-                    lock (_syncLock)
-                    {
-                        foreach (var t in newTickets)
-                        {
-                            session.Queue.Enqueue(t);
-                        }
-                    }
+                    NotificationHostService.PopRequestsToConsumers();
                 }
             }
         }
@@ -148,7 +151,10 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
             lock (_syncLock)
             {
                 session.IsPlaying = false;
+                _sessions.Remove(consumer);
             }
+            try { session.Handler?.OnPlaybackCompleted(); } catch { }
+            NotificationHostService.PopRequestsToConsumers();
         }
     }
 

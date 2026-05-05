@@ -248,7 +248,6 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
         set => SetValue(CurrentNotificationRequestProperty, value);
     }
 
-    private bool _isOverlayOpen = false;
     private bool _isUnloading = false;
     
     private DateTime _firstProcessNotificationsTime = DateTime.MinValue;
@@ -670,7 +669,10 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
                  App.ApplicationCommand.Quiet) // 静默启动
                )
             {
-                NotificationHostService.RequestQueue.Clear();
+                if (NotificationHostService is NotificationHostService hostService)
+                {
+                    hostService.ClearRequestQueue();
+                }
                 request.Cancel();
                 return;
             }
@@ -704,6 +706,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
                 var center = GetCenter();
                 TopmostEffectWindow.PlayEffect(new RippleEffect(center, MaskContent.Color));
             }
+
+            IsOverlayOpen = true;
         });
     }
 
@@ -743,11 +747,12 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
             OverlayContent = null;
             MaskContent = null;
             MainWindow.ReleaseTopmostLock(TopmostLock);
+            IsOverlayOpen = false;
         });
     }
 
     public int QueuedNotificationCount => NotificationPlaybackService.GetQueuedCount(this);
-    
-    public bool AcceptsNotificationRequests => IsNotificationEnabled && !IsAllComponentsHid && !IsOverlayOpen && !_isUnloading;
+     
+    public bool AcceptsNotificationRequests => IsNotificationEnabled && !IsAllComponentsHid && !_isUnloading;
 
 }

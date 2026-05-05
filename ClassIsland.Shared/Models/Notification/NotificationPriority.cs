@@ -51,7 +51,7 @@ public class NotificationPriority : IComparable
 
         if (IsNotificationPlayed != priority.IsNotificationPlayed)
         {
-            return IsNotificationPlayed ? -1 : 1;
+            return IsNotificationPlayed ? 1 : -1;
         }
 
         if (Priority != priority.Priority)
