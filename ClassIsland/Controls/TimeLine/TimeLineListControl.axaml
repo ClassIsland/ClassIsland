@@ -243,13 +243,15 @@
                                                             Margin="0 0 28 0"
                                                             Padding="2"
                                                             CornerRadius="4">
-                                                        <StackPanel Orientation="Horizontal" >
-                                                            <Button Content="{ci:FluentIcon &#xE61C;}"
-                                                                    Foreground="IndianRed"
-                                                                    Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
-                                                                    Theme="{StaticResource TransparentButton}"
-                                                                    ToolTip.Tip="删除时间点" />
-                                                        </StackPanel>
+                                                        <ci:TutorialBarrier>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Button Content="{ci:FluentIcon &#xE61C;}"
+                                                                        Foreground="IndianRed"
+                                                                        Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
+                                                                        Theme="{StaticResource TransparentButton}"
+                                                                        ToolTip.Tip="删除时间点" />
+                                                            </StackPanel>
+                                                        </ci:TutorialBarrier>
                                                     </Border>
                                                 </Grid>
                                             </ControlTemplate>
@@ -270,17 +272,19 @@
                                                             Margin="0 0 28 0"
                                                             Padding="2"
                                                             CornerRadius="4">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <!--<Button Content="{materialDesign:PackIcon Edit}"
+                                                        <ci:TutorialBarrier>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <!--<Button Content="{materialDesign:PackIcon Edit}"
                                                                     Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"
                                                                     Style="{StaticResource MaterialDesignToolForegroundButton}"
                                                                     ToolTip.Tip="编辑时间点…" Margin="0 0 4 0" />-->
-                                                            <Button Content="{ci:FluentIcon &#xE61C;}"
-                                                                    Foreground="IndianRed"
-                                                                    Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
-                                                                    Theme="{StaticResource TransparentButton}"
-                                                                    ToolTip.Tip="删除时间点" />
-                                                        </StackPanel>
+                                                                <Button Content="{ci:FluentIcon &#xE61C;}"
+                                                                        Foreground="IndianRed"
+                                                                        Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
+                                                                        Theme="{StaticResource TransparentButton}"
+                                                                        ToolTip.Tip="删除时间点" />
+                                                            </StackPanel>
+                                                        </ci:TutorialBarrier>
                                                     </Border>
                                                 </Grid>
                                             </ControlTemplate>

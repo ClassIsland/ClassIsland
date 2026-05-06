@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Reactive.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.ComponentModels;
 using ClassIsland.Core.Models.Plugin;
@@ -37,7 +39,10 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
     [ObservableProperty] private string _dragInstallHintText = "将插件拖入到此处，松手即可安装。";
     [ObservableProperty] private string _dragInstallSubHintText = "";
     [ObservableProperty] private bool _pluginListBoxHasItems = false;
-    [ObservableProperty] private IObservableList<KeyValuePair<string, PluginInfo>> _mergedPluginsFiltered = null!;
+
+    private ReadOnlyObservableCollection<KeyValuePair<string, PluginInfo>> _mergedPluginsFiltered = null!;
+    public ReadOnlyObservableCollection<KeyValuePair<string, PluginInfo>> MergedPluginsFiltered => _mergedPluginsFiltered;
+
     [ObservableProperty] private SyncDictionaryList<string, string> _officialPluginMirrors = null!;
 
     public SyncDictionaryList<string, PluginInfo> MergedPlugins { get; }
@@ -54,17 +59,28 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         SettingsService.Settings
             .ObservableForProperty(x => x.OfficialIndexMirrors)
             .Subscribe(_ => UpdateOfficialPluginSources());
-        
+
         UpdateMergedPlugins();
         UpdateOfficialPluginSources();
     }
 
     public void UpdateMergedPlugins()
     {
-        MergedPluginsFiltered = MergedPlugins.List
+        if (MergedPluginsFiltered != null)
+            return;
+
+        var pluginFilter = this
+            .WhenAnyValue(x => x.PluginFilterText, x => x.PluginCategoryIndex)
+            .Select(_ => new Func<KeyValuePair<string, PluginInfo>, bool>(PluginSourceFilter));
+
+        MergedPlugins.List
             .ToObservableChangeSet()
-            .Filter(PluginSourceFilter)
-            .AsObservableList();
+            .Filter(pluginFilter)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out _mergedPluginsFiltered)
+            .Subscribe();
+
+        OnPropertyChanged(nameof(MergedPluginsFiltered));
     }
 
     private void UpdateOfficialPluginSources()

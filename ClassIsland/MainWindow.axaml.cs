@@ -28,10 +28,12 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Helpers;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Platforms.Abstraction;
@@ -247,12 +249,17 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
-        PointerStateAssist.SetIsTouchMode(this, true);  // DEBUG
+        this.UseMyWindowExt();
 
         if (Environment.OSVersion.Version <= WindowsVersions.Win10V1809)
         {
             PseudoClasses.Set(":no-windowed-transparent", true);
         }
+
+#pragma warning disable CS8974 // 将方法组转换为非委托类型
+        TutorialService.Context["classisland.mainWindow.hasComponentWithSettings"] = HasComponentWithSettings;
+        TutorialService.Context["classisland.mainWindow.hasContainerComponent"] = HasContainerComponent;
+#pragma warning restore CS8974 // 将方法组转换为非委托类型
     }
 
     private void PostInit()
@@ -516,6 +523,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 // 延后一帧激活，确保窗口保持在前台可操作。
                 _ = Dispatcher.UIThread.InvokeAsync(Activate, DispatcherPriority.Background);
             }
+        }
+
+        if (e.PropertyName == nameof(ViewModel.SelectedComponentSettings))
+        {
+            TutorialService.Context["classisland.mainWindow.editMode.isComponentsSelected"] =
+                ViewModel.SelectedComponentSettings != null;
+            TutorialService.Context["classisland.mainWindow.editMode.selectedComponent.hasSettings"] =
+                ViewModel.SelectedComponentSettings is { AssociatedComponentInfo.SettingsType: not null };
+            TutorialService.Context["classisland.mainWindow.editMode.selectedComponent.isContainer"] =
+                ViewModel.SelectedComponentSettings is { AssociatedComponentInfo.IsComponentContainer: true };
         }
     }
 
@@ -1259,6 +1276,20 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     #region Edit Mode
 
+    private bool HasComponentWithSettings()
+    {
+        return ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.SettingsType != null);
+    }
+    
+    private bool HasContainerComponent()
+    {
+        return ComponentsService.CurrentComponents.Lines
+            .SelectMany(x => x.Children)
+            .Any(x => x.AssociatedComponentInfo.IsComponentContainer);
+    }
+
     private void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
     {
         EnterEditMode();
@@ -1276,16 +1307,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TutorialService.BeginNotCompletedTutorials(
             "classisland.getStarted.componentsEditing/introduction",
             "classisland.getStarted.componentsEditing/addComponent");
-        if (ComponentsService.CurrentComponents.Lines
-            .SelectMany(x => x.Children)
-            .Any(x => x.AssociatedComponentInfo.SettingsType != null))
+        if (HasComponentWithSettings())
         {
             TutorialService.BeginNotCompletedTutorials(
                 "classisland.getStarted.componentsEditing/componentSettings");
         }
-        if (ComponentsService.CurrentComponents.Lines
-            .SelectMany(x => x.Children)
-            .Any(x => x.AssociatedComponentInfo.IsComponentContainer))
+        if (HasContainerComponent())
         {
             TutorialService.BeginNotCompletedTutorials(
                 "classisland.getStarted.componentsEditing/containerComponent");
@@ -1307,6 +1334,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
         ViewModel.IsEditMode = false;
         ViewModel.EditModeTutorialPhase = -1;
+        MyWindow.GetState(this)?.AppToastAdorner?.Messages.Clear();
         ComponentsService.SaveConfig();
         TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.exit");
     }
@@ -1330,6 +1358,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         if (!ViewModel.ComponentsListBoxCache.Contains(listBox))
         {
             ViewModel.ComponentsListBoxCache.Add(listBox);
+            if (ViewModel.SelectedComponentSettings != null && settings.Children.Contains(ViewModel.SelectedComponentSettings))
+            {
+                listBox.SelectedItem = ViewModel.SelectedComponentSettings;
+            }
         }
         ViewModel.MainWindowLineListBoxCache[settings] = listBox;
         ViewModel.MainWindowLineListBoxCacheReversed[listBox] = settings;
@@ -1364,6 +1396,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         if (!ViewModel.ComponentsListBoxCache.Contains(listBox))
         {
             ViewModel.ComponentsListBoxCache.Add(listBox);
+            if (ViewModel.SelectedComponentSettings != null && settings.Settings.Children?.Contains(ViewModel.SelectedComponentSettings) == true)
+            {
+                listBox.SelectedItem = ViewModel.SelectedComponentSettings;
+            }
         }
         ViewModel.ContainerComponentListBoxCache[settings] = listBox;
         ViewModel.ContainerComponentListBoxCacheReversed[listBox] = settings;
@@ -1424,6 +1460,15 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void EditableComponentsListBox_OnRequestOpenChildComponents(object? sender, EditableComponentsListBoxEventArgs e)
     {
         ViewModel.EditModeView?.OpenChildComponents(e.Settings, e.ComponentStack, GetContainerComponentEditContainerInitPos(e.ItemPosition));
+    }
+    
+    private void EditableComponentsListBox_OnComponentDeleted(object? sender, EditableComponentsListBoxEventArgs e)
+    {
+        ViewModel.SelectedComponentSettings = null;
+        if (ViewModel.EditModeView != null && ViewModel.EditModeView.ViewModel.MainDrawerContent == ViewModel.EditModeView.FindResource("ComponentSettingsDrawer"))
+        {
+            ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
+        }
     }
 
     public Point GetContainerComponentEditContainerInitPos(Point pos)

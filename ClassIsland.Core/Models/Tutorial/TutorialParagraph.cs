@@ -3,12 +3,14 @@ using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using ClassIsland.Core.Abstractions.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MoonSharp.Interpreter;
 
 namespace ClassIsland.Core.Models.Tutorial;
 
 /// <summary>
 /// 代表一个教程中的段落。
 /// </summary>
+[MoonSharpUserData]
 public partial class TutorialParagraph : ObservableObject, IXmlnsAttached
 {
     /// <summary>
@@ -40,6 +42,11 @@ public partial class TutorialParagraph : ObservableObject, IXmlnsAttached
     /// 教程语句列表
     /// </summary>
     [ObservableProperty] private ObservableCollection<TutorialSentence> _content = [];
+
+    /// <summary>
+    /// 是否为此段落的教程启用屏障，防止用户跳转到其它页面。
+    /// </summary>
+    [ObservableProperty] private bool _isBarrierEnabled = true;
     
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
     
