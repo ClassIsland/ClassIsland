@@ -41,6 +41,10 @@ public partial class EditModeView : UserControl
     {
         InitializeComponent();
         DataContext = this;
+        ViewModel.TutorialService.Context["classisland.mainWindow.editMode.mainDrawer.getState"] =
+            () => ViewModel.MainDrawerState;
+        ViewModel.TutorialService.Context["classisland.mainWindow.editMode.secondaryDrawer.getState"] =
+            () => ViewModel.SecondaryDrawerState;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

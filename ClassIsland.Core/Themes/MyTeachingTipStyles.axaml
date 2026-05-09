@@ -1,0 +1,279 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:core="clr-namespace:FluentAvalonia.Core;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="50" Width="600" Height="300" Background="Black"> 
+            <controls:TeachingTip Title="Change themes without hassle"
+                                  Classes="sr-accent"
+                                  Subtitle="It's easier than ever to see control samples in both light and dark themes!"
+                                  IconSource="Refresh" IsLightDismissEnabled="False"
+                                  IsOpen="True" HeroContentPlacement="Auto" 
+                                  
+                            core:VisualStateHelper.ForcedClassesProperty=":bottom">
+                <controls:TeachingTip.HeroContent>
+                    <Border Width="100" Height="100" Background="Red" />
+                </controls:TeachingTip.HeroContent>
+            </controls:TeachingTip>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="controls|TeachingTip.sr-accent">
+        <Style.Resources>
+            <ControlTheme x:Key="MyActionButtonTheme" BasedOn="{StaticResource {x:Type Button}}"
+                          TargetType="Button">
+                <Setter Property="CornerRadius" Value="0"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+                
+                <Style Selector="^:pointerover">
+                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource AccentTextFillColorSecondaryBrush}" />
+                        <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorSecondaryBrush}" />
+                    </Style>
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="{DynamicResource AccentFillColorTertiaryBrush}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorTertiaryBrush}" />
+                        <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                    </Style>
+                </Style>
+            </ControlTheme>
+        </Style.Resources>
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius" Value="0"/>
+        <Setter Property="ActionButtonStyle" Value="{StaticResource MyActionButtonTheme}"/>
+        <Setter Property="CloseButtonStyle" Value="{StaticResource MyActionButtonTheme}"/>
+        
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="Container"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Background="Transparent">
+                    <Grid MinHeight="{DynamicResource TeachingTipMinHeight}"
+                          MinWidth="{DynamicResource TeachingTipMinWidth}"
+                          MaxHeight="{DynamicResource TeachingTipMaxHeight}"
+                          MaxWidth="{DynamicResource TeachingTipMaxWidth}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="{StaticResource TeachingTipTailShortSideLength}"/>
+                            <ColumnDefinition Width="{StaticResource TeachingTipTailMargin}"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="{StaticResource TeachingTipTailMargin}"/>
+                            <ColumnDefinition Width="{StaticResource TeachingTipTailShortSideLength}"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="{StaticResource TeachingTipTailShortSideLength}"/>
+                            <RowDefinition Height="{StaticResource TeachingTipTailMargin}"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="{StaticResource TeachingTipTailMargin}"/>
+                            <RowDefinition Height="{StaticResource TeachingTipTailShortSideLength}"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Name="TailOcclusionGrid"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              MinHeight="{DynamicResource TeachingTipMinHeight}"
+                              MinWidth="{DynamicResource TeachingTipMinWidth}"
+                              MaxHeight="{DynamicResource TeachingTipMaxHeight}"
+                              MaxWidth="{DynamicResource TeachingTipMaxWidth}"
+                              Grid.ColumnSpan="5"
+                              Grid.RowSpan="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{StaticResource TeachingTipTailShortSideLength}"/>
+                                <ColumnDefinition Width="{StaticResource TeachingTipTailMargin}"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="{StaticResource TeachingTipTailMargin}"/>
+                                <ColumnDefinition Width="{StaticResource TeachingTipTailShortSideLength}"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="{StaticResource TeachingTipTailShortSideLength}"/>
+                                <RowDefinition Height="{StaticResource TeachingTipTailMargin}"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="{StaticResource TeachingTipTailMargin}"/>
+                                <RowDefinition Height="{StaticResource TeachingTipTailShortSideLength}"/>
+                            </Grid.RowDefinitions>
+
+                            <Panel 
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="3"
+                                Grid.RowSpan="3">
+                                
+                                <Border Background="{DynamicResource AccentTextFillColorPrimaryBrush}" Margin="4 0 4 -4" 
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}" Margin="2 0 2 -2" 
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                <Border Name="ContentRootGridBorder"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        FlowDirection="{TemplateBinding FlowDirection}"
+                                        CornerRadius="{TemplateBinding CornerRadius}">
+                                    <Grid Name="ContentRootGrid" RowDefinitions="Auto,*,Auto">
+                                        <Border Name="HeroContentBorder"
+                                                Grid.Row="0"
+                                                Child="{TemplateBinding HeroContent}"
+                                                Background="{TemplateBinding Background}" />
+
+                                        <Grid Name="NonHeroContentRootGrid" Grid.Row="1" ColumnDefinitions="* Auto">
+                                            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
+                                                <StackPanel Margin="{StaticResource TeachingTipContentMargin}">
+                                                    <Grid ColumnDefinitions="Auto,*">
+                                                        <ContentPresenter Name="IconPresenter"
+                                                                          Grid.Column="0"
+                                                                          Foreground="{TemplateBinding Foreground}"
+                                                                          Margin="{DynamicResource TeachingTipIconPresenterMarginWithoutIcon}"
+                                                                          Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.IconElement}" />
+                                                        <StackPanel Name="TitlesStackPanel"
+                                                                    Grid.Column="1"
+                                                                    Margin="{DynamicResource TeachingTipTitleStackPanelMarginWithHeaderCloseButton}">
+                                                            <TextBlock Name="TitleTextBlock"
+                                                                       Grid.Column="0"
+                                                                       Text="{TemplateBinding Title}"
+                                                                       TextWrapping="Wrap"
+                                                                       Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                                                       FontFamily="{TemplateBinding FontFamily}"
+                                                                       FontWeight="SemiBold"
+                                                                       IsVisible="False" />
+                                                            <TextBlock Name="SubtitleTextBlock"
+                                                                       Grid.Row="1"
+                                                                       Text="{TemplateBinding Subtitle}"
+                                                                       Foreground="{DynamicResource AccentTextFillColorSecondaryBrush}"
+                                                                       FontFamily="{TemplateBinding FontFamily}"
+                                                                       TextWrapping="Wrap"
+                                                                       IsVisible="False" />
+                                                        </StackPanel>
+                                                    </Grid>
+
+                                                    <ContentPresenter Name="MainContentPresenter"
+                                                                      Grid.Row="1"
+                                                                      Content="{TemplateBinding Content}"
+                                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                      Background="{TemplateBinding Background}"
+                                                                      Foreground="{TemplateBinding Foreground}"
+                                                                      FontSize="{TemplateBinding FontSize}"
+                                                                      FontWeight="{TemplateBinding FontWeight}"
+                                                                      FontStyle="{TemplateBinding FontStyle}"
+                                                                      FontFamily="{TemplateBinding FontFamily}"
+                                                                      FontStretch="{TemplateBinding FontStretch}"
+                                                                      Margin="{DynamicResource TeachingTipMainContentAbsentMargin}" />
+                                                    <Grid Grid.Row="2">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Button Name="ActionButton"
+                                                                HorizontalAlignment="Stretch"
+                                                                Theme="{TemplateBinding ActionButtonStyle}"
+                                                                Command="{TemplateBinding ActionButtonCommand}"
+                                                                CommandParameter="{TemplateBinding ActionButtonCommandParameter}"
+                                                                IsVisible="False">
+                                                            <ContentPresenter TextWrapping="Wrap"
+                                                                              Content="{TemplateBinding ActionButtonContent}" />
+                                                        </Button>
+                                                        <Button Name="CloseButton"
+                                                                HorizontalAlignment="Stretch"
+                                                                Theme="{TemplateBinding CloseButtonStyle}"
+                                                                Command="{TemplateBinding CloseButtonCommand}"
+                                                                CommandParameter="{TemplateBinding CloseButtonCommandParameter}"
+                                                                Grid.Column="1"
+                                                                IsVisible="False">
+                                                            <ContentPresenter TextWrapping="Wrap"
+                                                                              Content="{TemplateBinding CloseButtonContent}" />
+                                                        </Button>
+                                                    </Grid>
+                                                </StackPanel>
+                                            </ScrollViewer>
+
+                                            <Rectangle Grid.Column="1" Width="4"
+                                                       Fill="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                                       Margin="8 4 4 4" />
+
+                                            <Button Name="AlternateCloseButton" Grid.Column="0"
+                                                    IsVisible="False"
+                                                    Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                                    Theme="{StaticResource AlternateCloseButtonStyle}" />
+                                            
+                                            <Path Grid.Column="0"
+                                                  x:Name="ContinueIndicator"
+                                                  Width="10.5"
+                                                  Height="9"
+                                                  Margin="0 0 2 6"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Bottom"
+                                                  Data="M 0 0 L 14 0 L 7 12 Z"
+                                                  Fill="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                                IsHitTestVisible="False"
+                                                Stretch="Uniform"
+                                                RenderTransformOrigin="50%,50%">
+                                                <Path.RenderTransform>
+                                                    <TransformGroup>
+                                                        <TranslateTransform />
+                                                        <Rotate3DTransform />
+                                                    </TransformGroup>
+                                                </Path.RenderTransform>
+                                                <Path.Styles>
+                                                    <Style Selector="Path">
+                                                        <Style.Animations>
+                                                            <Animation Duration="0:0:1"
+                                                                       IterationCount="Infinite">
+                                                                <KeyFrame Cue="0%">
+                                                                    <Setter Property="TranslateTransform.Y" Value="0" />
+                                                                </KeyFrame>
+                                                                <KeyFrame Cue="50%" KeySpline="0.5, 1, 0.89, 1">
+                                                                    <Setter Property="TranslateTransform.Y" Value="-8" />
+                                                                </KeyFrame>
+                                                                <KeyFrame Cue="100%" KeySpline="0.11, 0, 0.5, 0">
+                                                                    <Setter Property="TranslateTransform.Y" Value="0" />
+                                                                </KeyFrame>
+                                                                <KeyFrame Cue="0%">
+                                                                    <Setter Property="Rotate3DTransform.AngleY" Value="0" />
+                                                                </KeyFrame>
+                                                                <KeyFrame Cue="25%">
+                                                                    <Setter Property="Rotate3DTransform.AngleY" Value="0" />
+                                                                </KeyFrame>
+                                                                <KeyFrame Cue="75%" KeySpline="0.66, 0, 0.34, 1">
+                                                                    <Setter Property="Rotate3DTransform.AngleY" Value="180" />
+                                                                </KeyFrame>
+                                                                <KeyFrame Cue="100%">
+                                                                    <Setter Property="Rotate3DTransform.AngleY" Value="180" />
+                                                                </KeyFrame>
+                                                            </Animation>
+                                                        </Style.Animations>
+                                                    </Style>
+                                                </Path.Styles>
+                                            </Path>
+                                        </Grid>
+
+
+                                    </Grid>
+                                </Border>
+                                
+                            </Panel>
+                        </Grid>
+                    
+                        <Path Name="TailPolygon"
+                              Fill="{TemplateBinding Background}"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              Stroke="{TemplateBinding BorderBrush}"
+                              StrokeThickness="{StaticResource TeachingTipBorderThickness}"/>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^:footerClose /template/ Path#ContinueIndicator">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+    </Style>
+    <!-- Add Styles Here -->
+</Styles>

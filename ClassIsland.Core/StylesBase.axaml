@@ -43,6 +43,7 @@
     <StyleInclude Source="/Themes/Utils.axaml"/>
     <StyleInclude Source="/Themes/NavigationBackButton.axaml"/>
     <StyleInclude Source="/Themes/TabControlWithBarrier.axaml"/>
+    <StyleInclude Source="/Themes/MyTeachingTipStyles.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
     <StyleInclude Source="/Controls/DrawerHost.axaml"/>
     <StyleInclude Source="/Controls/TouchDragThumb.axaml"/>
