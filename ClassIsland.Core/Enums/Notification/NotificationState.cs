@@ -22,11 +22,15 @@ public enum NotificationState
     /// </summary>
     Paused,
     /// <summary>
-    /// 已取消
+    /// 已取消（最终状态）
     /// </summary>
     Cancelled,
     /// <summary>
-    /// 已完成
+    /// 已正常完成（最终状态）
     /// </summary>
-    Completed
+    Completed,
+    /// <summary>
+    /// 中断（等待移交到其他消费者继续播放）
+    /// </summary>
+    Interrupted
 }

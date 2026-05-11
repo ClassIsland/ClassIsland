@@ -26,11 +26,13 @@ public class NotificationRequest : ObservableRecipient
         (NotificationState.Playing, NotificationState.Paused),
         (NotificationState.Playing, NotificationState.Completed),
         (NotificationState.Playing, NotificationState.Cancelled),
+        (NotificationState.Playing, NotificationState.Interrupted),
         (NotificationState.Paused, NotificationState.Playing),
         (NotificationState.Paused, NotificationState.Cancelled),
         (NotificationState.Paused, NotificationState.Completed),
+        (NotificationState.Paused, NotificationState.Interrupted),
         (NotificationState.None, NotificationState.Cancelled),
-        (NotificationState.Completed, NotificationState.None), // 重置状态
+        (NotificationState.Interrupted, NotificationState.Queued), // 移交
     ];
 
     /// <summary>
@@ -243,6 +245,18 @@ public class NotificationRequest : ObservableRecipient
     public void Cancel()
     {
         CancellationTokenSource.Cancel();
+    }
+
+    /// <summary>
+    /// 为移交重置取消令牌
+    /// </summary>
+    internal void ResetCancellationTokensForTransfer()
+    {
+        _cancellationTokenSource = new CancellationTokenSource();
+        _cancellationTokenSource.Token.Register(() =>
+        {
+            Canceled?.Invoke(this, EventArgs.Empty);
+        });
     }
 
     /// <summary>
