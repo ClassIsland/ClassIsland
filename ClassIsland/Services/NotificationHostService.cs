@@ -149,6 +149,9 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                     PoppedRequests.Remove(request);
                     EnqueuedRequests.Remove(request);
                     break;
+                case NotificationState.Queued:
+                    PoppedRequests.Remove(request);
+                    break;
             }
             UpdateNotificationPlayingState();
         }
@@ -632,26 +635,49 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 UpdateNotificationPlayingState();
             }
 
-             Logger.LogTrace("票据 {} 已取消，准备重新加入提醒队列，{}", ticket.GetHashCode(), request);
-             if (request.CancellationToken.IsCancellationRequested || request.CompletedToken.IsCancellationRequested)
-             {
-                 return;
-             }
+            Logger.LogTrace("票据 {} 已取消，{}", ticket.GetHashCode(), request);
+            try
+            {
+                await ticket.CancellationCompletedCompletionSource.Task;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogTrace(ex, "等待取消完成时发生异常");
+            }
 
-             try
-             {
-                 await ticket.CancellationCompletedCompletionSource.Task;
-             }
-             catch (Exception ex)
-             {
-                 Logger.LogTrace(ex, "等待取消完成时发生异常");
-             }
+            // 因为时态问题打的补丁.
+            if (request.State == NotificationState.Playing)
+            {
+                var stateChangedSource = new TaskCompletionSource();
+                PropertyChangedEventHandler handler = (_, args) =>
+                {
+                    if (args.PropertyName == nameof(NotificationRequest.State))
+                        stateChangedSource.TrySetResult();
+                };
+                try
+                {
+                    request.PropertyChanged += handler;
+                    using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                    using var _ = timeoutCts.Token.Register(() => stateChangedSource.TrySetResult());
+                    await stateChangedSource.Task;
+                }
+                finally
+                {
+                    request.PropertyChanged -= handler;
+                }
+                Logger.LogTrace("票据State变更为 {}", request.State);
+            }
 
-             if (request.CancellationToken.IsCancellationRequested || request.CompletedToken.IsCancellationRequested)
-             {
-                 return;
-             }
+            if (request.State != NotificationState.Interrupted && request.State != NotificationState.Queued)
+            {
+                return;
+            }
 
+            if (request.State == NotificationState.Interrupted)
+            {
+                request.ResetCancellationTokensForTransfer();
+            }
+            TransitionRequestState(request, NotificationState.Queued);
             Logger.LogTrace("重新加入提醒队列, {}", request);
             EnqueueNotification(request, true);
             PopRequestsToConsumers();

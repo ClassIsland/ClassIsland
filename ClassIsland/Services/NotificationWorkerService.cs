@@ -273,7 +273,8 @@ public class NotificationWorkerService : INotificationWorkerService
             }
             else
             {
-                TransitionState(request, NotificationState.Paused);
+                TransitionState(request, NotificationState.Interrupted);
+                Logger.LogInformation("提醒请求 {request} 中断", request.GetHashCode());
             }
             throw;
         }
