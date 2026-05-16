@@ -560,7 +560,8 @@ public partial class ProfileSettingsWindow : MyWindow
             .FirstOrDefault(x => x.Value == ViewModel.SelectedClassPlan).Key;
         var id = ViewModel.ProfileService.CreateTempClassPlan(key,
             ViewModel.TempOverlayClassPlanTimeLayoutId,
-            ViewModel.OverlayEnableDateTime);
+            ViewModel.OverlayEnableDateTime,
+            ViewModel.TempOverlayCreateTimeLayout);
         if (id is { } guid)
         {
             ViewModel.SelectedClassPlan = ViewModel.ProfileService.Profile.ClassPlans[guid];
