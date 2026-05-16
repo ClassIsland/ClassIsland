@@ -1,0 +1,123 @@
+<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.TrayMenuSettingsPage"
+      xmlns="https://github.com/avaloniaui"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      mc:Ignorable="d" 
+      Design.Width="960" Design.Height="500"
+      d:DataContext="{d:DesignInstance local:TrayMenuSettingsPage}">
+    <ScrollViewer>
+        <StackPanel Classes="settings-container animated-intro">
+            <controls1:IconText Glyph="&#xE779;" Text="托盘菜单可见性" Margin="0 0 0 4" />
+            <controls3:SettingsExpander Header="关于 ClassIsland"
+                                        IconSource="{ci:FluentIconSource &#xE260;}"
+                                        Description="显示应用版本和相关信息。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuAboutVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="教学…"
+                                        IconSource="{ci:FluentIconSource &#xE959;}"
+                                        Description="打开交互式教学指南。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuTutorialVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="帮助文档…"
+                                        IconSource="{ci:FluentIconSource &#xE23C;}"
+                                        Description="打开在线帮助文档。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuHelpVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="显示主界面"
+                                        IconSource="{ci:FluentIconSource &#xE813;}"
+                                        Description="将主窗口置于前台。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuShowMainWindowVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="隐藏主界面"
+                                        IconSource="{ci:FluentIconSource &#xE817;}"
+                                        Description="将主窗口最小化到托盘。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuHideMainWindowVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="清除全部提醒"
+                                        IconSource="{ci:FluentIconSource &#xE029;}"
+                                        Description="一键清除所有正在显示的提醒。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuClearNotificationsVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="更多选项…"
+                                        IconSource="{ci:FluentIconSource &#xEBAC;}"
+                                        Description="包含自动化触发项等扩展菜单的子菜单。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuMoreOptionsVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+
+            <controls1:IconText Glyph="&#xE7C9;" Text="编辑与管理" Margin="0 16 0 4" />
+            <controls3:SettingsExpander Header="编辑档案…"
+                                        IconSource="{ci:FluentIconSource &#xE699;}"
+                                        Description="打开课表档案编辑窗口。[核心功能，不可禁用]">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuEditProfileVisible, Mode=TwoWay}"
+                                  IsEnabled="False"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="加载临时课表…"
+                                        IconSource="{ci:FluentIconSource &#xE6A1;}"
+                                        Description="临时替换当前课表。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuTempClassPlanVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="换课…"
+                                        IconSource="{ci:FluentIconSource &#xE15F;}"
+                                        Description="快速调换课程顺序。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuClassSwapVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="编辑主界面…"
+                                        IconSource="{ci:FluentIconSource &#xE7C9;}"
+                                        Description="进入主界面编辑模式。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuEditMainViewVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="应用设置…"
+                                        IconSource="{ci:FluentIconSource &#xEF27;}"
+                                        Description="打开应用设置窗口。[核心功能，不可禁用]">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuAppSettingsVisible, Mode=TwoWay}"
+                                  IsEnabled="False"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+
+            <controls1:IconText Glyph="&#xE0BD;" Text="系统" Margin="0 16 0 4" />
+            <controls3:SettingsExpander Header="重启"
+                                        IconSource="{ci:FluentIconSource &#xE0BD;}"
+                                        Description="重新启动 ClassIsland 应用。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuRestartVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+            <controls3:SettingsExpander Header="退出"
+                                        IconSource="{ci:FluentIconSource &#xE0DF;}"
+                                        Description="完全退出 ClassIsland 应用。">
+                <controls3:SettingsExpander.Footer>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuExitVisible, Mode=TwoWay}"/>
+                </controls3:SettingsExpander.Footer>
+            </controls3:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

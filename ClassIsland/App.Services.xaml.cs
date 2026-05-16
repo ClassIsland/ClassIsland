@@ -121,6 +121,7 @@ public partial class App
         services.AddTransient<WindowSettingsViewModel>();
         services.AddTransient<WeatherSettingsViewModel>();
         services.AddTransient<AutomationSettingsViewModel>();
+        services.AddTransient<TrayMenuSettingsViewModel>();
         services.AddTransient<PluginsSettingsPageViewModel>();
         services.AddTransient<StorageSettingsViewModel>();
         services.AddTransient<ErrorSettingsViewModel>();
