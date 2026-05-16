@@ -813,7 +813,7 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         var l = timeLayout.Layouts;
-        for (var i = 0; i < l.Count - 1; i++)
+        for (var i = 0; i < l.Count; i++)
         {
             if (l[i].StartTime <= item.StartTime)
                 continue;
