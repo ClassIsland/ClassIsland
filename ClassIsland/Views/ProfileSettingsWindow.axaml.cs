@@ -958,11 +958,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
         var copy = ConfigureFileHelper.CopyObject(item);
 
-        if (item.TimeType == 2 || item.TimeType == 3)
-        {
-            copy.StartTime = item.EndTime;
-            copy.EndTime = item.EndTime + (item.EndTime - item.StartTime);
-        }
+        copy.StartTime = item.EndTime;
+        copy.EndTime = item.EndTime + (item.EndTime - item.StartTime);
 
         var index = timeLayout.Layouts.IndexOf(item);
         if (index == -1) index = timeLayout.Layouts.Count;
