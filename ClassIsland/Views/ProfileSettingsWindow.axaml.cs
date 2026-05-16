@@ -946,6 +946,39 @@ public partial class ProfileSettingsWindow : MyWindow
         RemoveSelectedTimePoint();
     }
 
+    [RelayCommand]
+    private void DuplicateTimePoint(TimeLayoutItem? item)
+    {
+        if (item == null) item = ViewModel.SelectedTimePoint;
+        if (item == null) return;
+        
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        if (timeLayout == null) return;
+
+        var copy = ConfigureFileHelper.CopyObject(item);
+        // 为复制的时间点设置新的时间（稍微偏移一点，避免重叠）
+        // 实际上，我们应该让 AddTimePoint 方法来处理插入位置
+        // 但为了确保不与原时间点完全相同，我们可以稍微调整一下
+        // 不过更好的方式是直接使用 AddTimePoint 方法，它会自动排序
+        
+        var index = timeLayout.Layouts.IndexOf(item);
+        if (index == -1) index = timeLayout.Layouts.Count;
+        
+        // 我们需要确保复制的时间点不会与原时间点有完全相同的时间
+        // 可以稍微偏移一点，或者让用户自己调整
+        // 这里我们先直接添加，让 AddTimePoint 处理排序
+        
+        AddTimePoint(copy);
+        ViewModel.SelectedTimePoint = copy;
+        
+        this.ShowToast(new ToastMessage("已创建时间点副本。")
+        {
+            Severity = InfoBarSeverity.Success
+        });
+        
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.duplicate", 1);
+    }
+
     private void RemoveSelectedTimePoint()
     {
         if (ViewModel.SelectedTimePoint == null) 
