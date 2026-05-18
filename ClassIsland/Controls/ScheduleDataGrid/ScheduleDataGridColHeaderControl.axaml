@@ -49,12 +49,14 @@
                                    ClipToBounds="False"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Grid.Row="2" Margin="0 -4 -4 -4" Orientation="Horizontal">
-                        <Button Theme="{StaticResource TransparentButton}"
-                                IsVisible="{Binding !$parent[controls:ScheduleDataGrid].IsReadonly}"
-                                Content="{ci:FluentIcon &#xEF27;}"
-                                x:Name="PART_ButtonOpenClassPlanSettings"
-                                ToolTip.Tip="课表信息…"
-                                Padding="8 4"  />
+                        <ci:TutorialBarrier ExcludedTags="classisland.sdg.header.settings.open">
+                            <Button Theme="{StaticResource TransparentButton}"
+                                    IsVisible="{Binding !$parent[controls:ScheduleDataGrid].IsReadonly}"
+                                    Content="{ci:FluentIcon &#xEF27;}"
+                                    x:Name="PART_ButtonOpenClassPlanSettings"
+                                    ToolTip.Tip="课表信息…"
+                                    Padding="8 4" />
+                        </ci:TutorialBarrier>
                     </StackPanel>
                 </Grid>
             </ControlTemplate>
@@ -66,69 +68,75 @@
                         <TextBlock Grid.Row="0" Text="{Binding Date, RelativeSource={RelativeSource TemplatedParent}, StringFormat='ddd'}"/>
                         <TextBlock Grid.Row="0" Text="{Binding Date, RelativeSource={RelativeSource TemplatedParent}, StringFormat='MM/dd'}"
                                    HorizontalAlignment="Right"/>
-                        <Button Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                                x:Name="PART_ButtonCreateClassPlan"
-                                IsVisible="{Binding !$parent[controls:ScheduleDataGrid].IsReadonly}">
-                            <Button.IsEnabled>
-                                <Binding Path="!!$self.(controls:ScheduleDataGrid.TimeLayouts).List.Count"
-                                         x:CompileBindings="True"/>
-                            </Button.IsEnabled>
-                            <Button.Flyout>
-                                <Flyout>
-                                    <StackPanel Spacing="4" DataContext="{Binding ViewModel, RelativeSource={RelativeSource TemplatedParent}}">
-                                        <TextBlock Text="新建课表" FontWeight="Bold"/>
-                                        <ci:Field Label="时间表">
-                                            <ComboBox
-                                                SelectedValueBinding="{Binding Key}">
-                                                <ComboBox.SelectedValue>
-                                                    <Binding Path="$parent[controls:ScheduleDataGrid].(controls:ScheduleDataGrid.SelectedNewTimeLayoutId)"
-                                                             x:CompileBindings="True"/>
-                                                </ComboBox.SelectedValue>
-                                                <ComboBox.ItemsSource>
-                                                    <Binding Path="$self.(controls:ScheduleDataGrid.TimeLayouts).List"
-                                                             x:CompileBindings="True"/>
-                                                </ComboBox.ItemsSource>
-                                                <ComboBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Text="{Binding Value.Name}"/>
-                                                    </DataTemplate>
-                                                </ComboBox.ItemTemplate>
-                                            </ComboBox>
-                                        </ci:Field>
-                                        <ci:Field Label="名称">
-                                            <TextBox Text="{Binding ClassPlanName, Mode=TwoWay}"
-                                                     Watermark="{Binding SuggestedClassPlanName, Mode=OneWay}"/>
-                                        </ci:Field>
-                                        <DockPanel Dock="Left">
-                                            <CheckBox Content="复制自" DockPanel.Dock="Left"
-                                                      IsChecked="{Binding CopyFromClassPlan}"/>
-                                            <ComboBox HorizontalAlignment="Stretch"
-                                                      SelectedValue="{Binding CopyClassPlanSource}"
-                                                      SelectedValueBinding="{Binding Key}"
-                                                      IsVisible="{Binding CopyFromClassPlan}">
-                                                <ComboBox.ItemsSource>
-                                                    <Binding Path="$self.(controls:ScheduleDataGrid.ClassPlans).List"
-                                                             x:CompileBindings="True"/>
-                                                </ComboBox.ItemsSource>
-                                                <ComboBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Text="{Binding Value.Name}"/>
-                                                    </DataTemplate>
-                                                </ComboBox.ItemTemplate>
-                                            </ComboBox>
-                                        </DockPanel>
-                                        <controls1:TimeRuleEditControl TimeRule="{Binding ClassPlanTimeRule, Mode=TwoWay}"/>
-                                        <Separator/>
-                                        <Button Classes="accent" Margin="0 2 0 0"
-                                                Command="{Binding CompleteCreateClassPlanCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                                                CommandParameter="{Binding $self}">
-                                            <ci:IconText Glyph="&#xE424;" Text="创建"/>
-                                        </Button>
-                                    </StackPanel>
-                                </Flyout>
-                            </Button.Flyout>
-                            <ci:IconText Glyph="&#xE00D;" Text="新课表"/>
-                        </Button>
+                        <ci:TutorialBarrier Grid.Row="1" ExcludedTags="classisland.sdg.header.creationPopup.open,classisland.sdg.header.creationPopup.complete">
+                            <Button HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                    x:Name="PART_ButtonCreateClassPlan"
+                                    IsVisible="{Binding !$parent[controls:ScheduleDataGrid].IsReadonly}">
+                                <Button.IsEnabled>
+                                    <Binding Path="!!$self.(controls:ScheduleDataGrid.TimeLayouts).List.Count"
+                                             x:CompileBindings="True" />
+                                </Button.IsEnabled>
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel Spacing="4"
+                                                    DataContext="{Binding ViewModel, RelativeSource={RelativeSource TemplatedParent}}">
+                                            <TextBlock Text="新建课表" FontWeight="Bold" />
+                                            <ci:Field Label="时间表">
+                                                <ComboBox
+                                                    SelectedValueBinding="{Binding Key}">
+                                                    <ComboBox.SelectedValue>
+                                                        <Binding
+                                                            Path="$parent[controls:ScheduleDataGrid].(controls:ScheduleDataGrid.SelectedNewTimeLayoutId)"
+                                                            x:CompileBindings="True" />
+                                                    </ComboBox.SelectedValue>
+                                                    <ComboBox.ItemsSource>
+                                                        <Binding
+                                                            Path="$self.(controls:ScheduleDataGrid.TimeLayouts).List"
+                                                            x:CompileBindings="True" />
+                                                    </ComboBox.ItemsSource>
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Value.Name}" />
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                            </ci:Field>
+                                            <ci:Field Label="名称">
+                                                <TextBox Text="{Binding ClassPlanName, Mode=TwoWay}"
+                                                         Watermark="{Binding SuggestedClassPlanName, Mode=OneWay}" />
+                                            </ci:Field>
+                                            <DockPanel Dock="Left">
+                                                <CheckBox Content="复制自" DockPanel.Dock="Left"
+                                                          IsChecked="{Binding CopyFromClassPlan}" />
+                                                <ComboBox HorizontalAlignment="Stretch"
+                                                          SelectedValue="{Binding CopyClassPlanSource}"
+                                                          SelectedValueBinding="{Binding Key}"
+                                                          IsVisible="{Binding CopyFromClassPlan}">
+                                                    <ComboBox.ItemsSource>
+                                                        <Binding
+                                                            Path="$self.(controls:ScheduleDataGrid.ClassPlans).List"
+                                                            x:CompileBindings="True" />
+                                                    </ComboBox.ItemsSource>
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Value.Name}" />
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                            </DockPanel>
+                                            <controls1:TimeRuleEditControl
+                                                TimeRule="{Binding ClassPlanTimeRule, Mode=TwoWay}" />
+                                            <Separator />
+                                            <Button Classes="accent" Margin="0 2 0 0"
+                                                    Command="{Binding CompleteCreateClassPlanCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                                                    CommandParameter="{Binding $self}">
+                                                <ci:IconText Glyph="&#xE424;" Text="创建" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <ci:IconText Glyph="&#xE00D;" Text="新课表" />
+                            </Button></ci:TutorialBarrier>
                         
                     </Grid>
                 </ControlTemplate>

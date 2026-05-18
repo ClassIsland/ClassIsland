@@ -395,6 +395,33 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Hongbro886",
+      "name": "Hongbro886",
+      "avatar_url": "https://avatars.githubusercontent.com/u/185684679?v=4",
+      "profile": "https://github.com/Hongbro886",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "xfy2412",
+      "name": "xfy2412",
+      "avatar_url": "https://avatars.githubusercontent.com/u/194925706?v=4",
+      "profile": "https://xfyweb.cn/home",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Chineseshuaji",
+      "name": "SyntaxError",
+      "avatar_url": "https://avatars.githubusercontent.com/u/173371838?v=4",
+      "profile": "https://github.com/Chineseshuaji",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

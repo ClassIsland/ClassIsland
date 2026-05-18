@@ -43,9 +43,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -80,9 +82,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -123,9 +127,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -161,10 +167,12 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 5,
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -200,6 +208,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -228,6 +237,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -255,6 +265,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -318,10 +329,12 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -356,6 +369,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -383,6 +397,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -410,9 +425,11 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -452,6 +469,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -479,6 +497,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -507,6 +526,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -515,6 +535,8 @@
               "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|SettingsExpander[Header=\u5B66\u671F\u5F00\u59CB\u65F6\u95F4] :is(TextBox)",
+              "HighlightTarget": true,
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u8C03\u6574\u597D\u4E86",
               "RightButtonActions": [
@@ -534,6 +556,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -562,6 +585,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -591,6 +615,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -620,6 +645,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 4,
               "Xmlns": {}
             },
@@ -649,6 +675,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -677,9 +704,11 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.enter",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -719,6 +748,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -747,6 +777,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -776,6 +807,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.exit",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -803,9 +835,11 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.profileSettingsWindow.open",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -845,6 +879,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -872,6 +907,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -900,6 +936,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 7,
               "Xmlns": {}
             },
@@ -929,10 +966,12 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 8,
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         }
       ],
@@ -984,6 +1023,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1017,6 +1057,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1050,6 +1091,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1083,6 +1125,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1116,6 +1159,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1129,8 +1173,8 @@
               "RightButtonText": "\u597D",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
-                  "StringParameter": ""
+                  "Kind": 5,
+                  "StringParameter": "setup-timeLayout"
                 }
               ],
               "LeftButtonText": "\u6682\u65F6\u4E0D\u7528",
@@ -1144,9 +1188,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -1186,6 +1232,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1214,13 +1261,14 @@
               "InitializeActions": [],
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
-              "Tag": "",
+              "Tag": "classisland.profileSettingsWindow.timeLayouts.add",
+              "Script": "",
               "PlacementMode": 7,
               "Xmlns": {}
             },
             {
               "Title": "",
-              "Content": "\u60A8\u53EF\u4EE5\u5728\u8FD9\u4E2A\u9875\u9762\u5C06\u65F6\u95F4\u8868\u547D\u540D\u4E3A\u60A8\u5BB9\u6613\u8BB0\u4F4F\u7684\u540D\u79F0\u3002\u5728\u7F16\u8F91\u5B8C\u65F6\u95F4\u8868\u7684\u57FA\u672C\u4FE1\u606F\u540E\uFF0C\u70B9\u51FB\u7A7A\u767D\u5904\u5173\u95ED\u62BD\u5C49\u5373\u53EF\u3002",
+              "Content": "\u60A8\u53EF\u4EE5\u5728\u8FD9\u4E2A\u9875\u9762\u5C06\u65F6\u95F4\u8868\u547D\u540D\u4E3A\u60A8\u5BB9\u6613\u8BB0\u4F4F\u7684\u540D\u79F0\u3002\r\n\u5728\u7F16\u8F91\u5B8C\u65F6\u95F4\u8868\u7684\u57FA\u672C\u4FE1\u606F\u540E\uFF0C\u70B9\u51FB\u7A7A\u767D\u5904\u5173\u95ED\u62BD\u5C49\u5373\u53EF\u3002",
               "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
@@ -1243,6 +1291,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.profileSettingsWindow.drawer.close",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1270,6 +1319,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1297,6 +1347,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1325,7 +1376,8 @@
               "InitializeActions": [],
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
-              "Tag": "",
+              "Tag": "classisland.profileSettingsWindow.timeLayouts.timePoints.add",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -1355,6 +1407,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 4,
               "Xmlns": {}
             },
@@ -1384,6 +1437,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 4,
               "Xmlns": {}
             },
@@ -1413,6 +1467,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 3,
               "Xmlns": {}
             },
@@ -1441,6 +1496,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1469,7 +1525,8 @@
               "InitializeActions": [],
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
-              "Tag": "",
+              "Tag": "classisland.profileSettingsWindow.timeLayouts.timePoints.add",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -1499,6 +1556,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1526,6 +1584,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1554,6 +1613,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 7,
               "Xmlns": {}
             },
@@ -1583,10 +1643,12 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 7,
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -1651,6 +1713,8 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.sdg.profileSettingsWindow.classPlans.isCurrentWeekFull\u0022] == true) then\r\n\t\tservice.JumpToParagraph(\u0022classisland.getStarted.profileEditing/reject.multiweek-classplans.full\u0022)\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -1678,6 +1742,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -1707,6 +1772,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.creationPopup.open",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -1735,6 +1801,8 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.creationPopup.complete",
+              "Script": "",
+              "PlacementMode": 7,
               "Xmlns": {}
             },
             {
@@ -1763,6 +1831,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 1,
               "Xmlns": {}
             },
@@ -1792,6 +1861,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 1,
               "Xmlns": {}
             },
@@ -1821,6 +1891,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -1851,6 +1922,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.cell.edit.open",
+              "Script": "",
               "PlacementMode": 7,
               "Xmlns": {}
             },
@@ -1879,6 +1951,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.cell.edit.complete_edited",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -1908,6 +1981,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 3,
               "Xmlns": {}
             },
@@ -1936,6 +2010,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 3,
               "Xmlns": {}
             },
@@ -1964,9 +2039,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -2013,24 +2090,21 @@
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonText": "\u597D",
               "RightButtonActions": [
                 {
                   "Kind": 1,
                   "StringParameter": ""
                 }
               ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
+              "LeftButtonText": "\u4E0D\u7528\u4E86",
+              "LeftButtonActions": [],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
+              "Script": "function onLeftButtonClicked()\r\n\tservice.SkipTutorial()\r\n\treturn true\r\nend\r\n",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -2058,6 +2132,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2085,6 +2160,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2112,6 +2188,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2141,6 +2218,8 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.settings.open",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.sdg.profileSettingsWindow.classPlans.isEmpty\u0022] == true) then\r\n\t\tservice.JumpToParagraph(\u0022classisland.getStarted.profileEditing/reject.multiweek-classplans.empty\u0022)\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "PlacementMode": 7,
               "Xmlns": {}
             },
@@ -2170,6 +2249,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 6,
               "Xmlns": {}
             },
@@ -2199,6 +2279,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 3,
               "Xmlns": {}
             },
@@ -2228,6 +2309,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 3,
               "Xmlns": {}
             },
@@ -2256,6 +2338,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.profileSettingsWindow.drawer.close",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2283,6 +2366,8 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.sdg.profileSettingsWindow.classPlans.isCurrentWeekFull\u0022] == true) then\r\n\t\tservice.JumpToParagraph(\u0022classisland.getStarted.profileEditing/reject.multiweek-classplans.full\u0022)\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -2312,6 +2397,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.creationPopup.open",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -2340,6 +2426,8 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.creationPopup.complete",
+              "Script": "",
+              "PlacementMode": 7,
               "Xmlns": {}
             },
             {
@@ -2367,6 +2455,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2396,6 +2485,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.weekSwitcher.next",
+              "Script": "",
               "PlacementMode": 7,
               "Xmlns": {}
             },
@@ -2424,6 +2514,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2453,6 +2544,8 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.creationPopup.open",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.sdg.profileSettingsWindow.classPlans.isCurrentWeekFull\u0022] == true) then\r\n\t\tservice.JumpToParagraph(\u0022classisland.getStarted.profileEditing/reject.multiweek-classplans.full\u0022)\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -2481,6 +2574,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2508,6 +2602,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2535,6 +2630,8 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.creationPopup.complete",
+              "Script": "",
+              "PlacementMode": 7,
               "Xmlns": {}
             },
             {
@@ -2562,6 +2659,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2574,7 +2672,7 @@
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
+                  "Kind": 6,
                   "StringParameter": ""
                 }
               ],
@@ -2589,9 +2687,89 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
+          "Xmlns": {}
+        },
+        {
+          "Id": "reject.multiweek-classplans.full",
+          "Title": "\u62D2\u7EDD\u5206\u652F/\u591A\u5468\u8F6E\u6362/\u6EE1",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.Views.ProfileSettingsWindow",
+          "InitializeActions": [],
+          "Content": [
+            {
+              "Title": "\u672C\u5468\u8BFE\u8868\u5DF2\u6EE1",
+              "Content": "\u770B\u8D77\u6765\u8FD9\u5468\u7684\u8BFE\u8868\u5DF2\u7ECF\u6392\u6EE1\u4E86\uFF0C\u5207\u6362\u5230\u5176\u5B83\u672A\u6EE1\u7684\u5468\u540E\uFF0C\u518D\u8BD5\u8BD5\u7EE7\u7EED\u6559\u7A0B\u5427\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 6,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Script": "",
+              "Xmlns": {}
+            }
+          ],
+          "IsBarrierEnabled": true,
+          "Xmlns": {}
+        },
+        {
+          "Id": "reject.multiweek-classplans.empty",
+          "Title": "\u62D2\u7EDD\u5206\u652F/\u591A\u5468\u8F6E\u6362/\u7A7A",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.Views.ProfileSettingsWindow",
+          "InitializeActions": [],
+          "Content": [
+            {
+              "Title": "\u672C\u5468\u65E0\u8BFE\u8868",
+              "Content": "\u770B\u8D77\u6765\u8FD9\u5468\u8FD8\u6CA1\u6709\u8BFE\u8868\u3002\u5148\u521B\u5EFA\u4E00\u4E2A\u8BFE\u8868\uFF0C\u6216\u8005\u8BF4\u5207\u6362\u5230\u6709\u8BFE\u8868\u7684\u90A3\u4E00\u5468\u518D\u7EE7\u7EED\u6559\u7A0B\u5427\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 6,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Script": "",
+              "Xmlns": {}
+            }
+          ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         }
       ],
@@ -2626,6 +2804,7 @@
               "IconExpression": "sticker(\u5E15\u59C6_\u55E8)",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -2645,6 +2824,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2673,6 +2853,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 1,
               "Xmlns": {}
             },
@@ -2702,6 +2883,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -2730,6 +2912,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2757,6 +2940,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2785,6 +2969,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2813,6 +2998,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2821,6 +3007,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u597D",
               "RightButtonActions": [
@@ -2850,9 +3037,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -2873,6 +3062,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -2892,6 +3082,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2921,6 +3112,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.componentsLib.open",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2948,6 +3140,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -2975,6 +3168,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 8,
               "Xmlns": {}
             },
@@ -3003,6 +3197,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3030,6 +3225,8 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.componentsLib.closed",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.mainWindow.editMode.mainDrawer.getState\u0022]() != 2) then\r\n\t\tservice.TryStartNextSentence()\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -3060,6 +3257,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.componentsLib.open",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3087,6 +3285,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 8,
               "Xmlns": {}
             },
@@ -3115,9 +3314,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -3159,6 +3360,8 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.mainWindow.hasComponentWithSettings\u0022]() != true) then\r\n\t\tservice.JumpToParagraph(\u0022classisland.getStarted.componentsEditing/reject.noComponents\u0022)\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend\r\n",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -3170,7 +3373,7 @@
               "HighlightTarget": true,
               "ModalTarget": true,
               "PointToTarget": true,
-              "RightButtonText": "\u6211\u5DF2\u9009\u4E2D\u6B64\u7EC4\u4EF6",
+              "RightButtonText": "",
               "RightButtonActions": [
                 {
                   "Kind": 1,
@@ -3188,6 +3391,8 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.selection.changed",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.mainWindow.editMode.selectedComponent.hasSettings\u0022] == true) then\r\n\t\tservice.TryStartNextSentence()\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -3217,6 +3422,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.componentSettings.open",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3244,6 +3450,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3271,6 +3478,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3298,6 +3506,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 8,
               "Xmlns": {}
             },
@@ -3327,6 +3536,8 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.mainWindow.editMode.mainDrawer.getState\u0022]() == 0) then\r\n\t\tservice.TryStartNextSentence()\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -3354,9 +3565,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -3376,7 +3589,9 @@
               "Content": "\u8FD9\u662F\u4E00\u4E2A\u5BB9\u5668\u7EC4\u4EF6\uFF0C\u53EF\u4EE5\u5728\u5176\u4E2D\u5305\u542B\u5176\u5B83\u7EC4\u4EF6\uFF0C\u5B9E\u73B0\u8F6E\u64AD\u3001\u5206\u7EC4\u7B49\u6548\u679C\u3002\u63A5\u4E0B\u6765\u6211\u4EEC\u5C06\u4E86\u89E3\u5982\u4F55\u7F16\u8F91\u5BB9\u5668\u7EC4\u4EF6\u4E2D\u7684\u7EC4\u4EF6\u3002",
               "IconExpression": "",
               "HeroImage": "",
-              "TargetSelector": "",
+              "TargetSelector": "ci|ComponentPresenter[IsOnMainWindow=True]:container",
+              "HighlightTarget": true,
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -3396,6 +3611,8 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.mainWindow.hasContainerComponent\u0022]() != true) then\r\n\t\tservice.JumpToParagraph(\u0022classisland.getStarted.componentsEditing/reject.noComponents\u0022)\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend\r\n",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -3407,7 +3624,7 @@
               "HighlightTarget": true,
               "ModalTarget": true,
               "PointToTarget": true,
-              "RightButtonText": "\u6211\u5DF2\u9009\u4E2D\u6B64\u7EC4\u4EF6",
+              "RightButtonText": "",
               "RightButtonActions": [
                 {
                   "Kind": 1,
@@ -3425,6 +3642,8 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.selection.changed",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.mainWindow.editMode.selectedComponent.isContainer\u0022] == true) then\r\n\t\tservice.TryStartNextSentence()\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -3436,7 +3655,7 @@
               "HighlightTarget": true,
               "ModalTarget": true,
               "PointToTarget": false,
-              "RightButtonText": "\u6211\u5DF2\u5C55\u5F00\u5BB9\u5668\u7EC4\u4EF6",
+              "RightButtonText": "",
               "RightButtonActions": [
                 {
                   "Kind": 1,
@@ -3454,6 +3673,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.childrenComponent.open",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3482,6 +3702,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3509,6 +3730,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": false,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 8,
               "Xmlns": {}
             },
@@ -3537,9 +3759,11 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         },
         {
@@ -3579,6 +3803,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3608,6 +3833,7 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.mainWindowLine.create",
+              "Script": "",
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -3636,6 +3862,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3664,6 +3891,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 4,
               "Xmlns": {}
             },
@@ -3692,6 +3920,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             },
             {
@@ -3720,6 +3949,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 8,
               "Xmlns": {}
             },
@@ -3749,6 +3979,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 8,
               "Xmlns": {}
             },
@@ -3778,6 +4009,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 8,
               "Xmlns": {}
             },
@@ -3807,6 +4039,7 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "PlacementMode": 8,
               "Xmlns": {}
             },
@@ -3820,7 +4053,7 @@
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
+                  "Kind": 6,
                   "StringParameter": ""
                 }
               ],
@@ -3835,9 +4068,50 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
+              "Script": "",
               "Xmlns": {}
             }
           ],
+          "IsBarrierEnabled": true,
+          "Xmlns": {}
+        },
+        {
+          "Id": "reject.noComponents",
+          "Title": "\u62D2\u7EDD\u5206\u652F/\u65E0\u7B26\u5408\u6761\u4EF6\u7684\u7EC4\u4EF6",
+          "Description": "",
+          "TopLevelClassName": "ClassIsland.MainWindow",
+          "InitializeActions": [],
+          "Content": [
+            {
+              "Title": "\u627E\u4E0D\u5230\u7B26\u5408\u6761\u4EF6\u7684\u7EC4\u4EF6",
+              "Content": "\u5F53\u524D\u4E3B\u754C\u9762\u6CA1\u6709\u7B26\u5408\u6761\u4EF6\u7684\u7EC4\u4EF6\uFF0C\u6682\u65F6\u65E0\u6CD5\u8FDB\u884C\u6B64\u6559\u5B66\u3002",
+              "IconExpression": "",
+              "HeroImage": "",
+              "TargetSelector": "",
+              "PointToTarget": true,
+              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonActions": [
+                {
+                  "Kind": 6,
+                  "StringParameter": ""
+                }
+              ],
+              "LeftButtonText": "",
+              "LeftButtonActions": [
+                {
+                  "Kind": 2,
+                  "StringParameter": ""
+                }
+              ],
+              "InitializeActions": [],
+              "WaitForNextCommand": false,
+              "UseLightDismiss": true,
+              "Tag": "",
+              "Script": "",
+              "Xmlns": {}
+            }
+          ],
+          "IsBarrierEnabled": true,
           "Xmlns": {}
         }
       ],

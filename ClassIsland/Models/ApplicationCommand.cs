@@ -56,4 +56,6 @@ public class ApplicationCommand
     public bool Refreshing { get; set; } = false;
 
     public bool Onboarding { get; set; } = false;
+
+    public bool Autostartup { get; set; } = false;
 }

@@ -14,6 +14,36 @@ public class TimeLayout : AttachableSettingsObject
     private string _name = "新时间表";
     private bool _isActivated = false;
     private bool _isActivatedManually = false;
+    private bool _isOverlay = false;
+    private Guid? _overlaySourceId;
+
+    /// <summary>
+    /// 是否是临时层时间表
+    /// </summary>
+    public bool IsOverlay
+    {
+        get => _isOverlay;
+        set
+        {
+            if (value == _isOverlay) return;
+            _isOverlay = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 临时层时间表对应的源时间表ID
+    /// </summary>
+    public Guid? OverlaySourceId
+    {
+        get => _overlaySourceId;
+        set
+        {
+            if (value == _overlaySourceId) return;
+            _overlaySourceId = value;
+            OnPropertyChanged();
+        }
+    }
 
     /// <summary>
     /// 初始化对象

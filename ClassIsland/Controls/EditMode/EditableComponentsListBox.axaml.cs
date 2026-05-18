@@ -58,6 +58,17 @@ public partial class EditableComponentsListBox : ListBox
         remove => RemoveHandler(RequestAddComponentEvent, value);
     }
 
+    public static readonly RoutedEvent<EditableComponentsListBoxEventArgs>
+        ComponentDeletedEvent =
+            RoutedEvent.Register<EditableComponentsListBox, EditableComponentsListBoxEventArgs>(nameof(ComponentDeleted), RoutingStrategies.Bubble);
+
+    public event EventHandler<EditableComponentsListBoxEventArgs> ComponentDeleted
+    {
+        add => AddHandler(ComponentDeletedEvent, value);
+        remove => RemoveHandler(ComponentDeletedEvent, value);
+    }
+    
+
     public static readonly AttachedProperty<IEnumerable?> ItemsSourceInternalProperty =
         AvaloniaProperty.RegisterAttached<EditableComponentsListBox, Control, IEnumerable?>("ItemsSourceInternal", inherits: true);
 
@@ -113,6 +124,13 @@ public partial class EditableComponentsListBox : ListBox
         }
 
         components.Remove(componentSettings);
+        RaiseEvent(new EditableComponentsListBoxEventArgs(ComponentDeletedEvent)
+        {
+            Settings = componentSettings,
+            ComponentStack = ContainerComponentStack,
+            ComponentsList = components,
+            ItemPosition = new Point(0, 0)
+        });
     }
     
     [RelayCommand]
