@@ -217,7 +217,7 @@
                 
                 <Setter Property="Template">
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border Margin="-20" Padding="20">
+                        <Border Margin="-20 -60" Padding="20 60">
                             <Interaction.Behaviors>
                                 <behaviors:TimeLineListItemBehavior ListBoxItem="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                                                     ParentListBox="{Binding $parent[controls:TimeLineListControl]}">
@@ -258,7 +258,7 @@
                                             <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.LineTimePointAdornerKey}">
                                                 <Grid x:DataType="controls:TimeLineListControl">
                                                     <controls:TimeLineListItemSeparatorAdornerControl
-                                                        Margin="20"
+                                                        Margin="20 60"
                                                         VerticalAlignment="Stretch"
                                                         HorizontalAlignment="Stretch"
                                                         IsReadonly="{Binding IsReadonly}"

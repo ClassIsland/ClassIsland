@@ -300,5 +300,10 @@
         <Setter Property="MaxHeight" Value="60"/>
     </Style>
     
+    <Style Selector=":is(Button).foreground-accent /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+        <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+    
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

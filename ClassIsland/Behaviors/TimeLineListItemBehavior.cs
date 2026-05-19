@@ -106,6 +106,7 @@ public class TimeLineListItemBehavior : Behavior<Control>
         }
         if (_adorner != null)
         {
+            _adorner.RemoveHandler(TimeLineListItemExpandingAdornerControl.RequestInsertTimePointEvent, OnRequestInsertTimePoint);
             _layer?.Children.Remove(_adorner);
             AdornerLayer.SetAdornedElement(_adorner, null);
             _adorner = null;
@@ -135,8 +136,20 @@ public class TimeLineListItemBehavior : Behavior<Control>
             ClipToBounds = false,
             DataContext = ParentListBox
         };
+        _adorner.AddHandler(TimeLineListItemExpandingAdornerControl.RequestInsertTimePointEvent, OnRequestInsertTimePoint);
         AdornerLayer.SetIsClipEnabled(_adorner, true);
         layer?.Children.Add(_adorner);
         AdornerLayer.SetAdornedElement(_adorner, AssociatedObject);
+    }
+
+    private void OnRequestInsertTimePoint(object? sender, TimeLineInsertTimePointEventArgs e)
+    {
+        ParentListBox.RaiseEvent(new TimeLineInsertTimePointEventArgs(TimeLineListControl.RequestInsertTimePointEvent)
+        {
+            Kind = e.Kind,
+            Location = e.Location,
+            TimePoint = e.TimePoint
+        });
+        e.Handled = true;
     }
 }
