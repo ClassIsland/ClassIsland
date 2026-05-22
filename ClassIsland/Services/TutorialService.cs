@@ -320,6 +320,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
             Subtitle = sentence.Content,
             Target = sentence.PointToTarget ? targetControl : null,
             PreferredPlacement = sentence.PlacementMode,
+            Classes = { "sr-accent" }
         };
         RenderOptions.SetBitmapInterpolationMode(teachingTip, BitmapInterpolationMode.HighQuality);
         if (!string.IsNullOrEmpty(sentence.LeftButtonText) && !sentence.UseLightDismiss)
@@ -507,15 +508,16 @@ public partial class TutorialService : ObservableObject, ITutorialService
     [RelayCommand]
     public void PostSentenceWorks(int type)
     {
+        if (!TryRunSentenceHook(type == 0 ? "onLeftButtonClicked" : "onRightButtonClicked"))
+        {
+            return;
+        }
+        
         if (CurrentSentence is null)
         {
             return;
         }
 
-        if (!TryRunSentenceHook(type == 0 ? "onLeftButtonClicked" : "onRightButtonClicked"))
-        {
-            return;
-        }
         InvokeActions(type == 0 ? CurrentSentence.LeftButtonActions : CurrentSentence.RightButtonActions);
     }
 

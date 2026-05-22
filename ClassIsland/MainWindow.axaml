@@ -347,8 +347,9 @@
                                                                        Opacity="0.75"
                                                                        StrokeDashArray="1, 1.5"
                                                                        IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
-                                                            <ci:TouchDragThumb Grid.Column="0"
-                                                                               IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
+                                                            <ci:TutorialBarrier Grid.Column="0">
+                                                                <ci:TouchDragThumb IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
+                                                            </ci:TutorialBarrier>
                                                             <controls:MainWindowLine Grid.Column="1"
                                                                 WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
                                                                 LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
@@ -382,48 +383,49 @@
                                                                     </editMode:EditableComponentsListBox.ItemTemplate>
                                                                 </editMode:EditableComponentsListBox>
                                                             </controls:MainWindowLine>
-                                                            <StackPanel Grid.Column="2" Orientation="Horizontal"
-                                                                        Classes="items-valign-center"
-                                                                        IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
-                                                                        Spacing="2"
-                                                                        TextElement.FontSize="14">
-                                                                <Button
-                                                                    Command="{Binding $parent[local:MainWindow].OpenMainWindowLineSettingsCommand}"
-                                                                    CommandParameter="{Binding}"
-                                                                    VerticalAlignment="Center"
-                                                                    x:Name="ButtonMainWindowLineSettings"
-                                                                    ToolTip.Tip="设置…"
-                                                                    Background="Transparent"
-                                                                    BorderThickness="0"
-                                                                    Content="{ci:FluentIcon &#xEF27;}" />
-                                                                <ToggleButton
-                                                                    IsChecked="{Binding IsMainLine}"
-                                                                    Click="ToggleButtonIsMainLine_OnIsCheckedChanged"
-                                                                    VerticalAlignment="Center"
-                                                                    x:Name="ButtonMainWindowLineIsMainLine"
-                                                                    ToolTip.Tip="此行是主要行"
-                                                                    Background="Transparent"
-                                                                    BorderThickness="0"
-                                                                    Content="{ci:FluentIcon &#xE994;}" />
-                                                                <ToggleButton
-                                                                    IsChecked="{Binding IsNotificationEnabled}"
-                                                                    VerticalAlignment="Center"
-                                                                    x:Name="ButtonMainWindowLineIsNotificationEnabled"
-                                                                    ToolTip.Tip="此行可以显示提醒"
-                                                                    Click="ToggleButtonIsNotificationEnabled_OnIsCheckedChanged"
-                                                                    Background="Transparent"
-                                                                    BorderThickness="0"
-                                                                    Content="{ci:FluentIcon &#xE02B;}" />
-                                                                <Button
-                                                                    Foreground="IndianRed"
-                                                                    VerticalAlignment="Center"
-                                                                    x:Name="ButtonMainWindowLineDelete"
-                                                                    ToolTip.Tip="删除"
-                                                                    Command="{Binding $parent[local:MainWindow].RemoveMainWindowLineCommand}"
-                                                                    CommandParameter="{Binding}"
-                                                                    Theme="{StaticResource TransparentButton}"
-                                                                    Content="{ci:FluentIcon &#xE61D;}" />
-                                                            </StackPanel>
+                                                            <ci:TutorialBarrier Grid.Column="2" IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}">
+                                                                <StackPanel Orientation="Horizontal"
+                                                                            Classes="items-valign-center"
+                                                                            Spacing="2"
+                                                                            TextElement.FontSize="14">
+                                                                    <Button
+                                                                        Command="{Binding $parent[local:MainWindow].OpenMainWindowLineSettingsCommand}"
+                                                                        CommandParameter="{Binding}"
+                                                                        VerticalAlignment="Center"
+                                                                        x:Name="ButtonMainWindowLineSettings"
+                                                                        ToolTip.Tip="设置…"
+                                                                        Background="Transparent"
+                                                                        BorderThickness="0"
+                                                                        Content="{ci:FluentIcon &#xEF27;}" />
+                                                                    <ToggleButton
+                                                                        IsChecked="{Binding IsMainLine}"
+                                                                        Click="ToggleButtonIsMainLine_OnIsCheckedChanged"
+                                                                        VerticalAlignment="Center"
+                                                                        x:Name="ButtonMainWindowLineIsMainLine"
+                                                                        ToolTip.Tip="此行是主要行"
+                                                                        Background="Transparent"
+                                                                        BorderThickness="0"
+                                                                        Content="{ci:FluentIcon &#xE994;}" />
+                                                                    <ToggleButton
+                                                                        IsChecked="{Binding IsNotificationEnabled}"
+                                                                        VerticalAlignment="Center"
+                                                                        x:Name="ButtonMainWindowLineIsNotificationEnabled"
+                                                                        ToolTip.Tip="此行可以显示提醒"
+                                                                        Click="ToggleButtonIsNotificationEnabled_OnIsCheckedChanged"
+                                                                        Background="Transparent"
+                                                                        BorderThickness="0"
+                                                                        Content="{ci:FluentIcon &#xE02B;}" />
+                                                                    <Button
+                                                                        Foreground="IndianRed"
+                                                                        VerticalAlignment="Center"
+                                                                        x:Name="ButtonMainWindowLineDelete"
+                                                                        ToolTip.Tip="删除"
+                                                                        Command="{Binding $parent[local:MainWindow].RemoveMainWindowLineCommand}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Theme="{StaticResource TransparentButton}"
+                                                                        Content="{ci:FluentIcon &#xE61D;}" />
+                                                                </StackPanel>
+                                                            </ci:TutorialBarrier>
                                                         </Grid>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -479,11 +481,13 @@
                                                                         Classes="items-valign-center"
                                                                         Orientation="Horizontal" Spacing="4"
                                                                         Margin="4 0 0 0">
-                                                                <Button Content="{ci:FluentIcon &#xE671;}"
-                                                                        ToolTip.Tip="关闭"
-                                                                        Theme="{StaticResource TransparentButton}"
-                                                                        Command="{Binding $parent[local:MainWindow].CloseContainerComponentCommand}"
-                                                                        CommandParameter="{Binding}" />
+                                                                <ci:TutorialBarrier>
+                                                                    <Button Content="{ci:FluentIcon &#xE671;}"
+                                                                            ToolTip.Tip="关闭"
+                                                                            Theme="{StaticResource TransparentButton}"
+                                                                            Command="{Binding $parent[local:MainWindow].CloseContainerComponentCommand}"
+                                                                            CommandParameter="{Binding}" />
+                                                                </ci:TutorialBarrier>
                                                                 <controls1:IconSourceElement
                                                                     IconSource="{Binding Settings.AssociatedComponentInfo.IconSource}"
                                                                     VerticalAlignment="Center" Height="16" Width="16"
@@ -577,38 +581,41 @@
                 Padding="4"
                 BorderBrush="{DynamicResource CommandBarOverflowPresenterBorderBrush}"
                 BorderThickness="1">
-            <StackPanel Orientation="Horizontal" Spacing="6">
-                <ToggleButton IsChecked="{Binding !ViewModel.EditModeIsWindowMode}"
-                              Theme="{StaticResource TransparentToggleButton}">
-                    <ci:IconText Glyph="&#xE8D1;" Text="全屏"/>
-                </ToggleButton>
-                <Button Theme="{StaticResource TransparentButton}" 
-                        x:Name="ButtonResetView"
-                        Command="{Binding #ZoomBorder.ResetMatrix}">
-                    <ci:IconText Glyph="&#xE12F;" Text="重置视图"/>
-                </Button>
-                <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" StrokeThickness="1"
-                      HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" >
-                </Line>
-                <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}">
-                    <ci:IconText Glyph="&#xE51E;" Text="外观"/>
-                </Button>
-                <Button Click="ButtonOpenComponentsLib_OnClick" Theme="{StaticResource TransparentButton}"
-                        x:Name="ButtonOpenComponentsLib">
-                    <ci:IconText Glyph="&#xE071;" Text="添加组件"/>
-                </Button>
-                <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}">
-                    <ci:IconText Glyph="&#xE699;" Text="{Binding ViewModel.Settings.CurrentComponentConfig}"
-                                 MaxWidth="150"/>
-                </Button>
-                <Button Click="ButtonShowTutorial_OnClick" Theme="{StaticResource TransparentButton}"
-                        ToolTip.Tip="使用说明"
-                        Content="{ci:FluentIcon &#xEE31;}"/>
-                <Button Click="ButtonExitEditMode_OnClick" Classes="accent"
-                        x:Name="ButtonExitEditMode">
-                    <ci:IconText Glyph="&#xE424;" Text="完成"/>
-                </Button>
-            </StackPanel>
+            <ci:TutorialBarrier ExcludedTags="classisland.mainwindow.editMode.componentsLib.open,classisland.mainwindow.editMode.exit">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <ToggleButton IsChecked="{Binding !ViewModel.EditModeIsWindowMode}"
+                                  Theme="{StaticResource TransparentToggleButton}">
+                        <ci:IconText Glyph="&#xE8D1;" Text="全屏" />
+                    </ToggleButton>
+                    <Button Theme="{StaticResource TransparentButton}"
+                            x:Name="ButtonResetView"
+                            Command="{Binding #ZoomBorder.ResetMatrix}">
+                        <ci:IconText Glyph="&#xE12F;" Text="重置视图" />
+                    </Button>
+                    <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}"
+                          StrokeThickness="1"
+                          HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25">
+                    </Line>
+                    <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE51E;" Text="外观" />
+                    </Button>
+                    <Button Click="ButtonOpenComponentsLib_OnClick" Theme="{StaticResource TransparentButton}"
+                            x:Name="ButtonOpenComponentsLib">
+                        <ci:IconText Glyph="&#xE071;" Text="添加组件" />
+                    </Button>
+                    <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE699;" Text="{Binding ViewModel.Settings.CurrentComponentConfig}"
+                                     MaxWidth="150" />
+                    </Button>
+                    <Button Click="ButtonShowTutorial_OnClick" Theme="{StaticResource TransparentButton}"
+                            ToolTip.Tip="使用说明"
+                            Content="{ci:FluentIcon &#xEE31;}" />
+                    <Button Click="ButtonExitEditMode_OnClick" Classes="accent"
+                            x:Name="ButtonExitEditMode">
+                        <ci:IconText Glyph="&#xE424;" Text="完成" />
+                    </Button>
+                </StackPanel>
+            </ci:TutorialBarrier>
         </Border>
         
         <ContentPresenter x:Name="EditModeViewCp" />

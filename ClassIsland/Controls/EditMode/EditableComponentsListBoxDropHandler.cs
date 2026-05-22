@@ -8,6 +8,7 @@ using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactions.DragAndDrop;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Platforms.Abstraction;
@@ -56,6 +57,10 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
             return false;
         if (data.ComponentSettings is {} settings1 && listBox.ContainerComponentStack.Contains(settings1))
         {
+            if (execute)
+            {
+                listBox.ShowWarningToast("容器组件不能包含自己。");
+            }
             return false;
         }
         
@@ -70,6 +75,7 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
                 {
                     var clone = ConfigureFileHelper.CopyObject(settings);
                     InsertItem(targetList, clone, insertIndex);
+                    listBox.SelectedItem = clone;
                 }
                 return true;
             }
@@ -94,6 +100,7 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
                     {
                         MoveItem(sourceItems, targetList, sourceIndex, insertIndex);
                     }
+                    listBox.SelectedItem = settings;
                 }
                 return true;
             }
@@ -125,11 +132,16 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
             ComponentsService.LoadComponentSettings(componentSettings,
                 componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!);
             InsertItem(targetList, componentSettings, insertIndex);
-            if (data.IsComponentContainer)
+            if (data.SettingsType != null)
+            {
+                IAppHost.GetService<ITutorialService>().BeginNotCompletedTutorials(
+                    "classisland.getStarted.componentsEditing/componentSettings");
+            } else if (data.IsComponentContainer)
             {
                 IAppHost.GetService<ITutorialService>().BeginNotCompletedTutorials(
                     "classisland.getStarted.componentsEditing/containerComponent");
             }
+            listBox.SelectedItem = componentSettings;
         }
         return true;
 

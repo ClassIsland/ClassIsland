@@ -274,7 +274,7 @@
         
         <Style Selector="^[IsNotificationEnabled=False]">
             <Setter Property="Template" Value="{StaticResource MainWindowLineMinControlTemplate}"/>
-            <Setter Property="IsVisible" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InvertBooleanConverter}}"/>
+            <!-- <Setter Property="IsVisible" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InvertBooleanConverter}}"/> -->
         </Style>
        
         <Style Selector="^[IsNotificationEnabled=True][(ci|MainWindowStylesAssist.MainWindowInEditMode)=False]">

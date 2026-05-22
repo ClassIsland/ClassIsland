@@ -535,6 +535,8 @@
               "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "fa|SettingsExpander[Header=\u5B66\u671F\u5F00\u59CB\u65F6\u95F4] :is(TextBox)",
+              "HighlightTarget": true,
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u8C03\u6574\u597D\u4E86",
               "RightButtonActions": [
@@ -1171,8 +1173,8 @@
               "RightButtonText": "\u597D",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
-                  "StringParameter": ""
+                  "Kind": 5,
+                  "StringParameter": "setup-timeLayout"
                 }
               ],
               "LeftButtonText": "\u6682\u65F6\u4E0D\u7528",
@@ -1266,7 +1268,7 @@
             },
             {
               "Title": "",
-              "Content": "\u60A8\u53EF\u4EE5\u5728\u8FD9\u4E2A\u9875\u9762\u5C06\u65F6\u95F4\u8868\u547D\u540D\u4E3A\u60A8\u5BB9\u6613\u8BB0\u4F4F\u7684\u540D\u79F0\u3002\u5728\u7F16\u8F91\u5B8C\u65F6\u95F4\u8868\u7684\u57FA\u672C\u4FE1\u606F\u540E\uFF0C\u70B9\u51FB\u7A7A\u767D\u5904\u5173\u95ED\u62BD\u5C49\u5373\u53EF\u3002",
+              "Content": "\u60A8\u53EF\u4EE5\u5728\u8FD9\u4E2A\u9875\u9762\u5C06\u65F6\u95F4\u8868\u547D\u540D\u4E3A\u60A8\u5BB9\u6613\u8BB0\u4F4F\u7684\u540D\u79F0\u3002\r\n\u5728\u7F16\u8F91\u5B8C\u65F6\u95F4\u8868\u7684\u57FA\u672C\u4FE1\u606F\u540E\uFF0C\u70B9\u51FB\u7A7A\u767D\u5904\u5173\u95ED\u62BD\u5C49\u5373\u53EF\u3002",
               "IconExpression": "sticker(\u5E15\u59C6_\u6CE8\u610F)",
               "HeroImage": "",
               "TargetSelector": "",
@@ -1800,6 +1802,7 @@
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.creationPopup.complete",
               "Script": "",
+              "PlacementMode": 7,
               "Xmlns": {}
             },
             {
@@ -2087,25 +2090,21 @@
               "HeroImage": "",
               "TargetSelector": "",
               "PointToTarget": true,
-              "RightButtonText": "\u4E0B\u4E00\u6761",
+              "RightButtonText": "\u597D",
               "RightButtonActions": [
                 {
                   "Kind": 1,
                   "StringParameter": ""
                 }
               ],
-              "LeftButtonText": "",
-              "LeftButtonActions": [
-                {
-                  "Kind": 2,
-                  "StringParameter": ""
-                }
-              ],
+              "LeftButtonText": "\u4E0D\u7528\u4E86",
+              "LeftButtonActions": [],
               "InitializeActions": [],
               "WaitForNextCommand": false,
-              "UseLightDismiss": true,
+              "UseLightDismiss": false,
               "Tag": "",
-              "Script": "",
+              "Script": "function onLeftButtonClicked()\r\n\tservice.SkipTutorial()\r\n\treturn true\r\nend\r\n",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -2428,6 +2427,7 @@
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.creationPopup.complete",
               "Script": "",
+              "PlacementMode": 7,
               "Xmlns": {}
             },
             {
@@ -2631,6 +2631,7 @@
               "UseLightDismiss": false,
               "Tag": "classisland.sdg.header.creationPopup.complete",
               "Script": "",
+              "PlacementMode": 7,
               "Xmlns": {}
             },
             {
@@ -2671,7 +2672,7 @@
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
+                  "Kind": 6,
                   "StringParameter": ""
                 }
               ],
@@ -2710,7 +2711,7 @@
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
+                  "Kind": 6,
                   "StringParameter": ""
                 }
               ],
@@ -2749,7 +2750,7 @@
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
+                  "Kind": 6,
                   "StringParameter": ""
                 }
               ],
@@ -2803,6 +2804,7 @@
               "IconExpression": "sticker(\u5E15\u59C6_\u55E8)",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -3005,6 +3007,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u597D",
               "RightButtonActions": [
@@ -3059,6 +3062,7 @@
               "IconExpression": "",
               "HeroImage": "",
               "TargetSelector": "",
+              "ModalTarget": true,
               "PointToTarget": true,
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
@@ -3221,7 +3225,8 @@
               "WaitForNextCommand": true,
               "UseLightDismiss": false,
               "Tag": "classisland.mainwindow.editMode.componentsLib.closed",
-              "Script": "",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.mainWindow.editMode.mainDrawer.getState\u0022]() != 2) then\r\n\t\tservice.TryStartNextSentence()\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "PlacementMode": 2,
               "Xmlns": {}
             },
@@ -3531,7 +3536,8 @@
               "WaitForNextCommand": false,
               "UseLightDismiss": true,
               "Tag": "",
-              "Script": "",
+              "Script": "function onInitializing()\r\n\tif (context[\u0022classisland.mainWindow.editMode.mainDrawer.getState\u0022]() == 0) then\r\n\t\tservice.TryStartNextSentence()\r\n\t\treturn false\r\n\tend\r\n\treturn true\r\nend",
+              "IsScriptEnabled": true,
               "Xmlns": {}
             },
             {
@@ -4047,7 +4053,7 @@
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
+                  "Kind": 6,
                   "StringParameter": ""
                 }
               ],
@@ -4086,7 +4092,7 @@
               "RightButtonText": "\u4E0B\u4E00\u6761",
               "RightButtonActions": [
                 {
-                  "Kind": 1,
+                  "Kind": 6,
                   "StringParameter": ""
                 }
               ],

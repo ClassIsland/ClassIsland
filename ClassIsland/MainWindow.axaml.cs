@@ -28,6 +28,7 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
@@ -248,7 +249,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
-        PointerStateAssist.SetIsTouchMode(this, true);  // DEBUG
+        this.UseMyWindowExt();
 
         if (Environment.OSVersion.Version <= WindowsVersions.Win10V1809)
         {
@@ -1333,6 +1334,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
         ViewModel.IsEditMode = false;
         ViewModel.EditModeTutorialPhase = -1;
+        MyWindow.GetState(this)?.AppToastAdorner?.Messages.Clear();
         ComponentsService.SaveConfig();
         TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.exit");
     }
@@ -1356,6 +1358,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         if (!ViewModel.ComponentsListBoxCache.Contains(listBox))
         {
             ViewModel.ComponentsListBoxCache.Add(listBox);
+            if (ViewModel.SelectedComponentSettings != null && settings.Children.Contains(ViewModel.SelectedComponentSettings))
+            {
+                listBox.SelectedItem = ViewModel.SelectedComponentSettings;
+            }
         }
         ViewModel.MainWindowLineListBoxCache[settings] = listBox;
         ViewModel.MainWindowLineListBoxCacheReversed[listBox] = settings;
@@ -1390,6 +1396,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         if (!ViewModel.ComponentsListBoxCache.Contains(listBox))
         {
             ViewModel.ComponentsListBoxCache.Add(listBox);
+            if (ViewModel.SelectedComponentSettings != null && settings.Settings.Children?.Contains(ViewModel.SelectedComponentSettings) == true)
+            {
+                listBox.SelectedItem = ViewModel.SelectedComponentSettings;
+            }
         }
         ViewModel.ContainerComponentListBoxCache[settings] = listBox;
         ViewModel.ContainerComponentListBoxCacheReversed[listBox] = settings;
