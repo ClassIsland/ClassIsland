@@ -9,6 +9,10 @@ namespace ClassIsland.Core.Models.UI;
 public class ToastMessage : ObservableRecipient
 {
     private bool _isOpen = true;
+    private string _message = "";
+    private string _title = "";
+    private InfoBarSeverity _severity = InfoBarSeverity.Informational;
+    private object? _actionContent;
 
     /// <summary>
     /// 初始化一个 <see cref="ToastMessage"/> 实例。
@@ -31,29 +35,45 @@ public class ToastMessage : ObservableRecipient
     /// </summary>
     public ToastMessage(string title, string message)
     {
-        Message = message;
-        Title = title;
+        _message = message;
+        _title = title;
     }
 
     /// <summary>
     /// 消息内容
     /// </summary>
-    public string Message { get; init; } = "";
-    
+    public string Message
+    {
+        get => _message;
+        set => SetProperty(ref _message, value);
+    }
+
     /// <summary>
     /// 消息标题
     /// </summary>
-    public string Title { get; init; } = "";
-    
+    public string Title
+    {
+        get => _title;
+        set => SetProperty(ref _title, value);
+    }
+
     /// <summary>
     /// 消息重要程度
     /// </summary>
-    public InfoBarSeverity Severity { get; init; } = InfoBarSeverity.Informational;
-    
+    public InfoBarSeverity Severity
+    {
+        get => _severity;
+        set => SetProperty(ref _severity, value);
+    }
+
     /// <summary>
     /// 操作按钮内容
     /// </summary>
-    public object? ActionContent { get; init; }
+    public object? ActionContent
+    {
+        get => _actionContent;
+        set => SetProperty(ref _actionContent, value);
+    }
     
     /// <summary>
     /// 消息持续时间。只有在<see cref="AutoClose"/>属性为 true 时，这个属性才会生效。

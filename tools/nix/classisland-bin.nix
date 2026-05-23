@@ -18,16 +18,16 @@
 }:
 stdenv.mkDerivation rec {
   pname = "classisland-bin";
-  version = "2.0.2.0";
+  version = "2.0.3.2";
   src =
     {
       x86_64-linux = fetchurl {
         url = "https://github.com/ClassIsland/ClassIsland/releases/download/${version}/ClassIsland_app_linux_x64_selfContained_deb.deb";
-        hash = "sha256-HR47u6ESQJaepeq5YScPLhnGnX7VMEtjEql92Ew6XTc=";
+        hash = "sha256-oq3Kf4UXjpT7D7+2WOvaXwKbQHudF1UEVG+CngRjugw=";
       };
       aarch64-linux = fetchurl {
         url = "https://github.com/ClassIsland/ClassIsland/releases/download/${version}/ClassIsland_app_linux_arm64_selfContained_deb.deb";
-        hash = "sha256-Ao++dp+Z8cUOrnwwl7N9hxzXd2Wgy17gfgnXfGF3GK0=";
+        hash = "sha256-UWZ4rzRZgy3vIevRVMvtfF3VUKbNS0dcKLenK4RgQQI=";
       };
     }
     .${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
