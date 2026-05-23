@@ -801,8 +801,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void UpdateWindowFeatures()
     {
-        var isCaptureBlocked = ViewModel.Settings.IsScreenShotBlockingEnabled
-                               || ViewModel.Settings.IsScreenRecordingBlockingEnabled;
+        var isCaptureBlocked = ViewModel.Settings.IsWindowCaptureBlockingEnabled;
         var shouldUseToolWindow = ViewModel is
         {
             IsEditMode: false,
