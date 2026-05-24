@@ -130,6 +130,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private double _latestDpiX = 1.0;
     private double _latestDpiY = 1.0;
 
+    private const int WindowedEditModeScreenMargin = 60;
+
     private DispatcherTimer HighFreqTopmostRecheckTimer { get; } = new()
     {
         Interval = TimeSpan.FromMilliseconds(1)
@@ -515,13 +517,26 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         if (e.PropertyName == nameof(ViewModel.IsWindowMode))
         {
+            var shouldReattachTutorialAdorners = TutorialService.IsTutorialRunning && TutorialService.AttachedToplevel == this;
+            if (shouldReattachTutorialAdorners)
+            {
+                TutorialService.DetachCurrentAdornersForHostChange(this);
+            }
+
             PseudoClasses.Set(":windowed", ViewModel.IsWindowMode);
             UpdateTheme();
             if (ViewModel.IsEditMode && ViewModel.IsWindowMode)
             {
+                ApplyWindowedEditModeBounds();
                 // 编辑模式从全屏切到自由窗口时，窗口管理器可能把窗口压到后面。
                 // 延后一帧激活，确保窗口保持在前台可操作。
                 _ = Dispatcher.UIThread.InvokeAsync(Activate, DispatcherPriority.Background);
+            }
+
+            if (shouldReattachTutorialAdorners)
+            {
+                _ = Dispatcher.UIThread.InvokeAsync(() =>
+                    TutorialService.ReattachCurrentAdornersAfterHostChange(this), DispatcherPriority.Background);
             }
         }
 
@@ -943,6 +958,31 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             Position = newPos;
         }
+    }
+
+    private void ApplyWindowedEditModeBounds()
+    {
+        GetCurrentDpi(out var dpiX, out var dpiY);
+
+        var screen = GetSelectedScreenSafe() ?? Screens.ScreenFromWindow(this);
+        if (screen == null)
+        {
+            return;
+        }
+
+        var bounds = screen.WorkingArea;
+        var width = Math.Max(bounds.Width - WindowedEditModeScreenMargin * 2, 1) / dpiX;
+        var height = Math.Max(bounds.Height - WindowedEditModeScreenMargin * 2, 1) / dpiY;
+
+        WindowState = WindowState.Normal;
+        Position = new PixelPoint(
+            bounds.X + WindowedEditModeScreenMargin,
+            bounds.Y + WindowedEditModeScreenMargin);
+        Width = width;
+        Height = height;
+        // ViewModel.ActualClientBound = new Rect(0, 0, width, height);
+        LayoutContainerGrid.Width = width;
+        LayoutContainerGrid.Height = height;
     }
     
     private void UpdateWindowPos(bool updateEffectWindow=false)

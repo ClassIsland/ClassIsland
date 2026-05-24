@@ -1252,7 +1252,8 @@
                                                                       IsSticky="{Binding ViewModel.IsTimeLineSticky, RelativeSource={RelativeSource AncestorType=views:ProfileSettingsWindow}}"
                                                                       x:Name="TimeLineListControl"
                                                                       AutoScrollToSelectedItem="True"
-                                                                      IsPanningModeEnabled="True">
+                                                                      IsPanningModeEnabled="True"
+                                                                      RequestInsertTimePoint="TimeLineListControl_OnRequestInsertTimePoint">
                                             <!-- 回应我吧，爱莉希雅 -->
                                             <timeLine:TimeLineListControl.IsReadonly>
                                                 <Binding Path="ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=views:ProfileSettingsWindow}" Mode="OneWay"/>
