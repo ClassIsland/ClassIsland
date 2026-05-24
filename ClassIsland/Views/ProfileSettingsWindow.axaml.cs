@@ -49,6 +49,8 @@ namespace ClassIsland.Views;
 public partial class ProfileSettingsWindow : MyWindow
 {
     private bool _isOpen = false;
+    private record UndoEntry(bool IsAdd, TimeLayoutItem Item, TimeLayout Layout, int Index);
+    private readonly Stack<UndoEntry> _undoStack = new();
 
     public static readonly FuncValueConverter<ProfileTransferProviderType, string>
         ProfileTransferProviderTypeToImportButtonTextConverter = new(x => x switch
@@ -78,6 +80,8 @@ public partial class ProfileSettingsWindow : MyWindow
             .Subscribe(_ => OnDrawerStateChanged());
         ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
             .Subscribe(_ => TimeLineListControl?.ScrollIntoViewCentered(ViewModel.SelectedTimeLayout?.Layouts.FirstOrDefault()));
+        ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
+            .Subscribe(_ => { _undoStack.Clear(); ViewModel.CanUndo = false; });
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -117,6 +121,10 @@ public partial class ProfileSettingsWindow : MyWindow
                     TimeLineListControl?.ScrollIntoViewCentered(ViewModel.SelectedTimePoint);
                     e.Handled = true;
                 }
+                break;
+            case Key.Z when e.KeyModifiers == KeyModifiers.Control:
+                UndoLastAction();
+                e.Handled = true;
                 break;
         }
     }
@@ -808,6 +816,32 @@ public partial class ProfileSettingsWindow : MyWindow
         FlyoutHelper.CloseAncestorFlyout(sender);
     }
     
+    private void PushAddUndo(TimeLayoutItem item, TimeLayout layout)
+    {
+        var index = layout.Layouts.IndexOf(item);
+        _undoStack.Push(new UndoEntry(IsAdd: true, item, layout, index));
+        ViewModel.CanUndo = true;
+    }
+
+    private void PushDeleteUndo(TimeLayoutItem item, TimeLayout layout, int index)
+    {
+        _undoStack.Push(new UndoEntry(IsAdd: false, item, layout, index));
+        ViewModel.CanUndo = true;
+    }
+
+    private void UndoLastAction()
+    {
+        if (!_undoStack.TryPop(out var entry)) return;
+        if (entry.IsAdd)
+            entry.Layout.RemoveTimePoint(entry.Item);
+        else
+            entry.Layout.InsertTimePoint(entry.Index, entry.Item);
+        ViewModel.CanUndo = _undoStack.Count > 0;
+    }
+
+    private void ButtonUndoAdd_OnClick(object? sender, RoutedEventArgs e) => UndoLastAction();
+
+
     private void AddTimePoint(TimeLayoutItem item)
     {
         var timeLayout = ViewModel.SelectedTimeLayout;
@@ -915,6 +949,7 @@ public partial class ProfileSettingsWindow : MyWindow
         AddTimePoint(newItem);
         // ReSortTimeLayout(newItem);
         ViewModel.SelectedTimePoint = newItem;
+        PushAddUndo(newItem, timeLayout);
         //OpenDrawer("TimePointEditor");
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.create", 1,
         [
@@ -964,47 +999,17 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void RemoveSelectedTimePoint()
     {
-        if (ViewModel.SelectedTimePoint == null) 
+        if (ViewModel.SelectedTimePoint == null)
             return;
         var timePoint = ViewModel.SelectedTimePoint;
         var timeLayout = ViewModel.SelectedTimeLayout;
-        if (timeLayout == null)
-        {
-            return;
-        }
+        if (timeLayout == null) return;
         var i = timeLayout.Layouts.IndexOf(timePoint);
         timeLayout.RemoveTimePoint(timePoint);
         if (i > 0)
             ViewModel.SelectedTimePoint = timeLayout.Layouts[i - 1];
-        var revertButton = new Button()
-        {
-            Content = "撤销"
-        };
-
-        ViewModel.CurrentTimePointDeleteRevertToast?.Close();
-        var message = ViewModel.CurrentTimePointDeleteRevertToast = new ToastMessage()
-        {
-            Message = $"已删除时间点 {timePoint}。",
-            Duration = TimeSpan.FromSeconds(10),
-            ActionContent = revertButton
-        };
-        revertButton.Click += RevertButtonOnClick;
-        message.ClosedCancellationTokenSource.Token.Register(() =>
-        {
-            revertButton.Click -= RevertButtonOnClick;
-            ViewModel.CurrentTimePointDeleteRevertToast = null;
-        });
-        ViewModel.ObservableForProperty(x => x.SelectedTimeLayout).Subscribe(_ => message.Close());
-        this.ShowToast(message);
-        
+        PushDeleteUndo(timePoint, timeLayout, i);
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.remove", 1);
-        return;
-
-        void RevertButtonOnClick(object? o, RoutedEventArgs routedEventArgs)
-        {
-            AddTimePoint(timePoint);
-            message.Close();
-        }
     }
 
     private void ButtonRefreshTimeLayout_OnClick(object sender, RoutedEventArgs e)

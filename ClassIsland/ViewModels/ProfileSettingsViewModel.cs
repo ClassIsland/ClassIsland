@@ -81,6 +81,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private int _masterPageTabSelectIndex = 0;
     [ObservableProperty] private TimeLayout? _selectedTimeLayout;
     [ObservableProperty] private int _selectedTimePointIndex = -1;
+    [ObservableProperty] private bool _canUndo = false;
     [ObservableProperty] private ToastMessage? _currentTimePointDeleteRevertToast;
     [ObservableProperty] private ToastMessage? _currentClassPlanEditDoneToast = null;
     [ObservableProperty] private KeyValuePair<Guid, TimeLayout>? _classPlanInfoSelectedTimeLayoutKvp;
