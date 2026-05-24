@@ -517,6 +517,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         if (e.PropertyName == nameof(ViewModel.IsWindowMode))
         {
+            var shouldReattachTutorialAdorners = TutorialService.IsTutorialRunning && TutorialService.AttachedToplevel == this;
+            if (shouldReattachTutorialAdorners)
+            {
+                TutorialService.DetachCurrentAdornersForHostChange(this);
+            }
+
             PseudoClasses.Set(":windowed", ViewModel.IsWindowMode);
             UpdateTheme();
             if (ViewModel.IsEditMode && ViewModel.IsWindowMode)
@@ -525,6 +531,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 // 编辑模式从全屏切到自由窗口时，窗口管理器可能把窗口压到后面。
                 // 延后一帧激活，确保窗口保持在前台可操作。
                 _ = Dispatcher.UIThread.InvokeAsync(Activate, DispatcherPriority.Background);
+            }
+
+            if (shouldReattachTutorialAdorners)
+            {
+                _ = Dispatcher.UIThread.InvokeAsync(() =>
+                    TutorialService.ReattachCurrentAdornersAfterHostChange(this), DispatcherPriority.Background);
             }
         }
 
