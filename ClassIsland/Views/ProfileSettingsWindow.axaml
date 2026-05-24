@@ -1180,6 +1180,12 @@
                                                                        ToolTip.Tip="添加行动时间点。"
                                                                        Label="行动" />
                                             <controls:CommandBarSeparator />
+                                            <controls:CommandBarButton Click="ButtonUndoAdd_OnClick"
+                                                                       IconSource="{ci:FluentIconSource &#xE10E;}"
+                                                                       ToolTip.Tip="撤销上一步操作 (Ctrl+Z)"
+                                                                       IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanUndo}"
+                                                                       Label="撤销" />
+                                            <controls:CommandBarSeparator />
                                             <controls:CommandBarButton Click="ButtonRemoveTimePoint_OnClick"
                                                                        ToolTip.Tip="删除选中的时间点。"
                                                                        IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint, Converter={x:Static ObjectConverters.IsNotNull}}"
