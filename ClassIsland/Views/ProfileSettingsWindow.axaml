@@ -1185,6 +1185,11 @@
                                                                        ToolTip.Tip="撤销上一步操作 (Ctrl+Z)"
                                                                        IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanUndo}"
                                                                        Label="撤销" />
+                                            <controls:CommandBarButton Click="ButtonRedoAdd_OnClick"
+                                                                       IconSource="{ci:FluentIconSource &#xE10D;}"
+                                                                       ToolTip.Tip="重做上一步操作 (Ctrl+Y)"
+                                                                       IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanRedo}"
+                                                                       Label="重做" />
                                             <controls:CommandBarSeparator />
                                             <controls:CommandBarButton Click="ButtonRemoveTimePoint_OnClick"
                                                                        ToolTip.Tip="删除选中的时间点。"
