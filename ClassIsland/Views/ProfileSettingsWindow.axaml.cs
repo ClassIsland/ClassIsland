@@ -51,6 +51,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private bool _isOpen = false;
     private record UndoEntry(bool IsAdd, TimeLayoutItem Item, TimeLayout Layout, int Index);
     private readonly Stack<UndoEntry> _undoStack = new();
+    private readonly Stack<UndoEntry> _redoStack = new();
 
     public static readonly FuncValueConverter<ProfileTransferProviderType, string>
         ProfileTransferProviderTypeToImportButtonTextConverter = new(x => x switch
@@ -81,7 +82,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
             .Subscribe(_ => TimeLineListControl?.ScrollIntoViewCentered(ViewModel.SelectedTimeLayout?.Layouts.FirstOrDefault()));
         ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
-            .Subscribe(_ => { _undoStack.Clear(); ViewModel.CanUndo = false; });
+            .Subscribe(_ => { _undoStack.Clear(); _redoStack.Clear(); ViewModel.CanUndo = false; ViewModel.CanRedo = false; });
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -124,6 +125,10 @@ public partial class ProfileSettingsWindow : MyWindow
                 break;
             case Key.Z when e.KeyModifiers == KeyModifiers.Control:
                 UndoLastAction();
+                e.Handled = true;
+                break;
+            case Key.Y when e.KeyModifiers == KeyModifiers.Control:
+                RedoLastAction();
                 e.Handled = true;
                 break;
         }
@@ -820,26 +825,53 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         var index = layout.Layouts.IndexOf(item);
         _undoStack.Push(new UndoEntry(IsAdd: true, item, layout, index));
+        _redoStack.Clear();
         ViewModel.CanUndo = true;
+        ViewModel.CanRedo = false;
     }
 
     private void PushDeleteUndo(TimeLayoutItem item, TimeLayout layout, int index)
     {
         _undoStack.Push(new UndoEntry(IsAdd: false, item, layout, index));
+        _redoStack.Clear();
         ViewModel.CanUndo = true;
+        ViewModel.CanRedo = false;
     }
 
     private void UndoLastAction()
     {
         if (!_undoStack.TryPop(out var entry)) return;
+        var undoneIndex = entry.IsAdd ? entry.Layout.Layouts.IndexOf(entry.Item) : entry.Index;
         if (entry.IsAdd)
             entry.Layout.RemoveTimePoint(entry.Item);
         else
             entry.Layout.InsertTimePoint(entry.Index, entry.Item);
+        _redoStack.Push(entry with { Index = undoneIndex });
         ViewModel.CanUndo = _undoStack.Count > 0;
+        ViewModel.CanRedo = true;
+    }
+
+    private void RedoLastAction()
+    {
+        if (!_redoStack.TryPop(out var entry)) return;
+        int redoneIndex;
+        if (entry.IsAdd)
+        {
+            entry.Layout.InsertTimePoint(entry.Index, entry.Item);
+            redoneIndex = entry.Index;
+        }
+        else
+        {
+            redoneIndex = entry.Layout.Layouts.IndexOf(entry.Item);
+            entry.Layout.RemoveTimePoint(entry.Item);
+        }
+        _undoStack.Push(entry with { Index = redoneIndex });
+        ViewModel.CanRedo = _redoStack.Count > 0;
+        ViewModel.CanUndo = true;
     }
 
     private void ButtonUndoAdd_OnClick(object? sender, RoutedEventArgs e) => UndoLastAction();
+    private void ButtonRedoAdd_OnClick(object? sender, RoutedEventArgs e) => RedoLastAction();
 
 
     private void AddTimePoint(TimeLayoutItem item)
