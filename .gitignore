@@ -371,3 +371,7 @@ cipx/
 
 **/.idea/avalonia.xml
 **/.idea/copilot.*
+
+# Claude Code 本地配置（不上传）
+.claude/settings.json
+.claude/settings.local.json
