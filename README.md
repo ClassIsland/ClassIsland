@@ -1,5 +1,17 @@
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
 
+> **本仓库是 [ClassIsland/ClassIsland](https://github.com/ClassIsland/ClassIsland) 的个人 fork（ClassIsland-RB），用于开发和测试新功能，部分改动会择机提交 PR 至上游。**
+>
+> **当前开发进度：**
+>
+> | 功能 | 状态 | 说明 |
+> |---|---|---|
+> | 时间表编辑器撤销/重做 | ✅ 已完成 | Ctrl+Z / Ctrl+Y，支持历史记录下拉列表 |
+> | OCR AI 课表导入插件 | 🚧 开发中 | 支持 OpenAI / Anthropic / Gemini / GLM / Kimi，已修复切换服务商时模型列表不更新的问题 |
+> | 便携导入插件 | 🚧 开发中 | PortableImport |
+
+---
+
 <div align="center">
 
 # <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28" width="28"/> ClassIsland
