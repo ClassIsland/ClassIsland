@@ -188,7 +188,7 @@ public static class Program
             options.TracesSampleRate = 0.05;
             // options.ProfilesSampleRate = 0.016;
         }
-        options.EnableLogs = true;
+        options.EnableLogs = false;
         options.EnableMetrics = true;
         options.SetBeforeSendLog(log => log.Level < SentryLogLevel.Info || log is { Template: "当前内存使用: {}" } ? null : log);
     }
