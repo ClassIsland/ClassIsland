@@ -189,7 +189,10 @@
             </Style>
         </Style>
     </Window.Styles>
-    <Grid ci:MainWindowStylesAssist.MainWindowInEditMode="{Binding ViewModel.IsEditMode}"
+    <Grid x:Name="WindowRoot"
+          Background="Transparent"
+          ci:MainWindowStylesAssist.MainWindowInEditMode="{Binding ViewModel.IsEditMode}"
+          PointerPressed="MainWindowEditSurface_OnPointerPressed"
           ci:WrapPanelResizingAnimationAssist.Duration="0:0:0.300"
           ci:WrapPanelResizingAnimationAssist.Easing="0.65, 0, 0.35, 1.0">
         <ZoomBorder Name="ZoomBorder" 

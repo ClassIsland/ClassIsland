@@ -21,6 +21,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Controls.EditMode;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
@@ -1485,6 +1486,32 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         });
     }
 
+    private void MainWindowEditSurface_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!ViewModel.IsEditMode
+            || e.Handled
+            || e.GetCurrentPoint(this).Properties.IsLeftButtonPressed == false
+            || !Equals(e.Source, ZoomBorder))
+        {
+            return;
+        }
+        ClearSelectedComponent();
+    }
+
+    private void ClearSelectedComponent()
+    {
+        foreach (var listBox in ViewModel.ComponentsListBoxCache)
+        {
+            listBox.SelectedItem = null;
+        }
+
+        ViewModel.SelectedComponentSettings = null;
+        if (ViewModel.EditModeView != null && ViewModel.EditModeView.ViewModel.MainDrawerContent == ViewModel.EditModeView.FindResource("ComponentSettingsDrawer"))
+        {
+            ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
+        }
+    }
+
     [RelayCommand]
     public void ShowComponentSettings(ComponentSettings? component)
     {
@@ -1504,11 +1531,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     
     private void EditableComponentsListBox_OnComponentDeleted(object? sender, EditableComponentsListBoxEventArgs e)
     {
-        ViewModel.SelectedComponentSettings = null;
-        if (ViewModel.EditModeView != null && ViewModel.EditModeView.ViewModel.MainDrawerContent == ViewModel.EditModeView.FindResource("ComponentSettingsDrawer"))
-        {
-            ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
-        }
+        ClearSelectedComponent();
     }
 
     public Point GetContainerComponentEditContainerInitPos(Point pos)
