@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClassIsland"
         mc:Ignorable="d"
-        Title="ClassIsland" 
         Height="1"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
@@ -173,10 +172,12 @@
             <Setter Property="CanResize" Value="False"/>
             <Setter Property="CanMaximize" Value="False"/>
             <Setter Property="CanMinimize" Value="False"/>
+            <Setter Property="Title" Value="ClassIsland"/>
         </Style>
         <Style Selector=":is(Window):edit-mode">
             <Setter Property="Background" Value="{DynamicResource SmokeFillColorDefaultBrush}"/>
             <Setter Property="TransparencyLevelHint" Value="AcrylicBlur, Transparent"/>
+            <Setter Property="Title" Value="编辑主界面 | ClassIsland"/>
         </Style>
         <Style Selector=":is(Window):windowed">
             <Setter Property="SystemDecorations" Value="Full"/>
