@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -23,6 +24,7 @@ using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Helpers;
+using ClassIsland.Models;
 using ClassIsland.Models.AllContributors;
 using ClassIsland.Services;
 using ClassIsland.Shared;
@@ -50,6 +52,9 @@ public partial class AboutSettingsPage : SettingsPageBase
         InitializeComponent();
         var r = new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/LICENSE.txt")));
         ViewModel.License = r.ReadToEnd();
+
+        using var dependenciesStream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/dependencies.g.json"));
+        ViewModel.ThirdPartyLibs = JsonSerializer.Deserialize<ObservableCollection<NuGetLicenseInfo>>(dependenciesStream) ?? [];
     }
 
     private void UriNavigationCommands_OnClick(object sender, RoutedEventArgs e)
