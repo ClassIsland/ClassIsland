@@ -415,7 +415,9 @@
             <TextBlock Text="谨以此应用，献给现在或曾经陪伴着我的同学们。愿时光流转，各位能与所念之人重逢。"
                        Margin="0 8 0 0"
                        Classes="l-instructive" FontSize="13"
-                       VerticalAlignment="Center" TextAlignment="Center"/>
+                       VerticalAlignment="Center" TextAlignment="Center"
+                       Background="Transparent"
+                       PointerPressed="InputElementReunion_OnPointerPressed"/>
         </StackPanel>
     </controls1:StickyScrollViewer>
 </controls:SettingsPageBase>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using AsyncImageLoader;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -188,16 +189,6 @@ public partial class AboutSettingsPage : SettingsPageBase
         SentrySdk.Metrics.EmitCounter("views.settings.about.sayings.click", 1);
     }
 
-    private void UIElementAppInfo_OnMouseDown(object? sender, RoutedEventArgs pointerPressedEventArgs)
-    {
-        ViewModel.AppIconClickCount++;
-        if (ViewModel.AppIconClickCount >= 20 && !ViewModel.ManagementService.Policy.DisableEasterEggs)
-        {
-            TopLevel.GetTopLevel(this)?.Clipboard?
-                .SetTextAsync("5oS/5oiR5Lus5Zyo6YKj6bKc6Iqx6Iqs6Iqz55qE6KW/6aOO5bC95aS06YeN6YCi44CC");
-        }
-    }
-
     private async void SettingsExpanderItemShowOssLicense_OnClick(object? sender, RoutedEventArgs e)
     {
         var license = await new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/LICENSE.txt")))
@@ -276,6 +267,32 @@ public partial class AboutSettingsPage : SettingsPageBase
 #endif
             ViewModel.SettingsService.Settings.IsDebugOptionsEnabled = true;
             this.ShowSuccessToast("已启用调试菜单。");
+        }
+    }
+
+    private async void InputElementReunion_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        ViewModel.AppInfoClickCount++;
+        if (ViewModel.AppInfoClickCount < 20 || ViewModel.ManagementService.Policy.DisableEasterEggs) 
+            return;
+        TopLevel.GetTopLevel(this)?.Clipboard?
+            .SetTextAsync("5oS/5oiR5Lus5Zyo6YKj6bKc6Iqx6Iqs6Iqz55qE6KW/6aOO5bC95aS06YeN6YCi44CC");
+        var advancedImage = new AdvancedImage((Uri?)null)
+        {
+            Source = "https://res.classisland.tech/banners/reunion.webp",
+        };
+        var contentDialog = new ContentDialog()
+        {
+            Content = advancedImage,
+            Title = "查看图片",
+            PrimaryButtonText = "关闭",
+            DefaultButton = ContentDialogButton.Primary,
+            SecondaryButtonText = "在浏览器查看"
+        };
+        var r = await contentDialog.ShowAsync();
+        if (r == ContentDialogResult.Secondary)
+        {
+            IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("https://res.classisland.tech/banners/reunion.webp"));
         }
     }
 }
