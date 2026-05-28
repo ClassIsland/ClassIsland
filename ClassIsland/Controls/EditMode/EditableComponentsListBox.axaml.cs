@@ -5,8 +5,12 @@ using System.Linq;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
+using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Xaml.Interactions.DragAndDrop;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Services.Registry;
@@ -15,10 +19,34 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace ClassIsland.Controls.EditMode;
 
+[PseudoClasses(":dragging")]
 public partial class EditableComponentsListBox : ListBox
 {
     public IReadOnlyList<ComponentInfo> ContainerComponents { get; } =
         ComponentRegistryService.Registered.Where(x => x.IsComponentContainer).ToList();
+
+    public static readonly FuncValueConverter<IBrush, BoxShadows> BrushToBoxShadowConverter = new(
+        x => new BoxShadows(new BoxShadow()
+        {
+            Blur = 16,
+            Color = x switch
+            {
+                ISolidColorBrush brush => brush.Color,
+                _ => new Color(255, 255, 0, 255)
+            },
+            IsInset = false,
+            OffsetX = 0, OffsetY = 0,
+            Spread = 2
+        }));
+
+    public static readonly StyledProperty<bool> IsDraggingProperty = AvaloniaProperty.Register<EditableComponentsListBox, bool>(
+        nameof(IsDragging));
+
+    public bool IsDragging
+    {
+        get => GetValue(IsDraggingProperty);
+        set => SetValue(IsDraggingProperty, value);
+    }
 
     public static readonly StyledProperty<IReadOnlyList<ComponentSettings>> ContainerComponentStackProperty = AvaloniaProperty.Register<EditableComponentsListBox, IReadOnlyList<ComponentSettings>>(
         nameof(ContainerComponentStack), []);
@@ -200,5 +228,36 @@ public partial class EditableComponentsListBox : ListBox
         {
             ComponentList = list
         });
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        ManagedDragDropService.Instance.DragStarted += InstanceOnDragStarted;
+        ManagedDragDropService.Instance.DragEnded += InstanceOnDragEnded;
+        base.OnAttachedToVisualTree(e);
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        ManagedDragDropService.Instance.DragStarted -= InstanceOnDragStarted;
+        ManagedDragDropService.Instance.DragEnded -= InstanceOnDragEnded;
+        SetDragging(false);
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void InstanceOnDragEnded()
+    {
+        SetDragging(false);
+    }
+
+    private void InstanceOnDragStarted()
+    {
+        SetDragging(true);
+    }
+
+    private void SetDragging(bool isDragging)
+    {
+        IsDragging = isDragging;
+        PseudoClasses.Set(":dragging", isDragging);
     }
 }
