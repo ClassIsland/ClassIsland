@@ -126,6 +126,10 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
         {
             visual.ImplicitAnimations?.Clear();
         });
+        if (anim.Duration <= TimeSpan.Zero)
+        {
+            return;
+        }
         _currentScrollingAnimation = anim;
         visual.StartAnimation(nameof(visual.Offset), anim);
     }
