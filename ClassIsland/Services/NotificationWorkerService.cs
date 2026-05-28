@@ -222,7 +222,7 @@ public class NotificationWorkerService : INotificationWorkerService
             var isSpeechEnabled = settings.IsSpeechEnabled && content.IsSpeechEnabled && SettingsService.Settings.AllowNotificationSpeech;
             if (!session.HasSoundsPlayed && isSpeechEnabled)
             {
-                SpeechService.EnqueueSpeechQueue(content.SpeechContent);
+                try { SpeechService.EnqueueSpeechQueue(content.SpeechContent); } catch (Exception ex) { Logger.LogWarning(ex, "语音播报失败"); }
             }
             
             if (!session.HasSoundsPlayed && isMask && settings.IsNotificationSoundEnabled && SettingsService.Settings.AllowNotificationSound)
@@ -282,7 +282,7 @@ public class NotificationWorkerService : INotificationWorkerService
                 TransitionState(request, NotificationState.Completed);
                 if (!settings.AllowSpeechContinueAfterEnd)
                 {
-                    SpeechService.ClearSpeechQueue();
+                    try { SpeechService.ClearSpeechQueue(); } catch (ObjectDisposedException) { }
                 }
                 await request.CompletedTokenSource.CancelAsync();
             }
@@ -328,13 +328,13 @@ public class NotificationWorkerService : INotificationWorkerService
             else if (request.State == NotificationState.Cancelled)
             {
                 // Cancelled
-                audioCancellationTokenSource?.Cancel();
+                try { audioCancellationTokenSource?.Cancel(); } catch (ObjectDisposedException) { }
             }
             else
             {
                 if (!settings.AllowSoundContinueAfterEnd)
                 {
-                    audioCancellationTokenSource?.Cancel();
+                    try { audioCancellationTokenSource?.Cancel(); } catch (ObjectDisposedException) { }
                 }
             }
             if (audioCancellationTokenSource != null)

@@ -200,6 +200,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         }
         var group = new NotificationGroup(request);
         request.Group = group;
+        group.RegisterGroupCancellationPropagation();
         if (pushNotifications && PushNotificationGroups([group]))
         {
             UpdateNotificationPlayingState();
@@ -267,6 +268,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             }
         });
         var group = new NotificationGroup(requests.ToList(), rootCancellationTokenSource, rootCompletedTokenSource);
+        group.RegisterGroupCancellationPropagation();
         NotificationRequest? prevRequest = null;
         var head = requests[0];
         foreach (var request in requests)
@@ -680,20 +682,27 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 Logger.LogTrace("票据State变更为 {}", request.State);
             }
 
-            if (request.State != NotificationState.Interrupted && request.State != NotificationState.Queued)
+            if (request.State != NotificationState.Interrupted)
             {
                 return;
             }
-
-            // 以整个组为单位重新入队
             var group = request.Group;
             if (group == null)
             {
                 Logger.LogWarning("提醒请求 {} 没有关联的组，无法重新入队", request);
                 return;
             }
+            if (request.State == NotificationState.Interrupted)
+            {
+                foreach (var r in group.Requests)
+                {
+                    if (r != request)
+                    {
+                        try { r.CancellationTokenSource.Cancel(); } catch (ObjectDisposedException) { }
+                    }
+                }
+            }
 
-            // 如果组内还有活跃请求，整体重新入队
             var activeRequests = group.CollectActiveRequests();
             if (activeRequests.Count > 0)
             {
