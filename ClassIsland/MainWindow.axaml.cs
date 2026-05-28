@@ -817,9 +817,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void UpdateWindowFeatures()
     {
-        var shouldUseToolWindow = ViewModel is { IsEditMode: false, IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false };
+        var isCaptureBlocked = ViewModel.Settings.IsWindowCaptureBlockingEnabled;
+        var shouldUseToolWindow = ViewModel is
+        {
+            IsEditMode: false,
+            IsWindowMode: false,
+            Settings.IsScreenRecordingModeEnabled: false
+        };
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, shouldUseToolWindow);
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, !ViewModel.IsEditMode);
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Private, isCaptureBlocked);
     }
 
     private void UpdateWindowLayer()
