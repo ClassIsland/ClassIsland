@@ -13,6 +13,7 @@ using Avalonia.Labs.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
+using Avalonia.Threading;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -83,7 +84,6 @@ public partial class MyWindow : FAAppWindow
     {
         var state = new MyWindowState();
         SetState(window, state);
-        window.Initialized += OnInitialized;
         window.Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(window, BitmapInterpolationMode.HighQuality);
         window.KeyDown += OnKeyDown;
@@ -100,7 +100,6 @@ public partial class MyWindow : FAAppWindow
 
         void WindowOnClosed(object? sender, EventArgs e)
         {
-            window.Initialized -= OnInitialized;
             window.Loaded -= OnLoaded;
             window.KeyDown -= OnKeyDown;
             window.PointerPressed -= OnPointerUpdated;
@@ -165,7 +164,7 @@ public partial class MyWindow : FAAppWindow
             }
         }
 
-        void OnInitialized(object? sender, EventArgs e)
+        void OnLoaded(object? sender, EventArgs e)
         {
             var commands = CommandManager.GetCommandBindings(window);
             commands.Add(new CommandBinding(UriNavigationCommands.UriNavigationCommand,
@@ -173,18 +172,35 @@ public partial class MyWindow : FAAppWindow
                     ?.NavigateWrapped(new Uri(args.Parameter?.ToString() ?? "classisland:")),
                 (_, args) => args.CanExecute = true));
             CommandManager.SetCommandBindings(window, commands);
+            if (window.Content is not Visual visual)
+            {
+                return;
+            }
+                
+            visual.AttachedToVisualTree += VisualOnAttachedToVisualTree;
+            
+            return;
+            
+            void VisualOnAttachedToVisualTree(object? o, VisualTreeAttachmentEventArgs visualTreeAttachmentEventArgs)
+            {
+                visual.AttachedToVisualTree -= VisualOnAttachedToVisualTree;
+                AddAdorners();
+            }
         }
-
-        void OnLoaded(object? sender, RoutedEventArgs e)
+        
+        void AddAdorners()
         {
             if (window.Content is not Control element || state.IsAdornerAdded)
             {
                 return;
             }
-
             var layer = AdornerLayer.GetAdornerLayer(element);
+            if (layer == null)
+            {
+                return;
+            }
             var appToastAdorner = state.AppToastAdorner = new AppToastAdorner(window);
-            layer?.Children.Add(appToastAdorner);
+            layer.Children.Add(appToastAdorner);
             AdornerLayer.SetAdornedElement(appToastAdorner, element);
 
             if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark))
