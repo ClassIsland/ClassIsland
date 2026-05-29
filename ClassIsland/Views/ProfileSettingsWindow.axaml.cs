@@ -816,7 +816,7 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         var l = timeLayout.Layouts;
-        for (var i = 0; i < l.Count - 1; i++)
+        for (var i = 0; i < l.Count; i++)
         {
             if (l[i].StartTime <= item.StartTime)
                 continue;
@@ -960,6 +960,34 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonRemoveTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
         RemoveSelectedTimePoint();
+    }
+
+    [RelayCommand]
+    private void DuplicateTimePoint(TimeLayoutItem? item)
+    {
+        if (item == null) item = ViewModel.SelectedTimePoint;
+        if (item == null) return;
+        
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        if (timeLayout == null) return;
+
+        var copy = ConfigureFileHelper.CopyObject(item);
+
+        copy.StartTime = item.EndTime;
+        copy.EndTime = item.EndTime + (item.EndTime - item.StartTime);
+
+        var index = timeLayout.Layouts.IndexOf(item);
+        if (index == -1) index = timeLayout.Layouts.Count;
+
+        AddTimePoint(copy);
+        ViewModel.SelectedTimePoint = copy;
+        
+        this.ShowToast(new ToastMessage("已创建时间点副本。")
+        {
+            Severity = InfoBarSeverity.Success
+        });
+        
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.duplicate", 1);
     }
 
     private void RemoveSelectedTimePoint()
