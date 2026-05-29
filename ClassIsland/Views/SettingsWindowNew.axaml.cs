@@ -177,7 +177,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
                     
                     item = new FANavigationViewItem()
                     {
-                        IconSource = group.FAIconSource,
+                        IconSource = group.IconSource,
                         Content = group.Name,
                         Tag = i,
                         // IsExpanded = true

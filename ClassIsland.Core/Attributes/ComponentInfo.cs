@@ -23,7 +23,7 @@ public class ComponentInfo : Attribute
     /// <summary>
     /// 组件图标
     /// </summary>
-    public FAIconSource? FAIconSource { get; }
+    public FAIconSource? IconSource { get; }
 
     /// <summary>
     /// 组件位图图标uri
@@ -66,7 +66,7 @@ public class ComponentInfo : Attribute
     public ComponentInfo(string guid, string name, string iconSource, string description = "") : this(guid, name,
         description)
     {
-        FAIconSource = IconExpressionHelper.TryParseOrNull(iconSource);
+        IconSource = IconExpressionHelper.TryParseOrNull(iconSource);
     }
 
     /// <inheritdoc />

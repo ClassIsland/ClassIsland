@@ -385,7 +385,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
         var teachingTip = CurrentTeachingTip = new FATeachingTip()
         {
             HeroContent = heroContent,
-            IconSource = sentence.FAIconSource,
+            IconSource = sentence.IconSource,
             Title = sentence.Title,
             Subtitle = sentence.Content,
             Target = sentence.PointToTarget ? targetControl : null,

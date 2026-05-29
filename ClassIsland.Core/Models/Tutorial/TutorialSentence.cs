@@ -28,13 +28,13 @@ public partial class TutorialSentence : ObservableObject, IXmlnsAttached
     /// <summary>
     /// 语句图标表达式
     /// </summary>
-    [NotifyPropertyChangedFor(nameof(FAIconSource))]
+    [NotifyPropertyChangedFor(nameof(IconSource))]
     [ObservableProperty] private string _iconExpression = "";
 
     /// <summary>
     /// 语句图标
     /// </summary>
-    [JsonIgnore] public FAIconSource? FAIconSource => IconExpressionHelper.TryParseOrNull(IconExpression);
+    [JsonIgnore] public FAIconSource? IconSource => IconExpressionHelper.TryParseOrNull(IconExpression);
 
     /// <summary>
     /// 语句头图
