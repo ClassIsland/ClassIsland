@@ -1180,6 +1180,49 @@
                                                                        ToolTip.Tip="添加行动时间点。"
                                                                        Label="行动" />
                                             <controls:CommandBarSeparator />
+                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE10E;}"
+                                                                       ToolTip.Tip="撤销 (Ctrl+Z 单步)"
+                                                                       IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanUndo}"
+                                                                       Label="撤销">
+                                                <controls:CommandBarButton.Flyout>
+                                                    <Flyout Placement="BottomEdgeAlignedLeft">
+                                                        <StackPanel Spacing="4" MinWidth="180">
+                                                            <Button Content="撤销上一步 (Ctrl+Z)"
+                                                                    Click="ButtonUndoAdd_OnClick"
+                                                                    HorizontalAlignment="Stretch"
+                                                                    HorizontalContentAlignment="Left" />
+                                                            <Separator />
+                                                            <TextBlock Text="撤销历史" Opacity="0.6" FontSize="11" />
+                                                            <ScrollViewer MaxHeight="200">
+                                                                <ListBox ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.UndoDescriptions}"
+                                                                         SelectionChanged="UndoHistoryList_OnSelectionChanged" />
+                                                            </ScrollViewer>
+                                                        </StackPanel>
+                                                    </Flyout>
+                                                </controls:CommandBarButton.Flyout>
+                                            </controls:CommandBarButton>
+                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE10D;}"
+                                                                       ToolTip.Tip="重做 (Ctrl+Y 单步)"
+                                                                       IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanRedo}"
+                                                                       Label="重做">
+                                                <controls:CommandBarButton.Flyout>
+                                                    <Flyout Placement="BottomEdgeAlignedLeft">
+                                                        <StackPanel Spacing="4" MinWidth="180">
+                                                            <Button Content="重做上一步 (Ctrl+Y)"
+                                                                    Click="ButtonRedoAdd_OnClick"
+                                                                    HorizontalAlignment="Stretch"
+                                                                    HorizontalContentAlignment="Left" />
+                                                            <Separator />
+                                                            <TextBlock Text="重做历史" Opacity="0.6" FontSize="11" />
+                                                            <ScrollViewer MaxHeight="200">
+                                                                <ListBox ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.RedoDescriptions}"
+                                                                         SelectionChanged="RedoHistoryList_OnSelectionChanged" />
+                                                            </ScrollViewer>
+                                                        </StackPanel>
+                                                    </Flyout>
+                                                </controls:CommandBarButton.Flyout>
+                                            </controls:CommandBarButton>
+                                            <controls:CommandBarSeparator />
                                             <controls:CommandBarButton Click="ButtonRemoveTimePoint_OnClick"
                                                                        ToolTip.Tip="删除选中的时间点。"
                                                                        IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint, Converter={x:Static ObjectConverters.IsNotNull}}"
