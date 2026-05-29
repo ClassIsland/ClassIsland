@@ -117,7 +117,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
         // SplashScreen = new EmptySplashScreen();
 
         TitleBar.ExtendsContentIntoTitleBar = true;
-        TitleBar.TitleBarHitTestType = FATitleBarHitTestType.Complex;
+        // TitleBar.TitleBarHitTestType = FATitleBarHitTestType.Complex;
         NavigationFrame.NavigationPageFactory = this;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
 

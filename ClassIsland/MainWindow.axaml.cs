@@ -228,7 +228,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TopmostEffectWindow = topmostEffectWindow;
         XamlThemeService = xamlThemeService;
         TutorialService = tutorialService;
-
+        
+        this.UseMyWindowExt();
         ViewModel = new MainViewModel();
         DataContext = this;
         InitializeComponent();
@@ -264,8 +265,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
-        this.UseMyWindowExt();
-
         if (Environment.OSVersion.Version <= WindowsVersions.Win10V1809)
         {
             PseudoClasses.Set(":no-windowed-transparent", true);
