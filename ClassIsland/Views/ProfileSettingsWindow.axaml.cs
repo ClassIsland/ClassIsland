@@ -149,7 +149,6 @@ public partial class ProfileSettingsWindow : MyWindow
                     e.Handled = true;
                 }
                 break;
-                break;
         }
     }
 
@@ -948,7 +947,6 @@ public partial class ProfileSettingsWindow : MyWindow
         FlyoutHelper.CloseAncestorFlyout(lb);
         RedoToIndex(count);
     }
-
 
     private void AddTimePoint(TimeLayoutItem item)
     {
