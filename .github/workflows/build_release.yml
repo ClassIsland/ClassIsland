@@ -71,8 +71,24 @@ jobs:
         if: ${{ matrix.os == 'macos' }}
         run: |
           sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
+          sdk_dir="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+          if [ ! -e "$sdk_dir/MacOSX.sdk" ]; then
+            macos_sdk=""
+            for candidate in "$sdk_dir"/MacOSX*.sdk; do
+              if [ -e "$candidate" ] && [ "$(basename "$candidate")" != "MacOSX.sdk" ]; then
+                macos_sdk="$candidate"
+              fi
+            done
+            if [ -z "$macos_sdk" ]; then
+              echo "No macOS SDK found under $sdk_dir"
+              exit 1
+            fi
+            sudo rm -f "$sdk_dir/MacOSX.sdk"
+            sudo ln -s "$(basename "$macos_sdk")" "$sdk_dir/MacOSX.sdk"
+          fi
           xcodebuild -version
           xcodebuild -showsdks
+          xcrun --sdk macosx --find actool
           dotnet workload install macos
         
       - name: Add GitHub Package Registry
