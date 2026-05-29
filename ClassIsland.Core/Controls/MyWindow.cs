@@ -14,6 +14,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -176,8 +177,15 @@ public partial class MyWindow : FAAppWindow
             {
                 return;
             }
-                
-            visual.AttachedToVisualTree += VisualOnAttachedToVisualTree;
+
+            if (visual.IsAttachedToVisualTree())
+            {
+                AddAdorners();
+            }
+            else
+            {
+                visual.AttachedToVisualTree += VisualOnAttachedToVisualTree;
+            }
             
             return;
             
@@ -190,7 +198,7 @@ public partial class MyWindow : FAAppWindow
         
         void AddAdorners()
         {
-            if (window.Content is not Control element || state.IsAdornerAdded)
+            if (window.Content is not Visual element || state.IsAdornerAdded)
             {
                 return;
             }

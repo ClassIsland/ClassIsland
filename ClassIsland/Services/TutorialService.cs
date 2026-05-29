@@ -416,7 +416,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
                 FullscreenDim = targetControl == null,
                 DisableIntro = _useDimPrev
             };
-            AttachAdorner(spotlight, targetControl ?? AttachedToplevel);
+            AttachAdorner(spotlight, targetControl ?? AttachedToplevel.Content as Control ?? AttachedToplevel);
         }
         _useDimPrev = useDim;
         
@@ -433,7 +433,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
                 Background = Brushes.Transparent
             };
             CurrentDimBorder.PointerReleased += CurrentSpotlightOnClicked;
-            AttachAdorner(CurrentDimBorder, AttachedToplevel);
+            AttachAdorner(CurrentDimBorder, AttachedToplevel.Content as Control ?? AttachedToplevel);
         }
         (AttachedToplevel as Window)?.Activate();
         Dispatcher.UIThread.Post(() =>
