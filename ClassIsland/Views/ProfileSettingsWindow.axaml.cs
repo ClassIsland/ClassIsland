@@ -868,9 +868,16 @@ public partial class ProfileSettingsWindow : MyWindow
         if (!_undoStack.TryPop(out var entry)) return;
         var undoneIndex = entry.IsAdd ? entry.Layout.Layouts.IndexOf(entry.Item) : entry.Index;
         if (entry.IsAdd)
+        {
             entry.Layout.RemoveTimePoint(entry.Item);
+            if (ViewModel.SelectedTimePoint == entry.Item)
+                ViewModel.SelectedTimePoint = entry.Layout.Layouts.Count > 0 ? entry.Layout.Layouts[Math.Max(0, undoneIndex - 1)] : null;
+        }
         else
+        {
             entry.Layout.InsertTimePoint(entry.Index, entry.Item);
+            ViewModel.SelectedTimePoint = entry.Item;
+        }
         if (ViewModel.UndoDescriptions.Count > 0) ViewModel.UndoDescriptions.RemoveAt(0);
         _redoStack.Push(entry with { Index = undoneIndex });
         ViewModel.RedoDescriptions.Insert(0, entry.Description);
@@ -885,12 +892,15 @@ public partial class ProfileSettingsWindow : MyWindow
         if (entry.IsAdd)
         {
             entry.Layout.InsertTimePoint(entry.Index, entry.Item);
+            ViewModel.SelectedTimePoint = entry.Item;
             redoneIndex = entry.Index;
         }
         else
         {
             redoneIndex = entry.Layout.Layouts.IndexOf(entry.Item);
             entry.Layout.RemoveTimePoint(entry.Item);
+            if (ViewModel.SelectedTimePoint == entry.Item)
+                ViewModel.SelectedTimePoint = entry.Layout.Layouts.Count > 0 ? entry.Layout.Layouts[Math.Max(0, redoneIndex - 1)] : null;
         }
         if (ViewModel.RedoDescriptions.Count > 0) ViewModel.RedoDescriptions.RemoveAt(0);
         _undoStack.Push(entry with { Index = redoneIndex });
