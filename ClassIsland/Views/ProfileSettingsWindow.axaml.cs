@@ -1053,7 +1053,6 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.TutorialService.PushToNextSentence();
     }
 
-    
     private void ButtonAddClassTime_OnClick(object sender, RoutedEventArgs e)
     {
         AddTimeLayoutItem(0);
