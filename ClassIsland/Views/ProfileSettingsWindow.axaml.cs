@@ -101,6 +101,18 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
+        switch (e.Key)
+        {
+            case Key.Z when e.KeyModifiers == KeyModifiers.Control:
+                UndoLastAction();
+                e.Handled = true;
+                return;
+            case Key.Y when e.KeyModifiers == KeyModifiers.Control:
+                RedoLastAction();
+                e.Handled = true;
+                return;
+        }
+
         var layouts = ViewModel.SelectedTimeLayout?.Layouts;
         if (layouts == null || layouts.Count == 0)
             return;
@@ -137,13 +149,6 @@ public partial class ProfileSettingsWindow : MyWindow
                     e.Handled = true;
                 }
                 break;
-            case Key.Z when e.KeyModifiers == KeyModifiers.Control:
-                UndoLastAction();
-                e.Handled = true;
-                break;
-            case Key.Y when e.KeyModifiers == KeyModifiers.Control:
-                RedoLastAction();
-                e.Handled = true;
                 break;
         }
     }
