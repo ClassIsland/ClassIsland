@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Shared.Models.Profile;
 
@@ -13,6 +14,16 @@ namespace ClassIsland.Controls.TimeLine;
 
 public class TimeLineListControl : ListBox
 {
+
+    public static readonly RoutedEvent<TimeLineInsertTimePointEventArgs> RequestInsertTimePointEvent =
+        RoutedEvent.Register<TimeLineListControl, TimeLineInsertTimePointEventArgs>(
+            nameof(RequestInsertTimePoint), RoutingStrategies.Bubble | RoutingStrategies.Tunnel);
+
+    public event EventHandler<TimeLineInsertTimePointEventArgs>? RequestInsertTimePoint
+    {
+        add => AddHandler(RequestInsertTimePointEvent, value);
+        remove => RemoveHandler(RequestInsertTimePointEvent, value);
+    }
 
     public static readonly StyledProperty<double> ScaleProperty = AvaloniaProperty.Register<TimeLineListControl, double>(
         nameof(Scale));
@@ -116,5 +127,44 @@ public class TimeLineListControl : ListBox
             return;
         ScrollIntoView(timeLayoutItems[0]);
         SelectedIndex = 0;
+    }
+
+    /// <summary>
+    /// Scrolls the specified item into view, centering it vertically in the viewport.
+    /// </summary>
+    public void ScrollIntoViewCentered(object? item)
+    {
+        if (item == null)
+            return;
+
+        // First, ensure the item container is realized
+        ScrollIntoView(item);
+
+        // Find the ScrollViewer in the visual tree
+        var scrollViewer = this.FindDescendantOfType<ScrollViewer>();
+        if (scrollViewer == null)
+            return;
+
+        // Find the container for the item
+        var index = Items.Cast<object>().ToList().IndexOf(item);
+        if (index < 0)
+            return;
+
+        var container = ContainerFromIndex(index);
+        if (container == null)
+            return;
+
+        // Get the item's position and size from Canvas.Top and its height
+        var itemTop = Canvas.GetTop(container);
+        var itemHeight = container.Bounds.Height;
+
+        // Calculate the offset to center the item
+        var viewportHeight = scrollViewer.Viewport.Height;
+        var targetOffset = itemTop + itemHeight / 2 - viewportHeight / 2;
+
+        // Clamp to valid scroll range
+        targetOffset = Math.Max(0, Math.Min(targetOffset, scrollViewer.Extent.Height - viewportHeight));
+
+        scrollViewer.Offset = new Vector(scrollViewer.Offset.X, targetOffset);
     }
 }

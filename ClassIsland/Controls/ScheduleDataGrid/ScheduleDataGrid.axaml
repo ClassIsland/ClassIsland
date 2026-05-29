@@ -10,24 +10,26 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid RowDefinitions="Auto *" DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
-                    <StackPanel Grid.Row="0" Orientation="Horizontal"
-                                Spacing="4">
-                        <CalendarDatePicker
-                            SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
-                            Width="150"/>
-                        <Button Theme="{StaticResource TransparentButton}"
-                                Content="{ci:FluentIcon &#xE109;}"
-                                ToolTip.Tip="上一周"
-                                Name="PART_ButtonPreviousWeek"/>
-                        <Button Theme="{StaticResource TransparentButton}"
-                                Content="{ci:FluentIcon &#xE131;}"
-                                ToolTip.Tip="下一周"
-                                Name="PART_ButtonNextWeek"/>
-                        <TextBlock VerticalAlignment="Center"
-                                   Margin="4 0 0 0">
-                            <Run Text="第"/><Run Text="{Binding WeekIndex}"/><Run Text="周"/>
-                        </TextBlock>
-                    </StackPanel>
+                    <ci:TutorialBarrier Grid.Row="0" ExcludedTags="classisland.sdg.weekSwitcher.next,classisland.sdg.weekSwitcher.previous">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal"
+                                    Spacing="4">
+                            <CalendarDatePicker
+                                SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
+                                Width="150" />
+                            <Button Theme="{StaticResource TransparentButton}"
+                                    Content="{ci:FluentIcon &#xE109;}"
+                                    ToolTip.Tip="上一周"
+                                    Name="PART_ButtonPreviousWeek" />
+                            <Button Theme="{StaticResource TransparentButton}"
+                                    Content="{ci:FluentIcon &#xE131;}"
+                                    ToolTip.Tip="下一周"
+                                    Name="PART_ButtonNextWeek" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Margin="4 0 0 0">
+                                <Run Text="第" /><Run Text="{Binding WeekIndex}" /><Run Text="周" />
+                            </TextBlock>
+                        </StackPanel>
+                    </ci:TutorialBarrier>
                     
                     <DataGrid Grid.Row="1"
                               Margin="0 2 0 0"

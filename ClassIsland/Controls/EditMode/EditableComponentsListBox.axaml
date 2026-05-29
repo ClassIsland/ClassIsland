@@ -1,6 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls1="using:ClassIsland.Controls.EditMode"
+        xmlns:controls1="clr-namespace:ClassIsland.Controls.EditMode;assembly=ClassIsland"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
@@ -49,15 +49,17 @@
         <Setter Property="Template">
             <ControlTemplate TargetType="controls1:EditableComponentsListBox"
                              x:CompileBindings="True">
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
-                    <Button Height="32"
-                            x:Name="ButtonAddComponent"
-                            IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
-                            Command="{Binding $parent[controls1:EditableComponentsListBox].InvokeRequestAddComponentCommand}"
-                            Content="{ci:FluentIcon &#xE00D;, FontSize=20}">
-                    </Button>
-                </StackPanel>
+                <Border x:Name="HighlightBorder">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+                        <Button Height="32"
+                                x:Name="ButtonAddComponent"
+                                IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}"
+                                Command="{Binding $parent[controls1:EditableComponentsListBox].InvokeRequestAddComponentCommand}"
+                                Content="{ci:FluentIcon &#xE00D;, FontSize=20}">
+                        </Button>
+                    </StackPanel>
+                </Border>
             </ControlTemplate>
         </Setter>
         <Setter Property="ItemContainerTheme">
@@ -85,6 +87,7 @@
                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
                                     <TemplateBinding Property="IsSelected"/>
                                     <Binding Path="$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)"/>
+                                    <Binding Path="!$parent[controls1:EditableComponentsListBox].IsDragging"/>
                                 </MultiBinding>
                             </controls2:AdornerAttachHostControl.IsAttached>
                             <controls2:AdornerAttachHostControl.AdornerTemplate>
@@ -94,78 +97,92 @@
                                            x:DataType="components:ComponentSettings">
                                         <Panel.Resources>
                                         </Panel.Resources>
-                                        <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 0"
-                                                Background="{DynamicResource CommandBarOverflowPresenterBackground}"
-                                                CornerRadius="6"
-                                                Padding="4"
-                                                BorderBrush="{DynamicResource CommandBarOverflowPresenterBorderBrush}"
-                                                BorderThickness="1" >
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0">
-                                                    <controls:FAIconSourceElement IconSource="{Binding AssociatedComponentInfo.IconSource}"
-                                                        VerticalAlignment="Center" Height="16" Width="16"
-                                                        ClipToBounds="False"
-                                                        TextElement.FontSize="16"
-                                                        Classes="repair-fontsize"/>
-                                                    <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
-                                                               VerticalAlignment="Center" Margin="0 1 0 0"/>
+                                        <ci:TutorialBarrier ExcludedTags="classisland.mainwindow.editMode.childrenComponent.open,classisland.mainwindow.editMode.componentSettings.open,classisland.mainwindow.editMode.component.delete">
+                                            <Border HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                                                    Margin="0 0 0 0"
+                                                    Background="{DynamicResource CommandBarOverflowPresenterBackground}"
+                                                    CornerRadius="6"
+                                                    Padding="4"
+                                                    BorderBrush="{DynamicResource CommandBarOverflowPresenterBorderBrush}"
+                                                    BorderThickness="1">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="4 0 0 0">
+                                                        <controls:FAIconSourceElement
+                                                            IconSource="{Binding AssociatedComponentInfo.IconSource}"
+                                                            VerticalAlignment="Center" Height="16" Width="16"
+                                                            ClipToBounds="False"
+                                                            TextElement.FontSize="16"
+                                                            Classes="repair-fontsize" />
+                                                        <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
+                                                                   VerticalAlignment="Center" Margin="0 1 0 0" />
+                                                    </StackPanel>
+                                                    <Button Theme="{StaticResource TransparentButton}"
+                                                            Content="{ci:FluentIcon &#xEF27;}"
+                                                            Command="{Binding Data.ShowComponentSettingsCommand, Source={StaticResource ParentBindingProxy}}"
+                                                            CommandParameter="{Binding}"
+                                                            x:Name="ButtonComponentSettings"
+                                                            ToolTip.Tip="组件设置" />
+                                                    <Button Theme="{StaticResource TransparentButton}"
+                                                            IsVisible="{Binding AssociatedComponentInfo.IsComponentContainer}"
+                                                            Content="{ci:FluentIcon &#xEC30;}"
+                                                            Command="{Binding Data.OpenChildComponentsCommand, Source={StaticResource ParentBindingProxy}}"
+                                                            CommandParameter="{Binding}"
+                                                            x:Name="ButtonChildren"
+                                                            ToolTip.Tip="查看子组件" />
+                                                    <Button Theme="{StaticResource TransparentButton}"
+                                                            Content="{ci:FluentIcon &#xE61D;}"
+                                                            Foreground="IndianRed"
+                                                            Command="{Binding Data.DeleteComponentCommand, Source={StaticResource ParentBindingProxy}}"
+                                                            CommandParameter="{Binding}"
+                                                            x:Name="ButtonDeleteComponent"
+                                                            ToolTip.Tip="删除" />
+                                                    <Line VerticalAlignment="Center"
+                                                          Stroke="{DynamicResource DividerStrokeColorDefaultBrush}"
+                                                          StrokeThickness="1"
+                                                          HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25">
+                                                    </Line>
+                                                    <Button Theme="{StaticResource TransparentButton}"
+                                                            Content="{ci:FluentIcon &#xEBAC;}"
+                                                            ToolTip.Tip="更多选项…">
+                                                        <Button.Flyout>
+                                                            <MenuFlyout>
+                                                                <MenuItem Header="包裹到新容器"
+                                                                          Icon="{ci:FluentIcon &#xe27e;}"
+                                                                          ItemsSource="{Binding Data.ContainerComponents, Source={StaticResource ParentBindingProxy}}">
+                                                                    <MenuItem.ItemContainerTheme>
+                                                                        <ControlTheme TargetType="MenuItem"
+                                                                                BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                                            <Setter Property="Header"
+                                                                                    x:DataType="attributes:ComponentInfo"
+                                                                                    Value="{Binding Name}" />
+                                                                            <Setter Property="Icon"
+                                                                                    x:DataType="attributes:ComponentInfo">
+                                                                                <Template>
+                                                                                    <Border>
+                                                                                        <controls:FAIconSourceElement
+                                                                                            IconSource="{Binding IconSource}"
+                                                                                            Height="14" Width="14"
+                                                                                            TextElement.FontSize="14"
+                                                                                            Classes="repair-fontsize" />
+                                                                                    </Border>
+                                                                                </Template>
+                                                                            </Setter>
+                                                                            <Setter Property="Command"
+                                                                                    Value="{Binding Data.CreateContainerComponentCommand, Source={StaticResource ParentBindingProxy}}" />
+                                                                            <Setter Property="CommandParameter"
+                                                                                    Value="{Binding}" />
+                                                                        </ControlTheme>
+                                                                    </MenuItem.ItemContainerTheme>
+                                                                </MenuItem>
+                                                                <MenuItem Header="创建副本" Icon="{ci:FluentIcon &#xeeb9;}"
+                                                                          CommandParameter="{Binding}"
+                                                                          Command="{Binding Data.DuplicateComponentCommand, Source={StaticResource ParentBindingProxy}}" />
+                                                            </MenuFlyout>
+                                                        </Button.Flyout>
+                                                    </Button>
                                                 </StackPanel>
-                                                <Button Theme="{StaticResource TransparentButton}"
-                                                        Content="{ci:FluentIcon &#xEF27;}"
-                                                        Command="{Binding Data.ShowComponentSettingsCommand, Source={StaticResource ParentBindingProxy}}"
-                                                        CommandParameter="{Binding}"
-                                                        x:Name="ButtonComponentSettings"
-                                                        ToolTip.Tip="组件设置"/>
-                                                <Button Theme="{StaticResource TransparentButton}"
-                                                        IsVisible="{Binding AssociatedComponentInfo.IsComponentContainer}"
-                                                        Content="{ci:FluentIcon &#xEC30;}"
-                                                        Command="{Binding Data.OpenChildComponentsCommand, Source={StaticResource ParentBindingProxy}}"
-                                                        CommandParameter="{Binding}"
-                                                        x:Name="ButtonChildren"
-                                                        ToolTip.Tip="查看子组件"/>
-                                                <Button Theme="{StaticResource TransparentButton}"
-                                                        Content="{ci:FluentIcon &#xE61D;}"
-                                                        Foreground="IndianRed"
-                                                        Command="{Binding Data.DeleteComponentCommand, Source={StaticResource ParentBindingProxy}}"
-                                                        CommandParameter="{Binding}"
-                                                        x:Name="ButtonDeleteComponent"
-                                                        ToolTip.Tip="删除"/>
-                                                <Line VerticalAlignment="Center" Stroke="{DynamicResource DividerStrokeColorDefaultBrush}" StrokeThickness="1"
-                                                      HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25" >
-                                                </Line>
-                                                <Button Theme="{StaticResource TransparentButton}"
-                                                        Content="{ci:FluentIcon &#xEBAC;}"
-                                                        ToolTip.Tip="更多选项…">
-                                                    <Button.Flyout>
-                                                        <MenuFlyout >
-                                                            <MenuItem Header="包裹到新容器" Icon="{ci:FluentIcon &#xe27e;}"
-                                                                      ItemsSource="{Binding Data.ContainerComponents, Source={StaticResource ParentBindingProxy}}">
-                                                                <MenuItem.ItemContainerTheme>
-                                                                    <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                                                        <Setter Property="Header" x:DataType="attributes:ComponentInfo" Value="{Binding Name}"/>
-                                                                        <Setter Property="Icon" x:DataType="attributes:ComponentInfo">
-                                                                            <Template>
-                                                                                <Border>
-                                                                                    <controls:FAIconSourceElement IconSource="{Binding IconSource}"
-                                                                                        Height="14" Width="14"
-                                                                                        TextElement.FontSize="14"
-                                                                                        Classes="repair-fontsize"/>
-                                                                                </Border>
-                                                                            </Template>
-                                                                        </Setter>
-                                                                        <Setter Property="Command" Value="{Binding Data.CreateContainerComponentCommand, Source={StaticResource ParentBindingProxy}}"/>
-                                                                        <Setter Property="CommandParameter" Value="{Binding}"/>
-                                                                    </ControlTheme>
-                                                                </MenuItem.ItemContainerTheme>
-                                                            </MenuItem>
-                                                            <MenuItem Header="创建副本" Icon="{ci:FluentIcon &#xeeb9;}"
-                                                                      CommandParameter="{Binding}"
-                                                                      Command="{Binding Data.DuplicateComponentCommand, Source={StaticResource ParentBindingProxy}}"/>
-                                                        </MenuFlyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                            </StackPanel>
-                                        </Border>
+                                            </Border>
+                                        </ci:TutorialBarrier>
                                     </Panel>
                                 </ControlTemplate>
                             </controls2:AdornerAttachHostControl.AdornerTemplate>
@@ -287,6 +304,35 @@
             </Setter>
         </Style>
         
-        
+        <Style Selector="^:dragging /template/ Border#HighlightBorder">
+            <Setter Property="AdornerLayer.Adorner">
+                <Template>
+                    <Border BorderBrush="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                            BorderThickness="1"
+                            ClipToBounds="False"
+                            AdornerLayer.IsClipEnabled="False"
+                            Clip="{x:Null}"
+                            BoxShadow="{Binding $self.BorderBrush, Converter={x:Static controls1:EditableComponentsListBox.BrushToBoxShadowConverter}}">
+                        <Border.Styles>
+                            <Style Selector="Border">
+                                <Style.Animations>
+                                    <Animation Duration="0:0:1"
+                                               PlaybackDirection="Alternate"
+                                               Easing="SineEaseInOut"
+                                               IterationCount="Infinite">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="Opacity" Value="0.1" />
+                                        </KeyFrame>
+                                        <KeyFrame Cue="100%">
+                                            <Setter Property="Opacity" Value="0.6" />
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Border.Styles>
+                    </Border>
+                </Template>
+            </Setter>
+        </Style>
     </Style>
 </Styles>

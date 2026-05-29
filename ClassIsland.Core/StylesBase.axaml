@@ -45,6 +45,8 @@
     <StyleInclude Source="/Themes/TabStrip.axaml"/>
     <StyleInclude Source="/Themes/Utils.axaml"/>
     <StyleInclude Source="/Themes/NavigationBackButton.axaml"/>
+    <StyleInclude Source="/Themes/TabControlWithBarrier.axaml"/>
+    <StyleInclude Source="/Themes/MyTeachingTipStyles.axaml"/>
     <StyleInclude Source="/Controls/Thing.axaml"/>
     <StyleInclude Source="/Controls/DrawerHost.axaml"/>
     <StyleInclude Source="/Controls/TouchDragThumb.axaml"/>
@@ -299,6 +301,11 @@
     <Style Selector="controls|FATeachingTip /template/ ContentPresenter#IconPresenter">
         <Setter Property="MaxWidth" Value="60"/>
         <Setter Property="MaxHeight" Value="60"/>
+    </Style>
+    
+    <Style Selector=":is(Button).foreground-accent /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+        <Setter Property="FontWeight" Value="Medium" />
     </Style>
     
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>

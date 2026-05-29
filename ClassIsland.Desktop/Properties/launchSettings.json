@@ -28,7 +28,6 @@
     },
     "ClassIsland (启动指定 Uri)": {
       "commandName": "Project",
-      "commandLineArgs": "--uri classisland://app/profile/",
       "commandLineArgs": "--uri classisland://app/settings/automation"
     },
     "ClassIsland (禁用集控) verbose": {
@@ -53,12 +52,16 @@
       "commandName": "Project",
       "commandLineArgs": "--recovery"
     },
-    "配置文件 2": {
+    "Mac": {
+      "commandName": "Project"
+    },
+    "ClassIsland (安全模式)": {
       "commandName": "Project",
       "commandLineArgs": "--safe"
     },
-    "Mac" : {
-      "commandName": "Project"
+    "ClassIsland (诊断模式)": {
+      "commandName": "Project",
+      "commandLineArgs": "--diagnostic"
     }
   }
 }

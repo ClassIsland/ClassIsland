@@ -27,7 +27,7 @@ public static class ShortcutHelpers
             var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
                 "ClassIsland.desktop");
 
-            await CreateFreedesktopShortcutAsync(desktopPath);
+            await CreateFreedesktopShortcutAsync(desktopPath, false);
             await CopyFreeDesktopIconAsync();
         }
     }
@@ -49,7 +49,7 @@ public static class ShortcutHelpers
             var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                 ".local/share/applications/cn.classisland.app.desktop");
 
-            await CreateFreedesktopShortcutAsync(startMenuPath);
+            await CreateFreedesktopShortcutAsync(startMenuPath, false);
             await CopyFreeDesktopIconAsync();
         }
     }
@@ -62,7 +62,7 @@ public static class ShortcutHelpers
         await File.WriteAllTextAsync(desktopPath, await new StreamReader(stream).ReadToEndAsync());
     }
 
-    public static async Task CreateFreedesktopShortcutAsync(string path = "")
+    public static async Task CreateFreedesktopShortcutAsync(string path = "", bool isAutostart = false)
     {
         if (AppBase.Current.PackagingType == "deb")
         {
@@ -77,7 +77,8 @@ public static class ShortcutHelpers
         var raw = await new StreamReader(
                 AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/cn.classisland.app.desktop")))
             .ReadToEndAsync();
-        var final = string.Format(raw, AppBase.AppVersion, AppBase.ExecutingEntrance);
+        var args = isAutostart ? "--autostartup" : "--uri %u";
+        var final = string.Format(raw, AppBase.AppVersion, AppBase.ExecutingEntrance, args);
         await File.WriteAllTextAsync(targetPath, final);
         SetUnixExecutePermission(path);
     }

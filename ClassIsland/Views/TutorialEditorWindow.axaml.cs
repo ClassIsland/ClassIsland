@@ -128,6 +128,20 @@ public partial class TutorialEditorWindow : MyWindow
         if (ViewModel.CurrentSentence != null) 
             ViewModel.CurrentParagraph?.Content.Remove(ViewModel.CurrentSentence);
     }
+
+    private void ButtonEditSentenceScript_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel.CurrentSentence == null)
+        {
+            return;
+        }
+
+        var window = new TutorialScriptEditWindow()
+        {
+            TutorialSentence = ViewModel.CurrentSentence
+        };
+        _ = window.ShowDialog(this);
+    }
     
     private void DataGridParagraphContent_OnGotFocus(object? sender, RoutedEventArgs e)
     {
