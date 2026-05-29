@@ -70,6 +70,9 @@ jobs:
       - name: Install Macos workload
         if: ${{ matrix.os == 'macos' }}
         run: |
+          sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
+          xcodebuild -version
+          xcodebuild -showsdks
           dotnet workload install macos
         
       - name: Add GitHub Package Registry
