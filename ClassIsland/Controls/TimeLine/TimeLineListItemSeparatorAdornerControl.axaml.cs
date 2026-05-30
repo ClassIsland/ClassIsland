@@ -83,9 +83,9 @@ public partial class TimeLineListItemSeparatorAdornerControl : UserControl
             return;
         }
         var v = e.Vector.Y;
-        var d = GetDelta(_initStartTime, v);
+        var d = GetDelta(TimePoint.StartTime, v);
 
-        TimePoint.StartTime = TimePoint.EndTime = TimeSpanHelper.Clamp(_initStartTime + d, MinTime, MaxTime);
+        TimePoint.StartTime = TimePoint.EndTime = TimeSpanHelper.Clamp(TimePoint.StartTime + d, MinTime, MaxTime);
     }
 
     private void Thumb_OnDragCompleted(object sender, VectorEventArgs e)

@@ -308,5 +308,9 @@
         <Setter Property="FontWeight" Value="Medium" />
     </Style>
     
+    <Style Selector=":is(controls1|ScrollPresenter)">
+        <Setter Property="ci:ScrollPresenterAnimationAssist.IsTeleportationScrollEnabled" Value="True"/>
+    </Style>
+    
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

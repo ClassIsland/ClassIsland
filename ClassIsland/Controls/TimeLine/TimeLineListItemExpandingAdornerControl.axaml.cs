@@ -143,7 +143,7 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
 
     void ThumbTop_OnDragDelta(object _, VectorEventArgs e)
     {
-        var a = _initStartTime;
+        var a = TimePoint.StartTime;
         var b = PrevTimePoint();
         var d = GetDelta(_initStartTime, e.Vector.Y);
         // Console.WriteLine($"{_initStartTime} {e.Vector.Y} {d}");
@@ -198,8 +198,8 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
 
     void Thumb_OnDragDelta(object sender, VectorEventArgs e)
     {
-        var a1 = _initStartTime;
-        var a2 = _initEndTime;
+        var a1 = TimePoint.StartTime;
+        var a2 = TimePoint.EndTime;
         var d = GetDelta(_initStartTime, e.Vector.Y);
 
         if (!IsSticky && (a1 + d < PrevTimePoint()?.EndTime || NextTimePoint()?.StartTime < a2 + d))
