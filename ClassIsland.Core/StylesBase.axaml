@@ -312,5 +312,9 @@
         <Setter Property="ci:ScrollPresenterAnimationAssist.IsTeleportationScrollEnabled" Value="True"/>
     </Style>
     
+    <Style Selector=":is(ListBoxItem)">
+        <Setter Property="ci:ControlCompositionFadeInAssist.IsFadeInEnabled" Value="True"/>
+    </Style>
+    
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>
