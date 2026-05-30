@@ -15,6 +15,8 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
     private string _notificationSoundPath = "";
     private bool _isSettingsEnabled = false;
     private bool _isNotificationTopmostEnabled = false;
+    private bool _allowSpeechContinueAfterEnd = false;
+    private bool _allowSoundContinueAfterEnd = false;
 
     /// <summary>
     /// 是否启用提醒
@@ -96,6 +98,34 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         {
             if (value == _isNotificationTopmostEnabled) return;
             _isNotificationTopmostEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否允许语音在通知结束后继续完成播放而非直接截断
+    /// </summary>
+    public bool AllowSpeechContinueAfterEnd
+    {
+        get => _allowSpeechContinueAfterEnd;
+        set
+        {
+            if (value == _allowSpeechContinueAfterEnd) return;
+            _allowSpeechContinueAfterEnd = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否允许提醒音效在通知结束后继续完成播放而非直接截断
+    /// </summary>
+    public bool AllowSoundContinueAfterEnd
+    {
+        get => _allowSoundContinueAfterEnd;
+        set
+        {
+            if (value == _allowSoundContinueAfterEnd) return;
+            _allowSoundContinueAfterEnd = value;
             OnPropertyChanged();
         }
     }

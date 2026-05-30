@@ -45,7 +45,25 @@ public class NotificationWorkerService : INotificationWorkerService
 
     private readonly object _playingRequestsLock = new();
     private List<(NotificationRequest request, bool overlay)> PlayingRequests { get; } = [];
-    
+    private readonly HashSet<CancellationTokenSource> _activeAudioTokens = new();
+
+    /// <summary>
+    /// 取消所有正在播放的音效令牌。
+    /// </summary>
+    public void CancelAllAudio()
+    {
+        CancellationTokenSource[] tokens;
+        lock (_playingRequestsLock)
+        {
+            tokens = [.. _activeAudioTokens];
+            _activeAudioTokens.Clear();
+        }
+        foreach (var token in tokens)
+        {
+            token.Cancel();
+        }
+        SpeechService.ClearSpeechQueue();
+    }
     public NotificationWorkerService(ISpeechService speechService,
         IAudioService audioService, 
         SettingsService settingsService,
@@ -214,6 +232,10 @@ public class NotificationWorkerService : INotificationWorkerService
                     Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
                     // 音效令牌独立于请求的取消令牌，移交时不会被取消。
                     audioCancellationTokenSource = new CancellationTokenSource();
+                    lock (_playingRequestsLock)
+                    {
+                        _activeAudioTokens.Add(audioCancellationTokenSource);
+                    }
                     _ = PlayNotificationSoundAsync(settings, audioCancellationTokenSource);
                 }
                 catch (Exception e)
@@ -258,7 +280,10 @@ public class NotificationWorkerService : INotificationWorkerService
             if (request.OverlayContent == null || !isMask)
             {
                 TransitionState(request, NotificationState.Completed);
-                SpeechService.ClearSpeechQueue();
+                if (!settings.AllowSpeechContinueAfterEnd)
+                {
+                    SpeechService.ClearSpeechQueue();
+                }
                 await request.CompletedTokenSource.CancelAsync();
             }
 
@@ -292,10 +317,32 @@ public class NotificationWorkerService : INotificationWorkerService
                 session.TimingStopwatch.Reset();
                 session.SessionPlayedTime += playedTime;
             }
-            // 通知移交（Interrupted）时不在此处停止, 其他情况将停止.
-            if (request.State != NotificationState.Interrupted)
+            // 音频截断逻辑：
+            // Interrupted: 不截断
+            // Cancelled: 直接截断
+            // 其他: 看设置决定
+            if (request.State == NotificationState.Interrupted)
             {
+                // Interrupted
+            }
+            else if (request.State == NotificationState.Cancelled)
+            {
+                // Cancelled
                 audioCancellationTokenSource?.Cancel();
+            }
+            else
+            {
+                if (!settings.AllowSoundContinueAfterEnd)
+                {
+                    audioCancellationTokenSource?.Cancel();
+                }
+            }
+            if (audioCancellationTokenSource != null)
+            {
+                lock (_playingRequestsLock)
+                {
+                    _activeAudioTokens.Remove(audioCancellationTokenSource);
+                }
             }
             Logger.LogTrace("[{id}] END session, isMask={isMask}, playedTime={playedTime}", id, isMask, session.SessionPlayedTime);
             lock (_playingRequestsLock)

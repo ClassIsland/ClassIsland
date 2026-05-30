@@ -381,6 +381,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             PlayingTickets.Clear();
             UpdateNotificationPlayingState();
         }
+        IAppHost.GetService<INotificationWorkerService>().CancelAllAudio();
         foreach (var group in groups)
         {
             foreach (var request in group.Requests)
