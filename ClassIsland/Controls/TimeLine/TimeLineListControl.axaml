@@ -146,12 +146,15 @@
                             <ScrollViewer Padding="{TemplateBinding Padding}"
                                           ClipToBounds="False"
                                           Focusable="false">
-                                <Grid>
-                                    <controls:TimeLineBackgroundRulerControl Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
-                                    <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
-                                    <!--<TextBlock Text="{Binding IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                <VisualLayerManager>
+                                    <Grid>
+                                        <controls:TimeLineBackgroundRulerControl
+                                            Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
+                                        <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+                                        <!--<TextBlock Text="{Binding IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                Foreground="Red"/>-->
-                                </Grid>
+                                    </Grid>
+                                </VisualLayerManager>
                             </ScrollViewer>
                         </Border>
                     </Grid>
