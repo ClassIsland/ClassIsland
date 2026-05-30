@@ -167,6 +167,7 @@
                     </Button.IsVisible>
                     <controls1:IconText Glyph="&#xe109;" Text="上一步" />
                 </Button>
+                <HyperlinkButton Content="高级换课..." Click="ButtonAdvancedClassChanging_OnClick" ToolTip.Tip="打开调课界面，支持跨天的换课选项和更复杂的调课方案。"></HyperlinkButton>
             </StackPanel>
             <StackPanel Grid.Column="2"
                         Orientation="Horizontal"
