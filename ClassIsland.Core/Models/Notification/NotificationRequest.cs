@@ -230,6 +230,11 @@ public class NotificationRequest : ObservableRecipient
     internal int InitialQueueIndex { get; set; } = -1;
 
     /// <summary>
+    /// 此请求所属的通知组
+    /// </summary>
+    internal NotificationGroup? Group { get; set; }
+
+    /// <summary>
     /// 提醒遮罩播放会话
     /// </summary>
     public NotificationPlayingSessionInfo MaskSession { get; } = new();
@@ -256,6 +261,11 @@ public class NotificationRequest : ObservableRecipient
         _cancellationTokenSource.Token.Register(() =>
         {
             Canceled?.Invoke(this, EventArgs.Empty);
+        });
+        _completedTokenSource = new CancellationTokenSource();
+        _completedTokenSource.Token.Register(() =>
+        {
+            Completed?.Invoke(this, EventArgs.Empty);
         });
     }
 

@@ -17,7 +17,7 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface INotificationHostService : IHostedService, INotifyPropertyChanged
 {
-    internal PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; }
+    internal PriorityQueue<NotificationGroup, NotificationPriority> RequestQueue { get; }
     internal ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; }
     
     internal NotificationRequest? CurrentRequest { get; set; }
@@ -85,9 +85,9 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     public IList<NotificationPlayingTicket> PullNotificationRequests(INotificationConsumer consumer);
     
     /// <summary>
-    /// 分发队列中提醒请求。
+    /// 分发队列中提醒组到消费者。
     /// </summary>
-    public void PopRequestsToConsumers();
+    public void PopGroupsToConsumers();
     
     /// <summary>
     /// 当前是否正在播放提醒
