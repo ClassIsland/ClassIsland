@@ -196,6 +196,8 @@ public class NotificationWorkerService : INotificationWorkerService
         {
             PlayingRequests.Add(tuple);
         }
+        // 音效令牌独立于请求的取消令牌，移交时不会被取消。
+        CancellationTokenSource? audioCancellationTokenSource = null;
         Logger.LogTrace("[{id}] Start session, isMask={isMask}, duration={duration}", id, isMask, duration);
         try
         {
@@ -210,9 +212,8 @@ public class NotificationWorkerService : INotificationWorkerService
                 try
                 {
                     Logger.LogInformation("即将播放提醒音效：{}", settings.NotificationSoundPath);
-                    // 音效是独立的后台播放任务，但生命周期跟随提醒本身。
-                    var audioCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
-                        request.CancellationToken);
+                    // 音效令牌独立于请求的取消令牌，移交时不会被取消。
+                    audioCancellationTokenSource = new CancellationTokenSource();
                     _ = PlayNotificationSoundAsync(settings, audioCancellationTokenSource);
                 }
                 catch (Exception e)
@@ -290,6 +291,11 @@ public class NotificationWorkerService : INotificationWorkerService
                 var playedTime = session.TimingStopwatch.Elapsed;
                 session.TimingStopwatch.Reset();
                 session.SessionPlayedTime += playedTime;
+            }
+            // 通知移交（Interrupted）时不在此处停止, 其他情况将停止.
+            if (request.State != NotificationState.Interrupted)
+            {
+                audioCancellationTokenSource?.Cancel();
             }
             Logger.LogTrace("[{id}] END session, isMask={isMask}, playedTime={playedTime}", id, isMask, session.SessionPlayedTime);
             lock (_playingRequestsLock)

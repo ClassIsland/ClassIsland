@@ -100,12 +100,20 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
             {
                 NotificationPlayingTicket ticket;
                 INotificationPlaybackHandler handler;
+                bool needPull = false;
                 lock (_syncLock)
                 {
                     if (session.Queue.Count == 0)
                     {
-                        var pulledTickets = NotificationHostService.PullNotificationRequests(consumer);
-                        if (pulledTickets.Count > 0)
+                        needPull = true;
+                    }
+                }
+                if (needPull)
+                {
+                    var pulledTickets = NotificationHostService.PullNotificationRequests(consumer);
+                    if (pulledTickets.Count > 0)
+                    {
+                        lock (_syncLock)
                         {
                             foreach (var t in pulledTickets)
                             {
@@ -113,13 +121,16 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
                             }
                         }
                     }
+                }
+                lock (_syncLock)
+                {
                     if (session.Queue.Count == 0)
                     {
                         session.IsPlaying = false;
                         var h = session.Handler;
                         _sessions.Remove(consumer);
                         h?.OnPlaybackCompleted();
-                        NotificationHostService.PopRequestsToConsumers();
+                        NotificationHostService.PopGroupsToConsumers();
                         return;
                     }
                     ticket = session.Queue.Dequeue();
@@ -141,7 +152,7 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
                     {
                         session.PlayingTickets.Remove(ticket);
                     }
-                    NotificationHostService.PopRequestsToConsumers();
+                    NotificationHostService.PopGroupsToConsumers();
                 }
             }
         }
@@ -154,7 +165,7 @@ public class NotificationPlaybackService(ILogger<NotificationPlaybackService> lo
                 _sessions.Remove(consumer);
             }
             try { session.Handler?.OnPlaybackCompleted(); } catch { }
-            NotificationHostService.PopRequestsToConsumers();
+            NotificationHostService.PopGroupsToConsumers();
         }
     }
 
