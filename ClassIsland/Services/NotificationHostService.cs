@@ -148,6 +148,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 case NotificationState.Completed:
                 case NotificationState.Cancelled:
                     EnqueuedGroups.Remove(request.Group);
+                    PoppedGroups.Remove(request.Group);
                     break;
                 case NotificationState.Queued:
                     PoppedGroups.Remove(request.Group);
