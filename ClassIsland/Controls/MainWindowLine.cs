@@ -551,16 +551,16 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     if (x.Kind is not (RawInputDigitizerContactKind.Finger or RawInputDigitizerContactKind.Pen or RawInputDigitizerContactKind.Eraser or RawInputDigitizerContactKind.None or RawInputDigitizerContactKind.Hover))
                         continue;
 
-                    double rangeX = x.MaxX - x.MinX;
-                    double rangeY = x.MaxY - x.MinY;
-                    if (rangeX <= 0 || rangeY <= 0) continue;
+                    double maxX = x.MaxX > 0 ? x.MaxX : vWidth;
+                    double maxY = x.MaxY > 0 ? x.MaxY : vHeight;
+                    if (maxX <= 0 || maxY <= 0) continue;
                     // 归一化
-                    double normX = (double)(x.X - x.MinX) / rangeX;
-                    double normY = (double)(x.Y - x.MinY) / rangeY;
+                    double normX = (double)x.X / maxX;
+                    double normY = (double)x.Y / maxY;
                     var px = vLeft + (normX * vWidth);
                     var py = vTop + (normY * vHeight);
 
-                    // Logger.LogTrace("Digitizer Input: Kind={}, Raw=({}, {}), Norm=({:F4}, {:F4}), Physical=({:F2}, {:F2})", x.Kind, x.X, x.Y, normX, normY, px, py);
+                    // Logger.LogTrace("Digitizer Input: Kind={}, Raw=({}, {}), Max=({}, {}), Norm=({:F4}, {:F4}), Physical=({:F2}, {:F2})", x.Kind, x.X, x.Y, maxX, maxY, normX, normY, px, py);
                     if (GetMouseStatusByPos(new Point(px, py)))
                     {
                         if (x.Kind is RawInputDigitizerContactKind.Finger or RawInputDigitizerContactKind.Pen or RawInputDigitizerContactKind.Eraser)
@@ -570,11 +570,14 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     }
                 }
                 // 状态机：松开时启动计时器
-                if (wasTouchIn && !isAnyInNow && SettingsService.Settings.TouchInFadingDurationMs > 0)
+                if (wasTouchIn && !isAnyInNow)
                 {
-                    TouchInFadingTimer.Stop();
-                    TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
-                    TouchInFadingTimer.Start();
+                    if (SettingsService.Settings.TouchInFadingDurationMs > 0)
+                    {
+                        TouchInFadingTimer.Stop();
+                        TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
+                        TouchInFadingTimer.Start();
+                    }
                 }
                 else if (isAnyInNow)
                 {
@@ -589,12 +592,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 var isSimulated = (mouseData.Mouse.ExtraInformation & 0xFFFFFF00u) == 0xFF515700u;
                 if (isSimulated)  // pass系统合成的虚拟鼠标事件(触控/笔)
                 {
-                    _isRealMouseIn = false;
                     break;
-                }
-                if (TouchInFadingTimer.IsEnabled)
-                {
-                    TouchInFadingTimer.Stop();
                 }
                 UpdateMouseStatus();
                 break;
