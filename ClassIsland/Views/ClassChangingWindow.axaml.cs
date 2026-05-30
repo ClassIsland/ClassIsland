@@ -78,6 +78,15 @@ public partial class ClassChangingWindow : MyWindow
     {
         ViewModel.SlideIndex = 1;
     }
+    
+    private async void ButtonAdvancedClassChanging_OnClick(object sender, RoutedEventArgs e)
+    {
+        IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/profile/adjustment"));
+        if(!await IAppHost.GetService<ManagementService>().AuthorizeByLevel(IAppHost.GetService<ManagementService>().CredentialConfig.EditProfileAuthorizeLevel))
+        {
+            Close();
+        }
+    }
 
     private async void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
     {
