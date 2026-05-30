@@ -4,6 +4,7 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using ClassIsland.Helpers;
 using ClassIsland.Shared.Models.Profile;
 
@@ -59,6 +60,26 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
     {
         get => GetValue(IsStickyProperty);
         set => SetValue(IsStickyProperty, value);
+    }
+
+    private bool _isAddTimePointPopupVisible = true;
+
+    public static readonly DirectProperty<TimeLineListItemExpandingAdornerControl, bool> IsAddTimePointPopupVisibleProperty = AvaloniaProperty.RegisterDirect<TimeLineListItemExpandingAdornerControl, bool>(
+        nameof(IsAddTimePointPopupVisible), o => o.IsAddTimePointPopupVisible, (o, v) => o.IsAddTimePointPopupVisible = v);
+
+    public bool IsAddTimePointPopupVisible
+    {
+        get => _isAddTimePointPopupVisible;
+        set => SetAndRaise(IsAddTimePointPopupVisibleProperty, ref _isAddTimePointPopupVisible, value);
+    }
+
+    public static readonly RoutedEvent<TimeLineInsertTimePointEventArgs> RequestInsertTimePointEvent = RoutedEvent.Register<TimeLineListItemExpandingAdornerControl, TimeLineInsertTimePointEventArgs>(
+        nameof(RequestInsertTimePoint), RoutingStrategies.Bubble | RoutingStrategies.Tunnel);
+
+    public event EventHandler<TimeLineInsertTimePointEventArgs>? RequestInsertTimePoint
+    {
+        add => AddHandler(RequestInsertTimePointEvent, value);
+        remove => RemoveHandler(RequestInsertTimePointEvent, value);
     }
     
     private TimeSpan _initStartTime = TimeSpan.Zero;
@@ -237,5 +258,30 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
     {
         _initStartTime = TimePoint.StartTime;
         _initEndTime = TimePoint.EndTime;
+    }
+
+    private void ButtonAddOnClass_OnClick(object? sender, RoutedEventArgs e)
+    {
+        RaiseEvent(new TimeLineInsertTimePointEventArgs(RequestInsertTimePointEvent)
+        {
+            Kind = 0,
+            TimePoint = TimePoint,
+            Location = TimeLineInsertTimePointEventArgs.InsertLocation.After
+        });
+    }
+
+    private void ButtonAddOnBreaking_OnClick(object? sender, RoutedEventArgs e)
+    {
+        RaiseEvent(new TimeLineInsertTimePointEventArgs(RequestInsertTimePointEvent)
+        {
+            Kind = 1,
+            TimePoint = TimePoint,
+            Location = TimeLineInsertTimePointEventArgs.InsertLocation.After
+        });
+    }
+
+    private void ButtonDismiss_OnClick(object? sender, RoutedEventArgs e)
+    {
+        IsAddTimePointPopupVisible = false;
     }
 }

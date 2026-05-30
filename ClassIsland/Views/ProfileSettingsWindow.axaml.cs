@@ -19,6 +19,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ClassIsland.Controls.ScheduleDataGrid;
+using ClassIsland.Controls.TimeLine;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -75,6 +76,8 @@ public partial class ProfileSettingsWindow : MyWindow
         ListViewTimePoints.KeyDown += OnKeyDown;
         ViewModel.ObservableForProperty(x => x.IsDrawerOpen)
             .Subscribe(_ => OnDrawerStateChanged());
+        ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
+            .Subscribe(_ => TimeLineListControl?.ScrollIntoViewCentered(ViewModel.SelectedTimeLayout?.Layouts.FirstOrDefault()));
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -98,7 +101,7 @@ public partial class ProfileSettingsWindow : MyWindow
                         : currentIndex - 1;
 
                     ViewModel.SelectedTimePoint = layouts[nextIndex];
-                    TimeLineListControl?.ScrollIntoView(ViewModel.SelectedTimePoint);
+                    TimeLineListControl?.ScrollIntoViewCentered(ViewModel.SelectedTimePoint);
                     e.Handled = true;
                 }
                 break;
@@ -111,7 +114,7 @@ public partial class ProfileSettingsWindow : MyWindow
                         : currentIndex + 1;
 
                     ViewModel.SelectedTimePoint = layouts[nextIndex];
-                    TimeLineListControl?.ScrollIntoView(ViewModel.SelectedTimePoint);
+                    TimeLineListControl?.ScrollIntoViewCentered(ViewModel.SelectedTimePoint);
                     e.Handled = true;
                 }
                 break;
@@ -120,8 +123,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void TimeLineListControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (TimeLineListControl?.SelectedItem != null)
-            TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+        // if (TimeLineListControl?.SelectedItem != null)
+        //     TimeLineListControl.ScrollIntoViewCentered(TimeLineListControl.SelectedItem);
     }
     
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
@@ -821,6 +824,7 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         timeLayout.InsertTimePoint(l.Count, item);
+        TimeLineListControl?.ScrollIntoViewCentered(item);
     }
     
     private void AddTimeLayoutItem(int timeType)
@@ -942,6 +946,17 @@ public partial class ProfileSettingsWindow : MyWindow
         AddTimeLayoutItem(3);
     }
     
+    private void TimeLineListControl_OnRequestInsertTimePoint(object? sender, TimeLineInsertTimePointEventArgs e)
+    {
+        if (e.Location != TimeLineInsertTimePointEventArgs.InsertLocation.After)
+        {
+            return;  // 未实现
+        }
+
+        ViewModel.SelectedTimePoint = e.TimePoint;
+        AddTimeLayoutItem(e.Kind);
+    }
+    
     private void ButtonRemoveTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
         RemoveSelectedTimePoint();
@@ -1038,7 +1053,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
         if (TimeLineListControl.SelectedItem != null)
-            TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+            TimeLineListControl.ScrollIntoViewCentered(TimeLineListControl.SelectedItem);
     }
 
     private void ButtonZoomIn_OnClick(object sender, RoutedEventArgs e)
@@ -1049,7 +1064,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
         if (TimeLineListControl.SelectedItem != null)
-            TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+            TimeLineListControl.ScrollIntoViewCentered(TimeLineListControl.SelectedItem);
     }
 
     private void ButtonTimeLayoutItemScrollIntoItem(object? sender, RoutedEventArgs e)
@@ -1063,7 +1078,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
         ViewModel.SelectedTimePoint = null;
         ViewModel.SelectedTimePoint = tpr;
-        TimeLineListControl.ScrollIntoView(tpr);
+        TimeLineListControl.ScrollIntoViewCentered(tpr);
         ListViewTimePoints.ScrollIntoView(tpr);
     }
 
@@ -1411,7 +1426,5 @@ public partial class ProfileSettingsWindow : MyWindow
     }
     
     #endregion
-
-
     
 }
