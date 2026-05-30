@@ -235,7 +235,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isNonExactCountdownEnabled = false;
     private bool _showDetailedStatusOnSplash = false;
 
-
     public void NotifyPropertyChanged(string propertyName)
     {
         OnPropertyChanged(propertyName);
@@ -1873,7 +1872,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-
     public UpdateStatus LastUpdateStatus
     {
         get => _lastUpdateStatus;
@@ -2029,6 +2027,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isPluginsUpdateNotificationEnabled = true;
     private int _windowTopmostRecheckMode = 0;
     private bool _isScreenRecordingModeEnabled = false;
+    private bool _isWindowCaptureBlockingEnabled = false;
     private bool _hasEditModeTutorialShown = false;
     private int _classPlanEditModeIndex = 1;
     private bool _isRefreshingToastEnabled = true;
@@ -2085,7 +2084,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _windowDockingMonitorIndex) return;
 
-
             if (value < 0)
             {
                 throw new ArgumentException("选择不能为空。");
@@ -2113,6 +2111,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isScreenRecordingModeEnabled) return;
             _isScreenRecordingModeEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsWindowCaptureBlockingEnabled
+    {
+        get => _isWindowCaptureBlockingEnabled;
+        set
+        {
+            if (value == _isWindowCaptureBlockingEnabled) return;
+            _isWindowCaptureBlockingEnabled = value;
             OnPropertyChanged();
         }
     }
