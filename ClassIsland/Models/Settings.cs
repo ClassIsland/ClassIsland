@@ -100,6 +100,20 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _cityName = "北京 (北京, 中国)";
     private int _mainWindowFontWeight2 = (int)FontWeight.Medium;
     private int _taskBarIconClickBehavior = OperatingSystem.IsWindows() ? 0 : 4;
+    private bool _isTrayMenuAboutVisible = true;
+    private bool _isTrayMenuTutorialVisible = true;
+    private bool _isTrayMenuHelpVisible = true;
+    private bool _isTrayMenuShowMainWindowVisible = true;
+    private bool _isTrayMenuHideMainWindowVisible = true;
+    private bool _isTrayMenuClearNotificationsVisible = true;
+    private bool _isTrayMenuMoreOptionsVisible = true;
+    private bool _isTrayMenuEditProfileVisible = true;
+    private bool _isTrayMenuTempClassPlanVisible = true;
+    private bool _isTrayMenuClassSwapVisible = true;
+    private bool _isTrayMenuEditMainViewVisible = true;
+    private bool _isTrayMenuAppSettingsVisible = true;
+    private bool _isTrayMenuRestartVisible = true;
+    private bool _isTrayMenuExitVisible = true;
     private bool _showExtraInfoOnTimePoint = true;
     private int _extraInfoType = 0;
     private bool _isCountdownEnabled = true;
@@ -556,6 +570,160 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _taskBarIconClickBehavior) return;
             _taskBarIconClickBehavior = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuAboutVisible
+    {
+        get => _isTrayMenuAboutVisible;
+        set
+        {
+            if (value == _isTrayMenuAboutVisible) return;
+            _isTrayMenuAboutVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuTutorialVisible
+    {
+        get => _isTrayMenuTutorialVisible;
+        set
+        {
+            if (value == _isTrayMenuTutorialVisible) return;
+            _isTrayMenuTutorialVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuHelpVisible
+    {
+        get => _isTrayMenuHelpVisible;
+        set
+        {
+            if (value == _isTrayMenuHelpVisible) return;
+            _isTrayMenuHelpVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuShowMainWindowVisible
+    {
+        get => _isTrayMenuShowMainWindowVisible;
+        set
+        {
+            if (value == _isTrayMenuShowMainWindowVisible) return;
+            _isTrayMenuShowMainWindowVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuHideMainWindowVisible
+    {
+        get => _isTrayMenuHideMainWindowVisible;
+        set
+        {
+            if (value == _isTrayMenuHideMainWindowVisible) return;
+            _isTrayMenuHideMainWindowVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuClearNotificationsVisible
+    {
+        get => _isTrayMenuClearNotificationsVisible;
+        set
+        {
+            if (value == _isTrayMenuClearNotificationsVisible) return;
+            _isTrayMenuClearNotificationsVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuMoreOptionsVisible
+    {
+        get => _isTrayMenuMoreOptionsVisible;
+        set
+        {
+            if (value == _isTrayMenuMoreOptionsVisible) return;
+            _isTrayMenuMoreOptionsVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuEditProfileVisible
+    {
+        get => _isTrayMenuEditProfileVisible;
+        set
+        {
+            if (value == _isTrayMenuEditProfileVisible) return;
+            _isTrayMenuEditProfileVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuTempClassPlanVisible
+    {
+        get => _isTrayMenuTempClassPlanVisible;
+        set
+        {
+            if (value == _isTrayMenuTempClassPlanVisible) return;
+            _isTrayMenuTempClassPlanVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuClassSwapVisible
+    {
+        get => _isTrayMenuClassSwapVisible;
+        set
+        {
+            if (value == _isTrayMenuClassSwapVisible) return;
+            _isTrayMenuClassSwapVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuEditMainViewVisible
+    {
+        get => _isTrayMenuEditMainViewVisible;
+        set
+        {
+            if (value == _isTrayMenuEditMainViewVisible) return;
+            _isTrayMenuEditMainViewVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuAppSettingsVisible
+    {
+        get => _isTrayMenuAppSettingsVisible;
+        set
+        {
+            if (value == _isTrayMenuAppSettingsVisible) return;
+            _isTrayMenuAppSettingsVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuRestartVisible
+    {
+        get => _isTrayMenuRestartVisible;
+        set
+        {
+            if (value == _isTrayMenuRestartVisible) return;
+            _isTrayMenuRestartVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTrayMenuExitVisible
+    {
+        get => _isTrayMenuExitVisible;
+        set
+        {
+            if (value == _isTrayMenuExitVisible) return;
+            _isTrayMenuExitVisible = value;
             OnPropertyChanged();
         }
     }
