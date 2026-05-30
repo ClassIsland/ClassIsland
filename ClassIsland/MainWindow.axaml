@@ -47,12 +47,12 @@
     <Window.Resources>
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
-        <converters1:IntToBoolConverter x:Key="IntToBoolConverter"/>
         <profile:ClassPlan x:Key="FallbackClassPlan"/>
         
         <NativeMenu x:Key="AppMenu">
             <NativeMenuItem Header="ClassIsland" Click="MenuItemAbout_OnClick"
-                            IsVisible="{Binding ViewModel.Settings.IsTrayMenuAboutVisible}">
+                            IsVisible="{Binding ViewModel.Settings.IsTrayMenuAboutVisible}"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE260;}">
                 <NativeMenuItem.Icon>
                     <OnPlatform Default="Assets/AppLogo.png">
                         <On Content="{x:Null}" Options="macOS"/>
@@ -63,7 +63,7 @@
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE959;}"
                             Click="NativeMenuItemTutorials_OnClick">
                 <MenuItem.IsVisible>
-                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
                         <Binding Path="ViewModel.Settings.IsTrayMenuTutorialVisible" Mode="OneWay"/>
                     </MultiBinding>
@@ -73,7 +73,7 @@
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE23C;}"
                             Click="MenuItemHelps_OnClick">
                 <MenuItem.IsVisible>
-                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
                         <Binding Path="ViewModel.Settings.IsTrayMenuHelpVisible" Mode="OneWay"/>
                     </MultiBinding>
@@ -83,27 +83,27 @@
             <NativeMenuItem Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE813;}">
                 <MenuItem.IsVisible>
-                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}" />
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
-                        <Binding Path="ViewModel.Settings.IsTrayMenuShowMainWindowVisible" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsTrayMenuShowHideMainWindowVisible" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>
             <NativeMenuItem Header="隐藏主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE817;}">
                 <MenuItem.IsVisible>
-                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay"/>
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
-                        <Binding Path="ViewModel.Settings.IsTrayMenuHideMainWindowVisible" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsTrayMenuShowHideMainWindowVisible" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>
             <NativeMenuItem Header="清除全部提醒" Click="MenuItemClearAllNotifications_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE029;}">
                 <MenuItem.IsVisible>
-                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
                         <Binding Path="NotificationHostService.IsNotificationsPlaying" Mode="OneWay"/>
                         <Binding Path="ViewModel.Settings.IsTrayMenuClearNotificationsVisible" Mode="OneWay"/>
@@ -113,8 +113,12 @@
             <NativeMenuItem Header="更多选项…" Menu="{Binding MoreOptionsMenu}"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEBAC;}">
                 <MenuItem.IsVisible>
-                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
-                        <Binding Path="MoreOptionsMenu.Items.Count" Mode="OneWay" Converter="{StaticResource IntToBoolConverter}"/>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
+                        <Binding Path="MoreOptionsMenu.Items.Count" Mode="OneWay" Converter="{x:Static ObjectConverters.NotEqual}">
+                            <Binding.ConverterParameter>
+                                <x:Int32>0</x:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
                         <Binding Path="ViewModel.Settings.IsTrayMenuMoreOptionsVisible" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.IsVisible>

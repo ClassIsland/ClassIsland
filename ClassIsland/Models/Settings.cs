@@ -103,8 +103,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isTrayMenuAboutVisible = true;
     private bool _isTrayMenuTutorialVisible = true;
     private bool _isTrayMenuHelpVisible = true;
-    private bool _isTrayMenuShowMainWindowVisible = true;
-    private bool _isTrayMenuHideMainWindowVisible = true;
+    private bool _isTrayMenuShowHideMainWindowVisible = true;
     private bool _isTrayMenuClearNotificationsVisible = true;
     private bool _isTrayMenuMoreOptionsVisible = true;
     private bool _isTrayMenuEditProfileVisible = true;
@@ -608,24 +607,13 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public bool IsTrayMenuShowMainWindowVisible
+    public bool IsTrayMenuShowHideMainWindowVisible
     {
-        get => _isTrayMenuShowMainWindowVisible;
+        get => _isTrayMenuShowHideMainWindowVisible;
         set
         {
-            if (value == _isTrayMenuShowMainWindowVisible) return;
-            _isTrayMenuShowMainWindowVisible = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsTrayMenuHideMainWindowVisible
-    {
-        get => _isTrayMenuHideMainWindowVisible;
-        set
-        {
-            if (value == _isTrayMenuHideMainWindowVisible) return;
-            _isTrayMenuHideMainWindowVisible = value;
+            if (value == _isTrayMenuShowHideMainWindowVisible) return;
+            _isTrayMenuShowHideMainWindowVisible = value;
             OnPropertyChanged();
         }
     }
@@ -657,7 +645,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         get => _isTrayMenuEditProfileVisible;
         set
         {
-            if (value == _isTrayMenuEditProfileVisible) return;
+            if (!value || value == _isTrayMenuEditProfileVisible) return;
             _isTrayMenuEditProfileVisible = value;
             OnPropertyChanged();
         }
@@ -701,7 +689,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         get => _isTrayMenuAppSettingsVisible;
         set
         {
-            if (value == _isTrayMenuAppSettingsVisible) return;
+            if (!value || value == _isTrayMenuAppSettingsVisible) return;
             _isTrayMenuAppSettingsVisible = value;
             OnPropertyChanged();
         }
