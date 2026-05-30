@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Shared.Models.Notification;
@@ -17,6 +17,23 @@ public class NotificationRequest : ObservableRecipient
     private NotificationContent? _overlayContent;
     private NotificationContent _maskContent = NotificationContent.Empty;
     private double _leftProgress = 1.0;
+    private int? _targetLineNumber;
+    private static readonly HashSet<(NotificationState From, NotificationState To)> ValidStateTransitions =
+    [
+        (NotificationState.None, NotificationState.Queued),
+        (NotificationState.Queued, NotificationState.Playing),
+        (NotificationState.Queued, NotificationState.Cancelled),
+        (NotificationState.Playing, NotificationState.Paused),
+        (NotificationState.Playing, NotificationState.Completed),
+        (NotificationState.Playing, NotificationState.Cancelled),
+        (NotificationState.Playing, NotificationState.Interrupted),
+        (NotificationState.Paused, NotificationState.Playing),
+        (NotificationState.Paused, NotificationState.Cancelled),
+        (NotificationState.Paused, NotificationState.Completed),
+        (NotificationState.Paused, NotificationState.Interrupted),
+        (NotificationState.None, NotificationState.Cancelled),
+        (NotificationState.Interrupted, NotificationState.Queued), // 移交
+    ];
 
     /// <summary>
     /// 初始化一个 <see cref="NotificationRequest"/> 实例。
@@ -31,6 +48,20 @@ public class NotificationRequest : ObservableRecipient
         {
             Completed?.Invoke(this, EventArgs.Empty);
         });
+    }
+
+    /// <summary>
+    /// 目标行号。如果为 null，则由系统自动路由。
+    /// </summary>
+    public int? TargetLineNumber
+    {
+        get => _targetLineNumber;
+        set
+        {
+            if (value == _targetLineNumber) return;
+            _targetLineNumber = value;
+            OnPropertyChanged();
+        }
     }
 
     /// <summary>
@@ -121,10 +152,45 @@ public class NotificationRequest : ObservableRecipient
     /// </summary>
     public Guid ChannelId { get; set; }
 
+    private readonly object _stateLock = new();
+    private NotificationState _state = NotificationState.None;
+    
     /// <summary>
     /// 提醒播放状态
     /// </summary>
-    public NotificationState State { get; internal set; } = NotificationState.None;
+    public NotificationState State
+    {
+        get
+        {
+            lock (_stateLock)
+            {
+                return _state;
+            }
+        }
+        internal set
+        {
+            lock (_stateLock)
+            {
+                if (_state == value) return;
+                if (!IsValidStateTransition(_state, value))
+                {
+                    // Logger.LogWarning($"无效的状态转换: {_state} -> {value}");
+                    if (value != NotificationState.Cancelled)
+                        return;
+                }
+                _state = value;
+            }
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 检查状态转换是否有效
+    /// </summary>
+    private static bool IsValidStateTransition(NotificationState from, NotificationState to)
+    {
+        return ValidStateTransitions.Contains((from, to));
+    }
     
     /// <summary>
     /// 提醒播放剩余进度
@@ -164,6 +230,11 @@ public class NotificationRequest : ObservableRecipient
     internal int InitialQueueIndex { get; set; } = -1;
 
     /// <summary>
+    /// 此请求所属的通知组
+    /// </summary>
+    internal NotificationGroup? Group { get; set; }
+
+    /// <summary>
     /// 提醒遮罩播放会话
     /// </summary>
     public NotificationPlayingSessionInfo MaskSession { get; } = new();
@@ -174,11 +245,50 @@ public class NotificationRequest : ObservableRecipient
     public NotificationPlayingSessionInfo OverlaySession { get; } = new();
 
     /// <summary>
-    /// 取消当前提醒。
+    /// 取消提醒。
     /// </summary>
     public void Cancel()
     {
         CancellationTokenSource.Cancel();
+    }
+
+    /// <summary>
+    /// 为移交重置取消令牌
+    /// </summary>
+    internal void ResetCancellationTokensForTransfer()
+    {
+        _cancellationTokenSource = new CancellationTokenSource();
+        _cancellationTokenSource.Token.Register(() =>
+        {
+            Canceled?.Invoke(this, EventArgs.Empty);
+        });
+        _completedTokenSource = new CancellationTokenSource();
+        _completedTokenSource.Token.Register(() =>
+        {
+            Completed?.Invoke(this, EventArgs.Empty);
+        });
+    }
+
+    /// <summary>
+    /// 暂停提醒。
+    /// </summary>
+    public void Pause()
+    {
+        if (State == NotificationState.Playing)
+        {
+            State = NotificationState.Paused;
+        }
+    }
+
+    /// <summary>
+    /// 恢复提醒。
+    /// </summary>
+    public void Resume()
+    {
+        if (State == NotificationState.Paused)
+        {
+            State = NotificationState.Playing;
+        }
     }
 
     /// <inheritdoc />

@@ -49,11 +49,18 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
     {
         lock (_audioPlaybackDeviceInitializeLock)
         {
-            if (_sharedAudioPlaybackDevice?.IsValueDisposed == false)
+            if (_sharedAudioPlaybackDevice != null)
             {
-                var lease = _sharedAudioPlaybackDevice.Rent();
-                Logger.LogDebug("使用了缓存的音频设备 {} (Id={})", lease.Value.Info?.Name, lease.Value.Info?.Id);
-                return lease;
+                try
+                {
+                    var lease = _sharedAudioPlaybackDevice.Rent();
+                    Logger.LogDebug("使用了缓存的音频设备 {} (Id={})", lease.Value.Info?.Name, lease.Value.Info?.Id);
+                    return lease;
+                }
+                catch (ObjectDisposedException)
+                {
+                    _sharedAudioPlaybackDevice = null;
+                }
             }
 
             if (TryInitializeDefaultPlaybackDeviceInternal() is not { } device)
@@ -62,7 +69,6 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
             }
             _sharedAudioPlaybackDevice = new RefCounted<AudioPlaybackDevice>(device);
             var lease2 = _sharedAudioPlaybackDevice.Rent();
-            _sharedAudioPlaybackDevice.Dispose();
             return lease2;
         }
     });
@@ -109,22 +115,43 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
         Logger.LogDebug("开始播放音频 {}", audio.GetHashCode());
         device.MasterMixer.AddComponent(player);
         var tcs = new TaskCompletionSource<bool>();
+        var completed = false;
 
         player.PlaybackEnded += OnPlayerOnPlaybackEnded;
         cancellationToken.Value.Register(() =>
         {
+            if (completed)
+                return;
             Logger.LogDebug("取消播放音频 {}", audio.GetHashCode());
+            try
+            {
+                player.Stop();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "停止音频播放时发生异常");
+            }
             tcs.TrySetResult(false);
         });
-        player.Play();
-        tcs.Task.Wait();  // 不要在此处 await，否则会导致设备停止过程阻塞，无法完成播放流程。
-        Logger.LogDebug("结束播放音频 {}", audio.GetHashCode());
-        player.PlaybackEnded -= OnPlayerOnPlaybackEnded;
+        try
+        {
+            player.Play();
+            tcs.Task.Wait();  // 不要在此处 await，否则会导致设备停止过程阻塞，无法完成播放流程。
+        }
+        finally
+        {
+            completed = true;
+            Logger.LogDebug("结束播放音频 {}", audio.GetHashCode());
+            device.MasterMixer.RemoveComponent(player);
+            player.PlaybackEnded -= OnPlayerOnPlaybackEnded;
+        }
 
         return;
 
         void OnPlayerOnPlaybackEnded(object? sender, EventArgs args)
         {
+            if (completed)
+                return;
             tcs.TrySetResult(true);
         }
     });
@@ -137,6 +164,7 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
 
     public void Dispose()
     {
+        _sharedAudioPlaybackDevice?.Dispose();
         AudioEngine.Dispose();
         GC.SuppressFinalize(this);
     }

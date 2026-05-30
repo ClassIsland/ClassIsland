@@ -20,7 +20,7 @@ public interface INotificationConsumer
     public void ReceiveNotifications(IReadOnlyList<NotificationPlayingTicket> notificationRequests);
     
     /// <summary>
-    /// 待处理的提醒数量
+    /// 正在播放和待处理的提醒数量
     /// </summary>
     public int QueuedNotificationCount { get; }
     
