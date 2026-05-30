@@ -57,6 +57,10 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private List<Control> AttachedAdorners { get; } = [];
     
     private TeachingTip? CurrentTeachingTip { get; set; }
+
+    private bool WasCurrentTeachingTipOpenBeforeHostChange { get; set; }
+
+    private bool AreAdornersDetachedForHostChange { get; set; }
     
     private Border? CurrentDimBorder { get; set; }
     
@@ -279,6 +283,72 @@ public partial class TutorialService : ObservableObject, ITutorialService
         layer?.Children.Add(adorner);
         AdornerLayer.SetAdornedElement(adorner, target);
         AttachedAdorners.Add(adorner);
+    }
+
+    public void DetachCurrentAdornersForHostChange(TopLevel topLevel)
+    {
+        if (AttachedToplevel != topLevel || AttachedToplevel.Content is not Visual visual || AttachedAdorners.Count <= 0)
+        {
+            return;
+        }
+
+        var layer = AdornerLayer.GetAdornerLayer(visual);
+        if (layer == null)
+        {
+            return;
+        }
+
+        WasCurrentTeachingTipOpenBeforeHostChange = CurrentTeachingTip?.IsOpen == true;
+        if (CurrentTeachingTip != null)
+        {
+            CurrentTeachingTip.IsOpen = false;
+        }
+
+        foreach (var adorner in AttachedAdorners)
+        {
+            layer.Children.Remove(adorner);
+        }
+
+        AreAdornersDetachedForHostChange = true;
+    }
+
+    public void ReattachCurrentAdornersAfterHostChange(TopLevel topLevel)
+    {
+        if (!AreAdornersDetachedForHostChange || AttachedToplevel != topLevel || AttachedToplevel.Content is not Visual visual)
+        {
+            return;
+        }
+
+        var layer = AdornerLayer.GetAdornerLayer(visual);
+        if (layer == null)
+        {
+            return;
+        }
+
+        foreach (var adorner in AttachedAdorners)
+        {
+            if (!layer.Children.Contains(adorner))
+            {
+                layer.Children.Add(adorner);
+            }
+        }
+
+        var teachingTip = CurrentTeachingTip;
+        var shouldReopenTeachingTip = WasCurrentTeachingTipOpenBeforeHostChange;
+        AreAdornersDetachedForHostChange = false;
+        WasCurrentTeachingTipOpenBeforeHostChange = false;
+        if (teachingTip == null || !shouldReopenTeachingTip)
+        {
+            return;
+        }
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (CurrentTeachingTip == teachingTip && CurrentSentence != null)
+            {
+                teachingTip.IsOpen = true;
+            }
+        }, DispatcherPriority.Background);
     }
 
     private void StartSentence(TutorialSentence sentence)

@@ -93,9 +93,9 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
 
         var width = (InnerContainerWidth);
         var pausePos = _pausePos = !Settings.IsPauseEnabled || Settings.PauseOffsetX > width ? 0.0 : Settings.PauseOffsetX;
-        var durationSeconds = width / Math.Max(1, Settings.SpeedPixelPerSecond);
+        var durationSeconds = width / Math.Clamp(Settings.SpeedPixelPerSecond, 1, int.MaxValue);
         var pauseSeconds = Settings.IsPauseEnabled ? Settings.PauseSeconds : 0.0;
-        var backSeconds = OuterContainerWidth / Math.Max(1, Settings.SpeedPixelPerSecond);
+        var backSeconds = OuterContainerWidth / Math.Clamp(Settings.SpeedPixelPerSecond, 1, int.MaxValue);
         var totalSeconds = durationSeconds + pauseSeconds + backSeconds;
         var visual = ElementComposition.GetElementVisual(GridScrollContainer);
         if (visual is null)
@@ -126,6 +126,10 @@ public partial class RollingComponent : ComponentBase<RollingComponentSettings>
         {
             visual.ImplicitAnimations?.Clear();
         });
+        if (anim.Duration <= TimeSpan.Zero)
+        {
+            return;
+        }
         _currentScrollingAnimation = anim;
         visual.StartAnimation(nameof(visual.Offset), anim);
     }
