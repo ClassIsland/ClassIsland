@@ -1180,10 +1180,9 @@
                                                                        ToolTip.Tip="添加行动时间点。"
                                                                        Label="行动" />
                                             <controls:CommandBarSeparator />
-                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE10E;}"
+                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE195;}"
                                                                        ToolTip.Tip="撤销 (Ctrl+Z 单步)"
-                                                                       IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanUndo}"
-                                                                       Label="撤销">
+                                                                       IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanUndo}">
                                                 <controls:CommandBarButton.Flyout>
                                                     <Flyout Placement="BottomEdgeAlignedLeft">
                                                         <StackPanel Spacing="4" MinWidth="180">
@@ -1201,10 +1200,9 @@
                                                     </Flyout>
                                                 </controls:CommandBarButton.Flyout>
                                             </controls:CommandBarButton>
-                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE10D;}"
+                                            <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xE121;}"
                                                                        ToolTip.Tip="重做 (Ctrl+Y 单步)"
-                                                                       IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanRedo}"
-                                                                       Label="重做">
+                                                                       IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanRedo}">
                                                 <controls:CommandBarButton.Flyout>
                                                     <Flyout Placement="BottomEdgeAlignedLeft">
                                                         <StackPanel Spacing="4" MinWidth="180">

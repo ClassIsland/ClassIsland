@@ -53,15 +53,6 @@ public partial class ProfileSettingsWindow : MyWindow
     private readonly Stack<UndoEntry> _undoStack = new();
     private readonly Stack<UndoEntry> _redoStack = new();
 
-    private static string DescribeItem(TimeLayoutItem item) => item.TimeType switch
-    {
-        0 => $"上课 {item.StartTime:hh\\:mm}",
-        1 => $"课间 {item.StartTime:hh\\:mm}",
-        2 => "分割线",
-        3 => $"行动 {item.StartTime:hh\\:mm}",
-        _ => "时间点"
-    };
-
     public static readonly FuncValueConverter<ProfileTransferProviderType, string>
         ProfileTransferProviderTypeToImportButtonTextConverter = new(x => x switch
         {
@@ -850,7 +841,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void PushAddUndo(TimeLayoutItem item, TimeLayout layout)
     {
         var index = layout.Layouts.IndexOf(item);
-        var desc = $"添加{DescribeItem(item)}";
+        var desc = $"添加{item}";
         _undoStack.Push(new UndoEntry(IsAdd: true, item, layout, index, desc));
         ViewModel.UndoDescriptions.Insert(0, desc);
         _redoStack.Clear();
@@ -861,7 +852,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void PushDeleteUndo(TimeLayoutItem item, TimeLayout layout, int index)
     {
-        var desc = $"删除{DescribeItem(item)}";
+        var desc = $"删除{item}";
         _undoStack.Push(new UndoEntry(IsAdd: false, item, layout, index, desc));
         ViewModel.UndoDescriptions.Insert(0, desc);
         _redoStack.Clear();
