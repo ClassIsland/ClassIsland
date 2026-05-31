@@ -15,6 +15,18 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup> -->
 
+  <PropertyGroup>
+    <FluentIconMappingFile>Assets/Fonts/FluentSystemIcons-Resizable.json</FluentIconMappingFile>
+    <LucideIconMappingFile>Assets/Fonts/lucide.json</LucideIconMappingFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="FluentIconMappingFile" />
+    <AdditionalFiles Include="$(MSBuildProjectDirectory)\$(FluentIconMappingFile)" />
+    <CompilerVisibleProperty Include="LucideIconMappingFile" />
+    <AdditionalFiles Include="$(MSBuildProjectDirectory)\$(LucideIconMappingFile)" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Remove="NativeMethods.json" />
     <None Remove="NativeMethods.txt" />
@@ -24,6 +36,7 @@
     <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared.IPC\ClassIsland.Shared.IPC.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
+    <ProjectReference Include="..\roslyn\IconsMappingGenerator\IconsMappingGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,6 +48,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MoonSharp" Version="2.0.0" />
 
     <PackageReference Include="Octokit" Version="9.1.0" />
 
@@ -69,7 +83,7 @@
     <Compile Update="Controls\TeyvatLoadingControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <AvaloniaResource Include="Assets/**"/>
+    <AvaloniaResource Include="Assets/**" Exclude="Assets/Fonts/*.json"/>
     <Compile Update="Controls\LucideIcon.axaml.cs">
       <DependentUpon>LucideIcon.axaml</DependentUpon>
       <SubType>Code</SubType>

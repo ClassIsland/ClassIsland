@@ -68,7 +68,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {"AppStartupDurationMs", StartupDurationMs.ToString()},
             {"AppVersion", App.AppVersionLong},
             {"AppSubChannel", AppBase.Current.AppSubChannel},
-            {"AppLoadedPlugin",string.Join(", ",loadedPlugin)},
+            {"AppLoadedPlugin",loadedPlugin.Count<=0 ? "None" : string.Join(", ",loadedPlugin)},
             {"AppIsAssetsTrimmed", AppBase.Current.IsAssetsTrimmed().ToString()},
             {
                 nameof(settings.DiagnosticFirstLaunchTime),

@@ -117,6 +117,25 @@
                                 <iconSources:AdvancedImageIconSource Uri="avares://ClassIsland/Assets/HoYoStickers/昔涟_收到.png"/>
                             </iconSources:AdvancedImageIcon.IconSource>
                         </iconSources:AdvancedImageIcon>
+                        <Separator/>
+                        <ci:TutorialBarrier ExcludedTags="aaa,bbb,ccc">
+                            <WrapPanel Orientation="Horizontal"
+                                        Classes="items-valign-center">
+                                <Button>Hello</Button>
+                                <Slider Width="325"/>
+                                <TextBox Width="325"/>
+                                <ScrollViewer Width="325" Height="325">
+                                    <StackPanel>
+                                        <TextBlock Text="{StaticResource TestStringLong}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{StaticResource TestStringLong}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{StaticResource TestStringLong}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{StaticResource TestStringLong}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{StaticResource TestStringLong}" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </ScrollViewer>
+                                <CheckBox/>
+                            </WrapPanel>
+                        </ci:TutorialBarrier>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

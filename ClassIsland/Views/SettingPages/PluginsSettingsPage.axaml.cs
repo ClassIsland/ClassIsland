@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -188,6 +189,212 @@ public partial class PluginsSettingsPage : SettingsPageBase
         });
     }
 
+    public class PluginInstallPreviewItem : PluginManifest
+    {
+        public Avalonia.Media.Imaging.Bitmap? IconBitmap { get; set; }
+        public string? SourcePath { get; set; }
+    }
+
+    private sealed record PluginInstallPreviewRaw(PluginManifest Manifest, string SourcePath, byte[]? IconBytes);
+
+    private async Task<List<PluginInstallPreviewItem>> GetPluginManifestsAsync(IEnumerable<string> fileNames)
+    {
+        var raws = await Task.Run(() =>
+        {
+            var result = new List<PluginInstallPreviewRaw>();
+
+            var deserializer = new DeserializerBuilder()
+                .IgnoreUnmatchedProperties()
+                .WithTypeConverter(new OSPlatformTypeConverter())
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+
+            foreach (var fileName in fileNames)
+            {
+                try
+                {
+                    using var pkg = ZipFile.OpenRead(fileName);
+                    var mf = pkg.GetEntry(Services.PluginService.PluginManifestFileName);
+                    if (mf == null)
+                        continue;
+
+                    using var reader = new StreamReader(mf.Open());
+                    var mfText = reader.ReadToEnd();
+                    var manifest = deserializer.Deserialize<PluginManifest>(mfText);
+                    if (manifest == null)
+                        continue;
+
+                    byte[]? iconBytes = null;
+
+                    var iconPath = manifest.Icon?.Replace('\\', '/').TrimStart('/');
+                    if (!string.IsNullOrWhiteSpace(iconPath))
+                    {
+                        var iconEntry = pkg.GetEntry(iconPath);
+                        if (iconEntry != null)
+                        {
+                            try
+                            {
+                                using var iconStream = iconEntry.Open();
+                                using var ms = new MemoryStream();
+                                iconStream.CopyTo(ms);
+                                iconBytes = ms.ToArray();
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.LogWarning(ex, "无法加载插件图标：{Icon}", manifest.Icon);
+                            }
+                        }
+                    }
+                    result.Add(new PluginInstallPreviewRaw(manifest, fileName, iconBytes));
+                }
+                catch (InvalidDataException)
+                {
+                Logger.LogWarning("不是有效插件包：{File}", fileName);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "无法读取插件清单：{File}", fileName);
+                }
+            }
+
+            return result;
+        });
+
+        var manifests = new List<PluginInstallPreviewItem>();
+        foreach (var raw in raws)
+        {
+            var m = raw.Manifest;
+            var item = new PluginInstallPreviewItem()
+            {
+                EntranceAssembly = m.EntranceAssembly,
+                Name = m.Name,
+                Id = m.Id,
+                Description = m.Description,
+                Icon = m.Icon,
+                Readme = m.Readme,
+                Url = m.Url,
+                Version = m.Version,
+                ApiVersion = m.ApiVersion,
+                Author = m.Author,
+                Dependencies = m.Dependencies?.ToList() ?? [],
+                SupportedOSPlatforms = m.SupportedOSPlatforms?.ToList() ?? [],
+                SourcePath = raw.SourcePath
+            };
+
+            if (raw.IconBytes is { Length: > 0 })
+            {
+                try
+                {
+                    using var ms = new MemoryStream(raw.IconBytes);
+                    item.IconBitmap = new Avalonia.Media.Imaging.Bitmap(ms);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "Bitmap 创建失败：{Name}", item.Name);
+                }
+            }
+
+            manifests.Add(item);
+        }
+        return manifests;
+    }
+
+    private async Task ProcessInstallFiles(IEnumerable<string> filePaths)
+    {
+        if (ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
+            return;
+
+        var paths = filePaths
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => x.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Where(File.Exists)
+            .Where(x => Path.GetExtension(x).Equals(IPluginService.PluginPackageExtension, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        if (!paths.Any())
+        {
+            // this.ShowWarningToast($"请选择有效的 {IPluginService.PluginPackageExtension} 插件包文件。");
+            return;
+        }
+
+        ViewModel.IsInstallingLocalPlugin = true;
+        List<PluginInstallPreviewItem> manifests;
+        manifests = await GetPluginManifestsAsync(paths);
+        if (manifests.Count == 0)
+        {
+            this.ShowWarningToast("未能从选择的文件中解析出任何可安装的插件包。");
+            return;
+        }
+
+        var contentTemplate = this.TryFindResource("InstallPluginConfirmTemplate", out var templateObj)
+            ? templateObj as IDataTemplate
+            : null;
+
+        var dialog = new ContentDialog()
+        {
+            Title = "确认安装?",
+            Content = manifests,
+            ContentTemplate = contentTemplate,
+            PrimaryButtonText = "安装",
+            CloseButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary
+        };
+
+        var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+        ViewModel.IsInstallingLocalPlugin = false;
+        if (topLevel == null)
+        {
+            this.ShowErrorToast("找不到父窗口根节点");
+            return;
+        }
+
+        var result = await dialog.ShowAsync(topLevel);
+        if (result != ContentDialogResult.Primary)
+            return;
+
+        int success = 0;
+        int failed = 0;
+        foreach (var m in manifests)
+        {
+            var path = m.SourcePath;
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                failed++;
+                continue;
+            }
+            path = path.Trim();
+            if (!File.Exists(path))
+            {
+                this.ShowWarningToast($"文件不存在：{path}");
+                failed++;
+                continue;
+            }
+            try
+            {
+                var dest = Path.Combine(
+                    Services.PluginService.PluginsPkgRootPath,
+                    Path.GetFileName(path));
+                File.Copy(path, dest, true);
+                success++;
+            }
+            catch (Exception ex)
+            {
+                failed++;
+                this.ShowErrorToast($"无法安装插件 {path}", ex);
+            }
+        }
+        if (success > 0)
+        {
+            this.ShowSuccessToast($"成功安装了 {success} 个插件。");
+            RequestRestart();
+        }
+        else if (failed > 0)
+        {
+        this.ShowWarningToast($"安装失败：{failed} 个插件。");
+        }
+    }
+
     private async void ButtonInstallFromLocal_OnClick(object sender, RoutedEventArgs e)
     {
         if (StorageProvider == null)
@@ -203,28 +410,10 @@ public partial class PluginsSettingsPage : SettingsPageBase
             AllowMultiple = true
         }, TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow());
         PopupHelper.RestoreAllPopups();
-        if (file.Count <= 0)
+        if (file == null || file.Count == 0)
             return;
 
-        var success = 0;
-        foreach (var path in file)
-        {
-            try
-            {
-                File.Copy(path, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(path)), true);
-                success++;
-            }
-            catch (Exception exception)
-            {
-                this.ShowErrorToast($"无法安装插件 {path}", exception);
-            }
-        }
-
-        if (success > 0)
-        {
-            this.ShowSuccessToast($"成功安装了 {success} 个插件。");
-            RequestRestart();
-        }
+        await ProcessInstallFiles(file);
     }
 
     private void MenuItemOpenPluginConfigFolder_OnClick(object sender, RoutedEventArgs e)
@@ -403,60 +592,50 @@ public partial class PluginsSettingsPage : SettingsPageBase
     }
     private void Grid_DragEnter(object sender, DragEventArgs e)
     {
-        // TODO: 实现插件拖拽安装
-        // if (e.Data.GetDataPresent(DataFormats.FileDrop))
-        // {
-        //     ViewModel.IsDragEntering = true;
-        //     e.Effects = DragDropEffects.Link;
-        // }
-        // else
-        // {
-        //     ViewModel.IsDragEntering = false;
-        //     e.Effects = DragDropEffects.None;
-        // }
+        var files = e.Data.GetFiles()?.Select(x => x.Path.LocalPath).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+        if (files == null || files.Count == 0 || ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
+        {
+            ViewModel.IsDragEntering = false;
+            e.DragEffects = DragDropEffects.None;
+            return;
+        }
+
+        var supported = files.Count(x => Path.GetExtension(x).Equals(IPluginService.PluginPackageExtension, StringComparison.OrdinalIgnoreCase));
+        ViewModel.IsDragEntering = true;
+        ViewModel.DragInstallTotalCount = files.Count;
+        ViewModel.DragInstallSupportedCount = supported;
+        ViewModel.IsDragInstallValid = supported > 0;
+
+        if (supported <= 0)
+        {
+            ViewModel.DragInstallHintText = $"仅支持 {IPluginService.PluginPackageExtension} 插件包";
+            ViewModel.DragInstallSubHintText = "请拖入插件包文件";
+            e.DragEffects = DragDropEffects.None;
+            return;
+        }
+
+        ViewModel.DragInstallHintText = supported == 1 ? "松开以安装 1 个插件" : $"松开以安装 {supported} 个插件";
+        var ignored = files.Count - supported;
+        ViewModel.DragInstallSubHintText = ignored > 0 ? $"将忽略 {ignored} 个不受支持的文件" : $"支持多选（{IPluginService.PluginPackageExtension}）";
+        e.DragEffects = DragDropEffects.Copy;
     }
-    private void Grid_Drop(object sender, DragEventArgs e)
+    private async void Grid_Drop(object sender, DragEventArgs e)
     {
-        // TODO: 实现插件拖拽安装
-        // ViewModel.IsDragEntering = false;
-        // if (e.Data.GetDataPresent(DataFormats.FileDrop))
-        // {
-        //     var fileName = ((System.Array)e.Data.GetData(DataFormats.FileDrop))?.GetValue(0)?.ToString();
-        //     if (fileName == null)
-        //         return;
-        //     if (Path.GetExtension(fileName) != ".cipx")
-        //     {
-        //         ViewModel.MessageQueue.Enqueue($"不支持的文件：{fileName}");
-        //         return;
-        //     }
-        //     try
-        //     {
-        //         File.Copy(fileName, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(fileName)), true);
-        //
-        //         var deserializer = new DeserializerBuilder()
-        //             .IgnoreUnmatchedProperties()
-        //             .WithNamingConvention(CamelCaseNamingConvention.Instance)
-        //             .Build();
-        //         using var pkg = ZipFile.OpenRead(fileName);
-        //         var mf = pkg.GetEntry("manifest.yml");
-        //         if (mf == null)
-        //             return;
-        //         var mfText = new StreamReader(mf.Open()).ReadToEnd();
-        //         var manifest = deserializer.Deserialize<PluginManifest>(mfText);
-        //
-        //         ViewModel.MessageQueue.Enqueue($"插件 {manifest.Name} 版本 {manifest.Version} 安装成功。");
-        //         RequestRestart();
-        //     }
-        //     catch (Exception exception)
-        //     {
-        //         CommonDialog.ShowError($"无法安装插件：{exception.Message}");
-        //     }
-        // }
+        ViewModel.IsDragEntering = false;
+        if (ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
+            return;
+
+        var files = e.Data.GetFiles()?.Select(x => x.Path.LocalPath).ToList();
+        if (files == null || files.Count == 0)
+            return;
+
+        await ProcessInstallFiles(files.Where(x => Path.GetExtension(x).Equals(IPluginService.PluginPackageExtension, StringComparison.OrdinalIgnoreCase)));
     }
 
     private void Grid_DragLeave(object sender, DragEventArgs e)
     {
         ViewModel.IsDragEntering = false;
+        ViewModel.IsDragInstallValid = false;
     }
 
     private void PluginsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)

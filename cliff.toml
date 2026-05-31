@@ -9,6 +9,7 @@ body = """
     - {% if commit.scope %}【{{ commit.scope }}】{% endif %}\
         {% if commit.breaking %}[**破坏性更改**] {% endif %}\
         {{ commit.message | upper_first }}\
+        {% if commit.remote.username %} by @{{ commit.remote.username }}{% endif %}\
 {% endmacro -%}
 
 {% for group, commits in commits | group_by(attribute="group") %}
@@ -24,17 +25,6 @@ body = """
         {% endif -%}
     {% endfor -%}
 {% endfor -%}
-{%- if github -%}
-{% if github.contributors | length != 0 %}
-  ## 贡献者
-
-  感谢以下贡献者的贡献：
-
-{% endif %}\
-{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}
-  - @{{ contributor.username }}
-{%- endfor -%}
-{%- endif %}
 
 
 """
