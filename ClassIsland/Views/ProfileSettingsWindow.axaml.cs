@@ -86,6 +86,8 @@ public partial class ProfileSettingsWindow : MyWindow
         TimeLineListControl.SelectionChanged += TimeLineListControl_OnSelectionChanged;
         TimeLineListControl.KeyDown += OnKeyDown;
         ListViewTimePoints.KeyDown += OnKeyDown;
+        // 撤销/重做使用窗口级快捷键，避免依赖时间点列表是否获得焦点
+        AddHandler(KeyDownEvent, OnGlobalUndoRedoKeyDown, RoutingStrategies.Tunnel);
         ViewModel.ObservableForProperty(x => x.IsDrawerOpen)
             .Subscribe(_ => OnDrawerStateChanged());
         ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
@@ -99,20 +101,26 @@ public partial class ProfileSettingsWindow : MyWindow
             });
     }
 
-    private void OnKeyDown(object? sender, KeyEventArgs e)
+    private void OnGlobalUndoRedoKeyDown(object? sender, KeyEventArgs e)
     {
+        // 焦点位于文本输入框时，保留其自身的撤销/重做行为
+        if (FocusManager?.GetFocusedElement() is TextBox)
+            return;
         switch (e.Key)
         {
             case Key.Z when e.KeyModifiers == KeyModifiers.Control:
                 UndoLastAction();
                 e.Handled = true;
-                return;
+                break;
             case Key.Y when e.KeyModifiers == KeyModifiers.Control:
                 RedoLastAction();
                 e.Handled = true;
-                return;
+                break;
         }
+    }
 
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
         var layouts = ViewModel.SelectedTimeLayout?.Layouts;
         if (layouts == null || layouts.Count == 0)
             return;
