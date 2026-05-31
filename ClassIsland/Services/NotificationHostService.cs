@@ -212,7 +212,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         UpdateNotificationPlayingState();
     }
 
-    private void QueueNotificationGroup(NotificationGroup group)
+    private void QueueNotificationGroup(NotificationGroup group, bool isPlayed = false)
     {
         lock (_syncLock)
         {
@@ -220,7 +220,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             {
                 return;
             }
-            RequestQueue.Enqueue(group, GetNotificationPriority(group.Head, false));
+            RequestQueue.Enqueue(group, GetNotificationPriority(group.Head, isPlayed));
         }
     }
 
@@ -719,7 +719,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                     TransitionRequestState(r, NotificationState.Queued);
                 }
                 Logger.LogTrace("重新加入提醒队列 (组, {} 个活跃请求), {}", activeRequests.Count, request);
-                QueueNotificationGroup(group);
+                QueueNotificationGroup(group, true);
                 PopGroupsToConsumers();
             }
         }
