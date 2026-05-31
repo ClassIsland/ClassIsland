@@ -4,18 +4,20 @@
 文件结构如下：
 
 ```
-flatpak/
-├── build.sh # 自动化打包脚本
+tools/flatpak/
+├── build-flatpak.sh # 自动化打包脚本
 ├── com.classisland.ClassIsland.json # Flatpak打包配置文件
 ├── run.sh # 在Flatpak包中引导应用程序启动的脚本
 ```
 ## 构建
 
-只需运行`build.sh`脚本即可自动化完成Flatpak包的构建过程。该脚本需要:
+只需运行`build-flatpak.sh`脚本即可自动化完成Flatpak包的构建过程。该脚本需要:
 - Linux系统
 - Flatpak工具链（包括`flatpak-builder`和`flatpak`命令行工具）
 - Python 3环境
 - 网络连接
+
+请注意：如果经常运行`build-flatpak.sh`脚本的话，请注意自动生成的`.flatpak-builder`文件夹的大小。
 
 脚本将输出一个Flatpak包文件，可以直接安装。
 ## TO-DO:
