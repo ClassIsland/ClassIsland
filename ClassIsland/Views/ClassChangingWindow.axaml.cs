@@ -17,6 +17,7 @@ using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
+using ClassIsland.Models;
 
 
 namespace ClassIsland.Views;
@@ -81,11 +82,17 @@ public partial class ClassChangingWindow : MyWindow
     
     private async void ButtonAdvancedClassChanging_OnClick(object sender, RoutedEventArgs e)
     {
-        IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/profile/adjustment"));
-        if(!await IAppHost.GetService<ManagementService>().AuthorizeByLevel(IAppHost.GetService<ManagementService>().CredentialConfig.EditProfileAuthorizeLevel))
+        var managementService = IAppHost.TryGetService<ManagementService>();
+        if (managementService is not null)
         {
-            Close();
+            if (!await managementService.AuthorizeByLevel(managementService.CredentialConfig.EditProfileAuthorizeLevel))
+            {
+                this.ShowErrorToast("当前集控配置不允许此操作。");
+                return;
+            }
         }
+        IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/profile/adjustment"));
+        Close();
     }
 
     private async void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
