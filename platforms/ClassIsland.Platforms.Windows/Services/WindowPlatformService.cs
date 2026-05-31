@@ -129,18 +129,24 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
 
         if ((features & WindowFeatures.Transparent) > 0)
         {
-            var style = GetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
+            var hwnd = (HWND)handle;
+            var style = GetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
             if (state)
             {
-                style |= (int)WINDOW_EX_STYLE.WS_EX_LAYERED | (int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
-                SetLayeredWindowAttributes((HWND)handle, new COLORREF(0), 255, (LAYERED_WINDOW_ATTRIBUTES_FLAGS)0x2);
+                style |= (int)WINDOW_EX_STYLE.WS_EX_LAYERED | (int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT | (int)WINDOW_EX_STYLE.WS_EX_NOACTIVATE;
+                SetLayeredWindowAttributes(hwnd, new COLORREF(0), 255, (LAYERED_WINDOW_ATTRIBUTES_FLAGS)0x2);
             }
             else
             {
                 style &= ~(int)WINDOW_EX_STYLE.WS_EX_TRANSPARENT;
                 style &= ~(int)WINDOW_EX_STYLE.WS_EX_LAYERED;
+                style &= ~(int)WINDOW_EX_STYLE.WS_EX_NOACTIVATE;
             }
-            var r = SetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
+            var r = SetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
+            if (state)
+            {
+                MoveFocusToWindowBehind(hwnd);
+            }
         }
         if ((features & WindowFeatures.Bottommost) > 0)
         {
@@ -178,6 +184,21 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
             var r = SetWindowLong((HWND)handle, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
         }
         
+    }
+
+    private static void MoveFocusToWindowBehind(HWND hwnd)
+    {
+        var nextWindow = GetWindow(hwnd, GET_WINDOW_CMD.GW_HWNDNEXT);
+        while (nextWindow != HWND.Null && new HandleRef(null, nextWindow).Handle != IntPtr.Zero)
+        {
+            if (IsWindowVisible(nextWindow))
+            {
+                SetForegroundWindow(nextWindow);
+                return;
+            }
+
+            nextWindow = GetWindow(nextWindow, GET_WINDOW_CMD.GW_HWNDNEXT);
+        }
     }
 
     public WindowFeatures GetWindowFeatures(TopLevel topLevel)
