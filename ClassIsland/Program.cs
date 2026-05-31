@@ -1,4 +1,4 @@
-﻿using ClassIsland.Models;
+using ClassIsland.Models;
 using System;
 using System.Collections.Generic;
 using System.CommandLine.NamingConventionBinder;
@@ -20,8 +20,11 @@ using HotAvalonia;
 using Sentry;
 using System.Diagnostics;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared.JsonConverters;
+using ClassIsland.Shared.Models.Profile;
+using MoonSharp.Interpreter;
 
 namespace ClassIsland;
 
@@ -50,7 +53,7 @@ public static class Program
             new Option<bool>(["--verbose", "-v"], "启用详细输出"),
             new Option<bool>(["--showOssWatermark", "-ossw"], "显示开源地址水印"),
             new Option<bool>(["--recovery", "-r"], "启动时进入恢复模式"),
-            new Option<bool>(["--diagnostic", "-d"], "启用诊断模式"),
+            new Option<bool>(["--diagnostic", "-d"], "启用诊断模式(包括详细输出)"),
             new Option<bool>(["--safe", "-s"], "启用安全模式"),
             new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动"),
             new Option<string>(["--importV1"], "指定要导入的 ClassIsland 1.7 配置目录"),
@@ -59,6 +62,7 @@ public static class Program
             new Option<bool>(["--importV1Complete"], "从 ClassIsland 1 导入成功"),
             new Option<bool>(["--refreshing"], "应用将继续翻新向导"),
             new Option<bool>(["--onboarding"], "应用将继续迎新向导"),
+            new Option<bool>(["--autostartup", "-au"], "自启动模式，检测到程序已运行时直接退出"),
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);
@@ -67,6 +71,7 @@ public static class Program
 
         if (App.ApplicationCommand.Diagnostic)
         {
+            App.ApplicationCommand.Verbose = true;
             // TODO: 实现 AllocConsole
             // AllocConsole();
         }
@@ -119,6 +124,10 @@ public static class Program
             // ignore
         }
 
+        UserData.RegisterAssembly(typeof(Program).Assembly);
+        UserData.RegisterAssembly(typeof(Tutorial).Assembly);
+        UserData.RegisterAssembly(typeof(Profile).Assembly);
+        
         return () => new App()
         {
             Mutex = mutex,
@@ -179,7 +188,7 @@ public static class Program
             options.TracesSampleRate = 0.05;
             // options.ProfilesSampleRate = 0.016;
         }
-        options.EnableLogs = true;
+        options.EnableLogs = false;
         options.EnableMetrics = true;
         options.SetBeforeSendLog(log => log.Level < SentryLogLevel.Info || log is { Template: "当前内存使用: {}" } ? null : log);
     }

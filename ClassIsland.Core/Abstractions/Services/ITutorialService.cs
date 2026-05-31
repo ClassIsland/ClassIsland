@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Avalonia.Controls;
 using ClassIsland.Core.Models.Tutorial;
+using ClassIsland.Shared.ComponentModels;
+using MoonSharp.Interpreter;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -14,6 +16,11 @@ public interface ITutorialService : INotifyPropertyChanged
     /// 已注册的教程组
     /// </summary>
     public static ObservableCollection<TutorialGroup> RegisteredTutorialGroups { get; } = [];
+    
+    /// <summary>
+    /// 教学上下文
+    /// </summary>
+    public ObservableDictionary<string, object?> Context { get; }
     
     /// <summary>
     /// 当前正在进行的教程
@@ -39,6 +46,16 @@ public interface ITutorialService : INotifyPropertyChanged
     /// 当前附加到的 <see cref="TopLevel"/>
     /// </summary>
     public TopLevel? AttachedToplevel { get; }
+
+    /// <summary>
+    /// 在宿主窗口重建 XamlRoot 前，临时分离当前教程的装饰层控件。
+    /// </summary>
+    void DetachCurrentAdornersForHostChange(TopLevel topLevel);
+
+    /// <summary>
+    /// 在宿主窗口重建 XamlRoot 后，重新附加当前教程的装饰层控件。
+    /// </summary>
+    void ReattachCurrentAdornersAfterHostChange(TopLevel topLevel);
 
     /// <summary>
     /// 开始指定的教学。
@@ -67,6 +84,12 @@ public interface ITutorialService : INotifyPropertyChanged
     /// </remarks>
     /// <param name="paths">要开始的教学的路径</param>
     void BeginNotCompletedTutorials(params string[] paths);
+
+    /// <summary>
+    /// 跳转到指定教学的特定段落。当没有指定段落时，将从第一段开始。当当前没有教学进行时，将从指定的位置开始。
+    /// </summary>
+    /// <param name="path">要跳转的教学的路径</param>
+    void JumpToParagraph(string path);
 
     /// <summary>
     /// 跳转到指定教学的特定段落。当没有指定段落时，将从第一段开始。当当前没有教学进行时，将从指定的位置开始。

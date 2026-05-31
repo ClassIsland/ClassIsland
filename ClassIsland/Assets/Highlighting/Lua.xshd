@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SyntaxDefinition name="Lua" extensions=".lua" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="#6A9955" />
+  <Color name="String" foreground="#CE9178" />
+  <Color name="Number" foreground="#B5CEA8" />
+  <Color name="Keyword" foreground="#569CD6" />
+  <Color name="Function" foreground="#DCDCAA" />
+  <Color name="Global" foreground="#4EC9B0" />
+
+  <RuleSet>
+    <Span color="Comment" begin="--\[\[" end="\]\]" multiline="true" />
+    <Span color="Comment" begin="--" end="$" />
+    <Span color="String" begin="&quot;" end="&quot;">
+      <RuleSet>
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+    <Span color="String" begin="'" end="'">
+      <RuleSet>
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+    <Span color="String" begin="\[\[" end="\]\]" multiline="true" />
+
+    <Keywords color="Keyword">
+      <Word>and</Word>
+      <Word>break</Word>
+      <Word>do</Word>
+      <Word>else</Word>
+      <Word>elseif</Word>
+      <Word>end</Word>
+      <Word>false</Word>
+      <Word>for</Word>
+      <Word>function</Word>
+      <Word>goto</Word>
+      <Word>if</Word>
+      <Word>in</Word>
+      <Word>local</Word>
+      <Word>nil</Word>
+      <Word>not</Word>
+      <Word>or</Word>
+      <Word>repeat</Word>
+      <Word>return</Word>
+      <Word>then</Word>
+      <Word>true</Word>
+      <Word>until</Word>
+      <Word>while</Word>
+    </Keywords>
+
+    <Keywords color="Function">
+      <Word>assert</Word>
+      <Word>collectgarbage</Word>
+      <Word>dofile</Word>
+      <Word>error</Word>
+      <Word>getmetatable</Word>
+      <Word>ipairs</Word>
+      <Word>load</Word>
+      <Word>loadfile</Word>
+      <Word>next</Word>
+      <Word>pairs</Word>
+      <Word>pcall</Word>
+      <Word>print</Word>
+      <Word>rawequal</Word>
+      <Word>rawget</Word>
+      <Word>rawlen</Word>
+      <Word>rawset</Word>
+      <Word>require</Word>
+      <Word>select</Word>
+      <Word>setmetatable</Word>
+      <Word>tonumber</Word>
+      <Word>tostring</Word>
+      <Word>type</Word>
+      <Word>xpcall</Word>
+    </Keywords>
+
+    <Keywords color="Global">
+      <Word>coroutine</Word>
+      <Word>debug</Word>
+      <Word>io</Word>
+      <Word>math</Word>
+      <Word>os</Word>
+      <Word>package</Word>
+      <Word>string</Word>
+      <Word>table</Word>
+      <Word>utf8</Word>
+    </Keywords>
+
+    <Rule color="Number">\b(0[xX][0-9a-fA-F]+|\d+(\.\d+)?([eE][+-]?\d+)?)\b</Rule>
+  </RuleSet>
+</SyntaxDefinition>

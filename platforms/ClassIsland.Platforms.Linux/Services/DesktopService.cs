@@ -25,7 +25,7 @@ public class DesktopService : IDesktopService
                 }
                 if (value)
                 {
-                    _ = ShortcutHelpers.CreateFreedesktopShortcutAsync(startupPath);
+                    _ = ShortcutHelpers.CreateFreedesktopShortcutAsync(startupPath, true);
                 } else if (File.Exists(startupPath))
                 {
                     File.Delete(startupPath);

@@ -14,6 +14,7 @@ using Avalonia.Metadata;
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.IconControl")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.NavHyperlink")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.Ruleset")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.Tutorial")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Commands")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Controls")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Behaviors")]
@@ -22,3 +23,4 @@ using Avalonia.Metadata;
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Behaviors")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Assists")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.IconSources")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.MarkupExtensions")]
