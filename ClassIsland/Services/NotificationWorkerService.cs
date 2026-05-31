@@ -355,7 +355,7 @@ public class NotificationWorkerService : INotificationWorkerService
 
     private async Task PlayNotificationSoundAsync(INotificationSettings settings, CancellationTokenSource cancellationTokenSource)
     {
-        using var _ = cancellationTokenSource;
+        // 生命周期管理在 ProcessNotificationSessionCore
         try
         {
             var cancellationToken = cancellationTokenSource.Token;
