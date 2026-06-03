@@ -30,6 +30,7 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
+using ClassIsland.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -552,7 +553,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
     }
     
-    private void SelectingItemsControlClassPlans_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private void TreeViewClassPlans_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         ViewModel.CurrentClassPlanEditDoneToast?.Close();
     }
@@ -567,7 +568,7 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.TempOverlayCreateTimeLayout);
         if (id is { } guid)
         {
-            ViewModel.SelectedClassPlan = ViewModel.ProfileService.Profile.ClassPlans[guid];
+            ViewModel.SelectClassPlanByGuid(guid);
             UpdateClassPlanInfoEditorTimeLayoutComboBox();
             OpenDrawer("ClassPlansInfoEditor");
             FlyoutHelper.CloseAncestorFlyout(sender);
@@ -597,8 +598,24 @@ public partial class ProfileSettingsWindow : MyWindow
     private void CreateClassPlan()
     {
         var newClassPlan = new ClassPlan();
-        ViewModel.ProfileService.Profile.ClassPlans.Add(Guid.NewGuid(), newClassPlan);
-        ViewModel.SelectedClassPlan = newClassPlan;
+        var selectedNode = ViewModel.SelectedClassPlansTreeNode;
+        if (selectedNode is not null)
+        {
+            var selectedClassPlanGroup = 
+                selectedNode.IsGroup
+                    ? selectedNode.Guid
+                    : selectedNode.ClassPlan?.AssociatedGroup;
+
+            newClassPlan.AssociatedGroup = selectedClassPlanGroup ?? ViewModel.ProfileService.Profile.SelectedClassPlanGroupId;
+        }
+        else
+        {
+            newClassPlan.AssociatedGroup = ViewModel.ProfileService.Profile.SelectedClassPlanGroupId;
+        }
+        
+        var newClassPlanGuid = Guid.NewGuid();
+        ViewModel.ProfileService.Profile.ClassPlans.Add(newClassPlanGuid, newClassPlan);
+        ViewModel.SelectClassPlanByGuid(newClassPlanGuid);
         UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
     }
@@ -613,6 +630,7 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.ProfileService.Profile.OrderedSchedules.Remove(key);
         }
         FlyoutHelper.CloseAncestorFlyout(sender);
+        ViewModel.SelectedClassPlansTreeNode = null;
     }
 
     private void ButtonOpenCreateOverlayClassPlanFlyout_OnClick(object? sender, RoutedEventArgs e)
@@ -633,8 +651,9 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
 
-        ViewModel.ProfileService.Profile.ClassPlans.Add(Guid.NewGuid(), s);
-        ViewModel.SelectedClassPlan = s;
+        var newClassPlanGuid = Guid.NewGuid();
+        ViewModel.ProfileService.Profile.ClassPlans.Add(newClassPlanGuid, s);
+        ViewModel.SelectClassPlanByGuid(newClassPlanGuid);
         UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.classPlan.duplicate", 1);
@@ -1426,5 +1445,4 @@ public partial class ProfileSettingsWindow : MyWindow
     }
     
     #endregion
-    
 }
