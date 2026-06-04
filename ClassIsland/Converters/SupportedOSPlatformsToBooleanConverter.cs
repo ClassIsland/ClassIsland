@@ -27,9 +27,9 @@ public class SupportedOSPlatformsToBooleanConverter : IValueConverter
         }
         if (value is List<OSPlatform> s)
         {
-            return s.Contains(currentOsPlatform);
+            return !s.Contains(currentOsPlatform);
         }
-        return true;
+        return false;
     }
 
     public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
