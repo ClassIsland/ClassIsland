@@ -383,6 +383,7 @@
             </DataGrid>
         </Grid>
         <converters:LargeNumberToFriendlyNumberConverter x:Key="LargeNumberToFriendlyNumberConverter" />
+        <converters:SupportedOSPlatformsToBooleanConverter x:Key="SupportedOSPlatformsToBooleanConverter" />
         <DataTemplate x:Key="InstallPluginConfirmTemplate">
             <DockPanel>
                 <Border DockPanel.Dock="Bottom"
@@ -414,9 +415,40 @@
                                             <Image Source="{Binding IconBitmap}"/>
                                         </Border>
                                         <StackPanel Grid.Column="1" Spacing="2">
-                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16"/>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{Binding Name}"
+                                                           FontWeight="Bold"
+                                                           FontSize="16"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Author}"
+                                                           FontSize="12"
+                                                           Opacity="0.7"
+                                                           Margin="8 0 0 0"
+                                                           VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </Grid>
+                                            <TextBlock Grid.Column="2" Text="{Binding Version, StringFormat='v{0}'}" FontSize="12" Opacity="0.5" TextTrimming="CharacterEllipsis"/>
                                             <TextBlock Text="{Binding Description}" FontSize="12" Opacity="0.7" TextWrapping="Wrap"/>
-                                            <TextBlock Text="{Binding Version, StringFormat='v{0}'}" FontSize="10" Opacity="0.5"/>
+                                            <Border DockPanel.Dock="Bottom"
+                                                    Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                                                    CornerRadius="6"
+                                                    Padding="10"
+                                                    Margin="0 10 0 0"
+                                                    IsVisible="{Binding SupportedOSPlatforms, Converter={StaticResource SupportedOSPlatformsToBooleanConverter}}">
+                                                <!-- Use a two-column grid so long warning text wraps instead of overflowing -->
+                                                <Grid ColumnDefinitions="Auto,*">
+                                                    <ci:FluentIcon Grid.Column="0" Glyph="&#xF430;" VerticalAlignment="Top" Margin="0 0 8 0"/>
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="此插件未声明支持当前所运行的操作系统。此插件可能不能正常按预期工作。"
+                                                               FontWeight="SemiBold"
+                                                               TextWrapping="Wrap"
+                                                               VerticalAlignment="Center"
+                                                               MaxWidth="360" />
+                                                </Grid>
+                                            </Border>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
