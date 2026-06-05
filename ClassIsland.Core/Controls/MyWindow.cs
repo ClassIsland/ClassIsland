@@ -48,6 +48,14 @@ public partial class MyWindow : AppWindow
     public static readonly DirectProperty<MyWindow, bool> EnableMicaWindowProperty = AvaloniaProperty.RegisterDirect<MyWindow, bool>(
         nameof(EnableMicaWindow), o => o.EnableMicaWindow, (o, v) => o.EnableMicaWindow = v);
 
+    private bool _showDevelopmentBuildWatermark;
+
+    public static readonly DirectProperty<MyWindow, bool> ShowDevelopmentBuildWatermarkProperty =
+        AvaloniaProperty.RegisterDirect<MyWindow, bool>(
+            nameof(ShowDevelopmentBuildWatermark),
+            o => o.ShowDevelopmentBuildWatermark,
+            (o, v) => o.ShowDevelopmentBuildWatermark = v);
+
     private bool _isMicaSupported;
 
     public static readonly DirectProperty<MyWindow, bool> IsMicaSupportedProperty = AvaloniaProperty.RegisterDirect<MyWindow, bool>(
@@ -67,6 +75,15 @@ public partial class MyWindow : AppWindow
     {
         get => _enableMicaWindow;
         set => SetAndRaise(EnableMicaWindowProperty, ref _enableMicaWindow, value);
+    }
+
+    /// <summary>
+    /// 是否在窗口中显示开发构建水印。
+    /// </summary>
+    public bool ShowDevelopmentBuildWatermark
+    {
+        get => _showDevelopmentBuildWatermark;
+        set => SetAndRaise(ShowDevelopmentBuildWatermarkProperty, ref _showDevelopmentBuildWatermark, value);
     }
 
     public static readonly AttachedProperty<MyWindowState?> StateProperty =
@@ -187,9 +204,11 @@ public partial class MyWindow : AppWindow
             layer?.Children.Add(appToastAdorner);
             AdornerLayer.SetAdornedElement(appToastAdorner, window);
 
-            if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark))
+            var showDevelopmentBuildWatermark =
+                window is MyWindow myWindow && myWindow.ShowDevelopmentBuildWatermark && AppBase.Current.IsDevelopmentBuild;
+            if (showDevelopmentBuildWatermark || ShowOssWatermark)
             {
-                var adorner = new DevelopmentBuildAdorner(AppBase.Current.IsDevelopmentBuild, ShowOssWatermark);
+                var adorner = new DevelopmentBuildAdorner(showDevelopmentBuildWatermark, ShowOssWatermark);
                 layer?.Children.Add(adorner);
                 AdornerLayer.SetAdornedElement(adorner, window);
             }
