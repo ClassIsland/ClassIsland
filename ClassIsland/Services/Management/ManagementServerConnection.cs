@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -61,6 +62,23 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private GrpcChannel? Channel { get; set; }
 
+    private static GrpcChannel CreateChannel(string address)
+    {
+        var handler = new SocketsHttpHandler
+        {
+            EnableMultipleHttp2Connections = true,
+            ConnectTimeout = TimeSpan.FromSeconds(10),
+            SslOptions = new System.Net.Security.SslClientAuthenticationOptions
+            {
+                RemoteCertificateValidationCallback = (_, _, _, _) => true
+            }
+        };
+        return GrpcChannel.ForAddress(address, new GrpcChannelOptions
+        {
+            HttpHandler = handler
+        });
+    }
+
     private DispatcherTimer CommandConnectionAliveTimer { get; } = new()
     {
         Interval = TimeSpan.FromSeconds(10)
@@ -114,7 +132,7 @@ public class ManagementServerConnection : IManagementServerConnection
         Logger.LogInformation("初始化管理服务器连接。");
         if (lightConnect)
         {
-            Channel = GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc);
+            Channel = CreateChannel(ManagementSettings.ManagementServerGrpc);
             return;
         }
         AppBase.Current.AppStarted += (sender, args) => InstallAuditHooks();
@@ -267,7 +285,7 @@ public class ManagementServerConnection : IManagementServerConnection
         try
         {
             Logger.LogInformation("正在连接到命令流");
-            Channel = GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc);
+            Channel = CreateChannel(ManagementSettings.ManagementServerGrpc);
             var handshakeState = await BeginHandshake(CommandListeningCallCancellationTokenSource.Token);
             if (!handshakeState)
             {
