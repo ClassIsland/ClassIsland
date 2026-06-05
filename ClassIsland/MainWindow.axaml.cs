@@ -979,8 +979,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         var bounds = screen.WorkingArea;
-        var width = Math.Max(bounds.Width - WindowedEditModeScreenMargin * 2, 1) / dpiX;
-        var height = Math.Max(bounds.Height - WindowedEditModeScreenMargin * 2, 1) / dpiY;
+        var width = Math.Max(bounds.Width - (WindowedEditModeScreenMargin * 2), 1) / dpiX;
+        var height = Math.Max(bounds.Height - (WindowedEditModeScreenMargin * 2), 1) / dpiY;
 
         WindowState = WindowState.Normal;
         Position = new PixelPoint(

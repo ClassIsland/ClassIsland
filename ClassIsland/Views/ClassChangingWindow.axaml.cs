@@ -19,7 +19,6 @@ using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
 using ClassIsland.Models;
 
-
 namespace ClassIsland.Views;
 
 /// <summary>
