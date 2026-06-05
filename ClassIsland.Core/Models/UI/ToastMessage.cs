@@ -45,7 +45,7 @@ public class ToastMessage : ObservableRecipient
     public string Message
     {
         get => _message;
-        set => SetProperty(ref _message, value);
+        init => SetProperty(ref _message, value);
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class ToastMessage : ObservableRecipient
     public string Title
     {
         get => _title;
-        set => SetProperty(ref _title, value);
+        init => SetProperty(ref _title, value);
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class ToastMessage : ObservableRecipient
     public InfoBarSeverity Severity
     {
         get => _severity;
-        set => SetProperty(ref _severity, value);
+        init => SetProperty(ref _severity, value);
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public class ToastMessage : ObservableRecipient
     public object? ActionContent
     {
         get => _actionContent;
-        set => SetProperty(ref _actionContent, value);
+        init => SetProperty(ref _actionContent, value);
     }
     
     /// <summary>

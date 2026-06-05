@@ -143,7 +143,7 @@ public class WindowPlatformService : IWindowPlatformService, IDisposable
                 style &= ~(int)WINDOW_EX_STYLE.WS_EX_NOACTIVATE;
             }
             var r = SetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
-            if (state)
+            if (state && GetForegroundWindow() != handle)
             {
                 MoveFocusToWindowBehind(hwnd);
             }
