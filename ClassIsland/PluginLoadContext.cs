@@ -45,6 +45,18 @@ public class PluginLoadContext : AssemblyLoadContext
         "Microsoft.Windows.SDK.NET"
     ];
 
+    private static IReadOnlyList<string> SharedAssemblyPrefixes { get; } = [
+        "ClassIsland",
+        "Avalonia",
+        "FluentAvalonia",
+        "Microsoft.Extensions.Configuration",
+        "Microsoft.Extensions.DependencyInjection",
+        "Microsoft.Extensions.Hosting",
+        "Microsoft.Extensions.Logging",
+        "Microsoft.Extensions.Options",
+        "Microsoft.Extensions.Primitives"
+    ];
+
     /// <summary>
     /// 在需要加载程序集时被调用。优先从已加载的插件依赖项上下文中解析，如果在插件目录中找到对应的程序集则从路径加载。
     /// 对 WinRT 相关依赖会使用宿主的实现。
@@ -57,6 +69,14 @@ public class PluginLoadContext : AssemblyLoadContext
             // 这里将插件要的加载的 WinRT 相关程序集替换为应用自带的 WinRT 相关程序集。
             return null;
         }
+
+        if (assemblyName.Name != null &&
+            SharedAssemblyPrefixes.Any(prefix => assemblyName.Name.StartsWith(prefix, StringComparison.Ordinal)) &&
+            AssemblyLoadContext.Default.Assemblies.FirstOrDefault(x => x.GetName().Name == assemblyName.Name) is { } sharedAssembly)
+        {
+            return sharedAssembly;
+        }
+
         // 尝试查找依赖
         foreach (var dep in Info.Manifest.Dependencies)
         {
