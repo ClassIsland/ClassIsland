@@ -209,6 +209,14 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             .Bind(out _groupedClassPlans)
             .DisposeMany()
             .Subscribe();
+
+        PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(SelectedClassPlan))
+            {
+                SelectClassPlanByInstance(SelectedClassPlan, true);
+            }
+        };
     }
 
     /// <summary>
@@ -225,7 +233,35 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             foreach (var child in group.SubPlans)
             {
                 if (child.Guid != guid) continue;
-                
+
+                SelectedClassPlan = child.ClassPlan;
+                SelectedClassPlansTreeNode = child;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 通过 课表实例 来选中课表。
+    /// </summary>
+    /// <param name="classPlan">要选中的课表实例</param>
+    /// <param name="isInternal">是否为内部修改</param>
+    /// <returns>布尔值，true 为找到，false 为未找到。</returns>
+    public bool SelectClassPlanByInstance(ClassPlan? classPlan, bool isInternal = false)
+    {
+        if (classPlan == null) return false;
+        
+        foreach (var group in GroupedClassPlans)
+        {
+            if (group.SubPlans is null) continue;
+            
+            foreach (var child in group.SubPlans)
+            {
+                if (child.ClassPlan != classPlan) continue;
+
+                if (!isInternal) SelectedClassPlan = child.ClassPlan;
                 SelectedClassPlansTreeNode = child;
                 return true;
             }

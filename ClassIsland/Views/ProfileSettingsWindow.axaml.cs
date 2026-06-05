@@ -749,7 +749,7 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void ScheduleDataGrid_OnOpenClassPlanSettingsRequested(object? sender, ScheduleDataGridClassPlanEventArgs e)
     {
-        ViewModel.SelectedClassPlan = e.ClassPlan;
+        ViewModel.SelectClassPlanByInstance(e.ClassPlan);
         // ViewModel.ScheduleCalendarSelectedDate = e.Date;
         UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
