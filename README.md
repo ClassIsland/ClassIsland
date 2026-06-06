@@ -16,7 +16,10 @@
 ![GitHub Repo size](https://img.shields.io/github/repo-size/ClassIsland/ClassIsland?style=flat-square&color=3cb371)
 [![GitHub Repo Languages](https://img.shields.io/github/languages/top/ClassIsland/ClassIsland?style=flat-square)](https://github.com/ClassIsland/ClassIsland/search?l=c%23)
 
+<a href="https://trendshift.io/repositories/14441" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14441" alt="ClassIsland%2FClassIsland | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
 <a href="https://hellogithub.com/repository/ClassIsland/ClassIsland" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=fb844b7286244bf8a1d67bfd228a95c7&claim_uid=kZp2qRKGVYrXoTS" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 
 ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显示工具，可以在 Windows PC、Mac 及 Linux 设备屏幕上显示各种信息。<br/>
 本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
