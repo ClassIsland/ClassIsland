@@ -58,6 +58,10 @@ public partial class ManagementSettingsPage : SettingsPageBase
             var doc = JsonDocument.Parse(response);
             var root = doc.RootElement;
             ViewModel.IsRemoteAssistEnabled = root.GetProperty("enabled").GetBoolean();
+            if (ViewModel.IsRemoteAssistEnabled)
+            {
+                ViewModel.RemoteAssistPin = root.GetProperty("pin").GetString() ?? "";
+            }
             ViewModel.IsPinVisible = false;
         }
         catch (Exception ex)
@@ -72,7 +76,7 @@ public partial class ManagementSettingsPage : SettingsPageBase
         {
             Title = "ClassIsland",
             SubHeader = "启用远程协助",
-            Content = "启用远程协助后，管理员将可以通过集控服务器向本设备发送远程命令。\n\n此功能存在一定安全风险，请确认您信任所在的管理组织。\n\n启用后将生成一个 6 位 PIN 码，请妥善保管。关闭此功能需要在 WebUI 管理端操作。",
+                Content = "启用远程协助后，管理员将可以通过集控服务器向本设备发送远程命令。\n\n此功能存在一定安全风险，请确认您信任所在的管理组织。\n\n启用后将生成一个 6 位 PIN 码，请妥善保管。关闭此功能需要集控管理员操作。",
             Buttons =
             {
                 TaskDialogButton.CancelButton,
@@ -115,7 +119,7 @@ public partial class ManagementSettingsPage : SettingsPageBase
             {
                 Title = "ClassIsland",
                 SubHeader = "远程协助已启用",
-                Content = $"您的远程协助 PIN 码为：{pin}\n\n请记下此 PIN 码，管理员需要输入此 PIN 才能向本设备发送命令。\n\n关闭远程协助或重置 PIN 需要在 WebUI 管理端操作。",
+                Content = $"您的远程协助 PIN 码为：{pin}\n\n请记下此 PIN 码，管理员需要输入此 PIN 才能向本设备发送命令。\n\n关闭远程协助或重置 PIN 需要集控管理员操作。",
                 Buttons =
                 {
                     new TaskDialogButton("确定", true)
