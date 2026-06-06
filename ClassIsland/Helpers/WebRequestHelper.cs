@@ -24,7 +24,10 @@ public class WebRequestHelper(Uri? baseUri = null, bool phainon = false)
             new ColorHexJsonConverter()
         }
     };
-    private HttpClient HttpClient { get; } = new(new SentryHttpMessageHandler())
+    private HttpClient HttpClient { get; } = new(new SentryHttpMessageHandler(new HttpClientHandler
+    {
+        UseProxy = false
+    }))
     {
         BaseAddress = baseUri
     };

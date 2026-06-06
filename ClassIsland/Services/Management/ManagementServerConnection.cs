@@ -66,6 +66,7 @@ public class ManagementServerConnection : IManagementServerConnection
     {
         var handler = new SocketsHttpHandler
         {
+            UseProxy = false,
             EnableMultipleHttp2Connections = true,
             ConnectTimeout = TimeSpan.FromSeconds(10),
             SslOptions = new System.Net.Security.SslClientAuthenticationOptions
