@@ -203,6 +203,26 @@ public class ManagementServerConnection : IManagementServerConnection
         return await GetManifest();
     }
 
+    public async Task UnregisterAsync()
+    {
+        Logger.LogInformation("正在从服务端注销实例");
+        try
+        {
+            var client = new ClientRegister.ClientRegisterClient(Channel);
+            var r = await client.UnRegisterAsync(new ClientRegisterCsReq()
+            {
+                ClientUid = ClientGuid.ToString(),
+                ClientId = Id,
+                ClientMac = GetNetworkInterfaceMac()
+            }, GetMetadata(true));
+            Logger.LogTrace("ClientRegisterClient.UnRegisterAsync: {} {}", r.Retcode, r.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "注销实例失败（可能是连接已断开）");
+        }
+    }
+
     private async void CommandConnectionAliveTimerOnTick(object? sender, EventArgs e)
     {
         try

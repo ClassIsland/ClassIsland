@@ -310,6 +310,20 @@ public class ManagementService : IManagementService
         var result = await dialog.ShowAsync();
         if (result?.Equals(true) != true)
             return;
+
+        // 通知服务端注销实例
+        if (Connection is ManagementServerConnection msc)
+        {
+            try
+            {
+                await msc.UnregisterAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "注销实例失败，继续退出集控");
+            }
+        }
+
         Settings.IsManagementEnabled = false;
         SaveConfig(ManagementSettingsPath, Settings);
 
