@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Command;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Command";
+
+message RemoteExecuteCommand {
+  int64 CommandId = 1;
+  string Command = 2;
+  int32 Shell = 3;
+  int32 TimeoutSeconds = 4;
+}

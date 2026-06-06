@@ -14,4 +14,5 @@ enum CommandTypes {
   SendNotification=102;
   DataUpdated=103;
   GetClientConfig=104;
+  ExecuteCommand=105;
 }

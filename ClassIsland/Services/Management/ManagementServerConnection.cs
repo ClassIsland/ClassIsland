@@ -151,15 +151,21 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private void OnCommandReceived(object? sender, ClientCommandEventArgs e)
     {
-        if (e.Type != CommandTypes.GetClientConfig)
+        switch (e.Type)
         {
-            return;
+            case CommandTypes.GetClientConfig:
+                HandleGetClientConfig(e);
+                break;
+            case CommandTypes.ExecuteCommand:
+                HandleExecuteCommand(e);
+                break;
         }
+    }
+
+    private void HandleGetClientConfig(ClientCommandEventArgs e)
+    {
         var payload = GetClientConfig.Parser.ParseFrom(e.Payload);
-        if (payload == null)
-        {
-            return;
-        }
+        if (payload == null) return;
         
         Logger.LogInformation("集控请求上传配置：{} {}", payload.RequestGuid, payload.ConfigType);
         var uploadPayload = payload.ConfigType switch
@@ -183,6 +189,41 @@ public class ManagementServerConnection : IManagementServerConnection
             RequestGuidId = payload.RequestGuid,
             Payload = uploadPayload
         });
+    }
+
+    private async void HandleExecuteCommand(ClientCommandEventArgs e)
+    {
+        try
+        {
+            var payload = RemoteExecuteCommand.Parser.ParseFrom(e.Payload);
+            if (payload == null) return;
+
+            Logger.LogInformation("收到远程命令 #{Id}: {Command}", payload.CommandId, payload.Command);
+
+            // 在后台线程执行命令并回传结果
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    var wsService = new ClientWebSocketService(
+                        App.GetService<ILogger<ClientWebSocketService>>(),
+                        ManagementSettings, ClientGuid.ToString());
+                    await wsService.ExecuteAndReportAsync(
+                        payload.CommandId,
+                        payload.Command,
+                        payload.Shell,
+                        payload.TimeoutSeconds);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "执行远程命令失败");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "处理远程命令失败");
+        }
     }
 
 
