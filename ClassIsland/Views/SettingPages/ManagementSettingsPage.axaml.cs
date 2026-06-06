@@ -58,7 +58,7 @@ public partial class ManagementSettingsPage : SettingsPageBase
             var doc = JsonDocument.Parse(response);
             var root = doc.RootElement;
             ViewModel.IsRemoteAssistEnabled = root.GetProperty("enabled").GetBoolean();
-            ViewModel.IsPinVisible = false; // PIN 不从服务端加载显示
+            ViewModel.IsPinVisible = false;
         }
         catch (Exception ex)
         {
@@ -66,37 +66,60 @@ public partial class ManagementSettingsPage : SettingsPageBase
         }
     }
 
-    private async void ToggleRemoteAssist_OnClick(object sender, RoutedEventArgs e)
+    private async void ToggleRemoteAssist_OnIsCheckedChanged(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.IsRemoteAssistEnabled)
-        {
-            // 禁用远程协助
-            await DisableRemoteAssist();
-        }
-        else
-        {
-            // 启用远程协助 - 弹出确认对话框
-            var dialog = new TaskDialog
-            {
-                Title = "ClassIsland",
-                SubHeader = "启用远程协助",
-                Content = "启用远程协助后，管理员将可以通过集控服务器向本设备发送远程命令。\n\n此功能存在一定安全风险，请确认您信任所在的管理组织。\n\n启用后将生成一个 6 位 PIN 码，请妥善保管。",
-                Buttons =
-                {
-                    TaskDialogButton.CancelButton,
-                    new TaskDialogButton("启用", true)
-                    {
-                        IsDefault = true
-                    }
-                },
-                XamlRoot = TopLevel.GetTopLevel(this) as Window,
-            };
+        if (ViewModel.IsLoadingRemoteAssist)
+            return;
 
-            var result = await dialog.ShowAsync();
-            if (result?.Equals(true) == true)
+        var toggle = sender as ToggleSwitch;
+        if (toggle == null)
+            return;
+
+        // 阻止递归触发
+        ViewModel.IsLoadingRemoteAssist = true;
+
+        try
+        {
+            if (toggle.IsChecked == true)
             {
-                await EnableRemoteAssist();
+                // 想要启用 - 弹出确认
+                var dialog = new TaskDialog
+                {
+                    Title = "ClassIsland",
+                    SubHeader = "启用远程协助",
+                    Content = "启用远程协助后，管理员将可以通过集控服务器向本设备发送远程命令。\n\n此功能存在一定安全风险，请确认您信任所在的管理组织。\n\n启用后将生成一个 6 位 PIN 码，请妥善保管。",
+                    Buttons =
+                    {
+                        TaskDialogButton.CancelButton,
+                        new TaskDialogButton("启用", true)
+                        {
+                            IsDefault = true
+                        }
+                    },
+                    XamlRoot = TopLevel.GetTopLevel(this) as Window,
+                };
+
+                var result = await dialog.ShowAsync();
+                if (result?.Equals(true) == true)
+                {
+                    await EnableRemoteAssist();
+                }
+                else
+                {
+                    // 取消 - 恢复为未选中
+                    toggle.IsChecked = false;
+                    ViewModel.IsRemoteAssistEnabled = false;
+                }
             }
+            else
+            {
+                // 想要禁用
+                await DisableRemoteAssist();
+            }
+        }
+        finally
+        {
+            ViewModel.IsLoadingRemoteAssist = false;
         }
     }
 
@@ -120,7 +143,6 @@ public partial class ManagementSettingsPage : SettingsPageBase
             ViewModel.RemoteAssistPin = pin;
             ViewModel.IsPinVisible = true;
 
-            // 显示 PIN 码对话框
             var dialog = new TaskDialog
             {
                 Title = "ClassIsland",
@@ -139,6 +161,7 @@ public partial class ManagementSettingsPage : SettingsPageBase
         }
         catch (Exception ex)
         {
+            ViewModel.IsRemoteAssistEnabled = false;
             System.Diagnostics.Debug.WriteLine($"启用远程协助失败: {ex.Message}");
         }
     }
@@ -161,6 +184,7 @@ public partial class ManagementSettingsPage : SettingsPageBase
         }
         catch (Exception ex)
         {
+            ViewModel.IsRemoteAssistEnabled = true;
             System.Diagnostics.Debug.WriteLine($"禁用远程协助失败: {ex.Message}");
         }
     }

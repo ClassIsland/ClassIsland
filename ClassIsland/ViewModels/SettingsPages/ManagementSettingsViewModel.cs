@@ -9,4 +9,5 @@ public partial class ManagementSettingsViewModel : ObservableObject
     [ObservableProperty] private bool _isRemoteAssistEnabled;
     [ObservableProperty] private string _remoteAssistPin = "";
     [ObservableProperty] private bool _isPinVisible;
+    [ObservableProperty] private bool _isLoadingRemoteAssist;
 }

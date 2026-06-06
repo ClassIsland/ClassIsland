@@ -94,7 +94,7 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock Text="允许远程协助" VerticalAlignment="Center"/>
                             <ToggleSwitch IsChecked="{Binding ViewModel.IsRemoteAssistEnabled}"
-                                          Click="ToggleRemoteAssist_OnClick"
+                                          IsCheckedChanged="ToggleRemoteAssist_OnIsCheckedChanged"
                                           OnContent="已启用"
                                           OffContent="已禁用"/>
                         </StackPanel>
@@ -117,7 +117,7 @@
                                        FontSize="16"/>
                             <Button Click="ShowPinButton_OnClick"
                                     Padding="8 4">
-                                <TextBlock Text="{Binding ViewModel.IsPinVisible, StringFormat={}{0}, FallbackValue='显示'}"/>
+                                <TextBlock Text="显示/隐藏"/>
                             </Button>
                         </StackPanel>
                     </Grid>
