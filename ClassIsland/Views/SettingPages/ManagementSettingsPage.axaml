@@ -85,18 +85,18 @@
                     <StackPanel Spacing="8">
                         <TextBlock Text="远程协助" FontWeight="Bold"/>
                         <TextBlock TextWrapping="Wrap">
-                            <Run>启用远程协助后，管理员可以通过集控服务器向本设备发送远程命令。</Run>
+                            <Run>启用远程协助后，管理员可以通过集控服务器向本设备发送远程命令。关闭或重置 PIN 需在 WebUI 操作。</Run>
                         </TextBlock>
                     </StackPanel>
                 </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem IsVisible="{Binding !ViewModel.IsRemoteAssistEnabled}">
+                    <Button Content="启用远程协助" Click="EnableRemoteAssistButton_OnClick" />
+                </controls1:SettingsExpanderItem>
+                <controls1:SettingsExpanderItem IsVisible="{Binding ViewModel.IsRemoteAssistEnabled}">
                     <Grid>
                         <StackPanel Orientation="Horizontal" Spacing="12">
-                            <TextBlock Text="允许远程协助" VerticalAlignment="Center"/>
-                            <ToggleSwitch IsChecked="{Binding ViewModel.IsRemoteAssistEnabled}"
-                                          IsCheckedChanged="ToggleRemoteAssist_OnIsCheckedChanged"
-                                          OnContent="已启用"
-                                          OffContent="已禁用"/>
+                            <TextBlock Text="状态：" VerticalAlignment="Center"/>
+                            <TextBlock Text="已启用" VerticalAlignment="Center" Foreground="Green" FontWeight="Bold"/>
                         </StackPanel>
                     </Grid>
                 </controls1:SettingsExpanderItem>

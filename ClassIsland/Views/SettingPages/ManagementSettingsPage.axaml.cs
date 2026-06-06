@@ -66,60 +66,28 @@ public partial class ManagementSettingsPage : SettingsPageBase
         }
     }
 
-    private async void ToggleRemoteAssist_OnIsCheckedChanged(object sender, RoutedEventArgs e)
+    private async void EnableRemoteAssistButton_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.IsLoadingRemoteAssist)
-            return;
-
-        var toggle = sender as ToggleSwitch;
-        if (toggle == null)
-            return;
-
-        // 阻止递归触发
-        ViewModel.IsLoadingRemoteAssist = true;
-
-        try
+        var dialog = new TaskDialog
         {
-            if (toggle.IsChecked == true)
+            Title = "ClassIsland",
+            SubHeader = "启用远程协助",
+            Content = "启用远程协助后，管理员将可以通过集控服务器向本设备发送远程命令。\n\n此功能存在一定安全风险，请确认您信任所在的管理组织。\n\n启用后将生成一个 6 位 PIN 码，请妥善保管。关闭此功能需要在 WebUI 管理端操作。",
+            Buttons =
             {
-                // 想要启用 - 弹出确认
-                var dialog = new TaskDialog
+                TaskDialogButton.CancelButton,
+                new TaskDialogButton("启用", true)
                 {
-                    Title = "ClassIsland",
-                    SubHeader = "启用远程协助",
-                    Content = "启用远程协助后，管理员将可以通过集控服务器向本设备发送远程命令。\n\n此功能存在一定安全风险，请确认您信任所在的管理组织。\n\n启用后将生成一个 6 位 PIN 码，请妥善保管。",
-                    Buttons =
-                    {
-                        TaskDialogButton.CancelButton,
-                        new TaskDialogButton("启用", true)
-                        {
-                            IsDefault = true
-                        }
-                    },
-                    XamlRoot = TopLevel.GetTopLevel(this) as Window,
-                };
+                    IsDefault = true
+                }
+            },
+            XamlRoot = TopLevel.GetTopLevel(this) as Window,
+        };
 
-                var result = await dialog.ShowAsync();
-                if (result?.Equals(true) == true)
-                {
-                    await EnableRemoteAssist();
-                }
-                else
-                {
-                    // 取消 - 恢复为未选中
-                    toggle.IsChecked = false;
-                    ViewModel.IsRemoteAssistEnabled = false;
-                }
-            }
-            else
-            {
-                // 想要禁用
-                await DisableRemoteAssist();
-            }
-        }
-        finally
+        var result = await dialog.ShowAsync();
+        if (result?.Equals(true) == true)
         {
-            ViewModel.IsLoadingRemoteAssist = false;
+            await EnableRemoteAssist();
         }
     }
 
@@ -143,11 +111,11 @@ public partial class ManagementSettingsPage : SettingsPageBase
             ViewModel.RemoteAssistPin = pin;
             ViewModel.IsPinVisible = true;
 
-            var dialog = new TaskDialog
+            var pinDialog = new TaskDialog
             {
                 Title = "ClassIsland",
                 SubHeader = "远程协助已启用",
-                Content = $"您的远程协助 PIN 码为：{pin}\n\n请记下此 PIN 码，管理员需要输入此 PIN 才能向本设备发送命令。\n\nPIN 码可在本页面随时查看。",
+                Content = $"您的远程协助 PIN 码为：{pin}\n\n请记下此 PIN 码，管理员需要输入此 PIN 才能向本设备发送命令。\n\n关闭远程协助或重置 PIN 需要在 WebUI 管理端操作。",
                 Buttons =
                 {
                     new TaskDialogButton("确定", true)
@@ -157,35 +125,12 @@ public partial class ManagementSettingsPage : SettingsPageBase
                 },
                 XamlRoot = TopLevel.GetTopLevel(this) as Window,
             };
-            await dialog.ShowAsync();
+            await pinDialog.ShowAsync();
         }
         catch (Exception ex)
         {
             ViewModel.IsRemoteAssistEnabled = false;
             System.Diagnostics.Debug.WriteLine($"启用远程协助失败: {ex.Message}");
-        }
-    }
-
-    private async Task DisableRemoteAssist()
-    {
-        try
-        {
-            var cuid = ManagementService.Persist.ClientUniqueId;
-            var host = ManagementService.Settings.ManagementServer;
-
-            using var client = CreateHttpClient();
-            var content = new StringContent("", Encoding.UTF8, "application/json");
-            var response = await client.PostAsync($"{host}/api/v1/clients/{cuid}/remote-assist/disable", content);
-            response.EnsureSuccessStatusCode();
-
-            ViewModel.IsRemoteAssistEnabled = false;
-            ViewModel.RemoteAssistPin = "";
-            ViewModel.IsPinVisible = false;
-        }
-        catch (Exception ex)
-        {
-            ViewModel.IsRemoteAssistEnabled = true;
-            System.Diagnostics.Debug.WriteLine($"禁用远程协助失败: {ex.Message}");
         }
     }
 
