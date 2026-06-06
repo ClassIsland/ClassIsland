@@ -51,6 +51,11 @@ public class ManagementServerConnection : IManagementServerConnection
     private string? CurrentSessionId { get; set; }
     
     private ClientWebSocketService? WebSocketService { get; set; }
+
+    /// <summary>
+    /// 服务端推送数据更新通知
+    /// </summary>
+    public event EventHandler? DataUpdated;
     
     private ILogger<ManagementServerConnection> Logger { get; } = App.GetService<ILogger<ManagementServerConnection>>();
 
@@ -283,6 +288,11 @@ public class ManagementServerConnection : IManagementServerConnection
             WebSocketService.CommandReceived += async (_, e) =>
             {
                 await WebSocketService.ExecuteAndReportAsync(e.CommandId, e.Command, e.Shell, e.TimeoutSeconds);
+            };
+            WebSocketService.DataUpdated += (_, _) =>
+            {
+                Logger.LogInformation("收到 WebSocket 数据更新通知，触发配置重载");
+                DataUpdated?.Invoke(this, EventArgs.Empty);
             };
             _ = WebSocketService.StartAsync(completeRsp.SessionId, CommandListeningCallCancellationTokenSource.Token);
 

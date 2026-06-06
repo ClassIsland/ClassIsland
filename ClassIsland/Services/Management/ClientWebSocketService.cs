@@ -31,6 +31,7 @@ public class ClientWebSocketService : IDisposable
     private const int PingIntervalSeconds = 25;
 
     public event EventHandler<ExecuteCommandEventArgs>? CommandReceived;
+    public event EventHandler? DataUpdated;
     public event EventHandler? Connected;
     public event EventHandler? Disconnected;
 
@@ -182,7 +183,8 @@ public class ClientWebSocketService : IDisposable
                     break;
 
                 case "DataUpdated":
-                    _logger.LogInformation("收到数据更新通知");
+                    _logger.LogInformation("收到数据更新通知，触发配置重载");
+                    DataUpdated?.Invoke(this, EventArgs.Empty);
                     break;
 
                 default:

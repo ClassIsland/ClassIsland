@@ -104,7 +104,13 @@ public class ManagementService : IManagementService
                     Connection = new ServerlessConnection(Persist.ClientUniqueId, Settings.ClassIdentity ?? "", Settings.ManifestUrlTemplate);
                     break;
                 case ManagementServerKind.ManagementServer:
-                    Connection = new ManagementServerConnection(Settings, Persist.ClientUniqueId, false);
+                    var mscConnection = new ManagementServerConnection(Settings, Persist.ClientUniqueId, false);
+                    mscConnection.DataUpdated += async (_, _) =>
+                    {
+                        Logger.LogInformation("收到服务端数据更新推送，重新加载集控配置");
+                        await ReloadManagementAsync();
+                    };
+                    Connection = mscConnection;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("", "无效的集控服务器类型。");
