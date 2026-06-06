@@ -50,6 +50,8 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private string? CurrentSessionId { get; set; }
     
+    private ClientWebSocketService? WebSocketService { get; set; }
+    
     private ILogger<ManagementServerConnection> Logger { get; } = App.GetService<ILogger<ManagementServerConnection>>();
 
     private Guid ClientGuid { get; }
@@ -271,9 +273,20 @@ public class ManagementServerConnection : IManagementServerConnection
             // 不信任的服务器，不再尝试握手。
             return false;
         }
-        CurrentSessionId = completeRsp.SessionId;
-        Logger.LogInformation("与 {} 握手成功，SessionId：{}", ManagementSettings.ManagementServerGrpc, completeRsp.SessionId);
-        return true;
+            CurrentSessionId = completeRsp.SessionId;
+            Logger.LogInformation("与 {} 握手成功，SessionId：{}", ManagementSettings.ManagementServerGrpc, completeRsp.SessionId);
+
+            // 启动 WebSocket 实时推送通道
+            WebSocketService = new ClientWebSocketService(
+                App.GetService<ILogger<ClientWebSocketService>>(),
+                ManagementSettings, ClientGuid.ToString());
+            WebSocketService.CommandReceived += async (_, e) =>
+            {
+                await WebSocketService.ExecuteAndReportAsync(e.CommandId, e.Command, e.Shell, e.TimeoutSeconds);
+            };
+            _ = WebSocketService.StartAsync(completeRsp.SessionId, CommandListeningCallCancellationTokenSource.Token);
+
+            return true;
     }
     
     private async Task ListenCommands()
@@ -341,6 +354,8 @@ public class ManagementServerConnection : IManagementServerConnection
                 return;
             Channel = null;
             CurrentSessionId = null;
+            WebSocketService?.Dispose();
+            WebSocketService = null;
             Logger.LogError(ex, "无法连接到集控服务器命令流，将在30秒后重试。");
             CommandConnectionAliveTimer.Stop();
             CommandListeningCall = null;
