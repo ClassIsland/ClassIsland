@@ -640,7 +640,7 @@ public partial class App : AppBase, IAppHost
 #endif
         spanHostBuilding.Finish();
         spanPreInit.Finish();
-        if (!string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1))
+        if (!string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) || !string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {
             var dtWindow = new DataTransferWindow()
             {
@@ -648,7 +648,14 @@ public partial class App : AppBase, IAppHost
             };
             dtWindow.Show();
             var entries = int.TryParse(ApplicationCommand.ImportEntries, out var r) ? r : 0;
-            await dtWindow.PerformClassIslandImport(ApplicationCommand.ImportV1, (ImportEntries)entries);
+            if (!string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1))
+            {
+                await dtWindow.PerformClassIslandImport(ApplicationCommand.ImportV1, (ImportEntries)entries);
+            }
+            else
+            {
+                await dtWindow.PerformClassIsland2Import(ApplicationCommand.ImportV2, (ImportEntries)entries);
+            }
             return;
         }
         var spanLaunching = transaction.StartChild("startup-launching");
