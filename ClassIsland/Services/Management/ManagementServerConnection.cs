@@ -192,7 +192,7 @@ public class ManagementServerConnection : IManagementServerConnection
         {
             RequestGuidId = payload.RequestGuid,
             Payload = uploadPayload
-        });
+        }, GetMetadata());
     }
 
     private async void HandleExecuteCommand(ClientCommandEventArgs e)
