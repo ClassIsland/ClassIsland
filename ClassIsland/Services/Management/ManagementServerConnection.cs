@@ -239,22 +239,33 @@ public class ManagementServerConnection : IManagementServerConnection
 
             Logger.LogInformation("收到推送配置：类型={ConfigType}，触发重新加载", payload.ConfigType);
 
-            // 重新加载所有集控配置
-            var managementService = IAppHost.TryGetService<IManagementService>();
-            if (managementService is ManagementService ms)
+            switch ((ConfigTypes)payload.ConfigType)
             {
-                Dispatcher.UIThread.Invoke(async () =>
-                {
-                    try
+                case ConfigTypes.CurrentComponent:
+                    ApplyComponentConfig(payload.ConfigJson);
+                    break;
+                case ConfigTypes.CurrentAutomation:
+                    ApplyAutomationConfig(payload.ConfigJson);
+                    break;
+                default:
+                    // 重新加载所有集控配置
+                    var managementService = IAppHost.TryGetService<IManagementService>();
+                    if (managementService is ManagementService ms)
                     {
-                        await ms.ReloadManagementAsync();
-                        Logger.LogInformation("集控配置已重新加载");
+                        Dispatcher.UIThread.Invoke(async () =>
+                        {
+                            try
+                            {
+                                await ms.ReloadManagementAsync();
+                                Logger.LogInformation("集控配置已重新加载");
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.LogError(ex, "重新加载集控配置失败");
+                            }
+                        });
                     }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, "重新加载集控配置失败");
-                    }
-                });
+                    break;
             }
         }
         catch (Exception ex)
@@ -267,29 +278,71 @@ public class ManagementServerConnection : IManagementServerConnection
     {
         try
         {
-            var componentsService = IAppHost.TryGetService<IComponentsService>();
-            if (componentsService == null)
-            {
-                Logger.LogWarning("组件服务不可用");
-                return;
-            }
-
-            // 将推送的配置写入组件配置文件
-            var configPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "ClassIsland", "Components.json");
+            // 写入集控组件配置文件
+            var configPath = ManagementService.ManagementComponentsPath;
+            var dir = Path.GetDirectoryName(configPath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
             File.WriteAllText(configPath, configJson);
+            Logger.LogInformation("组件配置已写入：{}", configPath);
 
-            // 通知组件服务重新加载
-            Dispatcher.UIThread.Invoke(() =>
+            // 重新加载集控配置
+            var managementService = IAppHost.TryGetService<IManagementService>();
+            if (managementService is ManagementService ms)
             {
-                componentsService.LoadManagementConfig();
-                Logger.LogInformation("组件配置已应用并重新加载");
-            });
+                Dispatcher.UIThread.Invoke(async () =>
+                {
+                    try
+                    {
+                        await ms.ReloadManagementAsync();
+                        Logger.LogInformation("组件配置已应用并重新加载");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "重新加载组件配置失败");
+                    }
+                });
+            }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "应用组件配置失败");
+        }
+    }
+
+    private void ApplyAutomationConfig(string configJson)
+    {
+        try
+        {
+            // 写入集控自动化配置文件
+            var configPath = Path.Combine(ManagementService.ManagementConfigureFolderPath, "Automation.json");
+            var dir = Path.GetDirectoryName(configPath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            File.WriteAllText(configPath, configJson);
+            Logger.LogInformation("自动化配置已写入：{}", configPath);
+
+            // 重新加载集控配置
+            var managementService = IAppHost.TryGetService<IManagementService>();
+            if (managementService is ManagementService ms)
+            {
+                Dispatcher.UIThread.Invoke(async () =>
+                {
+                    try
+                    {
+                        await ms.ReloadManagementAsync();
+                        Logger.LogInformation("自动化配置已应用并重新加载");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "重新加载自动化配置失败");
+                    }
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "应用自动化配置失败");
         }
     }
 
