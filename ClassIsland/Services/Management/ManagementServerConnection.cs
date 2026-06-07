@@ -15,6 +15,7 @@ using System.Windows;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Models.Management;
@@ -159,6 +160,9 @@ public class ManagementServerConnection : IManagementServerConnection
             case CommandTypes.ExecuteCommand:
                 HandleExecuteCommand(e);
                 break;
+            case CommandTypes.PushConfig:
+                HandlePushConfig(e);
+                break;
         }
     }
 
@@ -223,6 +227,69 @@ public class ManagementServerConnection : IManagementServerConnection
         catch (Exception ex)
         {
             Logger.LogError(ex, "处理远程命令失败");
+        }
+    }
+
+    private void HandlePushConfig(ClientCommandEventArgs e)
+    {
+        try
+        {
+            var payload = PushConfig.Parser.ParseFrom(e.Payload);
+            if (payload == null) return;
+
+            Logger.LogInformation("收到推送配置：类型={ConfigType}，触发重新加载", payload.ConfigType);
+
+            // 重新加载所有集控配置
+            var managementService = IAppHost.TryGetService<IManagementService>();
+            if (managementService is ManagementService ms)
+            {
+                Dispatcher.UIThread.Invoke(async () =>
+                {
+                    try
+                    {
+                        await ms.ReloadManagementAsync();
+                        Logger.LogInformation("集控配置已重新加载");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "重新加载集控配置失败");
+                    }
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "处理推送配置失败");
+        }
+    }
+
+    private void ApplyComponentConfig(string configJson)
+    {
+        try
+        {
+            var componentsService = IAppHost.TryGetService<IComponentsService>();
+            if (componentsService == null)
+            {
+                Logger.LogWarning("组件服务不可用");
+                return;
+            }
+
+            // 将推送的配置写入组件配置文件
+            var configPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "ClassIsland", "Components.json");
+            File.WriteAllText(configPath, configJson);
+
+            // 通知组件服务重新加载
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                componentsService.LoadManagementConfig();
+                Logger.LogInformation("组件配置已应用并重新加载");
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "应用组件配置失败");
         }
     }
 

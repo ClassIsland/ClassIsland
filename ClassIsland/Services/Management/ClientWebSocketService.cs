@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Text;
@@ -125,7 +126,8 @@ public class ClientWebSocketService : IDisposable
     {
         var httpUrl = _settings.ManagementServer.TrimEnd('/');
         var wsBase = httpUrl.Replace("http://", "ws://").Replace("https://", "wss://");
-        return $"{wsBase}/ws/client?cuid={_clientUid}&session={sessionId}";
+        var encodedSession = Uri.EscapeDataString(sessionId);
+        return $"{wsBase}/ws/client?cuid={_clientUid}&session={encodedSession}";
     }
 
     private async Task ReceiveLoopAsync(CancellationToken ct)
@@ -245,8 +247,20 @@ public class ClientWebSocketService : IDisposable
 
     private async Task<(int exitCode, string stdout, string stderr)> RunCommandAsync(string command, int shell, int timeoutSeconds)
     {
-        var fileName = shell == 1 ? "pwsh" : "cmd";
-        var args = shell == 1 ? $"-NoProfile -Command \"{command}\"" : $"/c {command}";
+        string fileName;
+        string args;
+
+        if (shell == 1)
+        {
+            // PowerShell: 尝试 pwsh，回退到 powershell
+            fileName = FindPowerShellPath();
+            args = $"-NoProfile -NonInteractive -Command \"{command}\"";
+        }
+        else
+        {
+            fileName = "cmd";
+            args = $"/c {command}";
+        }
 
         var psi = new ProcessStartInfo
         {
@@ -275,6 +289,20 @@ public class ClientWebSocketService : IDisposable
         var stdout = await stdoutTask;
         var stderr = await stderrTask;
         return (process.ExitCode, stdout, stderr);
+    }
+
+    private static string FindPowerShellPath()
+    {
+        // 优先使用 pwsh (PowerShell 7+)
+        var pwshPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PowerShell", "7", "pwsh.exe");
+        if (File.Exists(pwshPath)) return pwshPath;
+
+        // 回退到 Windows PowerShell
+        var winPsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsPowerShell", "v1.0", "powershell.exe");
+        if (File.Exists(winPsPath)) return winPsPath;
+
+        // 最后尝试 PATH
+        return "pwsh";
     }
 
     private static HttpClient CreateHttpClient()

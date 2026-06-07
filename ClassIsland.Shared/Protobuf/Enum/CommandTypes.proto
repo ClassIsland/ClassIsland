@@ -15,4 +15,5 @@ enum CommandTypes {
   DataUpdated=103;
   GetClientConfig=104;
   ExecuteCommand=105;
+  PushConfig=106;
 }
