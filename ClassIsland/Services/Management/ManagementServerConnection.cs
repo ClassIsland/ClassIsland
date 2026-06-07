@@ -514,6 +514,7 @@ public class ManagementServerConnection : IManagementServerConnection
 
     internal void LogAuditEvent(AuditEvents eventType, IBufferMessage payload)
     {
+        if (CurrentSessionId == null || Channel == null) return;
         _ = Task.Run(() =>
         {
             try
