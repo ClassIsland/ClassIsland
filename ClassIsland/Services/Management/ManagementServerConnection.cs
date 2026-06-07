@@ -155,7 +155,7 @@ public class ManagementServerConnection : IManagementServerConnection
         switch (e.Type)
         {
             case CommandTypes.GetClientConfig:
-                HandleGetClientConfig(e);
+                _ = Task.Run(() => HandleGetClientConfig(e));
                 break;
             case CommandTypes.ExecuteCommand:
                 HandleExecuteCommand(e);
@@ -168,31 +168,39 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private void HandleGetClientConfig(ClientCommandEventArgs e)
     {
-        var payload = GetClientConfig.Parser.ParseFrom(e.Payload);
-        if (payload == null) return;
-        
-        Logger.LogInformation("集控请求上传配置：{} {}", payload.RequestGuid, payload.ConfigType);
-        var uploadPayload = payload.ConfigType switch
+        try
         {
-            ConfigTypes.AppSettings => JsonSerializer.Serialize(IAppHost.GetService<SettingsService>().Settings),
-            ConfigTypes.Profile => JsonSerializer.Serialize(IAppHost.GetService<IProfileService>().Profile),
-            ConfigTypes.CurrentComponent => JsonSerializer.Serialize(IAppHost.GetService<IComponentsService>()
-                .CurrentComponents),
-            ConfigTypes.CurrentAutomation => JsonSerializer.Serialize(IAppHost.GetService<IAutomationService>()
-                .Workflows),
-            ConfigTypes.Logs => JsonSerializer.Serialize(IAppHost.GetService<AppLogService>().Logs),
-            ConfigTypes.PluginList => JsonSerializer.Serialize(IPluginService.LoadedPlugins
-                .Where(x => x.LoadStatus == PluginLoadStatus.Loaded)
-                .Select(x => x.Manifest.Id)
-                .ToList()),
-            _ => throw new ArgumentOutOfRangeException()
-        };
-        var client = new ConfigUpload.ConfigUploadClient(Channel);
-        client.UploadConfig(new ConfigUploadScReq()
+            var payload = GetClientConfig.Parser.ParseFrom(e.Payload);
+            if (payload == null) return;
+            
+            Logger.LogInformation("集控请求上传配置：{} {}", payload.RequestGuid, payload.ConfigType);
+            var uploadPayload = payload.ConfigType switch
+            {
+                ConfigTypes.AppSettings => JsonSerializer.Serialize(IAppHost.GetService<SettingsService>().Settings),
+                ConfigTypes.Profile => JsonSerializer.Serialize(IAppHost.GetService<IProfileService>().Profile),
+                ConfigTypes.CurrentComponent => JsonSerializer.Serialize(IAppHost.GetService<IComponentsService>()
+                    .CurrentComponents),
+                ConfigTypes.CurrentAutomation => JsonSerializer.Serialize(IAppHost.GetService<IAutomationService>()
+                    .Workflows),
+                ConfigTypes.Logs => JsonSerializer.Serialize(IAppHost.GetService<AppLogService>().Logs),
+                ConfigTypes.PluginList => JsonSerializer.Serialize(IPluginService.LoadedPlugins
+                    .Where(x => x.LoadStatus == PluginLoadStatus.Loaded)
+                    .Select(x => x.Manifest.Id)
+                    .ToList()),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            var client = new ConfigUpload.ConfigUploadClient(Channel);
+            client.UploadConfig(new ConfigUploadScReq()
+            {
+                RequestGuidId = payload.RequestGuid,
+                Payload = uploadPayload
+            }, GetMetadata());
+            Logger.LogInformation("配置上传成功：{} {}", payload.RequestGuid, payload.ConfigType);
+        }
+        catch (Exception ex)
         {
-            RequestGuidId = payload.RequestGuid,
-            Payload = uploadPayload
-        }, GetMetadata());
+            Logger.LogError(ex, "上传客户端配置失败");
+        }
     }
 
     private async void HandleExecuteCommand(ClientCommandEventArgs e)
