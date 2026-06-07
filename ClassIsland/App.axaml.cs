@@ -610,8 +610,10 @@ public partial class App : AppBase, IAppHost
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
         if (App.ApplicationCommand.Diagnostic)
         {
+            var diagService = GetService<DiagnosticService>();
             Logger.LogInformation("诊断模式已启用!");
-            Logger.LogDebug(GetService<DiagnosticService>().GetDiagnosticInfo());
+            Logger.LogDebug("{DiagnosticMessage}", diagService.GetDiagnosticInfo());
+            await diagService.ExportDiagnosticData(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"ClassIsland_DiagnosticData_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip"), false);
         }
         foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Error))
         {

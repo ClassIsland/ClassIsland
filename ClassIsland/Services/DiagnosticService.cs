@@ -27,7 +27,7 @@ namespace ClassIsland.Services;
 /// <summary>
 /// 应用诊断服务
 /// </summary>
-public class DiagnosticService(SettingsService settingsService, FileFolderService fileFolderService, 
+public class DiagnosticService(SettingsService settingsService, FileFolderService fileFolderService,
     ILogger<DiagnosticService> logger,
     AppLogService appLogService)
 {
@@ -107,7 +107,8 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     /// 导出诊断信息到文件
     /// </summary>
     /// <param name="path">保存位置</param>
-    public async Task ExportDiagnosticData(string path)
+    /// <param name="showExportedFile">是否显示导出的文件</param>
+    public async Task ExportDiagnosticData(string path, bool showExportedFile = true)
     {
         try
         {
@@ -125,7 +126,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {
                 File.Copy(file, Path.Combine(temp, "Management/", Path.GetFileName(file)));
             }
-            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles", profile), Path.Combine(temp, "Profiles/",  profile));
+            File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles", profile), Path.Combine(temp, "Profiles/", profile));
             FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppConfigPath), Path.Combine(temp, "Config/"));
             FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppLogFolderPath), Path.Combine(temp, "Logs/"));
 
@@ -135,11 +136,14 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                 ZipFile.CreateFromDirectory(temp, path);
             });
             Directory.Delete(temp, true);
-            Process.Start(new ProcessStartInfo()
+            if (showExportedFile)
             {
-                FileName = Path.GetDirectoryName(path) ?? "",
-                UseShellExecute = true
-            });
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = Path.GetDirectoryName(path) ?? "",
+                    UseShellExecute = true
+                });
+            }
         }
         catch (Exception e)
         {
@@ -175,7 +179,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
 
             if (OperatingSystem.IsLinux())
             {
-                if(File.Exists("/sys/devices/virtual/dmi/id/product_name")) name=File.ReadAllText("/sys/devices/virtual/dmi/id/product_name").Trim();
+                if (File.Exists("/sys/devices/virtual/dmi/id/product_name")) name = File.ReadAllText("/sys/devices/virtual/dmi/id/product_name").Trim();
                 if (File.Exists("/sys/devices/virtual/dmi/id/sys_vendor")) vendor = File.ReadAllText("/sys/devices/virtual/dmi/id/sys_vendor").Trim();
             }
 
@@ -201,7 +205,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         {
             return;
         }
-        
+
         try
         {
             var app = (App)AppBase.Current;
@@ -253,7 +257,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
 
                        如果您要反馈这个问题或求助，请不要只上传本窗口的截图。请查阅事件查看器和日志获取完整的错误信息，并附加在求助信息中。
                        """;
-        
+
         // TODO: 实现对话框
         // var r = MessageBox.Show(message, "ClassIsland", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
         // if (r == DialogResult.Cancel)
@@ -336,7 +340,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             }
         }
 
-        if (!isPluginAutoDisabled) 
+        if (!isPluginAutoDisabled)
             return isPluginAutoDisabled;
         try
         {
