@@ -1,5 +1,6 @@
 using System;
 using System.Buffers.Text;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -16,6 +17,8 @@ using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Models.Automation;
+using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Models.Management;
@@ -294,23 +297,27 @@ public class ManagementServerConnection : IManagementServerConnection
             File.WriteAllText(configPath, configJson);
             Logger.LogInformation("组件配置已写入：{}", configPath);
 
-            // 重新加载集控配置
-            var managementService = IAppHost.TryGetService<IManagementService>();
-            if (managementService is ManagementService ms)
+            // 直接加载组件配置（不依赖 manifest 版本检查）
+            Dispatcher.UIThread.Invoke(() =>
             {
-                Dispatcher.UIThread.Invoke(async () =>
+                try
                 {
-                    try
+                    var componentsService = IAppHost.TryGetService<IComponentsService>();
+                    if (componentsService != null)
                     {
-                        await ms.ReloadManagementAsync();
-                        Logger.LogInformation("组件配置已应用并重新加载");
+                        var profile = System.Text.Json.JsonSerializer.Deserialize<ComponentProfile>(configJson);
+                        if (profile != null)
+                        {
+                            componentsService.CurrentComponents = profile;
+                            Logger.LogInformation("组件配置已直接加载到 ComponentsService");
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, "重新加载组件配置失败");
-                    }
-                });
-            }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "直接加载组件配置失败");
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -330,23 +337,27 @@ public class ManagementServerConnection : IManagementServerConnection
             File.WriteAllText(configPath, configJson);
             Logger.LogInformation("自动化配置已写入：{}", configPath);
 
-            // 重新加载集控配置
-            var managementService = IAppHost.TryGetService<IManagementService>();
-            if (managementService is ManagementService ms)
+            // 直接加载自动化配置（不依赖 manifest 版本检查）
+            Dispatcher.UIThread.Invoke(() =>
             {
-                Dispatcher.UIThread.Invoke(async () =>
+                try
                 {
-                    try
+                    var automationService = IAppHost.TryGetService<IAutomationService>();
+                    if (automationService != null)
                     {
-                        await ms.ReloadManagementAsync();
-                        Logger.LogInformation("自动化配置已应用并重新加载");
+                        var workflows = System.Text.Json.JsonSerializer.Deserialize<ObservableCollection<Workflow>>(configJson);
+                        if (workflows != null)
+                        {
+                            automationService.Workflows = workflows;
+                            Logger.LogInformation("自动化配置已直接加载到 AutomationService");
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, "重新加载自动化配置失败");
-                    }
-                });
-            }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "直接加载自动化配置失败");
+                }
+            });
         }
         catch (Exception ex)
         {
