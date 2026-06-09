@@ -1186,7 +1186,6 @@
                                                                        ToolTip.Tip="创建选中时间点的副本。"
                                                                        IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                                        Label="创建副本" />
-                                            <controls:CommandBarSeparator />
                                             <controls:CommandBarButton Click="ButtonRemoveTimePoint_OnClick"
                                                                        ToolTip.Tip="删除选中的时间点。"
                                                                        IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint, Converter={x:Static ObjectConverters.IsNotNull}}"

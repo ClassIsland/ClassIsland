@@ -41,6 +41,7 @@ using FluentAvalonia.UI.Controls;
 using HotAvalonia;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
+using ClassIsland.Helpers;
 using Sentry;
 
 namespace ClassIsland.Views;
@@ -956,13 +957,84 @@ public partial class ProfileSettingsWindow : MyWindow
         var timeLayout = ViewModel.SelectedTimeLayout;
         if (timeLayout == null) return;
 
+        var copyDuration = item.EndTime - item.StartTime;
+        var baseSec = item.EndTime;
+        var copyEndTime = baseSec + copyDuration;
+
+        // 限界检查：复制的时间点不能超出 23:59:59
+        var maxTime = new TimeSpan(23, 59, 59);
+        if (baseSec >= maxTime)
+        {
+            this.ShowWarningToast("没有足够的空间来复制时间点。");
+            return;
+        }
+
+        // 重叠检查（与 AddTimeLayoutItem 一致）
+        if (item.TimeType is 0 or 1)
+        {
+            var index = timeLayout.Layouts.IndexOf(item);
+            if (index >= 0 && index < timeLayout.Layouts.Count - 1)
+            {
+                var nexts = (from i
+                            in timeLayout.Layouts.Skip(index + 1)
+                        where i.TimeType != 2
+                        select i)
+                    .ToList();
+                if (nexts.Count > 0)
+                {
+                    var next = nexts[0];
+                    if (next.StartTime <= baseSec)
+                    {
+                        if (index != 0)
+                        {
+                            this.ShowWarningToast("没有合适的位置来复制时间点。");
+                            return;
+                        }
+
+                        baseSec = item.StartTime - copyDuration;
+                        copyEndTime = item.StartTime;
+                        this.ShowToast("已向前插入了新的时间点。");
+                    }
+
+                    if (next.StartTime < copyEndTime)
+                    {
+                        this.ShowToast("没有足够的空间完全复制该时间点，已缩短时间点长度。");
+                        copyEndTime = next.StartTime;
+                    }
+                }
+            }
+        }
+        else if (item.TimeType == 2)
+        {
+            if ((from i in timeLayout.Layouts where i.TimeType == 2 select i.StartTime).ToList()
+                .Contains(baseSec))
+            {
+                this.ShowWarningToast("这里已经存在一条分割线。");
+                return;
+            }
+        }
+        else if (item.TimeType == 3)
+        {
+            if ((from i in timeLayout.Layouts where i.TimeType == 3 select i.StartTime).ToList()
+                .Contains(baseSec))
+            {
+                this.ShowWarningToast("这里已经存在一个行动。");
+                return;
+            }
+        }
+
+        // 边界限界
+        copyEndTime = TimeSpanHelper.Clamp(copyEndTime, TimeSpan.Zero, maxTime);
+
+        if (copyEndTime <= baseSec && item.TimeType is 0 or 1)
+        {
+            this.ShowWarningToast("没有足够的空间来复制时间点。");
+            return;
+        }
+
         var copy = ConfigureFileHelper.CopyObject(item);
-
-        copy.StartTime = item.EndTime;
-        copy.EndTime = item.EndTime + (item.EndTime - item.StartTime);
-
-        var index = timeLayout.Layouts.IndexOf(item);
-        if (index == -1) index = timeLayout.Layouts.Count;
+        copy.StartTime = baseSec;
+        copy.EndTime = copyEndTime;
 
         AddTimePoint(copy);
         ViewModel.SelectedTimePoint = copy;
