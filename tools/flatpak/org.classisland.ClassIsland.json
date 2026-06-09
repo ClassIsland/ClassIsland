@@ -11,11 +11,9 @@
     "finish-args": [
         "--share=ipc",
         "--share=network",
-        "--socket=wayland",
         "--socket=x11",
         "--socket=session-bus",
         "--device=dri",
-        "--filesystem=home",
         "--filesystem=xdg-config:ro",
         "--filesystem=xdg-data:ro",
         "--filesystem=xdg-cache:ro"
