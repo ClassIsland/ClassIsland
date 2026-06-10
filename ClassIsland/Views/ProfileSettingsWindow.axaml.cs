@@ -247,6 +247,65 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #endregion
 
+    #region Reminders
+
+    private void ButtonOpenReminders_OnClick(object? sender, RoutedEventArgs e)
+    {
+        OpenDrawer("RemindersEditor");
+    }
+
+    private async void AddReminder_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var editor = new ClassIsland.Controls.ReminderEditorControl();
+        var reminder = new Reminder() { Time = DateTime.Now };
+        editor.LoadFrom(reminder);
+        var dlg = new ContentDialog()
+        {
+            Title = "添加提醒",
+            Content = editor,
+            DefaultButton = ContentDialogButton.Primary,
+            PrimaryButtonText = "添加",
+            SecondaryButtonText = "取消"
+        };
+        var r = await dlg.ShowAsync();
+        if (r != ContentDialogResult.Primary) return;
+        if (editor.ApplyTo(reminder))
+        {
+            ViewModel.AddReminder(reminder);
+        }
+    }
+
+    private async void EditSelectedReminder_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var sel = RemindersListBox.SelectedItem as Reminder;
+        if (sel == null) return;
+        var editor = new ClassIsland.Controls.ReminderEditorControl();
+        editor.LoadFrom(sel);
+        var dlg = new ContentDialog()
+        {
+            Title = "编辑提醒",
+            Content = editor,
+            DefaultButton = ContentDialogButton.Primary,
+            PrimaryButtonText = "保存",
+            SecondaryButtonText = "取消"
+        };
+        var r = await dlg.ShowAsync();
+        if (r != ContentDialogResult.Primary) return;
+        if (editor.ApplyTo(sel))
+        {
+            ViewModel.ProfileService.SaveProfile();
+        }
+    }
+
+    private void RemoveSelectedReminder_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var sel = RemindersListBox.SelectedItem as Reminder;
+        if (sel == null) return;
+        ViewModel.RemoveReminder(sel);
+    }
+
+    #endregion
+
     #region Profile
 
     private void RefreshProfiles()

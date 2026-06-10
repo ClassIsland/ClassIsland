@@ -147,6 +147,10 @@
                             Theme="{StaticResource TransparentButton}">
                         <ci:IconText Glyph="&#xE689;" Text="新建档案"/>
                     </Button>
+                    <Button ToolTip.Tip="编辑日程/提醒。" Click="ButtonOpenReminders_OnClick"
+                            Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE7F8;" Text="编辑日程"/>
+                    </Button>
                     <Button ToolTip.Tip="打开档案文件夹。" Click="ButtonOpenProfileFolder_OnClick"
                             Theme="{StaticResource TransparentButton}">
                         <ci:IconText Glyph="&#xE88D;" Text="打开文件夹"/>
@@ -196,6 +200,36 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
+
+        <!-- 提醒编辑面板 -->
+        <ScrollViewer x:Key="RemindersEditor" Width="332" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16" Spacing="8">
+                <TextBlock Text="日程 / 提醒" Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock Text="在此管理档案内的自定义提醒。" TextWrapping="Wrap" Classes="l-instructive"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Click="AddReminder_OnClick" Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE00D;" Text="添加提醒"/>
+                    </Button>
+                    <Button Click="EditSelectedReminder_OnClick" Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE70F;" Text="编辑所选"/>
+                    </Button>
+                    <Button Click="RemoveSelectedReminder_OnClick" Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE1BC;" Text="删除所选"/>
+                    </Button>
+                </StackPanel>
+                <ListBox x:Name="RemindersListBox" ItemsSource="{Binding ViewModel.ProfileService.Profile.Reminders}" Margin="0 8 0 0" Height="360">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="{Binding Title}" Width="140"/>
+                                <TextBlock Text="{Binding Time}" Width="150"/>
+                                <TextBlock Text="{Binding Repeat}" Width="80"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
         
         <!-- 时间表信息 -->
         <ScrollViewer x:Key="TimeLayoutInfoEditor" Width="332" VerticalScrollBarVisibility="Auto">

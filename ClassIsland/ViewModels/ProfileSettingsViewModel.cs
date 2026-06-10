@@ -120,4 +120,22 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
             .Filter(x => !x.Value.IsOverlay)
             .AsObservableList();
     }
+
+    /// <summary>
+    /// 暴露当前档案的提醒集合，供 UI 绑定使用。
+    /// </summary>
+    public ObservableCollection<Reminder> Reminders => ProfileService.Profile.Reminders;
+
+    public void AddReminder(Reminder reminder)
+    {
+        ProfileService.Profile.Reminders.Add(reminder);
+        ProfileService.SaveProfile();
+    }
+
+    public void RemoveReminder(Reminder reminder)
+    {
+        if (reminder == null) return;
+        ProfileService.Profile.Reminders.Remove(reminder);
+        ProfileService.SaveProfile();
+    }
 }

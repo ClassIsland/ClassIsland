@@ -98,6 +98,8 @@
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="编辑档案…" Click="ButtonSettings_OnClick" 
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE699;}"/>
+            <NativeMenuItem Header="编辑日程…" Click="MenuItemEditReminders_OnClick"
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE7F8;}"/>
             <NativeMenuItem Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE6A1;}">
             </NativeMenuItem>
