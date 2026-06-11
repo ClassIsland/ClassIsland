@@ -253,8 +253,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
         this.UseMyWindowExt();
-
-        if (Environment.OSVersion.Version <= WindowsVersions.Win10V1809)
+        
+        if (Environment.OSVersion.Version <= WindowsVersions.Win10V1803)
         {
             PseudoClasses.Set(":no-windowed-transparent", true);
         }

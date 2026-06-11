@@ -144,8 +144,9 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 ClipToBounds="False">
                             <ScrollViewer Padding="{TemplateBinding Padding}"
-                                          ClipToBounds="False"
-                                          Focusable="false">
+                                           ClipToBounds="False"
+                                           BringIntoViewOnFocusChange="False"
+                                           Focusable="false">
                                 <VisualLayerManager>
                                     <Grid>
                                         <controls:TimeLineBackgroundRulerControl
