@@ -15,13 +15,14 @@ namespace ClassIsland.Services;
 
 public class ScheduleReminderService : IHostedService, IDisposable
 {
-    private readonly ProfileService _profileService;
+    private readonly IProfileService _profileService;
     private readonly ILogger<ScheduleReminderService> _logger;
     private readonly IEnumerable<IHostedService> _hostedServices;
+    private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(30);
     private Timer? _timer;
     private bool _running = false;
 
-    public ScheduleReminderService(ProfileService profileService, ILogger<ScheduleReminderService> logger, IEnumerable<IHostedService> hostedServices)
+    public ScheduleReminderService(IProfileService profileService, ILogger<ScheduleReminderService> logger, IEnumerable<IHostedService> hostedServices)
     {
         _profileService = profileService;
         _logger = logger;
@@ -32,7 +33,7 @@ public class ScheduleReminderService : IHostedService, IDisposable
     {
         _logger.LogInformation("ScheduleReminderService starting.");
         // 检查周期：30 秒
-        _timer = new Timer(async _ => await CheckReminders(), null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
+        _timer = new Timer(async _ => await CheckReminders(), null, TimeSpan.Zero, _pollingInterval);
         return Task.CompletedTask;
     }
 
@@ -56,8 +57,9 @@ public class ScheduleReminderService : IHostedService, IDisposable
             {
                     _logger.LogDebug("提醒条目: Id={Id} Title='{Title}' Enabled={Enabled} StoredTime={Time}", rem.Id, rem.Title, rem.IsEnabled, rem.Time);
                 if (!rem.IsEnabled) continue;
-                    var next = rem.GetNextOccurrence(now.AddSeconds(-1));
-                    _logger.LogDebug("计算下次发生: {0}", next?.ToString() ?? "<null>");
+                    var from = now - _pollingInterval;
+                    var next = rem.GetNextOccurrence(from);
+                    _logger.LogDebug("计算下次发生: {0} (from={1})", next?.ToString() ?? "<null>", from);
                 if (next != null && next <= now)
                 {
                     try
