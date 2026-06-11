@@ -45,7 +45,9 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private TutorialSettings Settings { get; }
 
     [ObservableProperty] private Tutorial? _currentTutorial;
-    [ObservableProperty] private TutorialParagraph? _currentParagraph;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsTutorialRunning))]
+    private TutorialParagraph? _currentParagraph;
     
     [ObservableProperty] 
     [NotifyPropertyChangedFor(nameof(IsTutorialRunning))]
@@ -103,8 +105,8 @@ public partial class TutorialService : ObservableObject, ITutorialService
     }
 
     public ObservableDictionary<string, object?> Context { get; } = [];
-    
-    public bool IsTutorialRunning => CurrentSentence != null;
+
+    public bool IsTutorialRunning => CurrentParagraph is not null || CurrentSentence is not null;
 
     private void SaveConfig()
     {
@@ -560,9 +562,9 @@ public partial class TutorialService : ObservableObject, ITutorialService
         ControllerWindow = null;
         CleanupPrevSentence();
         TrySetCurrentParagraphCompleted();
-        CurrentSentence = null;
         CurrentParagraph = null;
         CurrentTutorial = null;
+        CurrentSentence = null;
         TutorialStateChanged?.Invoke(this, EventArgs.Empty);
     }
     

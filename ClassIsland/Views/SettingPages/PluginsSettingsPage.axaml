@@ -438,7 +438,6 @@
                                                     Padding="10"
                                                     Margin="0 10 0 0"
                                                     IsVisible="{Binding SupportedOSPlatforms, Converter={StaticResource SupportedOSPlatformsToBooleanConverter}}">
-                                                <!-- Use a two-column grid so long warning text wraps instead of overflowing -->
                                                 <Grid ColumnDefinitions="Auto,*">
                                                     <ci:FluentIcon Grid.Column="0" Glyph="&#xF430;" VerticalAlignment="Top" Margin="0 0 8 0"/>
                                                     <TextBlock Grid.Column="1"

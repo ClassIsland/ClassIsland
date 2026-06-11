@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text.Json;
@@ -25,6 +27,8 @@ using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.Logging;
+using ClassIsland.Services.Management;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -77,6 +81,7 @@ public partial class DataTransferPage : UserControl
         ViewModel.PageIndex = 1;
         ViewModel.ImportSourcePath = "";
         ViewModel.ImportDescription = "支持从 1.x 版本的 ClassIsland 导入课表、组件配置、自动化配置、应用设置、部分插件和主题等数据。";
+        ViewModel.IsExport = false;
     }
 
     private async Task BrowseClassIslandData()
@@ -247,6 +252,247 @@ public partial class DataTransferPage : UserControl
 
     #endregion
 
+    #region ClassIsland 2 / Import
+
+    private void SettingsExpanderImportFromClassIsland2_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.BrowseAction = BrowseClassIsland2Data;
+        ViewModel.PerformImportAction = BeginPerformClassIsland2Import;
+        ViewModel.PageIndex = 1;
+        ViewModel.ImportSourcePath = "";
+        ViewModel.ImportDescription = "支持从 1.x 版本的 ClassIsland 导入课表、组件配置、自动化配置、应用设置、部分插件和主题等数据。";
+        ViewModel.IsExport = false;
+    }
+    
+    private async Task BrowseClassIsland2Data()
+    {
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null)
+        {
+            return;
+        }
+
+        PopupHelper.DisableAllPopups();
+        var file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
+        {
+            Title = "浏览 ClassIsland 2 导出文件",
+            FileTypeFilter = [ new FilePickerFileType("ClassIsland 数据文件")
+                {
+                    Patterns = ["*.cidata"]
+                } 
+            ]
+        }, topLevel);
+        PopupHelper.RestoreAllPopups();
+        if (file.Count <= 0)
+        {
+            return;
+        }
+
+        ViewModel.ImportSourcePath = file[0] ?? "";
+    }
+    
+    private async Task BeginPerformClassIsland2Import()
+    {
+        var r = await new ContentDialog()
+        {
+            Title = "重启以继续",
+            Content = "应用需要重启以继续导入操作，要重启以继续导入吗？",
+            PrimaryButtonText = "重启并继续",
+            SecondaryButtonText = "取消",
+            DefaultButton = ContentDialogButton.Primary
+        }.ShowAsync(TopLevel.GetTopLevel(this));
+        if (r != ContentDialogResult.Primary)
+        {
+            return;
+        }
+
+        var entry = ImportEntries.None;
+        if (ViewModel.IsProfileSelected)
+        {
+            entry |= ImportEntries.Profiles;
+        }
+        if (ViewModel.IsSettingsSelected)
+        {
+            entry |= ImportEntries.Settings;
+        }
+        if (ViewModel.IsOtherConfigSelected)
+        {
+            entry |= ImportEntries.OtherConfig;
+        }
+        AppBase.Current.Restart(["--importV2", ViewModel.ImportSourcePath, "-m", "--importEntries", ((int)entry).ToString()]);
+    }
+    
+    public async Task PerformClassIsland2Import(string root, ImportEntries importEntries)
+    {
+        try
+        {
+            ViewModel.PageIndex = 3;
+            await Task.Run(() =>
+            {
+                var appDataRoot = Path.GetFullPath(CommonDirectories.AppDataFolderPath);
+                Directory.CreateDirectory(appDataRoot);
+                if (importEntries.HasFlag(ImportEntries.OtherConfig) && Directory.Exists(PluginService.PluginsRootPath))
+                {
+                    Directory.Delete(PluginService.PluginsRootPath, true);
+                }
+
+                using var archive = ZipFile.OpenRead(root);
+                foreach (var entry in archive.Entries)
+                {
+                    if (!ShouldImportEntry(entry.FullName))
+                    {
+                        continue;
+                    }
+
+                    ExtractEntry(entry, appDataRoot);
+                }
+
+                return;
+
+                bool ShouldImportEntry(string entryName)
+                {
+                    var normalizedName = entryName.Replace('\\', '/');
+                    if ((importEntries & ImportEntries.Settings) == ImportEntries.Settings &&
+                        normalizedName == "Settings.json")
+                    {
+                        return true;
+                    }
+
+                    if ((importEntries & ImportEntries.Profiles) == ImportEntries.Profiles &&
+                        normalizedName.StartsWith("Profiles/", StringComparison.Ordinal))
+                    {
+                        return true;
+                    }
+
+                    if ((importEntries & ImportEntries.OtherConfig) != ImportEntries.OtherConfig)
+                    {
+                        return false;
+                    }
+
+                    return normalizedName.StartsWith("Config/", StringComparison.Ordinal) ||
+                           normalizedName.StartsWith("Plugins/", StringComparison.Ordinal);
+                }
+
+                static void ExtractEntry(ZipArchiveEntry entry, string appDataRoot)
+                {
+                    var targetPath = Path.GetFullPath(Path.Combine(appDataRoot,
+                        entry.FullName.Replace('/', Path.DirectorySeparatorChar)));
+                    var rootWithSeparator = appDataRoot.EndsWith(Path.DirectorySeparatorChar)
+                        ? appDataRoot
+                        : appDataRoot + Path.DirectorySeparatorChar;
+                    if (!targetPath.StartsWith(rootWithSeparator, StringComparison.Ordinal) && targetPath != appDataRoot)
+                    {
+                        throw new InvalidDataException($"压缩包包含无效路径：{entry.FullName}");
+                    }
+
+                    if (string.IsNullOrEmpty(entry.Name))
+                    {
+                        Directory.CreateDirectory(targetPath);
+                        return;
+                    }
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(targetPath) ?? appDataRoot);
+                    entry.ExtractToFile(targetPath, true);
+                }
+            });
+            
+            AppBase.Current.Restart(["-m", "--importComplete"]);
+        }
+        catch (Exception e)
+        {
+            IAppHost.TryGetService<ILogger<DataTransferPage>>()?.LogError(e, "导入时发生意外错误");
+            this.ShowErrorToast("导入时发生意外错误", e);
+        }
+
+    }
+
+    #endregion    
+    
+    #region ClassIsland 2 / Export
+
+    private void SettingsExpanderExportToClassIsland2_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.BrowseAction = BrowseClassIsland2ExportTargetAction;
+        ViewModel.PerformImportAction = PerformClassIsland2ExportAction;
+        ViewModel.PageIndex = 1;
+        ViewModel.ImportSourcePath = "";
+        ViewModel.ImportDescription = "支持导出为可以导入到其它 ClassIsland 2 实例的文件格式。";
+        ViewModel.IsExport = true;
+    }
+
+
+    private async Task BrowseClassIsland2ExportTargetAction()
+    {
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null)
+        {
+            return;
+        }
+
+        PopupHelper.DisableAllPopups();
+        var file = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "浏览保存的导出文件",
+            FileTypeChoices = [ new FilePickerFileType("ClassIsland 数据文件")
+                {
+                    Patterns = ["*.cidata"]
+                } 
+            ],
+            SuggestedFileName = $"ClassIsland_data_{AppBase.AppVersion}_{DateTime.Now:yyyyMMdd_HHmmss}.cidata"
+        }, topLevel);
+        PopupHelper.RestoreAllPopups();
+        
+        
+        ViewModel.ImportSourcePath = file ?? "";
+    }
+
+    private async Task PerformClassIsland2ExportAction()
+    {
+        if (string.IsNullOrWhiteSpace(ViewModel.ImportSourcePath))
+        {
+            return;
+        }
+        try
+        {
+            ViewModel.PageIndex = 3;
+            var path = ViewModel.ImportSourcePath;
+            var temp = Directory.CreateTempSubdirectory("ClassIslandDataExport").FullName;
+            //await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
+            Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
+            Directory.CreateDirectory(Path.Combine(temp, "Plugins/"));
+            Directory.CreateDirectory(Path.Combine(temp, "Config/"));
+            
+            await Task.Run(() =>
+            {
+                if (ViewModel.IsSettingsSelected)
+                {
+                    File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Path.Combine(temp, "Settings.json"));
+                }
+                if (ViewModel.IsProfileSelected)
+                {
+                    FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles"), Path.Combine(temp, "Profiles/"));
+                }
+                if (ViewModel.IsOtherConfigSelected)
+                {
+                    FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppConfigPath), Path.Combine(temp, "Config/"));
+                    FileFolderService.CopyFolder(Path.Combine(PluginService.PluginsRootPath), Path.Combine(temp, "Plugins/"));
+                }
+                File.Delete(path);
+                ZipFile.CreateFromDirectory(temp, path);
+            });
+            Directory.Delete(temp, true);
+            ViewModel.PageIndex = 4;
+        }
+        catch (Exception e)
+        {
+            ViewModel.Logger.LogError(e, "导出数据时发生意外错误。");
+            this.ShowErrorToast("导出数据时发生意外错误。", e);
+            throw;
+        }
+    }
+    #endregion
+    
+
     #region Class Widgets
 
     private double TryGetDoubleFromSection(PropertyCollection? dictionary, string key, double fallback) 
@@ -296,6 +542,7 @@ public partial class DataTransferPage : UserControl
         ViewModel.PageIndex = 1;
         ViewModel.ImportSourcePath = "";
         ViewModel.ImportDescription = "支持从 Class Widgets 1 导入全部课表信息和大部分配置。";
+        ViewModel.IsExport = false;
     }
     
     private async Task BrowseClassWidgetsData()
@@ -552,6 +799,5 @@ public partial class DataTransferPage : UserControl
     {
         ViewModel.PageIndex++;
     }
-
     
 }
