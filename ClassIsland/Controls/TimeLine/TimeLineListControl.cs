@@ -14,6 +14,7 @@ namespace ClassIsland.Controls.TimeLine;
 
 public class TimeLineListControl : ListBox
 {
+    private IEnumerable? _lastItemsSource;
 
     public static readonly RoutedEvent<TimeLineInsertTimePointEventArgs> RequestInsertTimePointEvent =
         RoutedEvent.Register<TimeLineListControl, TimeLineInsertTimePointEventArgs>(
@@ -122,6 +123,12 @@ public class TimeLineListControl : ListBox
 
     private void OnItemsSourceChanged(IEnumerable? newValue)
     {
+        if (ReferenceEquals(_lastItemsSource, newValue))
+        {
+            return;
+        }
+
+        _lastItemsSource = newValue;
         var timeLayoutItems = (ObservableCollection<TimeLayoutItem>?)newValue;
         if (timeLayoutItems == null || timeLayoutItems.Count <= 0)
             return;
