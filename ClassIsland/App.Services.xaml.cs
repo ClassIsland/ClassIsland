@@ -274,6 +274,7 @@ public partial class App
         services.AddAction<WeatherNotificationAction, WeatherNotificationActionSettingControl>();
         services.AddAction<AppQuitAction>();
         services.AddAction<AppRestartAction, AppRestartActionSettingsControl>();
+        services.AddAction<DoSpeechAction, DoSpeechSettingsControl>();
 
         // 认证提供方
         services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
