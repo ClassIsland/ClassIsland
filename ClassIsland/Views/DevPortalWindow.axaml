@@ -238,24 +238,26 @@
             </TabItem>
             <TabItem Header="竖直抽屉">
                 <Grid>
-                    <StackPanel Classes="items-halign-left">
-                        <Button Content="打开抽屉" Command="{Binding #VerticalDrawer.Open}"></Button>
-                    </StackPanel>
                     <ci:VerticalDrawer AllowCollapse="True"
                                        x:Name="VerticalDrawer"
                                        Title="Title">
-                        <ScrollViewer Width="400">
-                            <TextBlock TextWrapping="Wrap">
-                                <Run Text="{StaticResource TestStringLong}"/>
-                                <Run Text="{StaticResource TestStringLong}"/>
-                                <Run Text="{StaticResource TestStringLong}"/>
-                                <Run Text="{StaticResource TestStringLong}"/>
-                                <Run Text="{StaticResource TestStringLong}"/>
-                                <Run Text="{StaticResource TestStringLong}"/>
-                                <Run Text="{StaticResource TestStringLong}"/>
-                                <Run Text="{StaticResource TestStringLong}"/>
-                            </TextBlock>
-                        </ScrollViewer>
+                        <ci:VerticalDrawer.DrawerContent>
+                            <ScrollViewer Width="400">
+                                <TextBlock TextWrapping="Wrap">
+                                    <Run Text="{StaticResource TestStringLong}"/>
+                                    <Run Text="{StaticResource TestStringLong}"/>
+                                    <Run Text="{StaticResource TestStringLong}"/>
+                                    <Run Text="{StaticResource TestStringLong}"/>
+                                    <Run Text="{StaticResource TestStringLong}"/>
+                                    <Run Text="{StaticResource TestStringLong}"/>
+                                    <Run Text="{StaticResource TestStringLong}"/>
+                                    <Run Text="{StaticResource TestStringLong}"/>
+                                </TextBlock>
+                            </ScrollViewer>
+                        </ci:VerticalDrawer.DrawerContent>
+                        <StackPanel Classes="items-halign-left">
+                            <Button Content="打开抽屉" Command="{Binding #VerticalDrawer.Open}"></Button>
+                        </StackPanel>
                     </ci:VerticalDrawer>
                 </Grid>
             </TabItem>
