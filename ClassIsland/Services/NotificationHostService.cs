@@ -220,6 +220,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             {
                 return;
             }
+            // 设置入队时间和有效分配时间
+            group.EnqueuedAt = DateTime.Now;
+            group.ValidUntil = group.Head.ValidityDuration.HasValue
+                ? group.EnqueuedAt + group.Head.ValidityDuration.Value
+                : null;
             RequestQueue.Enqueue(group, GetNotificationPriority(group.Head, isPlayed));
         }
     }
@@ -488,6 +493,17 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                     PoppedGroups.Remove(currentGroup);
                     continue;
                 }
+                if (currentGroup.ValidUntil.HasValue && DateTime.Now > currentGroup.ValidUntil.Value)
+                {
+                    RequestQueue.Dequeue();
+                    EnqueuedGroups.Remove(currentGroup);
+                    Logger.LogWarning("通知组已过期, 丢弃: {}", currentGroup.Head);
+                    foreach (var r in currentGroup.Requests)
+                    {
+                        try { r.CancellationTokenSource.Cancel(); } catch (ObjectDisposedException) { }
+                    }
+                    continue;
+                }
 
                 var activeRequests = currentGroup.CollectActiveRequests();
                 if (activeRequests.Count == 0)
@@ -536,6 +552,17 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                     RequestQueue.Dequeue();
                     EnqueuedGroups.Remove(currentGroup);
                     PoppedGroups.Remove(currentGroup);
+                    continue;
+                }
+                if (currentGroup.ValidUntil.HasValue && DateTime.Now > currentGroup.ValidUntil.Value)
+                {
+                    RequestQueue.Dequeue();
+                    EnqueuedGroups.Remove(currentGroup);
+                    Logger.LogWarning("通知组已过期, 丢弃: {}", currentGroup.Head);
+                    foreach (var r in currentGroup.Requests)
+                    {
+                        try { r.CancellationTokenSource.Cancel(); } catch (ObjectDisposedException) { }
+                    }
                     continue;
                 }
                 if (!processedGroups.Add(currentGroup))

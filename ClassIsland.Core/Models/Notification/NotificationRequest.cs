@@ -230,6 +230,11 @@ public class NotificationRequest : ObservableRecipient
     internal int InitialQueueIndex { get; set; } = -1;
 
     /// <summary>
+    /// 通知有效分配时间。超过此时间未被分配则丢弃。为 null 表示无时效限制。
+    /// </summary>
+    public TimeSpan? ValidityDuration { get; set; }
+
+    /// <summary>
     /// 此请求所属的通知组
     /// </summary>
     internal NotificationGroup? Group { get; set; }

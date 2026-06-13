@@ -29,6 +29,16 @@ public class NotificationGroup
     public CancellationTokenSource GroupCompletedTokenSource { get; }
 
     /// <summary>
+    /// 入队时间。由 QueueNotificationGroup 设置。
+    /// </summary>
+    public DateTime EnqueuedAt { get; internal set; } = DateTime.MinValue;
+
+    /// <summary>
+    /// 有效分配时间。超过此时间未被分配则丢弃。为 null 表示无时效限制。
+    /// </summary>
+    public DateTime? ValidUntil { get; internal set; }
+
+    /// <summary>
     /// 初始化一个多请求（链式）组。
     /// </summary>
     public NotificationGroup(
