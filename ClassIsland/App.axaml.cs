@@ -639,7 +639,6 @@ public partial class App : AppBase, IAppHost
             var diagService = GetService<DiagnosticService>();
             Logger.LogInformation("诊断模式已启用!");
             Logger.LogDebug("{DiagnosticMessage}", diagService.GetDiagnosticInfo());
-            await diagService.ExportDiagnosticData(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"ClassIsland_DiagnosticData_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip"), false);
         }
         foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Error))
         {
@@ -755,7 +754,13 @@ public partial class App : AppBase, IAppHost
         GetService<IWeatherService>();
         GetService<IExactTimeService>();
         await GetService<IComponentsService>().LoadManagementConfig();
+        
+        if (ApplicationCommand.Diagnostic)
+        {
+            await GetService<DiagnosticService>().ExportDiagnosticData(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"ClassIsland_DiagnosticData_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip"), false);
+        }
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
+        
         _ = IAppHost.Host.StartAsync();
         IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
         
