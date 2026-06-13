@@ -8,6 +8,8 @@ using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Shared;
+using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Threading;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -17,16 +19,16 @@ public class ScheduleReminderService : IHostedService, IDisposable
 {
     private readonly IProfileService _profileService;
     private readonly ILogger<ScheduleReminderService> _logger;
-    private readonly IEnumerable<IHostedService> _hostedServices;
+    private readonly IServiceProvider _serviceProvider;
     private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(30);
     private Timer? _timer;
     private bool _running = false;
 
-    public ScheduleReminderService(IProfileService profileService, ILogger<ScheduleReminderService> logger, IEnumerable<IHostedService> hostedServices)
+    public ScheduleReminderService(IProfileService profileService, ILogger<ScheduleReminderService> logger, IServiceProvider serviceProvider)
     {
         _profileService = profileService;
         _logger = logger;
-        _hostedServices = hostedServices;
+        _serviceProvider = serviceProvider;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -65,25 +67,34 @@ public class ScheduleReminderService : IHostedService, IDisposable
                     try
                     {
                         _logger.LogInformation("触发提醒：{0} @ {1}", rem.Title, next);
-                        var request = new NotificationRequest
-                        {
-                            MaskContent = ClassIsland.Core.Models.Notification.NotificationContent.CreateTwoIconsMask(rem.Title, hasRightIcon: false),
-                            OverlayContent = string.IsNullOrEmpty(rem.Message) ? null : ClassIsland.Core.Models.Notification.NotificationContent.CreateSimpleTextContent(rem.Message),
-                        };
 
-                        var provider = _hostedServices.OfType<ActionNotificationProvider>().FirstOrDefault();
-                        if (provider == null)
+                        // Create and show notification on the UI thread because building
+                        // NotificationContent may touch Avalonia objects (icons, controls,
+                        // etc.) which must be constructed on the UI dispatcher.
+                        await Dispatcher.UIThread.InvokeAsync(async () =>
                         {
-                            _logger.LogWarning("未找到 ActionNotificationProvider 实例，无法显示提醒");
-                        }
-                        else
-                        {
-                            _logger.LogDebug("使用 ActionNotificationProvider 显示提醒");
-                            await provider.ShowNotificationAsync(request);
-                        }
+                            var request = new NotificationRequest
+                            {
+                                MaskContent = ClassIsland.Core.Models.Notification.NotificationContent.CreateTwoIconsMask(rem.Title, hasRightIcon: false),
+                                OverlayContent = string.IsNullOrEmpty(rem.Message) ? null : ClassIsland.Core.Models.Notification.NotificationContent.CreateSimpleTextContent(rem.Message),
+                            };
 
-                        rem.AdvanceNextOccurrence();
-                        _profileService.SaveProfile();
+                            var provider = _serviceProvider.GetServices<IHostedService>().OfType<ActionNotificationProvider>().FirstOrDefault();
+                            if (provider == null)
+                            {
+                                _logger.LogWarning("未找到 ActionNotificationProvider 实例，无法显示提醒");
+                            }
+                            else
+                            {
+                                _logger.LogDebug("使用 ActionNotificationProvider 显示提醒");
+                                await provider.ShowNotificationAsync(request).ConfigureAwait(false);
+                            }
+
+                            // Advance occurrence and persist profile while still on UI thread
+                            // to avoid races with UI-bound reminder state.
+                            rem.AdvanceNextOccurrence();
+                            _profileService.SaveProfile();
+                        }).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {

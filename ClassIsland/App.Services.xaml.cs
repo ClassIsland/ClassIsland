@@ -77,7 +77,6 @@ public partial class App
         services.AddSingleton<AppLogService>();
         services.AddSingleton<IComponentsService, ComponentsService>();
         services.AddSingleton<ILessonsService, LessonsService>();
-        services.AddHostedService<ScheduleReminderService>();
         services.AddSingleton<IUriNavigationService, UriNavigationService>();
         services.AddHostedService<MemoryWatchDogService>();
         services.AddSingleton<IPluginService, PluginService>();
@@ -201,6 +200,7 @@ public partial class App
         services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
         services.AddNotificationProvider<ManagementNotificationProvider>();
         services.AddNotificationProvider<ActionNotificationProvider>();
+        services.AddHostedService<ScheduleReminderService>();
         // // Transients
         // services.AddTransient<ExcelImportWindow>();
         // services.AddTransient<WallpaperPreviewWindow>();
