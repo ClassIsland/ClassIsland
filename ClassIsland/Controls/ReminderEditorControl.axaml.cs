@@ -56,6 +56,8 @@ public partial class ReminderEditorControl : UserControl
         YearDayBox.TextChanged += (_, _) => OnEditingChanged();
         YearlyStartDate.SelectedDateChanged += (_, _) => OnEditingChanged();
         YearlyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
+
+        EnabledSwitch.IsCheckedChanged += (_, _) => OnEditingChanged();
     }
 
     private void FrequencyCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -113,6 +115,8 @@ public partial class ReminderEditorControl : UserControl
         YearlyStartDate.SelectedDate = r.StartDate;
         YearlyEndDate.SelectedDate = r.EndDate;
 
+        EnabledSwitch.IsChecked = r.IsEnabled;
+
         UpdatePanels();
         _isLoading = false;
     }
@@ -130,6 +134,7 @@ public partial class ReminderEditorControl : UserControl
                 if (OnceDatePicker.SelectedDate.HasValue && TimeSpan.TryParse(OnceTimeBox.Text, out var tOnce))
                 {
                     r.Time = OnceDatePicker.SelectedDate.Value.Date + tOnce;
+                    r.TimeOfDay = tOnce;
                 }
                 break;
             case 1: // daily
@@ -163,16 +168,14 @@ public partial class ReminderEditorControl : UserControl
                 break;
         }
 
-        // Ensure next occurrence/time field updated
+        // 由用户手动控制启用/禁用，不再自动禁用
+        r.IsEnabled = EnabledSwitch.IsChecked ?? true;
+
+        // 仍然计算下一次发生时间，但不强制修改 IsEnabled
         var next = r.GetNextOccurrence(DateTime.Now);
         if (next.HasValue)
         {
             r.Time = next.Value;
-            r.IsEnabled = true;
-        }
-        else
-        {
-            r.IsEnabled = false;
         }
 
         return true;

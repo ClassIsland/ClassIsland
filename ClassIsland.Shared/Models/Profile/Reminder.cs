@@ -73,7 +73,7 @@ public class Reminder : ObservableRecipient
     /// <summary>
     /// 时间部分（在重复或单次提醒中使用）。
     /// </summary>
-    public TimeSpan TimeOfDay { get; set; } = DateTime.Now.TimeOfDay;
+    public TimeSpan TimeOfDay { get; set; } = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, 0);
 
     /// <summary>
     /// 起始与结束日期（可选），用于限定重复生效区间。
@@ -93,6 +93,7 @@ public class Reminder : ObservableRecipient
         OnPropertyChanged(nameof(Title));
         OnPropertyChanged(nameof(Message));
         OnPropertyChanged(nameof(Time));
+        OnPropertyChanged(nameof(TimeOfDay));
         OnPropertyChanged(nameof(Frequency));
         OnPropertyChanged(nameof(WeekDays));
         OnPropertyChanged(nameof(StartDate));

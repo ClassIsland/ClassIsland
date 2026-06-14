@@ -1,0 +1,154 @@
+<UserControl x:Class="ClassIsland.Controls.ReminderTimelineControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+             xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+             xmlns:controls="clr-namespace:ClassIsland.Controls"
+             mc:Ignorable="d"
+             d:DesignWidth="400" d:DesignHeight="600">
+    <UserControl.Resources>
+        <converters:TimeSpanToCanvasPosConverter x:Key="TimeSpanToCanvasPosConverter" />
+        <converters:DayTimeSpanToHeightConverter x:Key="DayTimeSpanToHeightConverter" />
+    </UserControl.Resources>
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- 顶部：日期选择器 -->
+        <Border Grid.Row="0" Padding="6 4" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeFillColorDefaultBrush}" BorderThickness="0 0 0 1">
+            <Grid ColumnDefinitions="32,*,32">
+                <Button Grid.Column="0" Padding="4" Click="ButtonPrevDay_OnClick"
+                        ToolTip.Tip="前一天">
+                    <TextBlock Text="◀" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+                <CalendarDatePicker Grid.Column="1"
+                                    x:Name="DatePicker"
+                                    HorizontalAlignment="Center"
+                                    SelectedDate="{Binding SelectedDate, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ReminderTimelineControl}, Mode=TwoWay}" />
+                <Button Grid.Column="2" Padding="4" Click="ButtonNextDay_OnClick"
+                        ToolTip.Tip="后一天">
+                    <TextBlock Text="▶" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- 可视化日程时间线 -->
+        <ScrollViewer Grid.Row="1"
+                      x:Name="TimelineScrollViewer"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      AllowAutoHide="True">
+            <Grid x:Name="TimelineCanvas"
+                  Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ReminderTimelineControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"
+                  MinHeight="500">
+                <!-- 背景标尺 -->
+                <controls:ReminderTimelineRulerControl x:Name="RulerControl"
+                                                       Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ReminderTimelineControl}}"
+                                                       VerticalAlignment="Stretch"
+                                                       HorizontalAlignment="Stretch" />
+                <!-- 点击空白添加日程 -->
+                <Border x:Name="ClickToAddOverlay"
+                        Background="Transparent"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Cursor="Cross"
+                        ToolTip.Tip="点击空白区域添加新日程"
+                        Tapped="ClickToAddOverlay_OnTapped" />
+
+                <!-- 日程列表 -->
+                <ListBox x:Name="ReminderItemsControl"
+                         ItemsSource="{Binding DisplayedReminders, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ReminderTimelineControl}}"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         Background="Transparent">
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Padding" Value="0" />
+                        </Style>
+                    </ListBox.Styles>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemContainerTheme>
+                        <ControlTheme TargetType="ListBoxItem">
+                            <Setter Property="Canvas.Top">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource TimeSpanToCanvasPosConverter}" Mode="OneWay">
+                                        <Binding Path="Time.TimeOfDay" />
+                                        <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:ReminderTimelineControl}" />
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Canvas.Left" Value="0" />
+                        </ControlTheme>
+                    </ListBox.ItemContainerTheme>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="profile:Reminder">
+                            <Grid ColumnDefinitions="44,*,Auto" Margin="0 2 4 2" MinHeight="42">
+                                <!-- 时间指示线 + 时间标签 -->
+                                <Border Grid.Column="0"
+                                        BorderBrush="{Binding Frequency, Converter={x:Static controls:ReminderTimelineControl.FrequencyToBrushConverter}}"
+                                        BorderThickness="0 0 0 1"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Stretch"
+                                        Height="2"
+                                        Opacity="0.7" />
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Time.TimeOfDay, StringFormat='{}{0:hh\\:mm}'}"
+                                           FontSize="9"
+                                           Foreground="{Binding Frequency, Converter={x:Static controls:ReminderTimelineControl.FrequencyToBrushConverter}}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Top"
+                                           Margin="0 0 0 0" />
+                                <!-- 日程块（禁用时半透明） -->
+                                <Border Grid.Column="1" Grid.ColumnSpan="2"
+                                        Background="{Binding Frequency, Converter={x:Static controls:ReminderTimelineControl.FrequencyToBrushConverter}}"
+                                        CornerRadius="6"
+                                        Padding="8 6"
+                                        Cursor="Hand"
+                                        Opacity="{Binding IsEnabled, Converter={x:Static controls:ReminderTimelineControl.BoolToOpacityConverter}}"
+                                        Tapped="ReminderBlock_OnTapped">
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                                   Text="{Binding Title}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="13"
+                                                   Foreground="White"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                                   Text="{Binding Time.TimeOfDay, StringFormat='{}{0:hh\\:mm}'}"
+                                                   FontSize="11"
+                                                   Foreground="#CCFFFFFF"
+                                                   VerticalAlignment="Center" />
+                                        <Border Grid.Row="1" Grid.Column="1"
+                                                Background="#44FFFFFF"
+                                                CornerRadius="8"
+                                                Padding="6 1"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Frequency, Converter={x:Static controls:ReminderTimelineControl.FrequencyToLabelConverter}}"
+                                                       FontSize="10"
+                                                       Foreground="White" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- 底部提示 -->
+        <TextBlock Grid.Row="2"
+                   x:Name="EmptyHint"
+                   Text="该日期无日程，点击时间线空白区域添加"
+                   FontSize="12"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                   HorizontalAlignment="Center"
+                   Margin="0 8"
+                   IsVisible="False" />
+    </Grid>
+</UserControl>

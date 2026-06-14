@@ -1607,14 +1607,55 @@
 
                         <GridSplitter Grid.Column="1" Margin="2 0" />
 
-                        <ci:Emptiable Grid.Column="2" IsDirectContentMode="True" Data="{Binding ViewModel.SelectedReminder}">
-                            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                <StackPanel Margin="16" Spacing="12">
-                                    <TextBlock Text="编辑日程" Theme="{StaticResource SubtitleTextBlockStyle}" />
-                                    <controls1:ReminderEditorControl x:Name="ReminderEditor" />
-                                </StackPanel>
-                            </ScrollViewer>
-                        </ci:Emptiable>
+                        <Grid Grid.Column="2" RowDefinitions="*,Auto">
+                            <Grid RowDefinitions="2*,4,2*" Margin="0 0 0 0">
+                                <!-- 可视化日程时间线 -->
+                                <controls1:ReminderTimelineControl Grid.Row="0"
+                                                                   x:Name="ReminderTimeline"
+                                                                   Reminders="{Binding ViewModel.Reminders}"
+                                                                   SelectedReminder="{Binding ViewModel.SelectedReminder, Mode=TwoWay}"
+                                                                   Scale="{Binding ViewModel.ReminderTimelineScale}">
+                                    <controls1:ReminderTimelineControl.IsEnabled>
+                                        <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing"
+                                                 Converter="{StaticResource InvertBooleanConverter}" />
+                                    </controls1:ReminderTimelineControl.IsEnabled>
+                                </controls1:ReminderTimelineControl>
+                                <!-- 分隔线 -->
+                                <GridSplitter Grid.Row="1" Height="4" HorizontalAlignment="Stretch"
+                                              Background="{DynamicResource CardStrokeFillColorDefaultBrush}" />
+                                <!-- 详细编辑表单 -->
+                                <ci:Emptiable Grid.Row="2" IsDirectContentMode="True"
+                                              Data="{Binding ViewModel.SelectedReminder}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <StackPanel Margin="16" Spacing="12">
+                                            <TextBlock Text="编辑日程" Theme="{StaticResource SubtitleTextBlockStyle}" />
+                                            <controls1:ReminderEditorControl x:Name="ReminderEditor" />
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </ci:Emptiable>
+                            </Grid>
+                            <!-- 底部控制栏 -->
+                            <controls:CommandBar Grid.Row="1" DefaultLabelPosition="Right"
+                                                 Margin="0 4 0 0"
+                                                 IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileEditing, Converter={StaticResource InvertBooleanConverter}}">
+                                <controls:CommandBar.PrimaryCommands>
+                                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xf4d3;}"
+                                                               Label="缩小"
+                                                               ToolTip.Tip="缩小时间线 (Ctrl+滚轮)"
+                                                               Click="ButtonReminderTimelineZoomOut_OnClick" />
+                                    <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xf4d1;}"
+                                                               Label="放大"
+                                                               ToolTip.Tip="放大时间线 (Ctrl+滚轮)"
+                                                               Click="ButtonReminderTimelineZoomIn_OnClick" />
+                                    <controls:CommandBarElementContainer>
+                                        <TextBlock VerticalAlignment="Center"
+                                                   Opacity="0.7"
+                                                   FontSize="13"
+                                                   Text="{Binding ViewModel.ReminderTimelineScale, StringFormat='缩放: {0:F1}x'}" />
+                                    </controls:CommandBarElementContainer>
+                                </controls:CommandBar.PrimaryCommands>
+                            </controls:CommandBar>
+                        </Grid>
                     </Grid>
                 </TabItem>
                 <TabItem Header="科目" Classes="tag-Subjects"

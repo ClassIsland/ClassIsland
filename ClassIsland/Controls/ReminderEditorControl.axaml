@@ -10,6 +10,14 @@
     <ci:Field Label="消息（可选）">
       <TextBox x:Name="MessageBox" AcceptsReturn="True" Height="80" Watermark="输入提醒消息内容…"/>
     </ci:Field>
+    <StackPanel Orientation="Horizontal" Spacing="12">
+      <ci:Field Label="启用" Margin="0 0 0 0">
+        <ToggleSwitch x:Name="EnabledSwitch"
+                      OnContent="开" OffContent="关"
+                      HorizontalAlignment="Left" />
+      </ci:Field>
+    </StackPanel>
+
     <ci:Field Label="重复">
       <ComboBox x:Name="FrequencyCombo" SelectedIndex="0">
         <ComboBoxItem Tag="Once">单次</ComboBoxItem>

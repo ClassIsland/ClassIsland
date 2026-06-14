@@ -102,6 +102,10 @@ public partial class ProfileSettingsWindow : MyWindow
         };
         // 编辑器实时变更 → 立即同步到列表
         ReminderEditor.EditingChanged += (_, _) => SaveReminderEdits();
+
+        // 日程可视化时间线事件
+        ReminderTimeline.AddReminderRequested += ReminderTimeline_OnAddReminderRequested;
+        ReminderTimeline.ReminderSelected += ReminderTimeline_OnReminderSelected;
     }
 
     private void OnGlobalUndoRedoKeyDown(object? sender, KeyEventArgs e)
@@ -341,6 +345,41 @@ public partial class ProfileSettingsWindow : MyWindow
         if (sel == null) return;
         ViewModel.RemoveReminder(sel);
         ViewModel.SelectedReminder = null;
+    }
+
+    #endregion
+
+    #region 日程可视化时间线
+
+    private void ButtonReminderTimelineZoomIn_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.ReminderTimelineScale = Math.Min(10.0, ViewModel.ReminderTimelineScale + 0.5);
+    }
+
+    private void ButtonReminderTimelineZoomOut_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.ReminderTimelineScale = Math.Max(0.5, ViewModel.ReminderTimelineScale - 0.5);
+    }
+
+    private void ReminderTimeline_OnAddReminderRequested(object? sender, TimeSpan timeOfDay)
+    {
+        var now = DateTime.Now;
+        var time = new DateTime(now.Year, now.Month, now.Day).Add(timeOfDay);
+        if (time < now) time = time.AddDays(1);
+
+        var reminder = new Reminder()
+        {
+            Time = time,
+            TimeOfDay = timeOfDay,
+            Title = "新日程"
+        };
+        ViewModel.AddReminder(reminder);
+        ViewModel.SelectedReminder = reminder;
+    }
+
+    private void ReminderTimeline_OnReminderSelected(object? sender, Reminder? reminder)
+    {
+        ViewModel.SelectedReminder = reminder;
     }
 
     #endregion

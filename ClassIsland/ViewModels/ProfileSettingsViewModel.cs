@@ -60,6 +60,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isOfflineEditor = false;
     [ObservableProperty] private TimeLayoutItem? _selectedTimePoint;
     [ObservableProperty] private double _timeLineScale = 3.0;
+    [ObservableProperty] private double _reminderTimelineScale = 3.0;
     [ObservableProperty] private Subject? _selectedSubject;
     [ObservableProperty] private Reminder? _selectedReminder;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
