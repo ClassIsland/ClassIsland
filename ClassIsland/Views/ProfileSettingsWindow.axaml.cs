@@ -300,6 +300,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             ReminderEditor.ApplyTo(_lastEditedReminder);
             _lastEditedReminder.NotifyPropertiesChanged();
+            ViewModel.ProfileService.SaveProfile();
         }
     }
 

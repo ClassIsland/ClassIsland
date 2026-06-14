@@ -7,8 +7,8 @@
     <ci:Field Label="标题">
       <TextBox x:Name="TitleBox" />
     </ci:Field>
-    <ci:Field Label="消息">
-      <TextBox x:Name="MessageBox" AcceptsReturn="True" Height="80"/>
+    <ci:Field Label="消息（可选）">
+      <TextBox x:Name="MessageBox" AcceptsReturn="True" Height="80" Watermark="输入提醒消息内容…"/>
     </ci:Field>
     <ci:Field Label="重复">
       <ComboBox x:Name="FrequencyCombo" SelectedIndex="0">
