@@ -60,7 +60,7 @@
                          ItemsSource="{Binding DisplayedReminders, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ReminderTimelineControl}}"
                          VerticalAlignment="Stretch"
                          HorizontalAlignment="Stretch"
-                         Background="Transparent">
+                         Background="{x:Null}">
                     <ListBox.Styles>
                         <Style Selector="ListBoxItem">
                             <Setter Property="Background" Value="Transparent" />

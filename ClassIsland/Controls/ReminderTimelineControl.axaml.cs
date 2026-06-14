@@ -206,7 +206,7 @@ public partial class ReminderTimelineControl : UserControl
     /// <summary>
     /// 请求在指定时间添加一个新日程。
     /// </summary>
-    public event EventHandler<TimeSpan>? AddReminderRequested;
+    public event EventHandler<DateTime>? AddReminderRequested;
 
     /// <summary>
     /// 日程被选中时触发。
@@ -291,7 +291,7 @@ public partial class ReminderTimelineControl : UserControl
         var roundedMinutes = (int)Math.Round(timeOfDay.TotalMinutes / 5.0) * 5;
         var roundedTime = TimeSpan.FromMinutes(roundedMinutes);
 
-        AddReminderRequested?.Invoke(this, roundedTime);
+        AddReminderRequested?.Invoke(this, SelectedDate.Date + roundedTime);
         e.Handled = true;
     }
 }

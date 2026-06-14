@@ -361,16 +361,12 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.ReminderTimelineScale = Math.Max(0.5, ViewModel.ReminderTimelineScale - 0.5);
     }
 
-    private void ReminderTimeline_OnAddReminderRequested(object? sender, TimeSpan timeOfDay)
+    private void ReminderTimeline_OnAddReminderRequested(object? sender, DateTime targetTime)
     {
-        var now = DateTime.Now;
-        var time = new DateTime(now.Year, now.Month, now.Day).Add(timeOfDay);
-        if (time < now) time = time.AddDays(1);
-
         var reminder = new Reminder()
         {
-            Time = time,
-            TimeOfDay = timeOfDay,
+            Time = targetTime,
+            TimeOfDay = targetTime.TimeOfDay,
             Title = "新日程"
         };
         ViewModel.AddReminder(reminder);
