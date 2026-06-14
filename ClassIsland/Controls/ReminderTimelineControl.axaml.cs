@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -113,7 +114,16 @@ public partial class ReminderTimelineControl : UserControl
             case nameof(Reminder.YearMonth):
             case nameof(Reminder.YearDay):
             case nameof(Reminder.IsEnabled):
-                RefreshFilteredReminders();
+                // 防抖：属性变更只重新计算布局，不重建列表（避免闪烁）
+                if (!_refreshQueued)
+                {
+                    _refreshQueued = true;
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        _refreshQueued = false;
+                        RecalculateItemLayout();
+                    });
+                }
                 break;
         }
     }
@@ -136,6 +146,11 @@ public partial class ReminderTimelineControl : UserControl
             nameof(DisplayedReminders),
             o => o.DisplayedReminders);
 
+    private bool _refreshQueued;
+    private bool _needsLayoutRefresh;
+
+    private readonly Dictionary<Guid, double> _itemLeftOffsets = new();
+
     private ObservableCollection<Reminder> _displayedReminders = [];
 
     public ObservableCollection<Reminder> DisplayedReminders => _displayedReminders;
@@ -146,6 +161,7 @@ public partial class ReminderTimelineControl : UserControl
         if (_reminders == null || _reminders.Count == 0)
         {
             EmptyHint.IsVisible = false;
+            _needsLayoutRefresh = false;
             return;
         }
 
@@ -157,6 +173,135 @@ public partial class ReminderTimelineControl : UserControl
         }
 
         EmptyHint.IsVisible = _displayedReminders.Count == 0;
+
+        // 标记需要延迟到容器生成后计算布局
+        _needsLayoutRefresh = true;
+        TimelineCanvas.LayoutUpdated += OnTimelineCanvasLayoutUpdated;
+    }
+
+    private void OnTimelineCanvasLayoutUpdated(object? sender, EventArgs e)
+    {
+        if (!_needsLayoutRefresh) return;
+
+        // 检查所有容器是否已生成
+        for (var i = 0; i < _displayedReminders.Count; i++)
+            if (ReminderItemsControl.ItemContainerGenerator.ContainerFromIndex(i) == null)
+                return; // 还没生成完，等下一次 LayoutUpdated
+
+        _needsLayoutRefresh = false;
+        TimelineCanvas.LayoutUpdated -= OnTimelineCanvasLayoutUpdated;
+        RecalculateItemLayout();
+    }
+
+    private static double GetItemVisualHeight() => 46.0; // MinHeight 42 + Margin top/bottom 4
+
+    // 属性变更时使用：不重建列表，仅重新计算偏移
+    private void RecalculateItemLayout()
+    {
+        _itemLeftOffsets.Clear();
+
+        // 彻底重置 MinWidth，从视口宽度重新计算，防止累积
+        TimelineCanvas.MinWidth = 0;
+        var viewWidth = TimelineScrollViewer.Viewport.Width;
+
+        if (_displayedReminders.Count <= 1)
+        {
+            ResetItemPositions();
+            TimelineCanvas.MinWidth = 0;
+            return;
+        }
+
+        // 按时间排序
+        var sorted = _displayedReminders
+            .Select((r, i) => (Reminder: r, Index: i))
+            .OrderBy(x => x.Reminder.TimeOfDay.TotalMinutes)
+            .ToList();
+
+        // 构建重叠组
+        var groups = BuildOverlapGroups(sorted);
+
+        // 为重叠组计算基于实际宽度的累积偏移
+        const double gap = 8.0;
+        foreach (var group in groups)
+        {
+            if (group.Count <= 1) continue;
+
+            double currentLeft = 0;
+            for (var j = 0; j < group.Count; j++)
+            {
+                var (reminder, index) = group[j];
+                _itemLeftOffsets[reminder.Id] = currentLeft;
+
+                // 测量容器实际宽度
+                var container = ReminderItemsControl.ItemContainerGenerator.ContainerFromIndex(index);
+                var itemWidth = container is Control c && c.Bounds.Width > 0 ? c.Bounds.Width : 180.0;
+                currentLeft += Math.Max(itemWidth, 100.0) + gap;
+            }
+        }
+
+        ApplyItemPositions();
+
+        // 用视口宽度 + 偏移量决定 Canvas 所需宽度
+        var maxRight = viewWidth;
+        foreach (var offset in _itemLeftOffsets.Values)
+            if (offset > maxRight) maxRight = offset;
+        TimelineCanvas.MinWidth = Math.Max(viewWidth, maxRight + 250);
+    }
+
+    private List<List<(Reminder, int)>> BuildOverlapGroups(List<(Reminder Reminder, int Index)> sorted)
+    {
+        var groups = new List<List<(Reminder, int)>>();
+        if (sorted.Count == 0) return groups;
+
+        var itemHeight = GetItemVisualHeight();
+        const double allowedOverlap = 4.0;
+        var currentGroup = new List<(Reminder, int)> { sorted[0] };
+
+        for (var i = 1; i < sorted.Count; i++)
+        {
+            var prev = sorted[i - 1];
+            var curr = sorted[i];
+
+            var prevTop = prev.Reminder.TimeOfDay.Ticks / 1000000000.0 * Scale;
+            var currTop = curr.Reminder.TimeOfDay.Ticks / 1000000000.0 * Scale;
+            var prevBottom = prevTop + itemHeight;
+
+            if (currTop < prevBottom - allowedOverlap)
+                currentGroup.Add(curr);
+            else
+            {
+                groups.Add(currentGroup);
+                currentGroup = new List<(Reminder, int)> { curr };
+            }
+        }
+        groups.Add(currentGroup);
+        return groups;
+    }
+
+    private void ApplyItemPositions()
+    {
+        for (var i = 0; i < _displayedReminders.Count; i++)
+        {
+            var container = ReminderItemsControl.ItemContainerGenerator.ContainerFromIndex(i);
+            if (container is not Control c) continue;
+            var reminder = _displayedReminders[i];
+
+            Canvas.SetLeft(c, _itemLeftOffsets.GetValueOrDefault(reminder.Id, 0.0));
+            c.ClearValue(Control.WidthProperty);
+            c.ClearValue(Canvas.TopProperty);
+        }
+    }
+
+    private void ResetItemPositions()
+    {
+        for (var i = 0; i < _displayedReminders.Count; i++)
+        {
+            var container = ReminderItemsControl.ItemContainerGenerator.ContainerFromIndex(i);
+            if (container is not Control c) continue;
+            Canvas.SetLeft(c, 0.0);
+            c.ClearValue(Control.WidthProperty);
+            c.ClearValue(Canvas.TopProperty);
+        }
     }
 
     private static bool IsReminderOnDate(Reminder r, DateTime date)

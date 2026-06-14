@@ -36,11 +36,11 @@
         <ScrollViewer Grid.Row="1"
                       x:Name="TimelineScrollViewer"
                       VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled"
+                      HorizontalScrollBarVisibility="Auto"
                       AllowAutoHide="True">
             <Grid x:Name="TimelineCanvas"
                   Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ReminderTimelineControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"
-                  MinHeight="500">
+                  MinHeight="250">
                 <!-- 背景标尺 -->
                 <controls:ReminderTimelineRulerControl x:Name="RulerControl"
                                                        Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ReminderTimelineControl}}"
@@ -87,7 +87,7 @@
                     </ListBox.ItemContainerTheme>
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="profile:Reminder">
-                            <Grid ColumnDefinitions="44,*,Auto" Margin="0 2 4 2" MinHeight="42">
+                            <Grid ColumnDefinitions="44,Auto,Auto" Margin="0 2 4 2" MinHeight="42">
                                 <!-- 时间指示线 + 时间标签 -->
                                 <Border Grid.Column="0"
                                         BorderBrush="{Binding Frequency, Converter={x:Static controls:ReminderTimelineControl.FrequencyToBrushConverter}}"
