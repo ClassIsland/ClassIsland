@@ -34,13 +34,13 @@ public partial class ReminderEditorControl : UserControl
         FrequencyCombo.SelectionChanged += (_, _) => OnEditingChanged();
 
         OnceDatePicker.SelectedDateChanged += (_, _) => OnEditingChanged();
-        OnceTimeBox.TextChanged += (_, _) => OnEditingChanged();
+        OnceTimeBox.SelectedTimeChanged += (_, _) => OnEditingChanged();
 
-        DailyTimeBox.TextChanged += (_, _) => OnEditingChanged();
+        DailyTimeBox.SelectedTimeChanged += (_, _) => OnEditingChanged();
         DailyStartDate.SelectedDateChanged += (_, _) => OnEditingChanged();
         DailyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
 
-        WeeklyTimeBox.TextChanged += (_, _) => OnEditingChanged();
+        WeeklyTimeBox.SelectedTimeChanged += (_, _) => OnEditingChanged();
         ChkSun.IsCheckedChanged += (_, _) => OnEditingChanged();
         ChkMon.IsCheckedChanged += (_, _) => OnEditingChanged();
         ChkTue.IsCheckedChanged += (_, _) => OnEditingChanged();
@@ -51,7 +51,7 @@ public partial class ReminderEditorControl : UserControl
         WeeklyStartDate.SelectedDateChanged += (_, _) => OnEditingChanged();
         WeeklyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
 
-        YearlyTimeBox.TextChanged += (_, _) => OnEditingChanged();
+        YearlyTimeBox.SelectedTimeChanged += (_, _) => OnEditingChanged();
         YearMonthCombo.SelectionChanged += (_, _) => OnEditingChanged();
         YearDayBox.TextChanged += (_, _) => OnEditingChanged();
         YearlyStartDate.SelectedDateChanged += (_, _) => OnEditingChanged();
@@ -92,13 +92,13 @@ public partial class ReminderEditorControl : UserControl
         };
 
         OnceDatePicker.SelectedDate = r.Time.Date;
-        OnceTimeBox.Text = r.Time.ToString("HH:mm");
+        OnceTimeBox.SelectedTime = r.Time.TimeOfDay;
 
-        DailyTimeBox.Text = r.TimeOfDay.ToString(@"hh\:mm");
+        DailyTimeBox.SelectedTime = r.TimeOfDay;
         DailyStartDate.SelectedDate = r.StartDate;
         DailyEndDate.SelectedDate = r.EndDate;
 
-        WeeklyTimeBox.Text = r.TimeOfDay.ToString(@"hh\:mm");
+        WeeklyTimeBox.SelectedTime = r.TimeOfDay;
         ChkSun.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Sunday);
         ChkMon.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Monday);
         ChkTue.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Tuesday);
@@ -109,7 +109,7 @@ public partial class ReminderEditorControl : UserControl
         WeeklyStartDate.SelectedDate = r.StartDate;
         WeeklyEndDate.SelectedDate = r.EndDate;
 
-        YearlyTimeBox.Text = r.TimeOfDay.ToString(@"hh\:mm");
+        YearlyTimeBox.SelectedTime = r.TimeOfDay;
         if (r.YearMonth >= 1 && r.YearMonth <= 12) YearMonthCombo.SelectedIndex = r.YearMonth - 1;
         YearDayBox.Text = r.YearDay > 0 ? r.YearDay.ToString() : r.Time.Day.ToString();
         YearlyStartDate.SelectedDate = r.StartDate;
@@ -131,21 +131,21 @@ public partial class ReminderEditorControl : UserControl
         {
             case 0: // once
                 r.Frequency = ReminderFrequency.Once;
-                if (OnceDatePicker.SelectedDate.HasValue && TimeSpan.TryParse(OnceTimeBox.Text, out var tOnce))
+                if (OnceDatePicker.SelectedDate.HasValue)
                 {
-                    r.Time = OnceDatePicker.SelectedDate.Value.Date + tOnce;
-                    r.TimeOfDay = tOnce;
+                    r.Time = OnceDatePicker.SelectedDate.Value.Date + OnceTimeBox.SelectedTime.GetValueOrDefault();
+                    r.TimeOfDay = OnceTimeBox.SelectedTime.GetValueOrDefault();
                 }
                 break;
             case 1: // daily
                 r.Frequency = ReminderFrequency.Daily;
-                if (TimeSpan.TryParse(DailyTimeBox.Text, out var tDaily)) r.TimeOfDay = tDaily;
+                r.TimeOfDay = DailyTimeBox.SelectedTime.GetValueOrDefault();
                 r.StartDate = DailyStartDate.SelectedDate;
                 r.EndDate = DailyEndDate.SelectedDate;
                 break;
             case 2: // weekly
                 r.Frequency = ReminderFrequency.Weekly;
-                if (TimeSpan.TryParse(WeeklyTimeBox.Text, out var tWeekly)) r.TimeOfDay = tWeekly;
+                r.TimeOfDay = WeeklyTimeBox.SelectedTime.GetValueOrDefault();
                 ReminderWeekDays wd = ReminderWeekDays.None;
                 if (ChkSun.IsChecked == true) wd |= ReminderWeekDays.Sunday;
                 if (ChkMon.IsChecked == true) wd |= ReminderWeekDays.Monday;
@@ -160,7 +160,7 @@ public partial class ReminderEditorControl : UserControl
                 break;
             case 3: // yearly
                 r.Frequency = ReminderFrequency.Yearly;
-                if (TimeSpan.TryParse(YearlyTimeBox.Text, out var tYearly)) r.TimeOfDay = tYearly;
+                r.TimeOfDay = YearlyTimeBox.SelectedTime.GetValueOrDefault();
                 if (YearMonthCombo.SelectedIndex >= 0) r.YearMonth = YearMonthCombo.SelectedIndex + 1;
                 if (int.TryParse(YearDayBox.Text, out var yd)) r.YearDay = yd;
                 r.StartDate = YearlyStartDate.SelectedDate;

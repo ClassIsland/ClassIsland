@@ -32,21 +32,21 @@
       <ci:Field Label="日期">
         <CalendarDatePicker x:Name="OnceDatePicker" />
       </ci:Field>
-      <ci:Field Label="时间 (HH:mm)">
-        <TextBox x:Name="OnceTimeBox" />
+      <ci:Field Label="时间">
+        <TimePicker x:Name="OnceTimeBox" />
       </ci:Field>
     </StackPanel>
 
     <!-- Daily -->
     <StackPanel x:Name="DailyPanel" Spacing="8" IsVisible="False">
-      <ci:Field Label="时间 (HH:mm)"><TextBox x:Name="DailyTimeBox"/></ci:Field>
+      <ci:Field Label="时间"><TimePicker x:Name="DailyTimeBox"/></ci:Field>
       <ci:Field Label="开始日期 (可选)"><CalendarDatePicker x:Name="DailyStartDate"/></ci:Field>
       <ci:Field Label="结束日期 (可选)"><CalendarDatePicker x:Name="DailyEndDate"/></ci:Field>
     </StackPanel>
 
     <!-- Weekly -->
     <StackPanel x:Name="WeeklyPanel" Spacing="8" IsVisible="False">
-      <ci:Field Label="时间 (HH:mm)"><TextBox x:Name="WeeklyTimeBox"/></ci:Field>
+      <ci:Field Label="时间"><TimePicker x:Name="WeeklyTimeBox"/></ci:Field>
       <ci:Field Label="重复星期">
         <WrapPanel>
           <CheckBox x:Name="ChkSun" Content="日"/>
@@ -64,7 +64,7 @@
 
     <!-- Yearly -->
     <StackPanel x:Name="YearlyPanel" Spacing="8" IsVisible="False">
-      <ci:Field Label="时间 (HH:mm)"><TextBox x:Name="YearlyTimeBox"/></ci:Field>
+      <ci:Field Label="时间"><TimePicker x:Name="YearlyTimeBox"/></ci:Field>
       <ci:Field Label="月份">
         <ComboBox x:Name="YearMonthCombo">
           <ComboBoxItem>1</ComboBoxItem>
