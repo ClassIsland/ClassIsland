@@ -296,10 +296,17 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private ObservableCollection<ComponentSettings>? _prevSubscription;
 
+    private const string IslandContainerHeightResourceKey = "IslandContainerHeight";
+    private const double DefaultIslandContainerHeight = 40.0;
+    private double _baseIslandContainerHeight = DefaultIslandContainerHeight;
+    private bool _requestedLineSpanUpdateQueued;
+
     public MainWindowLine()
     {
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
+        AddHandler(MainWindowLayoutAssist.RequestedLineSpanChangedEvent, OnRequestedLineSpanChanged,
+            RoutingStrategies.Bubble);
         ComponentPresenter.ComponentVisibilityChangedEvent.AddClassHandler(typeof(MainWindowLine), 
             UpdateVisibilityState, RoutingStrategies.Bubble);
         this.GetObservable(HidingRulesProperty).Subscribe(new AnonymousObserver<Core.Models.Ruleset.Ruleset?>(_ => UpdateRuleState()));
@@ -328,6 +335,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 _prevSubscription = Settings.Children;
                 Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
                 UpdateHiddenState();
+                QueueRequestedLineSpanUpdate();
             });
         this.GetObservable(IsVisibleProperty).Subscribe(_ =>
         {
@@ -399,6 +407,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     private void ChildrenOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         UpdateHiddenState();
+        QueueRequestedLineSpanUpdate();
     }
 
     private void UpdateHiddenState()
@@ -420,7 +429,77 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     private void UpdateVisibilityState(object? sender, RoutedEventArgs args)
     {
         UpdateHiddenState();
+        QueueRequestedLineSpanUpdate();
         RaiseEvent(new RoutedEventArgs(LineVisibilityChangedEvent));
+    }
+
+    private void OnRequestedLineSpanChanged(object? sender, RoutedEventArgs args)
+    {
+        QueueRequestedLineSpanUpdate();
+    }
+
+    private void QueueRequestedLineSpanUpdate()
+    {
+        if (_requestedLineSpanUpdateQueued)
+        {
+            return;
+        }
+
+        _requestedLineSpanUpdateQueued = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _requestedLineSpanUpdateQueued = false;
+            UpdateRequestedLineSpan();
+        });
+    }
+
+    private void UpdateRequestedLineSpan()
+    {
+        if (!this.IsAttachedToVisualTree())
+        {
+            return;
+        }
+
+        var requestedLineSpan = this.GetVisualDescendants()
+            .OfType<Control>()
+            .Where(x => x.IsVisible)
+            .Select(MainWindowLayoutAssist.GetRequestedLineSpan)
+            .DefaultIfEmpty(1)
+            .Max();
+        requestedLineSpan = Math.Max(1, requestedLineSpan);
+        _baseIslandContainerHeight = GetBaseIslandContainerHeight();
+
+        if (requestedLineSpan <= 1)
+        {
+            Resources.Remove(IslandContainerHeightResourceKey);
+            return;
+        }
+
+        Resources[IslandContainerHeightResourceKey] = _baseIslandContainerHeight * requestedLineSpan;
+    }
+
+    private double GetBaseIslandContainerHeight()
+    {
+        var hasLocalOverride = Resources.ContainsKey(IslandContainerHeightResourceKey);
+        var localOverride = hasLocalOverride ? Resources[IslandContainerHeightResourceKey] : null;
+        if (hasLocalOverride)
+        {
+            Resources.Remove(IslandContainerHeightResourceKey);
+        }
+
+        try
+        {
+            return this.TryFindResource(IslandContainerHeightResourceKey, out var value) && value is double height
+                ? height
+                : DefaultIslandContainerHeight;
+        }
+        finally
+        {
+            if (hasLocalOverride)
+            {
+                Resources[IslandContainerHeightResourceKey] = localOverride!;
+            }
+        }
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
@@ -432,6 +511,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateHiddenState();
         UpdateFadeStatus();
+        QueueRequestedLineSpanUpdate();
         NotificationHostService.RegisterNotificationConsumer(this, Settings.IsMainLine ? -1 : LineNumber);
         if (Settings != null)
         {
