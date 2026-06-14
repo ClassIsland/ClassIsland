@@ -9,6 +9,7 @@ using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls;
@@ -247,6 +248,9 @@ public partial class ReminderTimelineControl : UserControl
 
         // 日期变化时重新过滤
         this.GetObservable(SelectedDateProperty).Subscribe(_ => RefreshFilteredReminders());
+
+        // 选中日程变化时自动滚动到对应位置
+        this.GetObservable(SelectedReminderProperty).Subscribe(_ => OnSelectedReminderChanged());
     }
 
     private void OnTimelineWheel(object? sender, PointerWheelEventArgs e)
@@ -293,5 +297,87 @@ public partial class ReminderTimelineControl : UserControl
 
         AddReminderRequested?.Invoke(this, SelectedDate.Date + roundedTime);
         e.Handled = true;
+    }
+
+    private void OnSelectedReminderChanged()
+    {
+        if (SelectedReminder == null) return;
+
+        // 如果当前日期不显示该日程，切换到合适的日期
+        if (!DisplayedReminders.Contains(SelectedReminder))
+        {
+            var targetDate = FindDisplayDateForReminder(SelectedReminder);
+            if (targetDate.HasValue)
+            {
+                SelectedDate = targetDate.Value.Date;
+            }
+        }
+
+        // 延迟到布局更新后滚动到对应位置
+        Dispatcher.UIThread.Post(ScrollToSelectedReminder, DispatcherPriority.Render);
+    }
+
+    private void ScrollToSelectedReminder()
+    {
+        if (SelectedReminder == null) return;
+
+        var timeOfDay = SelectedReminder.TimeOfDay;
+        var y = timeOfDay.Ticks / 1000000000.0 * Scale;
+
+        var viewportHeight = TimelineScrollViewer.Viewport.Height;
+        if (viewportHeight <= 0) return;
+
+        var scrollOffset = y - viewportHeight / 2.0;
+        TimelineScrollViewer.Offset = new Vector(0, Math.Max(0, scrollOffset));
+    }
+
+    private DateTime? FindDisplayDateForReminder(Reminder r)
+    {
+        // 已可在当前日期显示
+        if (IsReminderOnDate(r, SelectedDate.Date))
+            return SelectedDate.Date;
+
+        switch (r.Frequency)
+        {
+            case ReminderFrequency.Once:
+                return r.Time.Date;
+            case ReminderFrequency.Daily:
+                return r.StartDate ?? DateTime.Today;
+            case ReminderFrequency.Weekly:
+            {
+                var start = r.StartDate ?? DateTime.Today;
+                for (var i = 0; i < 14; i++)
+                {
+                    var candidate = start.AddDays(i);
+                    if (IsReminderOnDate(r, candidate))
+                        return candidate.Date;
+                }
+                return DateTime.Today;
+            }
+            case ReminderFrequency.Yearly:
+            {
+                var month = r.YearMonth > 0 ? r.YearMonth : r.Time.Month;
+                var day = r.YearDay > 0 ? r.YearDay : r.Time.Day;
+                var year = DateTime.Today.Year;
+                for (var y = 0; y <= 1; y++)
+                {
+                    var targetYear = year + y;
+                    try
+                    {
+                        var candidate = new DateTime(targetYear, month,
+                            Math.Min(day, DateTime.DaysInMonth(targetYear, month)));
+                        if (IsReminderOnDate(r, candidate))
+                            return candidate.Date;
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+                return DateTime.Today;
+            }
+            default:
+                return null;
+        }
     }
 }
