@@ -242,7 +242,13 @@ public partial class ProfileSettingsWindow : MyWindow
             "subjects" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 2,
             "forbidden" => 3,
             "adjustment" => 4,
-            "transfer" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 5,
+            "transfer" when ViewModel.ManagementService.Policy is
+            {
+                DisableProfileEditing: false,
+                DisableProfileClassPlanEditing: false,
+                DisableProfileTimeLayoutEditing: false,
+                DisableProfileSubjectsEditing: false
+            } => 5,
             _ => ViewModel.MasterPageTabSelectIndex
         };
     }
