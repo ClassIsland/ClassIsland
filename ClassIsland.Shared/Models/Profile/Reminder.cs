@@ -34,7 +34,18 @@ public class Reminder : ObservableRecipient
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    public string Title { get; set; } = "";
+    private string _title = "新日程";
+    public string Title
+    {
+        get => _title;
+        set
+        {
+            if (value == _title) return;
+            if (string.IsNullOrWhiteSpace(value)) return;
+            _title = value;
+            OnPropertyChanged();
+        }
+    }
 
     public string Message { get; set; } = "";
 
