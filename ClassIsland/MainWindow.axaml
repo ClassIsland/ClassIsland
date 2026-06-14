@@ -228,6 +228,12 @@
                     </Panel.Styles>
                     <!-- ROOT -->
                     <VisualLayerManager>
+                        <VisualLayerManager.IsEnabled>
+                            <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                                <Binding Path="!ViewModel.IsEditMode"/>
+                                <Binding Path="!ManagementService.Policy.DisableSettingsEditing"/>
+                            </MultiBinding>
+                        </VisualLayerManager.IsEnabled>
                         <StackPanel x:Name="StackPanelRootContainer"
                                     SizeChanged="StackPanelRootContainer_OnSizeChanged">
                             <StackPanel.Styles>
@@ -604,14 +610,17 @@
                           StrokeThickness="1"
                           HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25">
                     </Line>
-                    <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}">
+                    <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}"
+                            IsEnabled="{Binding !ManagementService.Policy.DisableSettingsEditing}">
                         <ci:IconText Glyph="&#xE51E;" Text="外观" />
                     </Button>
                     <Button Click="ButtonOpenComponentsLib_OnClick" Theme="{StaticResource TransparentButton}"
-                            x:Name="ButtonOpenComponentsLib">
+                            x:Name="ButtonOpenComponentsLib"
+                            IsEnabled="{Binding !ManagementService.Policy.DisableSettingsEditing}">
                         <ci:IconText Glyph="&#xE071;" Text="添加组件" />
                     </Button>
-                    <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}">
+                    <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}"
+                            IsEnabled="{Binding !ManagementService.Policy.DisableSettingsEditing}">
                         <ci:IconText Glyph="&#xE699;" Text="{Binding ViewModel.Settings.CurrentComponentConfig}"
                                      MaxWidth="150" />
                     </Button>
