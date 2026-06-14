@@ -514,6 +514,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private bool _isRealMouseIn = false;
     private bool _isTouchIn = false;
+    private bool _isTouchActive = false;
 
     private void UpdateIsMouseIn()
     {
@@ -543,6 +544,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 }
                 var vWidth = vRight - vLeft;
                 var vHeight = vBottom - vTop;
+                if (vWidth <= 0 || vHeight <= 0) break;
                 var isAnyInNow = false;
                 var wasTouchIn = _isTouchIn;
 
@@ -551,16 +553,28 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     if (x.Kind is not (RawInputDigitizerContactKind.Finger or RawInputDigitizerContactKind.Pen or RawInputDigitizerContactKind.Eraser or RawInputDigitizerContactKind.None or RawInputDigitizerContactKind.Hover))
                         continue;
 
-                    double maxX = x.MaxX > 0 ? x.MaxX : vWidth;
-                    double maxY = x.MaxY > 0 ? x.MaxY : vHeight;
-                    if (maxX <= 0 || maxY <= 0) continue;
-                    // 归一化
-                    double normX = (double)x.X / maxX;
-                    double normY = (double)x.Y / maxY;
-                    var px = vLeft + (normX * vWidth);
-                    var py = vTop + (normY * vHeight);
+                    double px, py;
+                    var rangeX = x.MaxX - x.MinX;
+                    var rangeY = x.MaxY - x.MinY;
+                    if (rangeX > 0 && rangeY > 0)
+                    {
+                        // 归一化
+                        double normX = (double)(x.X - x.MinX) / rangeX;
+                        double normY = (double)(x.Y - x.MinY) / rangeY;
+                        px = vLeft + (normX * vWidth);
+                        py = vTop + (normY * vHeight);
+                    }
+                    else if (x.X >= vLeft && x.X <= vRight && x.Y >= vTop && x.Y <= vBottom)
+                    {
+                        px = x.X;
+                        py = x.Y;
+                    }
+                    else
+                    {
+                        continue;
+                    }
 
-                    // Logger.LogTrace("Digitizer Input: Kind={}, Raw=({}, {}), Max=({}, {}), Norm=({:F4}, {:F4}), Physical=({:F2}, {:F2})", x.Kind, x.X, x.Y, maxX, maxY, normX, normY, px, py);
+                    // Logger.LogTrace("Digitizer Input: Kind={}, Raw=({}, {}), Range=({}, {}), Screen=({:F2}, {:F2})", x.Kind, x.X, x.Y, rangeX, rangeY, px, py);
                     if (GetMouseStatusByPos(new Point(px, py)))
                     {
                         if (x.Kind is RawInputDigitizerContactKind.Finger or RawInputDigitizerContactKind.Pen or RawInputDigitizerContactKind.Eraser)
@@ -572,11 +586,16 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                 // 状态机：松开时启动计时器
                 if (wasTouchIn && !isAnyInNow)
                 {
+                    _isTouchActive = false;
                     if (SettingsService.Settings.TouchInFadingDurationMs > 0)
                     {
                         TouchInFadingTimer.Stop();
                         TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
                         TouchInFadingTimer.Start();
+                    }
+                    else
+                    {
+                        UpdateMouseStatus();
                     }
                 }
                 else if (isAnyInNow)
@@ -584,13 +603,14 @@ public class MainWindowLine : ContentControl, INotificationConsumer
                     TouchInFadingTimer.Stop();
                 }
                 _isTouchIn = isAnyInNow;
+                if (isAnyInNow) _isTouchActive = true;
                 // Logger.LogTrace("isTouchIn: {}", _isTouchIn);
                 UpdateIsMouseIn();
                 break;
             }
             case RawInputMouseData mouseData:
                 var isSimulated = (mouseData.Mouse.ExtraInformation & 0xFFFFFF00u) == 0xFF515700u;
-                if (isSimulated)  // pass系统合成的虚拟鼠标事件(触控/笔)
+                if (isSimulated)
                 {
                     break;
                 }
@@ -602,11 +622,12 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
     {
         TouchInFadingTimer.Stop();
-        UpdateIsMouseIn();
+        UpdateMouseStatus();
     }
 
     private void UpdateMouseStatus()
     {
+        if (_isTouchActive) return;
         try
         {
             var ptr = PlatformServices.WindowPlatformService.GetMousePos();
@@ -621,6 +642,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private void MainWindowOnMousePosChanged(object? sender, MousePosChangedEventArgs e)
     {
+        if (_isTouchActive) return;
         _isRealMouseIn = GetMouseStatusByPos(e.Pos);
         UpdateIsMouseIn();
     }
