@@ -56,7 +56,8 @@ public static class Program
             new Option<bool>(["--diagnostic", "-d"], "启用诊断模式(包括详细输出)"),
             new Option<bool>(["--safe", "-s"], "启用安全模式"),
             new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动"),
-            new Option<string>(["--importV1"], "指定要导入的 ClassIsland 1.7 配置目录"),
+            new Option<string>(["--importV1"], "指定要导入的 ClassIsland 1.7 配置目录"), 
+            new Option<string>(["--importV2"], "指定要导入的 ClassIsland 2.x 配置目录"),
             new Option<string>(["--importEntries"], "指定要导入的 ClassIsland 1.7 配置信息"),
             new Option<bool>(["--importComplete"], "启动时显示导入完成窗口"),
             new Option<bool>(["--importV1Complete"], "从 ClassIsland 1 导入成功"),
@@ -188,7 +189,7 @@ public static class Program
             options.TracesSampleRate = 0.05;
             // options.ProfilesSampleRate = 0.016;
         }
-        options.EnableLogs = true;
+        options.EnableLogs = false;
         options.EnableMetrics = true;
         options.SetBeforeSendLog(log => log.Level < SentryLogLevel.Info || log is { Template: "当前内存使用: {}" } ? null : log);
     }
