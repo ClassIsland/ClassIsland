@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -55,17 +56,65 @@ public partial class ReminderTimelineControl : UserControl
         set
         {
             if (_reminders != null)
+            {
                 _reminders.CollectionChanged -= OnRemindersCollectionChanged;
+                foreach (var r in _reminders)
+                    UnsubscribeFromReminderPropertyChanged(r);
+            }
             SetAndRaise(RemindersProperty, ref _reminders, value);
             if (_reminders != null)
+            {
                 _reminders.CollectionChanged += OnRemindersCollectionChanged;
+                foreach (var r in _reminders)
+                    SubscribeToReminderPropertyChanged(r);
+            }
             RefreshFilteredReminders();
         }
     }
 
     private void OnRemindersCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (e.NewItems != null)
+        {
+            foreach (var item in e.NewItems.OfType<Reminder>())
+                SubscribeToReminderPropertyChanged(item);
+        }
+        if (e.OldItems != null)
+        {
+            foreach (var item in e.OldItems.OfType<Reminder>())
+                UnsubscribeFromReminderPropertyChanged(item);
+        }
         RefreshFilteredReminders();
+    }
+
+    private void SubscribeToReminderPropertyChanged(Reminder? reminder)
+    {
+        if (reminder != null)
+            reminder.PropertyChanged += OnReminderPropertyChanged;
+    }
+
+    private void UnsubscribeFromReminderPropertyChanged(Reminder? reminder)
+    {
+        if (reminder != null)
+            reminder.PropertyChanged -= OnReminderPropertyChanged;
+    }
+
+    private void OnReminderPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(Reminder.Frequency):
+            case nameof(Reminder.Time):
+            case nameof(Reminder.TimeOfDay):
+            case nameof(Reminder.WeekDays):
+            case nameof(Reminder.StartDate):
+            case nameof(Reminder.EndDate):
+            case nameof(Reminder.YearMonth):
+            case nameof(Reminder.YearDay):
+            case nameof(Reminder.IsEnabled):
+                RefreshFilteredReminders();
+                break;
+        }
     }
     #endregion
 
