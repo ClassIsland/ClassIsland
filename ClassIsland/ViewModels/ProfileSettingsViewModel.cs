@@ -61,6 +61,7 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private TimeLayoutItem? _selectedTimePoint;
     [ObservableProperty] private double _timeLineScale = 3.0;
     [ObservableProperty] private Subject? _selectedSubject;
+    [ObservableProperty] private Reminder? _selectedReminder;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
     [ObservableProperty] private Guid _tempOverlayClassPlanTimeLayoutId = Guid.Empty;

@@ -203,34 +203,6 @@
         </Grid>
 
         <!-- 提醒编辑面板 -->
-        <ScrollViewer x:Key="RemindersEditor" Width="332" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="16" Spacing="8">
-                <TextBlock Text="日程 / 提醒" Theme="{StaticResource SubtitleTextBlockStyle}"/>
-                <TextBlock Text="在此管理档案内的自定义提醒。" TextWrapping="Wrap" Classes="l-instructive"/>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Button Click="AddReminder_OnClick" Theme="{StaticResource TransparentButton}">
-                        <ci:IconText Glyph="&#xE00D;" Text="添加提醒"/>
-                    </Button>
-                    <Button Click="EditSelectedReminder_OnClick" Theme="{StaticResource TransparentButton}">
-                        <ci:IconText Glyph="&#xE70F;" Text="编辑所选"/>
-                    </Button>
-                    <Button Click="RemoveSelectedReminder_OnClick" Theme="{StaticResource TransparentButton}">
-                        <ci:IconText Glyph="&#xE1BC;" Text="删除所选"/>
-                    </Button>
-                </StackPanel>
-                <ListBox x:Name="RemindersListBox" ItemsSource="{Binding ViewModel.ProfileService.Profile.Reminders}" Margin="0 8 0 0" Height="360">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="{Binding Title}" Width="140"/>
-                                <TextBlock Text="{Binding Time}" Width="150"/>
-                                <TextBlock Text="{Binding Repeat}" Width="80"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-        </ScrollViewer>
         
         <!-- 时间表信息 -->
         <ScrollViewer x:Key="TimeLayoutInfoEditor" Width="332" VerticalScrollBarVisibility="Auto">
@@ -1591,6 +1563,57 @@
                                 </ci:Emptiable >
                             </Grid>
                             
+                        </ci:Emptiable>
+                    </Grid>
+                </TabItem>
+                <TabItem x:Name="ScheduleTabItem" Header="日程" Classes="tag-Reminders"
+                         IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" Margin="0 0 3 0" RowDefinitions="Auto,*,Auto">
+                            <controls:CommandBar Grid.Row="0" Margin="0 0 0 12"
+                                        DefaultLabelPosition="Right"
+                                        IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileEditing, Converter={StaticResource InvertBooleanConverter}}">
+                                <controls:CommandBar.PrimaryCommands>
+                                    <controls:CommandBarButton Click="AddReminder_OnClick" IconSource="{ci:FluentIconSource &#xE00D;}" Label="添加"/>
+                                    <controls:CommandBarButton Click="RemoveSelectedReminder_OnClick" IconSource="{ci:FluentIconSource &#xE1BC;}" Label="删除"
+                                                               IsEnabled="{Binding ViewModel.SelectedReminder, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                </controls:CommandBar.PrimaryCommands>
+                            </controls:CommandBar>
+
+                            <ListBox Grid.Row="1" SelectionMode="Single"
+                                     ItemsSource="{Binding ViewModel.Reminders, Mode=OneWay}"
+                                     SelectedItem="{Binding ViewModel.SelectedReminder, Mode=TwoWay}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Title}" />
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding Time, StringFormat='{}{0:MM/dd HH:mm}'}"
+                                                       Opacity="0.65" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+
+                        <GridSplitter Grid.Column="1" Margin="2 0" />
+
+                        <ci:Emptiable Grid.Column="2" IsDirectContentMode="True" Data="{Binding ViewModel.SelectedReminder}">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel Margin="16" Spacing="12">
+                                    <TextBlock Text="编辑日程" Theme="{StaticResource SubtitleTextBlockStyle}" />
+                                    <controls1:ReminderEditorControl x:Name="ReminderEditor" />
+                                </StackPanel>
+                            </ScrollViewer>
                         </ci:Emptiable>
                     </Grid>
                 </TabItem>

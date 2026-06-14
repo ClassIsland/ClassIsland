@@ -75,6 +75,21 @@ public class Reminder : ObservableRecipient
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     /// <summary>
+    /// 通知所有显示相关属性已更改，强制 UI 刷新列表绑定。
+    /// </summary>
+    public void NotifyPropertiesChanged()
+    {
+        OnPropertyChanged(nameof(Title));
+        OnPropertyChanged(nameof(Message));
+        OnPropertyChanged(nameof(Time));
+        OnPropertyChanged(nameof(Frequency));
+        OnPropertyChanged(nameof(WeekDays));
+        OnPropertyChanged(nameof(StartDate));
+        OnPropertyChanged(nameof(EndDate));
+        OnPropertyChanged(nameof(IsEnabled));
+    }
+
+    /// <summary>
     /// 计算从给定时间点起的下一个发生时间（若无则返回 null）。
     /// </summary>
     public DateTime? GetNextOccurrence(DateTime from)

@@ -1103,7 +1103,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         var wnd = App.GetService<ProfileSettingsWindow>();
         wnd.Open();
-        wnd.OpenDrawer("RemindersEditor");
+        wnd.OpenScheduleTab();
     }
 
 

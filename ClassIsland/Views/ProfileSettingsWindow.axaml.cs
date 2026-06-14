@@ -91,6 +91,17 @@ public partial class ProfileSettingsWindow : MyWindow
                 ViewModel.CanUndo = false; ViewModel.CanRedo = false;
                 ViewModel.UndoDescriptions.Clear(); ViewModel.RedoDescriptions.Clear();
             });
+        // 日程内联编辑：选中变化时自动保存旧值、加载新值
+        ViewModel.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(ViewModel.SelectedReminder))
+            {
+                SaveReminderEdits();
+                LoadReminderIntoEditor();
+            }
+        };
+        // 编辑器实时变更 → 立即同步到列表
+        ReminderEditor.EditingChanged += (_, _) => SaveReminderEdits();
     }
 
     private void OnGlobalUndoRedoKeyDown(object? sender, KeyEventArgs e)
@@ -255,6 +266,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         e.Cancel = true;
         _isOpen = false;
+        SaveReminderEdits();
         ViewModel.ProfileService.SaveProfile();
         Hide();
     }
@@ -280,59 +292,54 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region Reminders
 
+    private Reminder? _lastEditedReminder;
+
+    private void SaveReminderEdits()
+    {
+        if (_lastEditedReminder != null && ReminderEditor != null)
+        {
+            ReminderEditor.ApplyTo(_lastEditedReminder);
+            _lastEditedReminder.NotifyPropertiesChanged();
+        }
+    }
+
+    private void LoadReminderIntoEditor()
+    {
+        _lastEditedReminder = ViewModel.SelectedReminder;
+        if (ViewModel.SelectedReminder != null && ReminderEditor != null)
+        {
+            ReminderEditor.LoadFrom(ViewModel.SelectedReminder);
+        }
+    }
+
     private void ButtonOpenReminders_OnClick(object? sender, RoutedEventArgs e)
     {
-        OpenDrawer("RemindersEditor");
+        OpenScheduleTab();
     }
 
-    private async void AddReminder_OnClick(object? sender, RoutedEventArgs e)
+    public void OpenScheduleTab()
     {
-        var editor = new ClassIsland.Controls.ReminderEditorControl();
+        if (!IsVisible)
+        {
+            Show();
+        }
+
+        MasterTabControl.SelectedItem = ScheduleTabItem;
+    }
+
+    private void AddReminder_OnClick(object? sender, RoutedEventArgs e)
+    {
         var reminder = new Reminder() { Time = DateTime.Now };
-        editor.LoadFrom(reminder);
-        var dlg = new ContentDialog()
-        {
-            Title = "添加提醒",
-            Content = editor,
-            DefaultButton = ContentDialogButton.Primary,
-            PrimaryButtonText = "添加",
-            SecondaryButtonText = "取消"
-        };
-        var r = await dlg.ShowAsync();
-        if (r != ContentDialogResult.Primary) return;
-        if (editor.ApplyTo(reminder))
-        {
-            ViewModel.AddReminder(reminder);
-        }
-    }
-
-    private async void EditSelectedReminder_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var sel = RemindersListBox.SelectedItem as Reminder;
-        if (sel == null) return;
-        var editor = new ClassIsland.Controls.ReminderEditorControl();
-        editor.LoadFrom(sel);
-        var dlg = new ContentDialog()
-        {
-            Title = "编辑提醒",
-            Content = editor,
-            DefaultButton = ContentDialogButton.Primary,
-            PrimaryButtonText = "保存",
-            SecondaryButtonText = "取消"
-        };
-        var r = await dlg.ShowAsync();
-        if (r != ContentDialogResult.Primary) return;
-        if (editor.ApplyTo(sel))
-        {
-            ViewModel.ProfileService.SaveProfile();
-        }
+        ViewModel.AddReminder(reminder);
+        ViewModel.SelectedReminder = reminder;
     }
 
     private void RemoveSelectedReminder_OnClick(object? sender, RoutedEventArgs e)
     {
-        var sel = RemindersListBox.SelectedItem as Reminder;
+        var sel = ViewModel.SelectedReminder;
         if (sel == null) return;
         ViewModel.RemoveReminder(sel);
+        ViewModel.SelectedReminder = null;
     }
 
     #endregion

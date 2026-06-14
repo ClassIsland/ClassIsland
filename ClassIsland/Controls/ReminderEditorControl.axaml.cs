@@ -10,11 +10,52 @@ namespace ClassIsland.Controls;
 public partial class ReminderEditorControl : UserControl
 {
     public Reminder Editing { get; private set; } = new Reminder();
+    private bool _isLoading;
+
+    /// <summary>
+    /// 编辑器中任意值变更时触发，用于实现实时刷新。
+    /// </summary>
+    public event EventHandler? EditingChanged;
+
+    private void OnEditingChanged()
+    {
+        if (!_isLoading)
+            EditingChanged?.Invoke(this, EventArgs.Empty);
+    }
 
     public ReminderEditorControl()
     {
         InitializeComponent();
         FrequencyCombo.SelectionChanged += FrequencyCombo_SelectionChanged;
+
+        // 订阅所有控件变更事件，实现编辑即刷新
+        TitleBox.TextChanged += (_, _) => OnEditingChanged();
+        MessageBox.TextChanged += (_, _) => OnEditingChanged();
+        FrequencyCombo.SelectionChanged += (_, _) => OnEditingChanged();
+
+        OnceDatePicker.SelectedDateChanged += (_, _) => OnEditingChanged();
+        OnceTimeBox.TextChanged += (_, _) => OnEditingChanged();
+
+        DailyTimeBox.TextChanged += (_, _) => OnEditingChanged();
+        DailyStartDate.SelectedDateChanged += (_, _) => OnEditingChanged();
+        DailyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
+
+        WeeklyTimeBox.TextChanged += (_, _) => OnEditingChanged();
+        ChkSun.IsCheckedChanged += (_, _) => OnEditingChanged();
+        ChkMon.IsCheckedChanged += (_, _) => OnEditingChanged();
+        ChkTue.IsCheckedChanged += (_, _) => OnEditingChanged();
+        ChkWed.IsCheckedChanged += (_, _) => OnEditingChanged();
+        ChkThu.IsCheckedChanged += (_, _) => OnEditingChanged();
+        ChkFri.IsCheckedChanged += (_, _) => OnEditingChanged();
+        ChkSat.IsCheckedChanged += (_, _) => OnEditingChanged();
+        WeeklyStartDate.SelectedDateChanged += (_, _) => OnEditingChanged();
+        WeeklyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
+
+        YearlyTimeBox.TextChanged += (_, _) => OnEditingChanged();
+        YearMonthCombo.SelectionChanged += (_, _) => OnEditingChanged();
+        YearDayBox.TextChanged += (_, _) => OnEditingChanged();
+        YearlyStartDate.SelectedDateChanged += (_, _) => OnEditingChanged();
+        YearlyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
     }
 
     private void FrequencyCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -34,6 +75,7 @@ public partial class ReminderEditorControl : UserControl
     public void LoadFrom(Reminder r)
     {
         if (r == null) return;
+        _isLoading = true;
         Editing = r;
         TitleBox.Text = r.Title;
         MessageBox.Text = r.Message;
@@ -72,6 +114,7 @@ public partial class ReminderEditorControl : UserControl
         YearlyEndDate.SelectedDate = r.EndDate;
 
         UpdatePanels();
+        _isLoading = false;
     }
 
     public bool ApplyTo(Reminder r)
