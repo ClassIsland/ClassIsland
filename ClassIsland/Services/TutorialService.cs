@@ -13,6 +13,7 @@ using ClassIsland.Controls.Tutorial;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Enums.Tutorial;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
@@ -41,6 +42,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private IActionService ActionService { get; }
     private IUriNavigationService UriNavigationService { get; }
     private ILogger<TutorialService> Logger { get; set; }
+    private IManagementService ManagementService { get; }
 
     private TutorialSettings Settings { get; }
 
@@ -79,12 +81,14 @@ public partial class TutorialService : ObservableObject, ITutorialService
     public event EventHandler? TutorialStateChanged;
 
     /// <inheritdoc/>
-    public TutorialService(SettingsService settingsService, IActionService actionService, IUriNavigationService uriNavigationService, ILogger<TutorialService> logger)
+    public TutorialService(SettingsService settingsService, IActionService actionService, 
+        IUriNavigationService uriNavigationService, ILogger<TutorialService> logger, IManagementService managementService)
     {
         SettingsService = settingsService;
         ActionService = actionService;
         UriNavigationService = uriNavigationService;
         Logger = logger;
+        ManagementService = managementService;
 
         Settings = ConfigureFileHelper.LoadConfig<TutorialSettings>(Path.Combine(CommonDirectories.AppConfigPath,
             "Tutorial.json"));
@@ -97,6 +101,15 @@ public partial class TutorialService : ObservableObject, ITutorialService
         };
         this.ObservableForProperty(x => x.IsTutorialRunning)
             .Subscribe(_ => TutorialStateChanged?.Invoke(this, EventArgs.Empty));
+        Context["classisland.management.policy.getDisableProfileClassPlanEditing"] = () => ManagementService.Policy.DisableProfileClassPlanEditing;
+        Context["classisland.management.policy.getDisableProfileTimeLayoutEditing"] = () => ManagementService.Policy.DisableProfileTimeLayoutEditing;
+        Context["classisland.management.policy.getDisableProfileSubjectsEditing"] = () => ManagementService.Policy.DisableProfileSubjectsEditing;
+        Context["classisland.management.policy.getDisableProfileEditing"] = () => ManagementService.Policy.DisableProfileEditing;
+        Context["classisland.management.policy.getDisableSettingsEditing"] = () => ManagementService.Policy.DisableSettingsEditing;
+        Context["classisland.management.policy.getDisableSplashCustomize"] = () => ManagementService.Policy.DisableSplashCustomize;
+        Context["classisland.management.policy.getDisableDebugMenu"] = () => ManagementService.Policy.DisableDebugMenu;
+        Context["classisland.management.policy.getAllowExitManagement"] = () => ManagementService.Policy.AllowExitManagement;
+        Context["classisland.management.policy.getDisableEasterEggs"] = () => ManagementService.Policy.DisableEasterEggs;
 
         if (SettingsService.WillMigrateInitTutorial)
         {
