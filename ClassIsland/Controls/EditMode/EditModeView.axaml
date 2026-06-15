@@ -121,6 +121,7 @@
                             <NumericUpDown
                                 Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={x:Static ci:NotNaNConverter.Instance}}"
                                 Margin="6,0,0,0"
+                                Minimum="0"
                                 Width="125" />
                         </StackPanel>
                     </controls:SettingsExpander.Footer>
@@ -582,18 +583,16 @@
         </Grid>
     </UserControl.Resources>
     <Panel>
-        
-        
         <ci:VerticalDrawer SmokeBackground="False"
                            AllowCollapse="True"
                            RequestedWidth="{StaticResource SettingsContainerWidth}"
-                           Content="{Binding ViewModel.MainDrawerContent}"
+                           DrawerContent="{Binding ViewModel.MainDrawerContent}"
                            Title="{Binding ViewModel.MainDrawerTitle}"
                            State="{Binding ViewModel.MainDrawerState, Mode=TwoWay}"/>
         <ci:VerticalDrawer SmokeBackground="True"
                            AllowCollapse="False"
                            ContentHeightRatio="0.5"
-                           Content="{Binding ViewModel.SecondaryDrawerContent, Mode=OneWay}"
+                           DrawerContent="{Binding ViewModel.SecondaryDrawerContent, Mode=OneWay}"
                            Title="{Binding ViewModel.SecondaryDrawerTitle, Mode=OneWay}"
                            State="{Binding ViewModel.SecondaryDrawerState, Mode=TwoWay}"/>
     </Panel>
