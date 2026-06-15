@@ -341,6 +341,7 @@
                                                     <ItemsControl.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <StackPanel
+                                                                Spacing="{Binding ViewModel.Settings.MainWindowLineVerticalMargin}"
                                                                 Classes.animated-resize="{Binding !$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
                                                         </ItemsPanelTemplate>
                                                     </ItemsControl.ItemsPanel>
