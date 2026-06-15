@@ -896,7 +896,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var y = dockingTop 
             ? offsetAreaTop + oy - safeT
             : offsetAreaBottom - ah + oy + safeB;
-        var clientBoundsRelative = new PixelRect(0, (int)safeT, (int)aw, (int)ah)
+        var clientBoundsRelative = new PixelRect(0, (int)(safeT * dpiY), (int)aw, (int)ah)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
         if (LayoutContainerGrid != null)
