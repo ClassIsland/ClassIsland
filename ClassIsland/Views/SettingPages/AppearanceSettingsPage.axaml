@@ -102,6 +102,7 @@
                         <NumericUpDown
                             Value="{Binding ViewModel.SettingsService.Settings.MainWindowLineVerticalMargin, Converter={x:Static ci:NotNaNConverter.Instance}}"
                             Margin="6,0,0,0"
+                            Minimum="0"
                             Width="125"/>
                     </StackPanel>
                 </controls2:SettingsExpander.Footer>
