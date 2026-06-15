@@ -260,7 +260,7 @@ public partial class DataTransferPage : UserControl
         ViewModel.PerformImportAction = BeginPerformClassIsland2Import;
         ViewModel.PageIndex = 1;
         ViewModel.ImportSourcePath = "";
-        ViewModel.ImportDescription = "支持从 1.x 版本的 ClassIsland 导入课表、组件配置、自动化配置、应用设置、部分插件和主题等数据。";
+        ViewModel.ImportDescription = "支持从 ClassIsland 2.x 数据文件导入课表、组件配置、自动化配置、应用设置、部分插件和主题等数据。";
         ViewModel.IsExport = false;
     }
     
@@ -329,8 +329,8 @@ public partial class DataTransferPage : UserControl
             ViewModel.PageIndex = 3;
             await Task.Run(() =>
             {
-                var appDataRoot = Path.GetFullPath(CommonDirectories.AppDataFolderPath);
-                Directory.CreateDirectory(appDataRoot);
+                var appRoot = Path.GetFullPath(CommonDirectories.AppRootFolderPath);
+                Directory.CreateDirectory(appRoot);
                 if (importEntries.HasFlag(ImportEntries.OtherConfig) && Directory.Exists(PluginService.PluginsRootPath))
                 {
                     Directory.Delete(PluginService.PluginsRootPath, true);
@@ -344,7 +344,7 @@ public partial class DataTransferPage : UserControl
                         continue;
                     }
 
-                    ExtractEntry(entry, appDataRoot);
+                    ExtractEntry(entry, appRoot);
                 }
 
                 return;

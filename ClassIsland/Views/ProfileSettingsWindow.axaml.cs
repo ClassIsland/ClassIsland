@@ -210,27 +210,34 @@ public partial class ProfileSettingsWindow : MyWindow
             SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.open", 1);
             _isOpen = true;
             Show();
-            Dispatcher.UIThread.Post(() =>
+            if (ViewModel.ManagementService.Policy is
+                {
+                    DisableProfileEditing: false, DisableProfileClassPlanEditing: false,
+                    DisableProfileSubjectsEditing: false, DisableProfileTimeLayoutEditing: false
+                })
             {
-                if (ViewModel.ProfileService.Profile.TimeLayouts.Count > 0)
+                Dispatcher.UIThread.Post(() =>
                 {
-                    if (ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
+                    if (ViewModel.ProfileService.Profile.TimeLayouts.Count > 0)
                     {
-                        ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/setup-classplans");
+                        if (ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
+                        {
+                            ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/setup-classplans");
+                        }
+                        if (!ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeRule.WeekCountDiv > 0)
+                            && ViewModel.ProfileService.Profile.ClassPlans.Count > 0)
+                        {
+                            ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/multiweek-classplans");
+                        }
                     }
-                    if (!ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeRule.WeekCountDiv > 0)
-                        && ViewModel.ProfileService.Profile.ClassPlans.Count > 0)
+                    else
                     {
-                        ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/multiweek-classplans");
+                        ViewModel.TutorialService.BeginNotCompletedTutorials(
+                            "classisland.getStarted.profileEditing/concepts",
+                            "classisland.getStarted.profileEditing/setup-timeLayout");
                     }
-                }
-                else
-                {
-                    ViewModel.TutorialService.BeginNotCompletedTutorials(
-                        "classisland.getStarted.profileEditing/concepts",
-                        "classisland.getStarted.profileEditing/setup-timeLayout");
-                }
-            });
+                });
+            }
         }
         else
         {
@@ -257,7 +264,13 @@ public partial class ProfileSettingsWindow : MyWindow
             "subjects" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 2,
             "forbidden" => 3,
             "adjustment" => 4,
-            "transfer" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 5,
+            "transfer" when ViewModel.ManagementService.Policy is
+            {
+                DisableProfileEditing: false,
+                DisableProfileClassPlanEditing: false,
+                DisableProfileTimeLayoutEditing: false,
+                DisableProfileSubjectsEditing: false
+            } => 5,
             _ => ViewModel.MasterPageTabSelectIndex
         };
     }
