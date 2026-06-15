@@ -317,7 +317,7 @@ public partial class ReminderTimelineControl : UserControl
         switch (r.Frequency)
         {
             case ReminderFrequency.Once:
-                return r.Time.Date == date.Date && InRange(r.Time);
+                return (r.Time.Date == date.Date) && InRange(r.Time);
             case ReminderFrequency.Daily:
                 return InRange(date);
             case ReminderFrequency.Weekly:
@@ -327,8 +327,8 @@ public partial class ReminderTimelineControl : UserControl
             }
             case ReminderFrequency.Yearly:
             {
-                int month = (r.YearMonth > 0) ? r.YearMonth : r.Time.Month;
-                int day = (r.YearDay > 0) ? r.YearDay : r.Time.Day;
+                int month = ((r.YearMonth > 0) ? r.YearMonth : r.Time.Month);
+                int day = ((r.YearDay > 0) ? r.YearDay : r.Time.Day);
                 return (date.Month == month) && (date.Day == day) && InRange(date);
             }
             default:
