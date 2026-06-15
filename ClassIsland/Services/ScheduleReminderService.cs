@@ -88,30 +88,9 @@ public class ScheduleReminderService : IHostedService, IDisposable
                     continue;
                 }
 
-                // 检查日期范围
-                if (rem.StartDate.HasValue && now.Date < rem.StartDate.Value.Date) continue;
-                if (rem.EndDate.HasValue && now.Date > rem.EndDate.Value.Date) continue;
-
-                // 频率特定检查
-                switch (rem.Frequency)
-                {
-                    case ReminderFrequency.Once:
-                        // Once 类型：日期必须完全匹配
-                        if (rem.Time.Date != now.Date) continue;
-                        break;
-                    case ReminderFrequency.Weekly:
-                        // Weekly 类型：今天必须在选中的星期中
-                        var flag = DayOfWeekToFlag(now.DayOfWeek);
-                        if (!rem.WeekDays.HasFlag(flag)) continue;
-                        break;
-                    case ReminderFrequency.Yearly:
-                        // Yearly 类型：月/日必须匹配
-                        var month = rem.YearMonth > 0 ? rem.YearMonth : rem.Time.Month;
-                        var day = rem.YearDay > 0 ? rem.YearDay : rem.Time.Day;
-                        if (now.Month != month || now.Day != day) continue;
-                        break;
-                    // Daily: 无需额外检查（日期范围已在上面检查）
-                }
+                // 检查日期范围与频率
+                if (!ShouldTriggerNow(rem, now))
+                    continue;
 
                 _triggeredInCurrentMinute.Add(key);
 
@@ -170,6 +149,29 @@ public class ScheduleReminderService : IHostedService, IDisposable
         DayOfWeek.Saturday => ReminderWeekDays.Saturday,
         _ => ReminderWeekDays.None
     };
+
+    private static bool ShouldTriggerNow(Reminder rem, DateTime now)
+    {
+        // 检查日期范围
+        if (rem.StartDate.HasValue && now.Date < rem.StartDate.Value.Date) return false;
+        if (rem.EndDate.HasValue && now.Date > rem.EndDate.Value.Date) return false;
+
+        // 频率特定检查
+        return rem.Frequency switch
+        {
+            ReminderFrequency.Once => rem.Time.Date == now.Date,
+            ReminderFrequency.Weekly => rem.WeekDays.HasFlag(DayOfWeekToFlag(now.DayOfWeek)),
+            ReminderFrequency.Yearly => IsYearlyMatch(rem, now),
+            _ => true // Daily: 无需额外检查（日期范围已在上面检查）
+        };
+    }
+
+    private static bool IsYearlyMatch(Reminder rem, DateTime now)
+    {
+        var month = rem.YearMonth > 0 ? rem.YearMonth : rem.Time.Month;
+        var day = rem.YearDay > 0 ? rem.YearDay : rem.Time.Day;
+        return now.Month == month && now.Day == day;
+    }
 
     public void Dispose()
     {

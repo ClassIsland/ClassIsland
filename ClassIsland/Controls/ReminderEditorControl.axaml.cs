@@ -129,43 +129,10 @@ public partial class ReminderEditorControl : UserControl
 
         switch (FrequencyCombo.SelectedIndex)
         {
-            case 0: // once
-                r.Frequency = ReminderFrequency.Once;
-                if (OnceDatePicker.SelectedDate.HasValue)
-                {
-                    r.Time = OnceDatePicker.SelectedDate.Value.Date + OnceTimeBox.SelectedTime.GetValueOrDefault();
-                    r.TimeOfDay = OnceTimeBox.SelectedTime.GetValueOrDefault();
-                }
-                break;
-            case 1: // daily
-                r.Frequency = ReminderFrequency.Daily;
-                r.TimeOfDay = DailyTimeBox.SelectedTime.GetValueOrDefault();
-                r.StartDate = DailyStartDate.SelectedDate;
-                r.EndDate = DailyEndDate.SelectedDate;
-                break;
-            case 2: // weekly
-                r.Frequency = ReminderFrequency.Weekly;
-                r.TimeOfDay = WeeklyTimeBox.SelectedTime.GetValueOrDefault();
-                ReminderWeekDays wd = ReminderWeekDays.None;
-                if (ChkSun.IsChecked == true) wd |= ReminderWeekDays.Sunday;
-                if (ChkMon.IsChecked == true) wd |= ReminderWeekDays.Monday;
-                if (ChkTue.IsChecked == true) wd |= ReminderWeekDays.Tuesday;
-                if (ChkWed.IsChecked == true) wd |= ReminderWeekDays.Wednesday;
-                if (ChkThu.IsChecked == true) wd |= ReminderWeekDays.Thursday;
-                if (ChkFri.IsChecked == true) wd |= ReminderWeekDays.Friday;
-                if (ChkSat.IsChecked == true) wd |= ReminderWeekDays.Saturday;
-                r.WeekDays = wd;
-                r.StartDate = WeeklyStartDate.SelectedDate;
-                r.EndDate = WeeklyEndDate.SelectedDate;
-                break;
-            case 3: // yearly
-                r.Frequency = ReminderFrequency.Yearly;
-                r.TimeOfDay = YearlyTimeBox.SelectedTime.GetValueOrDefault();
-                if (YearMonthCombo.SelectedIndex >= 0) r.YearMonth = YearMonthCombo.SelectedIndex + 1;
-                if (int.TryParse(YearDayBox.Text, out var yd)) r.YearDay = yd;
-                r.StartDate = YearlyStartDate.SelectedDate;
-                r.EndDate = YearlyEndDate.SelectedDate;
-                break;
+            case 0: ApplyOnce(r); break;
+            case 1: ApplyDaily(r); break;
+            case 2: ApplyWeekly(r); break;
+            case 3: ApplyYearly(r); break;
         }
 
         // 由用户手动控制启用/禁用，不再自动禁用
@@ -179,5 +146,50 @@ public partial class ReminderEditorControl : UserControl
         }
 
         return true;
+    }
+
+    private void ApplyOnce(Reminder r)
+    {
+        r.Frequency = ReminderFrequency.Once;
+        if (OnceDatePicker.SelectedDate.HasValue)
+        {
+            r.Time = OnceDatePicker.SelectedDate.Value.Date + OnceTimeBox.SelectedTime.GetValueOrDefault();
+            r.TimeOfDay = OnceTimeBox.SelectedTime.GetValueOrDefault();
+        }
+    }
+
+    private void ApplyDaily(Reminder r)
+    {
+        r.Frequency = ReminderFrequency.Daily;
+        r.TimeOfDay = DailyTimeBox.SelectedTime.GetValueOrDefault();
+        r.StartDate = DailyStartDate.SelectedDate;
+        r.EndDate = DailyEndDate.SelectedDate;
+    }
+
+    private void ApplyWeekly(Reminder r)
+    {
+        r.Frequency = ReminderFrequency.Weekly;
+        r.TimeOfDay = WeeklyTimeBox.SelectedTime.GetValueOrDefault();
+        var wd = ReminderWeekDays.None;
+        if (ChkSun.IsChecked == true) wd |= ReminderWeekDays.Sunday;
+        if (ChkMon.IsChecked == true) wd |= ReminderWeekDays.Monday;
+        if (ChkTue.IsChecked == true) wd |= ReminderWeekDays.Tuesday;
+        if (ChkWed.IsChecked == true) wd |= ReminderWeekDays.Wednesday;
+        if (ChkThu.IsChecked == true) wd |= ReminderWeekDays.Thursday;
+        if (ChkFri.IsChecked == true) wd |= ReminderWeekDays.Friday;
+        if (ChkSat.IsChecked == true) wd |= ReminderWeekDays.Saturday;
+        r.WeekDays = wd;
+        r.StartDate = WeeklyStartDate.SelectedDate;
+        r.EndDate = WeeklyEndDate.SelectedDate;
+    }
+
+    private void ApplyYearly(Reminder r)
+    {
+        r.Frequency = ReminderFrequency.Yearly;
+        r.TimeOfDay = YearlyTimeBox.SelectedTime.GetValueOrDefault();
+        if (YearMonthCombo.SelectedIndex >= 0) r.YearMonth = YearMonthCombo.SelectedIndex + 1;
+        if (int.TryParse(YearDayBox.Text, out var yd)) r.YearDay = yd;
+        r.StartDate = YearlyStartDate.SelectedDate;
+        r.EndDate = YearlyEndDate.SelectedDate;
     }
 }

@@ -327,9 +327,9 @@ public partial class ReminderTimelineControl : UserControl
             }
             case ReminderFrequency.Yearly:
             {
-                int month = r.YearMonth > 0 ? r.YearMonth : r.Time.Month;
-                int day = r.YearDay > 0 ? r.YearDay : r.Time.Day;
-                return date.Month == month && date.Day == day && InRange(date);
+                int month = (r.YearMonth > 0) ? r.YearMonth : r.Time.Month;
+                int day = (r.YearDay > 0) ? r.YearDay : r.Time.Day;
+                return (date.Month == month) && (date.Day == day) && InRange(date);
             }
             default:
                 return false;

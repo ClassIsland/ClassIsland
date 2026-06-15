@@ -108,62 +108,69 @@ public class Reminder : ObservableRecipient
     {
         if (!IsEnabled) return null;
 
-        bool InRange(DateTime dt)
+        return Frequency switch
         {
-            if (StartDate.HasValue && dt.Date < StartDate.Value.Date) return false;
-            if (EndDate.HasValue && dt.Date > EndDate.Value.Date) return false;
-            return true;
-        }
+            ReminderFrequency.Once => NextOnce(from),
+            ReminderFrequency.Daily => NextDaily(from),
+            ReminderFrequency.Weekly => NextWeekly(from),
+            ReminderFrequency.Yearly => NextYearly(from),
+            _ => null
+        };
+    }
 
-        switch (Frequency)
+    private bool InRange(DateTime dt)
+    {
+        if (StartDate.HasValue && dt.Date < StartDate.Value.Date) return false;
+        if (EndDate.HasValue && dt.Date > EndDate.Value.Date) return false;
+        return true;
+    }
+
+    private DateTime? NextOnce(DateTime from)
+    {
+        var occ = Time;
+        if (occ >= from && InRange(occ)) return occ;
+        return null;
+    }
+
+    private DateTime? NextDaily(DateTime from)
+    {
+        var candidate = new DateTime(from.Year, from.Month, from.Day).Add(TimeOfDay);
+        if (candidate < from) candidate = candidate.AddDays(1);
+        return InRange(candidate) ? candidate : null;
+    }
+
+    private DateTime? NextWeekly(DateTime from)
+    {
+        var start = from.Date;
+        for (int i = 0; i < 14; i++)
         {
-            case ReminderFrequency.Once:
+            var candidateDate = start.AddDays(i);
+            var flag = DayOfWeekToFlag(candidateDate.DayOfWeek);
+            if (WeekDays.HasFlag(flag))
             {
-                var occ = Time;
-                if (occ >= from && InRange(occ)) return occ;
-                return null;
+                var candidate = candidateDate.Add(TimeOfDay);
+                if (candidate >= from && InRange(candidate)) return candidate;
             }
-            case ReminderFrequency.Daily:
-            {
-                var candidate = new DateTime(from.Year, from.Month, from.Day).Add(TimeOfDay);
-                if (candidate < from) candidate = candidate.AddDays(1);
-                return InRange(candidate) ? candidate : null;
-            }
-            case ReminderFrequency.Weekly:
-            {
-                var start = from.Date;
-                for (int i = 0; i < 14; i++)
-                {
-                    var candidateDate = start.AddDays(i);
-                    var flag = DayOfWeekToFlag(candidateDate.DayOfWeek);
-                    if (WeekDays.HasFlag(flag))
-                    {
-                        var candidate = candidateDate.Add(TimeOfDay);
-                        if (candidate >= from && InRange(candidate)) return candidate;
-                    }
-                }
-                return null;
-            }
-            case ReminderFrequency.Yearly:
-            {
-                int month = YearMonth > 0 ? YearMonth : Time.Month;
-                int day = YearDay > 0 ? YearDay : Time.Day;
-                var year = from.Year;
-                DateTime candidate;
-                try
-                {
-                    candidate = new DateTime(year, month, Math.Min(day, DateTime.DaysInMonth(year, month))).Add(TimeOfDay);
-                }
-                catch
-                {
-                    candidate = new DateTime(year, 1, 1).AddYears(1).Add(TimeOfDay);
-                }
-                if (candidate < from) candidate = candidate.AddYears(1);
-                return InRange(candidate) ? candidate : null;
-            }
-            default:
-                return null;
         }
+        return null;
+    }
+
+    private DateTime? NextYearly(DateTime from)
+    {
+        int month = YearMonth > 0 ? YearMonth : Time.Month;
+        int day = YearDay > 0 ? YearDay : Time.Day;
+        var year = from.Year;
+        DateTime candidate;
+        try
+        {
+            candidate = new DateTime(year, month, Math.Min(day, DateTime.DaysInMonth(year, month))).Add(TimeOfDay);
+        }
+        catch
+        {
+            candidate = new DateTime(year, 1, 1).AddYears(1).Add(TimeOfDay);
+        }
+        if (candidate < from) candidate = candidate.AddYears(1);
+        return InRange(candidate) ? candidate : null;
     }
 
     private static ReminderWeekDays DayOfWeekToFlag(DayOfWeek dow) => dow switch

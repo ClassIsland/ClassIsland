@@ -83,7 +83,6 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
         }
     }
 
-
     protected override async Task OnInterrupted()
     {
         await base.OnInterrupted();
@@ -93,8 +92,6 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
             _completedTokenSource?.Cancel();
         });
     }
-
-
 
     CancellationTokenSource? _cancellationTokenSource;
     CancellationTokenSource? _completedTokenSource;
