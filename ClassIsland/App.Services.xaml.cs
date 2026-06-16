@@ -200,7 +200,7 @@ public partial class App
         services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
         services.AddNotificationProvider<ManagementNotificationProvider>();
         services.AddNotificationProvider<ActionNotificationProvider>();
-        services.AddNotificationProvider<ReminderNotificationProvider>();
+        services.AddNotificationProvider<ReminderNotificationProvider, ReminderNotificationProviderSettingsControl>();
         services.AddHostedService<ScheduleReminderService>();
         // // Transients
         // services.AddTransient<ExcelImportWindow>();

@@ -20,27 +20,62 @@ public class ScheduleReminderService : IHostedService, IDisposable
     private readonly IProfileService _profileService;
     private readonly ILogger<ScheduleReminderService> _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(30);
     private Timer? _timer;
     private bool _running = false;
 
-    // 用于在相同时:分内防止重复触发（只比较时和分，不考虑秒）
-    private readonly HashSet<(int Hour, int Minute, Guid ReminderId)> _triggeredInCurrentMinute = new();
-    private int _lastCheckedHour = -1;
-    private int _lastCheckedMinute = -1;
+    // 缓存已解析的 Provider（懒加载），避免重复查找
+    private ReminderNotificationProvider? _cachedProvider;
 
-    public ScheduleReminderService(IProfileService profileService, ILogger<ScheduleReminderService> logger, IServiceProvider serviceProvider)
+    // 窗口式检查：记录上次检查时间
+    private DateTime _lastCheckTime;
+
+    // 已触发过的 (ReminderId, TriggerDateTime) 去重集合，避免同一次调度中重复触发
+    private readonly HashSet<(Guid ReminderId, DateTime TriggerTime)> _triggeredReminders = new();
+
+    // 标记时钟滴答间隔（固定 5 秒），CheckReminders 内部根据配置间隔决定是否真正执行
+    private static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(5);
+
+    // 最长追赶窗口：防止休眠后大量历史提醒涌出
+    private static readonly TimeSpan MaxCatchUpWindow = TimeSpan.FromHours(6);
+
+    // 清理去重记录：仅保留最近 N 分钟内的条目
+    private static readonly TimeSpan DedupRetention = TimeSpan.FromMinutes(10);
+
+    private DateTime _lastDedupCleanup = DateTime.MinValue;
+
+    public ScheduleReminderService(
+        IProfileService profileService,
+        ILogger<ScheduleReminderService> logger,
+        IServiceProvider serviceProvider)
     {
         _profileService = profileService;
         _logger = logger;
         _serviceProvider = serviceProvider;
     }
 
+    /// <summary>
+    /// 运行时获取 ReminderNotificationProvider 实例（懒加载 + 缓存）。
+    /// </summary>
+    private ReminderNotificationProvider? ResolveProvider()
+    {
+        if (_cachedProvider != null)
+            return _cachedProvider;
+
+        _cachedProvider = _serviceProvider.GetServices<IHostedService>()
+            .OfType<ReminderNotificationProvider>()
+            .FirstOrDefault();
+
+        if (_cachedProvider == null)
+            _logger.LogWarning("未找到 ReminderNotificationProvider 实例");
+
+        return _cachedProvider;
+    }
+
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("ScheduleReminderService starting.");
-        // 检查周期：30 秒
-        _timer = new Timer(async _ => await CheckReminders(), null, TimeSpan.Zero, _pollingInterval);
+        _lastCheckTime = DateTime.Now;
+        _timer = new Timer(async _ => await CheckReminders(), null, TimeSpan.Zero, TickInterval);
         return Task.CompletedTask;
     }
 
@@ -57,84 +92,148 @@ public class ScheduleReminderService : IHostedService, IDisposable
         _running = true;
         try
         {
-            var now = DateTime.Now;
+            // --- 1. 运行时解析 Provider ---
+            var provider = ResolveProvider();
+            if (provider == null)
+                return;
 
-            // 跨分钟时清空触发记录
-            if (now.Hour != _lastCheckedHour || now.Minute != _lastCheckedMinute)
+            var settings = provider.Settings;
+
+            // --- 2. 检查 Provider 是否启用 ---
+            if (!settings.IsEnabled)
             {
-                _triggeredInCurrentMinute.Clear();
-                _lastCheckedHour = now.Hour;
-                _lastCheckedMinute = now.Minute;
+                _lastCheckTime = DateTime.Now; // 即使禁用也更新检查点，避免积压
+                return;
             }
 
+            var interval = TimeSpan.FromSeconds(settings.CheckIntervalSeconds);
+            var now = DateTime.Now;
+
+            // --- 3. 判断是否到了执行间隔 ---
+            var elapsed = now - _lastCheckTime;
+            if (elapsed < interval)
+                return; // 间隔未到，跳过
+
+            // --- 4. 计算检查窗口并更新检查点 ---
+            var windowStart = _lastCheckTime;
+            // 如果窗口过大，限制追赶范围，防止休眠后大量提醒涌出
+            if (elapsed > MaxCatchUpWindow)
+                windowStart = now - MaxCatchUpWindow;
+            _lastCheckTime = now;
+
+            _logger.LogDebug("日程提醒检查窗口 [{0} - {1}] 间隔={2}s",
+                windowStart.ToString("HH:mm:ss"), now.ToString("HH:mm:ss"), interval.TotalSeconds);
+
             var reminders = _profileService.Profile.Reminders.ToList();
-            _logger.LogDebug("检查提醒：共 {0} 条", reminders.Count);
+            if (reminders.Count == 0)
+                return;
 
             foreach (var rem in reminders)
             {
-                _logger.LogDebug("提醒条目: Id={Id} Title='{Title}' Enabled={Enabled} TimeOfDay={Time}",
-                    rem.Id, rem.Title, rem.IsEnabled, rem.TimeOfDay);
                 if (!rem.IsEnabled) continue;
 
-                // 只比较小时和分钟，不考虑秒
-                if (rem.TimeOfDay.Hours != now.Hour || rem.TimeOfDay.Minutes != now.Minute)
-                    continue;
+                // 查找窗口内所有可能的触发时刻
+                var candidates = GetTriggerCandidatesInWindow(rem, windowStart, now);
 
-                // 检查是否已经在当前时:分触发过（同一分钟防重复）
-                var key = (now.Hour, now.Minute, rem.Id);
-                if (_triggeredInCurrentMinute.Contains(key))
+                foreach (var triggerTime in candidates)
                 {
-                    _logger.LogDebug("提醒 {0} 已在当前时:分触发过，跳过", rem.Title);
-                    continue;
-                }
-
-                // 检查日期范围与频率
-                if (!ShouldTriggerNow(rem, now))
-                    continue;
-
-                _triggeredInCurrentMinute.Add(key);
-
-                try
-                {
-                    _logger.LogInformation("触发提醒：{0} @ {1}:{2:D2}", rem.Title, now.Hour, now.Minute);
-
-                    // Create and show notification on the UI thread because building
-                    // NotificationContent may touch Avalonia objects (icons, controls,
-                    // etc.) which must be constructed on the UI dispatcher.
-                    await Dispatcher.UIThread.InvokeAsync(async () =>
+                    var dedupKey = (rem.Id, triggerTime);
+                    if (_triggeredReminders.Contains(dedupKey))
                     {
-                        var request = new NotificationRequest
-                        {
-                            MaskContent = ClassIsland.Core.Models.Notification.NotificationContent.CreateTwoIconsMask(rem.Title, hasRightIcon: false),
-                            OverlayContent = string.IsNullOrEmpty(rem.Message) ? null : ClassIsland.Core.Models.Notification.NotificationContent.CreateSimpleTextContent(rem.Message),
-                        };
+                        _logger.LogTrace("日程 [{Id}] '{Title}' 在 {t} 已触发过，跳过", rem.Id, rem.Title, triggerTime);
+                        continue;
+                    }
 
-                        var provider = _serviceProvider.GetServices<IHostedService>().OfType<ReminderNotificationProvider>().FirstOrDefault();
-                        if (provider == null)
+                    _triggeredReminders.Add(dedupKey);
+
+                    try
+                    {
+                        _logger.LogInformation("触发日程提醒：{0} @ {1:HH:mm:ss}", rem.Title, triggerTime);
+
+                        await Dispatcher.UIThread.InvokeAsync(async () =>
                         {
-                            _logger.LogWarning("未找到 ReminderNotificationProvider 实例，无法显示提醒");
-                        }
-                        else
-                        {
+                            var request = new NotificationRequest
+                            {
+                                MaskContent = ClassIsland.Core.Models.Notification.NotificationContent.CreateTwoIconsMask(rem.Title, hasRightIcon: false),
+                                OverlayContent = string.IsNullOrEmpty(rem.Message) ? null : ClassIsland.Core.Models.Notification.NotificationContent.CreateSimpleTextContent(rem.Message),
+                            };
+
                             _logger.LogDebug("使用 ReminderNotificationProvider 显示提醒");
                             await provider.ShowNotificationAsync(request).ConfigureAwait(false);
-                        }
 
-                        // Advance occurrence and persist profile while still on UI thread
-                        // to avoid races with UI-bound reminder state.
-                        rem.AdvanceNextOccurrence();
-                        _profileService.SaveProfile();
-                    }).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "发出提醒时发生错误：{0}", rem.Title);
+                            // 推进下次发生时间并持久化
+                            rem.AdvanceNextOccurrence();
+                            _profileService.SaveProfile();
+                        }).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "发出日程提醒时发生错误：{0}", rem.Title);
+                    }
                 }
             }
+
+            // --- 5. 定期清理去重记录 ---
+            CleanupDedupSet(now);
         }
         finally
         {
             _running = false;
+        }
+    }
+
+    /// <summary>
+    /// 获取给定 Reminder 在 [windowStart, windowEnd] 窗口内的所有有效触发时刻。
+    /// </summary>
+    private static IEnumerable<DateTime> GetTriggerCandidatesInWindow(Reminder rem, DateTime windowStart, DateTime windowEnd)
+    {
+        if (rem.Frequency == ReminderFrequency.Once)
+        {
+            // 一次性提醒：使用 rem.Time 的精确时间
+            if (rem.Time >= windowStart && rem.Time <= windowEnd)
+                yield return rem.Time;
+            yield break;
+        }
+
+        // 限制天数循环范围，避免极端情况
+        var dayCount = (windowEnd.Date - windowStart.Date).Days + 1;
+        if (dayCount > 7)
+            dayCount = 7; // 最多检查 7 天
+
+        for (var i = 0; i < dayCount; i++)
+        {
+            var day = windowStart.Date.AddDays(i);
+            var candidate = day + rem.TimeOfDay;
+
+            if (candidate < windowStart || candidate > windowEnd)
+                continue;
+
+            // 日期范围检查
+            if (rem.StartDate.HasValue && day < rem.StartDate.Value.Date) continue;
+            if (rem.EndDate.HasValue && day > rem.EndDate.Value.Date) continue;
+
+            // 频率检查
+            switch (rem.Frequency)
+            {
+                case ReminderFrequency.Daily:
+                    break; // 每天都可以
+                case ReminderFrequency.Weekly:
+                    if (!rem.WeekDays.HasFlag(DayOfWeekToFlag(day.DayOfWeek)))
+                        continue;
+                    break;
+                case ReminderFrequency.Yearly:
+                {
+                    var month = rem.YearMonth > 0 ? rem.YearMonth : rem.Time.Month;
+                    var monthDay = rem.YearDay > 0 ? rem.YearDay : rem.Time.Day;
+                    if (day.Month != month || day.Day != monthDay)
+                        continue;
+                    break;
+                }
+                default:
+                    continue;
+            }
+
+            yield return candidate;
         }
     }
 
@@ -150,27 +249,24 @@ public class ScheduleReminderService : IHostedService, IDisposable
         _ => ReminderWeekDays.None
     };
 
-    private static bool ShouldTriggerNow(Reminder rem, DateTime now)
+    /// <summary>
+    /// 定期清理去重集合中过老的条目。
+    /// </summary>
+    private void CleanupDedupSet(DateTime now)
     {
-        // 检查日期范围
-        if (rem.StartDate.HasValue && now.Date < rem.StartDate.Value.Date) return false;
-        if (rem.EndDate.HasValue && now.Date > rem.EndDate.Value.Date) return false;
+        if ((now - _lastDedupCleanup).TotalMinutes < 2)
+            return;
+        _lastDedupCleanup = now;
 
-        // 频率特定检查
-        return rem.Frequency switch
-        {
-            ReminderFrequency.Once => rem.Time.Date == now.Date,
-            ReminderFrequency.Weekly => rem.WeekDays.HasFlag(DayOfWeekToFlag(now.DayOfWeek)),
-            ReminderFrequency.Yearly => IsYearlyMatch(rem, now),
-            _ => true // Daily: 无需额外检查（日期范围已在上面检查）
-        };
-    }
+        var threshold = now - DedupRetention;
+        var toRemove = _triggeredReminders
+            .Where(kvp => kvp.TriggerTime < threshold)
+            .ToList();
+        foreach (var key in toRemove)
+            _triggeredReminders.Remove(key);
 
-    private static bool IsYearlyMatch(Reminder rem, DateTime now)
-    {
-        var month = rem.YearMonth > 0 ? rem.YearMonth : rem.Time.Month;
-        var day = rem.YearDay > 0 ? rem.YearDay : rem.Time.Day;
-        return now.Month == month && now.Day == day;
+        if (toRemove.Count > 0)
+            _logger.LogTrace("清理去重记录 {Count} 条", toRemove.Count);
     }
 
     public void Dispose()
