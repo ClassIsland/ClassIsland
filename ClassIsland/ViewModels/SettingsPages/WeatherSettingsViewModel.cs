@@ -146,6 +146,7 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
 
     partial void OnSelectedLocationSourceChanged(int value)
     {
+        if (value is < 0 or > 1) return;
         if (value == _settingsService.Settings.WeatherLocationSource) return;
         _settingsService.Settings.WeatherLocationSource = value;
     }
