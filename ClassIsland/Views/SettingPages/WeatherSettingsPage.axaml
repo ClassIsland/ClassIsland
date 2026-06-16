@@ -238,7 +238,7 @@
                                            Classes="l-instructive"
                                            FontSize="11"
                                            Margin="4 2 0 0"
-                                           IsVisible="{Binding !!!ViewModel.HideLocationPos}" />
+                                           IsVisible="{Binding ViewModel.IsLocationPosVisible}" />
                                 <Button Grid.Row="0"
                                         Theme="{StaticResource TransparentButton}"
                                         VerticalAlignment="Center" HorizontalAlignment="Center"

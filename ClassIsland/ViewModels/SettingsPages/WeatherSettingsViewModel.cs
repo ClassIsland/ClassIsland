@@ -33,6 +33,11 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isLocationUpdating;
     [ObservableProperty] private int _selectedLocationSource;
     [ObservableProperty] private bool _hideLocationPos = true;
+    public bool IsLocationPosVisible => !_hideLocationPos;
+        partial void OnHideLocationPosChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsLocationPosVisible));
+    }
 
 
     public WeatherSettingsViewModel(
@@ -46,7 +51,7 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
         _weatherService = weatherService;
         _logger = logger;
 
-        _searchDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
+        _searchDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
         _searchDebounceTimer.Tick += SearchDebounceTimer_Tick;
 
         SelectedLocationSource = settingsService.Settings.WeatherLocationSource;
@@ -61,7 +66,14 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
 
     public async Task InitializeAsync()
     {
-        CitySearchResults = await _weatherService.GetCitiesByName(string.Empty);
+        try
+        {
+            CitySearchResults = await _weatherService.GetCitiesByName(string.Empty);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "初始化搜索失败");
+        }
     }
 
     public void OnSearchTextChanged(string? searchText)
@@ -81,7 +93,7 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to search cities");
+            _logger.LogError(ex, "搜索城市失败");
         }
         finally
         {
