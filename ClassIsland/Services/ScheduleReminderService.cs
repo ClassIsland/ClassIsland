@@ -109,14 +109,14 @@ public class ScheduleReminderService : IHostedService, IDisposable
                             OverlayContent = string.IsNullOrEmpty(rem.Message) ? null : ClassIsland.Core.Models.Notification.NotificationContent.CreateSimpleTextContent(rem.Message),
                         };
 
-                        var provider = _serviceProvider.GetServices<IHostedService>().OfType<ActionNotificationProvider>().FirstOrDefault();
+                        var provider = _serviceProvider.GetServices<IHostedService>().OfType<ReminderNotificationProvider>().FirstOrDefault();
                         if (provider == null)
                         {
-                            _logger.LogWarning("未找到 ActionNotificationProvider 实例，无法显示提醒");
+                            _logger.LogWarning("未找到 ReminderNotificationProvider 实例，无法显示提醒");
                         }
                         else
                         {
-                            _logger.LogDebug("使用 ActionNotificationProvider 显示提醒");
+                            _logger.LogDebug("使用 ReminderNotificationProvider 显示提醒");
                             await provider.ShowNotificationAsync(request).ConfigureAwait(false);
                         }
 
