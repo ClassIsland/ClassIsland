@@ -1,8 +1,10 @@
 using System;
 using System.Globalization;
+using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Shared.Models.Automation;
 using ClassIsland.Shared.Models.Profile;
 
@@ -59,6 +61,11 @@ public partial class ReminderEditorControl : UserControl
         YearlyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
 
         EnabledSwitch.IsCheckedChanged += (_, _) => OnEditingChanged();
+        ConditionEnabledSwitch.IsCheckedChanged += (_, _) =>
+        {
+            ConditionRulesetEditor.IsVisible = ConditionEnabledSwitch.IsChecked == true;
+            OnEditingChanged();
+        };
     }
 
     private void FrequencyCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -122,6 +129,30 @@ public partial class ReminderEditorControl : UserControl
         Editing.ActionSet ??= new ActionSet();
         ActionSetEditor.ActionSet = Editing.ActionSet;
 
+        // 初始化条件判断
+        ConditionEnabledSwitch.IsChecked = r.IsConditionEnabled;
+        ConditionRulesetEditor.IsVisible = r.IsConditionEnabled;
+        if (r.ConditionSettings != null)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(r.ConditionSettings);
+                var ruleset = JsonSerializer.Deserialize<Ruleset>(json);
+                if (ruleset != null)
+                    ConditionRulesetEditor.Ruleset = ruleset;
+                else
+                    ConditionRulesetEditor.Ruleset = new Ruleset();
+            }
+            catch
+            {
+                ConditionRulesetEditor.Ruleset = new Ruleset();
+            }
+        }
+        else
+        {
+            ConditionRulesetEditor.Ruleset = new Ruleset();
+        }
+
         UpdatePanels();
         _isLoading = false;
     }
@@ -142,6 +173,17 @@ public partial class ReminderEditorControl : UserControl
 
         // 由用户手动控制启用/禁用，不再自动禁用
         r.IsEnabled = EnabledSwitch.IsChecked ?? true;
+
+        // 保存条件判断设置
+        r.IsConditionEnabled = ConditionEnabledSwitch.IsChecked ?? false;
+        try
+        {
+            r.ConditionSettings = JsonSerializer.SerializeToElement(ConditionRulesetEditor.Ruleset);
+        }
+        catch
+        {
+            r.ConditionSettings = null;
+        }
 
         // 仍然计算下一次发生时间，但不强制修改 IsEnabled
         var next = r.GetNextOccurrence(DateTime.Now);

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Models.Profile;
@@ -23,6 +25,7 @@ public class ScheduleReminderService : IHostedService, IDisposable
     private readonly ILogger<ScheduleReminderService> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IActionService? _actionService;
+    private readonly IRulesetService? _rulesetService;
     private Timer? _timer;
     private bool _running = false;
 
@@ -50,12 +53,14 @@ public class ScheduleReminderService : IHostedService, IDisposable
         IProfileService profileService,
         ILogger<ScheduleReminderService> logger,
         IServiceProvider serviceProvider,
-        IActionService actionService)
+        IActionService actionService,
+        IRulesetService rulesetService)
     {
         _profileService = profileService;
         _logger = logger;
         _serviceProvider = serviceProvider;
         _actionService = actionService;
+        _rulesetService = rulesetService;
     }
 
     /// <summary>
@@ -166,8 +171,29 @@ public class ScheduleReminderService : IHostedService, IDisposable
                             _logger.LogDebug("使用 ReminderNotificationProvider 显示提醒");
                             await provider.ShowNotificationAsync(request).ConfigureAwait(false);
 
-                            // 如果提醒关联了自动化行动组，则执行
-                            if (rem.ActionSet is { ActionItems.Count: > 0 } actionSet && _actionService != null)
+                            // 检查条件：如果启用了条件判断，评估规则集是否满足
+                            var shouldExecuteActions = true;
+                            if (rem.IsConditionEnabled && rem.ConditionSettings != null && _rulesetService != null)
+                            {
+                                try
+                                {
+                                    var json = JsonSerializer.Serialize(rem.ConditionSettings);
+                                    var ruleset = JsonSerializer.Deserialize<Ruleset>(json);
+                                    if (ruleset != null)
+                                    {
+                                        shouldExecuteActions = _rulesetService.IsRulesetSatisfied(ruleset);
+                                        if (!shouldExecuteActions)
+                                            _logger.LogInformation("日程提醒的条件不满足，跳过执行自动化行动：{0}", rem.Title);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogWarning(ex, "解析日程提醒的条件规则集时出错，将执行自动化行动：{0}", rem.Title);
+                                }
+                            }
+
+                            // 如果提醒关联了自动化行动组且条件满足，则执行
+                            if (shouldExecuteActions && rem.ActionSet is { ActionItems.Count: > 0 } actionSet && _actionService != null)
                             {
                                 _logger.LogInformation("执行日程提醒关联的自动化行动组：{0}", rem.Title);
                                 await _actionService.InvokeActionSetAsync(actionSet, isRevertable: false).ConfigureAwait(false);

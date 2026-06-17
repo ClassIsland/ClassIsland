@@ -90,6 +90,16 @@ public class Reminder : ObservableRecipient
     /// </summary>
     public ActionSet? ActionSet { get; set; }
 
+    /// <summary>
+    /// 是否启用条件判断。启用后，只有满足条件时才执行关联行动。
+    /// </summary>
+    public bool IsConditionEnabled { get; set; } = false;
+
+    /// <summary>
+    /// 条件判断的规则集序列化数据（JSON）。此属性由序列化框架自动处理。
+    /// </summary>
+    public object? ConditionSettings { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     /// <summary>
@@ -107,6 +117,8 @@ public class Reminder : ObservableRecipient
         OnPropertyChanged(nameof(EndDate));
         OnPropertyChanged(nameof(IsEnabled));
         OnPropertyChanged(nameof(ActionSet));
+        OnPropertyChanged(nameof(IsConditionEnabled));
+        OnPropertyChanged(nameof(ConditionSettings));
     }
 
     /// <summary>

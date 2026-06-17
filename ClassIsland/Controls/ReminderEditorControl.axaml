@@ -3,6 +3,7 @@
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:models="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
              xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
+             xmlns:ruleset="clr-namespace:ClassIsland.Core.Controls.Ruleset;assembly=ClassIsland.Core"
              x:Class="ClassIsland.Controls.ReminderEditorControl">
   <StackPanel Spacing="8" Margin="8">
     <ci:Field Label="标题">
@@ -94,5 +95,16 @@
     <ci:Field Label="关联行动（触发提醒时自动执行）">
       <automation:ActionControl x:Name="ActionSetEditor" />
     </ci:Field>
+
+    <!-- 条件判断 -->
+    <Separator Margin="0 8 0 4" />
+    <ci:Field Label="条件判断">
+      <ToggleSwitch x:Name="ConditionEnabledSwitch"
+                    OnContent="开" OffContent="关"
+                    HorizontalAlignment="Left" />
+    </ci:Field>
+    <ruleset:RulesetControl x:Name="ConditionRulesetEditor"
+                            ShowTitle="False"
+                            IsVisible="False" />
   </StackPanel>
 </UserControl>
