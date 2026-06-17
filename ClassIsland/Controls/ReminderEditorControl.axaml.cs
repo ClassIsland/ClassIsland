@@ -3,6 +3,7 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using ClassIsland.Shared.Models.Automation;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls;
@@ -116,6 +117,10 @@ public partial class ReminderEditorControl : UserControl
         YearlyEndDate.SelectedDate = r.EndDate;
 
         EnabledSwitch.IsChecked = r.IsEnabled;
+
+        // 初始化 ActionSet（确保 ActionControl 有绑定的行动组）
+        Editing.ActionSet ??= new ActionSet();
+        ActionSetEditor.ActionSet = Editing.ActionSet;
 
         UpdatePanels();
         _isLoading = false;

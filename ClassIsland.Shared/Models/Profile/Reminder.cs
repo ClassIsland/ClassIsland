@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using ClassIsland.Shared.Models.Automation;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Profile;
@@ -83,6 +84,12 @@ public class Reminder : ObservableRecipient
 
     public bool IsEnabled { get; set; } = true;
 
+    /// <summary>
+    /// 与提醒关联的自动化行动组。当提醒触发时，可以选择附带执行这些自动化行动。
+    /// 为 null 表示不执行任何自动化。
+    /// </summary>
+    public ActionSet? ActionSet { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     /// <summary>
@@ -99,6 +106,7 @@ public class Reminder : ObservableRecipient
         OnPropertyChanged(nameof(StartDate));
         OnPropertyChanged(nameof(EndDate));
         OnPropertyChanged(nameof(IsEnabled));
+        OnPropertyChanged(nameof(ActionSet));
     }
 
     /// <summary>

@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:models="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+             xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
              x:Class="ClassIsland.Controls.ReminderEditorControl">
   <StackPanel Spacing="8" Margin="8">
     <ci:Field Label="标题">
@@ -87,5 +88,11 @@
       <ci:Field Label="开始日期 (可选)"><CalendarDatePicker x:Name="YearlyStartDate"/></ci:Field>
       <ci:Field Label="结束日期 (可选)"><CalendarDatePicker x:Name="YearlyEndDate"/></ci:Field>
     </StackPanel>
+
+    <!-- 自动化行动 -->
+    <Separator Margin="0 8 0 4" />
+    <ci:Field Label="关联行动（触发提醒时自动执行）">
+      <automation:ActionControl x:Name="ActionSetEditor" />
+    </ci:Field>
   </StackPanel>
 </UserControl>

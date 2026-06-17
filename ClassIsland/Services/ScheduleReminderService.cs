@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Models.Automation;
 using Microsoft.Extensions.DependencyInjection;
 using Avalonia.Threading;
 using Microsoft.Extensions.Hosting;
@@ -20,6 +22,7 @@ public class ScheduleReminderService : IHostedService, IDisposable
     private readonly IProfileService _profileService;
     private readonly ILogger<ScheduleReminderService> _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IActionService? _actionService;
     private Timer? _timer;
     private bool _running = false;
 
@@ -46,11 +49,13 @@ public class ScheduleReminderService : IHostedService, IDisposable
     public ScheduleReminderService(
         IProfileService profileService,
         ILogger<ScheduleReminderService> logger,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IActionService actionService)
     {
         _profileService = profileService;
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _actionService = actionService;
     }
 
     /// <summary>
@@ -160,6 +165,13 @@ public class ScheduleReminderService : IHostedService, IDisposable
 
                             _logger.LogDebug("使用 ReminderNotificationProvider 显示提醒");
                             await provider.ShowNotificationAsync(request).ConfigureAwait(false);
+
+                            // 如果提醒关联了自动化行动组，则执行
+                            if (rem.ActionSet is { ActionItems.Count: > 0 } actionSet && _actionService != null)
+                            {
+                                _logger.LogInformation("执行日程提醒关联的自动化行动组：{0}", rem.Title);
+                                await _actionService.InvokeActionSetAsync(actionSet, isRevertable: false).ConfigureAwait(false);
+                            }
 
                             // 推进下次发生时间并持久化
                             rem.AdvanceNextOccurrence();
