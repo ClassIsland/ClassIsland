@@ -54,13 +54,6 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private string? CurrentSessionId { get; set; }
     
-    private ClientWebSocketService? WebSocketService { get; set; }
-
-    /// <summary>
-    /// 服务端推送数据更新通知
-    /// </summary>
-    public event EventHandler? DataUpdated;
-    
     private ILogger<ManagementServerConnection> Logger { get; } = App.GetService<ILogger<ManagementServerConnection>>();
 
     private Guid ClientGuid { get; }
@@ -160,11 +153,11 @@ public class ManagementServerConnection : IManagementServerConnection
             case CommandTypes.GetClientConfig:
                 _ = Task.Run(() => HandleGetClientConfig(e));
                 break;
-            case CommandTypes.ExecuteCommand:
-                HandleExecuteCommand(e);
-                break;
             case CommandTypes.PushConfig:
                 HandlePushConfig(e);
+                break;
+            case CommandTypes.ManagePlugin:
+                HandlePluginCommand(e);
                 break;
         }
     }
@@ -206,41 +199,6 @@ public class ManagementServerConnection : IManagementServerConnection
         }
     }
 
-    private async void HandleExecuteCommand(ClientCommandEventArgs e)
-    {
-        try
-        {
-            var payload = RemoteExecuteCommand.Parser.ParseFrom(e.Payload);
-            if (payload == null) return;
-
-            Logger.LogInformation("收到远程命令 #{Id}: {Command}", payload.CommandId, payload.Command);
-
-            // 在后台线程执行命令并回传结果
-            await Task.Run(async () =>
-            {
-                try
-                {
-                    var wsService = new ClientWebSocketService(
-                        App.GetService<ILogger<ClientWebSocketService>>(),
-                        ManagementSettings, ClientGuid.ToString());
-                    await wsService.ExecuteAndReportAsync(
-                        payload.CommandId,
-                        payload.Command,
-                        payload.Shell,
-                        payload.TimeoutSeconds);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "执行远程命令失败");
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "处理远程命令失败");
-        }
-    }
-
     private void HandlePushConfig(ClientCommandEventArgs e)
     {
         try
@@ -259,7 +217,6 @@ public class ManagementServerConnection : IManagementServerConnection
                     ApplyAutomationConfig(payload.ConfigJson);
                     break;
                 default:
-                    // 重新加载所有集控配置
                     var managementService = IAppHost.TryGetService<IManagementService>();
                     if (managementService is ManagementService ms)
                     {
@@ -289,7 +246,6 @@ public class ManagementServerConnection : IManagementServerConnection
     {
         try
         {
-            // 写入集控组件配置文件
             var configPath = ManagementService.ManagementComponentsPath;
             var dir = Path.GetDirectoryName(configPath);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
@@ -297,7 +253,6 @@ public class ManagementServerConnection : IManagementServerConnection
             File.WriteAllText(configPath, configJson);
             Logger.LogInformation("组件配置已写入：{}", configPath);
 
-            // 直接加载组件配置（不依赖 manifest 版本检查）
             Dispatcher.UIThread.Invoke(() =>
             {
                 try
@@ -329,7 +284,6 @@ public class ManagementServerConnection : IManagementServerConnection
     {
         try
         {
-            // 写入集控自动化配置文件
             var configPath = Path.Combine(ManagementService.ManagementConfigureFolderPath, "Automation.json");
             var dir = Path.GetDirectoryName(configPath);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
@@ -337,7 +291,6 @@ public class ManagementServerConnection : IManagementServerConnection
             File.WriteAllText(configPath, configJson);
             Logger.LogInformation("自动化配置已写入：{}", configPath);
 
-            // 直接加载自动化配置（不依赖 manifest 版本检查）
             Dispatcher.UIThread.Invoke(() =>
             {
                 try
@@ -362,6 +315,65 @@ public class ManagementServerConnection : IManagementServerConnection
         catch (Exception ex)
         {
             Logger.LogError(ex, "应用自动化配置失败");
+        }
+    }
+
+    private void HandlePluginCommand(ClientCommandEventArgs e)
+    {
+        try
+        {
+            var payload = PluginCommand.Parser.ParseFrom(e.Payload);
+            if (payload == null) return;
+
+            Logger.LogInformation("收到插件管理命令：{Operation} {PluginId}", payload.Operation, payload.PluginId);
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var pluginService = IAppHost.TryGetService<IPluginService>();
+                    if (pluginService == null)
+                    {
+                        Logger.LogWarning("PluginService 不可用");
+                        return;
+                    }
+
+                    switch (payload.Operation)
+                    {
+                        case "install":
+                            if (payload.RequestId > 0)
+                            {
+                                var packageUrl = $"{Host}/api/v1/clients/{ClientGuid}/plugins/install/{payload.RequestId}/package";
+                                Logger.LogInformation("下载插件安装包：{}", packageUrl);
+                                // TODO: 下载并安装插件
+                            }
+                            break;
+                        case "uninstall":
+                            if (!string.IsNullOrEmpty(payload.PluginId))
+                            {
+                                Logger.LogInformation("卸载插件：{}", payload.PluginId);
+                                // TODO: 卸载插件
+                            }
+                            break;
+                        case "enable":
+                        case "disable":
+                            if (!string.IsNullOrEmpty(payload.PluginId))
+                            {
+                                Logger.LogInformation("{Operation} 插件：{PluginId}", payload.Operation, payload.PluginId);
+                                // TODO: 启用/禁用插件
+                            }
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "处理插件管理命令失败");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "解析插件管理命令失败");
         }
     }
 
@@ -413,7 +425,6 @@ public class ManagementServerConnection : IManagementServerConnection
             }
             if (CommandListeningCallCancellationTokenSource.IsCancellationRequested)
                 return;
-            // Logger.LogTrace("向命令流发送心跳包。");
             await CommandListeningCall.RequestStream.WriteAsync(new ClientCommandDeliverScReq()
             {
                 Type = CommandTypes.Ping
@@ -464,7 +475,6 @@ public class ManagementServerConnection : IManagementServerConnection
         {
             Logger.LogWarning("与 {} 握手失败（{}）：{}", ManagementSettings.ManagementServerGrpc, beginRsp.Retcode,
                 beginRsp.Message);
-            // 服务器其他异常应直接抛出
             throw new InvalidOperationException($"与 {ManagementSettings.ManagementServerGrpc} 握手失败（{beginRsp.Retcode}）：{beginRsp.Message}");
         }
         var acceptedServer = beginRsp.ChallengeTokenDecrypted == challengeToken;
@@ -475,26 +485,10 @@ public class ManagementServerConnection : IManagementServerConnection
         if (!acceptedServer)
         {
             Logger.LogWarning("与 {} 握手失败：服务器密钥验证失败", ManagementSettings.ManagementServerGrpc);
-            // 不信任的服务器，不再尝试握手。
             return false;
         }
             CurrentSessionId = completeRsp.SessionId;
             Logger.LogInformation("与 {} 握手成功，SessionId：{}", ManagementSettings.ManagementServerGrpc, completeRsp.SessionId);
-
-            // 启动 WebSocket 实时推送通道
-            WebSocketService = new ClientWebSocketService(
-                App.GetService<ILogger<ClientWebSocketService>>(),
-                ManagementSettings, ClientGuid.ToString());
-            WebSocketService.CommandReceived += async (_, e) =>
-            {
-                await WebSocketService.ExecuteAndReportAsync(e.CommandId, e.Command, e.Shell, e.TimeoutSeconds);
-            };
-            WebSocketService.DataUpdated += (_, _) =>
-            {
-                Logger.LogInformation("收到 WebSocket 数据更新通知，触发配置重载");
-                DataUpdated?.Invoke(this, EventArgs.Empty);
-            };
-            _ = WebSocketService.StartAsync(completeRsp.SessionId, CommandListeningCallCancellationTokenSource.Token);
 
             return true;
     }
@@ -522,7 +516,6 @@ public class ManagementServerConnection : IManagementServerConnection
             var call = client.ListenCommand(GetMetadata());
             CommandListeningCallCancellationTokenSource = new CancellationTokenSource();
             CommandListeningCall = call;
-            // await call.RequestStream.WriteAsync(new ClientCommandDeliverScReq());
             CommandConnectionAliveTimer.Start();
             while (!CommandListeningCallCancellationTokenSource.IsCancellationRequested)
             {
@@ -564,8 +557,6 @@ public class ManagementServerConnection : IManagementServerConnection
                 return;
             Channel = null;
             CurrentSessionId = null;
-            WebSocketService?.Dispose();
-            WebSocketService = null;
             Logger.LogError(ex, "无法连接到集控服务器命令流，将在30秒后重试。");
             CommandConnectionAliveTimer.Stop();
             CommandListeningCall = null;

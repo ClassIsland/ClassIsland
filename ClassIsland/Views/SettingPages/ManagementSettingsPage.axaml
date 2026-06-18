@@ -79,51 +79,6 @@
                 </controls1:SettingsExpanderItem>
             </StackPanel>
 
-            <StackPanel Classes="cardContainer"
-                        IsVisible="{Binding ManagementService.IsManagementEnabled}">
-                <controls1:SettingsExpanderItem>
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="远程协助" FontWeight="Bold"/>
-                        <TextBlock TextWrapping="Wrap">
-                            <Run>启用远程协助后，管理员可以通过集控服务器向本设备发送远程命令。关闭或重置 PIN 需要集控管理员操作。</Run>
-                        </TextBlock>
-                    </StackPanel>
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem IsVisible="{Binding !ViewModel.IsRemoteAssistEnabled}">
-                    <Button Content="启用远程协助" Click="EnableRemoteAssistButton_OnClick" />
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem IsVisible="{Binding ViewModel.IsRemoteAssistEnabled}">
-                    <Grid>
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <TextBlock Text="状态：" VerticalAlignment="Center"/>
-                            <TextBlock Text="已启用" VerticalAlignment="Center" Foreground="Green" FontWeight="Bold"/>
-                        </StackPanel>
-                    </Grid>
-                </controls1:SettingsExpanderItem>
-                <controls1:SettingsExpanderItem IsVisible="{Binding ViewModel.IsRemoteAssistEnabled}">
-                    <Grid>
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <TextBlock Text="PIN 码：" VerticalAlignment="Center" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding ViewModel.RemoteAssistPin}"
-                                       IsVisible="{Binding ViewModel.IsPinVisible}"
-                                       VerticalAlignment="Center"
-                                       FontFamily="Consolas"
-                                       FontSize="16"
-                                       Foreground="{DynamicResource SystemAccentColor}"/>
-                            <TextBlock Text="******"
-                                       IsVisible="{Binding !ViewModel.IsPinVisible}"
-                                       VerticalAlignment="Center"
-                                       FontFamily="Consolas"
-                                       FontSize="16"/>
-                            <Button Click="ShowPinButton_OnClick"
-                                    Padding="8 4">
-                                <TextBlock Text="显示/隐藏"/>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </controls1:SettingsExpanderItem>
-            </StackPanel>
-
             <StackPanel Classes="cardContainer">
                 <controls1:SettingsExpanderItem>
                     <StackPanel Spacing="8">

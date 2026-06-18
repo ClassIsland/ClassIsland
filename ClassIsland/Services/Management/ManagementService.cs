@@ -105,11 +105,6 @@ public class ManagementService : IManagementService
                     break;
                 case ManagementServerKind.ManagementServer:
                     var mscConnection = new ManagementServerConnection(Settings, Persist.ClientUniqueId, false);
-                    mscConnection.DataUpdated += async (_, _) =>
-                    {
-                        Logger.LogInformation("收到服务端数据更新推送，重新加载集控配置");
-                        await ReloadManagementAsync();
-                    };
                     Connection = mscConnection;
                     break;
                 default:
@@ -133,7 +128,7 @@ public class ManagementService : IManagementService
                 break;
             }
             case CommandTypes.DataUpdated:
-                Logger.LogInformation("Received DataUpdated command.");
+                Logger.LogInformation("Received DataUpdated command via gRPC stream.");
                 _ = ReloadManagementAsync();
             break;
         }
