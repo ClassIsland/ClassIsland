@@ -117,7 +117,7 @@
             </Setter>
             <Setter Property="ItemsPanel">
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
                 </ItemsPanelTemplate>
             </Setter>
             <Setter Property="ItemContainerTheme">
@@ -137,7 +137,7 @@
                 <Setter Property="IsVisible" Value="False"/>
             </Style>
             <Style Selector="^ ListBoxItem">
-                <Setter Property="Interaction.Behaviors">
+                <Setter Property="(Interaction.Behaviors)">
                     <BehaviorCollectionTemplate>
                         <BehaviorCollection>
                             <ci:AdvancedManagedContextDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3">

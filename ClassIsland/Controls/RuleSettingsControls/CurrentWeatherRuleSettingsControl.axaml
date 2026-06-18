@@ -14,7 +14,19 @@
         <StackPanel Spacing="4" Orientation="Horizontal" Classes="items-valign-center">
             <ComboBox SelectedValue="{Binding Settings.WeatherId}"
                       SelectedValueBinding="{Binding Code}"
+                      MaxDropDownHeight="360"
+                      x:Name="WeatherComboBox"
                       ItemsSource="{Binding WeatherService.WeatherStatusList}">
+                <ComboBox.Styles>
+                    <Style Selector="ComboBoxItem">
+                        <Setter Property="MinHeight" Value="32"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    </Style>
+                    <Style Selector="#WeatherComboBox /template/ Popup#PART_Popup">
+                        <Setter Property="Width" Value="200"/>
+                        <Setter Property="Placement" Value="BottomEdgeAlignedRight"/>
+                    </Style>
+                </ComboBox.Styles>
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal"

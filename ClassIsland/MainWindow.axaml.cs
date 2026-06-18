@@ -265,7 +265,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
-        if (Environment.OSVersion.Version <= WindowsVersions.Win10V1809)
+        if (Environment.OSVersion.Version <= WindowsVersions.Win10V1803)
         {
             PseudoClasses.Set(":no-windowed-transparent", true);
         }
@@ -332,7 +332,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             try
             {
                 UriNavigationService.NavigateWrapped(new Uri(App.ApplicationCommand.Uri));
-            }
+            }   
             catch (Exception ex)
             {
                 // ignored
@@ -896,7 +896,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var y = dockingTop 
             ? offsetAreaTop + oy - safeT
             : offsetAreaBottom - ah + oy + safeB;
-        var clientBoundsRelative = new PixelRect(0, (int)safeT, (int)aw, (int)ah)
+        var clientBoundsRelative = new PixelRect(0, (int)(safeT * dpiY), (int)aw, (int)ah)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
         if (LayoutContainerGrid != null)
@@ -1352,6 +1352,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
         ViewModel.IsEditMode = true;
         TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.enter");
+        if (ManagementService.Policy.DisableSettingsEditing)
+        {
+            return;
+        }
         TutorialService.BeginNotCompletedTutorials(
             "classisland.getStarted.componentsEditing/introduction",
             "classisland.getStarted.componentsEditing/addComponent");

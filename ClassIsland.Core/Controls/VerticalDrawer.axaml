@@ -13,6 +13,10 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel>
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     <Border x:Name="PART_DismissLayer" 
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"/>
@@ -97,10 +101,10 @@
                                         <!-- Content -->
                                         <ContentPresenter x:Name="PART_ContentPresenter"
                                                           Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                                          Content="{TemplateBinding Content}"
-                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                                                          Content="{TemplateBinding DrawerContent}"
+                                                          ContentTemplate="{TemplateBinding DrawerTemplate}"
+                                                          HorizontalContentAlignment="{TemplateBinding DrawerHorizontalContentAlignment}"
+                                                          VerticalContentAlignment="{TemplateBinding DrawerVerticalContentAlignment}">
                                         </ContentPresenter>
                                     </Grid>
                                 </Border>

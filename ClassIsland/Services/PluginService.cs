@@ -81,6 +81,7 @@ public class PluginService : IPluginService
                 var mfText = new StreamReader(mf.Open()).ReadToEnd();
                 var manifest = deserializer.Deserialize<PluginManifest>(mfText);
                 var targetPath = Path.Combine(PluginsRootPath, manifest.Id);
+                Console.Write($"正在处理插件安装: {manifest.Name}({manifest.Id},{manifest.Version})...");
                 if (Directory.Exists(targetPath))
                 {
                     Directory.Delete(targetPath, true);
@@ -94,6 +95,7 @@ public class PluginService : IPluginService
                 Console.WriteLine(e);
             }
             File.Delete(pkgPath);
+            Console.WriteLine("完成!");
         }
     }
 
@@ -141,8 +143,10 @@ public class PluginService : IPluginService
             };
             if (info.IsUninstalling)
             {
+                Console.Write($"正在处理插件卸载: {manifest.Name}({manifest.Id},{manifest.Version})...");
                 Directory.Delete(pluginDir, true);
                 UninstalledPlugins.Add(manifest);
+                Console.WriteLine("完成!");
                 continue;
             }
             if (IPluginService.LoadedPluginsIds.Contains(manifest.Id))

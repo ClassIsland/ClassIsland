@@ -37,6 +37,11 @@ public partial class DataTransferWindow : MyWindow
         await _dataTransferPage.PerformClassIslandImport(root, importEntries);
 #pragma warning restore CS0612 // 类型或成员已过时
     }
+    
+    public async Task PerformClassIsland2Import(string root, ImportEntries importEntries)
+    {
+        await _dataTransferPage.PerformClassIsland2Import(root, importEntries);
+    }
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
