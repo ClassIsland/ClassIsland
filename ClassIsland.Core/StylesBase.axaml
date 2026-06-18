@@ -26,8 +26,8 @@
 
     <StyleInclude Source="avares://AsyncImageLoader.Avalonia/AdvancedImage.axaml" />
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
-    <controls1:ScrollViewerSmoothTheme />
-    <controls1:ScrollViewDefaultTheme />
+    <!-- <controls1:ScrollViewerSmoothTheme /> -->
+    <!-- <controls1:ScrollViewDefaultTheme /> -->
 
     <StyleInclude Source="/Controls/Field.axaml"/>
     <StyleInclude Source="/Controls/Emptiable.axaml"/>
