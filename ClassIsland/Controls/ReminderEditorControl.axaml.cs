@@ -15,6 +15,17 @@ public partial class ReminderEditorControl : UserControl
     public Reminder Editing { get; private set; } = new Reminder();
     private bool _isLoading;
 
+    private static readonly ReminderWeekDays[] WeekDayFlagOrder =
+    [
+        ReminderWeekDays.Sunday,
+        ReminderWeekDays.Monday,
+        ReminderWeekDays.Tuesday,
+        ReminderWeekDays.Wednesday,
+        ReminderWeekDays.Thursday,
+        ReminderWeekDays.Friday,
+        ReminderWeekDays.Saturday
+    ];
+
     /// <summary>
     /// 编辑器中任意值变更时触发，用于实现实时刷新。
     /// </summary>
@@ -44,18 +55,12 @@ public partial class ReminderEditorControl : UserControl
         DailyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
 
         WeeklyTimeBox.SelectedTimeChanged += (_, _) => OnEditingChanged();
-        ChkSun.IsCheckedChanged += (_, _) => OnEditingChanged();
-        ChkMon.IsCheckedChanged += (_, _) => OnEditingChanged();
-        ChkTue.IsCheckedChanged += (_, _) => OnEditingChanged();
-        ChkWed.IsCheckedChanged += (_, _) => OnEditingChanged();
-        ChkThu.IsCheckedChanged += (_, _) => OnEditingChanged();
-        ChkFri.IsCheckedChanged += (_, _) => OnEditingChanged();
-        ChkSat.IsCheckedChanged += (_, _) => OnEditingChanged();
+        WeekDayChipList.SelectionChanged += (_, _) => OnEditingChanged();
         WeeklyStartDate.SelectedDateChanged += (_, _) => OnEditingChanged();
         WeeklyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
 
         YearlyTimeBox.SelectedTimeChanged += (_, _) => OnEditingChanged();
-        YearMonthCombo.SelectionChanged += (_, _) => OnEditingChanged();
+        YearMonthChipList.SelectionChanged += (_, _) => OnEditingChanged();
         YearDayBox.TextChanged += (_, _) => OnEditingChanged();
         YearlyStartDate.SelectedDateChanged += (_, _) => OnEditingChanged();
         YearlyEndDate.SelectedDateChanged += (_, _) => OnEditingChanged();
@@ -63,7 +68,9 @@ public partial class ReminderEditorControl : UserControl
         EnabledSwitch.IsCheckedChanged += (_, _) => OnEditingChanged();
         ConditionEnabledSwitch.IsCheckedChanged += (_, _) =>
         {
-            ConditionRulesetEditor.IsVisible = ConditionEnabledSwitch.IsChecked == true;
+            var isEnabled = ConditionEnabledSwitch.IsChecked == true;
+            ConditionRulesetEditor.IsVisible = isEnabled;
+            ConditionDisabledHint.IsVisible = !isEnabled;
             OnEditingChanged();
         };
     }
@@ -107,18 +114,13 @@ public partial class ReminderEditorControl : UserControl
         DailyEndDate.SelectedDate = r.EndDate;
 
         WeeklyTimeBox.SelectedTime = r.TimeOfDay;
-        ChkSun.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Sunday);
-        ChkMon.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Monday);
-        ChkTue.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Tuesday);
-        ChkWed.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Wednesday);
-        ChkThu.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Thursday);
-        ChkFri.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Friday);
-        ChkSat.IsChecked = r.WeekDays.HasFlag(ReminderWeekDays.Saturday);
+        for (int i = 0; i < WeekDayFlagOrder.Length; i++)
+            ((ListBoxItem)WeekDayChipList.Items[i]!).IsSelected = r.WeekDays.HasFlag(WeekDayFlagOrder[i]);
         WeeklyStartDate.SelectedDate = r.StartDate;
         WeeklyEndDate.SelectedDate = r.EndDate;
 
         YearlyTimeBox.SelectedTime = r.TimeOfDay;
-        if (r.YearMonth >= 1 && r.YearMonth <= 12) YearMonthCombo.SelectedIndex = r.YearMonth - 1;
+        if (r.YearMonth >= 1 && r.YearMonth <= 12) YearMonthChipList.SelectedIndex = r.YearMonth - 1;
         YearDayBox.Text = r.YearDay > 0 ? r.YearDay.ToString() : r.Time.Day.ToString();
         YearlyStartDate.SelectedDate = r.StartDate;
         YearlyEndDate.SelectedDate = r.EndDate;
@@ -132,6 +134,7 @@ public partial class ReminderEditorControl : UserControl
         // 初始化条件判断
         ConditionEnabledSwitch.IsChecked = r.IsConditionEnabled;
         ConditionRulesetEditor.IsVisible = r.IsConditionEnabled;
+        ConditionDisabledHint.IsVisible = !r.IsConditionEnabled;
         if (r.ConditionSettings != null)
         {
             try
@@ -218,13 +221,11 @@ public partial class ReminderEditorControl : UserControl
         r.Frequency = ReminderFrequency.Weekly;
         r.TimeOfDay = WeeklyTimeBox.SelectedTime.GetValueOrDefault();
         var wd = ReminderWeekDays.None;
-        if (ChkSun.IsChecked == true) wd |= ReminderWeekDays.Sunday;
-        if (ChkMon.IsChecked == true) wd |= ReminderWeekDays.Monday;
-        if (ChkTue.IsChecked == true) wd |= ReminderWeekDays.Tuesday;
-        if (ChkWed.IsChecked == true) wd |= ReminderWeekDays.Wednesday;
-        if (ChkThu.IsChecked == true) wd |= ReminderWeekDays.Thursday;
-        if (ChkFri.IsChecked == true) wd |= ReminderWeekDays.Friday;
-        if (ChkSat.IsChecked == true) wd |= ReminderWeekDays.Saturday;
+        for (int i = 0; i < WeekDayFlagOrder.Length; i++)
+        {
+            if (((ListBoxItem)WeekDayChipList.Items[i]!).IsSelected)
+                wd |= WeekDayFlagOrder[i];
+        }
         r.WeekDays = wd;
         r.StartDate = WeeklyStartDate.SelectedDate;
         r.EndDate = WeeklyEndDate.SelectedDate;
@@ -234,7 +235,7 @@ public partial class ReminderEditorControl : UserControl
     {
         r.Frequency = ReminderFrequency.Yearly;
         r.TimeOfDay = YearlyTimeBox.SelectedTime.GetValueOrDefault();
-        if (YearMonthCombo.SelectedIndex >= 0) r.YearMonth = YearMonthCombo.SelectedIndex + 1;
+        if (YearMonthChipList.SelectedIndex >= 0) r.YearMonth = YearMonthChipList.SelectedIndex + 1;
         if (int.TryParse(YearDayBox.Text, out var yd)) r.YearDay = yd;
         r.StartDate = YearlyStartDate.SelectedDate;
         r.EndDate = YearlyEndDate.SelectedDate;

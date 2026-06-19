@@ -6,6 +6,11 @@
              xmlns:ruleset="clr-namespace:ClassIsland.Core.Controls.Ruleset;assembly=ClassIsland.Core"
              x:Class="ClassIsland.Controls.ReminderEditorControl">
   <StackPanel Spacing="8" Margin="8">
+    <StackPanel.Styles>
+      <Style Selector="StackPanel > Expander /template/ ToggleButton#ExpanderHeader">
+        <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+      </Style>
+    </StackPanel.Styles>
     <ci:Field Label="标题">
       <TextBox x:Name="TitleBox" />
     </ci:Field>
@@ -50,15 +55,18 @@
     <StackPanel x:Name="WeeklyPanel" Spacing="8" IsVisible="False">
       <ci:Field Label="时间"><TimePicker x:Name="WeeklyTimeBox"/></ci:Field>
       <ci:Field Label="重复星期">
-        <WrapPanel>
-          <CheckBox x:Name="ChkSun" Content="日"/>
-          <CheckBox x:Name="ChkMon" Content="一"/>
-          <CheckBox x:Name="ChkTue" Content="二"/>
-          <CheckBox x:Name="ChkWed" Content="三"/>
-          <CheckBox x:Name="ChkThu" Content="四"/>
-          <CheckBox x:Name="ChkFri" Content="五"/>
-          <CheckBox x:Name="ChkSat" Content="六"/>
-        </WrapPanel>
+        <ListBox x:Name="WeekDayChipList"
+                  Theme="{StaticResource ChipListBoxTheme}"
+                  SelectionMode="Multiple,Toggle"
+                  MaxWidth="400">
+          <ListBoxItem>日</ListBoxItem>
+          <ListBoxItem>一</ListBoxItem>
+          <ListBoxItem>二</ListBoxItem>
+          <ListBoxItem>三</ListBoxItem>
+          <ListBoxItem>四</ListBoxItem>
+          <ListBoxItem>五</ListBoxItem>
+          <ListBoxItem>六</ListBoxItem>
+        </ListBox>
       </ci:Field>
       <ci:Field Label="开始日期 (可选)"><CalendarDatePicker x:Name="WeeklyStartDate"/></ci:Field>
       <ci:Field Label="结束日期 (可选)"><CalendarDatePicker x:Name="WeeklyEndDate"/></ci:Field>
@@ -68,20 +76,23 @@
     <StackPanel x:Name="YearlyPanel" Spacing="8" IsVisible="False">
       <ci:Field Label="时间"><TimePicker x:Name="YearlyTimeBox"/></ci:Field>
       <ci:Field Label="月份">
-        <ComboBox x:Name="YearMonthCombo">
-          <ComboBoxItem>1</ComboBoxItem>
-          <ComboBoxItem>2</ComboBoxItem>
-          <ComboBoxItem>3</ComboBoxItem>
-          <ComboBoxItem>4</ComboBoxItem>
-          <ComboBoxItem>5</ComboBoxItem>
-          <ComboBoxItem>6</ComboBoxItem>
-          <ComboBoxItem>7</ComboBoxItem>
-          <ComboBoxItem>8</ComboBoxItem>
-          <ComboBoxItem>9</ComboBoxItem>
-          <ComboBoxItem>10</ComboBoxItem>
-          <ComboBoxItem>11</ComboBoxItem>
-          <ComboBoxItem>12</ComboBoxItem>
-        </ComboBox>
+        <ListBox x:Name="YearMonthChipList"
+                  Theme="{StaticResource ChipListBoxTheme}"
+                  SelectionMode="Multiple,Toggle"
+                  MaxWidth="400">
+          <ListBoxItem>1月</ListBoxItem>
+          <ListBoxItem>2月</ListBoxItem>
+          <ListBoxItem>3月</ListBoxItem>
+          <ListBoxItem>4月</ListBoxItem>
+          <ListBoxItem>5月</ListBoxItem>
+          <ListBoxItem>6月</ListBoxItem>
+          <ListBoxItem>7月</ListBoxItem>
+          <ListBoxItem>8月</ListBoxItem>
+          <ListBoxItem>9月</ListBoxItem>
+          <ListBoxItem>10月</ListBoxItem>
+          <ListBoxItem>11月</ListBoxItem>
+          <ListBoxItem>12月</ListBoxItem>
+        </ListBox>
       </ci:Field>
       <ci:Field Label="日">
         <TextBox x:Name="YearDayBox" />
@@ -90,21 +101,46 @@
       <ci:Field Label="结束日期 (可选)"><CalendarDatePicker x:Name="YearlyEndDate"/></ci:Field>
     </StackPanel>
 
-    <!-- 自动化行动 -->
-    <Separator Margin="0 8 0 4" />
-    <ci:Field Label="关联行动（触发提醒时自动执行）">
-      <automation:ActionControl x:Name="ActionSetEditor" />
+    <ci:Field Label="自动化-当日程被触发">
+      <StackPanel>
+        <!-- 条件判断 -->
+        <Expander Classes="compact stretch-header"
+                  IsExpanded="True"
+                  Margin="2 2 2 10">
+          <Expander.Header>
+            <Grid ColumnDefinitions="Auto, *, Auto">
+              <ci:IconText Glyph="&#xF17E;"
+                           Text="并且满足规则集时" />
+              <ToggleSwitch Grid.Column="2"
+                            Margin="0 -6 2 0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            x:Name="ConditionEnabledSwitch" />
+            </Grid>
+          </Expander.Header>
+          <Grid>
+            <TextBlock Margin="9 0 0 0"
+                       VerticalAlignment="Center"
+                       Text="提醒运行时不会考虑规则集。"
+                       x:Name="ConditionDisabledHint"
+                       IsVisible="False" />
+            <ruleset:RulesetControl x:Name="ConditionRulesetEditor"
+                                    ShowTitle="False"
+                                    IsVisible="False" />
+          </Grid>
+        </Expander>
+    
+        <!-- 自动化行动 -->
+        <Expander Classes="compact stretch-header"
+                  IsExpanded="True"
+                  Margin="2 2 2 10">
+          <Expander.Header>
+            <ci:IconText Glyph="&#xE01F;"
+                         Text="触发行动" />
+          </Expander.Header>
+          <automation:ActionControl x:Name="ActionSetEditor" />
+        </Expander>
+      </StackPanel>
     </ci:Field>
-
-    <!-- 条件判断 -->
-    <Separator Margin="0 8 0 4" />
-    <ci:Field Label="条件判断">
-      <ToggleSwitch x:Name="ConditionEnabledSwitch"
-                    OnContent="开" OffContent="关"
-                    HorizontalAlignment="Left" />
-    </ci:Field>
-    <ruleset:RulesetControl x:Name="ConditionRulesetEditor"
-                            ShowTitle="False"
-                            IsVisible="False" />
   </StackPanel>
 </UserControl>
