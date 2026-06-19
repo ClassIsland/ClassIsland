@@ -201,7 +201,8 @@ public partial class App
         services.AddNotificationProvider<ManagementNotificationProvider>();
         services.AddNotificationProvider<ActionNotificationProvider>();
         services.AddNotificationProvider<ReminderNotificationProvider, ReminderNotificationProviderSettingsControl>();
-        services.AddHostedService<ScheduleReminderService>();
+        services.AddSingleton<ScheduleReminderService>();
+        services.AddHostedService<ScheduleReminderService>(sp => sp.GetRequiredService<ScheduleReminderService>());
         // // Transients
         // services.AddTransient<ExcelImportWindow>();
         // services.AddTransient<WallpaperPreviewWindow>();

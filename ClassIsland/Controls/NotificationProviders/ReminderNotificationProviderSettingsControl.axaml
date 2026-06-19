@@ -38,6 +38,17 @@
                         </controls1:Field>
                     </controls2:SettingsExpanderItem.Footer>
                 </controls2:SettingsExpanderItem>
+
+                <!-- 检查模式 -->
+                <controls2:SettingsExpanderItem IconSource="{ci:FluentIconSource &#xe943;}"
+                                                Content="检查模式"
+                                                Description="WindowBased：按固定间隔扫描窗口内的所有触发点；Precise：固定 60 秒检查一次，精确到分钟">
+                    <controls2:SettingsExpanderItem.Footer>
+                        <ComboBox ItemsSource="{Binding CheckModeValues}"
+                                  SelectedItem="{Binding Settings.CheckMode}"
+                                  Width="150"/>
+                    </controls2:SettingsExpanderItem.Footer>
+                </controls2:SettingsExpanderItem>
             </controls2:SettingsExpander>
 
         </StackPanel>

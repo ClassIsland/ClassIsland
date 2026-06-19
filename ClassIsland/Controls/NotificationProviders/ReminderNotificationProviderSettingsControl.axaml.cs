@@ -1,3 +1,4 @@
+using System;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Models.NotificationProviderSettings;
 
@@ -12,4 +13,9 @@ public partial class ReminderNotificationProviderSettingsControl : NotificationP
     {
         InitializeComponent();
     }
+
+    /// <summary>
+    /// 供 ComboBox 绑定使用的枚举值列表
+    /// </summary>
+    public Array CheckModeValues => Enum.GetValues(typeof(ReminderCheckMode));
 }

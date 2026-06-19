@@ -318,6 +318,10 @@ public partial class ProfileSettingsWindow : MyWindow
             ReminderEditor.ApplyTo(_lastEditedReminder);
             _lastEditedReminder.NotifyPropertiesChanged();
             ViewModel.ProfileService.SaveProfile();
+
+            // 编辑后立即检查，确保新设定的日程能及时触发
+            var reminderService = IAppHost.GetService<ScheduleReminderService>();
+            reminderService?.RequestImmediateCheck();
         }
     }
 
