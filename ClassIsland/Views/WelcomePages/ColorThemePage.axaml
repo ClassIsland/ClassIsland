@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -19,7 +19,7 @@
         <TextBlock Text="设置 ClassIsland 的主题外观。" HorizontalAlignment="Center"
                    Margin="0 0 0 8"/>
         
-        <ListBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}">
+        <ListBox SelectedIndex="{Binding ViewModel.SettingsService.Settings.Theme}" HorizontalAlignment="Center">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"/>
@@ -30,15 +30,15 @@
                     <Panel>
                         <ThemeVariantScope RequestedThemeVariant="Dark">
                             <ThemeVariantScope.Clip>
-                                <RectangleGeometry Rect="0 0 72 75"/>
+                                <RectangleGeometry Rect="0 0 40 75"/>
                             </ThemeVariantScope.Clip>
-                            <demo:ThemeDemo Width="144" />
+                            <demo:ThemeDemo Width="80" />
                         </ThemeVariantScope>
                         <ThemeVariantScope RequestedThemeVariant="Light">
                             <ThemeVariantScope.Clip>
-                                <RectangleGeometry Rect="72 0 72 75"/>
+                                <RectangleGeometry Rect="40 0 40 75"/>
                             </ThemeVariantScope.Clip>
-                            <demo:ThemeDemo Width="144" />
+                            <demo:ThemeDemo Width="80" />
                         </ThemeVariantScope>
                     </Panel>
                     <RadioButton Content="跟随系统" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
@@ -47,7 +47,7 @@
             <ListBoxItem>
                 <StackPanel Margin="0 8 0 4">
                     <ThemeVariantScope RequestedThemeVariant="Light">
-                        <demo:ThemeDemo Width="144" />
+                        <demo:ThemeDemo Width="80" />
                     </ThemeVariantScope>
                     <RadioButton Content="明亮" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
                 </StackPanel>
@@ -55,9 +55,35 @@
             <ListBoxItem>
                 <StackPanel Margin="0 8 0 4">
                     <ThemeVariantScope RequestedThemeVariant="Dark">
-                        <demo:ThemeDemo Width="144" />
+                        <demo:ThemeDemo Width="80" />
                     </ThemeVariantScope>
                     <RadioButton Content="黑暗" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
+                </StackPanel>
+            </ListBoxItem>
+                    <ListBoxItem>
+                <StackPanel Margin="0 8 0 4">
+                    <Panel>
+                        <ThemeVariantScope RequestedThemeVariant="Dark">
+                            <ThemeVariantScope.Clip>
+                                <RectangleGeometry Rect="0 0 40 75"/>
+                            </ThemeVariantScope.Clip>
+                            <demo:ThemeDemo Width="80" />
+                        </ThemeVariantScope>
+                        <ThemeVariantScope RequestedThemeVariant="Light">
+                            <ThemeVariantScope.Clip>
+                                <RectangleGeometry Rect="40 0 40 75"/>
+                            </ThemeVariantScope.Clip>
+                            <demo:ThemeDemo Width="80" />
+                        </ThemeVariantScope>
+                        <Canvas Width="80" Height="75" HorizontalAlignment="Right">
+                            <Ellipse Canvas.Left="54" Canvas.Top="4" Width="10" Height="10" Fill="#FFB74D" Stroke="#FF9800" StrokeThickness="1"/>
+                            <Line Canvas.Left="59" Canvas.Top="1" X1="0" Y1="0" X2="0" Y2="2" Stroke="#FF9800" StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Line Canvas.Left="59" Canvas.Top="15" X1="0" Y1="0" X2="0" Y2="2" Stroke="#FF9800" StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Line Canvas.Left="52" Canvas.Top="4" X1="0" Y1="0" X2="-2" Y2="0" Stroke="#FF9800" StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Line Canvas.Left="66" Canvas.Top="4" X1="0" Y1="0" X2="2" Y2="0" Stroke="#FF9800" StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Canvas>
+                    </Panel>
+                    <RadioButton Content="跟随日出日落" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
                 </StackPanel>
             </ListBoxItem>
         </ListBox>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -976,7 +976,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Appearence
 
-    [SettingsInfo("应用主题", "\uE5CB", enums:["跟随系统", "明亮", "黑暗"], order: 1)]
+    [SettingsInfo("应用主题", "\uE5CB", enums:["跟随系统", "明亮", "黑暗", "跟随日出日落"], order: 1)]
     public int Theme
     {
         get => _theme;

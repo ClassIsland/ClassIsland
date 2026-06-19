@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
@@ -249,6 +249,9 @@ public partial class App
         services.AddTrigger<OnAfterSchoolTrigger>();
         services.AddTrigger<CurrentTimeStateChangedTrigger>();
         services.AddTrigger<PreTimePointTrigger, PreTimePointTriggerSettingsControl>();
+        services.AddTrigger<SunriseTrigger>();
+        services.AddTrigger<SunsetTrigger>();
+        
         // 规则
         services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
         services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
