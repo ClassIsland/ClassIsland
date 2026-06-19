@@ -907,7 +907,7 @@ public partial class App : AppBase, IAppHost
         GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 2/2）");
         if (!Design.IsDesignMode)
         {
-            GetService<MainWindow>().Show();
+            mw.Show();
         }
         GetService<IWindowRuleService>();
         GetService<SignalTriggerHandlerService>();

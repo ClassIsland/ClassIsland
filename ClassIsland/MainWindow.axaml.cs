@@ -229,6 +229,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         XamlThemeService = xamlThemeService;
         TutorialService = tutorialService;
 
+        // DEBUG!
+        Logger.LogInformation("MainWindow 初始化了！！！！！！！！！！！！！！！！！\n{}", new StackTrace());
+        
         ViewModel = new MainViewModel();
         DataContext = this;
         InitializeComponent();
@@ -915,7 +918,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         if (updateEffectWindow)
         {
-            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
+            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX, ViewModel.IsForegroundFullscreen);
         }
     }
 
