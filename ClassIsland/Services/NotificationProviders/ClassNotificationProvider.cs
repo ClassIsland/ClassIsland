@@ -291,7 +291,6 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
     private ClassNotificationAttachedSettings? GetAttachedSettings()
     {
-        var mvm = App.GetService<MainWindow>().ViewModel;
         var settings = IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<
                 ClassNotificationAttachedSettings>(
@@ -306,7 +305,6 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
     private ClassNotificationAttachedSettings? GetAttachedSettingsNext()
     {
-        var mvm = App.GetService<MainWindow>().ViewModel;
         var settings = IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<
                 ClassNotificationAttachedSettings>(

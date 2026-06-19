@@ -260,7 +260,11 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
 
     private bool _isTemplateApplied = false;
 
-    public MainWindow MainWindow { get; } = IAppHost.GetService<MainWindow>();
+    private MainWindow? _mainWindow;
+
+    public MainWindow MainWindow => _mainWindow ??= this.GetVisualRoot() as MainWindow ??
+        this.FindAncestorOfType<MainWindow>() ??
+        throw new InvalidOperationException("MainWindowLine is not attached to MainWindow.");
 
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
 
@@ -422,6 +426,8 @@ public class MainWindowLine : ContentControl, INotificationConsumer, INotificati
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         _isUnloading = false;
+        _mainWindow = this.GetVisualRoot() as MainWindow ?? this.FindAncestorOfType<MainWindow>() ??
+            throw new InvalidOperationException("MainWindowLine is not attached to MainWindow.");
         MainWindow.MousePosChanged += MainWindowOnMousePosChanged;
         MainWindow.RawInputEvent += MainWindowOnRawInputEvent;
         MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
