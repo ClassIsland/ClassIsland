@@ -228,9 +228,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TopmostEffectWindow = topmostEffectWindow;
         XamlThemeService = xamlThemeService;
         TutorialService = tutorialService;
-
-        // DEBUG!
-        Logger.LogInformation("MainWindow 初始化了！！！！！！！！！！！！！！！！！\n{}", new StackTrace());
         
         ViewModel = new MainViewModel();
         DataContext = this;
