@@ -18,6 +18,10 @@
         <Setter Property="ClipToBounds" Value="False"/>
     </Style>
     
+    <Style Selector=":is(TextElement)">
+        <Setter Property="Foreground" Value="Red"/>
+    </Style>
+    
     <Style Selector=":is(Control).clip-host[(ci|MainWindowStylesAssist.IsIslandSeperated)=False], :is(Control).clip-host.clip-enforcing">
         <Setter Property="Clip">
             <Setter.Value>

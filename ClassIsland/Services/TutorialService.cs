@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using AsyncImageLoader;
@@ -276,10 +277,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
                 CurrentDimBorder = null;
             }
 
-            foreach (var adorner in AttachedAdorners)
-            {
-                layer?.Children.Remove(adorner);
-            }
+            layer?.Children.RemoveAll(AttachedAdorners);
         }
 
         CurrentTeachingTip = null;
@@ -319,10 +317,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
             CurrentTeachingTip.IsOpen = false;
         }
 
-        foreach (var adorner in AttachedAdorners)
-        {
-            layer.Children.Remove(adorner);
-        }
+        layer.Children.RemoveAll(AttachedAdorners);
 
         AreAdornersDetachedForHostChange = true;
     }
@@ -340,12 +335,10 @@ public partial class TutorialService : ObservableObject, ITutorialService
             return;
         }
 
-        foreach (var adorner in AttachedAdorners)
+        foreach (var adorner in AttachedAdorners.ToImmutableArray()
+                     .Where(adorner => !layer.Children.Contains(adorner)))
         {
-            if (!layer.Children.Contains(adorner))
-            {
-                layer.Children.Add(adorner);
-            }
+            layer.Children.Add(adorner);
         }
 
         var teachingTip = CurrentTeachingTip;
