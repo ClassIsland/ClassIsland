@@ -165,8 +165,13 @@
                         </Binding>
                     </Button.IsVisible>
                 </Button>
-                <Button Content="下载并安装" Classes="accent" Margin="4"
-                        Click="ButtonDownloadUpdate_OnClick">
+                <SplitButton Content="下载并安装" Classes="accent" Margin="4"
+                             Click="ButtonDownloadUpdate_OnClick">
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="仅下载" Click="MenuItemDownloadOnly_OnClick"/>
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
                     <Button.IsVisible>
                         <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
                                  Converter="{x:Static ObjectConverters.Equal}">
@@ -175,7 +180,7 @@
                             </Binding.ConverterParameter>
                         </Binding>
                     </Button.IsVisible>
-                </Button>
+                </SplitButton>
                 <Button Content="安装更新" Classes="accent" Margin="4"
                         Click="ButtonDeployUpdate_OnClick"> 
                     <Button.IsVisible>

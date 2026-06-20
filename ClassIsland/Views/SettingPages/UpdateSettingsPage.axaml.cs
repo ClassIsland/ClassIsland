@@ -160,4 +160,9 @@ public partial class UpdateSettingsPage : SettingsPageBase
         ViewModel.ChangeLogDocument = sr.ReadToEnd();
         OpenDrawer("ChangeLogDrawer");
     }
+
+    private async void MenuItemDownloadOnly_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await ViewModel.UpdateService.DownloadUpdateAsync();
+    }
 }
