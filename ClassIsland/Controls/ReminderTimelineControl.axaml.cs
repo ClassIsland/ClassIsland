@@ -384,6 +384,8 @@ public partial class ReminderTimelineControl : UserControl
         new FuncValueConverter<bool, double>(b => b ? 1.0 : 0.45);
     #endregion
 
+    private DispatcherTimer? _nowTimer;
+
     public ReminderTimelineControl()
     {
         InitializeComponent();
@@ -391,11 +393,64 @@ public partial class ReminderTimelineControl : UserControl
         // 鼠标滚轮缩放
         TimelineScrollViewer.AddHandler(PointerWheelChangedEvent, OnTimelineWheel, RoutingStrategies.Tunnel);
 
-        // 日期变化时重新过滤
-        this.GetObservable(SelectedDateProperty).Subscribe(_ => RefreshFilteredReminders());
+        // 日期变化时重新过滤 + 更新当前时间指示线
+        this.GetObservable(SelectedDateProperty).Subscribe(_ =>
+        {
+            RefreshFilteredReminders();
+            UpdateNowIndicator();
+        });
+
+        // 缩放变化时更新当前时间指示线位置
+        this.GetObservable(ScaleProperty).Subscribe(_ => UpdateNowIndicator());
 
         // 选中日程变化时自动滚动到对应位置
         this.GetObservable(SelectedReminderProperty).Subscribe(_ => OnSelectedReminderChanged());
+
+        // 控件加载完后启动当前时间指示线定时器
+        Loaded += (_, _) => StartNowIndicatorTimer();
+        Unloaded += (_, _) => StopNowIndicatorTimer();
+    }
+
+    private void StartNowIndicatorTimer()
+    {
+        StopNowIndicatorTimer();
+        _nowTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(30)
+        };
+        _nowTimer.Tick += OnNowTimerTick;
+        _nowTimer.Start();
+        UpdateNowIndicator();
+    }
+
+    private void StopNowIndicatorTimer()
+    {
+        if (_nowTimer == null) return;
+        _nowTimer.Tick -= OnNowTimerTick;
+        _nowTimer.Stop();
+        _nowTimer = null;
+    }
+
+    private void OnNowTimerTick(object? sender, EventArgs e)
+    {
+        UpdateNowIndicator();
+    }
+
+    private void UpdateNowIndicator()
+    {
+        if (NowIndicatorLine == null) return;
+
+        var now = DateTime.Now;
+        if (SelectedDate.Date != now.Date)
+        {
+            NowIndicatorLine.IsVisible = false;
+            return;
+        }
+
+        NowIndicatorLine.IsVisible = true;
+        // 与标尺和项使用相同的计算公式：ticks / 1000000000.0 * Scale
+        var y = now.TimeOfDay.Ticks / 1000000000.0 * Scale;
+        NowIndicatorLine.Margin = new Thickness(0, y - 1, 0, 0);
     }
 
     private void OnTimelineWheel(object? sender, PointerWheelEventArgs e)

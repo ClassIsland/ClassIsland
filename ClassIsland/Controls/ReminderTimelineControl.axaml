@@ -60,7 +60,15 @@
                          ItemsSource="{Binding DisplayedReminders, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ReminderTimelineControl}}"
                          VerticalAlignment="Stretch"
                          HorizontalAlignment="Stretch"
-                         Background="{x:Null}">
+                         Background="{x:Null}"
+                         Padding="0"
+                         BorderThickness="0"
+                         ClipToBounds="False">
+                    <ListBox.Template>
+                        <ControlTemplate TargetType="ListBox">
+                            <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+                        </ControlTemplate>
+                    </ListBox.Template>
                     <ListBox.Styles>
                         <Style Selector="ListBoxItem">
                             <Setter Property="Background" Value="Transparent" />
@@ -87,12 +95,12 @@
                     </ListBox.ItemContainerTheme>
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="profile:Reminder">
-                            <Grid ColumnDefinitions="44,Auto,Auto" Margin="0 2 4 2" MinHeight="42">
+                            <Grid ColumnDefinitions="44,Auto,Auto" Margin="0 0 4 2" MinHeight="42">
                                 <!-- 时间指示线 + 时间标签 -->
                                 <Border Grid.Column="0"
                                         BorderBrush="{Binding Frequency, Converter={x:Static controls:ReminderTimelineControl.FrequencyToBrushConverter}}"
                                         BorderThickness="0 0 0 1"
-                                        VerticalAlignment="Center"
+                                        VerticalAlignment="Top"
                                         HorizontalAlignment="Stretch"
                                         Height="2"
                                         Opacity="0.7" />
@@ -102,7 +110,7 @@
                                            Foreground="{Binding Frequency, Converter={x:Static controls:ReminderTimelineControl.FrequencyToBrushConverter}}"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Top"
-                                           Margin="0 0 0 0" />
+                                           Margin="0 2 0 0" />
                                 <!-- 日程块（禁用时半透明） -->
                                 <Border Grid.Column="1" Grid.ColumnSpan="2"
                                         Background="{Binding Frequency, Converter={x:Static controls:ReminderTimelineControl.FrequencyToBrushConverter}}"
@@ -138,6 +146,22 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+
+                <!-- 当前时间指示线（仅当天显示） -->
+                <Border x:Name="NowIndicatorLine"
+                        IsHitTestVisible="False"
+                        ZIndex="100"
+                        Height="2"
+                        Background="#E84343"
+                        Opacity="0.85"
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Stretch"
+                        CornerRadius="1">
+                    <Ellipse Width="10" Height="10" Fill="#E84343"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Center"
+                             Margin="-5 0 0 0" />
+                </Border>
             </Grid>
         </ScrollViewer>
 
