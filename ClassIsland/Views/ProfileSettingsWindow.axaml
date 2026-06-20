@@ -1976,7 +1976,16 @@
                         <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xe68f;}"
                                                    Label="导入/导出"
                                                    Click="ButtonOpenProfileImportPage_OnClick"
-                                                   ToolTip.Tip="导入外部的课程信息，或导出当前的档案信息。" />
+                                                   ToolTip.Tip="导入外部的课程信息，或导出当前的档案信息。">
+                            <controls:CommandBarButton.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileEditing"/>
+                                    <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing"/>
+                                    <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing"/>
+                                    <Binding Path="!ViewModel.ManagementService.Policy.DisableProfileSubjectsEditing"/>
+                                </MultiBinding>
+                            </controls:CommandBarButton.IsVisible>
+                        </controls:CommandBarButton>
                         <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xee2f;}"
                                                    Label="帮助"
                                                    Click="ButtonHelp_OnClick"
