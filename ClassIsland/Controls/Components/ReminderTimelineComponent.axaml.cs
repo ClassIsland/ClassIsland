@@ -508,4 +508,4 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
     public bool HasItems => _hasItems;
     public new event PropertyChangedEventHandler? PropertyChanged;
     private void NotifyPropertyChanged(string n = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
-}`
+}
