@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Controls;
@@ -22,14 +23,14 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
     private readonly IExactTimeService _exactTimeService;
     private DispatcherTimer? _refreshTimer;
     private EventHandler? _timerHandler;
+    private bool _isAttached;
 
-    // 颜色常量（不再使用共享静态画刷，避免透明度污染）
+    // 颜色常量
     private static readonly Color ClrOnce = Colors.DodgerBlue;
     private static readonly Color ClrDaily = Colors.MediumSeaGreen;
     private static readonly Color ClrWeekly = Colors.DarkOrange;
     private static readonly Color ClrYearly = Colors.MediumPurple;
     private static readonly Color ClrDisable = Colors.LightGray;
-    private static readonly Color ClrTime = Colors.White;
 
     private const double PillH = 22;
     private const double Top = 5;
@@ -38,15 +39,15 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
     private const double PadL = 12;
     private const double PadR = 12;
     private const int MaxDisplay = 20;
+    private const double TimeLabelWidth = 45;
 
     private double _canvasW;
     private bool _hasItems;
     private int _lastMin = -1;
     private double _tFirst, _tLast;
     private readonly List<(double Time, double Left, double Right)> _visualGroups = new();
-    private readonly List<Border> _pills = new();
+    private readonly List<Control> _pills = new();
 
-    // 跟踪已订阅的提醒，确保正确取消
     private readonly HashSet<Reminder> _subscribedReminders = new();
 
     public ReminderTimelineComponent(IProfileService profileService, IExactTimeService exactTimeService)
@@ -60,6 +61,7 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
 
     private void OnAtt(object? s, VisualTreeAttachmentEventArgs e)
     {
+        _isAttached = true;
         Subscribe();
         StartTimer();
         Rebuild();
@@ -67,20 +69,22 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
 
     private void OnDet(object? s, VisualTreeAttachmentEventArgs e)
     {
+        _isAttached = false;
         Unsubscribe();
         StopTimer();
+        foreach (var c in _pills)
+            TimelineCanvas.Children.Remove(c);
+        _pills.Clear();
+        _visualGroups.Clear();
     }
 
     private void Subscribe()
     {
-        // 订阅服务属性变更（用于检测 Profile 替换）
         if (_profileService is INotifyPropertyChanged npc)
             npc.PropertyChanged += OnSvcChanged;
 
-        // 订阅集合变更
         _profileService.Profile.Reminders.CollectionChanged += OnChanged;
 
-        // 订阅当前所有提醒
         foreach (var r in _profileService.Profile.Reminders)
         {
             if (_subscribedReminders.Add(r))
@@ -90,14 +94,11 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
 
     private void Unsubscribe()
     {
-        // 取消服务事件
         if (_profileService is INotifyPropertyChanged npc)
             npc.PropertyChanged -= OnSvcChanged;
 
-        // 取消集合事件
         _profileService.Profile.Reminders.CollectionChanged -= OnChanged;
 
-        // 取消所有已订阅提醒的属性变更
         foreach (var r in _subscribedReminders)
             r.PropertyChanged -= OnPropChanged;
         _subscribedReminders.Clear();
@@ -109,13 +110,12 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
         {
             Unsubscribe();
             Subscribe();
-            Rebuild();
+            if (_isAttached) Rebuild();
         }
     }
 
     private void OnChanged(object? s, NotifyCollectionChangedEventArgs e)
     {
-        // 处理新增项
         if (e.NewItems != null)
         {
             foreach (var item in e.NewItems.OfType<Reminder>())
@@ -125,7 +125,6 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             }
         }
 
-        // 处理移除项
         if (e.OldItems != null)
         {
             foreach (var item in e.OldItems.OfType<Reminder>())
@@ -135,11 +134,8 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             }
         }
 
-        // 对于 Reset 操作，需要重新订阅全部（理论上会触发 NewItems 包含全部）
-        // 但为了安全，如果 e.Action == Reset，则完全重新订阅
         if (e.Action == NotifyCollectionChangedAction.Reset)
         {
-            // 先取消所有，再重新订阅
             foreach (var r in _subscribedReminders)
                 r.PropertyChanged -= OnPropChanged;
             _subscribedReminders.Clear();
@@ -150,7 +146,8 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             }
         }
 
-        _ = Dispatcher.UIThread.InvokeAsync(Rebuild);
+        if (_isAttached)
+            _ = Dispatcher.UIThread.InvokeAsync(Rebuild);
     }
 
     private void OnPropChanged(object? s, PropertyChangedEventArgs e)
@@ -159,7 +156,10 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             or nameof(Reminder.Frequency) or nameof(Reminder.WeekDays) or nameof(Reminder.StartDate)
             or nameof(Reminder.EndDate) or nameof(Reminder.YearMonth) or nameof(Reminder.YearDay)
             or nameof(Reminder.IsEnabled))
-            _ = Dispatcher.UIThread.InvokeAsync(Rebuild);
+        {
+            if (_isAttached)
+                _ = Dispatcher.UIThread.InvokeAsync(Rebuild);
+        }
     }
 
     private void StartTimer()
@@ -167,13 +167,17 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
         StopTimer();
         _timerHandler = (_, _) =>
         {
+            if (!_isAttached) return;
             var now = _exactTimeService.GetCurrentLocalDateTime();
             var m = (int)now.TimeOfDay.TotalMinutes;
             MoveNow(now.TimeOfDay);
             if (m != _lastMin)
             {
                 _lastMin = m;
-                Dispatcher.UIThread.Post(Rebuild, DispatcherPriority.Background);
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (_isAttached) Rebuild();
+                }, DispatcherPriority.Background);
             }
         };
         _refreshTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
@@ -189,7 +193,6 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             _refreshTimer.Stop();
             _refreshTimer = null;
         }
-
         _timerHandler = null;
     }
 
@@ -197,9 +200,10 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
 
     private void Rebuild()
     {
-        // 清理旧的胶囊
-        foreach (var p in _pills)
-            TimelineCanvas.Children.Remove(p);
+        if (!_isAttached) return;
+
+        foreach (var c in _pills)
+            TimelineCanvas.Children.Remove(c);
         _pills.Clear();
 
         var now = _exactTimeService.GetCurrentLocalDateTime();
@@ -246,24 +250,69 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
         {
             var n = g.Count;
             var r0 = g.First();
+            var timeStr = r0.TimeOfDay.ToString("hh\\:mm");
+            var color = PickColor(r0.Frequency, r0.IsEnabled);
 
-            if (n == 1)
+            if (n == 1)   // 单个日程：时间标签（彩色） + 胶囊（仅标题）
             {
                 var r = r0;
                 var w = CalcW(r);
                 var past = r.TimeOfDay <= now.TimeOfDay;
                 var op = (r.IsEnabled ? 1.0 : 0.4) * (past ? 0.45 : 1.0);
-                MakePill(w, curX, r.Frequency, r.IsEnabled, op, r.TimeOfDay.ToString("hh\\:mm"), r.Title);
-                _visualGroups.Add(((int)r.TimeOfDay.TotalMinutes, curX, curX + w));
-                curX += w + Gap;
-            }
-            else
-            {
-                // 同一分钟：背景框 + 横向排列
-                var iw = g.Max(r => CalcW(r));
-                var bgW = iw * n + GrpPad * 2 + Gap * (n - 1);
+                var pillW = w;
+                var totalW = TimeLabelWidth + pillW;
 
-                _visualGroups.Add(((int)r0.TimeOfDay.TotalMinutes, curX, curX + bgW));
+                // 时间标签（彩色背景，透明度与胶囊一致）
+                var timeLabel = CreateTimeLabel(timeStr, color, op);
+                Canvas.SetLeft(timeLabel, curX);
+                Canvas.SetTop(timeLabel, Top);
+                TimelineCanvas.Children.Add(timeLabel);
+                _pills.Add(timeLabel);
+
+                // 胶囊（无时间）
+                var pill = CreatePill(pillW, r.Frequency, r.IsEnabled, op, r.Title);
+                Canvas.SetLeft(pill, curX + TimeLabelWidth);
+                Canvas.SetTop(pill, Top);
+                TimelineCanvas.Children.Add(pill);
+                _pills.Add(pill);
+
+                _visualGroups.Add(((int)r.TimeOfDay.TotalMinutes, curX, curX + totalW));
+                curX += totalW + Gap;
+            }
+            else          // 多个日程：时间标签在外，分组框只含胶囊
+            {
+                var iw = g.Max(r => CalcW(r));
+                var totalPillsWidth = iw * n + Gap * (n - 1);
+                // 分组框宽度 = 胶囊总宽 + 左右内边距（不再包含时间标签）
+                var bgW = totalPillsWidth + GrpPad * 2;
+                // 整个组占用的总宽度 = 时间标签宽度 + 分组框宽度（保持不变）
+                var groupTotalW = TimeLabelWidth + bgW;
+
+                _visualGroups.Add(((int)r0.TimeOfDay.TotalMinutes, curX, curX + groupTotalW));
+
+                // 时间标签放在分组框外侧左侧
+                // 计算透明度：与组内第一个胶囊保持一致（后续可能在此细化，当前沿用分组内逻辑）
+                double firstOp = (r0.IsEnabled ? 0.9 : 0.4) * (r0.TimeOfDay <= now.TimeOfDay ? 0.5 : 1.0);
+                var timeLabel = CreateTimeLabel(timeStr, color, firstOp);
+                Canvas.SetLeft(timeLabel, curX);
+                Canvas.SetTop(timeLabel, Top);
+                TimelineCanvas.Children.Add(timeLabel);
+                _pills.Add(timeLabel);
+
+                // 分组背景框（只含胶囊）
+                var pillsPanel = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Spacing = Gap
+                };
+                foreach (var r in g)
+                {
+                    var past = r.TimeOfDay <= now.TimeOfDay;
+                    var op = (r.IsEnabled ? 0.9 : 0.4) * (past ? 0.5 : 1.0);
+                    var pill = CreatePill(iw, r.Frequency, r.IsEnabled, op, r.Title);
+                    pillsPanel.Children.Add(pill);
+                }
 
                 var bg = new Border
                 {
@@ -272,23 +321,21 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
                     CornerRadius = new CornerRadius(7),
                     Background = new SolidColorBrush(Colors.White) { Opacity = 0.25 },
                     BorderThickness = new Thickness(1),
-                    BorderBrush = new SolidColorBrush(Colors.White) { Opacity = 0.4 }
+                    BorderBrush = new SolidColorBrush(Colors.White) { Opacity = 0.4 },
+                    Child = new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(GrpPad, 0, GrpPad, 0),
+                        Children = { pillsPanel }
+                    }
                 };
-                Canvas.SetLeft(bg, curX);
+                Canvas.SetLeft(bg, curX + TimeLabelWidth);
                 Canvas.SetTop(bg, Top - GrpPad);
                 TimelineCanvas.Children.Add(bg);
                 _pills.Add(bg);
 
-                var xo = curX + GrpPad;
-                foreach (var r in g)
-                {
-                    var past = r.TimeOfDay <= now.TimeOfDay;
-                    var op = (r.IsEnabled ? 0.9 : 0.4) * (past ? 0.5 : 1.0);
-                    MakePill(iw, xo, r.Frequency, r.IsEnabled, op, r.TimeOfDay.ToString("hh\\:mm"), r.Title);
-                    xo += iw + Gap;
-                }
-
-                curX += bgW + Gap;
+                curX += groupTotalW + Gap;
             }
         }
 
@@ -300,45 +347,55 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
         NotifyPropertyChanged(nameof(HasItems));
     }
 
-    /// <summary>根据文本估算胶囊宽度</summary>
-    private static double CalcW(Reminder r)
+    /// <summary>
+    /// 创建带背景色的时间标签（背景色为日程颜色，文字白色）
+    /// </summary>
+    private Border CreateTimeLabel(string time, Color color, double opacity = 1.0)
     {
-        var titlePx = r.Title.Sum(c => c > 127 ? 12 : 7);
-        var width = Math.Max(60, Math.Min(titlePx + 36 + 16, 140));
-        return width;
+        var brush = new SolidColorBrush(color) { Opacity = opacity };
+        return new Border
+        {
+            Width = TimeLabelWidth,
+            Height = PillH,
+            CornerRadius = new CornerRadius(4),
+            Background = brush,
+            Child = new TextBlock
+            {
+                Text = time,
+                FontSize = 11,
+                Foreground = Brushes.White,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center
+            }
+        };
     }
 
-    private void MakePill(double w, double left, ReminderFrequency freq, bool isEnabled, double op, string time,
-        string title)
+    /// <summary>
+    /// 创建胶囊（仅标题，无时间）
+    /// </summary>
+    private Border CreatePill(double w, ReminderFrequency freq, bool isEnabled, double op, string title)
     {
-        // 获取颜色并新建画刷，避免共享实例透明度污染
         var color = PickColor(freq, isEnabled);
         var brush = new SolidColorBrush(color) { Opacity = op };
 
         var inner = new StackPanel
         {
-            Orientation = Avalonia.Layout.Orientation.Horizontal,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(4, 0, 4, 0)
         };
-        inner.Children.Add(new TextBlock
-        {
-            Text = time,
-            FontSize = 10,
-            Foreground = new SolidColorBrush(ClrTime),
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-        });
+
         inner.Children.Add(new TextBlock
         {
             Text = title,
             FontSize = 12,
             Foreground = Brushes.White,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-            Margin = new Thickness(3, 0, 0, 0)
+            VerticalAlignment = VerticalAlignment.Center,
+            TextTrimming = TextTrimming.CharacterEllipsis
         });
 
-        var pill = new Border
+        return new Border
         {
             Width = w,
             Height = PillH,
@@ -347,10 +404,13 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             ClipToBounds = true,
             Child = inner
         };
-        Canvas.SetLeft(pill, left);
-        Canvas.SetTop(pill, Top);
-        TimelineCanvas.Children.Add(pill);
-        _pills.Add(pill);
+    }
+
+    private static double CalcW(Reminder r)
+    {
+        var titlePx = r.Title.Sum(c => c > 127 ? 12 : 7);
+        var width = Math.Max(50, Math.Min(titlePx + 24 + 16, 130));
+        return width;
     }
 
     private void MoveNow(TimeSpan tod)
@@ -388,12 +448,10 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
                     goto draw;
                 }
             }
-
-            // 所有日程同一分钟
             x = first.Left + (last.Right - first.Left) / 2;
         }
 
-        draw:
+    draw:
         if (x < 0) x = 0;
         if (x > _canvasW) x = _canvasW;
 
@@ -450,4 +508,4 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
     public bool HasItems => _hasItems;
     public new event PropertyChangedEventHandler? PropertyChanged;
     private void NotifyPropertyChanged(string n = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
-}
+}`
