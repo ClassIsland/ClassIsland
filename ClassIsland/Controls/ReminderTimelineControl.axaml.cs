@@ -359,6 +359,11 @@ public partial class ReminderTimelineControl : UserControl
     /// </summary>
     public event EventHandler<Reminder?>? ReminderSelected;
 
+    /// <summary>
+    /// 点击日程块的设置按钮时触发。
+    /// </summary>
+    public event EventHandler<Reminder?>? ReminderSettingsClicked;
+
     #region 频率→颜色转换器
     public static readonly IValueConverter FrequencyToBrushConverter =
         new FuncValueConverter<ReminderFrequency, IBrush>(f => new SolidColorBrush(f switch
@@ -479,6 +484,15 @@ public partial class ReminderTimelineControl : UserControl
         {
             SelectedReminder = reminder;
             ReminderSelected?.Invoke(this, reminder);
+            e.Handled = true;
+        }
+    }
+
+    private void ReminderSettingsButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { DataContext: Reminder reminder })
+        {
+            ReminderSettingsClicked?.Invoke(this, reminder);
             e.Handled = true;
         }
     }

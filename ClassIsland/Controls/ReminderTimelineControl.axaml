@@ -119,19 +119,31 @@
                                         Cursor="Hand"
                                         Opacity="{Binding IsEnabled, Converter={x:Static controls:ReminderTimelineControl.BoolToOpacityConverter}}"
                                         Tapped="ReminderBlock_OnTapped">
-                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                    <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto">
                                         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                                                    Text="{Binding Title}"
                                                    FontWeight="SemiBold"
                                                    FontSize="13"
                                                    Foreground="White"
                                                    TextTrimming="CharacterEllipsis" />
+                                        <Button Grid.Row="0" Grid.Column="2"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Padding="2"
+                                                Width="20" Height="20"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Top"
+                                                Cursor="Hand"
+                                                ToolTip.Tip="编辑日程"
+                                                Click="ReminderSettingsButton_OnClick">
+                                            <TextBlock Text="⚙" FontSize="10" Foreground="#DDFFFFFF" />
+                                        </Button>
                                         <TextBlock Grid.Row="1" Grid.Column="0"
                                                    Text="{Binding Time.TimeOfDay, StringFormat='{}{0:hh\\:mm}'}"
                                                    FontSize="11"
                                                    Foreground="#CCFFFFFF"
                                                    VerticalAlignment="Center" />
-                                        <Border Grid.Row="1" Grid.Column="1"
+                                        <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
                                                 Background="#44FFFFFF"
                                                 CornerRadius="8"
                                                 Padding="6 1"
