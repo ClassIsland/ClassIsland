@@ -281,10 +281,9 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             }
             else          // 多个日程：时间标签在外，分组框只含胶囊
             {
-                var iw = g.Max(r => CalcW(r));
-                var totalPillsWidth = iw * n + Gap * (n - 1);
+                var pillsWidth = g.Sum(r => CalcW(r)) + Gap * (n - 1);
                 // 分组框宽度 = 胶囊总宽 + 左右内边距（不再包含时间标签）
-                var bgW = totalPillsWidth + GrpPad * 2;
+                var bgW = pillsWidth + GrpPad * 2;
                 // 整个组占用的总宽度 = 时间标签宽度 + 分组框宽度（保持不变）
                 var groupTotalW = TimeLabelWidth + bgW;
 
@@ -310,7 +309,7 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
                 {
                     var past = r.TimeOfDay <= now.TimeOfDay;
                     var op = (r.IsEnabled ? 0.9 : 0.4) * (past ? 0.5 : 1.0);
-                    var pill = CreatePill(iw, r.Frequency, r.IsEnabled, op, r.Title);
+                    var pill = CreatePill(CalcW(r), r.Frequency, r.IsEnabled, op, r.Title);
                     pillsPanel.Children.Add(pill);
                 }
 
