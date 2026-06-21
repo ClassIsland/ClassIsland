@@ -290,6 +290,21 @@ public class ClassPlan : AttachableSettingsObject
                 }
                 break;
             case NotifyCollectionChangedAction.Replace:
+                if (e.RemoveIndexClasses >= 0 && e.RemoveIndexClasses < Classes.Count)
+                {
+                    Classes.RemoveAt(e.RemoveIndexClasses);
+                }
+
+                if (e.AddIndexClasses >= 0 && e.AddIndexClasses <= Classes.Count)
+                {
+                    var classInfo = new ClassInfo();
+                    if (TimeLayout != null)
+                    {
+                        classInfo.CurrentTimeLayout = TimeLayout;
+                        classInfo.Index = e.AddIndexClasses;
+                    }
+                    Classes.Insert(e.AddIndexClasses, classInfo);
+                }
                 break;
             case NotifyCollectionChangedAction.Move:
                 break;
@@ -299,6 +314,7 @@ public class ClassPlan : AttachableSettingsObject
                 throw new ArgumentOutOfRangeException();
         }
 
+        RefreshClassesList();
         NotifyClassesChanged();
     }
 

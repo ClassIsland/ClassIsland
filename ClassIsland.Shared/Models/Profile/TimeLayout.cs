@@ -13,6 +13,7 @@ namespace ClassIsland.Shared.Models.Profile;
 public class TimeLayout : AttachableSettingsObject
 {
     private ObservableCollection<TimeLayoutItem> _layouts = new();
+    private readonly Dictionary<TimeLayoutItem, int> _timeTypeChangeClassIndexes = new();
     private string _name = "新时间表";
     private bool _isActivated = false;
     private bool _isActivatedManually = false;
@@ -89,7 +90,9 @@ public class TimeLayout : AttachableSettingsObject
         {
             foreach (var item in e.OldItems.OfType<TimeLayoutItem>())
             {
+                item.PropertyChanging -= TimeLayoutItemOnPropertyChanging;
                 item.PropertyChanged -= TimeLayoutItemOnPropertyChanged;
+                _timeTypeChangeClassIndexes.Remove(item);
             }
         }
 
@@ -97,6 +100,7 @@ public class TimeLayout : AttachableSettingsObject
         {
             foreach (var item in e.NewItems.OfType<TimeLayoutItem>())
             {
+                item.PropertyChanging += TimeLayoutItemOnPropertyChanging;
                 item.PropertyChanged += TimeLayoutItemOnPropertyChanged;
             }
         }
@@ -108,6 +112,7 @@ public class TimeLayout : AttachableSettingsObject
     {
         foreach (var item in items)
         {
+            item.PropertyChanging += TimeLayoutItemOnPropertyChanging;
             item.PropertyChanged += TimeLayoutItemOnPropertyChanged;
         }
     }
@@ -116,15 +121,65 @@ public class TimeLayout : AttachableSettingsObject
     {
         foreach (var item in items)
         {
+            item.PropertyChanging -= TimeLayoutItemOnPropertyChanging;
             item.PropertyChanged -= TimeLayoutItemOnPropertyChanged;
+            _timeTypeChangeClassIndexes.Remove(item);
         }
+    }
+
+    private void TimeLayoutItemOnPropertyChanging(object? sender, PropertyChangingEventArgs e)
+    {
+        if (sender is not TimeLayoutItem item || e.PropertyName != nameof(TimeLayoutItem.TimeType))
+        {
+            return;
+        }
+
+        _timeTypeChangeClassIndexes[item] = GetClassIndex(item);
     }
 
     private void TimeLayoutItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (sender is TimeLayoutItem item && e.PropertyName == nameof(TimeLayoutItem.TimeType))
+        {
+            NotifyTimeLayoutItemTypeChanged(item);
+            return;
+        }
+
         LayoutObjectChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    private void NotifyTimeLayoutItemTypeChanged(TimeLayoutItem item)
+    {
+        if (!_timeTypeChangeClassIndexes.TryGetValue(item, out var removeIndexClasses))
+        {
+            removeIndexClasses = GetClassIndex(item);
+        }
+        else
+        {
+            _timeTypeChangeClassIndexes.Remove(item);
+        }
+
+        LayoutItemChanged?.Invoke(this, new TimeLayoutUpdateEventArgs()
+        {
+            Action = NotifyCollectionChangedAction.Replace,
+            AddedItems = { item },
+            RemovedItems = { item },
+            AddIndex = Layouts.IndexOf(item),
+            RemoveIndex = Layouts.IndexOf(item),
+            AddIndexClasses = GetClassIndex(item),
+            RemoveIndexClasses = removeIndexClasses
+        });
+    }
+
+    private int GetClassIndex(TimeLayoutItem item)
+    {
+        if (item.TimeType != 0)
+        {
+            return -1;
+        }
+
+        return Layouts.Where(x => x.TimeType == 0).ToList().IndexOf(item);
+    }
     /// <summary>
     /// 在指定索引处插入时间点
     /// </summary>
