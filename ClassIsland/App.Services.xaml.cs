@@ -194,6 +194,7 @@ public partial class App
         services.AddComponent<RollingComponent, RollingComponentSettingsControl>();
         services.AddComponent<GroupComponent>();
         services.AddComponent<StackComponent>();
+        services.AddComponent<ReminderTimelineComponent>();
         // 提醒提供方
         services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
         services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();

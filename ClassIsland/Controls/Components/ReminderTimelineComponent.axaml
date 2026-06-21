@@ -1,0 +1,42 @@
+<ci:ComponentBase x:Class="ClassIsland.Controls.Components.ReminderTimelineComponent"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             mc:Ignorable="d" 
+             d:DesignHeight="34" d:DesignWidth="600">
+    <ci:ComponentBase.Resources>
+        <SolidColorBrush x:Key="ClrTime">#DDDDDD</SolidColorBrush>
+    </ci:ComponentBase.Resources>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Hidden"
+                  x:Name="TimelineScroll">
+        <Canvas x:Name="TimelineCanvas" Height="34" MinWidth="60">
+            <!-- 底轨 -->
+            <Border x:Name="TrackLine"
+                    Height="1" Canvas.Top="31" Canvas.Left="12"
+                    Background="#CCCCCC" Opacity="0.5" />
+
+            <!-- 无日程提示 -->
+            <TextBlock x:Name="EmptyHint"
+                       Text="今日暂无日程"
+                       FontSize="13" Foreground="#AAAAAA"
+                       Canvas.Left="12" Canvas.Top="8"
+                       IsVisible="False" />
+
+            <!-- 日程胶囊由代码创建，添加到 TimelineCanvas.Children -->
+
+            <!-- 当前时间红线 -->
+            <Border x:Name="NowLine" IsHitTestVisible="False"
+                    Width="2" Height="30" Canvas.Top="2"
+                    Background="#E84343" CornerRadius="1" Opacity="0.9"
+                    ZIndex="20" IsVisible="False" />
+            <Border x:Name="NowDot" IsHitTestVisible="False"
+                    Width="7" Height="7" Canvas.Top="0"
+                    Background="#E84343" CornerRadius="3.5"
+                    ZIndex="20" IsVisible="False" />
+        </Canvas>
+    </ScrollViewer>
+</ci:ComponentBase>
