@@ -222,7 +222,7 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             TrackLine.IsVisible = false;
             NowLine.IsVisible = false;
             NowDot.IsVisible = false;
-            TimelineCanvas.Width = 200;
+            // EmptyHint 在 Grid 中居中，Canvas 宽度不需要特殊处理
             NotifyPropertyChanged(nameof(HasItems));
             return;
         }
