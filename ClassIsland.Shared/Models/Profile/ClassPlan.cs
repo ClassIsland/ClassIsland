@@ -218,6 +218,7 @@ public class ClassPlan : AttachableSettingsObject
     {
         if (TimeLayout != null)
         {
+            TimeLayout.Layouts.CollectionChanged -= LayoutsOnCollectionChanged;
             TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
         }
         RefreshClassesList(true);
@@ -298,6 +299,8 @@ public class ClassPlan : AttachableSettingsObject
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        NotifyClassesChanged();
     }
 
     private void LayoutsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

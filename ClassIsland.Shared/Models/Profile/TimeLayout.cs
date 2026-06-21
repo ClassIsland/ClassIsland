@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace ClassIsland.Shared.Models.Profile;
@@ -51,7 +53,8 @@ public class TimeLayout : AttachableSettingsObject
     public TimeLayout()
     {
         PropertyChanged += OnPropertyChanged;
-        Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
+        Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+        AttachLayoutItems(Layouts);
     }
 
     /// <summary>
@@ -78,6 +81,48 @@ public class TimeLayout : AttachableSettingsObject
                 //LayoutObjectChanged?.Invoke(this, EventArgs.Empty);
                 break;
         }
+    }
+
+    private void LayoutsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems != null)
+        {
+            foreach (var item in e.OldItems.OfType<TimeLayoutItem>())
+            {
+                item.PropertyChanged -= TimeLayoutItemOnPropertyChanged;
+            }
+        }
+
+        if (e.NewItems != null)
+        {
+            foreach (var item in e.NewItems.OfType<TimeLayoutItem>())
+            {
+                item.PropertyChanged += TimeLayoutItemOnPropertyChanged;
+            }
+        }
+
+        OnPropertyChanged(nameof(Layouts));
+    }
+
+    private void AttachLayoutItems(IEnumerable<TimeLayoutItem> items)
+    {
+        foreach (var item in items)
+        {
+            item.PropertyChanged += TimeLayoutItemOnPropertyChanged;
+        }
+    }
+
+    private void DetachLayoutItems(IEnumerable<TimeLayoutItem> items)
+    {
+        foreach (var item in items)
+        {
+            item.PropertyChanged -= TimeLayoutItemOnPropertyChanged;
+        }
+    }
+
+    private void TimeLayoutItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        LayoutObjectChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -157,7 +202,11 @@ public class TimeLayout : AttachableSettingsObject
         set
         {
             if (Equals(value, _layouts)) return;
+            _layouts.CollectionChanged -= LayoutsOnCollectionChanged;
+            DetachLayoutItems(_layouts);
             _layouts = value;
+            _layouts.CollectionChanged += LayoutsOnCollectionChanged;
+            AttachLayoutItems(_layouts);
             OnPropertyChanged();
         }
     }
