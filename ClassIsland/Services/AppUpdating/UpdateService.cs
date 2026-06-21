@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -18,6 +19,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Updating;
@@ -65,16 +67,13 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private static string UpdateDistributionInfoPath { get; } = Path.Combine(UpdateCachePath, "DistributionInfo.json");
     private static string UpdateDistributionMetadataPath { get; } = Path.Combine(UpdateCachePath, "DistributionMetadata.json");
     
-    private const string AppComponentName = "app";
-    
-    private const string LauncherComponentName = "launcher";
-
-    private static readonly string[] Components = [AppComponentName, LauncherComponentName];
     public static readonly string[] AllowedPackageTypes = ["folder", "folderClassic", "installer"];
 
     private CancellationTokenSource? _downloadCancellationTokenSource;
     private int _downloadedCount = 0;
     private int _downloadingCountTotal = 0;
+    private bool _isDownloadingProgressIndeterminate = false;
+    private Exception? _deployErrorException;
 
     public ObservableCollection<DownloadTaskInfo> DownloadTasks { get; } = [];
 
@@ -105,6 +104,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         get => _currentWorkingMessage;
         set => SetField(ref _currentWorkingMessage, value);
+    }
+
+    public bool IsDownloadingProgressIndeterminate
+    {
+        get => _isDownloadingProgressIndeterminate;
+        set => SetField(ref _isDownloadingProgressIndeterminate, value);
     }
 
     private Settings Settings => SettingsService.Settings;
@@ -178,13 +183,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         set => SetField(ref _networkErrorException, value);
     }
 
+    public Exception? DeployErrorException
+    {
+        get => _deployErrorException;
+        set => SetField(ref _deployErrorException, value);
+    }
+
     public async Task<bool> AppStartup()
     {
-        if (Settings.UpdateMode < 1)
-        {
-            return false;
-        }
-        
         _ = AppStartupBackground();
         return false;
     }
@@ -197,6 +203,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             await PlatformServices.DesktopToastService.ShowToastAsync("更新成功",
                 $"应用已更新到 {AppBase.AppVersion}，点击以查看详细信息。", UpdateNotificationClickedCallback);
             Settings.LastUpdateStatus = UpdateStatus.UpToDate;
+        }
+        
+        if (Settings.UpdateMode < 1)
+        {
+            return;
         }
         
         await CheckUpdateAsync();
@@ -251,6 +262,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         if (!isCancel)
         {
             NetworkErrorException = null;
+            DeployErrorException = null;
         }
         try
         {
@@ -323,6 +335,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task DownloadUpdateAsync()
     {
+        IsDownloadingProgressIndeterminate = true;
         if (!AllowedPackageTypes.Contains(AppBase.Current.PackagingType))
         {
             return;
@@ -381,7 +394,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 ChunkCount = 4,
                 ParallelCount = 4,
                 ParallelDownload = true,
-                Timeout = 60_000
+                BlockTimeout = 60_000,
+                HttpClientTimeout = 60_000
             };
             // key 是 hash（HEX）
             Dictionary<string, (string Name, FileMapFile FileInfo)> filesHashed = [];
@@ -393,7 +407,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
             Logger.LogTrace("正在计算要下载的文件");
             var prevFileMapPath = Path.Combine(Environment.CurrentDirectory, "files.json");
+            var prevFileMapUserVarsPath = Path.Combine(Environment.CurrentDirectory, "files.uvars.json");
             var prevFileMap = new FileMap();
+            var prevUserVars = new Dictionary<string, string>();
+            var prevFileMapUserVarsLoadSuccess = false;
             if (File.Exists(prevFileMapPath))
             {
                 try
@@ -405,30 +422,65 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     Logger.LogWarning(e, "无法加载当前版本的文件图 {}", prevFileMapPath);
                 }
             }
+            if (File.Exists(prevFileMapUserVarsPath))
+            {
+                try
+                {
+                    prevUserVars = ConfigureFileHelper.LoadConfigUnWrapped<Dictionary<string, string>>(prevFileMapUserVarsPath, false);
+                    prevFileMapUserVarsLoadSuccess = true;
+                }
+                catch (Exception e)
+                {
+                    Logger.LogWarning(e, "无法加载当前版本的部署用户变量 {}", prevFileMapUserVarsPath);
+                }
+            }
+            var vars = ConfigureFileHelper.CopyObject(prevFileMap.Variables);
+            if (prevFileMapUserVarsLoadSuccess)
+            {
+                foreach (var (k, v) in prevUserVars)
+                {
+                    vars[k] = v;
+                }
+            }
 
+            var root = CommonDirectories.AppPackageRoot;
             foreach (var (id, component) in fileMap.Components)
             {
-                if (!Components.Contains(id))
-                {
-                    continue;
-                }
-
                 var prevComp = prevFileMap.Components.GetValueOrDefault(id);
                 var existedFiles = new List<string>();
                 deploymentLock.ExistedFiles[id] = existedFiles;
 
-                foreach (var (path, file) in component.Files)
+                string? prevCompRoot = null;
+                if (prevFileMapUserVarsLoadSuccess)
                 {
-                    if (component.AllowDiffUpdate &&
-                        prevComp?.Files.GetValueOrDefault(path)?.FileSha512.SequenceEqual(file.FileSha512) == true)
+                    prevCompRoot = Path.GetFullPath(Path.Combine(root,
+                        VariableStringHelpers.ExpandString(component.Root, vars)));
+                    if (!PathHelpers.IsSafePath(root, prevCompRoot))
                     {
-                        existedFiles.Add(path);
-                        Logger.LogTrace("SKIP {}/{}", id, path);
-                        continue;
+                        throw new InvalidOperationException("文件图组件根目录无效");
+                    }
+                    deploymentLock.ComponentRoots[id] = prevCompRoot;
+                }
+
+                foreach (var (path, fileInfo) in component.Files)
+                {
+                    if (prevFileMapUserVarsLoadSuccess && prevCompRoot != null &&
+                        Path.Exists(Path.Combine(prevCompRoot, path)) &&
+                        component.AllowDiffUpdate &&
+                        prevComp?.Files.GetValueOrDefault(path)?.FileSha512.SequenceEqual(fileInfo.FileSha512) == true)
+                    {
+                        await using var file = File.OpenRead(Path.Combine(prevCompRoot, path));
+                        var hash = await SHA512.HashDataAsync(file, cancellationToken);
+                        if (hash.SequenceEqual(fileInfo.FileSha512))
+                        {
+                            existedFiles.Add(path);
+                            Logger.LogTrace("SKIP {}/{}", id, path);
+                            continue;
+                        }
                     }
 
                     Logger.LogTrace("ADD {}/{}", id, path);
-                    filesHashed.TryAdd(Convert.ToHexString(file.FileSha512), (Path.GetFileName(path), file));
+                    filesHashed.TryAdd(Convert.ToHexString(fileInfo.FileSha512), (Path.GetFileName(path), fileInfo));
                 }
             }
 
@@ -445,6 +497,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             };
             DownloadedCount = 0;
             DownloadingCountTotal = filesHashed.Count;
+            IsDownloadingProgressIndeterminate = false;
             Logger.LogInformation("开始下载更新，要下载 {} 个文件", filesHashed.Count);
             var downloadTasksMap = new Dictionary<string, DownloadTaskInfo>();
             DownloadTasks.Clear();
@@ -533,7 +586,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
         finally
         {
-            CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+            if (CurrentWorkingStatus == UpdateWorkingStatus.DownloadingUpdates)
+            {
+                CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+            }
             _downloadCancellationTokenSource = null;
         }
     }
@@ -555,6 +611,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
 
         _downloadCancellationTokenSource = null;
+        Settings.LastUpdateStatus = UpdateStatus.UpToDate;
         CurrentWorkingStatus = UpdateWorkingStatus.Idle;
         await RemoveDownloadedFiles(true);
     }
@@ -580,6 +637,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task ExtractUpdateAsync()
     {
+        DeployErrorException = null;
         if (!AllowedPackageTypes.Contains(AppBase.Current.PackagingType))
         {
             return;
@@ -629,11 +687,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             
             foreach (var (id, component) in fileMap.Components)
             {
-                if (!Components.Contains(id))
-                {
-                    continue;
-                }
-
                 var existedFiles = deploymentLock.ExistedFiles.GetValueOrDefault(id, []);
 
                 foreach (var (path, fileInfo) in component.Files.Where(x =>
@@ -660,7 +713,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                         var hash = await SHA512.HashDataAsync(file);
                         if (!hash.SequenceEqual(fileInfo.FileSha512))
                         {
-                            throw new InvalidOperationException($"文件 {path} 的 SHA512 校验失败 ");
+                            throw new InvalidOperationException($"文件 {id}/{path} 的 SHA512 校验失败 ");
                         }
                     }
                 }
@@ -679,26 +732,52 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             
             foreach (var (id, component) in fileMap.Components)
             {
-                if (!Components.Contains(id))
-                {
-                    continue;
-                }
-                
                 var compRoot = Path.Combine(root,
                     VariableStringHelpers.ExpandString(component.Root, fileMap.Variables));
 
-                if (component.Files.Any(x =>
-                        Path.GetRelativePath(root, Path.Combine(compRoot, x.Key)).StartsWith("..") &&
-                        !Path.IsPathRooted(Path.Combine(compRoot, x.Key))
-                    ))
+                if (!PathHelpers.IsSafePath(root, compRoot) || 
+                    component.Files.Any(x => 
+                        !PathHelpers.IsSafePath(compRoot, x.Key)))
                 {
                     throw new InvalidOperationException("文件图发现非法文件路径");
                 }
-            }
 
-            Logger.LogInformation("正在准备部署");
-            
+                var existedFiles = deploymentLock.ExistedFiles.GetValueOrDefault(id, []);
+                var existedFilesRoot = deploymentLock.ComponentRoots.GetValueOrDefault(id);
+
+                foreach (var (path, fileInfo) in component.Files)
+                {
+                    var targetPath = Path.Combine(compRoot, path);
+
+                    if (component.AllowDiffUpdate && existedFiles.Contains(path) && existedFilesRoot != null)
+                    {
+                        var existedPath = Path.Combine(existedFilesRoot, path);
+                        if (Path.Exists(existedPath))
+                        {
+                            await using var file = File.OpenRead(existedPath);
+                            var hash = await SHA512.HashDataAsync(file);
+                            if (hash.SequenceEqual(fileInfo.FileSha512))
+                            {
+                                Logger.LogTrace("Deploy Check EXISTED {} -> {}", existedPath, targetPath);
+                                continue;
+                            }
+                        }
+                    }
+                    
+                    var hashHex = Convert.ToHexString(fileInfo.FileSha512);
+                    var fullPath = Path.Combine(extractedPath, hashHex[..2], hashHex);
+                    if (File.Exists(fullPath))
+                    {
+                        Logger.LogTrace("Deploy EXISTED {} -> {}", fullPath, targetPath);
+                        continue;
+                    }
+
+                    throw new InvalidOperationException($"文件 {id}/{path} 未找到部署源");
+                }
+            }
             Logger.LogInformation("Variables: {}", JsonSerializer.Serialize(fileMap.Variables));
+            
+            Logger.LogInformation("正在准备部署");
 
             var appPath = Path.Combine(root,
                 VariableStringHelpers.ExpandString(fileMap.Components["app"].Root, fileMap.Variables));
@@ -708,45 +787,41 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 await File.WriteAllTextAsync(Path.Combine(appPath, ".partial"), "");
             }
             
+            
             foreach (var (id, component) in fileMap.Components)
             {
-                if (!Components.Contains(id))
-                {
-                    continue;
-                }
-                
                 var existedFiles = deploymentLock.ExistedFiles.GetValueOrDefault(id, []);
+                var existedFilesRoot = deploymentLock.ComponentRoots.GetValueOrDefault(id);
                 var compRoot = Path.Combine(root,
                     VariableStringHelpers.ExpandString(component.Root, fileMap.Variables));
 
-                foreach (var (path, fileInfo) in component.Files)
+                await Parallel.ForEachAsync(component.Files, new ParallelOptions()
                 {
+                    MaxDegreeOfParallelism = 16
+                }, async (pair, token) =>
+                {
+                    var (path, fileInfo) = pair;
                     var targetPath = Path.Combine(compRoot, path);
                     var dir = Path.GetDirectoryName(targetPath);
                     if (dir != null && !Directory.Exists(dir))
                     {
                         Directory.CreateDirectory(dir);
                     }
-                    
-                    if (component.AllowDiffUpdate && existedFiles.Contains(path) && id is "app")
+
+                    if (component.AllowDiffUpdate && existedFiles.Contains(path) && existedFilesRoot != null)
                     {
-                        var existedFileRoot = id switch
-                        {
-                            "app" => Environment.CurrentDirectory,
-                            _ => throw new ArgumentOutOfRangeException()
-                        };
-                        var existedPath = Path.Combine(existedFileRoot, path);
-                        
+                        var existedPath = Path.Combine(existedFilesRoot, path);
+
                         Logger.LogTrace("Deploy Copy EXISTED {} -> {}", existedPath, targetPath);
                         File.Copy(existedPath, targetPath, true);
-                        continue;
+                        return;
                     }
-                    
+
                     var hashHex = Convert.ToHexString(fileInfo.FileSha512);
                     var fullPath = Path.Combine(extractedPath, hashHex[..2], hashHex);
                     Logger.LogTrace("Deploy Copy {} -> {}", fullPath, targetPath);
                     File.Copy(fullPath, targetPath, true);
-                }
+                });
             }
 
             if (OperatingSystem.IsLinux() && AppBase.Current.PackagingType == "folder")
@@ -764,6 +839,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 }
             }
             File.Copy(Path.Combine(UpdateTempPath, "FileMap.json"), Path.Combine(appPath, "files.json"));
+            ConfigureFileHelper.SaveConfig(Path.Combine(appPath, "files.uvars.json"), fileMap.Variables);
             
             Logger.LogInformation("正在激活新的部署");
             
@@ -784,6 +860,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
         catch (Exception e)
         {
+            DeployErrorException = e;
             Logger.LogError(e, "无法部署应用更新");
             await RemoveDownloadedFiles(true);
         }
@@ -791,6 +868,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             CurrentWorkingStatus = UpdateWorkingStatus.Idle;
         }
+
+        return;
+
+        string GetExistedFileRoot(string id) => id switch
+        {
+            "app" => Environment.CurrentDirectory,
+            _ => throw new ArgumentOutOfRangeException()
+        }; 
     }
 
     public void CleanupPrevDeployments()

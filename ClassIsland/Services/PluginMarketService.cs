@@ -139,7 +139,8 @@ public class PluginMarketService : ObservableRecipient, IPluginMarketService
                     .WithFileLocation(archive)
                     .WithConfiguration(new DownloadConfiguration()
                     {
-                        Timeout = 10_000
+                        BlockTimeout = 10_000,
+                        HttpClientTimeout = 10_000
                     })
                     .Build();
                 var i1 = i;
