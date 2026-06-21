@@ -81,7 +81,10 @@ public partial class UpdateSettingsPage : SettingsPageBase
     private async void ButtonDownloadUpdate_OnClick(object sender, RoutedEventArgs e)
     {
         await ViewModel.UpdateService.DownloadUpdateAsync();
-        await ViewModel.UpdateService.ExtractUpdateAsync();
+        if (ViewModel.SettingsService.Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
+        {
+            await ViewModel.UpdateService.ExtractUpdateAsync();
+        }
     }
 
     private void UpdateChannelInfo()
@@ -141,6 +144,11 @@ public partial class UpdateSettingsPage : SettingsPageBase
     private void InfoBarError_OnCloseButtonClick(InfoBar sender, EventArgs args)
     {
         ViewModel.UpdateService.NetworkErrorException = null;
+    }
+    
+    private void InfoBarDeployError_OnCloseButtonClick(InfoBar sender, EventArgs args)
+    {
+        ViewModel.UpdateService.DeployErrorException = null;
     }
 
     private void ButtonRestart_OnClick(object? sender, RoutedEventArgs e)
