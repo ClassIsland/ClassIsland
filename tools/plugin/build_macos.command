@@ -32,6 +32,7 @@ function echo_debug() {
 # 初始化路径
 PROJECT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 PROJECT_ROOT=$(cd "$PROJECT_DIR/../.." && pwd)
+RESTORE_TARGET="ClassIsland.Filter.MacOs.slnf"
 DOTNET_INSTALL_URL="https://dot.net/v1/dotnet-install.sh"
 DOTNET_INSTALL_DIR="${DOTNET_INSTALL_DIR:-$HOME/.dotnet}"
 DOTNET_INSTALL_FILE="${TMPDIR:-/tmp}/dotnet-install.sh"
@@ -187,6 +188,6 @@ fi
 
 echo_info "[6/6] dotnet restore"
 
-dotnet restore
+dotnet restore "$RESTORE_TARGET"
 
-echo_success "全部环境准备完成，dotnet restore 已完成。"
+echo_success "全部环境准备完成，dotnet restore $RESTORE_TARGET 已完成。"
