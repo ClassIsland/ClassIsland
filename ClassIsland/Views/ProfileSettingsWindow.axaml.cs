@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -288,7 +290,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         e.Cancel = true;
         _isOpen = false;
-        SaveReminderEdits();
+        SaveReminderEdits(true);
         ViewModel.ProfileService.SaveProfile();
         Hide();
     }
@@ -316,17 +318,59 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private Reminder? _lastEditedReminder;
 
-    private void SaveReminderEdits()
+    // 防抖：合并短时间内的多次日程编辑写入请求
+    private CancellationTokenSource? _reminderSaveDebounceCts = null;
+    private static readonly TimeSpan ReminderSaveDebounceInterval = TimeSpan.FromMilliseconds(500);
+
+    private void SaveReminderEdits(bool immediate = false)
     {
         if (_lastEditedReminder != null && _drawerReminderEditor != null)
         {
             _drawerReminderEditor.ApplyTo(_lastEditedReminder);
-            _lastEditedReminder.NotifyPropertiesChanged();
-            ViewModel.ProfileService.SaveProfile();
 
-            // 编辑后立即检查，确保新设定的日程能及时触发
-            var reminderService = IAppHost.GetService<ScheduleReminderService>();
-            reminderService?.RequestImmediateCheck();
+            if (immediate)
+            {
+                // 窗口/抽屉关闭时立即保存，确保数据不丢失
+                _lastEditedReminder.NotifyPropertiesChanged();
+                ViewModel.ProfileService.SaveProfile();
+                var reminderService = IAppHost.GetService<ScheduleReminderService>();
+                reminderService?.RequestImmediateCheck();
+            }
+            else
+            {
+                // 编辑中防抖：
+                //   ApplyTo 即时更新内存（Title 通过 setter 自然触发 PropertyChanged，实时刷新标题）；
+                //   全量 PropertyChanged 通知 + 磁盘写入合并到防抖到期后执行，避免每按一次键都触发
+                //   11 个 PropertyChanged 事件导致 UI 卡顿。
+                var reminderToNotify = _lastEditedReminder;
+                var oldCts = _reminderSaveDebounceCts;
+                _reminderSaveDebounceCts = new CancellationTokenSource();
+                oldCts?.Cancel();
+                oldCts?.Dispose();
+                var token = _reminderSaveDebounceCts.Token;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Task.Delay(ReminderSaveDebounceInterval, token).ConfigureAwait(false);
+                        token.ThrowIfCancellationRequested();
+
+                        // 全量 UI 通知（等待 UI 线程执行完成，避免 Post 的 fire-and-forget 问题）
+                        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            reminderToNotify.NotifyPropertiesChanged();
+                        }).GetTask().ConfigureAwait(false);
+                        token.ThrowIfCancellationRequested();
+                        ViewModel.ProfileService.SaveProfile();
+                        var reminderService = IAppHost.GetService<ScheduleReminderService>();
+                        reminderService?.RequestImmediateCheck();
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // 被新的编辑请求取消，属于正常流程
+                    }
+                }, token);
+            }
         }
     }
 
@@ -407,7 +451,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void CloseReminderDrawer()
     {
-        SaveReminderEdits();
+        SaveReminderEdits(true);
         ViewModel.IsDrawerOpen = false;
     }
 

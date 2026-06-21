@@ -46,6 +46,9 @@ public class ScheduleReminderService : IHostedService, IDisposable
     // 精确模式（分钟精度）：检查间隔，固定 60 秒
     private static readonly TimeSpan PreciseCheckInterval = TimeSpan.FromSeconds(60);
 
+    // 待保存标记：每个提醒触发时不立即写入，而在本轮检查结束时统一写入
+    private bool _pendingSave = false;
+
     // 最长追赶窗口：防止休眠后大量历史提醒涌出
     private static readonly TimeSpan MaxCatchUpWindow = TimeSpan.FromHours(6);
 
@@ -121,6 +124,7 @@ public class ScheduleReminderService : IHostedService, IDisposable
         try
         {
             var provider = ResolveProvider();
+            FlushPendingSave();
             if (provider == null)
                 return;
 
@@ -144,11 +148,23 @@ public class ScheduleReminderService : IHostedService, IDisposable
             }
 
             CleanupDedupSet(now);
+            FlushPendingSave();
         }
         finally
         {
             _running = false;
         }
+    }
+
+    /// <summary>
+    /// 将待处理的 Profile 写入刷入磁盘。
+    /// 将多次触发时的写入请求合并为一次，避免频繁完整写入整个档案。
+    /// </summary>
+    private void FlushPendingSave()
+    {
+        if (!_pendingSave) return;
+        _pendingSave = false;
+        _profileService.SaveProfile();
     }
 
     private async Task CheckRemindersWindowBased(DateTime now, ReminderNotificationProviderSettings settings, ReminderNotificationProvider provider)
@@ -298,7 +314,7 @@ public class ScheduleReminderService : IHostedService, IDisposable
             }
 
             rem.AdvanceNextOccurrence();
-            _profileService.SaveProfile();
+            _pendingSave = true;
         }).ConfigureAwait(false);
     }
 
