@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -11,13 +13,14 @@ using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls.Components;
 
 [ComponentInfo("3ce6d794-1687-4845-842a-27fcdaaa7823", "日程时间线", "\ue8bd",
     "以横向时间线显示当天 Reminder 日程，直观查看各日程的时间位置与当前进度。")]
-public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyChanged
+public partial class ReminderTimelineComponent : ComponentBase<ReminderTimelineComponentSettings>, INotifyPropertyChanged
 {
     private readonly IProfileService _profileService;
     private readonly IExactTimeService _exactTimeService;
@@ -38,7 +41,7 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
     private const double GrpPad = 4;
     private const double PadL = 12;
     private const double PadR = 12;
-    private const int MaxDisplay = 20;
+    // MaxDisplay 已被替换为 Settings.MaxRemindersBefore / MaxRemindersAfter
     private const double TimeLabelWidth = 45;
 
     private double _canvasW;
@@ -49,6 +52,9 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
     private readonly List<Control> _pills = new();
 
     private readonly HashSet<Reminder> _subscribedReminders = new();
+
+    // 设置变更防抖
+    private CancellationTokenSource? _settingsDebounceCts;
 
     public ReminderTimelineComponent(IProfileService profileService, IExactTimeService exactTimeService)
     {
@@ -90,6 +96,10 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             if (_subscribedReminders.Add(r))
                 r.PropertyChanged += OnPropChanged;
         }
+
+        // 监听设置变更
+        if (Settings is INotifyPropertyChanged settingsNpc)
+            settingsNpc.PropertyChanged += OnSettingsChanged;
     }
 
     private void Unsubscribe()
@@ -102,6 +112,12 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
         foreach (var r in _subscribedReminders)
             r.PropertyChanged -= OnPropChanged;
         _subscribedReminders.Clear();
+
+        if (Settings is INotifyPropertyChanged settingsNpc)
+            settingsNpc.PropertyChanged -= OnSettingsChanged;
+        _settingsDebounceCts?.Cancel();
+        _settingsDebounceCts?.Dispose();
+        _settingsDebounceCts = null;
     }
 
     private void OnSvcChanged(object? s, PropertyChangedEventArgs e)
@@ -162,6 +178,38 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
         }
     }
 
+    private void OnSettingsChanged(object? s, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(ReminderTimelineComponentSettings.GroupsBefore)
+            or nameof(ReminderTimelineComponentSettings.GroupsAfter)
+            or nameof(ReminderTimelineComponentSettings.MaxPerGroup))
+        {
+            if (!_isAttached) return;
+            _settingsDebounceCts?.Cancel();
+            _settingsDebounceCts?.Dispose();
+            _settingsDebounceCts = new CancellationTokenSource();
+            var token = _settingsDebounceCts.Token;
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(200, token).ConfigureAwait(false);
+                    if (!token.IsCancellationRequested)
+                    {
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            if (_isAttached) Rebuild();
+                        });
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // 被新的设置变更取消，正常流程
+                }
+            }, token);
+        }
+    }
+
     private void StartTimer()
     {
         StopTimer();
@@ -208,21 +256,42 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
 
         var now = _exactTimeService.GetCurrentLocalDateTime();
         var today = now.Date;
-        var reminders = _profileService.Profile.Reminders
+        var allReminders = _profileService.Profile.Reminders
             .Where(r => IsOnDate(r, today))
             .OrderBy(r => r.TimeOfDay.TotalMinutes)
-            .Take(MaxDisplay)
             .ToList();
 
-        _hasItems = reminders.Count > 0;
+        // 先按分钟分组
+        var allGroups = new List<List<Reminder>>();
+        foreach (var r in allReminders)
+        {
+            if (allGroups.Count > 0 &&
+                (int)allGroups.Last().Last().TimeOfDay.TotalMinutes == (int)r.TimeOfDay.TotalMinutes)
+                allGroups.Last().Add(r);
+            else
+                allGroups.Add([r]);
+        }
 
-        if (reminders.Count == 0)
+        // 以分组为单位，向前/向后分别限数
+        var pastGroups = allGroups
+            .Where(g => g[0].TimeOfDay <= now.TimeOfDay)
+            .TakeLast(Settings.GroupsBefore)
+            .ToList();
+        var futureGroups = allGroups
+            .Where(g => g[0].TimeOfDay > now.TimeOfDay)
+            .Take(Settings.GroupsAfter)
+            .ToList();
+
+        var groups = pastGroups.Concat(futureGroups).ToList();
+
+        _hasItems = groups.Count > 0;
+
+        if (groups.Count == 0)
         {
             EmptyHint.IsVisible = true;
             TrackLine.IsVisible = false;
             NowLine.IsVisible = false;
             NowDot.IsVisible = false;
-            // EmptyHint 在 Grid 中居中，Canvas 宽度不需要特殊处理
             NotifyPropertyChanged(nameof(HasItems));
             return;
         }
@@ -230,19 +299,9 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
         EmptyHint.IsVisible = false;
         TrackLine.IsVisible = true;
 
-        _tFirst = reminders.First().TimeOfDay.TotalMinutes;
-        _tLast = reminders.Last().TimeOfDay.TotalMinutes;
+        _tFirst = groups.First().First().TimeOfDay.TotalMinutes;
+        _tLast = groups.Last().Last().TimeOfDay.TotalMinutes;
         _visualGroups.Clear();
-
-        // 按分钟分组
-        var groups = new List<List<Reminder>>();
-        foreach (var r in reminders)
-        {
-            if (groups.Count > 0 && (int)groups.Last().Last().TimeOfDay.TotalMinutes == (int)r.TimeOfDay.TotalMinutes)
-                groups.Last().Add(r);
-            else
-                groups.Add([r]);
-        }
 
         var curX = PadL;
 
@@ -281,16 +340,21 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             }
             else          // 多个日程：时间标签在外，分组框只含胶囊
             {
-                var pillsWidth = g.Sum(r => CalcW(r)) + Gap * (n - 1);
-                // 分组框宽度 = 胶囊总宽 + 左右内边距（不再包含时间标签）
+                var maxShown = Settings.MaxPerGroup;
+                var remaining = n - maxShown;
+                var shownItems = remaining > 0 ? g.Take(maxShown).ToList() : g;
+                var hasEtc = remaining > 0;
+                var etcWidth = hasEtc ? 30.0 : 0.0;
+                var totalItems = shownItems.Count + (hasEtc ? 1 : 0); // 显示胶囊 + "等"胶囊
+                var pillsWidth = shownItems.Sum(r => CalcW(r)) + Gap * (totalItems - 1) + etcWidth;
+                // 分组框宽度 = 胶囊总宽 + 左右内边距
                 var bgW = pillsWidth + GrpPad * 2;
-                // 整个组占用的总宽度 = 时间标签宽度 + 分组框宽度（保持不变）
+                // 整个组占用的总宽度 = 时间标签宽度 + 分组框宽度
                 var groupTotalW = TimeLabelWidth + bgW;
 
                 _visualGroups.Add(((int)r0.TimeOfDay.TotalMinutes, curX, curX + groupTotalW));
 
                 // 时间标签放在分组框外侧左侧
-                // 计算透明度：与组内第一个胶囊保持一致（后续可能在此细化，当前沿用分组内逻辑）
                 double firstOp = (r0.IsEnabled ? 0.9 : 0.4) * (r0.TimeOfDay <= now.TimeOfDay ? 0.5 : 1.0);
                 var timeLabel = CreateTimeLabel(timeStr, color, firstOp);
                 Canvas.SetLeft(timeLabel, curX);
@@ -305,12 +369,18 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
                     VerticalAlignment = VerticalAlignment.Center,
                     Spacing = Gap
                 };
-                foreach (var r in g)
+                foreach (var r in shownItems)
                 {
                     var past = r.TimeOfDay <= now.TimeOfDay;
                     var op = (r.IsEnabled ? 0.9 : 0.4) * (past ? 0.5 : 1.0);
                     var pill = CreatePill(CalcW(r), r.Frequency, r.IsEnabled, op, r.Title);
                     pillsPanel.Children.Add(pill);
+                }
+                if (remaining > 0)
+                {
+                    // 超出部分显示"等"胶囊
+                    var etcPill = CreatePill(etcWidth, g[0].Frequency, g[0].IsEnabled, 0.6, $"等{remaining}");
+                    pillsPanel.Children.Add(etcPill);
                 }
 
                 var bg = new Border

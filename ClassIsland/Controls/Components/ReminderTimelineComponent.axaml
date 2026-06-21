@@ -1,9 +1,11 @@
-<ci:ComponentBase x:Class="ClassIsland.Controls.Components.ReminderTimelineComponent"
+<ci:ComponentBase x:TypeArguments="componentSettings:ReminderTimelineComponentSettings"
+             x:Class="ClassIsland.Controls.Components.ReminderTimelineComponent"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
              mc:Ignorable="d" 
              d:DesignHeight="34" d:DesignWidth="600">
     <ci:ComponentBase.Resources>
