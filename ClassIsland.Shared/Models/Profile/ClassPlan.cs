@@ -102,7 +102,6 @@ public class ClassPlan : AttachableSettingsObject
     /// </summary>
     public event EventHandler? ClassesChanged;
 
-
     private void NotifyClassesChanged()
     {
         ClassesChanged?.Invoke(this, EventArgs.Empty);
