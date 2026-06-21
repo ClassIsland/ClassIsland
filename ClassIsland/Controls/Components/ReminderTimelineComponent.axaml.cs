@@ -385,13 +385,15 @@ public partial class ReminderTimelineComponent : ComponentBase, INotifyPropertyC
             Margin = new Thickness(4, 0, 4, 0)
         };
 
+        var maxTextWidth = Math.Max(0, w - 8); // 减去 StackPanel 左右 Margin (4+4)
         inner.Children.Add(new TextBlock
         {
             Text = title,
             FontSize = 12,
             Foreground = Brushes.White,
             VerticalAlignment = VerticalAlignment.Center,
-            TextTrimming = TextTrimming.CharacterEllipsis
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            MaxWidth = maxTextWidth
         });
 
         return new Border
