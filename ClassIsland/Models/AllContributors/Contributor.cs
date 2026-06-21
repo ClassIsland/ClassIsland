@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.AllContributors;
 
-public class Contributor : ObservableRecipient
+internal class Contributor : ObservableRecipient
 {
     public static readonly Dictionary<string, string> ContributionKeys = new()
     {

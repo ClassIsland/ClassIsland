@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Models;
+using ClassIsland.Models.AllContributors;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -22,6 +23,7 @@ public class AboutSettingsViewModel(IManagementService managementService, Settin
     private bool _isSayingBusy = false;
     private int _clickCount = 0;
     private int _appInfoClickCount = 0;
+    private AllContributorsRc _contributorsCache = new();
 
     public int AppIconClickCount
     {
@@ -131,6 +133,17 @@ public class AboutSettingsViewModel(IManagementService managementService, Settin
         {
             if (value == _appInfoClickCount) return;
             _appInfoClickCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    internal AllContributorsRc ContributorsCache
+    {
+        get => _contributorsCache;
+        set
+        {
+            if (Equals(value, _contributorsCache)) return;
+            _contributorsCache = value;
             OnPropertyChanged();
         }
     }

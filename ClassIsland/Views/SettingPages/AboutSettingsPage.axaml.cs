@@ -131,7 +131,7 @@ public partial class AboutSettingsPage : SettingsPageBase
         ViewModel.IsRefreshingContributors = true;
         try
         {
-            ViewModel.SettingsService.Settings.ContributorsCache =
+            ViewModel.ContributorsCache =
                 await WebRequestHelper.Default.GetJson<AllContributorsRc>(new Uri(
                     "https://ghfast.top/https://raw.githubusercontent.com/ClassIsland/ClassIsland/master/.all-contributorsrc"));
         }

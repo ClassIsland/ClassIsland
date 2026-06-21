@@ -149,7 +149,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isNotificationTopmostEnabled = true;
     private double _notificationEffectRenderingScale = 1.0;
     private bool _isNotificationEffectRenderingScaleAutoSet = false;
-    private AllContributorsRc _contributorsCache = new();
     private bool _allowNotificationSpeech = false;
     private bool _allowNotificationEffect = true;
     private bool _allowNotificationSound = false;
@@ -2508,17 +2507,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _debugGitHubAuthKey) return;
             _debugGitHubAuthKey = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public AllContributorsRc ContributorsCache
-    {
-        get => _contributorsCache;
-        set
-        {
-            if (Equals(value, _contributorsCache)) return;
-            _contributorsCache = value;
             OnPropertyChanged();
         }
     }

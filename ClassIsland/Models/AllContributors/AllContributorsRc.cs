@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.AllContributors;
 
-public class AllContributorsRc : ObservableRecipient
+internal class AllContributorsRc : ObservableRecipient
 {
     private List<Contributor> _contributors = new();
 
