@@ -417,7 +417,8 @@ public partial class ProfileSettingsWindow : MyWindow
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
             },
             Width = 32,
-            Height = 32
+            Height = 32,
+            Padding = new Thickness(0)
         };
         closeBtn.Click += (_, _) => CloseReminderDrawer();
         Grid.SetColumn(title, 0);
