@@ -22,6 +22,7 @@ using ClassIsland.Shared.Helpers;
 using Pastel;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using Avalonia.Platform;
 
 
 namespace ClassIsland.Desktop;
@@ -87,6 +88,23 @@ class Program
             .WithDeveloperTools()
 #endif
             .UsePlatformDetect()
+            .AfterPlatformServicesSetup(_ =>
+            {
+                var appAssembly = typeof(App).Assembly;
+                var assemblyName = appAssembly.GetName().Name!;
+
+                var fallback = new StandardAssetLoader(appAssembly);
+
+                var overlay = new OverlayAssetLoader(
+                    fallback,
+                    appAssembly,
+                    assemblyName: assemblyName,
+                    avaresPrefix: "/Assets/",
+                    physicalRoot: OperatingSystem.IsMacOS() ? "../Resources/Assets/" 
+                        : Path.Combine(Path.GetDirectoryName(appAssembly.Location) ?? "./", "Assets/"));
+
+                BindAssetLoader(overlay);
+            })
             .LogToHostSink();
 
         return r.StartWithClassicDesktopLifetime(args);
@@ -96,6 +114,31 @@ class Program
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
         .UsePlatformDetect()
         .LogToHostSink();
+
+    private static void BindAssetLoader(IAssetLoader assetLoader)
+    {
+        const BindingFlags flags = BindingFlags.Public
+                                   | BindingFlags.NonPublic
+                                   | BindingFlags.Static
+                                   | BindingFlags.Instance;
+
+        var locatorType = typeof(AvaloniaLocator);
+        var locator = locatorType.GetProperty("CurrentMutable", flags)?.GetValue(null)
+                      ?? throw new InvalidOperationException("Unable to get AvaloniaLocator.CurrentMutable.");
+
+        var bindMethod = locatorType.GetMethod("Bind", flags)?.MakeGenericMethod(typeof(IAssetLoader))
+                         ?? throw new InvalidOperationException("Unable to get AvaloniaLocator.Bind<T>().");
+
+        var registration = bindMethod.Invoke(locator, null)
+                           ?? throw new InvalidOperationException("Unable to bind Avalonia IAssetLoader.");
+
+        var toConstantMethod = registration.GetType()
+                                   .GetMethod("ToConstant", flags)?
+                                   .MakeGenericMethod(typeof(IAssetLoader))
+                               ?? throw new InvalidOperationException("Unable to get AvaloniaLocator.ToConstant<T>().");
+
+        toConstantMethod.Invoke(registration, [assetLoader]);
+    }
 
     static void ActivatePlatforms(out Action postInitCallback, CancellationToken stopToken)
     {

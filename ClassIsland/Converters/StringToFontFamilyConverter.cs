@@ -7,19 +7,24 @@ namespace ClassIsland.Converters;
 
 public class StringToFontFamilyConverter : IValueConverter
 {
+    public const string UseSharedDefaultParameter = "UseSharedDefault";
+
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         try
         {
             var v = (string)value;
             var fontFamily = FontFamily.Parse(v);
-            return fontFamily.ToString() == MainWindow.DefaultFontFamily.ToString()
+            return parameter as string == UseSharedDefaultParameter &&
+                   fontFamily.ToString() == MainWindow.DefaultFontFamily.ToString()
                 ? MainWindow.DefaultFontFamily
                 : fontFamily;
         }
         catch (Exception)
         {
-            return MainWindow.DefaultFontFamily;
+            return parameter as string == UseSharedDefaultParameter
+                ? MainWindow.DefaultFontFamily
+                : FontFamily.Parse(MainWindow.DefaultFontFamilyKey);
         }
     }
 
