@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using AsyncImageLoader;
@@ -13,6 +14,7 @@ using ClassIsland.Controls.Tutorial;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Enums.Tutorial;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
@@ -41,11 +43,14 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private IActionService ActionService { get; }
     private IUriNavigationService UriNavigationService { get; }
     private ILogger<TutorialService> Logger { get; set; }
+    private IManagementService ManagementService { get; }
 
     private TutorialSettings Settings { get; }
 
     [ObservableProperty] private Tutorial? _currentTutorial;
-    [ObservableProperty] private TutorialParagraph? _currentParagraph;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsTutorialRunning))]
+    private TutorialParagraph? _currentParagraph;
     
     [ObservableProperty] 
     [NotifyPropertyChangedFor(nameof(IsTutorialRunning))]
@@ -57,6 +62,10 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private List<Control> AttachedAdorners { get; } = [];
     
     private TeachingTip? CurrentTeachingTip { get; set; }
+
+    private bool WasCurrentTeachingTipOpenBeforeHostChange { get; set; }
+
+    private bool AreAdornersDetachedForHostChange { get; set; }
     
     private Border? CurrentDimBorder { get; set; }
     
@@ -73,12 +82,14 @@ public partial class TutorialService : ObservableObject, ITutorialService
     public event EventHandler? TutorialStateChanged;
 
     /// <inheritdoc/>
-    public TutorialService(SettingsService settingsService, IActionService actionService, IUriNavigationService uriNavigationService, ILogger<TutorialService> logger)
+    public TutorialService(SettingsService settingsService, IActionService actionService, 
+        IUriNavigationService uriNavigationService, ILogger<TutorialService> logger, IManagementService managementService)
     {
         SettingsService = settingsService;
         ActionService = actionService;
         UriNavigationService = uriNavigationService;
         Logger = logger;
+        ManagementService = managementService;
 
         Settings = ConfigureFileHelper.LoadConfig<TutorialSettings>(Path.Combine(CommonDirectories.AppConfigPath,
             "Tutorial.json"));
@@ -91,6 +102,15 @@ public partial class TutorialService : ObservableObject, ITutorialService
         };
         this.ObservableForProperty(x => x.IsTutorialRunning)
             .Subscribe(_ => TutorialStateChanged?.Invoke(this, EventArgs.Empty));
+        Context["classisland.management.policy.getDisableProfileClassPlanEditing"] = () => ManagementService.Policy.DisableProfileClassPlanEditing;
+        Context["classisland.management.policy.getDisableProfileTimeLayoutEditing"] = () => ManagementService.Policy.DisableProfileTimeLayoutEditing;
+        Context["classisland.management.policy.getDisableProfileSubjectsEditing"] = () => ManagementService.Policy.DisableProfileSubjectsEditing;
+        Context["classisland.management.policy.getDisableProfileEditing"] = () => ManagementService.Policy.DisableProfileEditing;
+        Context["classisland.management.policy.getDisableSettingsEditing"] = () => ManagementService.Policy.DisableSettingsEditing;
+        Context["classisland.management.policy.getDisableSplashCustomize"] = () => ManagementService.Policy.DisableSplashCustomize;
+        Context["classisland.management.policy.getDisableDebugMenu"] = () => ManagementService.Policy.DisableDebugMenu;
+        Context["classisland.management.policy.getAllowExitManagement"] = () => ManagementService.Policy.AllowExitManagement;
+        Context["classisland.management.policy.getDisableEasterEggs"] = () => ManagementService.Policy.DisableEasterEggs;
 
         if (SettingsService.WillMigrateInitTutorial)
         {
@@ -99,8 +119,8 @@ public partial class TutorialService : ObservableObject, ITutorialService
     }
 
     public ObservableDictionary<string, object?> Context { get; } = [];
-    
-    public bool IsTutorialRunning => CurrentSentence != null;
+
+    public bool IsTutorialRunning => CurrentParagraph is not null || CurrentSentence is not null;
 
     private void SaveConfig()
     {
@@ -257,10 +277,7 @@ public partial class TutorialService : ObservableObject, ITutorialService
                 CurrentDimBorder = null;
             }
 
-            foreach (var adorner in AttachedAdorners)
-            {
-                layer?.Children.Remove(adorner);
-            }
+            layer?.Children.RemoveAll(AttachedAdorners);
         }
 
         CurrentTeachingTip = null;
@@ -279,6 +296,67 @@ public partial class TutorialService : ObservableObject, ITutorialService
         layer?.Children.Add(adorner);
         AdornerLayer.SetAdornedElement(adorner, target);
         AttachedAdorners.Add(adorner);
+    }
+
+    public void DetachCurrentAdornersForHostChange(TopLevel topLevel)
+    {
+        if (AttachedToplevel != topLevel || AttachedToplevel.Content is not Visual visual || AttachedAdorners.Count <= 0)
+        {
+            return;
+        }
+
+        var layer = AdornerLayer.GetAdornerLayer(visual);
+        if (layer == null)
+        {
+            return;
+        }
+
+        WasCurrentTeachingTipOpenBeforeHostChange = CurrentTeachingTip?.IsOpen == true;
+        if (CurrentTeachingTip != null)
+        {
+            CurrentTeachingTip.IsOpen = false;
+        }
+
+        layer.Children.RemoveAll(AttachedAdorners);
+
+        AreAdornersDetachedForHostChange = true;
+    }
+
+    public void ReattachCurrentAdornersAfterHostChange(TopLevel topLevel)
+    {
+        if (!AreAdornersDetachedForHostChange || AttachedToplevel != topLevel || AttachedToplevel.Content is not Visual visual)
+        {
+            return;
+        }
+
+        var layer = AdornerLayer.GetAdornerLayer(visual);
+        if (layer == null)
+        {
+            return;
+        }
+
+        foreach (var adorner in AttachedAdorners.ToImmutableArray()
+                     .Where(adorner => !layer.Children.Contains(adorner)))
+        {
+            layer.Children.Add(adorner);
+        }
+
+        var teachingTip = CurrentTeachingTip;
+        var shouldReopenTeachingTip = WasCurrentTeachingTipOpenBeforeHostChange;
+        AreAdornersDetachedForHostChange = false;
+        WasCurrentTeachingTipOpenBeforeHostChange = false;
+        if (teachingTip == null || !shouldReopenTeachingTip)
+        {
+            return;
+        }
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (CurrentTeachingTip == teachingTip && CurrentSentence != null)
+            {
+                teachingTip.IsOpen = true;
+            }
+        }, DispatcherPriority.Background);
     }
 
     private void StartSentence(TutorialSentence sentence)
@@ -490,9 +568,9 @@ public partial class TutorialService : ObservableObject, ITutorialService
         ControllerWindow = null;
         CleanupPrevSentence();
         TrySetCurrentParagraphCompleted();
-        CurrentSentence = null;
         CurrentParagraph = null;
         CurrentTutorial = null;
+        CurrentSentence = null;
         TutorialStateChanged?.Invoke(this, EventArgs.Empty);
     }
     

@@ -45,7 +45,7 @@ public partial class MainViewModel : ObservableRecipient
     private Rect _actualClientBound = new();
     private ObservableCollection<Control> _effectControls = [];
     private bool _isEditMode = false;
-    private bool _editModeIsWindowMode = false;
+    private bool _editModeIsWindowMode = true;
     private EditModeView? _editModeView = null;
 
 

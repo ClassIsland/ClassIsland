@@ -21,6 +21,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Controls.EditMode;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
@@ -130,6 +131,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private double _latestDpiX = 1.0;
     private double _latestDpiY = 1.0;
 
+    private const int WindowedEditModeScreenMargin = 60;
+
     private DispatcherTimer HighFreqTopmostRecheckTimer { get; } = new()
     {
         Interval = TimeSpan.FromMilliseconds(1)
@@ -225,7 +228,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TopmostEffectWindow = topmostEffectWindow;
         XamlThemeService = xamlThemeService;
         TutorialService = tutorialService;
-
+        
         ViewModel = new MainViewModel();
         DataContext = this;
         InitializeComponent();
@@ -250,8 +253,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
         this.UseMyWindowExt();
-
-        if (Environment.OSVersion.Version <= WindowsVersions.Win10V1809)
+        
+        if (Environment.OSVersion.Version <= WindowsVersions.Win10V1803)
         {
             PseudoClasses.Set(":no-windowed-transparent", true);
         }
@@ -311,6 +314,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         ComponentPresenter.SetIsMainWindowLoaded(this, true);
+        RefreshDefaultMainWindowFont();
         StartupCompleted?.Invoke(this, EventArgs.Empty);
 
         if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
@@ -318,7 +322,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             try
             {
                 UriNavigationService.NavigateWrapped(new Uri(App.ApplicationCommand.Uri));
-            }
+            }   
             catch (Exception ex)
             {
                 // ignored
@@ -398,6 +402,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         //ProfileService.LoadProfile();
         ViewModel.Profile = ProfileService.Profile;
+    }
+
+    private void RefreshDefaultMainWindowFont()
+    {
+        if (ViewModel.Settings.MainWindowFont != DefaultFontFamilyKey)
+        {
+            return;
+        }
+
+        SettingsService.Settings.NotifyPropertyChanged("MainWindowFontWeight2");
     }
     #endregion
 
@@ -515,13 +529,26 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         if (e.PropertyName == nameof(ViewModel.IsWindowMode))
         {
+            var shouldReattachTutorialAdorners = TutorialService.IsTutorialRunning && TutorialService.AttachedToplevel == this;
+            if (shouldReattachTutorialAdorners)
+            {
+                TutorialService.DetachCurrentAdornersForHostChange(this);
+            }
+
             PseudoClasses.Set(":windowed", ViewModel.IsWindowMode);
             UpdateTheme();
             if (ViewModel.IsEditMode && ViewModel.IsWindowMode)
             {
+                ApplyWindowedEditModeBounds();
                 // 编辑模式从全屏切到自由窗口时，窗口管理器可能把窗口压到后面。
                 // 延后一帧激活，确保窗口保持在前台可操作。
                 _ = Dispatcher.UIThread.InvokeAsync(Activate, DispatcherPriority.Background);
+            }
+
+            if (shouldReattachTutorialAdorners)
+            {
+                _ = Dispatcher.UIThread.InvokeAsync(() =>
+                    TutorialService.ReattachCurrentAdornersAfterHostChange(this), DispatcherPriority.Background);
             }
         }
 
@@ -801,9 +828,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private void UpdateWindowFeatures()
     {
-        var shouldUseToolWindow = ViewModel is { IsEditMode: false, IsWindowMode: false, Settings.IsScreenRecordingModeEnabled: false };
+        var isCaptureBlocked = ViewModel.Settings.IsWindowCaptureBlockingEnabled;
+        var shouldUseToolWindow = ViewModel is
+        {
+            IsEditMode: false,
+            IsWindowMode: false,
+            Settings.IsScreenRecordingModeEnabled: false
+        };
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, shouldUseToolWindow);
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, !ViewModel.IsEditMode);
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Private, isCaptureBlocked);
     }
 
     private void UpdateWindowLayer()
@@ -873,7 +907,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         var y = dockingTop 
             ? offsetAreaTop + oy - safeT
             : offsetAreaBottom - ah + oy + safeB;
-        var clientBoundsRelative = new PixelRect(0, (int)safeT, (int)aw, (int)ah)
+        var clientBoundsRelative = new PixelRect(0, (int)(safeT * dpiY), (int)aw, (int)ah)
             .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
         ViewModel.ActualClientBound = clientBoundsRelative;
         if (LayoutContainerGrid != null)
@@ -892,7 +926,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         if (updateEffectWindow)
         {
-            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
+            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX, ViewModel.IsForegroundFullscreen);
         }
     }
 
@@ -943,6 +977,31 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             Position = newPos;
         }
+    }
+
+    private void ApplyWindowedEditModeBounds()
+    {
+        GetCurrentDpi(out var dpiX, out var dpiY);
+
+        var screen = GetSelectedScreenSafe() ?? Screens.ScreenFromWindow(this);
+        if (screen == null)
+        {
+            return;
+        }
+
+        var bounds = screen.WorkingArea;
+        var width = Math.Max(bounds.Width - WindowedEditModeScreenMargin * 2, 1) / dpiX;
+        var height = Math.Max(bounds.Height - WindowedEditModeScreenMargin * 2, 1) / dpiY;
+
+        WindowState = WindowState.Normal;
+        Position = new PixelPoint(
+            bounds.X + WindowedEditModeScreenMargin,
+            bounds.Y + WindowedEditModeScreenMargin);
+        Width = width;
+        Height = height;
+        // ViewModel.ActualClientBound = new Rect(0, 0, width, height);
+        LayoutContainerGrid.Width = width;
+        LayoutContainerGrid.Height = height;
     }
     
     private void UpdateWindowPos(bool updateEffectWindow=false)
@@ -1304,6 +1363,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
         ViewModel.IsEditMode = true;
         TutorialService.PushToNextSentenceByTag("classisland.mainwindow.editMode.enter");
+        if (ManagementService.Policy.DisableSettingsEditing)
+        {
+            return;
+        }
         TutorialService.BeginNotCompletedTutorials(
             "classisland.getStarted.componentsEditing/introduction",
             "classisland.getStarted.componentsEditing/addComponent");
@@ -1445,6 +1508,32 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         });
     }
 
+    private void MainWindowEditSurface_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!ViewModel.IsEditMode
+            || e.Handled
+            || e.GetCurrentPoint(this).Properties.IsLeftButtonPressed == false
+            || !Equals(e.Source, ZoomBorder))
+        {
+            return;
+        }
+        ClearSelectedComponent();
+    }
+
+    private void ClearSelectedComponent()
+    {
+        foreach (var listBox in ViewModel.ComponentsListBoxCache)
+        {
+            listBox.SelectedItem = null;
+        }
+
+        ViewModel.SelectedComponentSettings = null;
+        if (ViewModel.EditModeView != null && ViewModel.EditModeView.ViewModel.MainDrawerContent == ViewModel.EditModeView.FindResource("ComponentSettingsDrawer"))
+        {
+            ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
+        }
+    }
+
     [RelayCommand]
     public void ShowComponentSettings(ComponentSettings? component)
     {
@@ -1464,11 +1553,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     
     private void EditableComponentsListBox_OnComponentDeleted(object? sender, EditableComponentsListBoxEventArgs e)
     {
-        ViewModel.SelectedComponentSettings = null;
-        if (ViewModel.EditModeView != null && ViewModel.EditModeView.ViewModel.MainDrawerContent == ViewModel.EditModeView.FindResource("ComponentSettingsDrawer"))
-        {
-            ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
-        }
+        ClearSelectedComponent();
     }
 
     public Point GetContainerComponentEditContainerInitPos(Point pos)

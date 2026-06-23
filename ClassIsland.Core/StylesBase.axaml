@@ -300,5 +300,42 @@
         <Setter Property="MaxHeight" Value="60"/>
     </Style>
     
+    <Style Selector=":is(Button).foreground-accent /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+        <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+    
+    <!--Accent Button-->
+    <Style Selector="SplitButton.accent">
+        <Style Selector="^  /template/ Grid > Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBorderBrush}" />
+        </Style>
+        <Style Selector="^ /template/ Grid > Button">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource AccentButtonBackground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBorderBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource AccentButtonForeground}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource AccentButtonBackgroundPointerOver}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBorderBrushPointerOver}" />
+                <Setter Property="Foreground" Value="{DynamicResource AccentButtonForegroundPointerOver}" />
+            </Style>
+
+            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource AccentButtonBackgroundPressed}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBorderBrushPressed}" />
+                <Setter Property="Foreground" Value="{DynamicResource AccentButtonForegroundPressed}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource AccentButtonBackgroundDisabled}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBorderBrushDisabled}" />
+                <Setter Property="Foreground" Value="{DynamicResource AccentButtonForegroundDisabled}" />
+            </Style>
+        </Style>
+    </Style>
+    
     <StyleInclude Source="./Themes/TextBaselineFixes.axaml"/>
 </Styles>

@@ -12,7 +12,8 @@
             <Setter Property="Padding" Value="8 0"/>
         </Style>
     </UserControl.Styles>
-    <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource AncestorType=views:DataTransferPage}}">
+    <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource AncestorType=views:DataTransferPage}}"
+                  Classes.export="{Binding ViewModel.IsExport}">
         <Grid MaxWidth="600" 
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Center">
@@ -32,6 +33,14 @@
                             <TabControl Classes="compact">
                                 <TabItem Header="导入">
                                     <StackPanel Classes="animated-intro" Spacing="2">
+                                        <controls:SettingsExpander Header="ClassIsland 2.x"
+                                                                   IsClickEnabled="True"
+                                                                   Click="SettingsExpanderImportFromClassIsland2_OnClick">
+                                            <controls:SettingsExpander.IconSource>
+                                                <controls:BitmapIconSource
+                                                    UriSource="avares://ClassIsland/Assets/AppLogo.png" />
+                                            </controls:SettingsExpander.IconSource>
+                                        </controls:SettingsExpander>
                                         <controls:SettingsExpander Header="ClassIsland 1.7.0.x"
                                                                    IsClickEnabled="True"
                                                                    Click="SettingsExpanderImportFromClassIsland1_OnClick">
@@ -46,23 +55,54 @@
                                                                    IconSource="{ci:FluentIconSource &#xe06f;}" />
                                     </StackPanel>
                                 </TabItem>
+                                <TabItem Header="导出">
+                                    <StackPanel Classes="animated-intro" Spacing="2">
+                                        <controls:InfoBar Message="此处的数据导出功能主要用于在不同 ClassIsland 实例间转移数据。若需导出诊断信息，请前往【应用设置】->【更多选项…】->【导出诊断数据】；若需备份应用数据，请使用【应用设置】->【通用】->【存储】中的备份功能。"
+                                                          IsOpen="True" IsClosable="False"/>
+                                        <controls:SettingsExpander Header="ClassIsland 2.x"
+                                                                   IsClickEnabled="True"
+                                                                   Click="SettingsExpanderExportToClassIsland2_OnClick">
+                                            <controls:SettingsExpander.IconSource>
+                                                <controls:BitmapIconSource
+                                                    UriSource="avares://ClassIsland/Assets/AppLogo.png" />
+                                            </controls:SettingsExpander.IconSource>
+                                        </controls:SettingsExpander>
+                                    </StackPanel>
+                                </TabItem>
                             </TabControl>
                         </StackPanel>
                     </Border>
                     <Border VerticalAlignment="Center">
                         <StackPanel Classes="animated-intro" Spacing="2" VerticalAlignment="Center">
-                            <TextBlock Text="选择要导入的数据" HorizontalAlignment="Center"
+                            <TextBlock HorizontalAlignment="Center"
                                        Margin="0 0 0 4"
-                                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
+                                       Theme="{StaticResource SubtitleTextBlockStyle}">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Text" Value="选择要导入的数据"/>
+                                    </Style>
+                                    <Style Selector=".export TextBlock">
+                                        <Setter Property="Text" Value="选择要导出的数据"/>
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
                             <TextBlock Text="{Binding ViewModel.ImportDescription}" 
                                        HorizontalAlignment="Center"
                                        TextAlignment="Center"
                                        TextWrapping="Wrap"
                                        Margin="0 0 0 4"/>
-                            <TextBlock Text="选择要从导入源导入的信息" 
-                                       HorizontalAlignment="Center"
+                            <TextBlock HorizontalAlignment="Center"
                                        TextAlignment="Center"
-                                       Margin="0 0 0 8"/>
+                                       Margin="0 0 0 8">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Text" Value="选择要导入的信息"/>
+                                    </Style>
+                                    <Style Selector=".export TextBlock">
+                                        <Setter Property="Text" Value="选择要导出的信息"/>
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
                             <CheckBox IsChecked="{Binding ViewModel.IsProfileSelected}">
                                 <ci:Thing IconSource="{ci:FluentIconSource &#xe699;}"
                                           VerticalAlignment="Center"
@@ -100,19 +140,43 @@
                     </Border>
                     <Border VerticalAlignment="Center">
                         <StackPanel Classes="animated-intro" Spacing="2" VerticalAlignment="Center">
-                            <TextBlock Text="导入来源" HorizontalAlignment="Center"
+                            <TextBlock HorizontalAlignment="Center"
                                        Margin="0 0 0 4"
-                                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock Text="选择要导入的数据来源。" 
-                                       HorizontalAlignment="Center"
+                                       Theme="{StaticResource SubtitleTextBlockStyle}">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Text" Value="导入来源"/>
+                                    </Style>
+                                    <Style Selector=".export TextBlock">
+                                        <Setter Property="Text" Value="导出目标"/>
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center"
                                        TextAlignment="Center"
-                                       Margin="0 0 0 8"/>
-                            
+                                       Margin="0 0 0 8">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Text" Value="选择要导入的数据来源。"/>
+                                    </Style>
+                                    <Style Selector=".export TextBlock">
+                                        <Setter Property="Text" Value="选择要导出到的目标。"/>
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
+
                             <controls:SettingsExpander Header="浏览…"
                                                        IconSource="{ci:FluentIconSource &#xe88d;}"
-                                                       Description="手动浏览导入位置"
                                                        IsClickEnabled="True"
                                                        Click="SettingsExpanderBrowse_OnClick">
+                                <controls:SettingsExpander.Styles>
+                                    <Style Selector="controls|SettingsExpander">
+                                        <Setter Property="Description" Value="手动浏览导入位置"/>
+                                    </Style>
+                                    <Style Selector=".export controls|SettingsExpander">
+                                        <Setter Property="Description" Value="手动浏览导出位置"/>
+                                    </Style>
+                                </controls:SettingsExpander.Styles>
                             </controls:SettingsExpander>
                             <Button Click="ButtonTurnBack_OnClick"
                                     ToolTip.Tip="上一步"
@@ -125,29 +189,64 @@
                     </Border>
                     <Border VerticalAlignment="Center">
                         <StackPanel Classes="animated-intro" Spacing="2" VerticalAlignment="Center">
-                            <TextBlock Text="正在导入" HorizontalAlignment="Center"
+                            <TextBlock HorizontalAlignment="Center"
                                        Margin="0 0 0 4"
-                                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock Text="请坐和放宽，导入很快就能完成。" 
-                                       HorizontalAlignment="Center"
-                                       TextAlignment="Center"
-                                       TextWrapping="Wrap"
-                                       Margin="0 0 0 4"/>
+                                       Theme="{StaticResource SubtitleTextBlockStyle}">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Text" Value="正在导入"/>
+                                    </Style>
+                                    <Style Selector=".export TextBlock">
+                                        <Setter Property="Text" Value="正在导出"/>
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap"
+                                Margin="0 0 0 4">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Text" Value="请坐和放宽，导入很快就能完成。"/>
+                                    </Style>
+                                    <Style Selector=".export TextBlock">
+                                        <Setter Property="Text" Value="请坐和放宽，导出很快就能完成。"/>
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
                             <controls:ProgressRing IsIndeterminate="True"
                                                    Width="48" Height="48"
-                                         Margin="0 8 0 0"/>
+                                                   Margin="0 8 0 0"/>
                         </StackPanel>
                     </Border>
                     <Border VerticalAlignment="Center">
                         <StackPanel Classes="animated-intro" Spacing="2" VerticalAlignment="Center">
-                            <TextBlock Text="导入完成" HorizontalAlignment="Center"
+                            <TextBlock HorizontalAlignment="Center"
                                        Margin="0 0 0 4"
-                                       Theme="{StaticResource SubtitleTextBlockStyle}"/>
-                            <TextBlock Text="已成功完成导入。" 
-                                       HorizontalAlignment="Center"
+                                       Theme="{StaticResource SubtitleTextBlockStyle}">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Text" Value="导入完成"/>
+                                    </Style>
+                                    <Style Selector=".export TextBlock">
+                                        <Setter Property="Text" Value="导出完成"/>
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
+                            <TextBlock HorizontalAlignment="Center"
                                        TextAlignment="Center"
                                        TextWrapping="Wrap"
-                                       Margin="0 0 0 4"/>
+                                       Margin="0 0 0 4">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="Text" Value="已成功完成导入。"/>
+                                    </Style>
+                                    <Style Selector=".export TextBlock">
+                                        <Setter Property="Text" Value="已成功完成导出。"/>
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
                             <Button ToolTip.Tip="完成"
                                     VerticalAlignment="Center"
                                     Content="{ci:FluentIcon &#xE423;, FontSize=18}"

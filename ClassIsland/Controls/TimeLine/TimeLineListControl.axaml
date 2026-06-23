@@ -144,14 +144,18 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 ClipToBounds="False">
                             <ScrollViewer Padding="{TemplateBinding Padding}"
-                                          ClipToBounds="False"
-                                          Focusable="false">
-                                <Grid>
-                                    <controls:TimeLineBackgroundRulerControl Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
-                                    <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
-                                    <!--<TextBlock Text="{Binding IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                           ClipToBounds="False"
+                                           BringIntoViewOnFocusChange="False"
+                                           Focusable="false">
+                                <VisualLayerManager>
+                                    <Grid>
+                                        <controls:TimeLineBackgroundRulerControl
+                                            Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
+                                        <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+                                        <!--<TextBlock Text="{Binding IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                Foreground="Red"/>-->
-                                </Grid>
+                                    </Grid>
+                                </VisualLayerManager>
                             </ScrollViewer>
                         </Border>
                     </Grid>
@@ -217,7 +221,7 @@
                 
                 <Setter Property="Template">
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border Margin="-20" Padding="20">
+                        <Border Margin="-20 -60" Padding="20 60">
                             <Interaction.Behaviors>
                                 <behaviors:TimeLineListItemBehavior ListBoxItem="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                                                     ParentListBox="{Binding $parent[controls:TimeLineListControl]}">
@@ -258,7 +262,7 @@
                                             <ControlTemplate x:Key="{x:Static controls:TimeLineListItemAdornerTemplateSelector.LineTimePointAdornerKey}">
                                                 <Grid x:DataType="controls:TimeLineListControl">
                                                     <controls:TimeLineListItemSeparatorAdornerControl
-                                                        Margin="20"
+                                                        Margin="20 60"
                                                         VerticalAlignment="Stretch"
                                                         HorizontalAlignment="Stretch"
                                                         IsReadonly="{Binding IsReadonly}"
