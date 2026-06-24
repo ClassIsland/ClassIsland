@@ -77,10 +77,10 @@
                         </ThemeVariantScope>
                         <Canvas Width="80" Height="75" HorizontalAlignment="Right">
                             <Ellipse Canvas.Left="54" Canvas.Top="4" Width="10" Height="10" Fill="#FFB74D" Stroke="#FF9800" StrokeThickness="1"/>
-                            <Line Canvas.Left="59" Canvas.Top="1" X1="0" Y1="0" X2="0" Y2="2" Stroke="#FF9800" StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                            <Line Canvas.Left="59" Canvas.Top="15" X1="0" Y1="0" X2="0" Y2="2" Stroke="#FF9800" StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                            <Line Canvas.Left="52" Canvas.Top="4" X1="0" Y1="0" X2="-2" Y2="0" Stroke="#FF9800" StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                            <Line Canvas.Left="66" Canvas.Top="4" X1="0" Y1="0" X2="2" Y2="0" Stroke="#FF9800" StrokeThickness="1.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            <Line Canvas.Left="59" Canvas.Top="1" StartPoint="0,0" EndPoint="0,2" Stroke="#FF9800" StrokeThickness="1.2" StrokeLineCap="Round"/>
+                            <Line Canvas.Left="59" Canvas.Top="15" StartPoint="0,0" EndPoint="0,2" Stroke="#FF9800" StrokeThickness="1.2" StrokeLineCap="Round"/>
+                            <Line Canvas.Left="52" Canvas.Top="4" StartPoint="0,0" EndPoint="-2,0" Stroke="#FF9800" StrokeThickness="1.2" StrokeLineCap="Round"/>
+                            <Line Canvas.Left="66" Canvas.Top="4" StartPoint="0,0" EndPoint="2,0" Stroke="#FF9800" StrokeThickness="1.2" StrokeLineCap="Round"/>
                         </Canvas>
                     </Panel>
                     <RadioButton Content="跟随日出日落" IsChecked="{Binding $parent[ListBoxItem].IsSelected}"/>
