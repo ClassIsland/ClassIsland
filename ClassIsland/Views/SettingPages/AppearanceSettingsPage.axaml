@@ -411,7 +411,7 @@
                               ItemsSource="{Binding ViewModel.FontFamilies}"
                               Foreground="{DynamicResource MaterialDesignBody}"
                               MaxDropDownHeight="360"
-                              SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}"
+                              SelectedItem="{Binding ViewModel.SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}, ConverterParameter=UseSharedDefault}"
                               HorizontalAlignment="Left">
                         <ComboBox.Styles>
                             <Style Selector="ComboBoxItem">
