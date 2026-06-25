@@ -101,7 +101,7 @@ public partial class RunActionSettingsControl : ActionSettingsControlBase<RunAct
         else
         {
             PopupHelper.DisableAllPopups();
-            var folders = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new()
+            var folders = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(new()
             {
                 SuggestedStartLocation = await storageProvider.TryGetFolderFromPathAsync(Settings.Value),
                 SuggestedFileName = Settings.Value
