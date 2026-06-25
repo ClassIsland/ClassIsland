@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,38 +10,27 @@ using Avalonia.Platform;
 
 namespace ClassIsland;
 
-public sealed class OverlayAssetLoader : IAssetLoader
+public sealed class OverlayAssetLoader(
+    IAssetLoader fallback,
+    Assembly localAssembly,
+    string assemblyName,
+    string avaresPrefix,
+    string physicalRoot)
+    : IAssetLoader
 {
-    private readonly IAssetLoader _fallback;
-    private readonly string _assemblyName;
-    private readonly string _avaresPrefix;
-    private readonly string _physicalRoot;
-    private readonly Assembly _localAssembly;
-
-    public OverlayAssetLoader(
-        IAssetLoader fallback,
-        Assembly localAssembly,
-        string assemblyName,
-        string avaresPrefix,
-        string physicalRoot)
-    {
-        _fallback = fallback;
-        _localAssembly = localAssembly;
-        _assemblyName = assemblyName;
-        _avaresPrefix = NormalizeAvaresPrefix(avaresPrefix);
-        _physicalRoot = Path.GetFullPath(physicalRoot);
-    }
+    private readonly string _avaresPrefix = NormalizeAvaresPrefix(avaresPrefix);
+    private readonly string _physicalRoot = Path.GetFullPath(physicalRoot);
 
     public void SetDefaultAssembly(Assembly assembly)
     {
-        _fallback.SetDefaultAssembly(assembly);
+        fallback.SetDefaultAssembly(assembly);
     }
 
     public bool Exists(Uri uri, Uri? baseUri = null)
     {
         return TryMapToFile(uri, baseUri, out var filePath)
             ? File.Exists(filePath)
-            : _fallback.Exists(uri, baseUri);
+            : fallback.Exists(uri, baseUri);
     }
 
     public Stream Open(Uri uri, Uri? baseUri = null)
@@ -48,15 +38,15 @@ public sealed class OverlayAssetLoader : IAssetLoader
         if (TryMapToFile(uri, baseUri, out var filePath))
             return File.OpenRead(filePath);
 
-        return _fallback.Open(uri, baseUri);
+        return fallback.Open(uri, baseUri);
     }
 
     public (Stream stream, Assembly assembly) OpenAndGetAssembly(Uri uri, Uri? baseUri = null)
     {
         if (TryMapToFile(uri, baseUri, out var filePath))
-            return (File.OpenRead(filePath), _localAssembly);
+            return (File.OpenRead(filePath), _localAssembly: localAssembly);
 
-        return _fallback.OpenAndGetAssembly(uri, baseUri);
+        return fallback.OpenAndGetAssembly(uri, baseUri);
     }
 
     public Assembly? GetAssembly(Uri uri, Uri? baseUri = null)
@@ -64,9 +54,9 @@ public sealed class OverlayAssetLoader : IAssetLoader
         var absolute = EnsureAbsolute(uri, baseUri);
 
         if (IsHandledAvaresUri(absolute))
-            return _localAssembly;
+            return localAssembly;
 
-        return _fallback.GetAssembly(uri, baseUri);
+        return fallback.GetAssembly(uri, baseUri);
     }
 
     public IEnumerable<Uri> GetAssets(Uri uri, Uri? baseUri)
@@ -74,7 +64,9 @@ public sealed class OverlayAssetLoader : IAssetLoader
         var absolute = EnsureAbsolute(uri, baseUri);
 
         if (!IsHandledAvaresUri(absolute))
-            return _fallback.GetAssets(uri, baseUri);
+            return fallback.GetAssets(uri, baseUri);
+
+        var assemblyAssets = fallback.GetAssets(uri, baseUri);
 
         var path = Uri.UnescapeDataString(absolute.AbsolutePath);
 
@@ -85,27 +77,31 @@ public sealed class OverlayAssetLoader : IAssetLoader
         var physicalDir = SafeCombine(_physicalRoot, relativePrefix);
 
         if (!Directory.Exists(physicalDir))
-            return Enumerable.Empty<Uri>();
+            return assemblyAssets;
 
-        return Directory.EnumerateFiles(physicalDir, "*", SearchOption.AllDirectories)
+        var physicalAssets = Directory.EnumerateFiles(physicalDir, "*", SearchOption.AllDirectories)
             .Select(file =>
             {
                 var relative = Path.GetRelativePath(_physicalRoot, file)
                     .Replace(Path.DirectorySeparatorChar, '/')
                     .Replace(Path.AltDirectorySeparatorChar, '/');
 
-                return new Uri($"avares://{_assemblyName}{_avaresPrefix}{relative}");
+                return new Uri($"avares://{assemblyName}{_avaresPrefix}{relative}");
             });
+
+        return physicalAssets
+            .Concat(assemblyAssets)
+            .DistinctBy(asset => asset.ToString());
     }
 
     public void InvalidateAssemblyCache(string name)
     {
-        _fallback.InvalidateAssemblyCache(name);
+        fallback.InvalidateAssemblyCache(name);
     }
 
     public void InvalidateAssemblyCache()
     {
-        _fallback.InvalidateAssemblyCache();
+        fallback.InvalidateAssemblyCache();
     }
 
     private bool TryMapToFile(Uri uri, Uri? baseUri, out string filePath)
@@ -136,7 +132,7 @@ public sealed class OverlayAssetLoader : IAssetLoader
     {
         return uri.IsAbsoluteUri
                && uri.Scheme.Equals("avares", StringComparison.OrdinalIgnoreCase)
-               && uri.Authority.Equals(_assemblyName, StringComparison.Ordinal)
+               && uri.Authority.Equals(assemblyName, StringComparison.Ordinal)
                && Uri.UnescapeDataString(uri.AbsolutePath)
                    .StartsWith(_avaresPrefix, StringComparison.Ordinal);
     }
