@@ -92,6 +92,14 @@ class Program
             {
                 var appAssembly = typeof(App).Assembly;
                 var assemblyName = appAssembly.GetName().Name!;
+                var appAssemblyDirectory = Path.GetDirectoryName(appAssembly.Location);
+
+                if (string.IsNullOrEmpty(appAssemblyDirectory))
+                    appAssemblyDirectory = AppContext.BaseDirectory;
+
+                var assetRoot = OperatingSystem.IsMacOS()
+                    ? Path.Combine(appAssemblyDirectory, "..", "Resources", "Assets")
+                    : Path.Combine(appAssemblyDirectory, "Assets");
 
                 var fallback = new StandardAssetLoader(appAssembly);
 
@@ -100,8 +108,7 @@ class Program
                     appAssembly,
                     assemblyName: assemblyName,
                     avaresPrefix: "/Assets/",
-                    physicalRoot: OperatingSystem.IsMacOS() ? "../Resources/Assets/" 
-                        : Path.Combine(Path.GetDirectoryName(appAssembly.Location) ?? "./", "Assets/"));
+                    physicalRoot: assetRoot);
 
                 BindAssetLoader(overlay);
             })

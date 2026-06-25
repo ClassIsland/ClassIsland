@@ -54,12 +54,18 @@
         <PackageReference Include="Packaging.DebUOS" Version="3.17.6"/>
     </ItemGroup>
     <ItemGroup>
-      <AvaloniaResource Include="Assets\AppLogo.ico">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-          <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-      </AvaloniaResource>
+      <AvaloniaResource Include="Assets\AppLogo.ico" />
       <None Include="Assets/**" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always"
             PublishFolderType="Resource"/>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX'">
+      <AvaloniaResource Update="Assets\AppLogo.ico">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </AvaloniaResource>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' != 'Debug' And '$(Configuration)' != 'Debug_MSIX'">
+      <None Remove="Assets\AppLogo.ico" />
     </ItemGroup>
     <ItemGroup>
       <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@384w.png" />
