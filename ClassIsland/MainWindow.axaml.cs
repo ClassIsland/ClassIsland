@@ -314,6 +314,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         ComponentPresenter.SetIsMainWindowLoaded(this, true);
+        RefreshDefaultMainWindowFont();
         StartupCompleted?.Invoke(this, EventArgs.Empty);
 
         if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
@@ -401,6 +402,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         //ProfileService.LoadProfile();
         ViewModel.Profile = ProfileService.Profile;
+    }
+
+    private void RefreshDefaultMainWindowFont()
+    {
+        if (ViewModel.Settings.MainWindowFont != DefaultFontFamilyKey)
+        {
+            return;
+        }
+
+        SettingsService.Settings.NotifyPropertyChanged("MainWindowFontWeight2");
     }
     #endregion
 

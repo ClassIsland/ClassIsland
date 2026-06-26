@@ -323,6 +323,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
         manifests = await GetPluginManifestsAsync(paths);
         if (manifests.Count == 0)
         {
+            ViewModel.IsInstallingLocalPlugin = false;
             this.ShowWarningToast("未能从选择的文件中解析出任何可安装的插件包。");
             return;
         }
