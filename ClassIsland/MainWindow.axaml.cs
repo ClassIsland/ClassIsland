@@ -254,7 +254,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         this.UseMyWindowExt();
         
-        if (Environment.OSVersion.Version <= WindowsVersions.Win10V1803)
+        if (OperatingSystem.IsWindows() && Environment.OSVersion.Version <= WindowsVersions.Win10V1803)
         {
             PseudoClasses.Set(":no-windowed-transparent", true);
         }
