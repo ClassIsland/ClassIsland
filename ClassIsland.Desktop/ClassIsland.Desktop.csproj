@@ -12,6 +12,13 @@
         <Title>ClassIsland</Title>
         <AssemblyTitle>ClassIsland</AssemblyTitle>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(PublishBuilding)'=='true' And '$(PublishPlatform)'=='macos'">
+        <!-- Preserve PublishFolderType from referenced projects for macOS app bundle resources. -->
+        <MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>true</MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(PublishBuilding)'!='true' And $([System.OperatingSystem]::IsMacOS())">
+        <MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>true</MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>
+    </PropertyGroup>
     
     <!-- UOS DEB Packaging Properties -->
     <PropertyGroup>
