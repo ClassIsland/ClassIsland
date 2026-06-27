@@ -205,7 +205,7 @@ public partial class App : AppBase, IAppHost
 
     private void ActivateAppDirectories()
     {
-        PackagingType = PackagingType.Replace(Environment.NewLine, "");
+        PackagingType = PackagingType.Replace(Environment.NewLine, "").Trim();
 
         ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
         CommonDirectories.AppRootFolderPath = PackagingType switch
