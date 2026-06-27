@@ -46,7 +46,6 @@ public class ManagementService : IManagementService
     public static readonly string ManagementPersistConfigPath =
         Path.Combine(ManagementConfigureFolderPath, "Persist.json");
 
-
     public static readonly string ManagementManifestPath = Path.Combine(ManagementConfigureFolderPath, "Manifest.json");
     public static readonly string ManagementVersionsPath = Path.Combine(ManagementConfigureFolderPath, "Versions.json");
     public static readonly string ManagementSettingsPath = Path.Combine(ManagementConfigureFolderPath, "Settings.json");

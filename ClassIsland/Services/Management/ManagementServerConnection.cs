@@ -377,7 +377,6 @@ public class ManagementServerConnection : IManagementServerConnection
         }
     }
 
-
     public async Task<ManagementManifest> RegisterAsync()
     {
         Logger.LogInformation("正在注册实例");
