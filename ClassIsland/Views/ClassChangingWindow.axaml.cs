@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
@@ -79,19 +80,11 @@ public partial class ClassChangingWindow : MyWindow
         ViewModel.SlideIndex = 1;
     }
     
-    private async void ButtonAdvancedClassChanging_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonAdvancedClassChanging_OnClick(object sender, RoutedEventArgs e)
     {
-        var managementService = IAppHost.TryGetService<ManagementService>();
-        if (managementService is not null)
-        {
-            if (!await managementService.AuthorizeByLevel(managementService.CredentialConfig.EditProfileAuthorizeLevel))
-            {
-                this.ShowErrorToast("当前集控配置不允许此操作。");
-                return;
-            }
-        }
-        IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/profile/adjustment"));
-        Close();
+        App.GetService<ProfileSettingsWindow>().Show();
+        App.GetService<ProfileSettingsWindow>().Open(new Uri("classisland://app/profile/adjustment"));
+        this.Close();
     }
 
     private async void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
