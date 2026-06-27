@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
@@ -82,9 +84,8 @@ public partial class ClassChangingWindow : MyWindow
     
     private void ButtonAdvancedClassChanging_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<ProfileSettingsWindow>().Show();
-        App.GetService<ProfileSettingsWindow>().Open(new Uri("classisland://app/profile/adjustment"));
-        this.Close();
+        Dispatcher.UIThread.InvokeAsync(() =>{App.GetService<ProfileSettingsWindow>().Open(new Uri("classisland://app/profile/adjustment"));} );
+        Close();
     }
 
     private async void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
