@@ -13,12 +13,11 @@
       d:DataContext="{d:DesignInstance local:TrayMenuSettingsPage}">
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
-            <controls1:IconText Glyph="&#xE779;" Text="托盘菜单可见性" Margin="0 0 0 4" />
-
-            <controls1:IconText Glyph="&#xE946;" Text="关于" Margin="0 16 0 4" />
             <controls3:SettingsExpander Header="关于 ClassIsland"
-                                        IconSource="{ci:FluentIconSource &#xE946;}"
                                         Description="显示应用版本和相关信息。">
+                <controls3:SettingsExpander.IconSource>
+                    <controls3:BitmapIconSource UriSource="avares://ClassIsland/Assets/AppLogo.png"/>
+                </controls3:SettingsExpander.IconSource>
                 <controls3:SettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsTrayMenuAboutVisible, Mode=TwoWay}"/>
                 </controls3:SettingsExpander.Footer>

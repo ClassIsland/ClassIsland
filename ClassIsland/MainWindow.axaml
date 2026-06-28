@@ -113,11 +113,7 @@
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEBAC;}">
                 <MenuItem.IsVisible>
                     <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
-                        <Binding Path="MoreOptionsMenu.Items.Count" Mode="OneWay" Converter="{x:Static ObjectConverters.NotEqual}">
-                            <Binding.ConverterParameter>
-                                <x:Int32>0</x:Int32>
-                            </Binding.ConverterParameter>
-                        </Binding>
+                        <Binding Path="!!$self.Menu.Items.Count" Mode="OneWay"/>
                         <Binding Path="ViewModel.Settings.IsTrayMenuMoreOptionsVisible" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.IsVisible>
