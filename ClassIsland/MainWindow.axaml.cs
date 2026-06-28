@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -95,6 +95,11 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     }
 
     private IThemeService ThemeService
+    {
+        get;
+    }
+
+    private IWeatherService WeatherService
     {
         get;
     }
@@ -201,6 +206,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ILogger<MainWindow> logger, 
         ISpeechService speechService,
         IExactTimeService exactTimeService,
+        IWeatherService weatherService,
         IComponentsService componentsService,
         ILessonsService lessonsService,
         IUriNavigationService uriNavigationService,
@@ -217,6 +223,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         TaskBarIconService = taskBarIconService;
         NotificationHostService = notificationHostService;
         ThemeService = themeService;
+        WeatherService = weatherService;
+        WeatherService.PropertyChanged += OnWeatherUpdatedForTheme;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
         ComponentsService = componentsService;
@@ -761,7 +769,12 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 }
                 break;
         }
-        ThemeService.SetTheme(ViewModel.Settings.Theme, primary);
+        var effectiveTheme = ViewModel.Settings.Theme;
+        if (effectiveTheme == 3) // 跟随日出日落
+        {
+            effectiveTheme = IsInDaylight() ? 1 : 2;
+        }
+        ThemeService.SetTheme(effectiveTheme, primary);
 
         if (ResourceLoaderBorder != null)
         {
@@ -1649,4 +1662,38 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         ViewModel.Settings.HasEditModeTutorialShown = true;
     }
     #endregion
+
+    private bool IsInDaylight()
+    {
+        var info = SettingsService.Settings.LastWeatherInfo;
+        if (info == null) return false; // 默认夜间
+        var list = info.ForecastDaily.SunRiseSet.Value;
+        if (list == null || list.Count == 0) return false;
+
+        var now = DateTimeOffset.Now;
+        foreach (var item in list)
+        {
+            if (!DateTimeOffset.TryParse(item.From, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var sr))
+                continue;
+            if (!DateTimeOffset.TryParse(item.To, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var ss))
+                continue;
+            if (sr.Date == now.Date || ss.Date == now.Date)
+            {
+                return now >= sr && now < ss;
+            }
+        }
+        return false;
+    }
+
+    private void OnWeatherUpdatedForTheme(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (ViewModel.Settings.Theme == 3) // 跟随日出日落
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                var effectiveTheme = IsInDaylight() ? 1 : 2;
+                ThemeService.SetTheme(effectiveTheme, null);
+            });
+        }
+    }
 }

@@ -1,4 +1,4 @@
-<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AppearanceSettingsPage"
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AppearanceSettingsPage"
       xmlns="https://github.com/avaloniaui"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -130,6 +130,7 @@
                         <controls1:IconText Glyph="&#xE5CB;" Text="跟随系统" />
                         <controls1:IconText Glyph="&#xF465;" Text="明亮" />
                         <controls1:IconText Glyph="&#xF44B;" Text="黑暗" />
+                        <controls1:IconText Glyph="&#xEC45;" Text="跟随日出日落" />
                     </ComboBox>
                 </controls2:SettingsExpander.Footer>
             </controls2:SettingsExpander>
