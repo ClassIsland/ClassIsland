@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -17,8 +19,32 @@ namespace ClassIsland.Services.Automation.Actions;
 [ActionInfo("classisland.showNotification", "显示提醒", "\ue02b", addDefaultToMenu:false)]
 public class NotificationAction : ActionBase<NotificationActionSettings>
 {
-    static ActionNotificationProvider ActionNotificationProvider { get; } =
-        IAppHost.Host.Services.GetServices<IHostedService>().OfType<ActionNotificationProvider>().First();
+    // Resolve the ActionNotificationProvider at runtime to avoid circular DI during type initialization
+    readonly IServiceProvider? _serviceProvider;
+
+    public NotificationAction(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    ActionNotificationProvider? ResolveActionNotificationProvider()
+    {
+        try
+        {
+            if (_serviceProvider != null)
+            {
+                var hosted = _serviceProvider.GetServices<IHostedService>();
+                return hosted?.OfType<ActionNotificationProvider>().FirstOrDefault();
+            }
+
+            var hostedGlobal = IAppHost.TryGetService<IEnumerable<IHostedService>>();
+            return hostedGlobal?.OfType<ActionNotificationProvider>().FirstOrDefault();
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     protected override async Task OnInvoke()
     {
@@ -57,7 +83,6 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
         }
     }
 
-
     protected override async Task OnInterrupted()
     {
         await base.OnInterrupted();
@@ -68,13 +93,14 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
         });
     }
 
-
-
     CancellationTokenSource? _cancellationTokenSource;
     CancellationTokenSource? _completedTokenSource;
 
     async Task ShowNotificationAsync(NotificationActionSettings settings)
     {
+        var provider = ResolveActionNotificationProvider();
+        if (provider is null) return;
+
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             var request = new NotificationRequest
@@ -103,7 +129,7 @@ public class NotificationAction : ActionBase<NotificationActionSettings>
             };
             _cancellationTokenSource = request.CancellationTokenSource;
             _completedTokenSource = request.CompletedTokenSource;
-            await ActionNotificationProvider.ShowNotificationAsync(request);
+            await provider.ShowNotificationAsync(request);
         });
     }
 }

@@ -30,6 +30,7 @@ public class Profile : ObservableRecipient
     private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
     private Guid _id = Guid.NewGuid();
     private ObservableDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
+    private ObservableCollection<Reminder> _reminders = new();
 
     /// <summary>
     /// 实例化对象
@@ -57,6 +58,9 @@ public class Profile : ObservableRecipient
                 IsGlobal = true
             });
         }
+
+        // 初始化提醒集合
+        _reminders = new ObservableCollection<Reminder>();
     }
 
     private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e)
@@ -472,6 +476,20 @@ public class Profile : ObservableRecipient
         {
             if (Equals(value, _orderedSchedules)) return;
             _orderedSchedules = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 用户自定义的提醒/日程列表
+    /// </summary>
+    public ObservableCollection<Reminder> Reminders
+    {
+        get => _reminders;
+        set
+        {
+            if (Equals(value, _reminders)) return;
+            _reminders = value;
             OnPropertyChanged();
         }
     }

@@ -5,6 +5,7 @@
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:views="clr-namespace:ClassIsland.Views"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:coreControls="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
@@ -148,6 +149,10 @@
                             Theme="{StaticResource TransparentButton}">
                         <ci:IconText Glyph="&#xE689;" Text="新建档案"/>
                     </Button>
+                    <Button ToolTip.Tip="编辑日程/提醒。" Click="ButtonOpenReminders_OnClick"
+                            Theme="{StaticResource TransparentButton}">
+                        <ci:IconText Glyph="&#xE7F8;" Text="编辑日程"/>
+                    </Button>
                     <Button ToolTip.Tip="打开档案文件夹。" Click="ButtonOpenProfileFolder_OnClick"
                             Theme="{StaticResource TransparentButton}">
                         <ci:IconText Glyph="&#xE88D;" Text="打开文件夹"/>
@@ -197,6 +202,8 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
+
+        <!-- 提醒编辑面板 -->
         
         <!-- 时间表信息 -->
         <ScrollViewer x:Key="TimeLayoutInfoEditor" Width="332" VerticalScrollBarVisibility="Auto">
@@ -1565,6 +1572,92 @@
                             
                         </ci:Emptiable>
                     </Grid>
+                </TabItem>
+                <TabItem x:Name="ScheduleTabItem" Header="日程" Classes="tag-Reminders"
+                         IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
+                    <coreControls:DrawerHost IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
+                                             DrawerPlacement="Right"
+                                             DrawerContent="{Binding ViewModel.DrawerContent}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300" MinWidth="300" MaxWidth="400"/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" Margin="0 0 3 0" RowDefinitions="Auto,*,Auto">
+                                <controls:CommandBar Grid.Row="0" Margin="0 0 0 12"
+                                            DefaultLabelPosition="Right"
+                                            IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileEditing, Converter={StaticResource InvertBooleanConverter}}">
+                                    <controls:CommandBar.PrimaryCommands>
+                                        <controls:CommandBarButton Click="AddReminder_OnClick" IconSource="{ci:FluentIconSource &#xE00D;}" Label="添加"/>
+                                        <controls:CommandBarButton Click="RemoveSelectedReminder_OnClick" IconSource="{ci:FluentIconSource &#xE1BC;}" Label="删除"
+                                                                   IsEnabled="{Binding ViewModel.SelectedReminder, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                        <controls:CommandBarButton Click="ButtonShowReminderDetails_OnClick"
+                                                                   IconSource="{ci:FluentIconSource &#xE9E4;}"
+                                                                   Label="详情"
+                                                                   ToolTip.Tip="查看并编辑选中的日程"
+                                                                   IsEnabled="{Binding ViewModel.SelectedReminder, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                    </controls:CommandBar.PrimaryCommands>
+                                </controls:CommandBar>
+
+                                <ListBox Grid.Row="1" SelectionMode="Single"
+                                         ItemsSource="{Binding ViewModel.Reminders, Mode=OneWay}"
+                                         SelectedItem="{Binding ViewModel.SelectedReminder, Mode=TwoWay}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Title}" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Time, StringFormat='{}{0:MM/dd HH:mm}'}"
+                                                           Opacity="0.65" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+
+                            <GridSplitter Grid.Column="1" Margin="2 0" />
+
+                            <Grid Grid.Column="2" RowDefinitions="*,Auto">
+                                <!-- 可视化日程时间线（占满全部高度） -->
+                                <controls1:ReminderTimelineControl Grid.Row="0"
+                                                                    x:Name="ReminderTimeline"
+                                                                    Reminders="{Binding ViewModel.Reminders}"
+                                                                    SelectedReminder="{Binding ViewModel.SelectedReminder, Mode=TwoWay}"
+                                                                    Scale="{Binding ViewModel.ReminderTimelineScale}">
+                                    <controls1:ReminderTimelineControl.IsEnabled>
+                                        <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing"
+                                                 Converter="{StaticResource InvertBooleanConverter}" />
+                                    </controls1:ReminderTimelineControl.IsEnabled>
+                                </controls1:ReminderTimelineControl>
+                                <!-- 底部控制栏 -->
+                                <controls:CommandBar Grid.Row="1" DefaultLabelPosition="Right"
+                                                     Margin="0 4 0 0"
+                                                     IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableProfileEditing, Converter={StaticResource InvertBooleanConverter}}">
+                                    <controls:CommandBar.PrimaryCommands>
+                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xf4d3;}"
+                                                                   Label="缩小"
+                                                                   ToolTip.Tip="缩小时间线 (Ctrl+滚轮)"
+                                                                   Click="ButtonReminderTimelineZoomOut_OnClick" />
+                                        <controls:CommandBarButton IconSource="{ci:FluentIconSource &#xf4d1;}"
+                                                                   Label="放大"
+                                                                   ToolTip.Tip="放大时间线 (Ctrl+滚轮)"
+                                                                   Click="ButtonReminderTimelineZoomIn_OnClick" />
+                                        <controls:CommandBarElementContainer>
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Opacity="0.7"
+                                                       FontSize="13"
+                                                       Text="{Binding ViewModel.ReminderTimelineScale, StringFormat='缩放: {0:F1}x'}" />
+                                        </controls:CommandBarElementContainer>
+                                    </controls:CommandBar.PrimaryCommands>
+                                </controls:CommandBar>
+                            </Grid>
+                        </Grid>
+                    </coreControls:DrawerHost>
                 </TabItem>
                 <TabItem Header="科目" Classes="tag-Subjects"
                          IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">

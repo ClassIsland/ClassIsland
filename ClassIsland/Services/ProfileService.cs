@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia.Platform;
@@ -61,6 +62,10 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     private bool _isProfileLoaded = false;
     private bool _isCurrentProfileTrusted = false;
+
+    // 防抖：合并短时间内的多次 Profile 写入请求
+    private CancellationTokenSource? _saveDebounceCts = null;
+    private static readonly TimeSpan SaveDebounceInterval = TimeSpan.FromMilliseconds(500);
 
     public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService, IIpcService ipcService)
     {
@@ -161,7 +166,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         {
             await MergeManagementProfileAsync();
         }
-        Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
+        Profile.PropertyChanged += (sender, args) => DebounceSaveProfile(filename);
 
         if (SettingsService.Settings.TrustedProfileIds.Contains(Profile.Id))
         {
@@ -224,6 +229,34 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     {
         Logger.LogInformation("写入档案文件：{}", Path.Combine(ProfilePath, filename));
         SaveConfig(Path.Combine(ProfilePath, filename), Profile);
+    }
+
+    /// <summary>
+    /// 防抖保存：短时间内的多次 Profile 属性变更合并为一次写入。
+    /// 避免频繁（如日程触发时）的链式属性变化导致重复全量序列化 + 磁盘 I/O。
+    /// </summary>
+    /// <param name="filename">保存文件名</param>
+    private void DebounceSaveProfile(string filename)
+    {
+        _saveDebounceCts?.Cancel();
+        _saveDebounceCts = new CancellationTokenSource();
+        var token = _saveDebounceCts.Token;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(SaveDebounceInterval, token).ConfigureAwait(false);
+                if (!token.IsCancellationRequested)
+                {
+                    // SaveProfile 仅做序列化 + 文件写入，在后台线程执行不阻塞 UI
+                    SaveProfile(filename);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // 被新的变更取消，属于正常流程
+            }
+        }, token);
     }
 
     private static T DuplicateJson<T>(T o)

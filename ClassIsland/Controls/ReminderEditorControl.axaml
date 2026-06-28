@@ -1,0 +1,146 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:models="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+             xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation;assembly=ClassIsland.Core"
+             xmlns:ruleset="clr-namespace:ClassIsland.Core.Controls.Ruleset;assembly=ClassIsland.Core"
+             x:Class="ClassIsland.Controls.ReminderEditorControl">
+  <StackPanel Spacing="8" Margin="8">
+    <StackPanel.Styles>
+      <Style Selector="StackPanel > Expander /template/ ToggleButton#ExpanderHeader">
+        <Setter Property="Background" Value="{DynamicResource CustomizedAccentBarBackground1Brush}" />
+      </Style>
+    </StackPanel.Styles>
+    <ci:Field Label="标题">
+      <TextBox x:Name="TitleBox" />
+    </ci:Field>
+    <ci:Field Label="消息（可选）">
+      <TextBox x:Name="MessageBox" AcceptsReturn="True" Height="80" Watermark="输入提醒消息内容…"/>
+    </ci:Field>
+    <StackPanel Orientation="Horizontal" Spacing="12">
+      <ci:Field Label="启用" Margin="0 0 0 0">
+        <ToggleSwitch x:Name="EnabledSwitch"
+                      OnContent="开" OffContent="关"
+                      HorizontalAlignment="Left" />
+      </ci:Field>
+    </StackPanel>
+
+    <ci:Field Label="重复">
+      <ComboBox x:Name="FrequencyCombo" SelectedIndex="0">
+        <ComboBoxItem Tag="Once">单次</ComboBoxItem>
+        <ComboBoxItem Tag="Daily">每天</ComboBoxItem>
+        <ComboBoxItem Tag="Weekly">每周</ComboBoxItem>
+        <ComboBoxItem Tag="Yearly">每年</ComboBoxItem>
+      </ComboBox>
+    </ci:Field>
+
+    <!-- Date/time for Once -->
+    <StackPanel x:Name="OncePanel" Spacing="8">
+      <ci:Field Label="日期">
+        <CalendarDatePicker x:Name="OnceDatePicker" />
+      </ci:Field>
+      <ci:Field Label="时间">
+        <TimePicker x:Name="OnceTimeBox" />
+      </ci:Field>
+    </StackPanel>
+
+    <!-- Daily -->
+    <StackPanel x:Name="DailyPanel" Spacing="8" IsVisible="False">
+      <ci:Field Label="时间"><TimePicker x:Name="DailyTimeBox"/></ci:Field>
+      <ci:Field Label="开始日期 (可选)"><CalendarDatePicker x:Name="DailyStartDate"/></ci:Field>
+      <ci:Field Label="结束日期 (可选)"><CalendarDatePicker x:Name="DailyEndDate"/></ci:Field>
+    </StackPanel>
+
+    <!-- Weekly -->
+    <StackPanel x:Name="WeeklyPanel" Spacing="8" IsVisible="False">
+      <ci:Field Label="时间"><TimePicker x:Name="WeeklyTimeBox"/></ci:Field>
+      <ci:Field Label="重复星期">
+        <ListBox x:Name="WeekDayChipList"
+                  Theme="{StaticResource ChipListBoxTheme}"
+                  SelectionMode="Multiple,Toggle"
+                  MaxWidth="400">
+          <ListBoxItem>日</ListBoxItem>
+          <ListBoxItem>一</ListBoxItem>
+          <ListBoxItem>二</ListBoxItem>
+          <ListBoxItem>三</ListBoxItem>
+          <ListBoxItem>四</ListBoxItem>
+          <ListBoxItem>五</ListBoxItem>
+          <ListBoxItem>六</ListBoxItem>
+        </ListBox>
+      </ci:Field>
+      <ci:Field Label="开始日期 (可选)"><CalendarDatePicker x:Name="WeeklyStartDate"/></ci:Field>
+      <ci:Field Label="结束日期 (可选)"><CalendarDatePicker x:Name="WeeklyEndDate"/></ci:Field>
+    </StackPanel>
+
+    <!-- Yearly -->
+    <StackPanel x:Name="YearlyPanel" Spacing="8" IsVisible="False">
+      <ci:Field Label="时间"><TimePicker x:Name="YearlyTimeBox"/></ci:Field>
+      <ci:Field Label="月份">
+        <ListBox x:Name="YearMonthChipList"
+                  Theme="{StaticResource ChipListBoxTheme}"
+                  SelectionMode="Multiple,Toggle"
+                  MaxWidth="400">
+          <ListBoxItem>1月</ListBoxItem>
+          <ListBoxItem>2月</ListBoxItem>
+          <ListBoxItem>3月</ListBoxItem>
+          <ListBoxItem>4月</ListBoxItem>
+          <ListBoxItem>5月</ListBoxItem>
+          <ListBoxItem>6月</ListBoxItem>
+          <ListBoxItem>7月</ListBoxItem>
+          <ListBoxItem>8月</ListBoxItem>
+          <ListBoxItem>9月</ListBoxItem>
+          <ListBoxItem>10月</ListBoxItem>
+          <ListBoxItem>11月</ListBoxItem>
+          <ListBoxItem>12月</ListBoxItem>
+        </ListBox>
+      </ci:Field>
+      <ci:Field Label="日">
+        <TextBox x:Name="YearDayBox" />
+      </ci:Field>
+      <ci:Field Label="开始日期 (可选)"><CalendarDatePicker x:Name="YearlyStartDate"/></ci:Field>
+      <ci:Field Label="结束日期 (可选)"><CalendarDatePicker x:Name="YearlyEndDate"/></ci:Field>
+    </StackPanel>
+
+    <ci:Field Label="自动化-当日程被触发">
+      <StackPanel>
+        <!-- 条件判断 -->
+        <Expander Classes="compact stretch-header"
+                  IsExpanded="True"
+                  Margin="2 2 2 10">
+          <Expander.Header>
+            <Grid ColumnDefinitions="Auto, *, Auto">
+              <ci:IconText Glyph="&#xF17E;"
+                           Text="并且满足规则集时" />
+              <ToggleSwitch Grid.Column="2"
+                            Margin="0 -6 2 0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            x:Name="ConditionEnabledSwitch" />
+            </Grid>
+          </Expander.Header>
+          <Grid>
+            <TextBlock Margin="9 0 0 0"
+                       VerticalAlignment="Center"
+                       Text="提醒运行时不会考虑规则集。"
+                       x:Name="ConditionDisabledHint"
+                       IsVisible="False" />
+            <ruleset:RulesetControl x:Name="ConditionRulesetEditor"
+                                    ShowTitle="False"
+                                    IsVisible="False" />
+          </Grid>
+        </Expander>
+    
+        <!-- 自动化行动 -->
+        <Expander Classes="compact stretch-header"
+                  IsExpanded="True"
+                  Margin="2 2 2 10">
+          <Expander.Header>
+            <ci:IconText Glyph="&#xE01F;"
+                         Text="触发行动" />
+          </Expander.Header>
+          <automation:ActionControl x:Name="ActionSetEditor" />
+        </Expander>
+      </StackPanel>
+    </ci:Field>
+  </StackPanel>
+</UserControl>

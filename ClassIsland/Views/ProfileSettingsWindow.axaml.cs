@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -18,6 +20,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using ClassIsland.Controls;
 using ClassIsland.Controls.ScheduleDataGrid;
 using ClassIsland.Controls.TimeLine;
 using ClassIsland.Core;
@@ -54,6 +57,10 @@ public partial class ProfileSettingsWindow : MyWindow
     private record UndoEntry(bool IsAdd, TimeLayoutItem Item, TimeLayout Layout, int Index, string Description);
     private readonly Stack<UndoEntry> _undoStack = new();
     private readonly Stack<UndoEntry> _redoStack = new();
+
+    // Drawer 中使用的编辑器实例，替代原来的 x:Name="ReminderEditor"
+    private ReminderEditorControl? _drawerReminderEditor;
+    private ContentControl? _drawerReminderContent;
 
     public static readonly FuncValueConverter<ProfileTransferProviderType, string>
         ProfileTransferProviderTypeToImportButtonTextConverter = new(x => x switch
@@ -92,6 +99,21 @@ public partial class ProfileSettingsWindow : MyWindow
                 ViewModel.CanUndo = false; ViewModel.CanRedo = false;
                 ViewModel.UndoDescriptions.Clear(); ViewModel.RedoDescriptions.Clear();
             });
+        // 日程内联编辑（Drawer 模式）：选中变化时只保存旧值，不自动加载编辑器
+        ViewModel.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(ViewModel.SelectedReminder))
+            {
+                SaveReminderEdits();
+            }
+        };
+        // 构建 Drawer 编辑器内容
+        BuildReminderDrawerContent();
+
+        // 日程可视化时间线事件
+        ReminderTimeline.AddReminderRequested += ReminderTimeline_OnAddReminderRequested;
+        ReminderTimeline.ReminderSelected += ReminderTimeline_OnReminderSelected;
+        ReminderTimeline.ReminderSettingsClicked += ReminderTimeline_OnReminderSettingsClicked;
     }
 
     private void OnGlobalUndoRedoKeyDown(object? sender, KeyEventArgs e)
@@ -269,6 +291,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         e.Cancel = true;
         _isOpen = false;
+        SaveReminderEdits(true);
         ViewModel.ProfileService.SaveProfile();
         Hide();
     }
@@ -288,6 +311,232 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonHelp_OnClick(object? sender, RoutedEventArgs e)
     {
         UriNavigationCommands.UriNavigationCommand.Execute("https://docs.classisland.tech/app/profile/");
+    }
+
+    #endregion
+
+    #region Reminders
+
+    private Reminder? _lastEditedReminder;
+
+    // 防抖：合并短时间内的多次日程编辑写入请求
+    private CancellationTokenSource? _reminderSaveDebounceCts = null;
+    private static readonly TimeSpan ReminderSaveDebounceInterval = TimeSpan.FromMilliseconds(500);
+
+    private void SaveReminderEdits(bool immediate = false)
+    {
+        if (_lastEditedReminder != null && _drawerReminderEditor != null)
+        {
+            _drawerReminderEditor.ApplyTo(_lastEditedReminder);
+
+            if (immediate)
+            {
+                // 窗口/抽屉关闭时立即保存，确保数据不丢失
+                _lastEditedReminder.NotifyPropertiesChanged();
+                ViewModel.ProfileService.SaveProfile();
+                var reminderService = IAppHost.GetService<ScheduleReminderService>();
+                reminderService?.RequestImmediateCheck();
+            }
+            else
+            {
+                // 编辑中防抖：
+                //   ApplyTo 即时更新内存（Title 通过 setter 自然触发 PropertyChanged，实时刷新标题）；
+                //   全量 PropertyChanged 通知 + 磁盘写入合并到防抖到期后执行，避免每按一次键都触发
+                //   11 个 PropertyChanged 事件导致 UI 卡顿。
+                var reminderToNotify = _lastEditedReminder;
+                var oldCts = _reminderSaveDebounceCts;
+                _reminderSaveDebounceCts = new CancellationTokenSource();
+                oldCts?.Cancel();
+                oldCts?.Dispose();
+                var token = _reminderSaveDebounceCts.Token;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Task.Delay(ReminderSaveDebounceInterval, token).ConfigureAwait(false);
+                        token.ThrowIfCancellationRequested();
+
+                        // 全量 UI 通知（等待 UI 线程执行完成，避免 Post 的 fire-and-forget 问题）
+                        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            reminderToNotify.NotifyPropertiesChanged();
+                        }).GetTask().ConfigureAwait(false);
+                        token.ThrowIfCancellationRequested();
+                        ViewModel.ProfileService.SaveProfile();
+                        var reminderService = IAppHost.GetService<ScheduleReminderService>();
+                        reminderService?.RequestImmediateCheck();
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // 被新的编辑请求取消，属于正常流程
+                    }
+                }, token);
+            }
+        }
+    }
+
+    private void LoadReminderIntoEditor()
+    {
+        _lastEditedReminder = ViewModel.SelectedReminder;
+        if (ViewModel.SelectedReminder != null && _drawerReminderEditor != null)
+        {
+            _drawerReminderEditor.LoadFrom(ViewModel.SelectedReminder);
+        }
+    }
+
+    private void ButtonOpenReminders_OnClick(object? sender, RoutedEventArgs e)
+    {
+        OpenScheduleTab();
+    }
+
+    private void BuildReminderDrawerContent()
+    {
+        if (_drawerReminderContent != null) return;
+
+        var editor = new ReminderEditorControl();
+        var scrollViewer = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+        var stack = new StackPanel { Spacing = 12, Margin = new Thickness(16) };
+
+        // 标题栏
+        var headerGrid = new Grid();
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        headerGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto));
+        var title = new TextBlock
+        {
+            Text = "编辑日程",
+            FontSize = 18,
+            FontWeight = Avalonia.Media.FontWeight.SemiBold,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+        };
+        var closeBtn = new Button
+        {
+            Content = new TextBlock
+            {
+                Text = "✕",
+                FontSize = 16,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
+            },
+            Width = 32,
+            Height = 32,
+            Padding = new Thickness(0)
+        };
+        closeBtn.Click += (_, _) => CloseReminderDrawer();
+        Grid.SetColumn(title, 0);
+        Grid.SetColumn(closeBtn, 1);
+        headerGrid.Children.Add(title);
+        headerGrid.Children.Add(closeBtn);
+
+        stack.Children.Add(headerGrid);
+        stack.Children.Add(editor);
+        scrollViewer.Content = stack;
+
+        _drawerReminderContent = new ContentControl
+        {
+            Content = scrollViewer,
+            Width = 420
+        };
+        _drawerReminderEditor = editor;
+
+        // 编辑器实时变更 → 立即同步
+        _drawerReminderEditor.EditingChanged += (_, _) => SaveReminderEdits();
+    }
+
+    private void OpenReminderDrawer(Reminder reminder)
+    {
+        if (_drawerReminderContent == null) return;
+        _lastEditedReminder = reminder;
+        _drawerReminderEditor?.LoadFrom(reminder);
+        ViewModel.DrawerContent = _drawerReminderContent;
+        ViewModel.IsDrawerOpen = true;
+    }
+
+    private void CloseReminderDrawer()
+    {
+        SaveReminderEdits(true);
+        ViewModel.IsDrawerOpen = false;
+    }
+
+    private void ButtonOpenReminderDrawer_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Control { DataContext: Reminder reminder })
+        {
+            ViewModel.SelectedReminder = reminder;
+            OpenReminderDrawer(reminder);
+        }
+    }
+
+    private void ButtonShowReminderDetails_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedReminder != null)
+        {
+            OpenReminderDrawer(ViewModel.SelectedReminder);
+        }
+    }
+
+    public void OpenScheduleTab()
+    {
+        if (!IsVisible)
+        {
+            Show();
+        }
+
+        MasterTabControl.SelectedItem = ScheduleTabItem;
+    }
+
+    private void AddReminder_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var reminder = new Reminder() { Time = DateTime.Now };
+        ViewModel.AddReminder(reminder);
+        ViewModel.SelectedReminder = reminder;
+    }
+
+    private void RemoveSelectedReminder_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var sel = ViewModel.SelectedReminder;
+        if (sel == null) return;
+        ViewModel.RemoveReminder(sel);
+        ViewModel.SelectedReminder = null;
+    }
+
+    #endregion
+
+    #region 日程可视化时间线
+
+    private void ButtonReminderTimelineZoomIn_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.ReminderTimelineScale = Math.Min(10.0, ViewModel.ReminderTimelineScale + 0.5);
+    }
+
+    private void ButtonReminderTimelineZoomOut_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.ReminderTimelineScale = Math.Max(0.5, ViewModel.ReminderTimelineScale - 0.5);
+    }
+
+    private void ReminderTimeline_OnAddReminderRequested(object? sender, DateTime targetTime)
+    {
+        var reminder = new Reminder()
+        {
+            Time = targetTime,
+            TimeOfDay = targetTime.TimeOfDay,
+            Title = "新日程"
+        };
+        ViewModel.AddReminder(reminder);
+        ViewModel.SelectedReminder = reminder;
+    }
+
+    private void ReminderTimeline_OnReminderSelected(object? sender, Reminder? reminder)
+    {
+        ViewModel.SelectedReminder = reminder;
+    }
+
+    private void ReminderTimeline_OnReminderSettingsClicked(object? sender, Reminder? reminder)
+    {
+        if (reminder != null)
+        {
+            ViewModel.SelectedReminder = reminder;
+            OpenReminderDrawer(reminder);
+        }
     }
 
     #endregion

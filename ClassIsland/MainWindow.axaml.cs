@@ -1110,6 +1110,13 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         App.GetService<SettingsWindowNew>().Open();
     }
 
+    private void MenuItemEditReminders_OnClick(object sender, EventArgs e)
+    {
+        var wnd = App.GetService<ProfileSettingsWindow>();
+        wnd.Open();
+        wnd.OpenScheduleTab();
+    }
+
 
     private async void MenuItemExitApp_OnClick(object sender, EventArgs e)
     {

@@ -60,7 +60,9 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     [ObservableProperty] private bool _isOfflineEditor = false;
     [ObservableProperty] private TimeLayoutItem? _selectedTimePoint;
     [ObservableProperty] private double _timeLineScale = 3.0;
+    [ObservableProperty] private double _reminderTimelineScale = 3.0;
     [ObservableProperty] private Subject? _selectedSubject;
+    [ObservableProperty] private Reminder? _selectedReminder;
     [ObservableProperty] private bool _isPanningModeEnabled = false;
     [ObservableProperty] private bool _isDragEntering = false;
     [ObservableProperty] private Guid _tempOverlayClassPlanTimeLayoutId = Guid.Empty;
@@ -272,5 +274,23 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// 暴露当前档案的提醒集合，供 UI 绑定使用。
+    /// </summary>
+    public ObservableCollection<Reminder> Reminders => ProfileService.Profile.Reminders;
+
+    public void AddReminder(Reminder reminder)
+    {
+        ProfileService.Profile.Reminders.Add(reminder);
+        ProfileService.SaveProfile();
+    }
+
+    public void RemoveReminder(Reminder reminder)
+    {
+        if (reminder == null) return;
+        ProfileService.Profile.Reminders.Remove(reminder);
+        ProfileService.SaveProfile();
     }
 }

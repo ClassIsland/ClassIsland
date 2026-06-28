@@ -194,12 +194,16 @@ public partial class App
         services.AddComponent<RollingComponent, RollingComponentSettingsControl>();
         services.AddComponent<GroupComponent>();
         services.AddComponent<StackComponent>();
+        services.AddComponent<ReminderTimelineComponent, ReminderTimelineComponentSettingsControl>();
         // 提醒提供方
         services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
         services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
         services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
         services.AddNotificationProvider<ManagementNotificationProvider>();
         services.AddNotificationProvider<ActionNotificationProvider>();
+        services.AddNotificationProvider<ReminderNotificationProvider, ReminderNotificationProviderSettingsControl>();
+        services.AddSingleton<ScheduleReminderService>();
+        services.AddHostedService<ScheduleReminderService>(sp => sp.GetRequiredService<ScheduleReminderService>());
         // // Transients
         // services.AddTransient<ExcelImportWindow>();
         // services.AddTransient<WallpaperPreviewWindow>();
