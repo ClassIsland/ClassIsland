@@ -12,6 +12,13 @@
         <Title>ClassIsland</Title>
         <AssemblyTitle>ClassIsland</AssemblyTitle>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(PublishBuilding)'=='true' And '$(PublishPlatform)'=='macos'">
+        <!-- Preserve PublishFolderType from referenced projects for macOS app bundle resources. -->
+        <MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>true</MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(PublishBuilding)'!='true' And $([System.OperatingSystem]::IsMacOS())">
+        <MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>true</MSBuildDisableGetCopyToPublishDirectoryItemsOptimization>
+    </PropertyGroup>
     
     <!-- UOS DEB Packaging Properties -->
     <PropertyGroup>
@@ -28,7 +35,8 @@
         <DesktopCategories>Education;Office</DesktopCategories>
         <InfoPermissions>autostart;notification;trayicon;clipboard</InfoPermissions>
         <DesktopExec>/opt/apps/$(AppId)/files/bin/$(AssemblyName)</DesktopExec>
-        <DebControlDepends>libx11-6, libice6, libsm6, libfontconfig1, ca-certificates, tzdata, libc6, libgcc1 | libgcc-s1, libgssapi-krb5-2, libstdc++6, zlib1g, libssl1.0.0 | libssl1.0.2 | libssl1.1 | libssl3, libicu | libicu77 | libicu76 | libicu74 | libicu72 | libicu71 | libicu70 | libicu69 | libicu68 | libicu67 | libicu66 | libicu65 | libicu63 | libicu60 | libicu57 | libicu55 | libicu52</DebControlDepends>
+        <ExcludePackingDebFileExtensions>.dbg;.pdb</ExcludePackingDebFileExtensions>
+        <DebControlDepends>libx11-6, libice6, libsm6, libfontconfig1, ca-certificates, tzdata, libc6, libgcc1 | libgcc-s1, libgssapi-krb5-2, libstdc++6, zlib1g, libssl1.0.0 | libssl1.0.2 | libssl1.1 | libssl3, libicu | libicu78 | libicu77 | libicu76 | libicu74 | libicu72 | libicu71 | libicu70 | libicu69 | libicu68 | libicu67 | libicu66 | libicu65 | libicu63 | libicu60 | libicu57 | libicu55 | libicu52</DebControlDepends>
     </PropertyGroup>
     
     <ItemGroup>
@@ -54,12 +62,18 @@
         <PackageReference Include="Packaging.DebUOS" Version="3.17.6"/>
     </ItemGroup>
     <ItemGroup>
-      <AvaloniaResource Include="Assets\AppLogo.ico">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-          <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-      </AvaloniaResource>
+      <AvaloniaResource Include="Assets\AppLogo.ico" />
       <None Include="Assets/**" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always"
             PublishFolderType="Resource"/>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX'">
+      <AvaloniaResource Update="Assets\AppLogo.ico">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </AvaloniaResource>
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)' != 'Debug' And '$(Configuration)' != 'Debug_MSIX'">
+      <None Remove="Assets\AppLogo.ico" />
     </ItemGroup>
     <ItemGroup>
       <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@384w.png" />

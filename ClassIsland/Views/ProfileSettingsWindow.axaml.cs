@@ -30,6 +30,7 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Models;
+using ClassIsland.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -42,6 +43,7 @@ using FluentAvalonia.UI.Controls;
 using HotAvalonia;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
+using ClassIsland.Helpers;
 using Sentry;
 
 namespace ClassIsland.Views;
@@ -49,6 +51,9 @@ namespace ClassIsland.Views;
 public partial class ProfileSettingsWindow : MyWindow
 {
     private bool _isOpen = false;
+    private record UndoEntry(bool IsAdd, TimeLayoutItem Item, TimeLayout Layout, int Index, string Description);
+    private readonly Stack<UndoEntry> _undoStack = new();
+    private readonly Stack<UndoEntry> _redoStack = new();
 
     public static readonly FuncValueConverter<ProfileTransferProviderType, string>
         ProfileTransferProviderTypeToImportButtonTextConverter = new(x => x switch
@@ -74,10 +79,37 @@ public partial class ProfileSettingsWindow : MyWindow
         TimeLineListControl.SelectionChanged += TimeLineListControl_OnSelectionChanged;
         TimeLineListControl.KeyDown += OnKeyDown;
         ListViewTimePoints.KeyDown += OnKeyDown;
+        // 撤销/重做使用窗口级快捷键，避免依赖时间点列表是否获得焦点
+        AddHandler(KeyDownEvent, OnGlobalUndoRedoKeyDown, RoutingStrategies.Tunnel);
         ViewModel.ObservableForProperty(x => x.IsDrawerOpen)
             .Subscribe(_ => OnDrawerStateChanged());
         ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
             .Subscribe(_ => TimeLineListControl?.ScrollIntoViewCentered(ViewModel.SelectedTimeLayout?.Layouts.FirstOrDefault()));
+        ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
+            .Subscribe(_ =>
+            {
+                _undoStack.Clear(); _redoStack.Clear();
+                ViewModel.CanUndo = false; ViewModel.CanRedo = false;
+                ViewModel.UndoDescriptions.Clear(); ViewModel.RedoDescriptions.Clear();
+            });
+    }
+
+    private void OnGlobalUndoRedoKeyDown(object? sender, KeyEventArgs e)
+    {
+        // 焦点位于文本输入框时，保留其自身的撤销/重做行为
+        if (FocusManager?.GetFocusedElement() is TextBox)
+            return;
+        switch (e.Key)
+        {
+            case Key.Z when e.KeyModifiers == KeyModifiers.Control:
+                UndoLastAction();
+                e.Handled = true;
+                break;
+            case Key.Y when e.KeyModifiers == KeyModifiers.Control:
+                RedoLastAction();
+                e.Handled = true;
+                break;
+        }
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -164,27 +196,34 @@ public partial class ProfileSettingsWindow : MyWindow
             SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.open", 1);
             _isOpen = true;
             Show();
-            Dispatcher.UIThread.Post(() =>
+            if (ViewModel.ManagementService.Policy is
+                {
+                    DisableProfileEditing: false, DisableProfileClassPlanEditing: false,
+                    DisableProfileSubjectsEditing: false, DisableProfileTimeLayoutEditing: false
+                })
             {
-                if (ViewModel.ProfileService.Profile.TimeLayouts.Count > 0)
+                Dispatcher.UIThread.Post(() =>
                 {
-                    if (ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
+                    if (ViewModel.ProfileService.Profile.TimeLayouts.Count > 0)
                     {
-                        ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/setup-classplans");
+                        if (ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
+                        {
+                            ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/setup-classplans");
+                        }
+                        if (!ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeRule.WeekCountDiv > 0)
+                            && ViewModel.ProfileService.Profile.ClassPlans.Count > 0)
+                        {
+                            ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/multiweek-classplans");
+                        }
                     }
-                    if (!ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeRule.WeekCountDiv > 0)
-                        && ViewModel.ProfileService.Profile.ClassPlans.Count > 0)
+                    else
                     {
-                        ViewModel.TutorialService.BeginNotCompletedTutorials("classisland.getStarted.profileEditing/multiweek-classplans");
+                        ViewModel.TutorialService.BeginNotCompletedTutorials(
+                            "classisland.getStarted.profileEditing/concepts",
+                            "classisland.getStarted.profileEditing/setup-timeLayout");
                     }
-                }
-                else
-                {
-                    ViewModel.TutorialService.BeginNotCompletedTutorials(
-                        "classisland.getStarted.profileEditing/concepts",
-                        "classisland.getStarted.profileEditing/setup-timeLayout");
-                }
-            });
+                });
+            }
         }
         else
         {
@@ -211,7 +250,13 @@ public partial class ProfileSettingsWindow : MyWindow
             "subjects" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 2,
             "forbidden" => 3,
             "adjustment" => 4,
-            "transfer" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 5,
+            "transfer" when ViewModel.ManagementService.Policy is
+            {
+                DisableProfileEditing: false,
+                DisableProfileClassPlanEditing: false,
+                DisableProfileTimeLayoutEditing: false,
+                DisableProfileSubjectsEditing: false
+            } => 5,
             _ => ViewModel.MasterPageTabSelectIndex
         };
     }
@@ -552,7 +597,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
     }
     
-    private void SelectingItemsControlClassPlans_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private void TreeViewClassPlans_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         ViewModel.CurrentClassPlanEditDoneToast?.Close();
     }
@@ -567,7 +612,7 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.TempOverlayCreateTimeLayout);
         if (id is { } guid)
         {
-            ViewModel.SelectedClassPlan = ViewModel.ProfileService.Profile.ClassPlans[guid];
+            ViewModel.SelectClassPlanByGuid(guid);
             UpdateClassPlanInfoEditorTimeLayoutComboBox();
             OpenDrawer("ClassPlansInfoEditor");
             FlyoutHelper.CloseAncestorFlyout(sender);
@@ -597,8 +642,24 @@ public partial class ProfileSettingsWindow : MyWindow
     private void CreateClassPlan()
     {
         var newClassPlan = new ClassPlan();
-        ViewModel.ProfileService.Profile.ClassPlans.Add(Guid.NewGuid(), newClassPlan);
-        ViewModel.SelectedClassPlan = newClassPlan;
+        var selectedNode = ViewModel.SelectedClassPlansTreeNode;
+        if (selectedNode is not null)
+        {
+            var selectedClassPlanGroup = 
+                selectedNode.IsGroup
+                    ? selectedNode.Guid
+                    : selectedNode.ClassPlan?.AssociatedGroup;
+
+            newClassPlan.AssociatedGroup = selectedClassPlanGroup ?? ViewModel.ProfileService.Profile.SelectedClassPlanGroupId;
+        }
+        else
+        {
+            newClassPlan.AssociatedGroup = ViewModel.ProfileService.Profile.SelectedClassPlanGroupId;
+        }
+        
+        var newClassPlanGuid = Guid.NewGuid();
+        ViewModel.ProfileService.Profile.ClassPlans.Add(newClassPlanGuid, newClassPlan);
+        ViewModel.SelectClassPlanByGuid(newClassPlanGuid);
         UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
     }
@@ -613,6 +674,7 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.ProfileService.Profile.OrderedSchedules.Remove(key);
         }
         FlyoutHelper.CloseAncestorFlyout(sender);
+        ViewModel.SelectedClassPlansTreeNode = null;
     }
 
     private void ButtonOpenCreateOverlayClassPlanFlyout_OnClick(object? sender, RoutedEventArgs e)
@@ -633,8 +695,9 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
 
-        ViewModel.ProfileService.Profile.ClassPlans.Add(Guid.NewGuid(), s);
-        ViewModel.SelectedClassPlan = s;
+        var newClassPlanGuid = Guid.NewGuid();
+        ViewModel.ProfileService.Profile.ClassPlans.Add(newClassPlanGuid, s);
+        ViewModel.SelectClassPlanByGuid(newClassPlanGuid);
         UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.classPlan.duplicate", 1);
@@ -730,7 +793,7 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void ScheduleDataGrid_OnOpenClassPlanSettingsRequested(object? sender, ScheduleDataGridClassPlanEventArgs e)
     {
-        ViewModel.SelectedClassPlan = e.ClassPlan;
+        ViewModel.SelectClassPlanByInstance(e.ClassPlan);
         // ViewModel.ScheduleCalendarSelectedDate = e.Date;
         UpdateClassPlanInfoEditorTimeLayoutComboBox();
         OpenDrawer("ClassPlansInfoEditor");
@@ -808,6 +871,115 @@ public partial class ProfileSettingsWindow : MyWindow
         FlyoutHelper.CloseAncestorFlyout(sender);
     }
     
+    private void PushAddUndo(TimeLayoutItem item, TimeLayout layout)
+    {
+        var index = layout.Layouts.IndexOf(item);
+        var desc = $"添加{item}";
+        _undoStack.Push(new UndoEntry(IsAdd: true, item, layout, index, desc));
+        ViewModel.UndoDescriptions.Insert(0, desc);
+        _redoStack.Clear();
+        ViewModel.RedoDescriptions.Clear();
+        ViewModel.CanUndo = true;
+        ViewModel.CanRedo = false;
+    }
+
+    private void PushDeleteUndo(TimeLayoutItem item, TimeLayout layout, int index)
+    {
+        var desc = $"删除{item}";
+        _undoStack.Push(new UndoEntry(IsAdd: false, item, layout, index, desc));
+        ViewModel.UndoDescriptions.Insert(0, desc);
+        _redoStack.Clear();
+        ViewModel.RedoDescriptions.Clear();
+        ViewModel.CanUndo = true;
+        ViewModel.CanRedo = false;
+    }
+
+    private void UndoLastAction()
+    {
+        if (!_undoStack.TryPop(out var entry)) return;
+        var undoneIndex = entry.IsAdd ? entry.Layout.Layouts.IndexOf(entry.Item) : entry.Index;
+        if (entry.IsAdd)
+        {
+            entry.Layout.RemoveTimePoint(entry.Item);
+            if (ViewModel.SelectedTimePoint == entry.Item)
+                ViewModel.SelectedTimePoint = entry.Layout.Layouts.Count > 0 ? entry.Layout.Layouts[Math.Max(0, undoneIndex - 1)] : null;
+        }
+        else
+        {
+            entry.Layout.InsertTimePoint(entry.Index, entry.Item);
+            ViewModel.SelectedTimePoint = entry.Item;
+        }
+        if (ViewModel.UndoDescriptions.Count > 0) ViewModel.UndoDescriptions.RemoveAt(0);
+        _redoStack.Push(entry with { Index = undoneIndex });
+        ViewModel.RedoDescriptions.Insert(0, entry.Description);
+        ViewModel.CanUndo = _undoStack.Count > 0;
+        ViewModel.CanRedo = true;
+    }
+
+    private void RedoLastAction()
+    {
+        if (!_redoStack.TryPop(out var entry)) return;
+        int redoneIndex;
+        if (entry.IsAdd)
+        {
+            entry.Layout.InsertTimePoint(entry.Index, entry.Item);
+            ViewModel.SelectedTimePoint = entry.Item;
+            redoneIndex = entry.Index;
+        }
+        else
+        {
+            redoneIndex = entry.Layout.Layouts.IndexOf(entry.Item);
+            entry.Layout.RemoveTimePoint(entry.Item);
+            if (ViewModel.SelectedTimePoint == entry.Item)
+                ViewModel.SelectedTimePoint = entry.Layout.Layouts.Count > 0 ? entry.Layout.Layouts[Math.Max(0, redoneIndex - 1)] : null;
+        }
+        if (ViewModel.RedoDescriptions.Count > 0) ViewModel.RedoDescriptions.RemoveAt(0);
+        _undoStack.Push(entry with { Index = redoneIndex });
+        ViewModel.UndoDescriptions.Insert(0, entry.Description);
+        ViewModel.CanRedo = _redoStack.Count > 0;
+        ViewModel.CanUndo = true;
+    }
+
+    private void UndoToIndex(int count)
+    {
+        for (var i = 0; i < count; i++) UndoLastAction();
+    }
+
+    private void RedoToIndex(int count)
+    {
+        for (var i = 0; i < count; i++) RedoLastAction();
+    }
+
+    private void ButtonUndoAdd_OnClick(object? sender, RoutedEventArgs e)
+    {
+        FlyoutHelper.CloseAncestorFlyout(sender as Control);
+        UndoLastAction();
+    }
+
+    private void ButtonRedoAdd_OnClick(object? sender, RoutedEventArgs e)
+    {
+        FlyoutHelper.CloseAncestorFlyout(sender as Control);
+        RedoLastAction();
+    }
+
+    private void UndoHistoryList_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is not ListBox lb || lb.SelectedIndex < 0) return;
+        var count = lb.SelectedIndex + 1;
+        lb.SelectedIndex = -1;
+        FlyoutHelper.CloseAncestorFlyout(lb);
+        UndoToIndex(count);
+    }
+
+    private void RedoHistoryList_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is not ListBox lb || lb.SelectedIndex < 0) return;
+        var count = lb.SelectedIndex + 1;
+        lb.SelectedIndex = -1;
+        FlyoutHelper.CloseAncestorFlyout(lb);
+        RedoToIndex(count);
+    }
+
     private void AddTimePoint(TimeLayoutItem item)
     {
         var timeLayout = ViewModel.SelectedTimeLayout;
@@ -816,7 +988,7 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         var l = timeLayout.Layouts;
-        for (var i = 0; i < l.Count - 1; i++)
+        for (var i = 0; i < l.Count; i++)
         {
             if (l[i].StartTime <= item.StartTime)
                 continue;
@@ -915,6 +1087,7 @@ public partial class ProfileSettingsWindow : MyWindow
         AddTimePoint(newItem);
         // ReSortTimeLayout(newItem);
         ViewModel.SelectedTimePoint = newItem;
+        PushAddUndo(newItem, timeLayout);
         //OpenDrawer("TimePointEditor");
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.create", 1,
         [
@@ -962,49 +1135,118 @@ public partial class ProfileSettingsWindow : MyWindow
         RemoveSelectedTimePoint();
     }
 
+    [RelayCommand]
+    private void DuplicateTimePoint(TimeLayoutItem? item)
+    {
+        if (item == null) item = ViewModel.SelectedTimePoint;
+        if (item == null) return;
+        
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        if (timeLayout == null) return;
+
+        var copyDuration = item.EndTime - item.StartTime;
+        var baseSec = item.EndTime;
+        var copyEndTime = baseSec + copyDuration;
+
+        // 限界检查：复制的时间点不能超出 23:59:59
+        var maxTime = new TimeSpan(23, 59, 59);
+        if (baseSec >= maxTime)
+        {
+            this.ShowWarningToast("没有足够的空间来复制时间点。");
+            return;
+        }
+
+        // 重叠检查（与 AddTimeLayoutItem 一致）
+        if (item.TimeType is 0 or 1)
+        {
+            var index = timeLayout.Layouts.IndexOf(item);
+            if (index >= 0 && index < timeLayout.Layouts.Count - 1)
+            {
+                var nexts = (from i
+                            in timeLayout.Layouts.Skip(index + 1)
+                        where i.TimeType != 2
+                        select i)
+                    .ToList();
+                if (nexts.Count > 0)
+                {
+                    var next = nexts[0];
+                    if (next.StartTime <= baseSec)
+                    {
+                        if (index != 0)
+                        {
+                            this.ShowWarningToast("没有合适的位置来复制时间点。");
+                            return;
+                        }
+
+                        baseSec = item.StartTime - copyDuration;
+                        copyEndTime = item.StartTime;
+                        this.ShowToast("已向前插入了新的时间点。");
+                    }
+
+                    if (next.StartTime < copyEndTime)
+                    {
+                        this.ShowToast("没有足够的空间完全复制该时间点，已缩短时间点长度。");
+                        copyEndTime = next.StartTime;
+                    }
+                }
+            }
+        }
+        else if (item.TimeType == 2)
+        {
+            if ((from i in timeLayout.Layouts where i.TimeType == 2 select i.StartTime).ToList()
+                .Contains(baseSec))
+            {
+                this.ShowWarningToast("这里已经存在一条分割线。");
+                return;
+            }
+        }
+        else if (item.TimeType == 3)
+        {
+            if ((from i in timeLayout.Layouts where i.TimeType == 3 select i.StartTime).ToList()
+                .Contains(baseSec))
+            {
+                this.ShowWarningToast("这里已经存在一个行动。");
+                return;
+            }
+        }
+
+        // 边界限界
+        copyEndTime = TimeSpanHelper.Clamp(copyEndTime, TimeSpan.Zero, maxTime);
+
+        if (copyEndTime <= baseSec && item.TimeType is 0 or 1)
+        {
+            this.ShowWarningToast("没有足够的空间来复制时间点。");
+            return;
+        }
+
+        var copy = ConfigureFileHelper.CopyObject(item);
+        copy.StartTime = baseSec;
+        copy.EndTime = copyEndTime;
+
+        AddTimePoint(copy);
+        ViewModel.SelectedTimePoint = copy;
+        
+        this.ShowToast(new ToastMessage("已创建时间点副本。")
+        {
+            Severity = InfoBarSeverity.Success
+        });
+        
+        SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.duplicate", 1);
+    }
+
     private void RemoveSelectedTimePoint()
     {
-        if (ViewModel.SelectedTimePoint == null) 
+        if (ViewModel.SelectedTimePoint == null)
             return;
         var timePoint = ViewModel.SelectedTimePoint;
         var timeLayout = ViewModel.SelectedTimeLayout;
-        if (timeLayout == null)
-        {
-            return;
-        }
+        if (timeLayout == null) return;
         var i = timeLayout.Layouts.IndexOf(timePoint);
         timeLayout.RemoveTimePoint(timePoint);
         if (i > 0)
             ViewModel.SelectedTimePoint = timeLayout.Layouts[i - 1];
-        var revertButton = new Button()
-        {
-            Content = "撤销"
-        };
-
-        ViewModel.CurrentTimePointDeleteRevertToast?.Close();
-        var message = ViewModel.CurrentTimePointDeleteRevertToast = new ToastMessage()
-        {
-            Message = $"已删除时间点 {timePoint}。",
-            Duration = TimeSpan.FromSeconds(10),
-            ActionContent = revertButton
-        };
-        revertButton.Click += RevertButtonOnClick;
-        message.ClosedCancellationTokenSource.Token.Register(() =>
-        {
-            revertButton.Click -= RevertButtonOnClick;
-            ViewModel.CurrentTimePointDeleteRevertToast = null;
-        });
-        ViewModel.ObservableForProperty(x => x.SelectedTimeLayout).Subscribe(_ => message.Close());
-        this.ShowToast(message);
-        
+        PushDeleteUndo(timePoint, timeLayout, i);
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.timePoint.remove", 1);
-        return;
-
-        void RevertButtonOnClick(object? o, RoutedEventArgs routedEventArgs)
-        {
-            AddTimePoint(timePoint);
-            message.Close();
-        }
     }
 
     private void ButtonRefreshTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -1426,5 +1668,4 @@ public partial class ProfileSettingsWindow : MyWindow
     }
     
     #endregion
-    
 }

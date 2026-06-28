@@ -61,6 +61,10 @@ public class WindowRuleService : IWindowRuleService
     private bool StatusHandler(object? settings)
     {
         if (settings is not WindowStatusRuleSettings s) return false;
+        if (AppBase.Current.MainWindow is not MainWindow)
+        {
+            return false;
+        }
         var mw = App.GetService<MainWindow>();
         var screen = mw.GetSelectedScreenSafe();
         if (screen == null)
