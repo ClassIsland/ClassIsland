@@ -18,7 +18,7 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     /// <summary>
     /// 指示应用程序所允许使用的最大内存使用量(Bytes)，默认值为1.5GB
     /// </summary>
-    public static readonly long MemoryLimitBytes = 1500000000;
+    public static readonly long MemoryLimitBytes = 3000000000;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

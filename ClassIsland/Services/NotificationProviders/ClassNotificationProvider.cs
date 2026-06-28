@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,6 +76,8 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             if (IsClassPreparingNotified)
                 return;
 
+            _prepareOnClassNotificationRequest?.Cancel();
+            _onClassNotificationRequest?.Cancel();
             IsClassPreparingNotified = true;
             var deltaTime = CalculateDeltaTime(settingsDeltaTime, tClassDelta);
             var notificationRequest = _prepareOnClassNotificationRequest = BuildNotificationRequest(settingsSource, deltaTime);
@@ -239,6 +241,8 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
     private void OnClass(object? sender, EventArgs e)
     {
+        _prepareOnClassNotificationRequest?.Cancel();
+        _onClassNotificationRequest?.Cancel();
         ShowOnClassNotificationCore();
 
         // 考虑到可能出现提醒过程中时间提前，导致提醒播放结束时还没上课导致重复提醒的情况，
@@ -315,11 +319,11 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return new Task(() => {});
+        return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return new Task(() => { });
+        return Task.CompletedTask;
     }
 }

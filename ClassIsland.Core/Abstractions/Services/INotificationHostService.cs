@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Enums.Notification;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
@@ -16,7 +17,7 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface INotificationHostService : IHostedService, INotifyPropertyChanged
 {
-    internal PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; }
+    internal PriorityQueue<NotificationGroup, NotificationPriority> RequestQueue { get; }
     internal ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; }
     
     internal NotificationRequest? CurrentRequest { get; set; }
@@ -67,7 +68,8 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     /// </summary>
     /// <param name="consumer">要注册的提醒消费者</param>
     /// <param name="priority">提醒消费者优先级</param>
-    public void RegisterNotificationConsumer(INotificationConsumer consumer, int priority);
+    /// <param name="lineNumber">提醒消费者所属的行号</param>
+    public void RegisterNotificationConsumer(INotificationConsumer consumer, int priority, int? lineNumber = null);
 
     /// <summary>
     /// 取消注册提醒消费者。
@@ -76,16 +78,27 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     public void UnregisterNotificationConsumer(INotificationConsumer consumer);
 
     /// <summary>
-    /// 拉取要播放的提醒。
+    /// 拉取下一个可用的提醒请求。
     /// </summary>
-    /// <remarks>
-    /// 此方法一般情况下只会返回一个要显示的提醒。如果有成链的提醒，会将这些提醒一并返回。请在显示完上次显示的提醒后再调用此方法。
-    /// </remarks>
-    /// <returns>获得的提醒</returns>
-    public IList<NotificationPlayingTicket> PullNotificationRequests();
+    /// <param name="consumer">正在拉取提醒的消费者</param>
+    /// <returns>提醒票据列表</returns>
+    public IList<NotificationPlayingTicket> PullNotificationRequests(INotificationConsumer consumer);
+    
+    /// <summary>
+    /// 分发队列中提醒组到消费者。
+    /// </summary>
+    public void PopGroupsToConsumers();
     
     /// <summary>
     /// 当前是否正在播放提醒
     /// </summary>
     public bool IsNotificationsPlaying { get; }
+
+    /// <summary>
+    /// 集中管理提醒请求的状态转换，同时更新内部跟踪集合。
+    /// 所有对 NotificationRequest.State 的修改都应通过此方法进行。
+    /// </summary>
+    /// <param name="request">要更新状态的提醒请求</param>
+    /// <param name="newState">目标状态</param>
+    public void TransitionRequestState(NotificationRequest request, NotificationState newState);
 }
