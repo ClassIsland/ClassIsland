@@ -304,6 +304,7 @@ public class MainWindowLine : ContentControl, INotificationConsumer
     {
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
+        TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
         ComponentPresenter.ComponentVisibilityChangedEvent.AddClassHandler(typeof(MainWindowLine), 
             UpdateVisibilityState, RoutingStrategies.Bubble);
         this.GetObservable(HidingRulesProperty).Subscribe(new AnonymousObserver<Core.Models.Ruleset.Ruleset?>(_ => UpdateRuleState()));
@@ -517,6 +518,16 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         // BeginStoryboard(e.StoryboardName);
     }
 
+    private bool _isRealMouseIn = false;
+    private bool _isTouchIn = false;
+    private bool _isTouchActive = false;
+
+    private void UpdateIsMouseIn()
+    {
+        IsMouseIn = _isRealMouseIn || _isTouchIn || TouchInFadingTimer.IsEnabled;
+        // Logger.LogTrace("IsMouseIn: {}", IsMouseIn);
+    }
+
     private void MainWindowOnRawInputEvent(object? sender, RawInputEventArgs e)
     {
         switch (e.Data)
@@ -524,42 +535,110 @@ public class MainWindowLine : ContentControl, INotificationConsumer
             case RawInputDigitizerData digitizerData:
             {
                 var contacts = digitizerData.Contacts;
-                //Logger.LogTrace("TOUCH {}", string.Join(", ", contacts.ToList().Select(x => $"({x.X}, {x.Y} + {x.Width})")));
-                var r = IsMouseIn =
-                    contacts.ToList().Exists(x => GetMouseStatusByPos(new Point(x.X, x.Y)));
-                if (SettingsService.Settings.TouchInFadingDurationMs > 0 && r)
+                var allScreens = MainWindow.Screens.All;
+                if (allScreens.Count == 0) break;
+                var vLeft = int.MaxValue;
+                var vTop = int.MaxValue;
+                var vRight = int.MinValue;
+                var vBottom = int.MinValue;
+                foreach (var s in allScreens)
                 {
-                    TouchInFadingTimer.Stop();
-                    TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
-                    TouchInFadingTimer.Start();
+                    if (s.Bounds.X < vLeft) vLeft = s.Bounds.X;
+                    if (s.Bounds.Y < vTop) vTop = s.Bounds.Y;
+                    if (s.Bounds.Right > vRight) vRight = s.Bounds.Right;
+                    if (s.Bounds.Bottom > vBottom) vBottom = s.Bounds.Bottom;
                 }
+                var vWidth = vRight - vLeft;
+                var vHeight = vBottom - vTop;
+                if (vWidth <= 0 || vHeight <= 0) break;
+                var isAnyInNow = false;
+                var wasTouchIn = _isTouchIn;
 
-                if (!r)
+                foreach (var x in contacts)
+                {
+                    if (x.Kind is not (RawInputDigitizerContactKind.Finger or RawInputDigitizerContactKind.Pen or RawInputDigitizerContactKind.Eraser or RawInputDigitizerContactKind.None or RawInputDigitizerContactKind.Hover))
+                        continue;
+
+                    double px, py;
+                    var rangeX = x.MaxX - x.MinX;
+                    var rangeY = x.MaxY - x.MinY;
+                    if (rangeX > 0 && rangeY > 0)
+                    {
+                        // 归一化
+                        double normX = (double)(x.X - x.MinX) / rangeX;
+                        double normY = (double)(x.Y - x.MinY) / rangeY;
+                        px = vLeft + (normX * vWidth);
+                        py = vTop + (normY * vHeight);
+                    }
+                    else if (x.X >= vLeft && x.X <= vRight && x.Y >= vTop && x.Y <= vBottom)
+                    {
+                        px = x.X;
+                        py = x.Y;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    // Logger.LogTrace("Digitizer Input: Kind={}, Raw=({}, {}), Range=({}, {}), Screen=({:F2}, {:F2})", x.Kind, x.X, x.Y, rangeX, rangeY, px, py);
+                    if (GetMouseStatusByPos(new Point(px, py)))
+                    {
+                        if (x.Kind is RawInputDigitizerContactKind.Finger or RawInputDigitizerContactKind.Pen or RawInputDigitizerContactKind.Eraser)
+                        {
+                            isAnyInNow = true;
+                        }
+                    }
+                }
+                // 状态机：松开时启动计时器
+                if (wasTouchIn && !isAnyInNow)
+                {
+                    _isTouchActive = false;
+                    if (SettingsService.Settings.TouchInFadingDurationMs > 0)
+                    {
+                        TouchInFadingTimer.Stop();
+                        TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
+                        TouchInFadingTimer.Start();
+                    }
+                    else
+                    {
+                        UpdateMouseStatus();
+                    }
+                }
+                else if (isAnyInNow)
                 {
                     TouchInFadingTimer.Stop();
                 }
+                _isTouchIn = isAnyInNow;
+                if (isAnyInNow) _isTouchActive = true;
+                // Logger.LogTrace("isTouchIn: {}", _isTouchIn);
+                UpdateIsMouseIn();
                 break;
             }
             case RawInputMouseData mouseData:
-                //Logger.LogTrace("MOUSE ({}, {}) {}", mouseData.Mouse.LastX, mouseData.Mouse.LastY, mouseData.Mouse.Buttons);
-                //if (TouchInFadingTimer.IsEnabled)
-                TouchInFadingTimer.Stop();
+                var isSimulated = (mouseData.Mouse.ExtraInformation & 0xFFFFFF00u) == 0xFF515700u;
+                if (isSimulated)
+                {
+                    break;
+                }
                 UpdateMouseStatus();
                 break;
         }
     }
 
+    private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
+    {
+        TouchInFadingTimer.Stop();
+        UpdateMouseStatus();
+    }
+
     private void UpdateMouseStatus()
     {
-        // if (PresentationSource.FromVisual(this) == null)
-        // {
-        //     return;
-        // }
-
+        if (_isTouchActive) return;
         try
         {
             var ptr = PlatformServices.WindowPlatformService.GetMousePos();
-            IsMouseIn = GetMouseStatusByPos(ptr);
+            _isRealMouseIn = GetMouseStatusByPos(ptr);
+            UpdateIsMouseIn();
         }
         catch (Exception ex)
         {
@@ -569,7 +648,9 @@ public class MainWindowLine : ContentControl, INotificationConsumer
 
     private void MainWindowOnMousePosChanged(object? sender, MousePosChangedEventArgs e)
     {
-        IsMouseIn = GetMouseStatusByPos(e.Pos);
+        if (_isTouchActive) return;
+        _isRealMouseIn = GetMouseStatusByPos(e.Pos);
+        UpdateIsMouseIn();
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -622,18 +703,11 @@ public class MainWindowLine : ContentControl, INotificationConsumer
         {
             return false;
         }
-        MainWindow.GetCurrentDpi(out var dpiX, out var dpiY);
-        var scale = SettingsService.Settings.Scale;
-        //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
-        var root = GridWrapper.PointToScreen(new Point(0, 0));
-        var cx = root.X;
-        var cy = root.Y;
-        var cw = GridWrapper.Bounds.Width * dpiX * scale;
-        var ch = GridWrapper.Bounds.Height * dpiY * scale;
-        var cr = cx + cw;
-        var cb = cy + ch;
 
-        return (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
+        var root = GridWrapper.PointToScreen(new Point(0, 0));
+        var bottomDown = GridWrapper.PointToScreen(new Point(GridWrapper.Bounds.Width, GridWrapper.Bounds.Height));
+
+        return (root.X <= ptr.X && root.Y <= ptr.Y && ptr.X <= bottomDown.X && ptr.Y <= bottomDown.Y);
     }
 
     public void ReceiveNotifications(IReadOnlyList<NotificationPlayingTicket> notificationRequests)
