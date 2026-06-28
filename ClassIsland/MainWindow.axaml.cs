@@ -619,7 +619,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         switch (SettingsService.Settings.TaskBarIconClickBehavior)
         {
             case 0:
-                if (!OperatingSystem.IsWindows())
+                if (!OperatingSystem.IsWindows()) // 兼容性处理：“打开主菜单”左键托盘行为仅在Windows平台上有效，为应对档案从Windows平台迁移至其他平台的情况，此处将左键托盘行为更改为“打开设置窗口”
                 {
                     SettingsService.Settings.TaskBarIconClickBehavior = 4;
                     break;
@@ -990,8 +990,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         var bounds = screen.WorkingArea;
-        var width = Math.Max(bounds.Width - WindowedEditModeScreenMargin * 2, 1) / dpiX;
-        var height = Math.Max(bounds.Height - WindowedEditModeScreenMargin * 2, 1) / dpiY;
+        var width = Math.Max(bounds.Width - (WindowedEditModeScreenMargin * 2), 1) / dpiX;
+        var height = Math.Max(bounds.Height - (WindowedEditModeScreenMargin * 2), 1) / dpiY;
 
         WindowState = WindowState.Normal;
         Position = new PixelPoint(
