@@ -1,46 +1,43 @@
 <controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WeatherSettingsPage"
       xmlns="https://github.com/avaloniaui"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
       xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
       xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
       xmlns:controls2="clr-namespace:ClassIsland.Controls"
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
-      xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-      xmlns:classIsland="clr-namespace:ClassIsland"
-      xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
       xmlns:ci="http://classisland.tech/schemas/xaml/core"
       xmlns:controls3="using:FluentAvalonia.UI.Controls"
       xmlns:system="clr-namespace:System;assembly=System.Runtime"
       xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
       xmlns:abstraction="clr-namespace:ClassIsland.Platforms.Abstraction;assembly=ClassIsland.Platforms.Abstractions"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+      mc:Ignorable="d"
+      d:DesignHeight="600" d:DesignWidth="800"
       d:DataContext="{d:DesignInstance local:WeatherSettingsPage}"
       Loaded="WeatherSettingsPage_OnLoaded"
       Unloaded="WeatherSettingsPage_OnUnloaded">
 
     <controls:SettingsPageBase.Resources>
         <converters:CollectionToStringConverter x:Key="CollectionToStringConverter" />
-        <Grid Width="300" Margin="16" x:Key="CitySearcher" RowDefinitions="Auto,*">
-            <StackPanel Grid.Row="0">
-                <TextBlock Text="搜索城市" Theme="{StaticResource SubtitleTextBlockStyle}"
-                           Margin="0 0 0 8" />
+        <converters:PreventNullConverter x:Key="PreventNullConverter" />
+        <Grid Width="320" Margin="16" x:Key="CitySearcher" RowDefinitions="Auto,*">
+            <StackPanel Grid.Row="0" Spacing="8">
+                <TextBlock Text="搜索城市" Theme="{StaticResource SubtitleTextBlockStyle}" />
                 <Grid>
                     <TextBox TextChanged="TextBoxSearchCity_OnTextChanged"
                              Watermark="搜索城市或省份…"
-                             x:Name="TextBoxSearchCity"/>
-                    <controls3:FAProgressRing 
+                             x:Name="TextBoxSearchCity" />
+                    <controls3:FAProgressRing
                           IsIndeterminate="True"
                           HorizontalAlignment="Right"
                           Margin="0 0 4 0"
                           VerticalAlignment="Center"
                           Height="24" Width="24"
                           IsHitTestVisible="False"
-                          IsVisible="{Binding ViewModel.IsSearchingWeather}"/>
+                          IsVisible="{Binding ViewModel.IsSearchingWeather}" />
                 </Grid>
             </StackPanel>
             <!-- Main list box -->
@@ -62,70 +59,70 @@
             <!-- 无结果 -->
             <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 50"
                         IsVisible="{Binding !!!ViewModel.CitySearchResults.Count}">
-                <ci:Empty Text="找不到符合条件的城市。请更换搜索关键字，然后再试一次。"/>
+                <ci:Empty Text="找不到符合条件的城市。请更换搜索关键字，然后再试一次。" />
             </StackPanel>
         </Grid>
-        <converters:PreventNullConverter x:Key="PreventNullConverter" />
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Classes="settings-container animated-intro">
             <controls1:IconText Glyph="&#xF464;" Text="天气预览" Margin="0 0 0 8" />
             <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
-                    Padding="16"
-                    CornerRadius="8"
-                    Margin="0 0 0 8">
-                <StackPanel Spacing="12">
+                    Padding="20"
+                    CornerRadius="12"
+                    Margin="0 0 0 4">
+                <StackPanel Spacing="16">
                     <Grid ColumnDefinitions="Auto, *, Auto">
-                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
-                            <controls2:WeatherPackIconControl MinWidth="48" MaxWidth="120" Height="48"
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="14">
+                            <controls2:WeatherPackIconControl MinWidth="52" MaxWidth="120" Height="52"
                                                               Code="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Weather}"
                                                               VerticalAlignment="Center" />
-                            <StackPanel VerticalAlignment="Center" Spacing="0">
-                                <TextBlock FontSize="28" FontWeight="SemiBold">
+                            <StackPanel VerticalAlignment="Center" Spacing="2">
+                                <TextBlock FontSize="32" FontWeight="SemiBold">
                                     <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}" />
-                                    <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" FontSize="16" />
+                                    <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" FontSize="18" />
                                 </TextBlock>
                                 <TextBlock Classes="l-instructive"
-                                           FontSize="11"
+                                           FontSize="12"
                                            Opacity="0.6"
                                            Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.UpdateTime, StringFormat='更新于 {0:HH:mm}'}" />
                             </StackPanel>
                         </StackPanel>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" Spacing="24">
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    Orientation="Horizontal" Spacing="28">
                             <StackPanel Spacing="4">
-                                <TextBlock Text="湿度" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8"/>
+                                <TextBlock Text="湿度" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
-                                    <ci:FluentIcon Glyph="&#xE794;" FontSize="14" VerticalAlignment="Center"/>
+                                    <ci:FluentIcon Glyph="&#xE794;" FontSize="14" VerticalAlignment="Center" />
                                     <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}" />
-                                        <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" FontSize="10"/>
+                                        <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" FontSize="10" />
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Spacing="4">
-                                <TextBlock Text="空气质量" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8"/>
+                                <TextBlock Text="空气质量" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
-                                    <ci:FluentIcon Glyph="&#xEA7D;" FontSize="14" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}" VerticalAlignment="Center" FontWeight="Medium"/>
+                                    <ci:FluentIcon Glyph="&#xEA7D;" FontSize="14" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}" VerticalAlignment="Center" FontWeight="Medium" />
                                 </StackPanel>
                             </StackPanel>
                             <StackPanel Spacing="4">
-                                <TextBlock Text="风力" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8"/>
+                                <TextBlock Text="风力" Classes="l-instructive" HorizontalAlignment="Center" FontSize="12" Opacity="0.8" />
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
-                                    <ci:FluentIcon Glyph="&#xF43B;" FontSize="14" VerticalAlignment="Center"/>
+                                    <ci:FluentIcon Glyph="&#xF43B;" FontSize="14" VerticalAlignment="Center" />
                                     <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                                         <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value}" />
-                                        <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" FontSize="10"/>
+                                        <Run Text="{Binding ViewModel.SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" FontSize="10" />
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
                         <Grid Grid.Column="2" VerticalAlignment="Center">
-                            <Button Content="{ci:FluentIcon &#xE0B5;}" 
+                            <Button Content="{ci:FluentIcon &#xE0B5;}"
                                     ToolTip.Tip="刷新"
                                     Width="40" Height="40"
                                     Theme="{StaticResource TransparentButton}"
-                                    Click="ButtonRefreshWeather_OnClick"
+                                    Command="{Binding ViewModel.RefreshWeatherCommand}"
                                     IsVisible="{Binding !ViewModel.IsRefreshingWeather}" />
                             <controls3:FAProgressRing Width="40" Height="40"
                                                   IsIndeterminate="True"
@@ -144,7 +141,7 @@
                                             <TextBlock Text="{Binding Title}" VerticalAlignment="Center" FontWeight="Medium" />
                                         </StackPanel>
                                     </Expander.Header>
-                                    <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" FontSize="13" Margin="32 4 8 8" Opacity="0.8"/>
+                                    <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" FontSize="13" Margin="32 4 8 8" Opacity="0.8" />
                                 </Expander>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -152,57 +149,50 @@
                 </StackPanel>
             </Border>
 
-            <Separator Margin="0 12 0 8" />
-            <controls1:IconText Glyph="&#xEF27;" Text="设置" Margin="0 0 0 4" />
-            
+            <Separator Margin="0 16 0 8" />
+            <controls1:IconText Glyph="&#xE7C5;" Text="位置设置" Margin="0 0 0 8" />
             <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE7C5;}"
                                         Header="天气位置"
                                         IsExpanded="True"
-                                        Description="设置 ClassIsland 用于查询天气的位置信息及获取这些位置信息的方式。">
+                                        Description="设置 ClassIsland 用于查询天气的位置信息及获取方式。">
                 <controls3:FASettingsExpander.Footer>
-                    <ListBox
-                        Theme="{StaticResource ChipListBoxTheme}"
-                        SelectionMode="Single">
-                        <ListBox.SelectedIndex>
-                            <Binding Path="ViewModel.SettingsService.Settings.WeatherLocationSource"
-                                     Converter="{StaticResource PreventNullConverter}">
-                            </Binding>
-                        </ListBox.SelectedIndex>
+                    <ListBox Theme="{StaticResource ChipListBoxTheme}"
+                             SelectionMode="Single"
+                             SelectedIndex="{Binding ViewModel.SelectedLocationSource, Mode=TwoWay}">
                         <ListBoxItem Content="选择城市" />
-                        <ListBoxItem Content="坐标定位" IsVisible="{x:Static abstraction:PlatformServices.IsLocationSupported}"/>
+                        <ListBoxItem Content="坐标定位" IsVisible="{x:Static abstraction:PlatformServices.IsLocationSupported}" />
                     </ListBox>
                 </controls3:FASettingsExpander.Footer>
                 <!-- 城市选择 -->
                 <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xE478;}"
                                                 Content="城市选择"
                                                 Description="选择当前所在的城市，以用于天气查询。">
+                    <controls3:FASettingsExpanderItem.IsVisible>
+                        <Binding Path="ViewModel.SelectedLocationSource"
+                                 Converter="{x:Static ObjectConverters.Equal}">
+                            <Binding.ConverterParameter>
+                                <system:Int32>0</system:Int32>
+                            </Binding.ConverterParameter>
+                        </Binding>
+                    </controls3:FASettingsExpanderItem.IsVisible>
                     <controls3:FASettingsExpanderItem.Footer>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding ViewModel.SettingsService.Settings.CityName}"
                                        VerticalAlignment="Center" />
-                            <Button Content="{ci:FluentIcon &#xE7C9;}" ToolTip.Tip="编辑"
+                            <Button Content="{ci:FluentIcon &#xE7C9;}" ToolTip.Tip="编辑城市"
                                     Margin="6 0 0 0"
                                     Theme="{StaticResource TransparentButton}"
                                     Click="ButtonEditCurrentCity_OnClick"
-                                    Foreground="{DynamicResource PrimaryHueMidBrush}">
-                                <Button.IsVisible>
-                                    <Binding Path="ViewModel.SettingsService.Settings.WeatherLocationSource"
-                                             Converter="{x:Static ObjectConverters.Equal}">
-                                        <Binding.ConverterParameter>
-                                            <system:Int32>0</system:Int32>
-                                        </Binding.ConverterParameter>
-                                    </Binding>
-                                </Button.IsVisible>
-                            </Button>
+                                    Foreground="{DynamicResource PrimaryHueMidBrush}" />
                         </StackPanel>
                     </controls3:FASettingsExpanderItem.Footer>
                 </controls3:FASettingsExpanderItem>
                 <!-- 位置坐标 -->
                 <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xEB5A;}"
                                                 Content="位置坐标"
-                                                Description="输入用于获取天气信息的经纬坐标">
+                                                Description="输入用于获取天气信息的经纬坐标。">
                     <controls3:FASettingsExpanderItem.IsVisible>
-                        <Binding Path="ViewModel.SettingsService.Settings.WeatherLocationSource"
+                        <Binding Path="ViewModel.SelectedLocationSource"
                                  Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <system:Int32>1</system:Int32>
@@ -211,51 +201,56 @@
                     </controls3:FASettingsExpanderItem.IsVisible>
                     <controls3:FASettingsExpanderItem.Footer>
                         <StackPanel Orientation="Horizontal">
-                            <Grid>
-                                <StackPanel Orientation="Horizontal"
+                            <Grid RowDefinitions="Auto, Auto">
+                                <StackPanel Grid.Row="0" Orientation="Horizontal"
                                             Classes.HideLocationPos="{Binding ViewModel.HideLocationPos}">
                                     <StackPanel.Transitions>
                                         <Transitions>
                                             <EffectTransition Property="Effect" Easing="0.00, 1.00, 0.00, 1.00"
-                                                              Duration="0:0:0.1"/>
+                                                              Duration="0:0:0.15" />
                                             <DoubleTransition Property="Opacity" Easing="0.00, 1.00, 0.00, 1.00"
-                                                              Duration="0:0:0.1"/>
+                                                              Duration="0:0:0.15" />
                                         </Transitions>
                                     </StackPanel.Transitions>
                                     <StackPanel.Styles>
                                         <Style Selector="StackPanel.HideLocationPos">
-                                            <Setter Property="Effect" Value="blur(16)"/>
-                                            <Setter Property="Opacity" Value="0.75"/>
-                                            <Setter Property="IsHitTestVisible" Value="False"/>
-                                            <Setter Property="IsTabStop" Value="False"/>
+                                            <Setter Property="Effect" Value="blur(16)" />
+                                            <Setter Property="Opacity" Value="0.75" />
+                                            <Setter Property="IsHitTestVisible" Value="False" />
+                                            <Setter Property="IsTabStop" Value="False" />
                                         </Style>
                                     </StackPanel.Styles>
                                     <ci:Field Prefix="经度" Suffix="°" Margin="0 0 2 0"
                                               VerticalAlignment="Center">
-                                        <TextBox
-                                            IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
-                                            Text="{Binding ViewModel.SettingsService.Settings.WeatherLongitude, Converter={StaticResource IntToStringConverter}}"
-                                            MinWidth="75"/>
+                                        <TextBox IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
+                                                 Text="{Binding ViewModel.SettingsService.Settings.WeatherLongitude, Converter={StaticResource IntToStringConverter}}"
+                                                 MinWidth="75" />
                                     </ci:Field>
                                     <ci:Field Prefix="纬度" Suffix="°" Margin="2 0 6 0"
                                               VerticalAlignment="Center">
-                                        <TextBox
-                                            IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
-                                            Text="{Binding ViewModel.SettingsService.Settings.WeatherLatitude, Converter={StaticResource IntToStringConverter}}"
-                                            MinWidth="75"/>
+                                        <TextBox IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
+                                                 Text="{Binding ViewModel.SettingsService.Settings.WeatherLatitude, Converter={StaticResource IntToStringConverter}}"
+                                                 MinWidth="75" />
                                     </ci:Field>
                                 </StackPanel>
-                                <Button Theme="{StaticResource TransparentButton}"
+                                <TextBlock Grid.Row="1"
+                                           Text="{Binding ViewModel.SettingsService.Settings.CityName}"
+                                           Classes="l-instructive"
+                                           FontSize="11"
+                                           Margin="4 2 0 0"
+                                           IsVisible="{Binding ViewModel.IsLocationPosVisible}" />
+                                <Button Grid.Row="0"
+                                        Theme="{StaticResource TransparentButton}"
                                         VerticalAlignment="Center" HorizontalAlignment="Center"
                                         Click="ButtonShowPos_OnClick"
                                         IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
                                         IsVisible="{Binding ViewModel.HideLocationPos}">
-                                    <controls1:IconText Glyph="&#xE813;" Text="显示坐标"/>
+                                    <controls1:IconText Glyph="&#xE813;" Text="显示坐标" />
                                 </Button>
                             </Grid>
                             <Button Theme="{StaticResource TransparentButton}"
                                     Content="{ci:FluentIcon &#xEBD2;}"
-                                    ToolTip.Tip="定位"
+                                    ToolTip.Tip="自动定位"
                                     IsEnabled="{Binding !ViewModel.IsLocationUpdating}"
                                     Click="ButtonGetCurrentPos_OnClick" />
                         </StackPanel>
@@ -263,10 +258,10 @@
                 </controls3:FASettingsExpanderItem>
                 <!-- 自动获取位置 -->
                 <controls3:FASettingsExpanderItem IconSource="{ci:FluentIconSource &#xEAEA;}"
-                                           Content="自动获取位置"
-                                           Description="启用后，将在应用每次启动时自动更新位置信息。">
+                                               Content="自动获取位置"
+                                               Description="启用后，将在应用每次启动时自动更新位置信息。">
                     <controls3:FASettingsExpanderItem.IsVisible>
-                        <Binding Path="ViewModel.SettingsService.Settings.WeatherLocationSource"
+                        <Binding Path="ViewModel.SelectedLocationSource"
                                  Converter="{x:Static ObjectConverters.Equal}">
                             <Binding.ConverterParameter>
                                 <system:Int32>1</system:Int32>
@@ -274,58 +269,64 @@
                         </Binding>
                     </controls3:FASettingsExpanderItem.IsVisible>
                     <controls3:FASettingsExpanderItem.Footer>
-                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AutoRefreshWeatherLocation, Mode=TwoWay}"/>
+                        <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.AutoRefreshWeatherLocation, Mode=TwoWay}" />
                     </controls3:FASettingsExpanderItem.Footer>
                 </controls3:FASettingsExpanderItem>
             </controls3:FASettingsExpander>
-            
-            <!-- 排除预警 -->
-            <controls3:FASettingsExpander IsExpanded="True"
-                                        IconSource="{ci:FluentIconSource &#xE837;}"
-                                        Header="排除的气象预警"
-                                        Description="包含以下字符串的预警将不会显示，一行一条排除项。">
-                <controls3:FASettingsExpanderItem Content="排除列表">
-                    <controls3:FASettingsExpanderItem.Footer>
-                        <TextBox Padding="8"
-                                 MaxHeight="250"
-                                 Width="250"
-                                 AcceptsReturn="True"
-                                 Text="{Binding ViewModel.SettingsService.Settings.ExcludedWeatherAlerts, Converter={StaticResource CollectionToStringConverter}}" />
-                    </controls3:FASettingsExpanderItem.Footer>
-                </controls3:FASettingsExpanderItem>
-            </controls3:FASettingsExpander>
-            
-            
+            <Separator Margin="0 16 0 8" />
+            <controls1:IconText Glyph="&#xE713;" Text="外观与高级设置" Margin="0 0 0 8" />
             <!-- 天气图标包 -->
             <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE9B0;}"
                                         Header="天气图标包"
                                         Description="调整在显示天气类型时使用的图标外观。">
 
                 <controls3:FASettingsExpander.Footer>
-                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                              ItemsSource="{x:Static services:IWeatherService.RegisteredTemplates}"
+                    <ComboBox ItemsSource="{x:Static services:IWeatherService.RegisteredTemplates}"
                               HorizontalContentAlignment="Left"
                               MinWidth="120"
                               SelectedValueBinding="{Binding Id}"
                               SelectedValue="{Binding ViewModel.SettingsService.Settings.WeatherIconId}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Name}"/>
+                                <TextBlock Text="{Binding Name}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </controls3:FASettingsExpander.Footer>
             </controls3:FASettingsExpander>
+
+            <!-- 排除预警 -->
+            <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xE837;}"
+                                        Header="排除的气象预警"
+                                        Description="包含以下字符串的预警将不会显示，一行一条排除项。">
+                <controls3:FASettingsExpanderItem Content="排除列表">
+                    <controls3:FASettingsExpanderItem.Footer>
+                        <TextBox Padding="8"
+                                 MaxHeight="200"
+                                 Width="260"
+                                 AcceptsReturn="True"
+                                 Text="{Binding ViewModel.SettingsService.Settings.ExcludedWeatherAlerts, Converter={StaticResource CollectionToStringConverter}}" />
+                    </controls3:FASettingsExpanderItem.Footer>
+                </controls3:FASettingsExpanderItem>
+            </controls3:FASettingsExpander>
+
+            <!-- TLS 设置 -->
             <controls3:FASettingsExpander IconSource="{ci:FluentIconSource &#xEAB0;}"
-                                       Header="不使用TLS协议获取天气"
-                                       Description="不建议，但可能改善兼容性较差的网络环境下的天气获取。启用后，应用将通过不安全的HTTP协议获取天气信息。">
+                                       Header="不使用 TLS 协议获取天气"
+                                       Description="不建议启用。启用后，应用将通过不安全的 HTTP 协议获取天气信息。">
                 <controls3:FASettingsExpander.Footer>
-                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.NoTLSWeatherRequests, Mode=TwoWay}"/>
+                    <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.NoTLSWeatherRequests, Mode=TwoWay}" />
                 </controls3:FASettingsExpander.Footer>
             </controls3:FASettingsExpander>
-            <TextBlock TextWrapping="Wrap" FontWeight="Regular" Margin="0 8 0 0">
-                要调整天气提醒设置，请转到<ci:NavHyperlink NavTarget="classisland://app/settings/notification">【提醒】页面</ci:NavHyperlink>。要调整主界面上的天气快速信息，请在<ci:NavHyperlink NavTarget="classisland://app/settings/components">【组件】页面</ci:NavHyperlink>中配置天气简报组件。
-            </TextBlock>
+            <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+                    CornerRadius="8"
+                    Padding="12"
+                    Margin="0 8 0 0">
+                <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8">
+                    要调整天气提醒设置，请转到<ci:NavHyperlink NavTarget="classisland://app/settings/notification">【提醒】页面</ci:NavHyperlink>。
+                    要调整主界面上的天气快速信息，请在<ci:NavHyperlink NavTarget="classisland://app/settings/components">【组件】页面</ci:NavHyperlink>中配置天气简报组件。
+                </TextBlock>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

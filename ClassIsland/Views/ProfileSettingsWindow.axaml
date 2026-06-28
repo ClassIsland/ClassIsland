@@ -1184,6 +1184,12 @@
                                                                        ToolTip.Tip="添加行动时间点。"
                                                                        Label="行动" />
                                             <controls:FACommandBarSeparator />
+                                            <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xE58B;}"
+                                                                       Command="{Binding $parent[views:ProfileSettingsWindow].DuplicateTimePointCommand}"
+                                                                       CommandParameter="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint}"
+                                                                       ToolTip.Tip="创建选中时间点的副本。"
+                                                                       IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SelectedTimePoint, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                                       Label="创建副本" />
                                             <controls:FACommandBarButton IconSource="{ci:FluentIconSource &#xE195;}"
                                                                        ToolTip.Tip="撤销 (Ctrl+Z 单步)"
                                                                        IsEnabled="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CanUndo}">

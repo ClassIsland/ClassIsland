@@ -132,9 +132,14 @@
                     <Run Text="{Binding ViewModel.UpdateService.DistributionInfo.Version, Mode=OneWay}" />
                 </TextBlock>
             </Grid>
-            <controls:FAInfoBar Severity="Error" Title="更新时发生错误，请检查您的网络连接并重试。" Message="{Binding ViewModel.UpdateService.NetworkErrorException.Message, FallbackValue=''}"
+            <controls:FAInfoBar Severity="Error" Title="更新时发生错误，请检查您的网络连接并重试。"
+                              Message="{Binding ViewModel.UpdateService.NetworkErrorException.Message, FallbackValue=''}"
                               IsOpen="{Binding ViewModel.UpdateService.NetworkErrorException, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneWay}"
                               CloseButtonClick="InfoBarError_OnCloseButtonClick"/>
+            <controls:FAInfoBar Severity="Error" Title="部署时发生错误，请稍后重试。" 
+                              Message="{Binding ViewModel.UpdateService.DeployErrorException.Message, FallbackValue=''}"
+                              IsOpen="{Binding ViewModel.UpdateService.DeployErrorException, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneWay}"
+                              CloseButtonClick="InfoBarDeployError_OnCloseButtonClick"/>
             <controls:FAInfoBar Severity="Informational" Title="更新将在重启后应用" Message="已成功部署更新，下次启动应用时将启动新版本。您也可以现在重启以立即使用新版本的 ClassIsland。">
                 <controls:FAInfoBar.IsOpen>
                     <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
@@ -165,8 +170,13 @@
                         </Binding>
                     </Button.IsVisible>
                 </Button>
-                <Button Content="下载并安装" Classes="accent" Margin="4"
-                        Click="ButtonDownloadUpdate_OnClick">
+                <SplitButton Content="下载并安装" Classes="accent" Margin="4"
+                             Click="ButtonDownloadUpdate_OnClick">
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="仅下载" Click="MenuItemDownloadOnly_OnClick"/>
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
                     <Button.IsVisible>
                         <Binding Path="ViewModel.SettingsService.Settings.LastUpdateStatus"
                                  Converter="{x:Static ObjectConverters.Equal}">
@@ -175,7 +185,7 @@
                             </Binding.ConverterParameter>
                         </Binding>
                     </Button.IsVisible>
-                </Button>
+                </SplitButton>
                 <Button Content="安装更新" Classes="accent" Margin="4"
                         Click="ButtonDeployUpdate_OnClick"> 
                     <Button.IsVisible>
@@ -226,12 +236,15 @@
                 <ProgressBar Maximum="{Binding ViewModel.UpdateService.DownloadingCountTotal}"
                              Value="{Binding ViewModel.UpdateService.DownloadedCount}">
                     <ProgressBar.IsIndeterminate>
-                        <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
-                                 Converter="{x:Static ObjectConverters.NotEqual}">
-                            <Binding.ConverterParameter>
-                                <enums:UpdateWorkingStatus>DownloadingUpdates</enums:UpdateWorkingStatus>
-                            </Binding.ConverterParameter>
-                        </Binding>
+                        <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                            <Binding Path="ViewModel.UpdateService.CurrentWorkingStatus"
+                                     Converter="{x:Static ObjectConverters.NotEqual}">
+                                <Binding.ConverterParameter>
+                                    <enums:UpdateWorkingStatus>DownloadingUpdates</enums:UpdateWorkingStatus>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                            <Binding Path="ViewModel.UpdateService.IsDownloadingProgressIndeterminate"/>
+                        </MultiBinding>
                     </ProgressBar.IsIndeterminate>
                 </ProgressBar>
                 <TextBlock Text="{Binding ViewModel.UpdateService.CurrentWorkingStatus, Converter={x:Static settingPages:UpdateSettingsPage.UpdateWorkingStatusToMessageConverter}}"/>

@@ -81,7 +81,10 @@ public partial class UpdateSettingsPage : SettingsPageBase
     private async void ButtonDownloadUpdate_OnClick(object sender, RoutedEventArgs e)
     {
         await ViewModel.UpdateService.DownloadUpdateAsync();
-        await ViewModel.UpdateService.ExtractUpdateAsync();
+        if (ViewModel.SettingsService.Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
+        {
+            await ViewModel.UpdateService.ExtractUpdateAsync();
+        }
     }
 
     private void UpdateChannelInfo()
@@ -142,6 +145,11 @@ public partial class UpdateSettingsPage : SettingsPageBase
     {
         ViewModel.UpdateService.NetworkErrorException = null;
     }
+    
+    private void InfoBarDeployError_OnCloseButtonClick(FAInfoBar sender, EventArgs args)
+    {
+        ViewModel.UpdateService.DeployErrorException = null;
+    }
 
     private void ButtonRestart_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -159,5 +167,10 @@ public partial class UpdateSettingsPage : SettingsPageBase
             new StreamReader(AssetLoader.Open(new Uri("avares://ClassIsland/Assets/Documents/ChangeLog.md")));
         ViewModel.ChangeLogDocument = sr.ReadToEnd();
         OpenDrawer("ChangeLogDrawer");
+    }
+
+    private async void MenuItemDownloadOnly_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await ViewModel.UpdateService.DownloadUpdateAsync();
     }
 }

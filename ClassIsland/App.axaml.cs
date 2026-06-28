@@ -205,7 +205,7 @@ public partial class App : AppBase, IAppHost
 
     private void ActivateAppDirectories()
     {
-        PackagingType = PackagingType.Replace(Environment.NewLine, "");
+        PackagingType = PackagingType.Replace(Environment.NewLine, "").Trim();
 
         ExecutingEntrance = Environment.ProcessPath?.Replace(".dll", PlatformExecutableExtension) ?? "";
         CommonDirectories.AppRootFolderPath = PackagingType switch
@@ -637,8 +637,9 @@ public partial class App : AppBase, IAppHost
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
         if (App.ApplicationCommand.Diagnostic)
         {
+            var diagService = GetService<DiagnosticService>();
             Logger.LogInformation("诊断模式已启用!");
-            Logger.LogDebug(GetService<DiagnosticService>().GetDiagnosticInfo());
+            Logger.LogDebug("{DiagnosticMessage}", diagService.GetDiagnosticInfo());
         }
         foreach (var plugin in PluginService.PluginLoadedStatus.Where(p => p.LoadStatus == PluginLoadStatus.Error))
         {
@@ -754,7 +755,13 @@ public partial class App : AppBase, IAppHost
         GetService<IWeatherService>();
         GetService<IExactTimeService>();
         await GetService<IComponentsService>().LoadManagementConfig();
+        
+        if (ApplicationCommand.Diagnostic)
+        {
+            await GetService<DiagnosticService>().ExportDiagnosticData(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"ClassIsland_DiagnosticData_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip"), false);
+        }
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
+        
         _ = IAppHost.Host.StartAsync();
         IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
         
@@ -908,7 +915,7 @@ public partial class App : AppBase, IAppHost
         GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 2/2）");
         if (!Design.IsDesignMode)
         {
-            GetService<MainWindow>().Show();
+            mw.Show();
         }
         GetService<IWindowRuleService>();
         GetService<SignalTriggerHandlerService>();

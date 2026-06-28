@@ -265,7 +265,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         HighFreqTopmostRecheckTimer.Tick += HighFreqTopmostRecheckTimerOnTick;
         
-        if (Environment.OSVersion.Version <= WindowsVersions.Win10V1803)
+        
+        if (OperatingSystem.IsWindows() && Environment.OSVersion.Version <= WindowsVersions.Win10V1803)
         {
             PseudoClasses.Set(":no-windowed-transparent", true);
         }
@@ -325,6 +326,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         ComponentPresenter.SetIsMainWindowLoaded(this, true);
+        RefreshDefaultMainWindowFont();
         StartupCompleted?.Invoke(this, EventArgs.Empty);
 
         if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
@@ -401,6 +403,16 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         //ProfileService.LoadProfile();
         ViewModel.Profile = ProfileService.Profile;
+    }
+
+    private void RefreshDefaultMainWindowFont()
+    {
+        if (ViewModel.Settings.MainWindowFont != DefaultFontFamilyKey)
+        {
+            return;
+        }
+
+        SettingsService.Settings.NotifyPropertyChanged("MainWindowFontWeight2");
     }
     #endregion
 
@@ -915,7 +927,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         if (updateEffectWindow)
         {
-            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
+            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX, ViewModel.IsForegroundFullscreen);
         }
     }
 
