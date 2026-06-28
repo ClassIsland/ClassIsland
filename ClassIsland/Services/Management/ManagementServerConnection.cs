@@ -1,9 +1,11 @@
 using System;
 using System.Buffers.Text;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,6 +16,9 @@ using System.Windows;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Models.Automation;
+using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Models.Management;
@@ -60,6 +65,24 @@ public class ManagementServerConnection : IManagementServerConnection
     private string Host { get; }
 
     private GrpcChannel? Channel { get; set; }
+
+    private static GrpcChannel CreateChannel(string address)
+    {
+        var handler = new SocketsHttpHandler
+        {
+            UseProxy = false,
+            EnableMultipleHttp2Connections = true,
+            ConnectTimeout = TimeSpan.FromSeconds(10),
+            SslOptions = new System.Net.Security.SslClientAuthenticationOptions
+            {
+                RemoteCertificateValidationCallback = (_, _, _, _) => true
+            }
+        };
+        return GrpcChannel.ForAddress(address, new GrpcChannelOptions
+        {
+            HttpHandler = handler
+        });
+    }
 
     private DispatcherTimer CommandConnectionAliveTimer { get; } = new()
     {
@@ -114,7 +137,7 @@ public class ManagementServerConnection : IManagementServerConnection
         Logger.LogInformation("初始化管理服务器连接。");
         if (lightConnect)
         {
-            Channel = GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc);
+            Channel = CreateChannel(ManagementSettings.ManagementServerGrpc);
             return;
         }
         AppBase.Current.AppStarted += (sender, args) => InstallAuditHooks();
@@ -125,40 +148,234 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private void OnCommandReceived(object? sender, ClientCommandEventArgs e)
     {
-        if (e.Type != CommandTypes.GetClientConfig)
+        switch (e.Type)
         {
-            return;
+            case CommandTypes.GetClientConfig:
+                _ = Task.Run(() => HandleGetClientConfig(e));
+                break;
+            case CommandTypes.PushConfig:
+                HandlePushConfig(e);
+                break;
+            case CommandTypes.ManagePlugin:
+                HandlePluginCommand(e);
+                break;
         }
-        var payload = GetClientConfig.Parser.ParseFrom(e.Payload);
-        if (payload == null)
-        {
-            return;
-        }
-        
-        Logger.LogInformation("集控请求上传配置：{} {}", payload.RequestGuid, payload.ConfigType);
-        var uploadPayload = payload.ConfigType switch
-        {
-            ConfigTypes.AppSettings => JsonSerializer.Serialize(IAppHost.GetService<SettingsService>().Settings),
-            ConfigTypes.Profile => JsonSerializer.Serialize(IAppHost.GetService<IProfileService>().Profile),
-            ConfigTypes.CurrentComponent => JsonSerializer.Serialize(IAppHost.GetService<IComponentsService>()
-                .CurrentComponents),
-            ConfigTypes.CurrentAutomation => JsonSerializer.Serialize(IAppHost.GetService<IAutomationService>()
-                .Workflows),
-            ConfigTypes.Logs => JsonSerializer.Serialize(IAppHost.GetService<AppLogService>().Logs),
-            ConfigTypes.PluginList => JsonSerializer.Serialize(IPluginService.LoadedPlugins
-                .Where(x => x.LoadStatus == PluginLoadStatus.Loaded)
-                .Select(x => x.Manifest.Id)
-                .ToList()),
-            _ => throw new ArgumentOutOfRangeException()
-        };
-        var client = new ConfigUpload.ConfigUploadClient(Channel);
-        client.UploadConfig(new ConfigUploadScReq()
-        {
-            RequestGuidId = payload.RequestGuid,
-            Payload = uploadPayload
-        });
     }
 
+    private void HandleGetClientConfig(ClientCommandEventArgs e)
+    {
+        try
+        {
+            var payload = GetClientConfig.Parser.ParseFrom(e.Payload);
+            if (payload == null) return;
+            
+            Logger.LogInformation("集控请求上传配置：{} {}", payload.RequestGuid, payload.ConfigType);
+            var uploadPayload = payload.ConfigType switch
+            {
+                ConfigTypes.AppSettings => JsonSerializer.Serialize(IAppHost.GetService<SettingsService>().Settings),
+                ConfigTypes.Profile => JsonSerializer.Serialize(IAppHost.GetService<IProfileService>().Profile),
+                ConfigTypes.CurrentComponent => JsonSerializer.Serialize(IAppHost.GetService<IComponentsService>()
+                    .CurrentComponents),
+                ConfigTypes.CurrentAutomation => JsonSerializer.Serialize(IAppHost.GetService<IAutomationService>()
+                    .Workflows),
+                ConfigTypes.Logs => JsonSerializer.Serialize(IAppHost.GetService<AppLogService>().Logs),
+                ConfigTypes.PluginList => JsonSerializer.Serialize(IPluginService.LoadedPlugins
+                    .Where(x => x.LoadStatus == PluginLoadStatus.Loaded)
+                    .Select(x => x.Manifest.Id)
+                    .ToList()),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            var client = new ConfigUpload.ConfigUploadClient(Channel);
+            client.UploadConfig(new ConfigUploadScReq()
+            {
+                RequestGuidId = payload.RequestGuid,
+                Payload = uploadPayload
+            }, GetMetadata());
+            Logger.LogInformation("配置上传成功：{} {}", payload.RequestGuid, payload.ConfigType);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "上传客户端配置失败");
+        }
+    }
+
+    private void HandlePushConfig(ClientCommandEventArgs e)
+    {
+        try
+        {
+            var payload = PushConfig.Parser.ParseFrom(e.Payload);
+            if (payload == null) return;
+
+            Logger.LogInformation("收到推送配置：类型={ConfigType}，触发重新加载", payload.ConfigType);
+
+            switch ((ConfigTypes)payload.ConfigType)
+            {
+                case ConfigTypes.CurrentComponent:
+                    ApplyComponentConfig(payload.ConfigJson);
+                    break;
+                case ConfigTypes.CurrentAutomation:
+                    ApplyAutomationConfig(payload.ConfigJson);
+                    break;
+                default:
+                    var managementService = IAppHost.TryGetService<IManagementService>();
+                    if (managementService is ManagementService ms)
+                    {
+                        Dispatcher.UIThread.Invoke(async () =>
+                        {
+                            try
+                            {
+                                await ms.ReloadManagementAsync();
+                                Logger.LogInformation("集控配置已重新加载");
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.LogError(ex, "重新加载集控配置失败");
+                            }
+                        });
+                    }
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "处理推送配置失败");
+        }
+    }
+
+    private void ApplyComponentConfig(string configJson)
+    {
+        try
+        {
+            var configPath = ManagementService.ManagementComponentsPath;
+            var dir = Path.GetDirectoryName(configPath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            File.WriteAllText(configPath, configJson);
+            Logger.LogInformation("组件配置已写入：{}", configPath);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                try
+                {
+                    var componentsService = IAppHost.TryGetService<IComponentsService>();
+                    if (componentsService != null)
+                    {
+                        var profile = System.Text.Json.JsonSerializer.Deserialize<ComponentProfile>(configJson);
+                        if (profile != null)
+                        {
+                            componentsService.CurrentComponents = profile;
+                            Logger.LogInformation("组件配置已直接加载到 ComponentsService");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "直接加载组件配置失败");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "应用组件配置失败");
+        }
+    }
+
+    private void ApplyAutomationConfig(string configJson)
+    {
+        try
+        {
+            var configPath = Path.Combine(ManagementService.ManagementConfigureFolderPath, "Automation.json");
+            var dir = Path.GetDirectoryName(configPath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            File.WriteAllText(configPath, configJson);
+            Logger.LogInformation("自动化配置已写入：{}", configPath);
+
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                try
+                {
+                    var automationService = IAppHost.TryGetService<IAutomationService>();
+                    if (automationService != null)
+                    {
+                        var workflows = System.Text.Json.JsonSerializer.Deserialize<ObservableCollection<Workflow>>(configJson);
+                        if (workflows != null)
+                        {
+                            automationService.Workflows = workflows;
+                            Logger.LogInformation("自动化配置已直接加载到 AutomationService");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "直接加载自动化配置失败");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "应用自动化配置失败");
+        }
+    }
+
+    private void HandlePluginCommand(ClientCommandEventArgs e)
+    {
+        try
+        {
+            var payload = PluginCommand.Parser.ParseFrom(e.Payload);
+            if (payload == null) return;
+
+            Logger.LogInformation("收到插件管理命令：{Operation} {PluginId}", payload.Operation, payload.PluginId);
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var pluginService = IAppHost.TryGetService<IPluginService>();
+                    if (pluginService == null)
+                    {
+                        Logger.LogWarning("PluginService 不可用");
+                        return;
+                    }
+
+                    switch (payload.Operation)
+                    {
+                        case "install":
+                            if (payload.RequestId > 0)
+                            {
+                                var packageUrl = $"{Host}/api/v1/clients/{ClientGuid}/plugins/install/{payload.RequestId}/package";
+                                Logger.LogInformation("下载插件安装包：{}", packageUrl);
+                                // TODO: 下载并安装插件
+                            }
+                            break;
+                        case "uninstall":
+                            if (!string.IsNullOrEmpty(payload.PluginId))
+                            {
+                                Logger.LogInformation("卸载插件：{}", payload.PluginId);
+                                // TODO: 卸载插件
+                            }
+                            break;
+                        case "enable":
+                        case "disable":
+                            if (!string.IsNullOrEmpty(payload.PluginId))
+                            {
+                                Logger.LogInformation("{Operation} 插件：{PluginId}", payload.Operation, payload.PluginId);
+                                // TODO: 启用/禁用插件
+                            }
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "处理插件管理命令失败");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "解析插件管理命令失败");
+        }
+    }
 
     public async Task<ManagementManifest> RegisterAsync()
     {
@@ -177,6 +394,26 @@ public class ManagementServerConnection : IManagementServerConnection
         return await GetManifest();
     }
 
+    public async Task UnregisterAsync()
+    {
+        Logger.LogInformation("正在从服务端注销实例");
+        try
+        {
+            var client = new ClientRegister.ClientRegisterClient(Channel);
+            var r = await client.UnRegisterAsync(new ClientRegisterCsReq()
+            {
+                ClientUid = ClientGuid.ToString(),
+                ClientId = Id,
+                ClientMac = GetNetworkInterfaceMac()
+            }, GetMetadata(true));
+            Logger.LogTrace("ClientRegisterClient.UnRegisterAsync: {} {}", r.Retcode, r.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "注销实例失败（可能是连接已断开）");
+        }
+    }
+
     private async void CommandConnectionAliveTimerOnTick(object? sender, EventArgs e)
     {
         try
@@ -187,7 +424,6 @@ public class ManagementServerConnection : IManagementServerConnection
             }
             if (CommandListeningCallCancellationTokenSource.IsCancellationRequested)
                 return;
-            // Logger.LogTrace("向命令流发送心跳包。");
             await CommandListeningCall.RequestStream.WriteAsync(new ClientCommandDeliverScReq()
             {
                 Type = CommandTypes.Ping
@@ -238,7 +474,6 @@ public class ManagementServerConnection : IManagementServerConnection
         {
             Logger.LogWarning("与 {} 握手失败（{}）：{}", ManagementSettings.ManagementServerGrpc, beginRsp.Retcode,
                 beginRsp.Message);
-            // 服务器其他异常应直接抛出
             throw new InvalidOperationException($"与 {ManagementSettings.ManagementServerGrpc} 握手失败（{beginRsp.Retcode}）：{beginRsp.Message}");
         }
         var acceptedServer = beginRsp.ChallengeTokenDecrypted == challengeToken;
@@ -249,12 +484,12 @@ public class ManagementServerConnection : IManagementServerConnection
         if (!acceptedServer)
         {
             Logger.LogWarning("与 {} 握手失败：服务器密钥验证失败", ManagementSettings.ManagementServerGrpc);
-            // 不信任的服务器，不再尝试握手。
             return false;
         }
-        CurrentSessionId = completeRsp.SessionId;
-        Logger.LogInformation("与 {} 握手成功，SessionId：{}", ManagementSettings.ManagementServerGrpc, completeRsp.SessionId);
-        return true;
+            CurrentSessionId = completeRsp.SessionId;
+            Logger.LogInformation("与 {} 握手成功，SessionId：{}", ManagementSettings.ManagementServerGrpc, completeRsp.SessionId);
+
+            return true;
     }
     
     private async Task ListenCommands()
@@ -267,7 +502,7 @@ public class ManagementServerConnection : IManagementServerConnection
         try
         {
             Logger.LogInformation("正在连接到命令流");
-            Channel = GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc);
+            Channel = CreateChannel(ManagementSettings.ManagementServerGrpc);
             var handshakeState = await BeginHandshake(CommandListeningCallCancellationTokenSource.Token);
             if (!handshakeState)
             {
@@ -280,7 +515,6 @@ public class ManagementServerConnection : IManagementServerConnection
             var call = client.ListenCommand(GetMetadata());
             CommandListeningCallCancellationTokenSource = new CancellationTokenSource();
             CommandListeningCall = call;
-            // await call.RequestStream.WriteAsync(new ClientCommandDeliverScReq());
             CommandConnectionAliveTimer.Start();
             while (!CommandListeningCallCancellationTokenSource.IsCancellationRequested)
             {
@@ -342,6 +576,7 @@ public class ManagementServerConnection : IManagementServerConnection
 
     internal void LogAuditEvent(AuditEvents eventType, IBufferMessage payload)
     {
+        if (CurrentSessionId == null || Channel == null) return;
         _ = Task.Run(() =>
         {
             try
