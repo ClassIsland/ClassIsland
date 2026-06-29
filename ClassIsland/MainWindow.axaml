@@ -49,7 +49,8 @@
         <profile:ClassPlan x:Key="FallbackClassPlan"/>
         
         <NativeMenu x:Key="AppMenu">
-            <NativeMenuItem Header="ClassIsland" Click="MenuItemAbout_OnClick">
+            <NativeMenuItem Header="ClassIsland" Click="MenuItemAbout_OnClick"
+                            IsVisible="{Binding ViewModel.Settings.IsTrayMenuAboutVisible}">
                 <NativeMenuItem.Icon>
                     <OnPlatform Default="Assets/AppLogo.png">
                         <On Content="{x:Null}" Options="macOS"/>
@@ -58,62 +59,90 @@
             </NativeMenuItem>
             <NativeMenuItem Header="教学…"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE959;}"
-                            Click="NativeMenuItemTutorials_OnClick" 
-                            IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
+                            Click="NativeMenuItemTutorials_OnClick">
+                <MenuItem.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
+                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsTrayMenuTutorialVisible" Mode="OneWay"/>
+                    </MultiBinding>
+                </MenuItem.IsVisible>
+            </NativeMenuItem>
             <NativeMenuItem Header="帮助文档…"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE23C;}"
-                            Click="MenuItemHelps_OnClick" 
-                            IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
+                            Click="MenuItemHelps_OnClick">
+                <MenuItem.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
+                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsTrayMenuHelpVisible" Mode="OneWay"/>
+                    </MultiBinding>
+                </MenuItem.IsVisible>
+            </NativeMenuItem>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE813;}">
                 <MenuItem.IsVisible>
-                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}" />
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsTrayMenuShowHideMainWindowVisible" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>
             <NativeMenuItem Header="隐藏主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE817;}">
                 <MenuItem.IsVisible>
-                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay"/>
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsTrayMenuShowHideMainWindowVisible" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>
             <NativeMenuItem Header="清除全部提醒" Click="MenuItemClearAllNotifications_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE029;}">
                 <MenuItem.IsVisible>
-                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
                         <Binding Path="NotificationHostService.IsNotificationsPlaying" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsTrayMenuClearNotificationsVisible" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.IsVisible>
             </NativeMenuItem>
             <NativeMenuItem Header="更多选项…" Menu="{Binding MoreOptionsMenu}"
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEBAC;}"
-                            IsVisible="{Binding !!$self.Menu.Items.Count}"/>
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEBAC;}">
+                <MenuItem.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}" Mode="OneWay">
+                        <Binding Path="!!MoreOptionsMenu.Items.Count" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsTrayMenuMoreOptionsVisible" Mode="OneWay"/>
+                    </MultiBinding>
+                </MenuItem.IsVisible>
+            </NativeMenuItem>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="编辑档案…" Click="ButtonSettings_OnClick" 
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE699;}"/>
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE699;}"
+                            IsVisible="{Binding ViewModel.Settings.IsTrayMenuEditProfileVisible}"/>
             <NativeMenuItem Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick"
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE6A1;}">
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE6A1;}"
+                            IsVisible="{Binding ViewModel.Settings.IsTrayMenuTempClassPlanVisible}">
             </NativeMenuItem>
             <NativeMenuItem Header="换课…" Click="MenuItemClassSwap_OnClick"
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE15F;}">
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE15F;}"
+                            IsVisible="{Binding ViewModel.Settings.IsTrayMenuClassSwapVisible}">
             </NativeMenuItem>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="编辑主界面…" Click="NativeMenuItemEnterEditMode_OnClick" 
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE7C9;}"/>
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE7C9;}"
+                            IsVisible="{Binding ViewModel.Settings.IsTrayMenuEditMainViewVisible}"/>
             <NativeMenuItem Header="应用设置…" Click="MenuItemSettings_OnClick" 
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEF27;}"/>
+                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xEF27;}"
+                            IsVisible="{Binding ViewModel.Settings.IsTrayMenuAppSettingsVisible}"/>
             <NativeMenuItemSeparator />
             <NativeMenuItem  Header="重启" Click="MenuItemRestartApp_OnClick"
-                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE0BD;}"/>
+                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE0BD;}"
+                             IsVisible="{Binding ViewModel.Settings.IsTrayMenuRestartVisible}"/>
             <NativeMenuItem  Header="退出" Click="MenuItemExitApp_OnClick"
-                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE0DF;}"/>
+                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE0DF;}"
+                             IsVisible="{Binding ViewModel.Settings.IsTrayMenuExitVisible}"/>
             <NativeMenuItemSeparator IsVisible="{Binding ViewModel.Settings.IsDebugEnabled}"/>
             <NativeMenuItem Header="dev__Debug" IsVisible="{Binding ViewModel.Settings.IsDebugEnabled}"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE2C8;}">
@@ -228,12 +257,6 @@
                     </Panel.Styles>
                     <!-- ROOT -->
                     <VisualLayerManager>
-                        <VisualLayerManager.IsEnabled>
-                            <MultiBinding Converter="{x:Static BoolConverters.Or}">
-                                <Binding Path="!ViewModel.IsEditMode"/>
-                                <Binding Path="!ManagementService.Policy.DisableSettingsEditing"/>
-                            </MultiBinding>
-                        </VisualLayerManager.IsEnabled>
                         <StackPanel x:Name="StackPanelRootContainer"
                                     SizeChanged="StackPanelRootContainer_OnSizeChanged">
                             <StackPanel.Styles>
@@ -341,7 +364,6 @@
                                                     <ItemsControl.ItemsPanel>
                                                         <ItemsPanelTemplate>
                                                             <StackPanel
-                                                                Spacing="{Binding ViewModel.Settings.MainWindowLineVerticalMargin}"
                                                                 Classes.animated-resize="{Binding !$self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
                                                         </ItemsPanelTemplate>
                                                     </ItemsControl.ItemsPanel>
@@ -602,6 +624,10 @@
                 BorderThickness="1">
             <ci:TutorialBarrier ExcludedTags="classisland.mainwindow.editMode.componentsLib.open,classisland.mainwindow.editMode.exit">
                 <StackPanel Orientation="Horizontal" Spacing="6">
+                    <ToggleButton IsChecked="{Binding !ViewModel.EditModeIsWindowMode}"
+                                  Theme="{StaticResource TransparentToggleButton}">
+                        <ci:IconText Glyph="&#xE8D1;" Text="全屏" />
+                    </ToggleButton>
                     <Button Theme="{StaticResource TransparentButton}"
                             x:Name="ButtonResetView"
                             Command="{Binding #ZoomBorder.ResetMatrix}">
@@ -611,20 +637,20 @@
                           StrokeThickness="1"
                           HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25">
                     </Line>
-                    <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}"
-                            IsEnabled="{Binding !ManagementService.Policy.DisableSettingsEditing}">
+                    <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}">
                         <ci:IconText Glyph="&#xE51E;" Text="外观" />
                     </Button>
                     <Button Click="ButtonOpenComponentsLib_OnClick" Theme="{StaticResource TransparentButton}"
-                            x:Name="ButtonOpenComponentsLib"
-                            IsEnabled="{Binding !ManagementService.Policy.DisableSettingsEditing}">
+                            x:Name="ButtonOpenComponentsLib">
                         <ci:IconText Glyph="&#xE071;" Text="添加组件" />
                     </Button>
-                    <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}"
-                            IsEnabled="{Binding !ManagementService.Policy.DisableSettingsEditing}">
+                    <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}">
                         <ci:IconText Glyph="&#xE699;" Text="{Binding ViewModel.Settings.CurrentComponentConfig}"
                                      MaxWidth="150" />
                     </Button>
+                    <Button Click="ButtonShowTutorial_OnClick" Theme="{StaticResource TransparentButton}"
+                            ToolTip.Tip="使用说明"
+                            Content="{ci:FluentIcon &#xEE31;}" />
                     <Button Click="ButtonExitEditMode_OnClick" Classes="accent"
                             x:Name="ButtonExitEditMode">
                         <ci:IconText Glyph="&#xE424;" Text="完成" />
@@ -634,6 +660,85 @@
         </Border>
         
         <ContentPresenter x:Name="EditModeViewCp" />
+        
+        <controls1:TeachingTip Title="移动视图"
+                               Subtitle="按住鼠标中键并拖动或用手指拖动以移动视图。"
+                               CloseButtonContent="下一条"
+                               CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}">
+            <controls1:TeachingTip.CloseButtonCommandParameter>
+                <x:Int32>1</x:Int32>
+            </controls1:TeachingTip.CloseButtonCommandParameter>
+            <controls1:TeachingTip.IsOpen>
+                <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <x:Int32>0</x:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </controls1:TeachingTip.IsOpen>
+        </controls1:TeachingTip>
+        <controls1:TeachingTip Title="缩放"
+                               Subtitle="滚动鼠标滚轮或双指捏合即可缩放视图。"
+                               ActionButtonContent="上一条"
+                               CloseButtonContent="下一条"
+                               ActionButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
+                               CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}">
+            <controls1:TeachingTip.ActionButtonCommandParameter>
+                <x:Int32>0</x:Int32>
+            </controls1:TeachingTip.ActionButtonCommandParameter>
+            <controls1:TeachingTip.CloseButtonCommandParameter>
+                <x:Int32>2</x:Int32>
+            </controls1:TeachingTip.CloseButtonCommandParameter>
+            <controls1:TeachingTip.IsOpen>
+                <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <x:Int32>1</x:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </controls1:TeachingTip.IsOpen>
+        </controls1:TeachingTip>
+        <controls1:TeachingTip Title="添加组件"
+                               Subtitle="点击此按钮打开组件库并将组件拖动到要添加的位置，或点击主界面行中的加号【+】组件库并选择组件以添加组件。"
+                               Target="{Binding #ButtonOpenComponentsLib}"
+                               ActionButtonContent="上一条"
+                               CloseButtonContent="下一条"
+                               ActionButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
+                               CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}">
+            <controls1:TeachingTip.ActionButtonCommandParameter>
+                <x:Int32>1</x:Int32>
+            </controls1:TeachingTip.ActionButtonCommandParameter>
+            <controls1:TeachingTip.CloseButtonCommandParameter>
+                <x:Int32>3</x:Int32>
+            </controls1:TeachingTip.CloseButtonCommandParameter>
+            <controls1:TeachingTip.IsOpen>
+                <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <x:Int32>2</x:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </controls1:TeachingTip.IsOpen>
+        </controls1:TeachingTip>
+        <controls1:TeachingTip Title="完成"
+                               Subtitle="当编辑完成时，点击【完成】按钮即可退出编辑模式。"
+                               Target="{Binding #ButtonExitEditMode}"
+                               ActionButtonContent="上一条"
+                               CloseButtonContent="结束教程"
+                               ActionButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
+                               CloseButtonCommand="{Binding SetEditModeTutorialPhaseCommand}"
+                               CloseButtonClick="TeachingTipEditModeP4_OnCloseButtonClick">
+            <controls1:TeachingTip.ActionButtonCommandParameter>
+                <x:Int32>2</x:Int32>
+            </controls1:TeachingTip.ActionButtonCommandParameter>
+            <controls1:TeachingTip.CloseButtonCommandParameter>
+                <x:Int32>-1</x:Int32>
+            </controls1:TeachingTip.CloseButtonCommandParameter>
+            <controls1:TeachingTip.IsOpen>
+                <Binding Path="ViewModel.EditModeTutorialPhase" Converter="{x:Static ObjectConverters.Equal}">
+                    <Binding.ConverterParameter>
+                        <x:Int32>3</x:Int32>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </controls1:TeachingTip.IsOpen>
+        </controls1:TeachingTip>
 
         <!-- debug -->
         <StackPanel IsVisible="{Binding ViewModel.Settings.IsMainWindowDebugEnabled}"
