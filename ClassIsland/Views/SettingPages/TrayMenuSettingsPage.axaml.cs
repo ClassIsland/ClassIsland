@@ -7,7 +7,7 @@ using ClassIsland.ViewModels.SettingsPages;
 namespace ClassIsland.Views.SettingPages;
 
 [Group("classisland.general")]
-[SettingsPageInfo("tray-menu", "托盘菜单", "\uedbf", "\uedbf", SettingsPageCategory.Internal)]
+[SettingsPageInfo("tray-menu", "托盘菜单", "", "", SettingsPageCategory.Internal)]
 public partial class TrayMenuSettingsPage : SettingsPageBase
 {
     public TrayMenuSettingsViewModel ViewModel { get; } = IAppHost.GetService<TrayMenuSettingsViewModel>();
