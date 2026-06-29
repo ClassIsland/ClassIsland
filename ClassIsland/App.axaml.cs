@@ -46,7 +46,9 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Abstractions.Services.UI;
 using ClassIsland.Core.Assists;
 using ClassIsland.Core.Controls.IconSources;
 using ClassIsland.Core.Enums;
@@ -57,6 +59,7 @@ using ClassIsland.Enums;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Platforms.Abstraction.Models;
+using ClassIsland.Services.UI;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using FluentAvalonia.UI.Controls;
@@ -488,7 +491,7 @@ public partial class App : AppBase, IAppHost
 
     private async void DesktopLifetimeOnStartup(object? sender, ControlledApplicationLifetimeStartupEventArgs e)
     {
-
+        IViewHostProvider.Instance = new WindowViewHostProvider();
         CreatePhonyRootWindow();
         PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         Initialized?.Invoke(this, EventArgs.Empty);

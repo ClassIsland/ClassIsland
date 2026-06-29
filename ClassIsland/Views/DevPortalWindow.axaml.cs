@@ -13,6 +13,7 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Core.Services.UI;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using FluentAvalonia.UI.Controls;
@@ -197,5 +198,11 @@ public partial class DevPortalWindow : MyWindow
     {
         ViewModel.SplashProvider?.EndSplash();
         ViewModel.SplashProvider = null;
+    }
+
+    private void ButtonTestMve_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var view = ViewManagementService.Instance.ActivateNewView<MveTestView>();
+        view.Show();
     }
 }

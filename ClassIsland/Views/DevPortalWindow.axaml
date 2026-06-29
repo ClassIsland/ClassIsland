@@ -60,6 +60,8 @@
                         <Button Click="ButtonStartSplash_OnClick">StartSplash</Button>
                         <Button Click="ButtonEndSplash_OnClick">EndSplash</Button>
                     </StackPanel>
+                    
+                    <Button Click="ButtonTestMve_OnClick">Test MVE</Button>
                 </StackPanel>
             </TabItem>
             <TabItem Header="控件">

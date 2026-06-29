@@ -1,0 +1,14 @@
+<ci:MyWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:ui="clr-namespace:ClassIsland.Controls.UI;assembly=ClassIsland"
+        xmlns:views="clr-namespace:ClassIsland.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ClassIsland.Controls.UI.WindowViewHost"
+        Title="WindowViewHost"
+        x:DataType="ui:WindowViewHost">
+    <NavigationPage x:Name="NavigationPage">
+    </NavigationPage>
+</ci:MyWindow>

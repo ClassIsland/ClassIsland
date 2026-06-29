@@ -1,0 +1,19 @@
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ClassIsland.Views.MveTestView"
+             Header="Mve Hello!">
+    <StackPanel Spacing="6" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Classes="items-halign-center">
+        <asyncImageLoader:AdvancedImage Source="https://res.classisland.tech/stickers/3.png"
+                                        Width="72" Height="72"/>
+        <TextBlock Text="Welcome to Misha View Engine!"/>
+        <Button Click="ButtonOpenViewDefault_OnClick">在默认视图宿主打开新视图</Button>
+        <Button Click="ButtonOpenViewExistedViewHost_OnClick">在当前视图宿主打开新视图</Button>
+        <Button Click="ButtonOpenViewNewViewHost_OnClick">在新视图宿主打开新视图</Button>
+    </StackPanel>
+</ci:ViewBase>
