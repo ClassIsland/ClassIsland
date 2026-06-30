@@ -15,5 +15,6 @@
         <Button Click="ButtonOpenViewDefault_OnClick">在默认视图宿主打开新视图</Button>
         <Button Click="ButtonOpenViewExistedViewHost_OnClick">在当前视图宿主打开新视图</Button>
         <Button Click="ButtonOpenViewNewViewHost_OnClick">在新视图宿主打开新视图</Button>
+        <CheckBox x:Name="ShowModal">带模态显示</CheckBox>
     </StackPanel>
 </ci:ViewBase>

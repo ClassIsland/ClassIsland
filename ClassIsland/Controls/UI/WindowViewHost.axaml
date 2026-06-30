@@ -9,6 +9,7 @@
         x:Class="ClassIsland.Controls.UI.WindowViewHost"
         Title="WindowViewHost"
         x:DataType="ui:WindowViewHost">
-    <NavigationPage x:Name="NavigationPage">
+    <NavigationPage x:Name="NavigationPage"
+                    Popped="NavigationPage_OnPopped">
     </NavigationPage>
 </ci:MyWindow>

@@ -46,6 +46,13 @@ public interface IViewHost
     Task ShowView(ViewBase view);
 
     /// <summary>
+    /// 带模态显示指定的视图
+    /// </summary>
+    /// <param name="view">要显示的视图</param>
+    /// <param name="owner">视图所有者</param>
+    Task ShowViewModal(ViewBase view, ViewBase owner);
+
+    /// <summary>
     /// 隐藏指定的视图
     /// </summary>
     /// <param name="view">要隐藏的视图</param>

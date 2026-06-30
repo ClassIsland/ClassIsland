@@ -8,6 +8,12 @@ namespace ClassIsland.Core.Abstractions.Controls;
 /// </summary>
 public abstract class ViewBase : ContentPage
 {
+    #region Fields
+
+    private TaskCompletionSource DeactiveTcs { get; } = new();
+
+    #endregion
+    
     #region Events
 
     public static readonly RoutedEvent<RoutedEventArgs> ClosedEvent = RoutedEvent.Register<ViewBase, RoutedEventArgs>(
@@ -54,6 +60,7 @@ public abstract class ViewBase : ContentPage
     internal void ViewDeactivated()
     {
         AssociatedViewHost = null;
+        DeactiveTcs.TrySetResult();
     }
 
     #endregion
@@ -77,23 +84,32 @@ public abstract class ViewBase : ContentPage
     /// <param name="owner">所有者视图</param>
     public virtual void Show(ViewBase owner)
     {
-        throw new NotImplementedException();
+        if (AssociatedViewHost == null)
+        {
+            throw new InvalidOperationException("视图需要激活才能被显示。");
+        }
+        AssociatedViewHost.ShowView(this);
     }
 
     /// <summary>
     /// 以模态显示并等待取消激活。
     /// </summary>
     /// <returns></returns>
-    public async virtual Task ShowModal(ViewBase owner)
+    public virtual async Task ShowModal(ViewBase owner)
     {
-        throw new NotImplementedException();
+        if (AssociatedViewHost == null)
+        {
+            throw new InvalidOperationException("视图需要激活才能被显示。");
+        }
+        await AssociatedViewHost.ShowViewModal(this, owner);
+        await DeactiveTcs.Task;
     }
     
     /// <summary>
     /// 以模态显示并等待取消激活。
     /// </summary>
     /// <returns></returns>
-    public async virtual Task<T> ShowModal<T>(ViewBase owner)
+    public virtual async Task<T> ShowModal<T>(ViewBase owner)
     {
         throw new NotImplementedException();
     }

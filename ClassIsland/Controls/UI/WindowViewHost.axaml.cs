@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -19,6 +20,31 @@ public partial class WindowViewHost : MyWindow, IViewHost
     {
         DataContext = this;
         InitializeComponent();
+        Closing += OnClosing;
+    }
+
+    private void OnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        var view = ActivatedViews.LastOrDefault();
+        if (view == null)
+        {
+            return;
+        }
+
+        if (view.ViewDeactivating() || e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+        {
+            foreach (var view1 in ActivatedViews)
+            {
+                if (view1 != view)
+                {
+                    view.ViewDeactivating();
+                }
+                view1.ViewDeactivated();
+            }
+            return;
+        }
+
+        e.Cancel = true;
     }
 
 
@@ -60,30 +86,56 @@ public partial class WindowViewHost : MyWindow, IViewHost
         return true;
     }
 
+    public override void Show()
+    {
+        base.Show();
+        _isShowed = true;
+    }
+
     public void Show(IViewHost owner)
     {
         if (owner is WindowViewHost host)
         {
-            base.Show(host);   
+            ShowDialog(host);   
+            _isShowed = true;
         }
         else
         {
-            base.Show();
+            Show();
         }
-
-        _isShowed = true;
+        
     }
 
     public async Task ShowView(ViewBase view)
     {
         if (!ActivatedViews.Contains(view))
         {
-            throw new InvalidOperationException("视图必须已经激活才能显示。");
+            throw new InvalidOperationException("视图必须已经激活到此视图宿主才能显示。");
         }
 
         if (!_isShowed)
         {
             Show();
+        }
+
+        await NavigationPage.PushAsync(view);
+    }
+
+    public async Task ShowViewModal(ViewBase view, ViewBase owner)
+    {
+        if (!ActivatedViews.Contains(view))
+        {
+            throw new InvalidOperationException("视图必须已经激活到此视图宿主才能显示。");
+        }
+
+        if (owner.AssociatedViewHost == null)
+        {
+            throw new InvalidOperationException("视图所有者必须已经激活到此视图宿主才能显示。");
+        }
+        
+        if (!_isShowed)
+        {
+            Show(owner.AssociatedViewHost);
         }
 
         await NavigationPage.PushAsync(view);
@@ -101,8 +153,23 @@ public partial class WindowViewHost : MyWindow, IViewHost
             return false;
         }
 
+        if (!DeactivateView(view))
+        {
+            return false;
+        }
+
         await NavigationPage.PopAsync();
 
         return true;
+    }
+
+    private void NavigationPage_OnPopped(object? sender, NavigationEventArgs e)
+    {
+        if (e.Page is not ViewBase viewBase)
+        {
+            return;
+        }
+        viewBase.ViewDeactivating();
+        viewBase.ViewDeactivated();
     }
 }
