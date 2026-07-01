@@ -83,6 +83,9 @@
     <Style Selector="controls|SettingsExpander.switcher">
         <Setter Property="FooterTemplate" Value="{StaticResource SwitcherTemplate}"/>
     </Style>
+    <Style Selector="controls|SettingsExpander:empty">
+        <Setter Property="IsClickEnabled" Value="True"/>
+    </Style>
     <Style Selector="controls|SettingsExpanderItem.switcher">
         <Setter Property="FooterTemplate" Value="{StaticResource SwitcherTemplate}"/>
     </Style>
