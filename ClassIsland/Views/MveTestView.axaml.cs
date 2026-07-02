@@ -6,7 +6,9 @@ using Avalonia.Markup.Xaml;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Enums.UI;
 using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Core.Services.UI;
+using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Views;
 
@@ -17,6 +19,18 @@ public partial class MveTestView : ViewBase
     public MveTestView()
     {
         InitializeComponent();
+        Closing += OnClosing;
+    }
+
+    private async void OnClosing(object? sender, ViewClosingEventArgs e)
+    {
+        if (Confirm.IsChecked != true || !e.IsCancelable)
+        {
+            return;    
+        }
+
+        e.Cancel = true;
+        this.ShowToast("关闭事件已拦截。");
     }
 
     private async void ShowView(ViewBase view)
@@ -65,5 +79,10 @@ public partial class MveTestView : ViewBase
     {
         var view = _lastView = new MveBigImageTestView();
         ShowView(view);
+    }
+
+    private void ButtonOpenLastView_OnClick(object? sender, RoutedEventArgs e)
+    {
+        _lastView?.Open();
     }
 }

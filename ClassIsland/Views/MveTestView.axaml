@@ -18,9 +18,11 @@
         <Button Click="ButtonTestBigImage_OnClick">测试大图像</Button>
         <CheckBox x:Name="ShowModal">带模态显示</CheckBox>
         <Separator/>
+        <CheckBox x:Name="Confirm">不允许关闭</CheckBox>
         <Separator/>
         <TextBlock Text="操作上一个视图"/>
-        <Button Click="ButtonReuseLastView_OnClick">复用上个视图</Button>
+        <Button Click="ButtonReuseLastView_OnClick">复用上个视图(Show)</Button>
+        <Button Click="ButtonOpenLastView_OnClick">复用上个视图(Open)</Button>
         <Button Click="ButtonHideLastView_OnClick">关闭上个视图</Button>
     </StackPanel>
 </ci:ViewBase>

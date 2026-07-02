@@ -39,7 +39,7 @@ public abstract class ViewBase : ContentPage
         remove => RemoveHandler(ClosedEvent, value);
     }
 
-    public EventHandler<ViewClosingEventArgs>? Closing;
+    public event EventHandler<ViewClosingEventArgs>? Closing;
     
 
     #endregion
@@ -51,7 +51,31 @@ public abstract class ViewBase : ContentPage
     public IViewHost? AssociatedViewHost { get; internal set; }
 
     #region Lifetime
-    
+
+    /// <inheritdoc />
+    public ViewBase()
+    {
+        Navigating += OnNavigating;
+    }
+
+    private async Task OnNavigating(NavigatingFromEventArgs arg)
+    {
+        if (arg.NavigationType is NavigationType.Insert or NavigationType.Push or NavigationType.PushModal)
+        {
+            return;
+        }
+
+        if (!_isShowed)
+        {
+            return;
+        }
+
+        if (InvokeClosingEvent(WindowCloseReason.Undefined, false, true))
+        {
+            arg.Cancel = true;
+        }
+    }
+
     internal bool ViewActivating(IViewHost viewHost)
     {
         if (AssociatedViewHost != null)
@@ -69,9 +93,14 @@ public abstract class ViewBase : ContentPage
 
     internal bool ViewDeactivating(WindowCloseReason reason, bool isProgrammatic, bool isCancelable)
     {
+        return !InvokeClosingEvent(reason, isProgrammatic, isCancelable);
+    }
+
+    private bool InvokeClosingEvent(WindowCloseReason reason, bool isProgrammatic, bool isCancelable)
+    {
         var eventArgs = new ViewClosingEventArgs(reason, isProgrammatic, isCancelable);
         Closing?.Invoke(this, eventArgs);
-        return !eventArgs.Cancel;
+        return eventArgs.Cancel;
     }
 
     internal void ViewDeactivated()
@@ -107,24 +136,29 @@ public abstract class ViewBase : ContentPage
     #endregion
 
     #region PublicMethods
+
     /// <summary>
-    /// 显示该视图。
+    /// 尝试打开此视图，或将已打开的视图显示到前台。
     /// </summary>
-    public virtual void Show()
+    /// <remarks>如果视图已经显示，不会抛出异常，而是将视图显示到最前端。</remarks>
+    /// <param name="owner">所有者视图</param>
+    /// <returns>视图是否显示成功。返回 false 时代表视图已经打开，仅将视图显示到了前台。</returns>
+    public virtual bool Open(ViewBase? owner = null)
     {
-        if (AssociatedViewHost == null)
+        if (_isShowed && AssociatedViewHost != null)
         {
-            ViewManagementService.Instance.ActivateView(this);
+            AssociatedViewHost.Activate();
+            return false;
         }
-
-        ShowCore();
+        Show(owner);
+        return true;
     }
-
+    
     /// <summary>
     /// 以另一个视图为所有者显示视图。
     /// </summary>
     /// <param name="owner">所有者视图</param>
-    public virtual void Show(ViewBase owner)
+    public virtual void Show(ViewBase? owner = null)
     {
         if (AssociatedViewHost == null)
         {

@@ -39,6 +39,11 @@ public interface IViewHost
     void Hide();
 
     /// <summary>
+    /// 将自身移动到前台。
+    /// </summary>
+    void Activate();
+
+    /// <summary>
     /// 显示指定的视图。
     /// </summary>
     /// <remarks>视图必须已经激活，才能在试图宿主上显示。</remarks>

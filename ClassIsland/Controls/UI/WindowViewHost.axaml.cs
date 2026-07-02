@@ -75,6 +75,15 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     IViewHost? IViewHost.Owner => MyOwner;
 
+    public new void Activate()
+    {
+        if (WindowState == WindowState.Minimized)
+        {
+            WindowState = WindowState.Normal;
+        }
+        base.Activate();
+    }
+
     public bool ActivateView(ViewBase view)
     {
         if (ActivatedViews.Contains(view))
