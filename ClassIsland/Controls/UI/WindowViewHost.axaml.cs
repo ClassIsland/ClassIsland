@@ -4,23 +4,46 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
 using Avalonia.Markup.Xaml;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 
 namespace ClassIsland.Controls.UI;
 
+[PseudoClasses(":mobile")]
 public partial class WindowViewHost : MyWindow, IViewHost
 {
+    public bool IsMobileMode { get; }
+    
     private HashSet<ViewBase> ActivatedViews { get; } = [];
 
     private bool _isShowed = false;
 
-    public WindowViewHost()
+    private bool _isClosed = false;
+
+    public WindowViewHost(bool isMobileMode=false)
     {
+        IsMobileMode = isMobileMode;
         DataContext = this;
         InitializeComponent();
         Closing += OnClosing;
+        Closed += OnClosed;
+        if (IsMobileMode)
+        {
+            Width = 360;
+            Height = 800;
+            PseudoClasses.Set(":mobile", true);
+        }
+        
+    }
+
+    private void OnClosed(object? sender, EventArgs e)
+    {
+        _isClosed = true;
+        NavigationPage.PopAllModalsAsync(null);
+        NavigationPage.PopToRootAsync(null);
+        NavigationPage.ReplaceAsync(new ContentPage(), null);
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
@@ -31,13 +54,13 @@ public partial class WindowViewHost : MyWindow, IViewHost
             return;
         }
 
-        if (view.ViewDeactivating() || e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+        if (view.ViewDeactivating(e.CloseReason, e.IsProgrammatic, true) || e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
         {
             foreach (var view1 in ActivatedViews)
             {
                 if (view1 != view)
                 {
-                    view.ViewDeactivating();
+                    view.ViewDeactivating(e.CloseReason, e.IsProgrammatic, false);
                 }
                 view1.ViewDeactivated();
             }
@@ -76,7 +99,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
             return false;
         }
 
-        if (!view.ViewDeactivating())
+        if (!view.ViewDeactivating(WindowCloseReason.Undefined, true, true))
         {
             return false;
         }
@@ -94,9 +117,21 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     public void Show(IViewHost owner)
     {
+        Show(owner, false);
+    }
+
+    public void Show(IViewHost? owner, bool modal)
+    {
         if (owner is WindowViewHost host)
         {
-            ShowDialog(host);   
+            if (modal)
+            {
+                ShowDialog(host);   
+            }
+            else
+            {
+                base.Show(host);
+            }
             _isShowed = true;
         }
         else
@@ -106,7 +141,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
         
     }
 
-    public async Task ShowView(ViewBase view)
+    public async Task ShowView(ViewBase view, ViewBase? owner = null)
     {
         if (!ActivatedViews.Contains(view))
         {
@@ -115,7 +150,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
         if (!_isShowed)
         {
-            Show();
+            Show(owner?.AssociatedViewHost, true);
         }
 
         await NavigationPage.PushAsync(view);
@@ -135,7 +170,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
         
         if (!_isShowed)
         {
-            Show(owner.AssociatedViewHost);
+            Show(owner.AssociatedViewHost, true);
         }
 
         await NavigationPage.PushAsync(view);
@@ -148,7 +183,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
             throw new InvalidOperationException("视图必须已经激活才能隐藏。");
         }
 
-        if (!Equals(NavigationPage.Content, view))
+        if (!Equals(NavigationPage.CurrentPage, view))
         {
             return false;
         }
@@ -158,18 +193,30 @@ public partial class WindowViewHost : MyWindow, IViewHost
             return false;
         }
 
-        await NavigationPage.PopAsync();
+        if (NavigationPage.Pages?.Count() <= 1)
+        {
+            Close();
+        }
+        else
+        {
+            await NavigationPage.PopAsync();
+        }
 
         return true;
     }
 
     private void NavigationPage_OnPopped(object? sender, NavigationEventArgs e)
     {
+        if (_isClosed)
+        {
+            return;
+        }
         if (e.Page is not ViewBase viewBase)
         {
             return;
         }
-        viewBase.ViewDeactivating();
+        viewBase.ViewDeactivating(WindowCloseReason.Undefined, true, true);
         viewBase.ViewDeactivated();
+        ActivatedViews.Remove(viewBase);
     }
 }

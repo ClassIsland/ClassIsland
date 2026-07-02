@@ -59,4 +59,5 @@ public class ApplicationCommand
     public bool Onboarding { get; set; } = false;
 
     public bool Autostartup { get; set; } = false;
+    public bool Mobile { get; set; } = false;
 }

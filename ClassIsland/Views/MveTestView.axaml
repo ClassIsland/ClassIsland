@@ -15,6 +15,12 @@
         <Button Click="ButtonOpenViewDefault_OnClick">在默认视图宿主打开新视图</Button>
         <Button Click="ButtonOpenViewExistedViewHost_OnClick">在当前视图宿主打开新视图</Button>
         <Button Click="ButtonOpenViewNewViewHost_OnClick">在新视图宿主打开新视图</Button>
+        <Button Click="ButtonTestBigImage_OnClick">测试大图像</Button>
         <CheckBox x:Name="ShowModal">带模态显示</CheckBox>
+        <Separator/>
+        <Separator/>
+        <TextBlock Text="操作上一个视图"/>
+        <Button Click="ButtonReuseLastView_OnClick">复用上个视图</Button>
+        <Button Click="ButtonHideLastView_OnClick">关闭上个视图</Button>
     </StackPanel>
 </ci:ViewBase>

@@ -43,7 +43,8 @@ public interface IViewHost
     /// </summary>
     /// <remarks>视图必须已经激活，才能在试图宿主上显示。</remarks>
     /// <param name="view">要显示的视图</param>
-    Task ShowView(ViewBase view);
+    /// <param name="owner">视图所有者</param>
+    Task ShowView(ViewBase view, ViewBase? owner = null);
 
     /// <summary>
     /// 带模态显示指定的视图

@@ -64,6 +64,7 @@ public static class Program
             new Option<bool>(["--refreshing"], "应用将继续翻新向导"),
             new Option<bool>(["--onboarding"], "应用将继续迎新向导"),
             new Option<bool>(["--autostartup", "-au"], "自启动模式，检测到程序已运行时直接退出"),
+            new Option<bool>(["--mobile"], "伪移动端模式"),
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
         command.Invoke(args);

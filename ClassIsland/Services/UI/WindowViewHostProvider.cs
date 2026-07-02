@@ -8,12 +8,13 @@ using ClassIsland.Core.Enums.UI;
 
 namespace ClassIsland.Services.UI;
 
-public class WindowViewHostProvider : IViewHostProvider
+public class WindowViewHostProvider(bool mobile) : IViewHostProvider
 {
-    public const ViewActivationPreference DefaultPreference = ViewActivationPreference.NewViewHost;
+    private ViewActivationPreference DefaultPreference => mobile ? ViewActivationPreference.ExistedViewHost 
+        : ViewActivationPreference.NewViewHost;
     
     private HashSet<WindowViewHost> ViewHosts { get; } = [];
-    
+
     public IViewHost GetViewHost(ViewActivationPreference activationPreference)
     {
         activationPreference = activationPreference == ViewActivationPreference.Default
@@ -32,7 +33,7 @@ public class WindowViewHostProvider : IViewHostProvider
 
     private WindowViewHost CreateNew()
     {
-        var host = new WindowViewHost();
+        var host = new WindowViewHost(mobile);
         host.Closed += HostOnClosed;
         ViewHosts.Add(host);
         return host;

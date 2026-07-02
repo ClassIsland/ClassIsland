@@ -1,5 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using ClassIsland.Core.Models.UI;
+using ClassIsland.Core.Services.UI;
 
 namespace ClassIsland.Core.Abstractions.Controls;
 
@@ -10,8 +13,19 @@ public abstract class ViewBase : ContentPage
 {
     #region Fields
 
-    private TaskCompletionSource DeactiveTcs { get; } = new();
+    private TaskCompletionSource? DeActiveTcs { get; set; }
 
+    private bool _isShowed = false;
+
+    public static readonly StyledProperty<object?> ResultProperty = AvaloniaProperty.Register<ViewBase, object?>(
+        nameof(Result));
+
+    public object? Result
+    {
+        get => GetValue(ResultProperty);
+        set => SetValue(ResultProperty, value);
+    }
+    
     #endregion
     
     #region Events
@@ -25,7 +39,8 @@ public abstract class ViewBase : ContentPage
         remove => RemoveHandler(ClosedEvent, value);
     }
 
-    public EventHandler<WindowClosingEventArgs>? Closing;
+    public EventHandler<ViewClosingEventArgs>? Closing;
+    
 
     #endregion
     
@@ -52,15 +67,41 @@ public abstract class ViewBase : ContentPage
         AssociatedViewHost = viewHost;
     }
 
-    internal bool ViewDeactivating()
+    internal bool ViewDeactivating(WindowCloseReason reason, bool isProgrammatic, bool isCancelable)
     {
-        return true;
+        var eventArgs = new ViewClosingEventArgs(reason, isProgrammatic, isCancelable);
+        Closing?.Invoke(this, eventArgs);
+        return !eventArgs.Cancel;
     }
 
     internal void ViewDeactivated()
     {
         AssociatedViewHost = null;
-        DeactiveTcs.TrySetResult();
+        DeActiveTcs?.TrySetResult();
+        _isShowed = false;
+    }
+
+    private void ShowCore(ViewBase? owner = null, bool modal = false)
+    {
+        if (AssociatedViewHost == null)
+        {
+            throw new InvalidOperationException("只有在该视图被激活到视图宿主后才能显示此视图。");
+        }
+
+        if (_isShowed)
+        {
+            throw new InvalidOperationException("视图已被显示时不能再次被显示。");
+        }
+
+        if (owner != null)
+        {
+            AssociatedViewHost.ShowViewModal(this, owner);
+        }
+        else
+        {
+            AssociatedViewHost.ShowView(this, owner);
+        }
+        _isShowed = true;
     }
 
     #endregion
@@ -73,9 +114,10 @@ public abstract class ViewBase : ContentPage
     {
         if (AssociatedViewHost == null)
         {
-            throw new InvalidOperationException("视图需要激活才能被显示。");
+            ViewManagementService.Instance.ActivateView(this);
         }
-        AssociatedViewHost.ShowView(this);
+
+        ShowCore();
     }
 
     /// <summary>
@@ -86,9 +128,9 @@ public abstract class ViewBase : ContentPage
     {
         if (AssociatedViewHost == null)
         {
-            throw new InvalidOperationException("视图需要激活才能被显示。");
+            ViewManagementService.Instance.ActivateView(this);
         }
-        AssociatedViewHost.ShowView(this);
+        ShowCore(owner);
     }
 
     /// <summary>
@@ -99,10 +141,11 @@ public abstract class ViewBase : ContentPage
     {
         if (AssociatedViewHost == null)
         {
-            throw new InvalidOperationException("视图需要激活才能被显示。");
+            ViewManagementService.Instance.ActivateView(this);
         }
-        await AssociatedViewHost.ShowViewModal(this, owner);
-        await DeactiveTcs.Task;
+        ShowCore(owner, true);
+        DeActiveTcs = new TaskCompletionSource();
+        await DeActiveTcs.Task;
     }
     
     /// <summary>
@@ -111,7 +154,27 @@ public abstract class ViewBase : ContentPage
     /// <returns></returns>
     public virtual async Task<T> ShowModal<T>(ViewBase owner)
     {
-        throw new NotImplementedException();
+        if (AssociatedViewHost == null)
+        {
+            ViewManagementService.Instance.ActivateView(this);
+        }
+        ShowCore(owner, true);
+        DeActiveTcs = new TaskCompletionSource();
+        await DeActiveTcs.Task;
+        return (T)Result!;
+    }
+
+    /// <summary>
+    /// 隐藏当前视图。
+    /// </summary>
+    public virtual void Hide()
+    {
+        if (AssociatedViewHost == null)
+        {
+            throw new InvalidOperationException("只有在该视图被激活到视图宿主后才能隐藏此视图。");
+        }
+
+        AssociatedViewHost.HideView(this);
     }
     #endregion
     

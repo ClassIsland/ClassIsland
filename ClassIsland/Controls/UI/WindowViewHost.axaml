@@ -7,8 +7,17 @@
         xmlns:views="clr-namespace:ClassIsland.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Controls.UI.WindowViewHost"
-        Title="WindowViewHost"
         x:DataType="ui:WindowViewHost">
+    <ci:MyWindow.Styles>
+        <Style Selector=":is(Window)">
+            <Setter Property="Title" Value="{Binding #NavigationPage.CurrentPage.Header}"/>
+            <Setter Property="Width" Value="{Binding #NavigationPage.CurrentPage.Width, Mode=TwoWay}"/>
+            <Setter Property="Height" Value="{Binding #NavigationPage.CurrentPage.Height, Mode=TwoWay}"/>
+        </Style>
+        <Style Selector=":is(Window):mobile">
+            <Setter Property="Title" Value="ClassIsland Mobile"/>
+        </Style>
+    </ci:MyWindow.Styles>
     <NavigationPage x:Name="NavigationPage"
                     Popped="NavigationPage_OnPopped">
     </NavigationPage>

@@ -55,6 +55,7 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Services;
+using ClassIsland.Core.Services.UI;
 using ClassIsland.Enums;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -491,7 +492,12 @@ public partial class App : AppBase, IAppHost
 
     private async void DesktopLifetimeOnStartup(object? sender, ControlledApplicationLifetimeStartupEventArgs e)
     {
-        IViewHostProvider.Instance = new WindowViewHostProvider();
+        IViewHostProvider.Instance = new WindowViewHostProvider(ApplicationCommand.Mobile);
+        if (ApplicationCommand.Mobile)
+        {
+            var splash = ViewManagementService.Instance.ActivateNewView<SplashView>();
+            splash.Show();
+        }
         CreatePhonyRootWindow();
         PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         Initialized?.Invoke(this, EventArgs.Empty);

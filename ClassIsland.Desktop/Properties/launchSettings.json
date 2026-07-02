@@ -3,6 +3,10 @@
     "ClassIsland": {
       "commandName": "Project"
     },
+    "ClassIsland (Mobile)": {
+      "commandName": "Project",
+      "commandLineArgs": "--mobile"
+    },
     "Remote": {
       "commandName": "Project",
       "workingDirectory": "X:\\",
