@@ -28,13 +28,17 @@ public sealed class OverlayAssetLoader(
 
     public bool Exists(Uri uri, Uri? baseUri = null)
     {
-        return TryMapToFile(uri, baseUri, out var filePath)
-            ? File.Exists(filePath)
-            : fallback.Exists(uri, baseUri);
+        if (fallback.Exists(uri, baseUri))
+            return true;
+
+        return TryMapToFile(uri, baseUri, out _);
     }
 
     public Stream Open(Uri uri, Uri? baseUri = null)
     {
+        if (fallback.Exists(uri, baseUri))
+            return fallback.Open(uri, baseUri);
+
         if (TryMapToFile(uri, baseUri, out var filePath))
             return File.OpenRead(filePath);
 
@@ -43,6 +47,9 @@ public sealed class OverlayAssetLoader(
 
     public (Stream stream, Assembly assembly) OpenAndGetAssembly(Uri uri, Uri? baseUri = null)
     {
+        if (fallback.Exists(uri, baseUri))
+            return fallback.OpenAndGetAssembly(uri, baseUri);
+
         if (TryMapToFile(uri, baseUri, out var filePath))
             return (File.OpenRead(filePath), _localAssembly: localAssembly);
 
@@ -53,7 +60,10 @@ public sealed class OverlayAssetLoader(
     {
         var absolute = EnsureAbsolute(uri, baseUri);
 
-        if (IsHandledAvaresUri(absolute))
+        if (!IsHandledAvaresUri(absolute) || fallback.Exists(uri, baseUri))
+            return fallback.GetAssembly(uri, baseUri);
+
+        if (TryMapToFile(uri, baseUri, out _))
             return localAssembly;
 
         return fallback.GetAssembly(uri, baseUri);
@@ -89,8 +99,8 @@ public sealed class OverlayAssetLoader(
                 return new Uri($"avares://{assemblyName}{_avaresPrefix}{relative}");
             });
 
-        return physicalAssets
-            .Concat(assemblyAssets)
+        return assemblyAssets
+            .Concat(physicalAssets)
             .DistinctBy(asset => asset.ToString());
     }
 
