@@ -341,7 +341,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             }
         }
 #if DEBUG
-        MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
+        if (!System.OperatingSystem.IsAndroid())
+            MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
         TutorialService.BeginNotCompletedTutorials("classisland.getStarted.welcome/init");
     }

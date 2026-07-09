@@ -8,4 +8,7 @@ using System.Windows;
 // [assembly: AssemblyProduct("ClassIsland")]
 // [assembly: SupportedOSPlatform("Windows")]
 
-[assembly:InternalsVisibleTo("ClassIsland.Desktop")]
+[assembly: InternalsVisibleTo("ClassIsland.Desktop")]
+[assembly: InternalsVisibleTo("ClassIsland.Android")]
+[assembly: InternalsVisibleTo("ClassIsland.iOS")]
+[assembly: InternalsVisibleTo("ClassIsland.Hmos")]

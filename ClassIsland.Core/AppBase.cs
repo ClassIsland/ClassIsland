@@ -154,22 +154,24 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 虚根窗口
     /// </summary>
-    public Window PhonyRootWindow = null!;
+    public TopLevel PhonyRootWindow = null!;
 
     /// <summary>
     /// 获得一个根窗口。
     /// </summary>
     /// <returns>优先返回当前激活的窗口。如果没有激活的窗口，则返回虚窗口。</returns>
-    public Window GetRootWindow()
+    public TopLevel GetRootWindow()
     {
-        var w =  Current.DesktopLifetime?.Windows
-            .Where(x => x.GetType().Name != "TrayPopupRoot" && x is { IsActive: true, IsVisible: true,  PlatformImpl: not null })
-            .OrderBy(x => x == MainWindow ? 1 : 0)  // 将主窗口的优先级下降，防止出现因主界面置底导致内容子窗口的问题
-            .FirstOrDefault();
-        if (w != null) 
+        if (Current.DesktopLifetime?.Windows
+                .Where(x => x.GetType().Name != "TrayPopupRoot" && x is { IsActive: true, IsVisible: true,  PlatformImpl: not null })
+                .OrderBy(x => x == MainWindow ? 1 : 0)  // 将主窗口的优先级下降，防止出现因主界面置底导致内容子窗口的问题
+                .FirstOrDefault() is TopLevel w) 
             return w;
         w = PhonyRootWindow;
-        w.Activate();
+        if (w is Window window)
+        {
+            window.Activate();
+        }
 
         return w;
     }

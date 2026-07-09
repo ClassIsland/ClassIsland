@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationId>cn.classisland.android.dev</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
+    <ProjectReference Include="..\ClassIsland\ClassIsland.csproj">
+      <AdditionalProperties>ClassIslandReferencedByAndroid=true</AdditionalProperties>
+    </ProjectReference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)"/>
+    <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.2.0.2" />
+  </ItemGroup>
+
+  <Import Project="../Global.props"/>
+  <Import Project="../AvaloniaShared.props"/>
+</Project>

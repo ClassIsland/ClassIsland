@@ -9,8 +9,6 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public static class CommonTaskDialogs
 {
-    private static Window PhonyXamlRootWindow { get; } = new();
-    
     /// <summary>
     /// 显示基本提示框
     /// </summary>

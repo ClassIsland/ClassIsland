@@ -25,6 +25,11 @@
     <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
 	    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
     </PropertyGroup>
+    <PropertyGroup>
+        <ClassIslandBundleAssetsInAssembly Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">true</ClassIslandBundleAssetsInAssembly>
+        <ClassIslandBundleAssetsInAssembly Condition="'$(ClassIslandReferencedByAndroid)'=='true' And '$(Configuration)'=='Release'">true</ClassIslandBundleAssetsInAssembly>
+        <ClassIslandBundleAssetsInAssembly Condition="'$(ClassIslandBundleAssetsInAssembly)'==''">false</ClassIslandBundleAssetsInAssembly>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug_MSIX' Or '$(Configuration)'=='Release_MSIX'">
       <IsMsix>true</IsMsix>
     </PropertyGroup>
@@ -116,10 +121,10 @@
         <AvaloniaResource Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.resx" />
         <None Include="Assets\AppLogo.png" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" PublishFolderType="Resource" />
     </ItemGroup>
-    <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX'">
+    <ItemGroup Condition="'$(ClassIslandBundleAssetsInAssembly)' == 'true'">
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
-    <ItemGroup Condition="'$(Configuration)' != 'Debug' And '$(Configuration)' != 'Debug_MSIX'">
+    <ItemGroup Condition="'$(ClassIslandBundleAssetsInAssembly)' != 'true'">
         <None Update="Assets\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>Always</CopyToPublishDirectory>

@@ -1,4 +1,4 @@
-<controls1:MyWindow x:Class="ClassIsland.Views.CrashWindow"
+<ci:ViewBase x:Class="ClassIsland.Views.CrashWindow"
                    xmlns="https://github.com/avaloniaui"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,12 +8,12 @@
                    xmlns:controls="clr-namespace:ClassIsland.Controls"
                    xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
                    xmlns:controls2="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+                   xmlns:ci="http://classisland.tech/schemas/xaml/core"
                    d:DataContext="{d:DesignInstance views:CrashWindow}"
                    mc:Ignorable="d"
-                   WindowStartupLocation="CenterScreen"
                    Icon="/Assets/AppLogo.ico"
-                   Title="ClassIsland 崩溃报告" Height="450" Width="800"
-                   EnableMicaWindow="True">
+                   Header="ClassIsland 崩溃报告" HostHeight="450" HostWidth="800"
+                   >
     <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
         <!-- Header -->
         <controls1:StickerControl Grid.Row="0" Grid.Column="0"
@@ -96,4 +96,4 @@
             </StackPanel>
         </Grid>
     </Grid>
-</controls1:MyWindow>
+</ci:ViewBase>

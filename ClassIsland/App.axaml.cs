@@ -172,6 +172,12 @@ public partial class App : AppBase, IAppHost
             return;
         }
 
+        if (System.OperatingSystem.IsAndroid())
+        {
+            PackagingType = "apk";
+            return;
+        }
+
         var exeDir = Path.GetDirectoryName(Environment.ProcessPath) ?? "./";
         var packageTypeDir = Path.Combine(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? exeDir,
             "PackageType");
@@ -215,7 +221,7 @@ public partial class App : AppBase, IAppHost
         CommonDirectories.AppRootFolderPath = PackagingType switch
         {
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
-            "installer" or "deb" or "appImage" or "pkg" or "msix" => Path.GetFullPath(Path.Combine(
+            "installer" or "deb" or "appImage" or "pkg" or "msix" or "apk" => Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
             _ => System.OperatingSystem.IsMacOS() ? Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")) :
@@ -243,7 +249,7 @@ public partial class App : AppBase, IAppHost
         Environment.CurrentDirectory = Path.GetDirectoryName(Environment.ProcessPath) ?? "./";
         ActivatePackageType();
         ActivateAppDirectories();
-        if (!Design.IsDesignMode && !System.OperatingSystem.IsMacOS())
+        if (!Design.IsDesignMode && !System.OperatingSystem.IsMacOS() && !System.OperatingSystem.IsAndroid())
         {
             this.EnableHotReload();
         }
@@ -431,7 +437,7 @@ public partial class App : AppBase, IAppHost
                 AllowIgnore = _isStartedCompleted && !critical,
                 IsCritical = critical
             };
-            await CrashWindow.ShowDialog(GetRootWindow());
+            await CrashWindow.ShowModal();
             return;
         }
 
@@ -492,14 +498,22 @@ public partial class App : AppBase, IAppHost
 
     private async void DesktopLifetimeOnStartup(object? sender, ControlledApplicationLifetimeStartupEventArgs e)
     {
-        IViewHostProvider.Instance = new WindowViewHostProvider(ApplicationCommand.Mobile);
-        if (ApplicationCommand.Mobile)
+        Init();
+    }
+
+    internal async void Init()
+    {
+        AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Initializing;
+        if (System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux())
         {
-            var splash = ViewManagementService.Instance.ActivateNewView<SplashView>();
-            splash.Show();
+            IViewHostProvider.Instance = new WindowViewHostProvider(ApplicationCommand.Mobile);
         }
-        CreatePhonyRootWindow();
-        PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
+        
+        if (System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux())
+        {
+            CreatePhonyRootWindow();
+            PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
+        }
         Initialized?.Invoke(this, EventArgs.Empty);
         var transaction = SentrySdk.StartTransaction(
             "startup",
@@ -507,7 +521,6 @@ public partial class App : AppBase, IAppHost
         );
         SentrySdk.ConfigureScope(s => s.Transaction = transaction);
         var spanPreInit = transaction.StartChild("startup-init");
-        AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Initializing;
         Dispatcher.UIThread.UnhandledException += App_OnDispatcherUnhandledException;
         MyWindow.ShowOssWatermark = ApplicationCommand.ShowOssWatermark;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
@@ -673,7 +686,10 @@ public partial class App : AppBase, IAppHost
             AppDomain.CurrentDomain.AssemblyLoad += (o, args) => Logger.LogTrace("加载程序集：{AssemblyFullName} ({AssemblyLocation})", args.LoadedAssembly.FullName, args.LoadedAssembly.Location);
         }
 #if DEBUG
-        MemoryProfiler.GetSnapshot("Host built");
+        if (!System.OperatingSystem.IsAndroid())
+        {
+            MemoryProfiler.GetSnapshot("Host built");
+        }
 #endif
         spanHostBuilding.Finish();
         spanPreInit.Finish();
@@ -803,6 +819,9 @@ public partial class App : AppBase, IAppHost
                     return;
                 }
             }
+
+            var sw = IAppHost.GetService<SettingsWindowNew>();
+            await sw.ShowModal();
             var w = IAppHost.GetService<WelcomeWindow>();
             if (ApplicationCommand.Refreshing)
             {
@@ -839,7 +858,8 @@ public partial class App : AppBase, IAppHost
         GetService<ISplashService>().SetDetailedStatus("正在启动主界面所需的服务");
         GetService<ISplashService>().CurrentProgress = 55;
 #if DEBUG
-        MemoryProfiler.GetSnapshot("Pre MainWindow init");
+        if (!System.OperatingSystem.IsAndroid())
+            MemoryProfiler.GetSnapshot("Pre MainWindow init");
 #endif
         var mw = GetService<MainWindow>();
         MainWindow = mw;
@@ -918,7 +938,8 @@ public partial class App : AppBase, IAppHost
             }
         };
 #if DEBUG
-        MemoryProfiler.GetSnapshot("Pre MainWindow show");
+        if (!System.OperatingSystem.IsAndroid())
+            MemoryProfiler.GetSnapshot("Pre MainWindow show");
 #endif
         GetService<ISplashService>().CurrentProgress = 80;
         GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 2/2）");
@@ -978,7 +999,7 @@ public partial class App : AppBase, IAppHost
 
     private void CreatePhonyRootWindow()
     {
-        PhonyRootWindow = new Window()
+        var prw = new Window()
         {
             Width = 1,
             Height = 1,
@@ -990,7 +1011,8 @@ public partial class App : AppBase, IAppHost
             TransparencyLevelHint = [ WindowTransparencyLevel.Transparent ],
             Title = "PhonyRootWindow"
         };
-        PhonyRootWindow.Closing += (sender, args) =>
+        PhonyRootWindow = prw;
+        prw.Closing += (sender, args) =>
         {
             if (args.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
             {
@@ -998,7 +1020,7 @@ public partial class App : AppBase, IAppHost
             }
             args.Cancel = true;
         };
-        PhonyRootWindow.Show();
+        prw.Show();
     }
 
 

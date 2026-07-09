@@ -11,3 +11,8 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+/libraries/**
+deploymentTargetSelector.xml
+deviceManager.xml
+AndroidProjectSystem.xml
