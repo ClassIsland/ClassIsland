@@ -832,6 +832,10 @@ public partial class ProfileSettingsWindow : MyWindow
                         maxIndex = result + 1;
                     }
                 }
+                else
+                {
+                    timeLayout.IsRenamed = true;
+                }
             }
         }
         
