@@ -112,7 +112,7 @@ public class RefreshingService(SettingsService settingsService, IExactTimeServic
         welcomeWin.ViewModel.RefreshingScopes =
             ConfigureFileHelper.CopyObject(SettingsService.Settings.RefreshingScopes);
         welcomeWin.SetWelcomeExperience(true, isOnboarding, false);
-        await welcomeWin.ShowDialog(AppBase.Current.GetRootWindow());
+        await welcomeWin.ShowModal();
         if (!isOnboarding)
         {
             return false;

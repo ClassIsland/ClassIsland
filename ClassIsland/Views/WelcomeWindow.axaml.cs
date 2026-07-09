@@ -11,6 +11,7 @@ using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
@@ -25,7 +26,7 @@ using WindowsShortcutFactory;
 
 namespace ClassIsland.Views;
 
-public partial class WelcomeWindow : MyWindow, IFANavigationPageFactory
+public partial class WelcomeWindow : ViewBase, IFANavigationPageFactory
 {
    
     public static readonly ICommand WelcomeNavigateBackCommand = new RoutedCommand(nameof(WelcomeNavigateBackCommand));
@@ -49,12 +50,6 @@ public partial class WelcomeWindow : MyWindow, IFANavigationPageFactory
     {
         InitializeComponent();
         DataContext = this;
-        if (OperatingSystem.IsMacOS())
-        {
-            ExtendClientAreaToDecorationsHint = true;
-            ExtendClientAreaTitleBarHeightHint = -1;
-            WindowDecorations = WindowDecorations.Full;
-        }
         SetWelcomeExperience(false, true, false);
     }
 
@@ -213,12 +208,12 @@ public partial class WelcomeWindow : MyWindow, IFANavigationPageFactory
             ViewModel.SettingsService.Settings.LeftRefreshingToastCounts = 0;
         }
         
-        Close();
+        Hide();
     }
 
-    private async void Window_OnClosing(object? sender, WindowClosingEventArgs e)
+    private async void Window_OnClosing(object? sender, ViewClosingEventArgs e)
     {
-        if (ViewModel.CanClose || e.CloseReason is WindowCloseReason.OSShutdown or WindowCloseReason.ApplicationShutdown || !IsOnboarding)
+        if (ViewModel.CanClose || !IsOnboarding)
         {
             return;
         }
@@ -231,13 +226,13 @@ public partial class WelcomeWindow : MyWindow, IFANavigationPageFactory
             PrimaryButtonText = "退出",
             SecondaryButtonText = "取消",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync(this);
+        }.ShowAsync(TopLevel.GetTopLevel(this));
         if (r != FAContentDialogResult.Primary)
         {
             return;
         }
 
         ViewModel.CanClose = true;
-        Close();
+        Hide();
     }
 }

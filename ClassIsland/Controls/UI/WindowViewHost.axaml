@@ -21,10 +21,11 @@
         <Style Selector=":is(Window):not(:mobile)">
             <Setter Property="Width" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.HostWidth), Mode=TwoWay}"/>
             <Setter Property="Height" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.HostHeight), Mode=TwoWay}"/>
+            <Setter Property="CanResize" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.CanResize), Mode=TwoWay, FallbackValue={x:True}}"/>
             <Style Selector="^:inlineHeader">
                 <Style Selector="^ NavigationPage#NavigationPage">
                     <Style Selector="^ /template/ Border#PART_NavigationBar">
-                        <Setter Property="Height" Value="32"/>
+                        <Setter Property="Height" Value="{Binding $parent[ui:WindowViewHost].InlineHeaderHeight}"/>
                         <Style Selector="^ > Grid">
                             <Setter Property="Margin" Value="0"/>
                         </Style>

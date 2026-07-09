@@ -59,7 +59,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// SettingsWindowNew.xaml 的交互逻辑
 /// </summary>
-public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
+public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 {
     private const string KeepHistoryParameterName = "ci_keepHistory";
     private const string ErrorPageId = "_error";
@@ -115,8 +115,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         InitializeComponent();
         // SplashScreen = new EmptySplashScreen();
-
-        TitleBar.ExtendsContentIntoTitleBar = true;
+        
         // TitleBar.TitleBarHitTestType = FATitleBarHitTestType.Complex;
         NavigationFrame.NavigationPageFactory = this;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
@@ -130,14 +129,6 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
         SettingsService.Settings
             .ObservableForProperty(x => x.IsDebugOptionsEnabled)
             .Subscribe(_ => BuildNavigationMenuItems());
-
-        TitleBar.Height = 48;
-        if (OperatingSystem.IsMacOS())
-        {
-            ExtendClientAreaToDecorationsHint = true;
-            ExtendClientAreaTitleBarHeightHint = -1;
-            WindowDecorations = WindowDecorations.Full;
-        }
     }
 
     private void BuildNavigationMenuItems()
@@ -237,9 +228,9 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
         
     }
 
-    protected override async void OnOpened(EventArgs e)
+    protected async override void OnLoaded(RoutedEventArgs e)
     {
-        base.OnOpened(e);
+        base.OnLoaded(e);
         if (_isFirstNavigated)
         {
             return;
@@ -434,9 +425,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
 
     private void SettingsWindowNew_OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        ViewModel.IsViewCompressed = Width < 800;
-        if (WindowState == WindowState.Maximized)
-            ViewModel.IsViewCompressed = false;
+        ViewModel.IsViewCompressed = Bounds.Width < 800;
         if (!ViewModel.IsViewCompressed)
         {
             ViewModel.IsNavigationDrawerOpened = true;
@@ -453,28 +442,13 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
         NavigationFrame.GoBack();
     }
 
-    public async void Open()
+    public override async void Open(ViewBase? owner = null)
     {
-        if (!IsOpened)
+        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
         {
-            if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
-            {
-                return;
-            }
-            SentrySdk.Metrics.EmitCounter("views.SettingsWindow.open", 1);
-            IsOpened = true;
-            Show();
+            return;
         }
-        else
-        {
-            if (WindowState == WindowState.Minimized)
-            {
-                WindowState = WindowState.Normal;
-            }
-
-            Activate();
-        }
-        TutorialService.PushToNextSentence("classisland.getStarted.welcome/systems");
+        base.Open(owner);
     }
 
     public async void Open(string key, Uri? uri = null)
@@ -496,23 +470,9 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
             Open();
     }
 
-    private void SettingsWindowNew_OnClosing(object? sender, WindowClosingEventArgs e)
+    private void SettingsWindowNew_OnClosing(object? sender, ViewClosingEventArgs e)
     {
-        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
-        {
-            return;
-        }
-        e.Cancel = true;
-        IsOpened = false;
-        Hide();
-        SettingsService.SaveSettings("关闭应用设置窗口");
-        ComponentsService.SaveConfig();
-        App.GetService<IAutomationService>().SaveConfig("关闭应用设置窗口");
-        if (SettingsService.Settings.SettingsPagesCachePolicy <= 1)
-        {
-            _cachedPages.Clear();
-        }
-        GC.Collect();
+        
     }
 
     private void CommandBindingOpenDrawer_OnExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -543,7 +503,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
                 PrimaryButtonText = "重启",
                 CloseButtonText = "取消",
                 DefaultButton = FAContentDialogButton.Primary,
-            }.ShowAsync(this);
+            }.ShowAsync(TopLevel.GetTopLevel(this));
             IsShowingRestartDialog = false;
             if (r != FAContentDialogResult.Primary)
                 return;
@@ -626,7 +586,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
             {
                 Title = "导出诊断数据",
                 SuggestedStartLocation =
-                    await StorageProvider.TryGetFolderFromPathAsync(
+                    await TopLevel.GetTopLevel(this)!.StorageProvider.TryGetFolderFromPathAsync(
                         Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
                 FileTypeChoices =
                 [
@@ -635,7 +595,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
                         Patterns = ["*.zip"]
                     }
                 ]
-            }, this);
+            }, TopLevel.GetTopLevel(this)!);
             PopupHelper.RestoreAllPopups();
             if (file == null)
             {
@@ -743,7 +703,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
         {
             SuggestedFileName = "快捷换课.url",
             SuggestedStartLocation =
-                await StorageProvider.TryGetFolderFromPathAsync(
+                await TopLevel.GetTopLevel(this)!.StorageProvider.TryGetFolderFromPathAsync(
                     Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
             FileTypeChoices = [
                 new FilePickerFileType("快捷方式")
@@ -751,7 +711,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
                     Patterns = ["*.url"]
                 }
             ]
-        }, this);
+        }, TopLevel.GetTopLevel(this)!);
         PopupHelper.RestoreAllPopups();
         if (file == null)
         {
@@ -825,7 +785,7 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
 
     private void MenuItemDataTransfer_OnClick(object? sender, RoutedEventArgs e)
     {
-        IAppHost.GetService<DataTransferWindow>().ShowDialog(this);
+        IAppHost.GetService<DataTransferWindow>().ShowDialog((Window)TopLevel.GetTopLevel(this)!);
     }
 
     private void MenuItemOpenManagementSettingsPage_OnClick(object? sender, RoutedEventArgs e)
@@ -877,5 +837,17 @@ public partial class SettingsWindowNew : MyWindow, IFANavigationPageFactory
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {   
         
+    }
+
+    private void ViewBase_OnClosed(object? sender, RoutedEventArgs e)
+    {
+        SettingsService.SaveSettings("关闭应用设置窗口");
+        ComponentsService.SaveConfig();
+        App.GetService<IAutomationService>().SaveConfig("关闭应用设置窗口");
+        if (SettingsService.Settings.SettingsPagesCachePolicy <= 1)
+        {
+            _cachedPages.Clear();
+        }
+        GC.Collect();
     }
 }

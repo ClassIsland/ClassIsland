@@ -69,7 +69,7 @@
     <PackageReference Include="Avalonia.Controls.ColorPicker" Version="$(AvaloniaVersion)" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
 <!--    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />-->
-    <PackageReference Include="FluentAvaloniaUI" Version="3.0.0-preview4" />
+    <PackageReference Include="FluentAvaloniaUI" Version="3.0.0" />
     <PackageReference Include="Avalonia.Labs.CommandManager" Version="12.0.2" />
   </ItemGroup>
 

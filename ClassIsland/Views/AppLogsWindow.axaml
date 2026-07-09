@@ -1,4 +1,4 @@
-﻿<controls1:MyWindow x:Class="ClassIsland.Views.AppLogsWindow"
+﻿<ci:ViewBase x:Class="ClassIsland.Views.AppLogsWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,11 +11,10 @@
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
         xmlns:logging="clr-namespace:Microsoft.Extensions.Logging;assembly=Microsoft.Extensions.Logging.Abstractions"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
         mc:Ignorable="d"
-        Title="日志" Height="600" Width="1200"
-        EnableMicaWindow="True"
-        d:DataContext="{d:DesignInstance local:AppLogsWindow}"
-        Closing="AppLogsWindow_OnClosing">
+        Header="日志" HostHeight="600" HostWidth="1200"
+        d:DataContext="{d:DesignInstance local:AppLogsWindow}">
     <Grid RowDefinitions="Auto,*,Auto">
         <Grid Grid.Row="0">
             <ListBox HorizontalAlignment="Left"
@@ -175,4 +174,4 @@
             </Button>
         </WrapPanel>
     </Grid>
-</controls1:MyWindow>
+</ci:ViewBase>

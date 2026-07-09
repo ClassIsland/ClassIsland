@@ -36,6 +36,21 @@ public partial class WindowViewHost : MyWindow, IViewHost
     private IDisposable? _currentViewHostWindowStateObserver;
 
     private IDisposable? _currentViewUseInlineHeaderObserver;
+    
+    private IDisposable? _currentViewHostShowAsDialogObserver;
+    
+    private IDisposable? _currentViewHeaderHeightOverrideObserver;
+
+    private double _inlineHeaderHeight = 32.0;
+
+    public static readonly DirectProperty<WindowViewHost, double> InlineHeaderHeightProperty = AvaloniaProperty.RegisterDirect<WindowViewHost, double>(
+        nameof(InlineHeaderHeight), o => o.InlineHeaderHeight, (o, v) => o.InlineHeaderHeight = v);
+
+    public double InlineHeaderHeight
+    {
+        get => _inlineHeaderHeight;
+        set => SetAndRaise(InlineHeaderHeightProperty, ref _inlineHeaderHeight, value);
+    }
 
     public WindowViewHost()
     {
@@ -173,7 +188,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private void ApplyHostPositionToWindow(ViewBase view)
     {
-        if (IsMobileMode || _isSyncingHostPosition || !_isShowed)
+        if (IsMobileMode || _isSyncingHostPosition)
         {
             return;
         }
@@ -230,8 +245,24 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private void ApplyViewFeatures(ViewBase view)
     {
+        if (IsMobileMode)
+        {
+            return;
+        }
         PseudoClasses.Set(":inlineHeader", view.UseInlineHeader);
         TitleBar.ExtendsContentIntoTitleBar = view.UseInlineHeader;
+        ShowAsDialog = view.ShowAsDialog;
+        InlineHeaderHeight = view.IsSet(NavigationPage.BarHeightOverrideProperty)
+            ? NavigationPage.GetBarHeightOverride(view) ?? 32.0
+            : 32.0;
+        if (view.UseInlineHeader)
+        {
+            TitleBar.Height = InlineHeaderHeight;
+        }
+        else
+        {
+            TitleBar.Height = 32;
+        }
     }
 
     private void SyncHostPositionWithWindow(ViewBase view)
@@ -375,6 +406,10 @@ public partial class WindowViewHost : MyWindow, IViewHost
             _currentViewHostWindowStateObserver = null;
             _currentViewUseInlineHeaderObserver?.Dispose();
             _currentViewUseInlineHeaderObserver = null;
+            _currentViewHostShowAsDialogObserver?.Dispose();
+            _currentViewHostShowAsDialogObserver = null;
+            _currentViewHeaderHeightOverrideObserver?.Dispose();
+            _currentViewHeaderHeightOverrideObserver = null;
         }
 
         _currentView = view;
@@ -390,6 +425,10 @@ public partial class WindowViewHost : MyWindow, IViewHost
         _currentViewHostWindowStateObserver = _currentView.GetObservable(ViewBase.HostWindowStateProperty)
             .Subscribe(_ => ApplyHostWindowStateToWindow(_currentView));
         _currentViewUseInlineHeaderObserver = _currentView.GetObservable(ViewBase.UseInlineHeaderProperty)
+            .Subscribe(_ => ApplyViewFeatures(_currentView));
+        _currentViewHostShowAsDialogObserver = _currentView.GetObservable(ViewBase.ShowAsDialogProperty)
+            .Subscribe(_ => ApplyViewFeatures(_currentView));
+        _currentViewHeaderHeightOverrideObserver = _currentView.GetObservable(NavigationPage.BarHeightOverrideProperty)
             .Subscribe(_ => ApplyViewFeatures(_currentView));
         ApplyHostBoundsToWindow(_currentView);
         ApplyViewFeatures(_currentView);
@@ -461,13 +500,13 @@ public partial class WindowViewHost : MyWindow, IViewHost
         if (!_isShowed)
         {
             WindowStartupLocation = view.HostStartupLocation;
-            ApplyHostSizeToWindow(view);
+            ApplyHostBoundsToWindow(view);
             Show(owner?.AssociatedViewHost, modal);
         }
         
+        Activate();
         await NavigationPage.PushAsync(view);
         SetCurrentView(view);
-        ApplyHostBoundsToWindow(view);
     }
 
     public async Task ShowView(ViewBase view, ViewBase? owner = null)

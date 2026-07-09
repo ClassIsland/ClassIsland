@@ -1,4 +1,4 @@
-<ci:MyWindow xmlns="https://github.com/avaloniaui"
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,13 +8,12 @@
         xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.WelcomeWindow"
-        Title="ClassIsland"
+        Header="ClassIsland"
         Loaded="Control_OnLoaded"
         d:DataContext="{d:DesignInstance views:WelcomeWindow}"
-        Width="800" Height="600"
-        EnableMicaWindow="True"
-        WindowStartupLocation="CenterScreen"
-        X11Properties.NetWmWindowType="Normal"
+        HostWidth="800" 
+        HostHeight="600"
+        HostStartupLocation="CenterScreen"
         Closing="Window_OnClosing"
         ShowAsDialog="True"
         CanResize="False">
@@ -27,4 +26,4 @@
                               Executed="CommandBindingFinishWizard_OnExecuted"/>
     </input:CommandManager.CommandBindings>
     <controls:FAFrame x:Name="MainFrame" NavigationPageFactory="{Binding}"/>
-</ci:MyWindow>
+</ci:ViewBase>

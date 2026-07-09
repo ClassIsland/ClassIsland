@@ -10,9 +10,11 @@ using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Reactive;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Logging;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Services.Logging;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
@@ -29,7 +31,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// AppLogsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class AppLogsWindow : MyWindow
+public partial class AppLogsWindow : ViewBase
 {
     public static readonly FuncValueConverter<LogLevel, string> LogLevelToIconGlyphConverter = new(x => x switch
     {
@@ -71,37 +73,8 @@ public partial class AppLogsWindow : MyWindow
         RefreshView();
     }
 
-    public void Open()
-    {
-        if (!_isOpened)
-        {
-            _isOpened = true;
-            Show();
-        }
-        else
-        {
-            if (WindowState == WindowState.Minimized)
-            {
-                WindowState = WindowState.Normal;
-            }
-
-            Activate();
-        }
-    }
-
     private void LogsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-    }
-
-    private void AppLogsWindow_OnClosing(object? sender, WindowClosingEventArgs e)
-    {
-        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
-        {
-            return;
-        }
-        e.Cancel = true;
-        Hide();
-        _isOpened = false;
     }
 
     private void MainListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -134,7 +107,7 @@ public partial class AppLogsWindow : MyWindow
         try
         {
             var logs = DataGridMain.SelectedItems.Cast<object?>().Select(x => x?.ToString() ?? "").ToList();
-            Clipboard?.SetTextAsync(string.Join(Environment.NewLine, logs));
+            TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(string.Join(Environment.NewLine, logs));
             this.ShowSuccessToast($"已将 {logs.Count} 条日志复制到剪贴板。");
         }
         catch (Exception ex)

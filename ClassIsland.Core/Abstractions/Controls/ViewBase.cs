@@ -1,8 +1,10 @@
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Core.Services.UI;
+using ClassIsland.Platforms.Abstraction.Enums;
 
 namespace ClassIsland.Core.Abstractions.Controls;
 
@@ -79,8 +81,37 @@ public abstract class ViewBase : ContentPage
         get => GetValue(UseInlineHeaderProperty);
         set => SetValue(UseInlineHeaderProperty, value);
     }
+
+    public static readonly StyledProperty<bool> ShowAsDialogProperty = AvaloniaProperty.Register<ViewBase, bool>(
+        nameof(ShowAsDialog));
+
+    public bool ShowAsDialog
+    {
+        get => GetValue(ShowAsDialogProperty);
+        set => SetValue(ShowAsDialogProperty, value);
+    }
+
+    public static readonly StyledProperty<bool> CanResizeProperty = AvaloniaProperty.Register<ViewBase, bool>(
+        nameof(CanResize), true);
+
+    public bool CanResize
+    {
+        get => GetValue(CanResizeProperty);
+        set => SetValue(CanResizeProperty, value);
+    }
     
     public bool ShowedOnce { get; private set; }
+
+    public TopLevel? TopLevel => TopLevel.GetTopLevel(this);
+
+    public static readonly StyledProperty<AvaloniaList<WindowFeatures>> HostFeaturesProperty = AvaloniaProperty.Register<ViewBase, AvaloniaList<WindowFeatures>>(
+        nameof(HostFeatures));
+
+    public AvaloniaList<WindowFeatures> HostFeatures
+    {
+        get => GetValue(HostFeaturesProperty);
+        set => SetValue(HostFeaturesProperty, value);
+    }
 
     
     #endregion
@@ -179,7 +210,7 @@ public abstract class ViewBase : ContentPage
             throw new InvalidOperationException("视图已被显示时不能再次被显示。");
         }
 
-        if (owner != null)
+        if (owner != null && modal)
         {
             AssociatedViewHost.ShowViewModal(this, owner);
         }
@@ -200,16 +231,18 @@ public abstract class ViewBase : ContentPage
     /// </summary>
     /// <remarks>如果视图已经显示，不会抛出异常，而是将视图显示到最前端。</remarks>
     /// <param name="owner">所有者视图</param>
-    /// <returns>视图是否显示成功。返回 false 时代表视图已经打开，仅将视图显示到了前台。</returns>
-    public virtual bool Open(ViewBase? owner = null)
+    public virtual void Open(ViewBase? owner = null)
     {
         if (_isShowed && AssociatedViewHost != null)
         {
-            AssociatedViewHost.Activate();
-            return false;
+            // 如果不等一会再激活，可能会出现从托盘菜单打开的界面不激活的问题。
+            Dispatcher.Post(() =>
+            {
+                AssociatedViewHost.Activate();
+            });
+            return;
         }
         Show(owner);
-        return true;
     }
     
     /// <summary>
@@ -229,7 +262,7 @@ public abstract class ViewBase : ContentPage
     /// 以模态显示并等待取消激活。
     /// </summary>
     /// <returns></returns>
-    public virtual async Task ShowModal(ViewBase owner)
+    public virtual async Task ShowModal(ViewBase? owner=null)
     {
         if (AssociatedViewHost == null)
         {
@@ -244,7 +277,7 @@ public abstract class ViewBase : ContentPage
     /// 以模态显示并等待取消激活。
     /// </summary>
     /// <returns></returns>
-    public virtual async Task<T> ShowModal<T>(ViewBase owner)
+    public virtual async Task<T> ShowModal<T>(ViewBase? owner=null)
     {
         if (AssociatedViewHost == null)
         {
@@ -268,7 +301,13 @@ public abstract class ViewBase : ContentPage
 
         AssociatedViewHost.HideView(this);
     }
+    
+    /// <summary>
+    /// 隐藏当前视图，效果与 <see cref="Hide"/> 等价。
+    /// </summary>
+    public void Close() => Hide();
+    
     #endregion
-    
-    
+
+
 }

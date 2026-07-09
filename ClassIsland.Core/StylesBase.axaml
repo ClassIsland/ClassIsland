@@ -277,6 +277,9 @@
     <Style Selector=":is(windowing|FAAppWindow):not(:windows) :is(Control).custom-titlebar-only">
         <Setter Property="IsVisible" Value="False"/>
     </Style>
+    <Style Selector=":mobile :is(Control).custom-titlebar-only">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
     
     <Style Selector=":is(Button).light">
         <Setter Property="Background" Value="Transparent"/>

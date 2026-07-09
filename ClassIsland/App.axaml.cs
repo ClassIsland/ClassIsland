@@ -808,7 +808,7 @@ public partial class App : AppBase, IAppHost
             {
                 w.SetWelcomeExperience(true, ApplicationCommand.Onboarding, true);
             }
-            await w.ShowDialog(PhonyRootWindow);
+            await w.ShowModal();
             if (w is { IsOnboarding: true, ViewModel.IsManuallyRestarted: false })
             {
                 if (!w.ViewModel.IsWizardCompleted)
