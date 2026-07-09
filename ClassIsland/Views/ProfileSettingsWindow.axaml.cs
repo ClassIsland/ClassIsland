@@ -825,9 +825,9 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             if (timeLayout.IsRenamed == false)
             {
-                if (int.TryParse(timeLayout.Name[4].ToString(), out int result))
+                if (int.TryParse(timeLayout.Name[4..], out int result))
                 {
-                    if (result > maxIndex || maxIndex == result)
+                    if (result >= maxIndex)
                     {
                         maxIndex = result + 1;
                     }
