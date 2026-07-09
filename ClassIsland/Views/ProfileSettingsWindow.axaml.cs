@@ -817,11 +817,32 @@ public partial class ProfileSettingsWindow : MyWindow
         timeLayout.SortCompleted();
     }
 
+    private string NameTimeLayout()
+    {
+        var maxIndex = 1;
+        var timeLayouts = ViewModel.ProfileService.Profile.TimeLayouts.Values;
+        foreach (var timeLayout in timeLayouts)
+        {
+            if (timeLayout.IsRenamed == false)
+            {
+                if (int.TryParse(timeLayout.Name[4].ToString(), out int result))
+                {
+                    if (result > maxIndex || maxIndex == result)
+                    {
+                        maxIndex = result + 1;
+                    }
+                }
+            }
+        }
+        
+        return "新时间表" + maxIndex;
+    }
+
     private void ButtonAddTimeLayout_OnClick(object sender, RoutedEventArgs e)
     {
         var timeLayout = new TimeLayout()
         {
-            Name = "新时间表"
+            Name = NameTimeLayout()
         };
         ViewModel.ProfileService.Profile.TimeLayouts.Add(Guid.NewGuid(), timeLayout);
         OpenDrawer("TimeLayoutInfoEditor");

@@ -14,10 +14,11 @@ public class TimeLayout : AttachableSettingsObject
 {
     private ObservableCollection<TimeLayoutItem> _layouts = new();
     private readonly Dictionary<TimeLayoutItem, int> _timeTypeChangeClassIndexes = new();
-    private string _name = "新时间表";
+    private string _name;
     private bool _isActivated = false;
     private bool _isActivatedManually = false;
     private bool _isOverlay = false;
+    private bool _isRenamed = false;
     private Guid? _overlaySourceId;
 
     /// <summary>
@@ -30,6 +31,20 @@ public class TimeLayout : AttachableSettingsObject
         {
             if (value == _isOverlay) return;
             _isOverlay = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否重命名过
+    /// </summary>
+    public bool IsRenamed
+    {
+        get => _isRenamed;
+        set
+        {
+            if (value == _isRenamed) return;
+            _isRenamed = value;
             OnPropertyChanged();
         }
     }
@@ -56,6 +71,7 @@ public class TimeLayout : AttachableSettingsObject
         PropertyChanged += OnPropertyChanged;
         Layouts.CollectionChanged += LayoutsOnCollectionChanged;
         AttachLayoutItems(Layouts);
+        CheckIsRenamed();
     }
 
     /// <summary>
@@ -84,6 +100,22 @@ public class TimeLayout : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 用于兼容已创建的时间表
+    /// </summary>
+    private void CheckIsRenamed()
+    {
+        if (string.IsNullOrEmpty(Name) || IsRenamed)
+        {
+            return;
+        }
+
+        if (Name.Length != 5 || !Name.Contains("新时间表"))
+        {
+            IsRenamed = true;
+        }
+    }
+    
     private void LayoutsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.OldItems != null)
@@ -243,6 +275,10 @@ public class TimeLayout : AttachableSettingsObject
         set
         {
             if (value == _name) return;
+            if (!string.IsNullOrEmpty(Name))
+            {
+                IsRenamed = true;
+            }
             _name = value;
             OnPropertyChanged();
         }
