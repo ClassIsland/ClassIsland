@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">ClassIsland.Android</string>
+    <string name="app_name">ClassIsland</string>
     <string name="app_text">Hello, Android!</string>
 </resources>

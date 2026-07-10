@@ -13,10 +13,9 @@ using ClassIsland.Views;
 
 namespace ClassIsland.Android;
 
-[Activity(Label = "ClassIsland",
-    MainLauncher = true, 
+[Activity(MainLauncher = true,
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize,
-    Theme = "@style/AppTheme")]
+    Theme = "@style/AppStartingTheme")]
 [SupportedOSPlatform("android24.0")]
 public class MainActivity : AvaloniaMainActivity
 {
@@ -30,6 +29,7 @@ public class MainActivity : AvaloniaMainActivity
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {
+        AndroidX.Core.SplashScreen.SplashScreen.InstallSplashScreen(this);
         IViewHostProvider.Instance = ActivityViewHostProvider.Instance;
         base.OnCreate(savedInstanceState);
 

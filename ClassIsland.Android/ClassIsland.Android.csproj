@@ -5,13 +5,23 @@
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationId>cn.classisland.android.dev</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <ApplicationId>cn.classisland.android</ApplicationId>
+    <ApplicationTitle>ClassIsland</ApplicationTitle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <ApplicationId>cn.classisland.android.dev</ApplicationId>
+    <ApplicationTitle>ClassIsland (Dev)</ApplicationTitle>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AndroidManifestPlaceholders>applicationLabel=$(ApplicationTitle)</AndroidManifestPlaceholders>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
@@ -23,6 +33,16 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)"/>
     <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.2.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AndroidResource Remove="Resources\mipmap-*\appicon*.png" />
+    <AndroidResource Include="..\ClassIsland\Assets\Logos\Main.png"
+                     Link="Resources\drawable\appicon_foreground.png"
+                     Condition="'$(Configuration)' == 'Release'" />
+    <AndroidResource Include="..\ClassIsland\Assets\Logos\Dev.png"
+                     Link="Resources\drawable\appicon_foreground.png"
+                     Condition="'$(Configuration)' == 'Debug'" />
   </ItemGroup>
 
   <Import Project="../Global.props"/>

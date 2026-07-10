@@ -1,4 +1,12 @@
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-  <background android:drawable="@mipmap/appicon_background" />
-  <foreground android:drawable="@mipmap/appicon_foreground" />
+  <background android:drawable="@color/ic_launcher_background" />
+  <foreground>
+    <inset
+        android:insetBottom="18dp"
+        android:insetLeft="18dp"
+        android:insetRight="18dp"
+        android:insetTop="18dp">
+      <bitmap android:gravity="fill" android:src="@drawable/appicon_foreground" />
+    </inset>
+  </foreground>
 </adaptive-icon>
