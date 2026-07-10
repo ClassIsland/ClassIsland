@@ -825,14 +825,21 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             if (timeLayout.IsRenamed == false)
             {
-                if (int.TryParse(timeLayout.Name![4..], out int result))
+                try
                 {
-                    if (result >= maxIndex)
+                    if (int.TryParse(timeLayout.Name[4..], out int result))
                     {
-                        maxIndex = result + 1;
+                        if (result >= maxIndex)
+                        {
+                            maxIndex = result + 1;
+                        }
+                    }
+                    else
+                    {
+                        timeLayout.IsRenamed = true;
                     }
                 }
-                else
+                catch (NullReferenceException e)
                 {
                     timeLayout.IsRenamed = true;
                 }
