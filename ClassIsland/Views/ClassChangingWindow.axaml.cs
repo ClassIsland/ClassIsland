@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
@@ -24,7 +25,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// ClassChangingWindow.xaml 的交互逻辑
 /// </summary>
-public partial class ClassChangingWindow : MyWindow
+public partial class ClassChangingWindow : ViewBase
 {
     public ClassChangingViewModel ViewModel { get; } = IAppHost.GetService<ClassChangingViewModel>();
 

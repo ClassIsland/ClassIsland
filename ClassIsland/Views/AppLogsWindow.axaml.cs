@@ -59,8 +59,6 @@ public partial class AppLogsWindow : ViewBase
     
     public AppLogsViewModel ViewModel { get; } = IAppHost.GetService<AppLogsViewModel>();
 
-    private bool _isOpened = false;
-
     public AppLogsWindow()
     {
         InitializeComponent();

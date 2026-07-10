@@ -1,4 +1,4 @@
-<ci:MyWindow xmlns="https://github.com/avaloniaui"
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -20,21 +20,20 @@
         xmlns:profile2="clr-namespace:ClassIsland.Models.Profile"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.ProfileSettingsWindow"
-        Title="档案编辑"
-        EnableMicaWindow="True"
+        Header="档案编辑"
         d:DataContext="{d:DesignInstance views:ProfileSettingsWindow}"
         Icon="/Assets/AppLogo.ico"
         MinWidth="750"
-        Width="1100" Height="600"
+        HostWidth="1100" HostHeight="600"
         Closing="Window_OnClosing"
         Loaded="Control_OnLoaded">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
                               Executed="CommandBindingRemoveTimePoint_OnExecuted"/>
     </input:CommandManager.CommandBindings>
-    <ci:MyWindow.DataTemplates>
-    </ci:MyWindow.DataTemplates>
-    <ci:MyWindow.Resources>
+    <ci:ViewBase.DataTemplates>
+    </ci:ViewBase.DataTemplates>
+    <ci:ViewBase.Resources>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:Subject"
                                               x:Key="SubjectIdToSubjectConverter"/>
         <ci:CustomKeyDictionaryValueConverter x:TypeArguments="system:Guid, profile:ClassPlanGroup"
@@ -489,7 +488,7 @@
                         Click="ButtonDeleteSelectedClassPlan_OnClick" />
             </StackPanel>
         </Flyout>
-    </ci:MyWindow.Resources>
+    </ci:ViewBase.Resources>
     <ci:DrawerHost DrawerPlacement="Right"
                IsDrawerOpen="{Binding ViewModel.IsDrawerOpen, Mode=TwoWay}"
                DrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
@@ -1999,4 +1998,4 @@
             </ci:TutorialBarrier>   
         </Grid>
     </ci:DrawerHost>
-</ci:MyWindow>
+</ci:ViewBase>

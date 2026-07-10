@@ -1,4 +1,4 @@
-﻿<ci:MyWindow x:Class="ClassIsland.Views.AuthorizeWindow"
+﻿<ci:ViewBase x:Class="ClassIsland.Views.AuthorizeWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,17 +11,16 @@
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
         mc:Ignorable="d"
-        Width="500"
-        WindowStartupLocation="CenterScreen"
+        HostWidth="500"
+        HostStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance local:AuthorizeWindow}"
         SizeToContent="Height"
         CanResize="False"
         MinHeight="300"
         MaxHeight="700"
-        Topmost="True"
         ShowAsDialog="True"
         CanMaximize="False"
-        Title="ClassIsland">
+        Header="ClassIsland">
     <input:CommandManager.CommandBindings>
         <input:CommandBinding Command="{x:Static ci:AuthorizeProviderControlBase.CompleteAuthorizeCommand}" Executed="CommandBindingCompleteAuthorize_OnExecuted"></input:CommandBinding>
     </input:CommandManager.CommandBindings>
@@ -150,4 +149,4 @@
             </Button>
         </Grid>
     </Grid>
-</ci:MyWindow>
+</ci:ViewBase>

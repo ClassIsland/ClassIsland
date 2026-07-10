@@ -66,8 +66,6 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     public SettingsNewViewModel ViewModel { get; } = new();
 
-    private bool IsOpened { get; set; } = false;
-
     public IManagementService ManagementService { get; }
 
     private IHangService HangService { get; }
@@ -470,11 +468,6 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
             Open();
     }
 
-    private void SettingsWindowNew_OnClosing(object? sender, ViewClosingEventArgs e)
-    {
-        
-    }
-
     private void CommandBindingOpenDrawer_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
         ViewModel.DrawerContent = e.Parameter;
@@ -783,9 +776,9 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         NavigationView.IsPaneOpen = !NavigationView.IsPaneOpen;
     }
 
-    private void MenuItemDataTransfer_OnClick(object? sender, RoutedEventArgs e)
+    private async void MenuItemDataTransfer_OnClick(object? sender, RoutedEventArgs e)
     {
-        IAppHost.GetService<DataTransferWindow>().ShowDialog((Window)TopLevel.GetTopLevel(this)!);
+        await IAppHost.GetService<DataTransferWindow>().ShowModal(this);
     }
 
     private void MenuItemOpenManagementSettingsPage_OnClick(object? sender, RoutedEventArgs e)

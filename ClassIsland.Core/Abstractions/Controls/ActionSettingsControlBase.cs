@@ -91,8 +91,7 @@ public abstract class ActionSettingsControlBase : UserControl
     protected async Task ShowDrawer(Control control, bool isOpenInDialog = false)
     {
         if (!isOpenInDialog &&
-            TopLevel.GetTopLevel(this) is Window window &&
-            window.GetType().FullName == "ClassIsland.Views.SettingsWindowNew")
+            this.FindAncestorOfType<ViewBase>()?.GetType().FullName == "ClassIsland.Views.SettingsWindowNew")
         {
             control.Classes.Remove("in-dialog");
             control.Classes.Add("in-drawer");

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Avalonia.Interactivity;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums;
@@ -18,7 +19,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// ClassPlanDetailsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class ClassPlanDetailsWindow : MyWindow
+public partial class ClassPlanDetailsWindow : ViewBase
 {
     public IProfileService ProfileService { get; }
     public IProfileAnalyzeService ProfileAnalyzeService { get; }

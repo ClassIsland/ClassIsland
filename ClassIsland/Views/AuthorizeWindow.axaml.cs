@@ -6,10 +6,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Models.Authorize;
-using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
@@ -20,36 +20,24 @@ namespace ClassIsland.Views;
 /// <summary>
 /// AuthorizeWindow.xaml 的交互逻辑
 /// </summary>
-public partial class AuthorizeWindow : MyWindow
+public partial class AuthorizeWindow : ViewBase
 {
     public AuthorizeViewModel ViewModel { get; } = new();
 
     private ILogger<AuthorizeWindow> Logger { get; } = IAppHost.GetService<ILogger<AuthorizeWindow>>();
-
-    public bool DialogResult { get; set; } = false;
 
     public AuthorizeWindow(Credential credential, bool isEditingMode)
     {
         DataContext = this;
         ViewModel.Credential = credential;
         ViewModel.IsEditingMode = isEditingMode;
+        Result = false;
+        HostFeatures = [WindowFeatures.Private, WindowFeatures.Topmost];
         InitializeComponent();
         Loaded += (sender, args) =>
         {
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Private, true);
             ViewModel.SelectedCredentialItem = ViewModel.Credential.Items.FirstOrDefault();
-            Activate();
         };
-    }
-
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        base.OnAttachedToVisualTree(e);
-    }
-
-    public override void Show()
-    {
-        base.Show();
     }
 
     private void ButtonAddAuthorizeMethod_OnClick(object sender, RoutedEventArgs e)
@@ -94,7 +82,7 @@ public partial class AuthorizeWindow : MyWindow
             return;
         }
         
-        DialogResult = true;
+        Result = true;
         Close();
     }
 
@@ -105,7 +93,7 @@ public partial class AuthorizeWindow : MyWindow
             Logger.LogWarning("来自 {} 的命令 CommandBindingCompleteAuthorize 在编辑模式下没有效果，已忽略此调用。", sender.GetType());
             return;
         }
-        DialogResult = true;
+        Result = true;
         Close();
     }
 }

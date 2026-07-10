@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
@@ -63,7 +64,7 @@ public partial class RefreshingSettingsPage : SettingsPageBase
         {
             Scopes = ViewModel.SettingsService.Settings.RefreshingScopes
         };
-        await win.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
+        await win.ShowModal(this.FindAncestorOfType<ViewBase>());
     }
 
     private void ButtonExit_OnClick(object? sender, RoutedEventArgs e)

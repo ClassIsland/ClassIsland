@@ -1,14 +1,18 @@
 using System;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
+using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Enums;
 
 namespace ClassIsland.Controls.UI;
 
@@ -17,7 +21,9 @@ public partial class WindowViewHost : MyWindow, IViewHost
 {
     public bool IsMobileMode { get; init; }
     
-    private HashSet<ViewBase> ActivatedViews { get; } = [];
+    private HashSet<ViewBase> ActivatedViewSet { get; } = [];
+
+    public IReadOnlyCollection<ViewBase> ActivatedViews => ActivatedViewSet;
 
     private bool _isShowed = false;
 
@@ -31,6 +37,8 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private ViewBase? _currentView;
 
+    public ViewBase? CurrentView => _currentView;
+
     private IDisposable? _currentViewHostPositionObserver;
 
     private IDisposable? _currentViewHostWindowStateObserver;
@@ -40,6 +48,12 @@ public partial class WindowViewHost : MyWindow, IViewHost
     private IDisposable? _currentViewHostShowAsDialogObserver;
     
     private IDisposable? _currentViewHeaderHeightOverrideObserver;
+
+    private IDisposable? _currentViewHostFeaturesObserver;
+
+    private AvaloniaList<WindowFeatures>? _observedHostFeatures;
+
+    private WindowFeatures _appliedHostFeatures;
 
     private double _inlineHeaderHeight = 32.0;
 
@@ -77,26 +91,29 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        var view = ActivatedViews.LastOrDefault();
+        var view = _currentView ?? ActivatedViewSet.LastOrDefault();
         if (view == null)
         {
             return;
         }
 
-        if (view.ViewDeactivating(e.CloseReason, e.IsProgrammatic, true) || e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+        var isCancelable = e.CloseReason is not (WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown);
+        if (!view.ViewDeactivating(e.CloseReason, e.IsProgrammatic, isCancelable) && isCancelable)
         {
-            foreach (var view1 in ActivatedViews)
-            {
-                if (view1 != view)
-                {
-                    view.ViewDeactivating(e.CloseReason, e.IsProgrammatic, false);
-                }
-                view1.ViewDeactivated();
-            }
+            e.Cancel = true;
             return;
         }
 
-        e.Cancel = true;
+        foreach (var activatedView in ActivatedViewSet.ToArray())
+        {
+            if (!ReferenceEquals(activatedView, view))
+            {
+                activatedView.ViewDeactivating(e.CloseReason, e.IsProgrammatic, false);
+            }
+            activatedView.ViewDeactivated();
+        }
+
+        ActivatedViewSet.Clear();
     }
 
 
@@ -115,7 +132,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     public bool ActivateView(ViewBase view)
     {
-        if (ActivatedViews.Contains(view))
+        if (ActivatedViewSet.Contains(view))
         {
             return false;
         }
@@ -124,7 +141,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
         {
             return false;
         }
-        ActivatedViews.Add(view);
+        ActivatedViewSet.Add(view);
         view.ViewActivated(this);
 
         return true;
@@ -132,7 +149,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     public bool DeactivateView(ViewBase view)
     {
-        if (!ActivatedViews.Contains(view))
+        if (!ActivatedViewSet.Contains(view))
         {
             return false;
         }
@@ -141,7 +158,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
         {
             return false;
         }
-        ActivatedViews.Remove(view);
+        ActivatedViewSet.Remove(view);
         view.ViewDeactivated();
         
         return true;
@@ -390,6 +407,82 @@ public partial class WindowViewHost : MyWindow, IViewHost
         }
     }
 
+    private void ApplyHostFeatures(ViewBase view)
+    {
+        var features = WindowFeatures.None;
+        if (view.HostFeatures != null)
+        {
+            foreach (var feature in view.HostFeatures)
+            {
+                features |= feature;
+            }
+        }
+
+        SetHostFeatures(_appliedHostFeatures & ~features, false);
+        SetHostFeatures(features & ~_appliedHostFeatures, true);
+        _appliedHostFeatures = features;
+    }
+
+    private void ApplyWindowFeatures(ViewBase view)
+    {
+        if (IsMobileMode)
+        {
+            return;
+        }
+
+        SetCurrentValue(Window.SizeToContentProperty, view.SizeToContent);
+        SetCurrentValue(Window.CanResizeProperty, view.CanResize);
+        SetCurrentValue(Window.CanMaximizeProperty, view.CanMaximize);
+        SetCurrentValue(Window.MinWidthProperty, view.MinWidth);
+        SetCurrentValue(Window.MinHeightProperty, view.MinHeight);
+        SetCurrentValue(Window.MaxWidthProperty, view.MaxWidth);
+        SetCurrentValue(Window.MaxHeightProperty, view.MaxHeight);
+        ApplyViewFeatures(view);
+    }
+
+    private void SetHostFeatures(WindowFeatures features, bool state)
+    {
+        if (features == WindowFeatures.None)
+        {
+            return;
+        }
+
+        if ((features & WindowFeatures.Topmost) != 0)
+        {
+            Topmost = state;
+        }
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, features, state);
+    }
+
+    private void CurrentViewHostFeaturesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (_currentView != null && ReferenceEquals(sender, _observedHostFeatures))
+        {
+            ApplyHostFeatures(_currentView);
+        }
+    }
+
+    private void UpdateHostFeaturesObserver(ViewBase view)
+    {
+        if (!ReferenceEquals(_currentView, view))
+        {
+            return;
+        }
+
+        if (_observedHostFeatures != null)
+        {
+            _observedHostFeatures.CollectionChanged -= CurrentViewHostFeaturesOnCollectionChanged;
+        }
+
+        _observedHostFeatures = view.HostFeatures;
+        if (_observedHostFeatures != null)
+        {
+            _observedHostFeatures.CollectionChanged += CurrentViewHostFeaturesOnCollectionChanged;
+        }
+
+        ApplyHostFeatures(view);
+    }
+
     private void SetCurrentView(ViewBase? view)
     {
         if (ReferenceEquals(_currentView, view))
@@ -410,6 +503,13 @@ public partial class WindowViewHost : MyWindow, IViewHost
             _currentViewHostShowAsDialogObserver = null;
             _currentViewHeaderHeightOverrideObserver?.Dispose();
             _currentViewHeaderHeightOverrideObserver = null;
+            _currentViewHostFeaturesObserver?.Dispose();
+            _currentViewHostFeaturesObserver = null;
+            if (_observedHostFeatures != null)
+            {
+                _observedHostFeatures.CollectionChanged -= CurrentViewHostFeaturesOnCollectionChanged;
+                _observedHostFeatures = null;
+            }
         }
 
         _currentView = view;
@@ -430,8 +530,10 @@ public partial class WindowViewHost : MyWindow, IViewHost
             .Subscribe(_ => ApplyViewFeatures(_currentView));
         _currentViewHeaderHeightOverrideObserver = _currentView.GetObservable(NavigationPage.BarHeightOverrideProperty)
             .Subscribe(_ => ApplyViewFeatures(_currentView));
+        _currentViewHostFeaturesObserver = _currentView.GetObservable(ViewBase.HostFeaturesProperty)
+            .Subscribe(_ => UpdateHostFeaturesObserver(_currentView));
         ApplyHostBoundsToWindow(_currentView);
-        ApplyViewFeatures(_currentView);
+        ApplyWindowFeatures(_currentView);
     }
 
     private void CurrentView_OnLoaded(object? sender, RoutedEventArgs e)
@@ -442,12 +544,23 @@ public partial class WindowViewHost : MyWindow, IViewHost
         }
     }
 
-    private void PreShow()
+    private void PreShow(ViewBase? view = null)
     {
-        if (!IsMobileMode) return;
-        Width = 360;
-        Height = 800;
-        PseudoClasses.Set(":mobile", true);
+        if (IsMobileMode)
+        {
+            Width = 360;
+            Height = 800;
+            PseudoClasses.Set(":mobile", true);
+            return;
+        }
+
+        if (view != null)
+        {
+            WindowStartupLocation = view.HostStartupLocation;
+            Title = view.Header?.ToString() ?? "ClassIsland";
+            ApplyHostBoundsToWindow(view);
+            ApplyWindowFeatures(view);
+        }
     }
 
     public override void Show()
@@ -468,9 +581,10 @@ public partial class WindowViewHost : MyWindow, IViewHost
         if (owner is WindowViewHost host)
         {
             PreShow();
+            MyOwner = host;
             if (modal)
             {
-                ShowDialog(host);   
+                _ = ShowDialog(host);
             }
             else
             {
@@ -485,9 +599,16 @@ public partial class WindowViewHost : MyWindow, IViewHost
         
     }
 
-    private async Task ShowViewCore(ViewBase view, ViewBase? owner, bool modal)
+    private void ShowNativeModal(Window owner)
     {
-        if (!ActivatedViews.Contains(view))
+        PreShow();
+        _ = ShowDialog(owner);
+        _isShowed = true;
+    }
+
+    private async Task ShowViewCore(ViewBase view, ViewBase? owner, Window? windowOwner, bool modal)
+    {
+        if (!ActivatedViewSet.Contains(view))
         {
             throw new InvalidOperationException("视图必须已经激活到此视图宿主才能显示。");
         }
@@ -499,9 +620,16 @@ public partial class WindowViewHost : MyWindow, IViewHost
         
         if (!_isShowed)
         {
-            WindowStartupLocation = view.HostStartupLocation;
-            ApplyHostBoundsToWindow(view);
-            Show(owner?.AssociatedViewHost, modal);
+            PreShow(view);
+            if (windowOwner != null)
+            {
+                ShowNativeModal(windowOwner);
+            }
+            else
+            {
+                Show(owner?.AssociatedViewHost, modal);
+            }
+            ApplyHostFeatures(view);
         }
         
         Activate();
@@ -511,17 +639,23 @@ public partial class WindowViewHost : MyWindow, IViewHost
 
     public async Task ShowView(ViewBase view, ViewBase? owner = null)
     {
-        await ShowViewCore(view, owner, false);
+        await ShowViewCore(view, owner, null, false);
     }
 
     public async Task ShowViewModal(ViewBase view, ViewBase owner)
     {
-        await ShowViewCore(view, owner, true);
+        await ShowViewCore(view, owner, null, true);
+    }
+
+    public async Task ShowViewModal(ViewBase view, Window owner)
+    {
+        ArgumentNullException.ThrowIfNull(owner);
+        await ShowViewCore(view, null, owner, true);
     }
 
     public async Task<bool> HideView(ViewBase view)
     {
-        if (!ActivatedViews.Contains(view))
+        if (!ActivatedViewSet.Contains(view))
         {
             throw new InvalidOperationException("视图必须已经激活才能隐藏。");
         }
@@ -532,11 +666,6 @@ public partial class WindowViewHost : MyWindow, IViewHost
         }
 
         UpdateHostBoundsFromWindow(view);
-        if (!DeactivateView(view))
-        {
-            return false;
-        }
-
         if (NavigationPage.Pages?.Count() <= 1)
         {
             Close();
@@ -546,7 +675,7 @@ public partial class WindowViewHost : MyWindow, IViewHost
             await NavigationPage.PopAsync();
         }
 
-        return true;
+        return !ActivatedViewSet.Contains(view);
     }
 
     private void NavigationPage_OnPopped(object? sender, NavigationEventArgs e)
@@ -559,9 +688,10 @@ public partial class WindowViewHost : MyWindow, IViewHost
         {
             return;
         }
-        viewBase.ViewDeactivating(WindowCloseReason.Undefined, true, true);
-        viewBase.ViewDeactivated();
-        ActivatedViews.Remove(viewBase);
+        if (ActivatedViewSet.Remove(viewBase))
+        {
+            viewBase.ViewDeactivated();
+        }
 
         SetCurrentView(NavigationPage.CurrentPage as ViewBase);
         if (NavigationPage.CurrentPage is ViewBase currentView)

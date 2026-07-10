@@ -5,12 +5,13 @@ using Avalonia.Controls;
 using Avalonia.Platform;
 using AvaloniaEdit.Highlighting;
 using AvaloniaEdit.Highlighting.Xshd;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Tutorial;
 
 namespace ClassIsland.Views;
 
-public partial class TutorialScriptEditWindow : MyWindow
+public partial class TutorialScriptEditWindow : ViewBase
 {
     public static readonly StyledProperty<TutorialSentence?> TutorialSentenceProperty =
         AvaloniaProperty.Register<TutorialScriptEditWindow, TutorialSentence?>(nameof(TutorialSentence));

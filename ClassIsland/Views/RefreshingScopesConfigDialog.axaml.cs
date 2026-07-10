@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.ComponentModels;
 using ClassIsland.Core.Controls;
@@ -16,7 +17,7 @@ using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Views;
 
-public partial class RefreshingScopesConfigDialog : MyWindow
+public partial class RefreshingScopesConfigDialog : ViewBase
 {
     public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
     
@@ -37,7 +38,7 @@ public partial class RefreshingScopesConfigDialog : MyWindow
         InitializeComponent();
     }
 
-    private void TopLevel_OnOpened(object? sender, EventArgs e)
+    private void ViewBase_OnLoaded(object? sender, RoutedEventArgs e)
     {
         HookScopesReservedClassPlansCollection();
         HookScopesReservedTimeLayoutsCollection();
@@ -46,7 +47,7 @@ public partial class RefreshingScopesConfigDialog : MyWindow
         SyncReservedTimeLayoutsToSelection();
     }
 
-    private void TopLevel_OnClosed(object? sender, EventArgs e)
+    private void ViewBase_OnUnloaded(object? sender, RoutedEventArgs e)
     {
         UnhookScopesReservedClassPlansCollection();
         UnhookScopesReservedTimeLayoutsCollection();

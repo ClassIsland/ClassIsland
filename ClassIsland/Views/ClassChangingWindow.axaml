@@ -1,4 +1,4 @@
-﻿<controls1:MyWindow x:Class="ClassIsland.Views.ClassChangingWindow"
+﻿<ci:ViewBase x:Class="ClassIsland.Views.ClassChangingWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -14,17 +14,16 @@
         xmlns:controls2="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         mc:Ignorable="d"
-        Title="换课" 
-        Height="250" Width="600"
+        Header="换课"
+        HostHeight="250" HostWidth="600"
         MinWidth="730"
         MinHeight="175"
         Icon="/Assets/AppLogo.png"
-        EnableMicaWindow="True"
         SizeToContent="WidthAndHeight"
         d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
-        WindowStartupLocation="CenterScreen"
+        HostStartupLocation="CenterScreen"
         Unloaded="Control_OnUnloaded">
-    <controls1:MyWindow.Styles>
+    <ci:ViewBase.Styles>
         <Style Selector="ci|LessonsListBox ListBoxItem">
             <Setter Property="IsHitTestVisible">
                 <Setter.Value>
@@ -38,14 +37,14 @@
             </Setter>
             <Setter Property="IsTabStop" Value="False" />
         </Style>
-    </controls1:MyWindow.Styles>
-    <controls1:MyWindow.Resources>
+    </ci:ViewBase.Styles>
+    <ci:ViewBase.Resources>
         <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
 
         <converters1:IndexConverter x:Key="IndexConverter" />
         <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
         <converters1:InvertBooleanOrExpressionMultiConverter x:Key="InvertBooleanOrExpressionMultiConverter" />
-    </controls1:MyWindow.Resources>
+    </ci:ViewBase.Resources>
     <Grid RowDefinitions="Auto,*,Auto,Auto" MinWidth="730" MinHeight="175">
 
         <!-- Content -->
@@ -269,4 +268,4 @@
             </StackPanel>
         </Border>
     </Grid>
-</controls1:MyWindow>
+</ci:ViewBase>

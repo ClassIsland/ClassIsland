@@ -1,4 +1,4 @@
-<ci:MyWindow xmlns="https://github.com/avaloniaui"
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -12,11 +12,10 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.TutorialEditorWindow"
         d:DataContext="{d:DesignInstance views:TutorialEditorWindow}"
-        WindowState="Maximized"
-        Title="教程编辑器"
-        Closing="TopLevel_OnClosing"
-        Deactivated="WindowBase_OnDeactivated">
-    <ci:MyWindow.Styles>
+        HostWindowState="Maximized"
+        Header="教程编辑器"
+        Closing="TopLevel_OnClosing">
+    <ci:ViewBase.Styles>
         <Style Selector="ci|AnimatedIconButton">
             <Setter Property="Theme" Value="{StaticResource TransparentButton}"/>
         </Style>
@@ -62,8 +61,8 @@
                 </Template>
             </Setter>
         </Style>
-    </ci:MyWindow.Styles>
-    <ci:MyWindow.DataTemplates>
+    </ci:ViewBase.Styles>
+    <ci:ViewBase.DataTemplates>
         <DataTemplate x:DataType="tutorial:TutorialGroup">
             <ScrollViewer>
                 <StackPanel Spacing="6" Margin="8">
@@ -235,7 +234,7 @@
                 </TabItem>
             </TabControl>
         </DataTemplate>
-    </ci:MyWindow.DataTemplates>
+    </ci:ViewBase.DataTemplates>
     <Grid RowDefinitions="Auto Auto * Auto" ColumnDefinitions="220 Auto * Auto 328">
         <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
             <MenuItem Header="文件">
@@ -375,4 +374,4 @@
         <ci:Emptiable Grid.Row="1" Grid.Column="4" Grid.RowSpan="2"
                       Content="{Binding ViewModel.SelectedDetailObject, Mode=OneWay}"/>
     </Grid>
-</ci:MyWindow>
+</ci:ViewBase>

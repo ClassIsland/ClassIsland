@@ -7,11 +7,14 @@ using AsyncImageLoader;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using ClassIsland.Controls.Tutorial;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -76,6 +79,10 @@ public partial class TutorialService : ObservableObject, ITutorialService
     private bool _isInvokingActions;
     
     private Script? CurrentScript { get; set; }
+
+    private ViewBase? PendingTargetView { get; set; }
+
+    private EventHandler<RoutedEventArgs>? PendingTargetLoadedHandler { get; set; }
 
     [ObservableProperty] private TopLevel? _attachedToplevel;
 
@@ -249,19 +256,78 @@ public partial class TutorialService : ObservableObject, ITutorialService
         SentenceIndex = 0;
         ControllerWindow ??= BuildControllerWindow();
         InvokeActions(paragraph.InitializeActions, true);
-        var topLevel =
-            AppBase.Current.DesktopLifetime?.Windows.FirstOrDefault(x =>
-                x.GetType().FullName == paragraph.TopLevelClassName);
+        var (topLevel, targetView) = FindTutorialTarget(paragraph.TopLevelClassName);
         AttachedToplevel = topLevel;
         if (paragraph.Content.Count <= 0)
         {
             return;
         }
+
+        if (targetView is { IsLoaded: false })
+        {
+            PendingTargetView = targetView;
+            PendingTargetLoadedHandler = (_, _) =>
+            {
+                CancelPendingTargetViewLoad();
+                if (CurrentTutorial != tutorial || CurrentParagraph != paragraph)
+                {
+                    return;
+                }
+
+                AttachedToplevel = TopLevel.GetTopLevel(targetView) ?? topLevel;
+                StartSentence(paragraph.Content[0]);
+            };
+            targetView.Loaded += PendingTargetLoadedHandler;
+            return;
+        }
+
+        if (targetView != null)
+        {
+            AttachedToplevel = TopLevel.GetTopLevel(targetView) ?? topLevel;
+        }
         StartSentence(paragraph.Content[0]);
+    }
+
+    private static (TopLevel? TopLevel, ViewBase? View) FindTutorialTarget(string? typeName)
+    {
+        if (string.IsNullOrWhiteSpace(typeName) || AppBase.Current.DesktopLifetime?.Windows is not { } windows)
+        {
+            return (null, null);
+        }
+
+        foreach (var window in windows)
+        {
+            if (window.GetType().FullName == typeName)
+            {
+                return (window, null);
+            }
+
+            if (window is IViewHost viewHost)
+            {
+                var view = viewHost.CurrentView?.GetType().FullName == typeName
+                    ? viewHost.CurrentView
+                    : viewHost.ActivatedViews.LastOrDefault(x => x.GetType().FullName == typeName);
+                if (view != null)
+                {
+                    return (window, view);
+                }
+            }
+
+            var visualView = window.GetVisualDescendants()
+                .OfType<ViewBase>()
+                .FirstOrDefault(x => x.GetType().FullName == typeName);
+            if (visualView != null)
+            {
+                return (window, visualView);
+            }
+        }
+
+        return (null, null);
     }
 
     private void CleanupPrevSentence()
     {
+        CancelPendingTargetViewLoad();
         if (AttachedToplevel is { Content: Visual visual })
         {
             var layer = AdornerLayer.GetAdornerLayer(visual);
@@ -283,6 +349,16 @@ public partial class TutorialService : ObservableObject, ITutorialService
         CurrentTeachingTip = null;
         AttachedAdorners.Clear();
         CurrentScript = null;
+    }
+
+    private void CancelPendingTargetViewLoad()
+    {
+        if (PendingTargetView != null && PendingTargetLoadedHandler != null)
+        {
+            PendingTargetView.Loaded -= PendingTargetLoadedHandler;
+        }
+        PendingTargetView = null;
+        PendingTargetLoadedHandler = null;
     }
 
     private void AttachAdorner(Control adorner, Control target)

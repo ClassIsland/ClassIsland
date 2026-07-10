@@ -5,6 +5,7 @@ using System.Windows;
 using Avalonia;
 using Avalonia.Interactivity;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Services;
 
@@ -13,7 +14,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// CrashWindow.xaml 的交互逻辑
 /// </summary>
-public partial class CrashWindow : MyWindow
+public partial class CrashWindow : ViewBase
 {
     public static readonly StyledProperty<string> CrashInfoProperty = AvaloniaProperty.Register<CrashWindow, string>(
         nameof(CrashInfo));

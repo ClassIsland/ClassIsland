@@ -16,7 +16,6 @@
           Header="应用设置" HostHeight="550" HostWidth="1240"
           x:Name="SettingsWindowRoot"
           SizeChanged="SettingsWindowNew_OnSizeChanged"
-          Closing="SettingsWindowNew_OnClosing"
           Closed="ViewBase_OnClosed"
           NavigationPage.HasBackButton="False"
           NavigationPage.BarHeightOverride="48"

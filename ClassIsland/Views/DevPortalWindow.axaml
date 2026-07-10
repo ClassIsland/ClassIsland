@@ -1,4 +1,4 @@
-<ci:MyWindow xmlns="https://github.com/avaloniaui"
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -14,10 +14,9 @@
         xmlns:iconSources="clr-namespace:ClassIsland.Core.Controls.IconSources;assembly=ClassIsland.Core"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.DevPortalWindow"
-        Title="DevPortal"
-        Height="700" Width="1200"
-        EnableMicaWindow="True"
-        WindowStartupLocation="CenterScreen"
+        Header="DevPortal"
+        HostHeight="700" HostWidth="1200"
+        HostStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance views:DevPortalWindow}">
     <Grid RowDefinitions="48, *">
         <!-- Background Layer -->
@@ -268,4 +267,4 @@
             </TabItem>
         </TabControl>
     </Grid>
-</ci:MyWindow>
+</ci:ViewBase>

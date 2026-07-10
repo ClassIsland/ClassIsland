@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using Avalonia.Controls;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;
@@ -22,6 +23,8 @@ public partial class ScreenshotHelperViewModel : ObservableObject
         public Window Window { get; } = window;
 
         public int Id { get; } = window.GetHashCode();
-        public Type Type { get; } = window.GetType();
+        public Type Type { get; } = window is IViewHost { CurrentView: { } view }
+            ? view.GetType()
+            : window.GetType();
     }
 }

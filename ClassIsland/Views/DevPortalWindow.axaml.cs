@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using ClassIsland.Controls;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.Tutorial;
@@ -20,7 +21,7 @@ using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Views;
 
-public partial class DevPortalWindow : MyWindow
+public partial class DevPortalWindow : ViewBase
 {
     public DevPortalViewModel ViewModel { get; } = IAppHost.GetService<DevPortalViewModel>();
     

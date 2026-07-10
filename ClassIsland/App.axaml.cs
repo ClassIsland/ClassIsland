@@ -431,7 +431,7 @@ public partial class App : AppBase, IAppHost
                 AllowIgnore = _isStartedCompleted && !critical,
                 IsCritical = critical
             };
-            await CrashWindow.ShowDialog(GetRootWindow());
+            await CrashWindow.ShowModal(GetRootWindow());
             return;
         }
 
