@@ -54,6 +54,7 @@ public class TimeLayout : AttachableSettingsObject
     /// <summary>
     /// 是否忽略重命名检查
     /// </summary>
+    [JsonIgnore]
     public bool IsRenamedCheckIgnore
     {
         get => _isRenamedCheckIgnore;
