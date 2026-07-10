@@ -14,12 +14,14 @@ public class TimeLayout : AttachableSettingsObject
 {
     private ObservableCollection<TimeLayoutItem> _layouts = new();
     private readonly Dictionary<TimeLayoutItem, int> _timeTypeChangeClassIndexes = new();
-    private string _name;
+    private string? _name;
     private bool _isActivated = false;
     private bool _isActivatedManually = false;
     private bool _isOverlay = false;
     private bool _isRenamed = false;
+    private bool _isRenamedCheckIgnore = false;
     private Guid? _overlaySourceId;
+    private bool _isRenamedChecked = false;
 
     /// <summary>
     /// 是否是临时层时间表
@@ -31,6 +33,34 @@ public class TimeLayout : AttachableSettingsObject
         {
             if (value == _isOverlay) return;
             _isOverlay = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否检查过有没有重命名
+    /// </summary>
+    public bool IsRenamedChecked
+    {
+        get => _isRenamedChecked;
+        set
+        {
+            if  (value == _isRenamedChecked) return;
+            _isRenamedChecked = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否忽略重命名检查
+    /// </summary>
+    public bool IsRenamedCheckIgnore
+    {
+        get => _isRenamedCheckIgnore;
+        set
+        {
+            if  (value == _isRenamedCheckIgnore) return;
+            _isRenamedCheckIgnore = value;
             OnPropertyChanged();
         }
     }
@@ -71,7 +101,6 @@ public class TimeLayout : AttachableSettingsObject
         PropertyChanged += OnPropertyChanged;
         Layouts.CollectionChanged += LayoutsOnCollectionChanged;
         AttachLayoutItems(Layouts);
-        CheckIsRenamed();
     }
 
     /// <summary>
@@ -97,22 +126,32 @@ public class TimeLayout : AttachableSettingsObject
             case nameof(Layouts):
                 //LayoutObjectChanged?.Invoke(this, EventArgs.Empty);
                 break;
+            case nameof(Name):
+                CheckIsRenamed();
+                break;
         }
     }
 
     /// <summary>
-    /// 用于兼容已创建的时间表
+    /// 重命名检查，用于兼容已创建的时间表
     /// </summary>
     private void CheckIsRenamed()
     {
-        if (string.IsNullOrEmpty(Name) || IsRenamed)
+        if (IsRenamedCheckIgnore)
+        {
+            IsRenamedCheckIgnore = false;
+            return;
+        }
+        
+        if (IsRenamed || IsRenamedChecked)
         {
             return;
         }
 
-        if (Name.Length != 5 || !Name.Contains("新时间表"))
+        if (Name!.Length != 5 || !Name.Contains("新时间表"))
         {
             IsRenamed = true;
+            IsRenamedChecked = true;
         }
     }
     
@@ -269,7 +308,7 @@ public class TimeLayout : AttachableSettingsObject
     /// <summary>
     /// 时间表名称
     /// </summary>
-    public string Name
+    public string? Name
     {
         get => _name;
         set

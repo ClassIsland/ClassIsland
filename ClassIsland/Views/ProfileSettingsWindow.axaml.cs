@@ -825,7 +825,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             if (timeLayout.IsRenamed == false)
             {
-                if (int.TryParse(timeLayout.Name[4..], out int result))
+                if (int.TryParse(timeLayout.Name![4..], out int result))
                 {
                     if (result >= maxIndex)
                     {
@@ -846,7 +846,8 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         var timeLayout = new TimeLayout()
         {
-            Name = NameTimeLayout()
+            IsRenamedCheckIgnore = true,
+            Name = NameTimeLayout(),
         };
         ViewModel.ProfileService.Profile.TimeLayouts.Add(Guid.NewGuid(), timeLayout);
         OpenDrawer("TimeLayoutInfoEditor");
