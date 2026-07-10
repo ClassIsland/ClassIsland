@@ -148,7 +148,7 @@ public class TimeLayout : AttachableSettingsObject
             return;
         }
 
-        if (Name!.Length != 5 || !Name.Contains("新时间表"))
+        if (Name!.Length <= 5 || !Name.Contains("新时间表"))
         {
             IsRenamed = true;
             IsRenamedChecked = true;
