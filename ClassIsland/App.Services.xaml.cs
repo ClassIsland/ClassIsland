@@ -152,6 +152,7 @@ public partial class App
         services.AddSingleton<TutorialCenterWindow>();
         services.AddTransient<TutorialControllerWindow>();
         services.AddTransient<ISplashProvider, SplashWindow>();
+        services.AddTransient<MainView>();
         // 设置页面分组
         services.AddSettingsPageGroup("classisland.general", "\uef27", "通用");
         services.AddSettingsPageGroup("classisland.mainwindow", "\uec85", "主界面");
@@ -314,9 +315,12 @@ public partial class App
             VerticalSafeAreaPx = 20
         });
         // 教程
-        // services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.test.json"));
-        // services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.sp.json"));
-        services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.getStarted.json"));
+        if (System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() && System.OperatingSystem.IsLinux())
+        {
+            // services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.test.json"));
+            // services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.sp.json"));
+            services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.getStarted.json"));
+        }
         // Plugins
         if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {

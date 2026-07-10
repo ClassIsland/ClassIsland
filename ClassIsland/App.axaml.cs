@@ -504,12 +504,13 @@ public partial class App : AppBase, IAppHost
     internal async void Init()
     {
         AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Initializing;
-        if (System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux())
+        var isDesktop = System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux();
+        if (isDesktop)
         {
             IViewHostProvider.Instance = new WindowViewHostProvider(ApplicationCommand.Mobile);
         }
         
-        if (System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux())
+        if (isDesktop)
         {
             CreatePhonyRootWindow();
             PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
@@ -861,92 +862,23 @@ public partial class App : AppBase, IAppHost
         if (!System.OperatingSystem.IsAndroid())
             MemoryProfiler.GetSnapshot("Pre MainWindow init");
 #endif
-        var mw = GetService<MainWindow>();
-        MainWindow = mw;
-        mw.StartupCompleted += (o, args) =>
+        if (isDesktop)
         {
-            GetService<ISplashService>().CurrentProgress = 98;
-            GetService<ISplashService>().SetDetailedStatus("正在进行启动后操作");
-            // 由于在应用启动时调用 WMI 会导致无法使用触摸，故在应用启动完成后再获取设备统计信息。
-            // https://github.com/dotnet/wpf/issues/9752
-            if (IsSentryEnabled)
-            {
-                DiagnosticService.GetDeviceInfo(out var name, out var vendor);
-                SentrySdk.ConfigureScope(s =>
-                {
-                    s.SetTag("deviceDesktop.name", name);
-                    s.SetTag("deviceDesktop.vendor", vendor);
-                });
-            }
-            AppStarted?.Invoke(this, EventArgs.Empty);
-            GetService<IIpcService>().IpcProvider.StartServer();
-            GetService<IIpcService>().JsonRoutedProvider.StartServer();
-            spanLoadMainWindow.Finish();
-            transaction.Finish();
-            SentrySdk.ConfigureScope(s => s.Transaction = null);
-            GetService<IAutomationService>();
-            GetService<IRulesetService>().NotifyStatusChanged();
-            File.Delete(startupCountFilePath);
-            if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)
-            {
-                PlatformServices.DesktopToastService.ShowToastAsync("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", () => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
-            }
-            if (Settings.CorruptPluginsDisabledLastSession)
-            {
-                Settings.CorruptPluginsDisabledLastSession = false;
-                var content = new DesktopToastContent()
-                {
-                    Title = "已自动禁用异常插件",
-                    Body = "ClassIsland 已自动禁用导致上次崩溃的插件。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。",
-                    Buttons =
-                    {
-                        {
-                            "打开插件设置",
-                            () => GetService<IUriNavigationService>()
-                                .NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"))
-                        },
-                        {
-                            "管理异常插件行为",
-                            () => GetService<IUriNavigationService>()
-                                .NavigateWrapped(new Uri("classisland://app/settings/general"))
-                        }
-                    }
-                };
-                content.Activated += (_, _) => GetService<IUriNavigationService>()
-                    .NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"));
-                PlatformServices.DesktopToastService.ShowToastAsync(content);
-            }
-
-            if (Settings.IsSplashEnabled)
-            {
-                App.GetService<ISplashService>().EndSplash();
-            }
-            if (IAppHost.TryGetService<IManagementService>() is IManagementService { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-            {
-                connection.LogAuditEvent(AuditEvents.AppStarted, new Empty());
-            }
-            _isStartedCompleted = true;
-            AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Running;
-            if (ApplicationCommand.ImportComplete)
-            {
-                var dtWindow = new DataTransferWindow()
-                {
-                    ImportName = "ClassIsland"
-                };
-                dtWindow.Show();
-                dtWindow.ImportComplete(ApplicationCommand.ImportV1Complete);
-            }
-        };
+            var mw = GetService<MainWindow>();
+            MainWindow = mw;
+            mw.StartupCompleted += (o, args) => PostStartup(spanLoadMainWindow, transaction, startupCountFilePath);
+            GetService<ISplashService>().CurrentProgress = 80;
+            GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 2/2）");
 #if DEBUG
         if (!System.OperatingSystem.IsAndroid())
             MemoryProfiler.GetSnapshot("Pre MainWindow show");
 #endif
-        GetService<ISplashService>().CurrentProgress = 80;
-        GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 2/2）");
-        if (!Design.IsDesignMode)
-        {
-            mw.Show();
+            if (!Design.IsDesignMode)
+            {
+                mw.Show();
+            }
         }
+        
         GetService<IWindowRuleService>();
         GetService<SignalTriggerHandlerService>();
 
@@ -994,6 +926,88 @@ public partial class App : AppBase, IAppHost
         {
             Stop();
             return;
+        }
+
+        if (!isDesktop)
+        {
+            PostStartup(spanLoadMainWindow, transaction, startupCountFilePath);
+            var mv = GetService<MainView>();
+            mv.Show();
+        }
+    }
+
+    private void PostStartup(ISpan spanLoadMainWindow, ITransactionTracer transaction, string startupCountFilePath)
+    {
+        GetService<ISplashService>().CurrentProgress = 98;
+        GetService<ISplashService>().SetDetailedStatus("正在进行启动后操作");
+        // 由于在应用启动时调用 WMI 会导致无法使用触摸，故在应用启动完成后再获取设备统计信息。
+        // https://github.com/dotnet/wpf/issues/9752
+        if (IsSentryEnabled)
+        {
+            DiagnosticService.GetDeviceInfo(out var name, out var vendor);
+            SentrySdk.ConfigureScope(s =>
+            {
+                s.SetTag("deviceDesktop.name", name);
+                s.SetTag("deviceDesktop.vendor", vendor);
+            });
+        }
+        AppStarted?.Invoke(this, EventArgs.Empty);
+        GetService<IIpcService>().IpcProvider.StartServer();
+        GetService<IIpcService>().JsonRoutedProvider.StartServer();
+        spanLoadMainWindow.Finish();
+        transaction.Finish();
+        SentrySdk.ConfigureScope(s => s.Transaction = null);
+        GetService<IAutomationService>();
+        GetService<IRulesetService>().NotifyStatusChanged();
+        File.Delete(startupCountFilePath);
+        if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)
+        {
+            PlatformServices.DesktopToastService.ShowToastAsync("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", () => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
+        }
+        if (Settings.CorruptPluginsDisabledLastSession)
+        {
+            Settings.CorruptPluginsDisabledLastSession = false;
+            var content = new DesktopToastContent()
+            {
+                Title = "已自动禁用异常插件",
+                Body = "ClassIsland 已自动禁用导致上次崩溃的插件。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。",
+                Buttons =
+                {
+                    {
+                        "打开插件设置",
+                        () => GetService<IUriNavigationService>()
+                            .NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"))
+                    },
+                    {
+                        "管理异常插件行为",
+                        () => GetService<IUriNavigationService>()
+                            .NavigateWrapped(new Uri("classisland://app/settings/general"))
+                    }
+                }
+            };
+            content.Activated += (_, _) => GetService<IUriNavigationService>()
+                .NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins"));
+            PlatformServices.DesktopToastService.ShowToastAsync(content);
+        }
+
+        if (Settings.IsSplashEnabled)
+        {
+            App.GetService<ISplashService>().EndSplash();
+        }
+        if (IAppHost.TryGetService<IManagementService>() is IManagementService { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+        {
+            connection.LogAuditEvent(AuditEvents.AppStarted, new Empty());
+        }
+        _isStartedCompleted = true;
+        AppBase.CurrentLifetime = ClassIsland.Core.Enums.ApplicationLifetime.Running;
+        if (ApplicationCommand.ImportComplete)
+        {
+            var dtWindow = new DataTransferWindow()
+            {
+                ImportName = "ClassIsland"
+            };
+            dtWindow.Show();
+            dtWindow.ImportComplete(ApplicationCommand.ImportV1Complete);
         }
     }
 

@@ -4,6 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="ClassIsland.Android.Controls.UI.AndroidViewHost">
+    <UserControl.Styles>
+        <Style Selector="NavigationPage#NavigationPage /template/ Border#PART_NavigationBar">
+            <Setter Property="Background" Value="{x:Null}"/>
+        </Style>
+    </UserControl.Styles>
     <NavigationPage x:Name="NavigationPage"
                     Popped="NavigationPage_OnPopped">
     </NavigationPage>

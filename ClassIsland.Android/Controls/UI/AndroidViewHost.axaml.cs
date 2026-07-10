@@ -14,6 +14,9 @@ public partial class AndroidViewHost : UserControl, IViewHost
 {
     public MainActivity Activity { get; }
 
+    public ViewBase? CurrentView { get; }
+    IReadOnlyCollection<ViewBase> IViewHost.ActivatedViews => ActivatedViews;
+
     private HashSet<ViewBase> ActivatedViews { get; } = [];
 
     private bool _isShowed = false;
@@ -226,6 +229,11 @@ public partial class AndroidViewHost : UserControl, IViewHost
     public async Task ShowViewModal(ViewBase view, ViewBase owner)
     {
         await ShowViewCore(view, owner, true);
+    }
+
+    public async Task ShowViewModal(ViewBase view, Window owner)
+    {
+        await ShowViewCore(view, null, true);
     }
 
     public async Task<bool> HideView(ViewBase view)

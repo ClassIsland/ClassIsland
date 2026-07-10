@@ -2,6 +2,7 @@ using System.Runtime.Versioning;
 using Android.Runtime;
 using Avalonia;
 using Avalonia.Android;
+using Avalonia.Controls;
 using Avalonia.Media;
 using ClassIsland.Extensions;
 

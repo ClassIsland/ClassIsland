@@ -1,0 +1,13 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector=":is(Button), :is(controls|FASettingsExpanderItem), :is(controls|FASettingsExpander), :is(ToggleSwitch)">
+        <Setter Property="PlatformFeedback.FeedbackType" Value="Auto"/>
+    </Style>
+</Styles>
