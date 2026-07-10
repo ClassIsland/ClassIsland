@@ -1299,7 +1299,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             ClassPlan = LessonsService.CurrentClassPlan
         };
-        await ClassChangingWindow.ShowDialog(this);
+        await ClassChangingWindow.ShowModal(this);
         ClassChangingWindow.DataContext = null;
         ClassChangingWindow = null;
         // ViewModel.IsBusy = false;

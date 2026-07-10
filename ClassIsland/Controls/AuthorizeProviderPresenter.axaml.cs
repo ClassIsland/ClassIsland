@@ -5,6 +5,7 @@ using System.Windows;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Models.Authorize;
@@ -98,7 +99,7 @@ public partial class AuthorizeProviderPresenter : UserControl
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        _window = TopLevel.GetTopLevel(this) as AuthorizeWindow;
+        _window = this.FindAncestorOfType<AuthorizeWindow>();
         _window?.AddHandler(RequestValidateAuthorizationProvidersEvent, RequestValidateAuthorizationProvidersEventHandler);
     }
     

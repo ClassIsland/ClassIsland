@@ -2,6 +2,7 @@ using System;
 using System.Windows; 
 using Avalonia.Interactivity;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.ViewModels;
 using ClassIsland.Views.RecoveryPages;
@@ -12,7 +13,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// RecoveryWindow.xaml 的交互逻辑
 /// </summary>
-public partial class RecoveryWindow : MyWindow
+public partial class RecoveryWindow : ViewBase
 {
     public static RecoveryWindow? Instance { get; private set; }
 
@@ -27,7 +28,7 @@ public partial class RecoveryWindow : MyWindow
         DataContext = this;
     }
 
-    private void RecoveryWindow_OnClosed(object? sender, EventArgs e)
+    private void RecoveryWindow_OnClosed(object? sender, RoutedEventArgs e)
     {
         AppBase.Current.Stop();
     }

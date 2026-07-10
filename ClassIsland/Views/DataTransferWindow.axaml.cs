@@ -5,12 +5,13 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Enums;
 
 namespace ClassIsland.Views;
 
-public partial class DataTransferWindow : MyWindow
+public partial class DataTransferWindow : ViewBase
 {
     public int ImportStage { init; get; } = -1;
     
@@ -23,12 +24,6 @@ public partial class DataTransferWindow : MyWindow
     {
         InitializeComponent();
         Content = _dataTransferPage = new DataTransferPage();
-        if (OperatingSystem.IsMacOS())
-        {
-            ExtendClientAreaToDecorationsHint = true;
-            ExtendClientAreaTitleBarHeightHint = -1;
-            WindowDecorations = WindowDecorations.Full;
-        }
     }
 
     public async Task PerformClassIslandImport(string root, ImportEntries importEntries)

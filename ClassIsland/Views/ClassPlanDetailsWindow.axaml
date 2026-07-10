@@ -1,4 +1,4 @@
-﻿<ci:MyWindow x:Class="ClassIsland.Views.ClassPlanDetailsWindow"
+﻿<ci:ViewBase x:Class="ClassIsland.Views.ClassPlanDetailsWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,10 +11,9 @@
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:enums="clr-namespace:ClassIsland.Core.Enums;assembly=ClassIsland.Core"
         mc:Ignorable="d"
-        Title="课表详细信息"
+        Header="课表详细信息"
         d:DataContext="{d:DesignInstance local:ClassPlanDetailsWindow}"
-        EnableMicaWindow="True"
-        Height="500" Width="800">
+        HostHeight="500" HostWidth="800">
     <Grid RowDefinitions="Auto,*">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500"/>
@@ -196,4 +195,4 @@
             </Grid>
         </Border>
     </Grid>
-</ci:MyWindow>
+</ci:ViewBase>

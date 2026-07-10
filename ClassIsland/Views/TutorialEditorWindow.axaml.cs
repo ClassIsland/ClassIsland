@@ -10,11 +10,13 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.Tutorial;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Tutorial;
+using ClassIsland.Core.Models.UI;
 using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -26,7 +28,7 @@ using Mono.Unix;
 
 namespace ClassIsland.Views;
 
-public partial class TutorialEditorWindow : MyWindow
+public partial class TutorialEditorWindow : ViewBase
 {
     public static FuncValueConverter<TutorialActionKind, int> TutorialActionKindToIntConverter { get; } =
         new(x => (int)x, x => (TutorialActionKind)x);
@@ -35,6 +37,8 @@ public partial class TutorialEditorWindow : MyWindow
         new(x => (int)x, x => (FATeachingTipPlacementMode)x);
     
     public TutorialEditorViewModel ViewModel { get; } = IAppHost.GetService<TutorialEditorViewModel>();
+
+    private Window? _hostWindow;
     
     public TutorialEditorWindow()
     {
@@ -129,7 +133,7 @@ public partial class TutorialEditorWindow : MyWindow
             ViewModel.CurrentParagraph?.Content.Remove(ViewModel.CurrentSentence);
     }
 
-    private void ButtonEditSentenceScript_OnClick(object? sender, RoutedEventArgs e)
+    private async void ButtonEditSentenceScript_OnClick(object? sender, RoutedEventArgs e)
     {
         if (ViewModel.CurrentSentence == null)
         {
@@ -140,7 +144,7 @@ public partial class TutorialEditorWindow : MyWindow
         {
             TutorialSentence = ViewModel.CurrentSentence
         };
-        _ = window.ShowDialog(this);
+        await window.ShowModal(this);
     }
     
     private void DataGridParagraphContent_OnGotFocus(object? sender, RoutedEventArgs e)
@@ -171,7 +175,7 @@ public partial class TutorialEditorWindow : MyWindow
         {
             FileTypeFilter = [FilePickerFileTypes.Json],
             AllowMultiple = false
-        }, this);
+        }, TopLevel!);
         if (paths.Count <= 0)
         {
             return;
@@ -202,7 +206,7 @@ public partial class TutorialEditorWindow : MyWindow
             var paths = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions()
             {
                 FileTypeChoices = [FilePickerFileTypes.Json],
-            }, this);
+            }, TopLevel!);
             if (paths == null)
             {
                 return;
@@ -224,9 +228,9 @@ public partial class TutorialEditorWindow : MyWindow
         this.ShowToast($"已保存 {ViewModel.OpenedFilePath}");
     }
 
-    private async void TopLevel_OnClosing(object? sender, WindowClosingEventArgs e)
+    private async void TopLevel_OnClosing(object? sender, ViewClosingEventArgs e)
     {
-        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown || ViewModel.IsClosing)
+        if (e.ViewHostCloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown || ViewModel.IsClosing)
         {
             return;
         }
@@ -284,6 +288,32 @@ public partial class TutorialEditorWindow : MyWindow
     private void WindowBase_OnDeactivated(object? sender, EventArgs e)
     {
         SaveTutorialGroupToFile();
+    }
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+        if (TopLevel is not Window hostWindow || ReferenceEquals(_hostWindow, hostWindow))
+        {
+            return;
+        }
+
+        if (_hostWindow != null)
+        {
+            _hostWindow.Deactivated -= WindowBase_OnDeactivated;
+        }
+        _hostWindow = hostWindow;
+        _hostWindow.Deactivated += WindowBase_OnDeactivated;
+    }
+
+    protected override void OnUnloaded(RoutedEventArgs e)
+    {
+        if (_hostWindow != null)
+        {
+            _hostWindow.Deactivated -= WindowBase_OnDeactivated;
+            _hostWindow = null;
+        }
+        base.OnUnloaded(e);
     }
 
     private async void MenuItemSaveAs_OnClick(object? sender, RoutedEventArgs e)

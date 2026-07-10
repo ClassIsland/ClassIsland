@@ -8,6 +8,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Shared;
@@ -15,7 +16,7 @@ using ClassIsland.ViewModels;
 
 namespace ClassIsland.Views;
 
-public partial class ScreenshotHelperWindow : MyWindow
+public partial class ScreenshotHelperWindow : ViewBase
 {
     public ScreenshotHelperViewModel ViewModel { get; } = IAppHost.GetService<ScreenshotHelperViewModel>();
     

@@ -99,6 +99,25 @@ public abstract class ViewBase : ContentPage
         get => GetValue(CanResizeProperty);
         set => SetValue(CanResizeProperty, value);
     }
+
+    public static readonly StyledProperty<SizeToContent> SizeToContentProperty =
+        Window.SizeToContentProperty.AddOwner<ViewBase>(
+            new StyledPropertyMetadata<SizeToContent>(SizeToContent.Manual));
+
+    public SizeToContent SizeToContent
+    {
+        get => GetValue(SizeToContentProperty);
+        set => SetValue(SizeToContentProperty, value);
+    }
+
+    public static readonly StyledProperty<bool> CanMaximizeProperty =
+        Window.CanMaximizeProperty.AddOwner<ViewBase>(new StyledPropertyMetadata<bool>(true));
+
+    public bool CanMaximize
+    {
+        get => GetValue(CanMaximizeProperty);
+        set => SetValue(CanMaximizeProperty, value);
+    }
     
     public bool ShowedOnce { get; private set; }
 
@@ -143,6 +162,7 @@ public abstract class ViewBase : ContentPage
     /// <inheritdoc />
     public ViewBase()
     {
+        SetCurrentValue(HostFeaturesProperty, new AvaloniaList<WindowFeatures>());
         Navigating += OnNavigating;
     }
 
@@ -193,12 +213,26 @@ public abstract class ViewBase : ContentPage
 
     internal void ViewDeactivated()
     {
+        var wasShowed = _isShowed;
+        var deActiveTcs = DeActiveTcs;
+
+        if (!wasShowed && AssociatedViewHost == null && deActiveTcs == null)
+        {
+            return;
+        }
+
         AssociatedViewHost = null;
-        DeActiveTcs?.TrySetResult();
         _isShowed = false;
+        DeActiveTcs = null;
+        deActiveTcs?.TrySetResult();
+
+        if (wasShowed)
+        {
+            RaiseEvent(new RoutedEventArgs(ClosedEvent));
+        }
     }
 
-    private void ShowCore(ViewBase? owner = null, bool modal = false)
+    private void ShowCore(ViewBase? owner = null, Window? windowOwner = null, bool modal = false)
     {
         if (AssociatedViewHost == null)
         {
@@ -210,16 +244,49 @@ public abstract class ViewBase : ContentPage
             throw new InvalidOperationException("视图已被显示时不能再次被显示。");
         }
 
-        if (owner != null && modal)
+        if (windowOwner != null && modal)
         {
-            AssociatedViewHost.ShowViewModal(this, owner);
+            _ = AssociatedViewHost.ShowViewModal(this, windowOwner);
+        }
+        else if (owner != null && modal)
+        {
+            _ = AssociatedViewHost.ShowViewModal(this, owner);
         }
         else
         {
-            AssociatedViewHost.ShowView(this, owner);
+            _ = AssociatedViewHost.ShowView(this, owner);
         }
         _isShowed = true;
         ShowedOnce = true;
+    }
+
+    private async Task ShowModalCore(ViewBase? owner = null, Window? windowOwner = null)
+    {
+        if (AssociatedViewHost == null)
+        {
+            ViewManagementService.Instance.ActivateView(this);
+        }
+
+        if (_isShowed)
+        {
+            throw new InvalidOperationException("视图已被显示时不能再次被显示。");
+        }
+
+        var deActiveTcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        DeActiveTcs = deActiveTcs;
+        try
+        {
+            ShowCore(owner, windowOwner, true);
+            await deActiveTcs.Task;
+        }
+        catch
+        {
+            if (ReferenceEquals(DeActiveTcs, deActiveTcs))
+            {
+                DeActiveTcs = null;
+            }
+            throw;
+        }
     }
 
     #endregion
@@ -264,13 +331,7 @@ public abstract class ViewBase : ContentPage
     /// <returns></returns>
     public virtual async Task ShowModal(ViewBase? owner=null)
     {
-        if (AssociatedViewHost == null)
-        {
-            ViewManagementService.Instance.ActivateView(this);
-        }
-        ShowCore(owner, true);
-        DeActiveTcs = new TaskCompletionSource();
-        await DeActiveTcs.Task;
+        await ShowModalCore(owner);
     }
     
     /// <summary>
@@ -279,13 +340,29 @@ public abstract class ViewBase : ContentPage
     /// <returns></returns>
     public virtual async Task<T> ShowModal<T>(ViewBase? owner=null)
     {
-        if (AssociatedViewHost == null)
-        {
-            ViewManagementService.Instance.ActivateView(this);
-        }
-        ShowCore(owner, true);
-        DeActiveTcs = new TaskCompletionSource();
-        await DeActiveTcs.Task;
+        await ShowModalCore(owner);
+        return (T)Result!;
+    }
+
+    /// <summary>
+    /// 以原生窗口为所有者模态显示并等待取消激活。
+    /// </summary>
+    /// <param name="owner">所有者窗口。</param>
+    public virtual async Task ShowModal(Window owner)
+    {
+        ArgumentNullException.ThrowIfNull(owner);
+        await ShowModalCore(windowOwner: owner);
+    }
+
+    /// <summary>
+    /// 以原生窗口为所有者模态显示并等待取消激活。
+    /// </summary>
+    /// <param name="owner">所有者窗口。</param>
+    /// <typeparam name="T">结果类型。</typeparam>
+    public virtual async Task<T> ShowModal<T>(Window owner)
+    {
+        ArgumentNullException.ThrowIfNull(owner);
+        await ShowModalCore(windowOwner: owner);
         return (T)Result!;
     }
 

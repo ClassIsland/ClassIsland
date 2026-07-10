@@ -15,6 +15,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
@@ -792,7 +793,7 @@ public partial class DataTransferPage : UserControl
 
     private void ButtonFinish_OnClick(object? sender, RoutedEventArgs e)
     {
-        (TopLevel.GetTopLevel(this) as Window)?.Close();
+        this.FindAncestorOfType<DataTransferWindow>()?.Close();
     }
 
     private void ButtonNext_OnClick(object? sender, RoutedEventArgs e)

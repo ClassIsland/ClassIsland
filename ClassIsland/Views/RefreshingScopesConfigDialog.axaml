@@ -1,4 +1,4 @@
-<ci:MyWindow xmlns="https://github.com/avaloniaui"
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,15 +6,15 @@
         xmlns:views="clr-namespace:ClassIsland.Views;assembly=ClassIsland"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.RefreshingScopesConfigDialog"
-        Title="编辑翻新范围"
-        Width="400"
-        Height="600"
-        WindowStartupLocation="CenterOwner"
+        Header="编辑翻新范围"
+        HostWidth="400"
+        HostHeight="600"
+        HostStartupLocation="CenterOwner"
         ShowAsDialog="True"
         CanResize="False"
         d:DataContext="{d:DesignInstance views:RefreshingScopesConfigDialog}"
-        Opened="TopLevel_OnOpened"
-        Closed="TopLevel_OnClosed">
+        Loaded="ViewBase_OnLoaded"
+        Unloaded="ViewBase_OnUnloaded">
     <Grid RowDefinitions="Auto * Auto" Margin="12">
         <StackPanel Grid.Row="0" Spacing="6">
             <TextBlock Text="选择翻新时要保留的内容" Theme="{StaticResource SubtitleTextBlockStyle}"/>
@@ -57,4 +57,4 @@
                     Margin="4 8 12 8"/>
         </Grid>
     </Grid>
-</ci:MyWindow>
+</ci:ViewBase>

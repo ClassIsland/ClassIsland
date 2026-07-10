@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Services;
@@ -15,11 +16,9 @@ using Sentry;
 
 namespace ClassIsland.Views;
 
-public partial class TutorialCenterWindow : MyWindow
+public partial class TutorialCenterWindow : ViewBase
 {
     public TutorialCenterViewModel ViewModel { get; } = IAppHost.GetService<TutorialCenterViewModel>();
-    
-    private bool IsOpened { get; set; } = false;
     
     public TutorialCenterWindow()
     {
@@ -28,23 +27,13 @@ public partial class TutorialCenterWindow : MyWindow
         
     }
     
-    public void Open()
+    public override void Open(ViewBase? owner = null)
     {
-        if (!IsOpened)
+        if (AssociatedViewHost == null)
         {
             SentrySdk.Metrics.EmitCounter("views.TutorialCenterWindow.open", 1);
-            IsOpened = true;
-            Show();
         }
-        else
-        {
-            if (WindowState == WindowState.Minimized)
-            {
-                WindowState = WindowState.Normal;
-            }
-
-            Activate();
-        }
+        base.Open(owner);
     }
 
     [RelayCommand]
@@ -71,15 +60,4 @@ public partial class TutorialCenterWindow : MyWindow
         ViewModel.TutorialService.StopTutorial();
     }
 
-    private void Window_OnClosing(object? sender, WindowClosingEventArgs e)
-    {
-        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
-        {
-            return;
-        }
-
-        e.Cancel = true;
-        Hide();
-        IsOpened = false;
-    }
 }

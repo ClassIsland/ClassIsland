@@ -1,4 +1,4 @@
-<ci:MyWindow x:Class="ClassIsland.Views.RecoveryWindow"
+<ci:ViewBase x:Class="ClassIsland.Views.RecoveryWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,12 +11,12 @@
         mc:Ignorable="d"
         Loaded="RecoveryWindow_OnLoaded"
         Closed="RecoveryWindow_OnClosed"
-        Title="恢复" Height="600" Width="450"
-        WindowStartupLocation="CenterScreen"
+        Header="恢复" HostHeight="600" HostWidth="450"
+        HostStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance local:RecoveryWindow}"
         Icon="/Assets/AppLogo.png">
     <Grid RowDefinitions="Auto,*">
         <controls1:FAFrame Grid.Row="1" x:Name="MainFrame" 
                          CacheSize="0"/>
     </Grid>
-</ci:MyWindow>
+</ci:ViewBase>

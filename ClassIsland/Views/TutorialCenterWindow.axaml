@@ -1,4 +1,4 @@
-<ci:MyWindow xmlns="https://github.com/avaloniaui"
+<ci:ViewBase xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,14 +11,12 @@
         xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ClassIsland.Views.TutorialCenterWindow"
-        Title="教学中心" Height="550" Width="1240"
+        Header="教学中心" HostHeight="550" HostWidth="1240"
         d:DataContext="{d:DesignInstance views:TutorialCenterWindow}"
-        Icon="/Assets/AppLogo.ico"
-        EnableMicaWindow="True"
-        Closing="Window_OnClosing">
-    <ci:MyWindow.Resources>
+        Icon="/Assets/AppLogo.ico">
+    <ci:ViewBase.Resources>
         
-    </ci:MyWindow.Resources>
+    </ci:ViewBase.Resources>
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0" ColumnDefinitions="Auto * Auto">
             <TabStrip Grid.Column="1"
@@ -246,4 +244,4 @@
             </TabControl.ContentTemplate>
         </TabControl>
     </Grid>
-</ci:MyWindow>
+</ci:ViewBase>

@@ -1,4 +1,4 @@
-﻿<ci:MyWindow x:Class="ClassIsland.Views.WindowRuleDebugWindow"
+﻿<ci:ViewBase x:Class="ClassIsland.Views.WindowRuleDebugWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,12 +6,10 @@
         xmlns:local="clr-namespace:ClassIsland.Views"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         mc:Ignorable="d"
-        Title="窗口规则调试工具" Height="200" Width="400"
+        Header="窗口规则调试工具" HostHeight="200" HostWidth="400"
         SizeToContent="Height"
-        Topmost="True"
         Loaded="WindowRuleDebugWindow_OnLoaded"
         Unloaded="WindowRuleDebugWindow_OnUnloaded"
-        EnableMicaWindow="True"
         d:DataContext="{d:DesignInstance local:WindowRuleDebugWindow}">
     <StackPanel>
         <SelectableTextBlock TextWrapping="Wrap">
@@ -27,4 +25,4 @@
             <LineBreak/>
         </SelectableTextBlock>
     </StackPanel>
-</ci:MyWindow>
+</ci:ViewBase>

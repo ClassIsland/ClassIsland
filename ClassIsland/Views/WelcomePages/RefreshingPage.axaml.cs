@@ -9,7 +9,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
+using Avalonia.VisualTree;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Automation;
@@ -35,12 +37,13 @@ public partial class RefreshingPage : UserControl, IWelcomePage
         InitializeComponent();
     }
 
-    private void ButtonSelectedReservedItems_OnClick(object? sender, RoutedEventArgs e)
+    private async void ButtonSelectedReservedItems_OnClick(object? sender, RoutedEventArgs e)
     {
-        new RefreshingScopesConfigDialog()
+        var view = new RefreshingScopesConfigDialog()
         {
             Scopes = ViewModel.RefreshingScopes
-        }.ShowDialog((Window)TopLevel.GetTopLevel(this)!);
+        };
+        await view.ShowModal(this.FindAncestorOfType<ViewBase>());
     }
 
     private async void ButtonNext_OnClick(object? sender, RoutedEventArgs e)

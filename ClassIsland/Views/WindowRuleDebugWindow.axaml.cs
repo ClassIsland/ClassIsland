@@ -3,12 +3,14 @@ using System.Diagnostics;
 using System.Windows;
 using Avalonia.Controls;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.ViewModels;
 using Avalonia.Interactivity;
 using Avalonia.Platform;
 using ClassIsland.Core.Controls;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Enums;
 using ClassIsland.Platforms.Abstraction.Models;
 
 namespace ClassIsland.Views;
@@ -16,7 +18,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// WindowRuleDebugWindow.xaml 的交互逻辑
 /// </summary>
-public partial class WindowRuleDebugWindow : MyWindow
+public partial class WindowRuleDebugWindow : ViewBase
 {
     public IWindowRuleService WindowRuleService { get; }
     public MainWindow MainWindow { get; }
@@ -27,6 +29,7 @@ public partial class WindowRuleDebugWindow : MyWindow
     {
         WindowRuleService = windowRuleService;
         MainWindow = mainWindow;
+        HostFeatures = [WindowFeatures.Topmost];
         InitializeComponent();
         DataContext = this;
     }

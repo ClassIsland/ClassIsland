@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Avalonia.Interactivity;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Helpers;
@@ -20,7 +21,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// TimeAdjustmentWindow.xaml 的交互逻辑
 /// </summary>
-public partial class TimeAdjustmentWindow : MyWindow
+public partial class TimeAdjustmentWindow : ViewBase
 {
     public IExactTimeService ExactTimeService { get; }
     public ILessonsService LessonsService { get; }
@@ -51,7 +52,7 @@ public partial class TimeAdjustmentWindow : MyWindow
         
     }
 
-    private void TimeAdjustmentWindow_OnClosed(object? sender, EventArgs e)
+    private void TimeAdjustmentWindow_OnClosed(object? sender, RoutedEventArgs e)
     {
         LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
     }

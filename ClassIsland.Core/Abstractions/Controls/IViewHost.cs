@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Avalonia.Controls;
+
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
@@ -9,6 +12,16 @@ public interface IViewHost
     /// 所有者视图宿主
     /// </summary>
     IViewHost? Owner { get; }
+
+    /// <summary>
+    /// 当前显示的视图。
+    /// </summary>
+    ViewBase? CurrentView { get; }
+
+    /// <summary>
+    /// 已激活到此宿主的视图。
+    /// </summary>
+    IReadOnlyCollection<ViewBase> ActivatedViews { get; }
 
     /// <summary>
     /// 将视图激活到视图宿主中。
@@ -57,6 +70,13 @@ public interface IViewHost
     /// <param name="view">要显示的视图</param>
     /// <param name="owner">视图所有者</param>
     Task ShowViewModal(ViewBase view, ViewBase owner);
+
+    /// <summary>
+    /// 以原生窗口为所有者模态显示指定的视图。
+    /// </summary>
+    /// <param name="view">要显示的视图。</param>
+    /// <param name="owner">所有者窗口。</param>
+    Task ShowViewModal(ViewBase view, Window owner);
 
     /// <summary>
     /// 隐藏指定的视图

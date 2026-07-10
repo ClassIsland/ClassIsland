@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
@@ -39,10 +40,10 @@ public partial class ClockSettingsPage : SettingsPageBase
         ViewModel.LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
     }
 
-    private void ButtonAdjustTime_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonAdjustTime_OnClick(object sender, RoutedEventArgs e)
     {
         var window = IAppHost.GetService<TimeAdjustmentWindow>();
-        window.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
+        await window.ShowModal(this.FindAncestorOfType<ViewBase>());
     }
 
     private void ButtonSyncTimeNow_OnClick(object sender, RoutedEventArgs e)

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -48,9 +49,8 @@ using Sentry;
 
 namespace ClassIsland.Views;
 
-public partial class ProfileSettingsWindow : MyWindow
+public partial class ProfileSettingsWindow : ViewBase
 {
-    private bool _isOpen = false;
     private record UndoEntry(bool IsAdd, TimeLayoutItem Item, TimeLayout Layout, int Index, string Description);
     private readonly Stack<UndoEntry> _undoStack = new();
     private readonly Stack<UndoEntry> _redoStack = new();
@@ -97,7 +97,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void OnGlobalUndoRedoKeyDown(object? sender, KeyEventArgs e)
     {
         // 焦点位于文本输入框时，保留其自身的撤销/重做行为
-        if (FocusManager?.GetFocusedElement() is TextBox)
+        if (TopLevel?.FocusManager?.GetFocusedElement() is TextBox)
             return;
         switch (e.Key)
         {
@@ -183,9 +183,20 @@ public partial class ProfileSettingsWindow : MyWindow
         }
     }
 
-    public async void Open(Uri? uri = null)
+    public override async void Open(ViewBase? owner = null)
     {
-        if (!_isOpen)
+        await OpenCore(owner, null);
+    }
+
+    public async void Open(Uri? uri)
+    {
+        await OpenCore(null, uri);
+    }
+
+    private async Task OpenCore(ViewBase? owner, Uri? uri)
+    {
+        var isOpening = AssociatedViewHost == null;
+        if (isOpening)
         {
             if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig
                     .EditProfileAuthorizeLevel))
@@ -194,8 +205,7 @@ public partial class ProfileSettingsWindow : MyWindow
             }
 
             SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.open", 1);
-            _isOpen = true;
-            Show();
+            base.Open(owner);
             if (ViewModel.ManagementService.Policy is
                 {
                     DisableProfileEditing: false, DisableProfileClassPlanEditing: false,
@@ -227,12 +237,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         else
         {
-            if (WindowState == WindowState.Minimized)
-            {
-                WindowState = WindowState.Normal;
-            }
-
-            Activate();
+            base.Open(owner);
         }
         
         ViewModel.TutorialService.PushToNextSentenceByTag("classisland.profileSettingsWindow.open");
@@ -261,16 +266,13 @@ public partial class ProfileSettingsWindow : MyWindow
         };
     }
 
-    private void Window_OnClosing(object? sender, WindowClosingEventArgs e)
+    private void Window_OnClosing(object? sender, ViewClosingEventArgs e)
     {
-        if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
+        if (e.ViewHostCloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
         {
             return;
         }
-        e.Cancel = true;
-        _isOpen = false;
         ViewModel.ProfileService.SaveProfile();
-        Hide();
     }
     
     private void MasterTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -573,7 +575,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region ClassPlans
 
-    private void ButtonOpenClassPlanDetailsWindow_OnClick(object? sender, RoutedEventArgs e)
+    private async void ButtonOpenClassPlanDetailsWindow_OnClick(object? sender, RoutedEventArgs e)
     {
         var details = App.GetService<ClassPlanDetailsWindow>();
         if (ViewModel.SelectedClassPlan == null)
@@ -581,7 +583,7 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         details.ViewModel.ClassPlan = ViewModel.SelectedClassPlan;
-        _ = details.ShowDialog(this);
+        await details.ShowModal(this);
     }
     
     private void UpdateClassPlanInfoEditorTimeLayoutComboBox()
@@ -1607,7 +1609,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
         if (info.FunctionHandler != null)
         {
-            info.FunctionHandler(this);
+            info.FunctionHandler(TopLevel!);
             return;
         }
 

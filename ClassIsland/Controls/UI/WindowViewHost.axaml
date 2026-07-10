@@ -22,15 +22,23 @@
             <Setter Property="Width" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.HostWidth), Mode=TwoWay}"/>
             <Setter Property="Height" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.HostHeight), Mode=TwoWay}"/>
             <Setter Property="CanResize" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.CanResize), Mode=TwoWay, FallbackValue={x:True}}"/>
+            <Setter Property="CanMaximize" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.CanMaximize), FallbackValue={x:True}}"/>
+            <Setter Property="SizeToContent" Value="{Binding #NavigationPage.CurrentPage.(ci:ViewBase.SizeToContent)}"/>
+            <Setter Property="MinWidth" Value="{Binding #NavigationPage.CurrentPage.MinWidth}"/>
+            <Setter Property="MinHeight" Value="{Binding #NavigationPage.CurrentPage.MinHeight}"/>
+            <Setter Property="MaxWidth" Value="{Binding #NavigationPage.CurrentPage.MaxWidth}"/>
+            <Setter Property="MaxHeight" Value="{Binding #NavigationPage.CurrentPage.MaxHeight}"/>
             <Style Selector="^:inlineHeader">
                 <Style Selector="^ NavigationPage#NavigationPage">
+                    <Style Selector="^ /template/ Border#PART_NavBarSpacer">
+                        <Setter Property="Height" Value="{Binding $parent[ui:WindowViewHost].InlineHeaderHeight}"/>
+                    </Style>
                     <Style Selector="^ /template/ Border#PART_NavigationBar">
                         <Setter Property="Height" Value="{Binding $parent[ui:WindowViewHost].InlineHeaderHeight}"/>
                         <Style Selector="^ > Grid">
                             <Setter Property="Margin" Value="0"/>
                         </Style>
                         <Setter Property="TextElement.Foreground" Value="{DynamicResource TitleBarForeground}"/>
-                        
                     </Style>
                     
                     <Style Selector="^ /template/ ContentPresenter#PART_Header">

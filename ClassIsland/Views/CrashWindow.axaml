@@ -11,9 +11,9 @@
                    xmlns:ci="http://classisland.tech/schemas/xaml/core"
                    d:DataContext="{d:DesignInstance views:CrashWindow}"
                    mc:Ignorable="d"
+                   HostStartupLocation="CenterScreen"
                    Icon="/Assets/AppLogo.ico"
-                   Header="ClassIsland 崩溃报告" HostHeight="450" HostWidth="800"
-                   >
+                   Header="ClassIsland 崩溃报告" HostHeight="450" HostWidth="800">
     <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
         <!-- Header -->
         <controls1:StickerControl Grid.Row="0" Grid.Column="0"
