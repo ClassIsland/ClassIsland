@@ -14,7 +14,7 @@ public class TimeLayout : AttachableSettingsObject
 {
     private ObservableCollection<TimeLayoutItem> _layouts = new();
     private readonly Dictionary<TimeLayoutItem, int> _timeTypeChangeClassIndexes = new();
-    private string _name = "新时间表";
+    private string? _name;
     private bool _isActivated = false;
     private bool _isActivatedManually = false;
     private bool _isOverlay = false;
@@ -149,7 +149,7 @@ public class TimeLayout : AttachableSettingsObject
             return;
         }
 
-        if (Name.Length <= 5 || !Name.Contains("新时间表"))
+        if (Name!.Length <= 5 || !Name.Contains("新时间表"))
         {
             IsRenamed = true;
             IsRenamedChecked = true;
@@ -309,7 +309,7 @@ public class TimeLayout : AttachableSettingsObject
     /// <summary>
     /// 时间表名称
     /// </summary>
-    public string Name
+    public string? Name
     {
         get => _name;
         set
