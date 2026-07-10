@@ -50,17 +50,24 @@ public class ThemeService : IHostedService, IThemeService
             return;
         }
         
-        AppBase.Current.RequestedThemeVariant = themeMode switch
+        ThemeVariant? requestedThemeVariant = themeMode switch
         {
-            0 => ThemeVariant.Default,
             1 => ThemeVariant.Light,
             2 => ThemeVariant.Dark,
-            _ => ThemeVariant.Default
+            _ => null
         };
+
+        // FluentAvalonia resolves and tracks the concrete system theme itself. Assigning
+        // ThemeVariant.Default here makes Avalonia clear ActualThemeVariant and can re-enter
+        // application resource resolution, eventually causing a stack overflow.
+        faTheme.PreferSystemTheme = requestedThemeVariant == null;
+        if (requestedThemeVariant != null)
+        {
+            AppBase.Current.RequestedThemeVariant = requestedThemeVariant;
+        }
 
         faTheme.CustomAccentColor = primary;
         faTheme.PreferUserAccentColor = primary == null;
-        faTheme.PreferSystemTheme = themeMode == 0;
         
         // 计算应用画刷
         var brush = AppBase.Current.TryFindResource("AccentFillColorSelectedTextBackgroundBrush",

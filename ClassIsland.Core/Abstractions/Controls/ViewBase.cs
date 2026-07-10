@@ -1,7 +1,9 @@
+using System.Reflection;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Core.Services.UI;
 using ClassIsland.Platforms.Abstraction.Enums;
@@ -14,6 +16,9 @@ namespace ClassIsland.Core.Abstractions.Controls;
 public abstract class ViewBase : ContentPage
 {
     #region Fields
+    
+    public static readonly FieldInfo? s_stylesAppliedField = typeof(StyledElement).GetField("_stylesApplied", BindingFlags.Instance | BindingFlags.NonPublic);
+    
 
     private TaskCompletionSource? DeActiveTcs { get; set; }
 
@@ -165,6 +170,34 @@ public abstract class ViewBase : ContentPage
         SetCurrentValue(HostFeaturesProperty, new AvaloniaList<WindowFeatures>());
         Navigating += OnNavigating;
     }
+    
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        if (ShowedOnce)
+        {
+            InvalidChildren(this);
+        }
+        
+        base.OnAttachedToVisualTree(e);
+    }
+    
+    private void InvalidChildren(Visual visual)
+    {
+        visual.InvalidateVisual();
+        if (visual is StyledElement se)
+        {
+            s_stylesAppliedField?.SetValue(se, false);
+        }
+
+        if (visual is Control control)
+        {
+            control.InvalidateMeasure();
+        }
+        foreach (var child in visual.GetVisualChildren())
+        {
+            InvalidChildren(child);
+        }
+    }
 
     private async Task OnNavigating(NavigatingFromEventArgs arg)
     {
@@ -244,20 +277,33 @@ public abstract class ViewBase : ContentPage
             throw new InvalidOperationException("视图已被显示时不能再次被显示。");
         }
 
+        Task? task;
         if (windowOwner != null && modal)
         {
-            _ = AssociatedViewHost.ShowViewModal(this, windowOwner);
+            task = AssociatedViewHost.ShowViewModal(this, windowOwner);
         }
         else if (owner != null && modal)
         {
-            _ = AssociatedViewHost.ShowViewModal(this, owner);
+            task = AssociatedViewHost.ShowViewModal(this, owner);
         }
         else
         {
-            _ = AssociatedViewHost.ShowView(this, owner);
+            task = AssociatedViewHost.ShowView(this, owner);
         }
-        _isShowed = true;
-        ShowedOnce = true;
+
+        task.ContinueWith(_ =>
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (ShowedOnce)
+                {
+                    InvalidChildren(this);
+                }
+                
+                _isShowed = true;
+                ShowedOnce = true;
+            });
+        });
     }
 
     private async Task ShowModalCore(ViewBase? owner = null, Window? windowOwner = null)

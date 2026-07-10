@@ -498,19 +498,19 @@
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch" />
 
-            <TabControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2"  
+            <ci:ReusableTabControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2"
                         Padding="0" Classes="navigation barrier"
                         SelectionChanged="MasterTabControl_OnSelectionChanged"
                         x:Name="MasterTabControl"
                         SelectedIndex="{Binding ViewModel.MasterPageTabSelectIndex}">
-                <TabControl.Styles>
+                <ci:ReusableTabControl.Styles>
                     <Style Selector="TabControl#MasterTabControl /template/ ItemsPresenter#PART_ItemsPresenter">
                         <Setter Property="HorizontalAlignment" Value="Left"/>
                     </Style>
-                </TabControl.Styles>
+                </ci:ReusableTabControl.Styles>
                 <TabItem Header="课表" Classes="tag-ClassPlans"
                          IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableProfileEditing}">
-                    <TabControl TabStripPlacement="Bottom" Classes="compact barrier" Padding="0" 
+                    <ci:ReusableTabControl TabStripPlacement="Bottom" Classes="compact barrier" Padding="0"
                                 SelectedIndex="{Binding ViewModel.SettingsService.Settings.ClassPlanEditModeIndex}">
                         <TabItem Header="{ci:FluentIcon &#xE075;}" ToolTip.Tip="列表视图">
                             <Grid>
@@ -875,7 +875,7 @@
                                                           Grid.Row="0" Grid.RowSpan="2"
                                                           VerticalAlignment="Stretch" />
 
-                                            <TabControl Grid.Row="0" Grid.Column="2" Classes="compact"
+                                            <ci:ReusableTabControl Grid.Row="0" Grid.Column="2" Classes="compact"
                                                         Grid.RowSpan="2"
                                                         Padding="0">
                                                 <TabItem Header="编辑科目">
@@ -916,7 +916,7 @@
                                                                   Content="选完科目自动移动到下一个课程" />
                                                     </Grid>
                                                 </TabItem>
-                                            </TabControl>
+                                            </ci:ReusableTabControl>
                                         </Grid>
                                     </Grid>
                                 </ci:Emptiable>
@@ -1006,7 +1006,7 @@
                                               Grid.Row="1" 
                                               VerticalAlignment="Stretch" />
 
-                                <TabControl Grid.Row="1" Grid.Column="2" Classes="compact tag-SubjectsInput"
+                                <ci:ReusableTabControl Grid.Row="1" Grid.Column="2" Classes="compact tag-SubjectsInput"
                                             IsEnabled="{Binding !ViewModel.ManagementService.Policy.DisableProfileClassPlanEditing}"
                                             Padding="0">
                                     <TabItem Header="编辑科目">
@@ -1048,7 +1048,7 @@
                                                       Content="选完科目自动移动到下一个课程" />
                                         </Grid>
                                     </TabItem>
-                                </TabControl>
+                                </ci:ReusableTabControl>
                             </Grid>
                         </TabItem>
                         <TabItem Header="{ci:FluentIcon &#xE304;}" ToolTip.Tip="月视图">
@@ -1074,7 +1074,7 @@
                                                                    SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}" />
                             </Grid>
                         </TabItem>
-                    </TabControl>
+                    </ci:ReusableTabControl>
                     
                 </TabItem>
                 <TabItem Header="时间表" Classes="tag-TimeLayouts"
@@ -1267,7 +1267,7 @@
                                         </controls:FACommandBar.PrimaryCommands>
                                     </controls:FACommandBar>
                                 </ci:TutorialBarrier>
-                                <TabControl Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Classes="compact barrier"
+                                <ci:ReusableTabControl Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" Classes="compact barrier"
                                             Padding="0"
                                             SelectedIndex="{Binding $parent[views:ProfileSettingsWindow].ViewModel.SettingsService.Settings.TimeLayoutEditorIndex, Mode=TwoWay}"
                                             TabStripPlacement="Bottom">
@@ -1307,7 +1307,7 @@
                                             </timeLine:TimeLineListControl.IsReadonly>
                                         </timeLine:TimeLineListControl>
                                     </TabItem>
-                                </TabControl>
+                                </ci:ReusableTabControl>
                                 <!-- 底部操作按钮 -->
                                 <StackPanel Grid.Row="3" Grid.Column="0" Spacing="2"
                                             Orientation="Horizontal"
@@ -1844,7 +1844,7 @@
                                       Margin="4 0"
                                       ResizeBehavior="PreviousAndNext"/>
 
-                        <TabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl"
+                        <ci:ReusableTabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl"
                                     SelectionChanged="ScheduleAdjustmentTabControl_OnSelectionChanged"
                                     TabStripPlacement="Bottom"
                                     Padding="0"
@@ -1884,7 +1884,7 @@
                                                                   DisplayDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"
                                                                   SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}" />
                             </TabItem>
-                        </TabControl>
+                        </ci:ReusableTabControl>
                     </Grid>
                 </TabItem>
                 <TabItem Header="导入/导出" IsVisible="False">
@@ -1943,7 +1943,7 @@
                         </ci:Emptiable>
                     </controls:FANavigationView>
                 </TabItem>
-            </TabControl>
+            </ci:ReusableTabControl>
 
             <!-- 信息栏 -->
             <ci:TutorialBarrier Grid.Column="1" Grid.Row="0" >
