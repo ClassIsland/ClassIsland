@@ -28,7 +28,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 
 #### [🌐 官方网站](https://classisland.tech/) | [🚀 软件下载](https://classisland.tech/download)｜[📚 项目文档](https://docs.classisland.tech)｜[🗳 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop)
 
-###### [观看介绍视频，快速了解突破创新 →](https://www.bilibili.com/video/BV12fFoefEGn/)
+###### [观看介绍视频，快速了解突破创新 →](https://www.bilibili.com/video/BV1SYZyBDEXJ/)
 
 </div>
 
@@ -127,7 +127,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的跨平台课表信息显�
 - Windows 10 或更高版本
 - macOS Big Sur 11 或更高版本 [^1]
 - Debian（或其衍生版）10 或更高版本，X11 图形环境 [^1]
-  
+
 [^1]: 仅适用于 1.7.105.1 及更高版本的 ClassIsland
 
 对于 Windows PC，您需要安装 [.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
@@ -158,8 +158,8 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 [![GitHub Issues](https://img.shields.io/github/issues-search/ClassIsland/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Issues&color=%233fb950)](https://github.com/ClassIsland/ClassIsland/issues)
 [![GitHub Discussions](https://img.shields.io/github/discussions/ClassIsland/ClassIsland?style=flat-square&logo=Github&label=Discussions)](https://github.com/ClassIsland/ClassIsland/discussions)
 [![加入 QQ 频道](https://img.shields.io/badge/QQ_%E9%A2%91%E9%81%93-classisland-%230066cc?style=flat-square&logo=TencentQQ)](https://pd.qq.com/s/scb3wzia)
-[![加入 QQ 群](https://img.shields.io/badge/QQ_%E7%BE%A4_1-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
-[![加入 QQ 群](https://img.shields.io/badge/QQ_%E7%BE%A4_2-769582982-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/MhWCvrk7mu)
+[![加入 QQ 群 1](https://img.shields.io/badge/QQ_%E7%BE%A4_1-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
+[![加入 QQ 群 2](https://img.shields.io/badge/QQ_%E7%BE%A4_2-769582982-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/MhWCvrk7mu)
 
 如果您确定您遇到的问题是一个 **Bug**，或者您要提出一项**新的功能**，请[提交 Issue](https://github.com/ClassIsland/ClassIsland/issues/new/choose)。
 
@@ -288,7 +288,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
     <td>
     Free code signing on Windows provided by <a href="https://signpath.io">SignPath.io</a>, certficate by <a href="https://signpath.org/">SignPath Foundation</a>
     </td>
-  </tr> 
+  </tr>
   <tr>
     <td>
       <img alt="苏州晔淞信息科技有限公司" src="https://res.classisland.tech/sponsors/ystron.png" width="50" height="50"/>
@@ -296,7 +296,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
     <td>
     由<a href="https://www.yesongit.com">苏州晔淞信息科技有限公司</a>提供云计算支持。苏州晔淞信息科技有限公司以自主创新、灵活开放的理念，以行业领先的云计算平台助力云上业务创新。
     </td>
-  </tr> 
+  </tr>
 </table>
 
 ## 代码签名策略 / Code signing policy
