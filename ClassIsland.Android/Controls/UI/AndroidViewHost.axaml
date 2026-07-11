@@ -9,7 +9,18 @@
             <Setter Property="Background" Value="{x:Null}"/>
         </Style>
     </UserControl.Styles>
-    <NavigationPage x:Name="NavigationPage"
-                    Popped="NavigationPage_OnPopped">
-    </NavigationPage>
+    <Grid>
+        <NavigationPage x:Name="NavigationPage"
+                        Popped="NavigationPage_OnPopped">
+        </NavigationPage>
+        <Border Height="3"
+                VerticalAlignment="Top"
+                ClipToBounds="True"
+                IsHitTestVisible="False">
+            <Rectangle x:Name="NavigationProgressBarFill"
+                       HorizontalAlignment="Stretch"
+                       Fill="{DynamicResource AccentFillColorDefaultBrush}"
+                       Opacity="0" />
+        </Border>
+    </Grid>
 </UserControl>

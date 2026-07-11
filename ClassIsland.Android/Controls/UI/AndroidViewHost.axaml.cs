@@ -1,9 +1,12 @@
 using System.Runtime.Versioning;
 using Android.Content;
 using Avalonia;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Rendering.Composition;
+using Avalonia.Rendering.Composition.Animations;
 using ClassIsland.Controls.UI;
 using ClassIsland.Core.Abstractions.Controls;
 
@@ -40,6 +43,8 @@ public partial class AndroidViewHost : UserControl, IViewHost
     private IDisposable? _currentViewHostShowAsDialogObserver;
     
     private IDisposable? _currentViewHeaderHeightOverrideObserver;
+
+    private int _navigationProgressAnimationVersion;
     
     public AndroidViewHost(MainActivity activity)
     {
@@ -217,7 +222,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
         }
         
         Activate();
-        await NavigationPage.PushAsync(view);
+        await RunNavigationWithProgressAsync(() => NavigationPage.PushAsync(view));
         SetCurrentView(view);
     }
 
@@ -259,10 +264,91 @@ public partial class AndroidViewHost : UserControl, IViewHost
         }
         else
         {
-            await NavigationPage.PopAsync();
+            await RunNavigationWithProgressAsync(() => NavigationPage.PopAsync());
         }
 
         return true;
+    }
+
+    private async Task RunNavigationWithProgressAsync(Func<Task> navigation)
+    {
+        var animationVersion = StartNavigationProgressAnimation();
+        try
+        {
+            await Dispatcher.InvokeAsync(async () =>
+            {
+                await navigation();
+            });
+        }
+        finally
+        {
+            await CompleteNavigationProgressAnimationAsync(animationVersion);
+        }
+    }
+
+    private int StartNavigationProgressAnimation()
+    {
+        var animationVersion = ++_navigationProgressAnimationVersion;
+        var visual = ElementComposition.GetElementVisual(NavigationProgressBarFill);
+        if (visual == null)
+        {
+            return animationVersion;
+        }
+
+        var compositor = visual.Compositor;
+        var progressAnimation = compositor.CreateVector3DKeyFrameAnimation();
+        progressAnimation.InsertKeyFrame(0.0f, visual.Scale with { X = 0.05 });
+        progressAnimation.InsertKeyFrame(0.35f, visual.Scale with { X = 0.65 }, new CubicEaseOut());
+        progressAnimation.InsertKeyFrame(1.0f, visual.Scale with { X = 0.9 }, new CubicEaseOut());
+        progressAnimation.Duration = TimeSpan.FromSeconds(1.5);
+        visual.StartAnimation(nameof(visual.Scale), progressAnimation);
+
+        var opacityAnimation = compositor.CreateScalarKeyFrameAnimation();
+        opacityAnimation.InsertKeyFrame(0.0f, 1);
+        opacityAnimation.InsertKeyFrame(1.0f, 1);
+        opacityAnimation.Duration = progressAnimation.Duration;
+        visual.StartAnimation(nameof(visual.Opacity), opacityAnimation);
+
+        return animationVersion;
+    }
+
+    private async Task CompleteNavigationProgressAnimationAsync(int animationVersion)
+    {
+        if (animationVersion != _navigationProgressAnimationVersion)
+        {
+            return;
+        }
+
+        var visual = ElementComposition.GetElementVisual(NavigationProgressBarFill);
+        if (visual == null)
+        {
+            return;
+        }
+
+        var completionDuration = TimeSpan.FromMilliseconds(150);
+        var completionAnimation = visual.Compositor.CreateVector3DKeyFrameAnimation();
+        completionAnimation.InsertKeyFrame(1.0f, visual.Scale with { X = 1 }, new CubicEaseOut());
+        completionAnimation.Duration = completionDuration;
+        visual.StartAnimation(nameof(visual.Scale), completionAnimation);
+        await Task.Delay(completionDuration);
+
+        if (animationVersion != _navigationProgressAnimationVersion)
+        {
+            return;
+        }
+
+        var fadeDuration = TimeSpan.FromMilliseconds(120);
+        var fadeAnimation = visual.Compositor.CreateScalarKeyFrameAnimation();
+        fadeAnimation.InsertKeyFrame(1.0f, 0, new CubicEaseOut());
+        fadeAnimation.Duration = fadeDuration;
+        visual.StartAnimation(nameof(visual.Opacity), fadeAnimation);
+        await Task.Delay(fadeDuration);
+
+        if (animationVersion == _navigationProgressAnimationVersion)
+        {
+            visual.Opacity = 0;
+            visual.Scale = visual.Scale with { X = 0.05 };
+        }
     }
 
     private void NavigationPage_OnPopped(object? sender, NavigationEventArgs e)
