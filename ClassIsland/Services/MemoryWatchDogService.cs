@@ -48,6 +48,10 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
 
     private void CheckMemoryAndRestartIfNeeded()
     {
+        if (OperatingSystem.IsAndroid())
+        {
+            return;
+        }
         var size = GetMemoryUsage();
         var formatted = Helpers.StorageSizeHelper.FormatSize((ulong)size);
         Logger.LogInformation("当前内存使用: {} ({} Bytes)", formatted, size);

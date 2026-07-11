@@ -17,7 +17,10 @@
         </StackPanel>
         
         <TextBlock FontSize="12" Classes="l-instructive" Margin="0 0 0 2"
-                   VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                   VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                   TextAlignment="Center">
+            Lifetime:<Run Text="{Binding Source={x:Static ci:AppBase.CurrentLifetime}}"/>
+            <LineBreak/>
             <Run Text="{x:Static classIsland:App.AppVersion}"/>-<Run Text="{x:Static classIsland:App.AppCodeName}"/>
         </TextBlock>
     </Grid>
