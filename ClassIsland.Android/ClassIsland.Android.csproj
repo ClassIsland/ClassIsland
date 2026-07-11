@@ -21,7 +21,7 @@
     <ApplicationTitle>ClassIsland (Dev)</ApplicationTitle>
   </PropertyGroup>
   <PropertyGroup>
-    <AndroidManifestPlaceholders>applicationLabel=$(ApplicationTitle)</AndroidManifestPlaceholders>
+    <AndroidManifestPlaceholders>applicationLabel=$(ApplicationTitle);documentsAuthority=$(ApplicationId).documents</AndroidManifestPlaceholders>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
