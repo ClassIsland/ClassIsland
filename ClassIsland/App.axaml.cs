@@ -821,8 +821,6 @@ public partial class App : AppBase, IAppHost
                 }
             }
 
-            var sw = IAppHost.GetService<SettingsWindowNew>();
-            await sw.ShowModal();
             var w = IAppHost.GetService<WelcomeWindow>();
             if (ApplicationCommand.Refreshing)
             {

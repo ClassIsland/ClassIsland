@@ -5,6 +5,7 @@ using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Media;
 using ClassIsland.Extensions;
+using ClassIsland.Services;
 
 namespace ClassIsland.Android;
 
@@ -18,7 +19,7 @@ public class Application : AvaloniaAndroidApplication<App>
     {
         Instance = this;
     }
-    
+
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
         var buildApp = Program.AppEntry(["--mobile"]);
