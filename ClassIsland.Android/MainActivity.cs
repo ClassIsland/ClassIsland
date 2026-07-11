@@ -9,6 +9,7 @@ using ClassIsland.Android.Services.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.UI;
 using ClassIsland.Core.Enums;
+using ClassIsland.Shared;
 using ClassIsland.Views;
 
 namespace ClassIsland.Android;
@@ -46,6 +47,16 @@ public class MainActivity : AvaloniaMainActivity
             {
                 AppBase.Current.PhonyRootWindow = TopLevel.GetTopLevel(ViewHost)!;
                 ((App)AppBase.Current).Init();
+            });
+        }
+        else if (AppBase.CurrentLifetime == ApplicationLifetime.Running)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                Console.WriteLine("[ELYSIADBG] Recreating MainView...");
+                AppBase.Current.PhonyRootWindow = TopLevel.GetTopLevel(ViewHost)!;
+                var mv = IAppHost.GetService<MainView>();
+                mv.Show();
             });
         }
     }

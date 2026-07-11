@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using Android.Content;
 using Avalonia;
+using Avalonia.Android;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -9,6 +10,7 @@ using Avalonia.Rendering.Composition;
 using Avalonia.Rendering.Composition.Animations;
 using ClassIsland.Controls.UI;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Views;
 
 namespace ClassIsland.Android.Controls.UI;
 
@@ -23,6 +25,8 @@ public partial class AndroidViewHost : UserControl, IViewHost
     private HashSet<ViewBase> ActivatedViews { get; } = [];
 
     private bool _isShowed = false;
+
+    private bool _isFirstViewShowed = false;
 
     private bool _isClosed = false;
 
@@ -90,7 +94,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     public void Hide()
     {
-        throw new NotImplementedException();
+        Activity.Finish();
     }
 
     public new void Activate()
@@ -222,7 +226,22 @@ public partial class AndroidViewHost : UserControl, IViewHost
         }
         
         Activate();
-        await RunNavigationWithProgressAsync(() => NavigationPage.PushAsync(view));
+        var isFirstViewShowed = _isFirstViewShowed;
+        await RunNavigationWithProgressAsync(async () =>
+        {
+            if (isFirstViewShowed)
+            {
+                await NavigationPage.PushAsync(view);
+            }
+            else
+            {
+                await NavigationPage.ReplaceAsync(view);
+            }
+        });
+        if (view is SplashView)
+        {
+            _isFirstViewShowed = true;
+        }
         SetCurrentView(view);
     }
 
@@ -243,6 +262,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
     public async Task<bool> HideView(ViewBase view)
     {
+        Console.WriteLine($"[ELYSIADBG] Going to hide view {view}");
         if (!ActivatedViews.Contains(view))
         {
             throw new InvalidOperationException("视图必须已经激活才能隐藏。");
@@ -260,7 +280,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
 
         if (NavigationPage.Pages?.Count() <= 1)
         {
-            Activity.Finish();
+            Hide();
         }
         else
         {

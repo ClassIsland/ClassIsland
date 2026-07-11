@@ -41,6 +41,14 @@ public class Application : AvaloniaAndroidApplication<App>
                     }
                 ]
             })
+            .With(new AndroidPlatformOptions()
+            {
+                // RenderingMode = [
+                //     AndroidRenderingMode.Vulkan,
+                //     AndroidRenderingMode.Egl,
+                //     AndroidRenderingMode.Software
+                // ]
+            })
             .LogToHostSink();
     }
 }

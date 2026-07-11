@@ -169,8 +169,33 @@ public abstract class ViewBase : ContentPage
     {
         SetCurrentValue(HostFeaturesProperty, new AvaloniaList<WindowFeatures>());
         Navigating += OnNavigating;
+        NavigatedFrom += OnNavigatedFrom;
+        NavigatedTo += OnNavigatedTo;
     }
-    
+
+    private void OnNavigatedTo(object? sender, NavigatedToEventArgs e)
+    {
+        Console.WriteLine($"[ELYSIADBG] OnNavigatedTo {this} {TopLevel}");
+        TopLevel?.BackRequested += TopLevelOnBackRequested;
+    }
+
+    private void OnNavigatedFrom(object? sender, NavigatedFromEventArgs e)
+    {
+        
+    }
+
+    private void TopLevelOnBackRequested(object? sender, RoutedEventArgs e)
+    {
+        if (e.Handled)
+        {
+            return;
+        }
+
+        Console.WriteLine("[ELYSIADBG] 听好了！！！！！ BackRequested！！！！！！！！！！");
+        e.Handled = true;
+        Hide();
+    }
+
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         if (ShowedOnce)
@@ -201,20 +226,16 @@ public abstract class ViewBase : ContentPage
 
     private async Task OnNavigating(NavigatingFromEventArgs arg)
     {
-        if (arg.NavigationType is NavigationType.Insert or NavigationType.Push or NavigationType.PushModal)
-        {
-            return;
-        }
-
-        if (!_isShowed)
-        {
-            return;
-        }
-
-        if (InvokeClosingEvent(WindowCloseReason.Undefined, false, true))
+        if (_isShowed 
+            && arg.NavigationType is NavigationType.Pop or NavigationType.PopModal or NavigationType.PopToRoot or NavigationType.Replace or NavigationType.Remove
+            && InvokeClosingEvent(WindowCloseReason.Undefined, false, true))
         {
             arg.Cancel = true;
+            return;
         }
+        
+        Console.WriteLine($"[ELYSIADBG] OnNavigatedFrom {this} {TopLevel}");
+        TopLevel?.BackRequested -= TopLevelOnBackRequested;
     }
 
     internal bool ViewActivating(IViewHost viewHost)
