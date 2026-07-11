@@ -13,7 +13,7 @@ description: 配置 ClassIsland 插件开发环境：检查操作系统、安装
 
 检查你的系统是否安装了以下软件：
 
-- .NET 8.0 SDK
+- .NET 8 & 9 SDK
 - Git
 - PowerShell Core（`pwsh.exe`）
 
@@ -26,8 +26,9 @@ description: 配置 ClassIsland 插件开发环境：检查操作系统、安装
 # PowerShell Core
 winget install Microsoft.PowerShell
 
-# .NET 8.0 SDK
+# .NET SDK
 winget install Microsoft.DotNet.SDK.8
+winget install Microsoft.DotNet.SDK.9
 
 # Git
 winget install --id Git.Git -e --source winget
