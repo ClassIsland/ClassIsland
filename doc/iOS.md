@@ -90,6 +90,10 @@ dotnet workload restore ClassIsland.iOS/ClassIsland.iOS.csproj
 
 Windows 可以编译和测试 C# 层，但无法执行 Xcode、签名 Widget Extension 或产出可安装的 IPA。
 
+## 通过 Files App 查看应用文件
+
+iOS 与 iPadOS 版本已启用文件共享和原位打开，应用数据保存在可见的 `Documents/ClassIsland/Data` 目录。安装并至少启动一次 ClassIsland 后，可在 Files App 的“在我的 iPhone/iPad 上 > ClassIsland”中查看配置、课表、日志等文件。
+
 ## 从 C# 调用实时活动和灵动岛
 
 业务代码不需要引用 Swift 类型：
