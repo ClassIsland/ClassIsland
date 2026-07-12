@@ -9,6 +9,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.UriNavigation;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Microsoft.Extensions.Logging;
@@ -70,7 +71,7 @@ public class UriNavigationService : IUriNavigationService
             }
             else
             {
-                AppBase.Current.PhonyRootWindow.Launcher.LaunchUriAsync(uri);
+                PlatformServices.LauncherService.LaunchUrl(uri.ToString());
             }
         });
     }

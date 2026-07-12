@@ -65,11 +65,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
     [RelayCommand]
     private void OpenFolder(ThemeInfo info)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = System.IO.Path.GetFullPath(info.Path),
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(info.Path);
     }
 
     [RelayCommand]
@@ -80,11 +76,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
 
     private void ButtonOpenThemeFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = ClassIsland.Services.XamlThemeService.ThemesPath,
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(ClassIsland.Services.XamlThemeService.ThemesPath);
     }
 
     private void ListBoxCategory_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -152,11 +144,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
         try
         {
             await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, file);
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = Path.GetDirectoryName(file) ?? "",
-                UseShellExecute = true
-            });
+            await PlatformServices.LauncherService.LaunchPath(Path.GetDirectoryName(file) ?? "");
         }
         catch (Exception ex)
         {

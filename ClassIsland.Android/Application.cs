@@ -12,9 +12,10 @@ using ClassIsland.Services;
 namespace ClassIsland.Android;
 
 [Application]
-[SupportedOSPlatform("android")]
+[SupportedOSPlatform("android24.0")]
 public class Application : AvaloniaAndroidApplication<App>
 {
+    
     public static Application Instance { get; private set; } = null!;
     
     protected Application(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
@@ -25,6 +26,7 @@ public class Application : AvaloniaAndroidApplication<App>
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
         PlatformServices.AppLifetimeService = new AndroidAppLifetimeService();
+        PlatformServices.LauncherService = new LauncherService();
 
         var restartParameters = MainActivity.Current?.TryGetTarget(out var mainActivity) == true
             ? mainActivity.Intent?.GetStringArrayExtra(AndroidAppLifetimeService.RestartParametersExtra)

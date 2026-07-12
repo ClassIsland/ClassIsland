@@ -71,11 +71,7 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private void Hyperlink2_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = "https://github.com/DuguSand/class_form",
-            UseShellExecute = true
-        });
+        IAppHost.TryGetService<IUriNavigationService>()?.NavigateWrapped(new Uri("https://github.com/DuguSand/class_form"));
     }
 
     private async void ButtonDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)

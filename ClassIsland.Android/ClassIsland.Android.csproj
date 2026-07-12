@@ -16,14 +16,17 @@
   <PropertyGroup Condition="'$(BrandType)' == 'Production'">
     <ApplicationId>cn.classisland.android</ApplicationId>
     <ApplicationTitle>ClassIsland</ApplicationTitle>
+    <DefineConstants>$(DefineConstants);Brand_Production</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BrandType)' == 'Beta'">
     <ApplicationId>cn.classisland.android,beta</ApplicationId>
     <ApplicationTitle>ClassIsland (Beta)</ApplicationTitle>
+    <DefineConstants>$(DefineConstants);Brand_Beta</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BrandType)' == 'Dev'">
     <ApplicationId>cn.classisland.android.dev</ApplicationId>
     <ApplicationTitle>ClassIsland (Dev)</ApplicationTitle>
+    <DefineConstants>$(DefineConstants);Brand_Dev</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <AndroidManifestPlaceholders>applicationLabel=$(ApplicationTitle);documentsAuthority=$(ApplicationId).documents</AndroidManifestPlaceholders>

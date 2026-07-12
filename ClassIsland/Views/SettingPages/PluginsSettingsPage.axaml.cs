@@ -167,11 +167,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
         try
         {
             await Services.PluginService.PackagePluginAsync(ViewModel.SelectedPluginInfo.Manifest.Id, file);
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = Path.GetDirectoryName(file) ?? "",
-                UseShellExecute = true
-            });
+            await PlatformServices.LauncherService.LaunchPath(Path.GetDirectoryName(file));
         }
         catch (Exception ex)
         {
@@ -183,11 +179,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         if (ViewModel.SelectedPluginInfo == null)
             return;
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = ViewModel.SelectedPluginInfo.PluginFolderPath,
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(ViewModel.SelectedPluginInfo.PluginFolderPath);
     }
 
     public class PluginInstallPreviewItem : PluginManifest
@@ -422,11 +414,8 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         if (ViewModel.SelectedPluginInfo == null)
             return;
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.Combine(Services.PluginService.PluginConfigsFolderPath, ViewModel.SelectedPluginInfo.Manifest.Id),
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(Path.Combine(Services.PluginService.PluginConfigsFolderPath,
+            ViewModel.SelectedPluginInfo.Manifest.Id));
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -535,11 +524,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private void MenuItemOpenPluginsFolder_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsPluginMarketOperationsPopupOpened = false;
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(Services.PluginService.PluginsRootPath),
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(Services.PluginService.PluginsRootPath);
     }
 
     private void ButtonBase2_OnClick(object sender, RoutedEventArgs e)

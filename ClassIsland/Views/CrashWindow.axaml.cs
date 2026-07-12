@@ -7,6 +7,7 @@ using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 
 namespace ClassIsland.Views;
@@ -70,11 +71,7 @@ public partial class CrashWindow : ViewBase
             $"https://github.com/ClassIsland/ClassIsland/issues/new");
         uri.Query = 
             $"template=BugReport.yml&stacktrace={HttpUtility.UrlEncode(CrashInfo)}&app_version={HttpUtility.UrlEncode(App.AppVersionLong)}&os_version={HttpUtility.UrlEncode(Environment.OSVersion.Version.ToString())}";
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = uri.ToString(),
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchUrl(uri.ToString());
     }
 
     private void ButtonDebug_OnClick(object sender, RoutedEventArgs e)

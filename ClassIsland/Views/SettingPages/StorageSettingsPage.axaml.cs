@@ -9,6 +9,7 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Models;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
@@ -57,11 +58,7 @@ public partial class StorageSettingsPage : SettingsPageBase
     {
         try
         {
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = System.IO.Path.GetFullPath(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups")),
-                UseShellExecute = true
-            });
+            PlatformServices.LauncherService.LaunchPath(Path.Combine(CommonDirectories.AppRootFolderPath, "Backups"));
         }
         catch (Exception exception)
         {

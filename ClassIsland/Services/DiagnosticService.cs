@@ -136,7 +136,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                 ZipFile.CreateFromDirectory(temp, path);
             });
             Directory.Delete(temp, true);
-            if (showExportedFile)
+            if (showExportedFile && (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid()))
             {
                 Process.Start(new ProcessStartInfo()
                 {

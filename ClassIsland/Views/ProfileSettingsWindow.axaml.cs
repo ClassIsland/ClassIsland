@@ -46,6 +46,7 @@ using HotAvalonia;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using ClassIsland.Helpers;
+using ClassIsland.Platforms.Abstraction;
 using Sentry;
 
 namespace ClassIsland.Views;
@@ -377,11 +378,7 @@ public partial class ProfileSettingsWindow : ViewBase
     private void ButtonOpenProfileFolder_OnClick(object sender, RoutedEventArgs e)
     {
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.openFolder", 1);
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(Services.ProfileService.ProfilePath),
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(ProfileService.ProfilePath);
     }
 
     private void ButtonRefreshProfiles_OnClick(object sender, RoutedEventArgs e)

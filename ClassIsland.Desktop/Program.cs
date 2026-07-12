@@ -152,6 +152,7 @@ class Program
     {
         postInitCallback = () => { };
         PlatformServices.AppLifetimeService = new DesktopAppLifetimeService();
+        PlatformServices.LauncherService = new LauncherService();
 #if Platforms_Windows
         PlatformServices.WindowPlatformService = new WindowPlatformService();
         PlatformServices.LocationService = new LocationService();

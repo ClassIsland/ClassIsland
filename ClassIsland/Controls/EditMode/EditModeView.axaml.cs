@@ -21,6 +21,7 @@ using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Core.Services.Registry;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -264,11 +265,7 @@ public partial class EditModeView : UserControl
 
     private void ButtonOpenComponentLayoutsFolder_OnClick(object? sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath),
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(ComponentsService.ComponentSettingsPath);
     }
 
     private async void ButtonCreateComponentLayout_OnClick(object? sender, RoutedEventArgs e)

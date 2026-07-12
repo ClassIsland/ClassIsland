@@ -611,20 +611,12 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     private void MenuItemOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(CommonDirectories.AppLogFolderPath) ?? "",
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(CommonDirectories.AppLogFolderPath);
     }
 
     private void MenuItemOpenAppFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(".") ?? "",
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(".");
     }
 
     private void MenuItemDebugWindowRule_OnClick(object sender, RoutedEventArgs e)
@@ -634,11 +626,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
     private void MenuItemOpenDataFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(CommonDirectories.AppRootFolderPath) ?? "",
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(CommonDirectories.AppRootFolderPath);
     }
 
     private async void MenuItemAddDesktopShortcut_OnClick(object? sender, RoutedEventArgs e)

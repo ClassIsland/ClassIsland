@@ -7,27 +7,113 @@ namespace ClassIsland.Platforms.Abstraction.Stubs.Services;
 /// <inheritdoc />
 public class AvaloniaDefaultPlatformFilePickerService : IPlatformFilePickerService
 {
+    private const string FileBookmarkSchema = "_elysia-bookmark:";
+    private const string FolderBookmarkSchema = "_cyrene-bookmark:";
+    
     /// <inheritdoc />
     public async Task<List<string>> OpenFilesPickerAsync(FilePickerOpenOptions options, TopLevel root)
     {
-        return (await root.StorageProvider.OpenFilePickerAsync(options))
-            .Select(x => x.TryGetLocalPath())
-            .OfType<string>()
+        var list =  (await root.StorageProvider.OpenFilePickerAsync(options))
             .ToList();
+        var r = new List<string>();
+        foreach (var file in list)
+        {
+            if (file.TryGetLocalPath() is {} path)
+            {
+                r.Add(path);
+                continue;
+            }
+
+            if (file.CanBookmark)
+            {
+                r.Add(FileBookmarkSchema + await file.SaveBookmarkAsync());
+            }
+        }
+
+        foreach (var file in list)
+        {
+            file.Dispose();
+        }
+
+        return r;
     }
 
     /// <inheritdoc />
     public async Task<string?> SaveFilePickerAsync(FilePickerSaveOptions options, TopLevel root)
     {
-        return (await root.StorageProvider.SaveFilePickerAsync(options))?.TryGetLocalPath();
+        var file = await root.StorageProvider.SaveFilePickerAsync(options);
+        if (file == null)
+        {
+            return null;
+        }
+        if (file.TryGetLocalPath() is {} path)
+        {
+            file.Dispose();
+            return path;
+        }
+
+        if (!file.CanBookmark)
+            return null;
+        var path2 = FileBookmarkSchema + await file.SaveBookmarkAsync();
+        file.Dispose();
+        return path2;
+
     }
 
     /// <inheritdoc />
     public async Task<List<string>> OpenFoldersPickerAsync(FolderPickerOpenOptions options, TopLevel root)
     {
-        return (await root.StorageProvider.OpenFolderPickerAsync(options))
-            .Select(x => x.TryGetLocalPath())
-            .OfType<string>()
-            .ToList();
+        var list = await root.StorageProvider.OpenFolderPickerAsync(options);
+        var r = new List<string>();
+        foreach (var file in list)
+        {
+            if (file.TryGetLocalPath() is {} path)
+            {
+                r.Add(path);
+                continue;
+            }
+
+            if (file.CanBookmark)
+            {
+                r.Add(FolderBookmarkSchema + await file.SaveBookmarkAsync());
+            }
+        }
+        
+        foreach (var file in list)
+        {
+            file.Dispose();
+        }
+
+        return r;
+    }
+
+    /// <inheritdoc />
+    public async Task<IStorageFile?> GetFileAsync(string path, TopLevel root)
+    {
+        if (path.StartsWith(FileBookmarkSchema) && 
+            await root.StorageProvider.OpenFileBookmarkAsync(path[FileBookmarkSchema.Length..]) is {} bookmarkFile)
+        {
+            return bookmarkFile;
+        }
+
+        return await root.StorageProvider.TryGetFileFromPathAsync(path);
+    }
+
+    /// <inheritdoc />
+    public async Task<IStorageFolder?> GetFolderAsync(string path, TopLevel root)
+    {
+        if (path.StartsWith(FolderBookmarkSchema) && 
+            await root.StorageProvider.OpenFolderBookmarkAsync(path[FolderBookmarkSchema.Length..]) is {} bookmarkFolder)
+        {
+            return bookmarkFolder;
+        }
+
+        return await root.StorageProvider.TryGetFolderFromPathAsync(path);
+    }
+
+    /// <inheritdoc />
+    public bool IsBookmark(string path)
+    {
+        return path.StartsWith(FileBookmarkSchema) || path.StartsWith(FolderBookmarkSchema);
     }
 }

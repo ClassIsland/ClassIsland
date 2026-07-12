@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using System.Text;
 using Android.Content;
 using Android.Database;
@@ -265,6 +266,40 @@ public sealed class ClassIslandDocumentsProvider : DocumentsProvider
         }
     }
 
+    [SupportedOSPlatform("android26.0")]
+    public override DocumentsContract.Path FindDocumentPath(string? parentDocumentId, string? childDocumentId)
+    {
+        var childPath = GetPathForDocumentId(childDocumentId);
+        if (!Directory.Exists(childPath) && !File.Exists(childPath))
+        {
+            throw NotFound(childDocumentId);
+        }
+
+        var parentPath = parentDocumentId == null ? RootPath : GetPathForDocumentId(parentDocumentId);
+        if (!string.Equals(parentPath, childPath, StringComparison.Ordinal) &&
+            !IsContainedBy(childPath, parentPath))
+        {
+            throw new JavaFileNotFoundException("The requested document is not below the supplied parent.");
+        }
+
+        var documentIds = new List<string> { GetDocumentIdForPath(parentPath) };
+        if (!string.Equals(parentPath, childPath, StringComparison.Ordinal))
+        {
+            var currentPath = parentPath;
+            foreach (var segment in Path.GetRelativePath(parentPath, childPath)
+                         .Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries))
+            {
+                currentPath = Path.Combine(currentPath, segment);
+                documentIds.Add(GetDocumentIdForPath(currentPath));
+            }
+        }
+
+        return new DocumentsContract.Path(parentDocumentId == null ? RootId : null, documentIds);
+    }
+
+    internal static global::Android.Net.Uri BuildDocumentUri(string authority, string relativePath) =>
+        DocumentsContract.BuildDocumentUri(authority, GetDocumentIdForRelativePath(relativePath));
+
     private void IncludeDocument(MatrixCursor cursor, IReadOnlyList<string> columns, string path)
     {
         if (!Directory.Exists(path) && !File.Exists(path))
@@ -349,7 +384,23 @@ public sealed class ClassIslandDocumentsProvider : DocumentsProvider
         }
 
         var relativePath = Path.GetRelativePath(RootPath, canonicalPath).Replace('\\', '/');
-        var encodedPath = Convert.ToBase64String(Encoding.UTF8.GetBytes(relativePath))
+        return GetDocumentIdForRelativePath(relativePath);
+    }
+
+    private static string GetDocumentIdForRelativePath(string relativePath)
+    {
+        var normalizedPath = relativePath.Replace('\\', '/').Trim('/');
+        if (string.IsNullOrEmpty(normalizedPath) || normalizedPath == ".")
+        {
+            return RootDocumentId;
+        }
+
+        if (Path.IsPathRooted(relativePath) || normalizedPath.Split('/').Any(segment => segment is "." or ".."))
+        {
+            throw new ArgumentException("The document path must be relative to the provider root.", nameof(relativePath));
+        }
+
+        var encodedPath = Convert.ToBase64String(Encoding.UTF8.GetBytes(normalizedPath))
             .TrimEnd('=')
             .Replace('+', '-')
             .Replace('/', '_');

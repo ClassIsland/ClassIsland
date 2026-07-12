@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ClassIsland.Platforms.Abstraction;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.RecoveryPages;
@@ -63,11 +64,7 @@ public partial class HomePage : UserControl
 
     private void ButtonOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(CommonDirectories.AppLogFolderPath) ?? "",
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(CommonDirectories.AppLogFolderPath);
     }
 
     private async void ButtonCleanTempFiles_OnClick(object sender, RoutedEventArgs e)

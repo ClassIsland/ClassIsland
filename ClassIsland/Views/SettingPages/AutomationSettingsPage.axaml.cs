@@ -12,6 +12,7 @@ using ClassIsland.Core.Extensions;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -152,11 +153,7 @@ public partial class AutomationSettingsPage : SettingsPageBase
     [RelayCommand]
     void OpenConfigFolder()
     {
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = Path.GetFullPath(AutomationService.AutomationConfigsFolderPath),
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(AutomationService.AutomationConfigsFolderPath);
     }
 
     [RelayCommand]

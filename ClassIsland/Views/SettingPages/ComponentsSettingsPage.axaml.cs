@@ -24,6 +24,7 @@ using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -145,11 +146,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
 
     private void ButtonOpenConfigFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath),
-            UseShellExecute = true
-        });
+        PlatformServices.LauncherService.LaunchPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath);
     }
     
     private void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)
