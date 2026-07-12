@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Extensions.UI;
 using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Views.WelcomePages;
@@ -30,7 +31,7 @@ public partial class LicensePage : UserControl
             },
             PrimaryButtonText = "关闭",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync();
+        }.ShowAsyncAuto();
     }
 
     private void ButtonShowPrivacyLicense_OnClick(object? sender, RoutedEventArgs e)

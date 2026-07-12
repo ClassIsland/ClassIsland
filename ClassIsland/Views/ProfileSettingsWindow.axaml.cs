@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using ClassIsland.Core.Extensions.UI;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data.Converters;
 using Avalonia.Input;
@@ -313,7 +314,7 @@ public partial class ProfileSettingsWindow : ViewBase
             DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "信任此档案",
             SecondaryButtonText = "取消"
-        }.ShowAsync();
+        }.ShowAsyncAuto();
 
         if (result == FAContentDialogResult.Primary)
         {
@@ -355,7 +356,7 @@ public partial class ProfileSettingsWindow : ViewBase
             DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "新建",
             SecondaryButtonText = "取消"
-        }.ShowAsync();
+        }.ShowAsyncAuto();
 
         var path = Path.Combine(Services.ProfileService.ProfilePath, $"{textBox.Text}.json");
         if (r != FAContentDialogResult.Primary || File.Exists(path))
@@ -409,7 +410,7 @@ public partial class ProfileSettingsWindow : ViewBase
             DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "重命名",
             SecondaryButtonText = "取消"
-        }.ShowAsync();
+        }.ShowAsyncAuto();
 
         var raw = Path.Combine(Services.ProfileService.ProfilePath, $"{ViewModel.SelectedProfile}");
         var path = Path.Combine(Services.ProfileService.ProfilePath, $"{textBox.Text}.json");
@@ -466,7 +467,7 @@ public partial class ProfileSettingsWindow : ViewBase
             DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "删除",
             SecondaryButtonText = "取消"
-        }.ShowAsync();
+        }.ShowAsyncAuto();
 
         if (r == FAContentDialogResult.Primary)
         {

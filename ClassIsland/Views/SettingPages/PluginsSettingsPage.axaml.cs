@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using ClassIsland.Core.Extensions.UI;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
@@ -350,7 +351,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
             return;
         }
 
-        var result = await dialog.ShowAsync(topLevel);
+        var result = await dialog.ShowAsyncAuto(topLevel);
         if (result != FAContentDialogResult.Primary)
             return;
 
@@ -467,7 +468,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 SecondaryButtonText = "取消",
                 PrimaryButtonText = "继续",
                 DefaultButton = FAContentDialogButton.Secondary
-            }.ShowAsync();
+            }.ShowAsyncAuto();
             if (result != FAContentDialogResult.Primary)
             {
                 return;
@@ -484,7 +485,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 SecondaryButtonText = "取消",
                 PrimaryButtonText = "继续",
                 DefaultButton = FAContentDialogButton.Secondary
-            }.ShowAsync();
+            }.ShowAsyncAuto();
             if (result != FAContentDialogResult.Primary)
             {
                 return;

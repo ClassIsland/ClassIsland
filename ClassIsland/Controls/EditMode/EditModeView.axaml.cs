@@ -10,6 +10,7 @@ using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using ClassIsland.Core.Extensions.UI;
 using Avalonia.Xaml.Interactions.DragAndDrop;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -290,7 +291,7 @@ public partial class EditModeView : UserControl
                 Label = "组件名",
                 Suffix = ".json"
             }
-        }.ShowAsync();
+        }.ShowAsyncAuto();
 
         ViewModel.CreateProfileName = textBox.Text;
         var path = Path.Combine(ClassIsland.Services.ComponentsService.ComponentSettingsPath,
@@ -338,7 +339,7 @@ public partial class EditModeView : UserControl
             DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "删除",
             SecondaryButtonText = "取消"
-        }.ShowAsync();
+        }.ShowAsyncAuto();
 
         if (r == FAContentDialogResult.Primary)
         {
@@ -367,7 +368,7 @@ public partial class EditModeView : UserControl
             DefaultButton = FAContentDialogButton.Primary,
             PrimaryButtonText = "重命名",
             SecondaryButtonText = "取消"
-        }.ShowAsync();
+        }.ShowAsyncAuto();
 
         var raw = Path.Combine(Services.ComponentsService.ComponentSettingsPath, $"{name}.json");
         var path = Path.Combine(Services.ComponentsService.ComponentSettingsPath, $"{textBox.Text}.json");

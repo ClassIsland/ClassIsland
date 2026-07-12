@@ -60,7 +60,6 @@ public class MainActivity : AvaloniaMainActivity
         {
             Dispatcher.UIThread.Post(() =>
             {
-                AppBase.Current.PhonyRootWindow = TopLevel.GetTopLevel(ViewHost)!;
                 ((App)AppBase.Current).Init();
             });
         }
@@ -69,7 +68,6 @@ public class MainActivity : AvaloniaMainActivity
             Dispatcher.UIThread.Post(() =>
             {
                 Console.WriteLine("[ELYSIADBG] Recreating MainView...");
-                AppBase.Current.PhonyRootWindow = TopLevel.GetTopLevel(ViewHost)!;
                 var mv = IAppHost.GetService<MainView>();
                 mv.Show();
             });

@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Rendering.Composition;
 using Avalonia.Rendering.Composition.Animations;
 using ClassIsland.Controls.UI;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Views;
 
@@ -56,6 +57,13 @@ public partial class AndroidViewHost : UserControl, IViewHost
         Activity.Destroy += OnDestroy;
         _isShowed = true;
         InitializeComponent();
+    }
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        AppBase.Current.PhonyRootWindow = TopLevel.GetTopLevel(this)!;
+        Console.WriteLine($"[ELYSIADBG] Get TopLevel = {TopLevel.GetTopLevel(this)}");
+        base.OnLoaded(e);
     }
 
     private void OnDestroy(object? sender, EventArgs e)

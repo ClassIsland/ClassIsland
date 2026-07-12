@@ -7,6 +7,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Services;
 using ClassIsland.Shared;
@@ -42,7 +43,7 @@ public partial class RefreshingSettingsPage : SettingsPageBase
             DefaultButton = FAContentDialogButton.Primary,
             SecondaryButtonText = "取消"
         };
-        var r = await dialog.ShowAsync(TopLevel.GetTopLevel(this));
+        var r = await dialog.ShowAsyncAuto(TopLevel.GetTopLevel(this));
         if (r != FAContentDialogResult.Primary)
         {
             return;

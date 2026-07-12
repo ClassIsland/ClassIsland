@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using ClassIsland.Core.Extensions.UI;
 using FluentAvalonia.UI.Controls;
 using ShimSkiaSharp;
 
@@ -50,7 +51,7 @@ public static class ContentDialogHelper
             PrimaryButtonText = positiveText,
             CloseButtonText = negativeText
         };
-        var r = await dialog.ShowAsync(root);
+        var r = await dialog.ShowAsyncAuto(root);
         if (r != FAContentDialogResult.Primary)
         {
             return false;

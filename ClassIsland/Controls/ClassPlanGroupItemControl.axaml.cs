@@ -10,6 +10,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
@@ -133,7 +134,7 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
             PrimaryButtonText = "解散",
             SecondaryButtonText = "取消",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync(TopLevel.GetTopLevel(this));
+        }.ShowAsyncAuto(TopLevel.GetTopLevel(this));
         if (result != FAContentDialogResult.Primary)
         {
             return;
@@ -151,7 +152,7 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
             PrimaryButtonText = "删除",
             SecondaryButtonText = "取消",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync(TopLevel.GetTopLevel(this));
+        }.ShowAsyncAuto(TopLevel.GetTopLevel(this));
         if (result != FAContentDialogResult.Primary)
         {
             return;

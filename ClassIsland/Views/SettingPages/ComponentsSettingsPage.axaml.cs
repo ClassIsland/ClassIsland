@@ -10,6 +10,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using ClassIsland.Core.Extensions.UI;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -82,7 +83,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
                 Label = "组件名",
                 Suffix = ".json"
             }
-        }.ShowAsync();
+        }.ShowAsyncAuto();
 
         ViewModel.CreateProfileName = textBox.Text;
         var path = Path.Combine(ClassIsland.Services.ComponentsService.ComponentSettingsPath,

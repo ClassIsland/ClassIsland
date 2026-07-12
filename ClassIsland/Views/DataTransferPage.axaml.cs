@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Avalonia;
+using ClassIsland.Core.Extensions.UI;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -123,7 +124,7 @@ public partial class DataTransferPage : UserControl
             PrimaryButtonText = "重启并继续",
             SecondaryButtonText = "取消",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync(TopLevel.GetTopLevel(this));
+        }.ShowAsyncAuto(TopLevel.GetTopLevel(this));
         if (r != FAContentDialogResult.Primary)
         {
             return;
@@ -301,7 +302,7 @@ public partial class DataTransferPage : UserControl
             PrimaryButtonText = "重启并继续",
             SecondaryButtonText = "取消",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync(TopLevel.GetTopLevel(this));
+        }.ShowAsyncAuto(TopLevel.GetTopLevel(this));
         if (r != FAContentDialogResult.Primary)
         {
             return;
@@ -729,7 +730,7 @@ public partial class DataTransferPage : UserControl
             PrimaryButtonText = "重启并继续",
             SecondaryButtonText = "取消",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync(TopLevel.GetTopLevel(this));
+        }.ShowAsyncAuto(TopLevel.GetTopLevel(this));
         if (r != FAContentDialogResult.Primary)
         {
             return;

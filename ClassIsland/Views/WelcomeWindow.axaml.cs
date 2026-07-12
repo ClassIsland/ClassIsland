@@ -10,6 +10,7 @@ using Avalonia.Interactivity;
 using Avalonia.Labs.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
@@ -226,7 +227,7 @@ public partial class WelcomeWindow : ViewBase, IFANavigationPageFactory
             PrimaryButtonText = "退出",
             SecondaryButtonText = "取消",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync(TopLevel.GetTopLevel(this));
+        }.ShowAsyncAuto(TopLevel.GetTopLevel(this));
         if (r != FAContentDialogResult.Primary)
         {
             return;

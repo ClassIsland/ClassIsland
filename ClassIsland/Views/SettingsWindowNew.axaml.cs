@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
@@ -496,7 +497,7 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
                 PrimaryButtonText = "重启",
                 CloseButtonText = "取消",
                 DefaultButton = FAContentDialogButton.Primary,
-            }.ShowAsync(TopLevel.GetTopLevel(this));
+            }.ShowAsyncAuto(TopLevel.GetTopLevel(this));
             IsShowingRestartDialog = false;
             if (r != FAContentDialogResult.Primary)
                 return;

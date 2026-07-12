@@ -9,6 +9,7 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
@@ -97,7 +98,7 @@ public partial class ClassChangingWindow : ViewBase
                 PrimaryButtonText = "继续",
                 SecondaryButtonText = "取消",
                 DefaultButton = FAContentDialogButton.Primary
-            }.ShowAsync();
+            }.ShowAsyncAuto();
             if (r != FAContentDialogResult.Primary)
             {
                 return;

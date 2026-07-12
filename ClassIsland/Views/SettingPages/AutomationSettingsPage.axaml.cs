@@ -9,6 +9,7 @@ using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Extensions;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Services;
@@ -103,7 +104,7 @@ public partial class AutomationSettingsPage : SettingsPageBase
                 Label = "配置方案名称",
                 Suffix = ".json"
             }
-        }.ShowAsync();
+        }.ShowAsyncAuto();
 
         var createProfileName = textBox.Text;
         var path = Path.Combine(AutomationService.AutomationConfigsFolderPath,

@@ -10,6 +10,7 @@ using AsyncImageLoader;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using ClassIsland.Core.Extensions.UI;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -93,7 +94,7 @@ public partial class AboutSettingsPage : SettingsPageBase
             DefaultButton = FAContentDialogButton.Primary
         };
         dialog.SecondaryButtonClick += ButtonCopyDiagnosticInfo_OnClick;
-        await dialog.ShowAsync();
+        await dialog.ShowAsyncAuto();
     }
 
     private async void ButtonCopyDiagnosticInfo_OnClick(FAContentDialog sender, FAContentDialogButtonClickEventArgs args)
@@ -207,7 +208,7 @@ public partial class AboutSettingsPage : SettingsPageBase
             },
             PrimaryButtonText = "关闭",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync();
+        }.ShowAsyncAuto();
     }
 
     private async void DebugBorder_OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -256,7 +257,7 @@ public partial class AboutSettingsPage : SettingsPageBase
                 PrimaryButtonText = "继续",
                 SecondaryButtonText = "取消",
                 DefaultButton = FAContentDialogButton.Primary
-            }.ShowAsync();
+            }.ShowAsyncAuto();
             
             
             if (r != FAContentDialogResult.Primary)
@@ -294,7 +295,7 @@ public partial class AboutSettingsPage : SettingsPageBase
             DefaultButton = FAContentDialogButton.Primary,
             SecondaryButtonText = "在浏览器查看"
         };
-        var r = await contentDialog.ShowAsync();
+        var r = await contentDialog.ShowAsyncAuto();
         if (r == FAContentDialogResult.Secondary)
         {
             IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("https://res.classisland.tech/banners/reunion.webp"));

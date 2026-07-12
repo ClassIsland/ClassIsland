@@ -10,6 +10,7 @@ using Avalonia.Interactivity;
 using ClassIsland.Converters;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
@@ -123,7 +124,7 @@ public partial class DebugPage : SettingsPageBase
             PrimaryButtonText = "确定",
             SecondaryButtonText = "取消",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync();
+        }.ShowAsyncAuto();
         if (result != FAContentDialogResult.Primary)
         {
             return;
@@ -172,7 +173,7 @@ public partial class DebugPage : SettingsPageBase
             Content = textBox,
             PrimaryButtonText = "确定",
             DefaultButton = FAContentDialogButton.Primary
-        }.ShowAsync();
+        }.ShowAsyncAuto();
         if (result != FAContentDialogResult.Primary)
         {
             return;
