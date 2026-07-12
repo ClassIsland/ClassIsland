@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <Include>[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Models.LiveActivities.*,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Stubs.Services.LiveActivityServiceStub,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.PlatformServices</Include>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

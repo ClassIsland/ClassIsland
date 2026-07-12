@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-ios</TargetFramework>
+    <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>ClassIsland.iOS</AssemblyName>
+    <RootNamespace>ClassIsland.iOS</RootNamespace>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <TrimMode Condition="'$(Configuration)' == 'Release'">partial</TrimMode>
+    <LinkWithSwiftSystemLibraries>true</LinkWithSwiftSystemLibraries>
+    <BrandType>Production</BrandType>
+    <BrandType Condition="'$(Configuration)' == 'Debug'">Dev</BrandType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(BrandType)' == 'Production'">
+    <ApplicationId>cn.classisland.ios</ApplicationId>
+    <ApplicationTitle>ClassIsland</ApplicationTitle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BrandType)' == 'Beta'">
+    <ApplicationId>cn.classisland.ios.beta</ApplicationId>
+    <ApplicationTitle>ClassIsland (Beta)</ApplicationTitle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BrandType)' == 'Dev'">
+    <ApplicationId>cn.classisland.ios.dev</ApplicationId>
+    <ApplicationTitle>ClassIsland (Dev)</ApplicationTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClassIsland.Platforms.Abstractions\ClassIsland.Platforms.Abstractions.csproj" />
+    <ProjectReference Include="..\ClassIsland\ClassIsland.csproj">
+      <AdditionalProperties>ClassIslandReferencedByMobile=true</AdditionalProperties>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ImageAsset Include="..\ClassIsland.Desktop\Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo_512x512_2x.png">
+      <Link>Assets.xcassets\AppIcon.appiconset\AppIcon.png</Link>
+    </ImageAsset>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ClassIslandNativeConfiguration>Release</ClassIslandNativeConfiguration>
+    <ClassIslandNativeConfiguration Condition="$([System.String]::Copy('$(Configuration)').StartsWith('Debug'))">Debug</ClassIslandNativeConfiguration>
+    <ClassIslandLiveActivitySdk>iphoneos</ClassIslandLiveActivitySdk>
+    <ClassIslandLiveActivitySdk Condition="$([System.String]::Copy('$(RuntimeIdentifier)').Contains('simulator'))">iphonesimulator</ClassIslandLiveActivitySdk>
+    <ClassIslandLiveActivityDerivedData>$(IntermediateOutputPath)xcode-live-activity-extension</ClassIslandLiveActivityDerivedData>
+    <ClassIslandLiveActivityProducts>$(ClassIslandLiveActivityDerivedData)/Build/Products/$(ClassIslandNativeConfiguration)-$(ClassIslandLiveActivitySdk)</ClassIslandLiveActivityProducts>
+    <ClassIslandLiveActivityCompiledEntitlements>$(ClassIslandLiveActivityDerivedData)/ClassIslandLiveActivityExtension.xcent</ClassIslandLiveActivityCompiledEntitlements>
+    <ClassIslandLiveActivityCodesignArguments>CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO</ClassIslandLiveActivityCodesignArguments>
+    <ClassIslandLiveActivityCodesignArguments Condition="'$(ClassIslandLiveActivitySdk)' == 'iphoneos' And '$(ClassIslandLiveActivityCodesignProvision)' != ''">CODE_SIGNING_ALLOWED=YES CODE_SIGNING_REQUIRED=YES CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=&quot;$(CodesignKey)&quot; PROVISIONING_PROFILE_SPECIFIER=&quot;$(ClassIslandLiveActivityCodesignProvision)&quot; DEVELOPMENT_TEAM=&quot;$(ClassIslandDevelopmentTeam)&quot;</ClassIslandLiveActivityCodesignArguments>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\ClassIsland.iOS.Native\**\*" Link="Native\%(RecursiveDir)%(Filename)%(Extension)" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('osx'))">
+    <XcodeProject Include="..\ClassIsland.iOS.Native\ClassIsland.iOS.Native.xcodeproj">
+      <SchemeName>ClassIslandLiveActivityBridge</SchemeName>
+      <Configuration>$(ClassIslandNativeConfiguration)</Configuration>
+      <Kind>Framework</Kind>
+      <Visible>false</Visible>
+    </XcodeProject>
+    <AdditionalAppExtensions Include="$(ClassIslandLiveActivityProducts)">
+      <Name>ClassIslandLiveActivityExtension</Name>
+      <BuildOutput>.</BuildOutput>
+      <CodesignEntitlements Condition="'$(ClassIslandLiveActivityCodesignProvision)' != ''">$(ClassIslandLiveActivityCompiledEntitlements)</CodesignEntitlements>
+    </AdditionalAppExtensions>
+  </ItemGroup>
+
+  <Target Name="BuildClassIslandLiveActivityExtension"
+          BeforeTargets="_ExtendAppExtensionReferences"
+          Condition="$([MSBuild]::IsOSPlatform('osx'))">
+    <Error Condition="'$(ClassIslandLiveActivitySdk)' == 'iphoneos' And '$(EnableCodeSigning)' != 'false' And '$(BuildIpa)' == 'true' And '$(ClassIslandLiveActivityCodesignProvision)' == ''"
+           Text="ClassIslandLiveActivityCodesignProvision is required to package the Live Activity extension in a signed IPA." />
+    <Error Condition="'$(ClassIslandLiveActivityCodesignProvision)' != '' And '$(CodesignKey)' == ''"
+           Text="CodesignKey is required when ClassIslandLiveActivityCodesignProvision is set." />
+    <Error Condition="'$(ClassIslandLiveActivityCodesignProvision)' != '' And '$(ClassIslandDevelopmentTeam)' == ''"
+           Text="ClassIslandDevelopmentTeam is required when ClassIslandLiveActivityCodesignProvision is set." />
+    <Exec Command="/usr/bin/xcrun xcodebuild -project &quot;$(MSBuildProjectDirectory)/../ClassIsland.iOS.Native/ClassIsland.iOS.Native.xcodeproj&quot; -scheme ClassIslandLiveActivityExtension -configuration $(ClassIslandNativeConfiguration) -sdk $(ClassIslandLiveActivitySdk) -derivedDataPath &quot;$(ClassIslandLiveActivityDerivedData)&quot; CLASSISLAND_APP_BUNDLE_ID=&quot;$(ApplicationId)&quot; MARKETING_VERSION=&quot;$(ApplicationDisplayVersion)&quot; CURRENT_PROJECT_VERSION=&quot;$(ApplicationVersion)&quot; $(ClassIslandLiveActivityCodesignArguments) build" />
+    <Exec Condition="'$(ClassIslandLiveActivitySdk)' == 'iphoneos' And '$(ClassIslandLiveActivityCodesignProvision)' != ''"
+          Command="/usr/bin/codesign -d --entitlements :- &quot;$(ClassIslandLiveActivityProducts)/ClassIslandLiveActivityExtension.appex&quot; &gt; &quot;$(ClassIslandLiveActivityCompiledEntitlements)&quot;" />
+  </Target>
+
+  <Import Project="..\Global.props" />
+  <Import Project="..\AvaloniaShared.props" />
+</Project>

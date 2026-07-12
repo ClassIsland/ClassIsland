@@ -10,6 +10,7 @@ using ClassIsland;
 using ClassIsland.Core;
 using ClassIsland.Core.Converters;
 using ClassIsland.Core.Enums;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Extensions;
 using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
@@ -85,7 +86,18 @@ public static class Program
             Environment.SetEnvironmentVariable("QT_SCALE_FACTORS", null);
         }
 
-        var mutex = new Mutex(true, "Global\\ClassIsland.Lock", out var createNew);
+        bool createNew;
+        Mutex mutex;
+        if (PlatformHelper.IsMobile)
+        {
+            // iOS/Android 已由系统保证单一应用实例；避免依赖移动沙盒中的命名 Mutex 语义。
+            mutex = new Mutex(true);
+            createNew = true;
+        }
+        else
+        {
+            mutex = new Mutex(true, "Global\\ClassIsland.Lock", out createNew);
+        }
 
         if (!createNew)
         {

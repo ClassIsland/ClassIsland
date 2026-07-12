@@ -38,10 +38,17 @@ partial class Build : NukeBuild
     [Parameter("API_SIGNING_KEY")] readonly string ApiSigningKey;
     [Parameter("API_SIGNING_KEY_PS")] readonly string ApiSigningKeyPs;
     [Parameter] readonly string AppVersion;
+    [Parameter] readonly string BuildNumber;
+    [Parameter] readonly string BrandType;
+    [Parameter] readonly string CodesignKey;
+    [Parameter] readonly string CodesignProvision;
+    [Parameter] readonly string ClassIslandLiveActivityCodesignProvision;
+    [Parameter] readonly string ClassIslandDevelopmentTeam;
     
     string PublishArtifactName;
 
     readonly AbsolutePath DesktopAppEntryProject = RootDirectory / "ClassIsland.Desktop" / "ClassIsland.Desktop.csproj";
+    readonly AbsolutePath IosAppEntryProject = RootDirectory / "ClassIsland.iOS" / "ClassIsland.iOS.csproj";
     readonly AbsolutePath LauncherEntryProject = RootDirectory / "ClassIsland.Launcher" / "ClassIsland.Launcher.csproj";
     readonly AbsolutePath PluginDevAppPath = RootDirectory / "out" / "ClassIsland_Dev";
     readonly AbsolutePath PluginDevAppPublishPath = RootDirectory / "out" / "ClassIsland_Dev" / "bin";
@@ -50,6 +57,8 @@ partial class Build : NukeBuild
     readonly AbsolutePath AppPublishPath = RootDirectory / "out" / "ClassIsland";
     readonly AbsolutePath LauncherPublishPath = RootDirectory / "out" / "Launcher";
     readonly AbsolutePath AppSecretsPath = RootDirectory / "ClassIsland" / "secrets.g.cs";
+
+    bool IsIosBuild => OsName == "ios";
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = Configuration.Release ;
@@ -70,19 +79,44 @@ partial class Build : NukeBuild
                 "windows" => "win",
                 "linux" => "linux", 
                 "macos" => "osx",
+                "ios" => "ios",
                 _ => throw new InvalidOperationException($"不支持的平台：{OsName}")
             };
             RuntimeIdentifier = $"{osRid}-{Arch}";
             PublishArtifactName = $"out_{BuildName}_{OsName}_{Arch}_{BuildType}_{Package}";
             IsSecretFilled = !(string.IsNullOrEmpty(ApiSigningKey) || string.IsNullOrEmpty(ApiSigningKeyPs));
             AppPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
+            IosPublishArtifactPath = AppOutputPath / PublishArtifactName + ".ipa";
             LauncherPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
+
+            if (IsIosBuild)
+            {
+                if (Package != "ipa" || Arch != "arm64")
+                {
+                    throw new InvalidOperationException("iOS 发布仅支持 --Package ipa --Arch arm64。");
+                }
+
+                var missingSigningParameter = new[]
+                {
+                    BuildNumber,
+                    BrandType,
+                    CodesignKey,
+                    CodesignProvision,
+                    ClassIslandLiveActivityCodesignProvision,
+                    ClassIslandDevelopmentTeam
+                }.Any(string.IsNullOrWhiteSpace);
+                if (missingSigningParameter)
+                {
+                    throw new InvalidOperationException("iOS IPA 发布缺少版本、品牌或双 target 签名参数。");
+                }
+            }
             
             Log.Information("AppVersion = {AppVersion}", AppVersion);
             Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
             Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
             Log.Information("PublishArtifactName = {PublishArtifactName}", PublishArtifactName);
             Log.Information("AppPublishArtifactPath = {AppPublishArtifactPath}", AppPublishArtifactPath);
+            Log.Information("IosPublishArtifactPath = {IosPublishArtifactPath}", IosPublishArtifactPath);
             Log.Information("LauncherPublishArtifactPath = {LauncherPublishArtifactPath}", LauncherPublishArtifactPath);
         });
     

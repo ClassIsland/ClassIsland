@@ -44,6 +44,11 @@ public static class PlatformServices
     public static IPlatformFilePickerService FilePickerService { get; internal set; } = new AvaloniaDefaultPlatformFilePickerService();
 
     /// <summary>
+    /// 系统实时活动服务。非 Apple 平台和不受支持的系统会安全返回 Unsupported。
+    /// </summary>
+    public static ILiveActivityService LiveActivityService { get; internal set; } = new LiveActivityServiceStub();
+
+    /// <summary>
     /// 应用生命周期操作服务。
     /// </summary>
     internal static IAppLifetimeService AppLifetimeService { get; set; } = new AppLifetimeServiceStub();

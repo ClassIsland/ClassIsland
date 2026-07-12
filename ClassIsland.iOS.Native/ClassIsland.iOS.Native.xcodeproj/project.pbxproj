@@ -1,0 +1,441 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* ClassIslandActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* ClassIslandActivityAttributes.swift */; };
+		A10000000000000000000002 /* ClassIslandLiveActivityBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* ClassIslandLiveActivityBridge.swift */; };
+		A10000000000000000000003 /* ClassIslandLiveActivityBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* ClassIslandLiveActivityBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A10000000000000000000004 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* ActivityKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		A10000000000000000000005 /* ClassIslandActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* ClassIslandActivityAttributes.swift */; };
+		A10000000000000000000006 /* ClassIslandLiveActivityBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* ClassIslandLiveActivityBundle.swift */; };
+		A10000000000000000000007 /* ClassIslandLiveActivityWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* ClassIslandLiveActivityWidget.swift */; };
+		A10000000000000000000008 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* ActivityKit.framework */; };
+		A10000000000000000000009 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* SwiftUI.framework */; };
+		A1000000000000000000000A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* WidgetKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A20000000000000000000001 /* ClassIslandActivityAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandActivityAttributes.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* ClassIslandLiveActivityBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandLiveActivityBridge.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* ClassIslandLiveActivityBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassIslandLiveActivityBridge.h; sourceTree = "<group>"; };
+		A20000000000000000000004 /* ClassIslandLiveActivityBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandLiveActivityBundle.swift; sourceTree = "<group>"; };
+		A20000000000000000000005 /* ClassIslandLiveActivityWidget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassIslandLiveActivityWidget.swift; sourceTree = "<group>"; };
+		A20000000000000000000006 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000000000000000000007 /* ClassIslandLiveActivityExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = ClassIslandLiveActivityExtension.entitlements; sourceTree = "<group>"; };
+		A20000000000000000000008 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		A20000000000000000000009 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		A2000000000000000000000A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		A2000000000000000000000B /* ClassIslandLiveActivityBridge.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ClassIslandLiveActivityBridge.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2000000000000000000000C /* ClassIslandLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = ClassIslandLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A30000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000004 /* ActivityKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A30000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000008 /* ActivityKit.framework in Frameworks */,
+				A10000000000000000000009 /* SwiftUI.framework in Frameworks */,
+				A1000000000000000000000A /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A40000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A40000000000000000000002 /* Shared */,
+				A40000000000000000000003 /* Bridge */,
+				A40000000000000000000004 /* Extension */,
+				A40000000000000000000005 /* Frameworks */,
+				A40000000000000000000006 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A40000000000000000000002 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000001 /* ClassIslandActivityAttributes.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000003 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000002 /* ClassIslandLiveActivityBridge.swift */,
+				A20000000000000000000003 /* ClassIslandLiveActivityBridge.h */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000004 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000004 /* ClassIslandLiveActivityBundle.swift */,
+				A20000000000000000000005 /* ClassIslandLiveActivityWidget.swift */,
+				A20000000000000000000006 /* Info.plist */,
+				A20000000000000000000007 /* ClassIslandLiveActivityExtension.entitlements */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000005 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000008 /* ActivityKit.framework */,
+				A20000000000000000000009 /* SwiftUI.framework */,
+				A2000000000000000000000A /* WidgetKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000006 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000B /* ClassIslandLiveActivityBridge.framework */,
+				A2000000000000000000000C /* ClassIslandLiveActivityExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A50000000000000000000001 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000003 /* ClassIslandLiveActivityBridge.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A60000000000000000000001 /* ClassIslandLiveActivityBridge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A70000000000000000000002 /* Build configuration list for PBXNativeTarget "ClassIslandLiveActivityBridge" */;
+			buildPhases = (
+				A30000000000000000000003 /* Sources */,
+				A30000000000000000000001 /* Frameworks */,
+				A50000000000000000000001 /* Headers */,
+				A30000000000000000000005 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ClassIslandLiveActivityBridge;
+			productName = ClassIslandLiveActivityBridge;
+			productReference = A2000000000000000000000B /* ClassIslandLiveActivityBridge.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		A60000000000000000000002 /* ClassIslandLiveActivityExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A70000000000000000000003 /* Build configuration list for PBXNativeTarget "ClassIslandLiveActivityExtension" */;
+			buildPhases = (
+				A30000000000000000000004 /* Sources */,
+				A30000000000000000000002 /* Frameworks */,
+				A30000000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ClassIslandLiveActivityExtension;
+			productName = ClassIslandLiveActivityExtension;
+			productReference = A2000000000000000000000C /* ClassIslandLiveActivityExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A60000000000000000000000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					A60000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+						LastSwiftMigration = 1600;
+					};
+					A60000000000000000000002 = {
+						CreatedOnToolsVersion = 16.0;
+						LastSwiftMigration = 1600;
+					};
+				};
+			};
+			buildConfigurationList = A70000000000000000000001 /* Build configuration list for PBXProject "ClassIsland.iOS.Native" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A40000000000000000000001;
+			productRefGroup = A40000000000000000000006 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A60000000000000000000001 /* ClassIslandLiveActivityBridge */,
+				A60000000000000000000002 /* ClassIslandLiveActivityExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A30000000000000000000005 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A30000000000000000000006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A30000000000000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* ClassIslandActivityAttributes.swift in Sources */,
+				A10000000000000000000002 /* ClassIslandLiveActivityBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A30000000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000005 /* ClassIslandActivityAttributes.swift in Sources */,
+				A10000000000000000000006 /* ClassIslandLiveActivityBundle.swift in Sources */,
+				A10000000000000000000007 /* ClassIslandLiveActivityWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A80000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLASSISLAND_APP_BUNDLE_ID = cn.classisland.ios.dev;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A80000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLASSISLAND_APP_BUNDLE_ID = cn.classisland.ios;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A80000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "ClassIsland Live Activity Bridge";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@rpath",
+				);
+				MARKETING_VERSION = 1.0;
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(CLASSISLAND_APP_BUNDLE_ID).LiveActivityBridge";
+				PRODUCT_MODULE_NAME = ClassIslandLiveActivityBridge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A80000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "ClassIsland Live Activity Bridge";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@rpath",
+				);
+				MARKETING_VERSION = 1.0;
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(CLASSISLAND_APP_BUNDLE_ID).LiveActivityBridge";
+				PRODUCT_MODULE_NAME = ClassIslandLiveActivityBridge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A80000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Extension/ClassIslandLiveActivityExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Extension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(CLASSISLAND_APP_BUNDLE_ID).LiveActivityExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A80000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Extension/ClassIslandLiveActivityExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = Extension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(CLASSISLAND_APP_BUNDLE_ID).LiveActivityExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A70000000000000000000001 /* Build configuration list for PBXProject "ClassIsland.iOS.Native" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A80000000000000000000001 /* Debug */,
+				A80000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A70000000000000000000002 /* Build configuration list for PBXNativeTarget "ClassIslandLiveActivityBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A80000000000000000000003 /* Debug */,
+				A80000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A70000000000000000000003 /* Build configuration list for PBXNativeTarget "ClassIslandLiveActivityExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A80000000000000000000005 /* Debug */,
+				A80000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A60000000000000000000000 /* Project object */;
+}

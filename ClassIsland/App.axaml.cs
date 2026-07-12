@@ -178,6 +178,12 @@ public partial class App : AppBase, IAppHost
             return;
         }
 
+        if (System.OperatingSystem.IsIOS())
+        {
+            PackagingType = "ipa";
+            return;
+        }
+
         var exeDir = Path.GetDirectoryName(Environment.ProcessPath) ?? "./";
         var packageTypeDir = Path.Combine(Environment.GetEnvironmentVariable("ClassIsland_PackageRoot") ?? exeDir,
             "PackageType");
@@ -221,7 +227,7 @@ public partial class App : AppBase, IAppHost
         CommonDirectories.AppRootFolderPath = PackagingType switch
         {
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
-            "installer" or "deb" or "appImage" or "pkg" or "msix" or "apk" => Path.GetFullPath(Path.Combine(
+            "installer" or "deb" or "appImage" or "pkg" or "msix" or "apk" or "ipa" => Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
             _ => System.OperatingSystem.IsMacOS() ? Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")) :
@@ -249,7 +255,7 @@ public partial class App : AppBase, IAppHost
         Environment.CurrentDirectory = Path.GetDirectoryName(Environment.ProcessPath) ?? "./";
         ActivatePackageType();
         ActivateAppDirectories();
-        if (!Design.IsDesignMode && !System.OperatingSystem.IsMacOS() && !System.OperatingSystem.IsAndroid())
+        if (!Design.IsDesignMode && !System.OperatingSystem.IsMacOS() && !PlatformHelper.IsMobile)
         {
             this.EnableHotReload();
         }
@@ -687,7 +693,7 @@ public partial class App : AppBase, IAppHost
             AppDomain.CurrentDomain.AssemblyLoad += (o, args) => Logger.LogTrace("加载程序集：{AssemblyFullName} ({AssemblyLocation})", args.LoadedAssembly.FullName, args.LoadedAssembly.Location);
         }
 #if DEBUG
-        if (!System.OperatingSystem.IsAndroid())
+        if (!PlatformHelper.IsMobile)
         {
             MemoryProfiler.GetSnapshot("Host built");
         }
@@ -762,7 +768,7 @@ public partial class App : AppBase, IAppHost
         GetService<ISplashService>().SetDetailedStatus("正在创建任务栏图标");
         var spanCreateTaskbarIcon = spanLaunching.StartChild("startup-create-taskbar-icon");
 
-        if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
+        if (!ApplicationCommand.Quiet && !PlatformHelper.IsAppleMobile)  // iOS 由 App Store 管理更新
         {
             GetService<ISplashService>().SetDetailedStatus("正在进行更新服务启动操作");
             var spanCheckUpdate = spanLaunching.StartChild("startup-process-update");
@@ -789,7 +795,10 @@ public partial class App : AppBase, IAppHost
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         
         _ = IAppHost.Host.StartAsync();
-        IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
+        }
         
         if (!Settings.IsWelcomeWindowShowed || ApplicationCommand.Refreshing || ApplicationCommand.Onboarding)
         {
@@ -857,7 +866,7 @@ public partial class App : AppBase, IAppHost
         GetService<ISplashService>().SetDetailedStatus("正在启动主界面所需的服务");
         GetService<ISplashService>().CurrentProgress = 55;
 #if DEBUG
-        if (!System.OperatingSystem.IsAndroid())
+        if (!PlatformHelper.IsMobile)
             MemoryProfiler.GetSnapshot("Pre MainWindow init");
 #endif
         if (isDesktop)
@@ -868,7 +877,7 @@ public partial class App : AppBase, IAppHost
             GetService<ISplashService>().CurrentProgress = 80;
             GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 2/2）");
 #if DEBUG
-        if (!System.OperatingSystem.IsAndroid())
+        if (!PlatformHelper.IsMobile)
             MemoryProfiler.GetSnapshot("Pre MainWindow show");
 #endif
             if (!Design.IsDesignMode)
@@ -877,19 +886,25 @@ public partial class App : AppBase, IAppHost
             }
         }
         
-        GetService<IWindowRuleService>();
+        if (isDesktop)
+        {
+            GetService<IWindowRuleService>();
+        }
         GetService<SignalTriggerHandlerService>();
 
         // 注册uri导航
         var uriNavigationService = GetService<IUriNavigationService>();
         uriNavigationService.HandleAppNavigation("test", args => _ = CommonTaskDialogs.ShowDialog("测试导航", $"{args.Uri}"));
         uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
-        uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow(args.Uri));
+        uriNavigationService.HandleAppNavigation("profile", args => GetService<ProfileSettingsWindow>().Open(args.Uri));
         uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/")));
         // uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
         // uriNavigationService.HandleAppNavigation("config-errors", args => GetService<ConfigErrorsWindow>().ShowDialog());
 
-        GetService<IIpcService>().IpcProvider.CreateIpcJoint<IFooService>(new FooService());
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            GetService<IIpcService>().IpcProvider.CreateIpcJoint<IFooService>(new FooService());
+        }
         try
         {
             await App.GetService<FileFolderService>().ProcessAutoBackupAsync();
@@ -950,8 +965,11 @@ public partial class App : AppBase, IAppHost
             });
         }
         AppStarted?.Invoke(this, EventArgs.Empty);
-        GetService<IIpcService>().IpcProvider.StartServer();
-        GetService<IIpcService>().JsonRoutedProvider.StartServer();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            GetService<IIpcService>().IpcProvider.StartServer();
+            GetService<IIpcService>().JsonRoutedProvider.StartServer();
+        }
         spanLoadMainWindow.Finish();
         transaction.Finish();
         SentrySdk.ConfigureScope(s => s.Transaction = null);
@@ -1208,6 +1226,12 @@ public partial class App : AppBase, IAppHost
     
     public override void Restart(string[] parameters, bool restartToLauncher)
     {
+        if (PlatformHelper.IsAppleMobile)
+        {
+            Logger?.LogWarning("当前平台不支持由应用主动重启。请手动重新打开 ClassIsland。");
+            return;
+        }
+
         PlatformServices.AppLifetimeService.Restart(parameters, restartToLauncher);
         Stop();
     }

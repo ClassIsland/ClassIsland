@@ -322,7 +322,10 @@ public partial class App
             services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.getStarted.json"));
         }
         // Plugins
-        if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
+        if (!PlatformHelper.IsAppleMobile &&
+            !ApplicationCommand.Safe &&
+            string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) &&
+            string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {
             PluginService.InitializePlugins(context, services);
         }

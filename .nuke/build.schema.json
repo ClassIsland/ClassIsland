@@ -135,13 +135,31 @@
           "type": "string",
           "description": "Arch"
         },
+        "BrandType": {
+          "type": "string"
+        },
         "BuildName": {
           "type": "string",
           "description": "BuildName"
         },
+        "BuildNumber": {
+          "type": "string"
+        },
         "BuildType": {
           "type": "string",
           "description": "BuildType"
+        },
+        "ClassIslandDevelopmentTeam": {
+          "type": "string"
+        },
+        "ClassIslandLiveActivityCodesignProvision": {
+          "type": "string"
+        },
+        "CodesignKey": {
+          "type": "string"
+        },
+        "CodesignProvision": {
+          "type": "string"
         },
         "Configuration": {
           "type": "string",

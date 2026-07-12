@@ -14,6 +14,7 @@ partial class Build
 {
     string RuntimeIdentifier = "";
     AbsolutePath AppPublishArtifactPath;
+    AbsolutePath IosPublishArtifactPath;
     bool IsSecretFilled = false;
     
     Target RestoreDesktopApp => _ => _
@@ -21,6 +22,14 @@ partial class Build
         .DependsOn(GenerateMetadata)
         .Executes(() =>
         {
+            if (IsIosBuild)
+            {
+                DotNetRestore(s => s
+                    .SetProjectFile(IosAppEntryProject)
+                    .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
+                return;
+            }
+
             DotNetRestore(s => s
                 .SetProjectFile(DesktopAppEntryProject)
                 .SetProperty("PublishBuilding", true)
@@ -36,6 +45,14 @@ partial class Build
         .DependsOn(RestoreDesktopApp)
         .Executes(() =>
         {
+            if (IsIosBuild)
+            {
+                DotNetClean(s => s
+                    .SetProject(IosAppEntryProject)
+                    .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
+                return;
+            }
+
             DotNetClean(s => s
                 .SetProject(DesktopAppEntryProject)
                 .SetProperty("PublishBuilding", true)
@@ -76,6 +93,25 @@ partial class Build
         .DependsOn(CleanDesktopApp)
         .Executes(() =>
         {
+            if (IsIosBuild)
+            {
+                DotNetPublish(s => s
+                    .SetProject(IosAppEntryProject)
+                    .SetConfiguration(Configuration)
+                    .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
+                    .SetProperty("ArchiveOnBuild", true)
+                    .SetProperty("BuildIpa", true)
+                    .SetProperty("BrandType", BrandType)
+                    .SetProperty("ApplicationDisplayVersion", AppVersion)
+                    .SetProperty("ApplicationVersion", BuildNumber)
+                    .SetProperty("CodesignKey", CodesignKey)
+                    .SetProperty("CodesignProvision", CodesignProvision)
+                    .SetProperty("ClassIslandLiveActivityCodesignProvision", ClassIslandLiveActivityCodesignProvision)
+                    .SetProperty("ClassIslandDevelopmentTeam", ClassIslandDevelopmentTeam)
+                    .SetProperty("IpaPackagePath", IosPublishArtifactPath));
+                return;
+            }
+
             var createDeb = Package == "deb";
             var isSelfContained = BuildType == "selfContained";
             DotNetPublish(s => s
@@ -103,7 +139,7 @@ partial class Build
     Target GenerateAppZipArchive => _ => _
         .Produces(AppPublishArtifactPath)
         .DependsOn(CompileApp)
-        .OnlyWhenDynamic(() => Package != "deb" && Package != "pkg")
+        .OnlyWhenDynamic(() => Package != "deb" && Package != "pkg" && Package != "ipa")
         .Executes(() =>
         {
             AppPublishPath.ZipTo(AppPublishArtifactPath);
