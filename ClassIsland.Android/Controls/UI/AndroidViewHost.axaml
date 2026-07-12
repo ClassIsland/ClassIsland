@@ -10,9 +10,14 @@
         </Style>
     </UserControl.Styles>
     <Grid>
-        <NavigationPage x:Name="NavigationPage"
-                        Popped="NavigationPage_OnPopped">
-        </NavigationPage>
+        <Grid x:Name="PageContentRoot">
+            <Grid.RenderTransform>
+                <TranslateTransform />
+            </Grid.RenderTransform>
+            <NavigationPage x:Name="NavigationPage"
+                            Popped="NavigationPage_OnPopped">
+            </NavigationPage>
+        </Grid>
         <Border Height="3"
                 VerticalAlignment="Top"
                 ClipToBounds="True"
