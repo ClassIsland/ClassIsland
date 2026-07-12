@@ -123,7 +123,7 @@ jobs:
         run: >-
           dotnet build "$IOS_PROJECT"
           -f net10.0-ios
-          -c Release
+          -c Debug
           -r iossimulator-arm64
           --no-restore
           -p:BrandType=Dev
