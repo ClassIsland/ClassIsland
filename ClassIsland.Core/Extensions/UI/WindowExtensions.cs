@@ -12,7 +12,7 @@ public static class WindowExtensions
     /// 为不继承 MyWindow 的类初始化 MyWindow 扩展特性。
     /// </summary>
     /// <param name="window">窗口</param>
-    public static void UseMyWindowExt(this Window window)
+    public static void UseMyWindowExt(this Control window)
     {
         MyWindow.SetupMyWindowExt(window);
     }

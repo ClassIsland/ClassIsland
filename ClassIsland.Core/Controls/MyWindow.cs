@@ -72,16 +72,16 @@ public partial class MyWindow : FAAppWindow
     }
 
     public static readonly AttachedProperty<MyWindowState?> StateProperty =
-        AvaloniaProperty.RegisterAttached<MyWindow, Window, MyWindowState?>("State");
+        AvaloniaProperty.RegisterAttached<MyWindow, Control, MyWindowState?>("State");
 
-    internal static void SetState(Window obj, MyWindowState? value) => obj.SetValue(StateProperty, value);
-    internal static MyWindowState? GetState(Window obj) => obj.GetValue(StateProperty);
+    internal static void SetState(Control obj, MyWindowState? value) => obj.SetValue(StateProperty, value);
+    internal static MyWindowState? GetState(Control obj) => obj.GetValue(StateProperty);
 
     /// <summary>
     /// 为不继承 MyWindow 的类初始化 MyWindow 扩展特性。
     /// </summary>
     /// <param name="window">窗口</param>
-    public static void SetupMyWindowExt(Window window)
+    public static void SetupMyWindowExt(Control window)
     {
         var state = new MyWindowState();
         SetState(window, state);
@@ -89,7 +89,7 @@ public partial class MyWindow : FAAppWindow
         RenderOptions.SetBitmapInterpolationMode(window, BitmapInterpolationMode.HighQuality);
         window.KeyDown += OnKeyDown;
         window.PointerPressed += OnPointerUpdated;
-        window.Closed += WindowOnClosed;
+        window.Unloaded += WindowOnUnloaded;
 
         var managementService = IAppHost.Host?.Services.GetService(typeof(IManagementService)) as IManagementService;
         if (managementService?.Policy.DisableEasterEggs == true)
@@ -99,12 +99,12 @@ public partial class MyWindow : FAAppWindow
         
         return;
 
-        void WindowOnClosed(object? sender, EventArgs e)
+        void WindowOnUnloaded(object? sender, EventArgs e)
         {
             window.Loaded -= OnLoaded;
             window.KeyDown -= OnKeyDown;
             window.PointerPressed -= OnPointerUpdated;
-            window.Closed -= WindowOnClosed;
+            window.Unloaded -= WindowOnUnloaded;
         }
 
         void OnPointerUpdated(object? sender, PointerEventArgs e)
@@ -127,7 +127,7 @@ public partial class MyWindow : FAAppWindow
                         state.DebugGraphState = 0;
                     }
 
-                    window.RendererDiagnostics.DebugOverlays = state.DebugGraphState switch
+                    GetTopLevel(window)?.RendererDiagnostics.DebugOverlays = state.DebugGraphState switch
                     {
                         0 => RendererDebugOverlays.None,
                         1 => RendererDebugOverlays.Fps,
@@ -173,7 +173,7 @@ public partial class MyWindow : FAAppWindow
                     ?.NavigateWrapped(new Uri(args.Parameter?.ToString() ?? "classisland:")),
                 (_, args) => args.CanExecute = true));
             CommandManager.SetCommandBindings(window, commands);
-            if (window.Content is not Visual visual)
+            if (window is not ContentControl { Content: Visual visual })
             {
                 return;
             }
@@ -198,7 +198,7 @@ public partial class MyWindow : FAAppWindow
         
         void AddAdorners()
         {
-            if (window.Content is not Visual element || state.IsAdornerAdded)
+            if (window is not ContentControl { Content: Visual element } || state.IsAdornerAdded)
             {
                 return;
             }
@@ -207,7 +207,7 @@ public partial class MyWindow : FAAppWindow
             {
                 return;
             }
-            var appToastAdorner = state.AppToastAdorner = new AppToastAdorner(window);
+            var appToastAdorner = state.AppToastAdorner = new AppToastAdorner(GetTopLevel(window)!);
             layer.Children.Add(appToastAdorner);
             AdornerLayer.SetAdornedElement(appToastAdorner, element);
 

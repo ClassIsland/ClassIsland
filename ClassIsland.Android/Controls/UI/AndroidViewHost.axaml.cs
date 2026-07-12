@@ -18,6 +18,7 @@ using Avalonia.VisualTree;
 using ClassIsland.Controls.UI;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Views;
 
 namespace ClassIsland.Android.Controls.UI;
@@ -77,6 +78,7 @@ public partial class AndroidViewHost : UserControl, IViewHost
         Activity = activity;
         Activity.Destroy += OnDestroy;
         _isShowed = true;
+        this.UseMyWindowExt();
         InitializeComponent();
     }
 
