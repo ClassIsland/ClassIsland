@@ -26,6 +26,8 @@ public class MainActivity : AvaloniaMainActivity
     private const string NotificationPermissionRequestedKey = "post_notifications_requested";
     private const int NotificationPermissionRequestCode = 13280;
 
+    public static WeakReference<MainActivity>? Current { get; set; }
+
     public event EventHandler? Destroy;
 
     private AndroidViewHost? ViewHost { get; set; }
@@ -37,6 +39,9 @@ public class MainActivity : AvaloniaMainActivity
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         AndroidX.Core.SplashScreen.SplashScreen.InstallSplashScreen(this);
+
+        Current = new WeakReference<MainActivity>(this);
+        
         IViewHostProvider.Instance = ActivityViewHostProvider.Instance;
         base.OnCreate(savedInstanceState);
 

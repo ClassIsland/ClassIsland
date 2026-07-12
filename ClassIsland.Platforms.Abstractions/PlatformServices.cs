@@ -42,4 +42,9 @@ public static class PlatformServices
     /// 平台文件选取服务
     /// </summary>
     public static IPlatformFilePickerService FilePickerService { get; internal set; } = new AvaloniaDefaultPlatformFilePickerService();
+
+    /// <summary>
+    /// 应用生命周期操作服务。
+    /// </summary>
+    internal static IAppLifetimeService AppLifetimeService { get; set; } = new AppLifetimeServiceStub();
 }

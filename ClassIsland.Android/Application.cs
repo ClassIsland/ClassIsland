@@ -4,7 +4,9 @@ using Avalonia;
 using Avalonia.Android;
 using Avalonia.Controls;
 using Avalonia.Media;
+using ClassIsland.Android.Services.Platform;
 using ClassIsland.Extensions;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 
 namespace ClassIsland.Android;
@@ -22,7 +24,14 @@ public class Application : AvaloniaAndroidApplication<App>
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
-        var buildApp = Program.AppEntry(["--mobile"]);
+        PlatformServices.AppLifetimeService = new AndroidAppLifetimeService();
+
+        var restartParameters = MainActivity.Current?.TryGetTarget(out var mainActivity) == true
+            ? mainActivity.Intent?.GetStringArrayExtra(AndroidAppLifetimeService.RestartParametersExtra)
+            : null;
+        var buildApp = Program.AppEntry(restartParameters is null
+            ? ["--mobile"]
+            : [.. restartParameters, "--mobile"]);
 
         return AppBuilder.Configure<App>(() =>
             {

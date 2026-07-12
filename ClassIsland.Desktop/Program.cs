@@ -23,6 +23,7 @@ using Pastel;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using Avalonia.Platform;
+using ClassIsland.Desktop.Services.Platform;
 
 
 namespace ClassIsland.Desktop;
@@ -150,6 +151,7 @@ class Program
     static void ActivatePlatforms(out Action postInitCallback, CancellationToken stopToken)
     {
         postInitCallback = () => { };
+        PlatformServices.AppLifetimeService = new DesktopAppLifetimeService();
 #if Platforms_Windows
         PlatformServices.WindowPlatformService = new WindowPlatformService();
         PlatformServices.LocationService = new LocationService();

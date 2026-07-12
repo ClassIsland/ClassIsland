@@ -10,13 +10,18 @@
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
-    
+    <BrandType>Production</BrandType>
+    <BrandType Condition="'$(Configuration)' == 'Debug'">Dev</BrandType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+  <PropertyGroup Condition="'$(BrandType)' == 'Production'">
     <ApplicationId>cn.classisland.android</ApplicationId>
     <ApplicationTitle>ClassIsland</ApplicationTitle>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+  <PropertyGroup Condition="'$(BrandType)' == 'Beta'">
+    <ApplicationId>cn.classisland.android,beta</ApplicationId>
+    <ApplicationTitle>ClassIsland (Beta)</ApplicationTitle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BrandType)' == 'Dev'">
     <ApplicationId>cn.classisland.android.dev</ApplicationId>
     <ApplicationTitle>ClassIsland (Dev)</ApplicationTitle>
   </PropertyGroup>
@@ -40,10 +45,13 @@
     <AndroidResource Remove="Resources\mipmap-*\appicon*.png" />
     <AndroidResource Include="..\ClassIsland\Assets\Logos\Main.png"
                      Link="Resources\drawable\appicon_foreground.png"
-                     Condition="'$(Configuration)' == 'Release'" />
+                     Condition="'$(BrandType)' == 'Production'" />
+    <AndroidResource Include="..\ClassIsland\Assets\Logos\Beta.png"
+                     Link="Resources\drawable\appicon_foreground.png"
+                     Condition="'$(BrandType)' == 'Beta'" />
     <AndroidResource Include="..\ClassIsland\Assets\Logos\Dev.png"
                      Link="Resources\drawable\appicon_foreground.png"
-                     Condition="'$(Configuration)' == 'Debug'" />
+                     Condition="'$(BrandType)' == 'Dev'" />
   </ItemGroup>
 
   <Import Project="../Global.props"/>

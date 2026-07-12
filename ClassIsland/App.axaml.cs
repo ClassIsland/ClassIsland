@@ -1171,7 +1171,7 @@ public partial class App : AppBase, IAppHost
             {
                 toastService.Dispose();
             }
-            DesktopLifetime?.Shutdown();
+            PlatformServices.AppLifetimeService.Shutdown();
             try
             {
                 //ReleaseLock();
@@ -1208,17 +1208,8 @@ public partial class App : AppBase, IAppHost
     
     public override void Restart(string[] parameters, bool restartToLauncher)
     {
+        PlatformServices.AppLifetimeService.Restart(parameters, restartToLauncher);
         Stop();
-        var path = Environment.ProcessPath;
-        if (path == null)
-            return;
-        var replaced = path.Replace(".dll", PlatformExecutableExtension);
-        var startInfo = new ProcessStartInfo(restartToLauncher ? ExecutingEntrance : replaced);
-        foreach (var i in parameters)
-        {
-            startInfo.ArgumentList.Add(i);
-        }
-        Process.Start(startInfo);
     }
 
     private void NativeMenuItemOpenAbout_OnClick(object? sender, EventArgs e)
