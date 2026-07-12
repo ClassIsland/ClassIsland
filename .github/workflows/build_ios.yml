@@ -115,6 +115,7 @@ jobs:
         run: |
           dotnet workload restore "$IOS_PROJECT"
           dotnet restore "$IOS_SOLUTION_FILTER"
+          dotnet restore "$IOS_PROJECT" -r ios-arm64
 
       - name: Run platform abstraction tests
         run: dotnet test ClassIsland.Platforms.Abstractions.Tests/ClassIsland.Platforms.Abstractions.Tests.csproj -c Release
