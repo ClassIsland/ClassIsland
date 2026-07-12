@@ -88,7 +88,7 @@ public partial class MyWindow : FAAppWindow
         window.Loaded += OnLoaded;
         RenderOptions.SetBitmapInterpolationMode(window, BitmapInterpolationMode.HighQuality);
         window.KeyDown += OnKeyDown;
-        window.PointerPressed += OnPointerUpdated;
+        window.AddHandler(PointerPressedEvent, OnPointerUpdated, RoutingStrategies.Bubble | RoutingStrategies.Tunnel);
         window.Unloaded += WindowOnUnloaded;
 
         var managementService = IAppHost.Host?.Services.GetService(typeof(IManagementService)) as IManagementService;
