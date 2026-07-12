@@ -126,6 +126,7 @@ jobs:
           -c Debug
           -r iossimulator-arm64
           --no-restore
+          -m:1
           -p:BrandType=Dev
           -p:EnableCodeSigning=false
 
