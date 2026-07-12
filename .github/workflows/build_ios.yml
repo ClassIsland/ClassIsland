@@ -78,7 +78,7 @@ env:
 
 jobs:
   validate:
-    name: Validate iOS simulator build
+    name: Validate unsigned iOS device build
     runs-on: macos-26
     timeout-minutes: 60
     steps:
@@ -119,12 +119,12 @@ jobs:
       - name: Run platform abstraction tests
         run: dotnet test ClassIsland.Platforms.Abstractions.Tests/ClassIsland.Platforms.Abstractions.Tests.csproj -c Release
 
-      - name: Build iOS simulator app
+      - name: Build unsigned iOS device app
         run: >-
           dotnet build "$IOS_PROJECT"
           -f net10.0-ios
           -c Debug
-          -r iossimulator-arm64
+          -r ios-arm64
           --no-restore
           -m:1
           -p:BrandType=Dev

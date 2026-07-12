@@ -6,8 +6,8 @@ ClassIsland 的 iPhone 与 iPad 主界面由 Avalonia 统一实现。Swift 代�
 
 工作流位于 `.github/workflows/build_ios.yml`：
 
-- Pull Request 以及 `master`、`develop/v2/ios` 的相关提交会在 `macos-26` 上执行无签名的 iOS Simulator 构建。
-- 手动运行 `Build iOS` 工作流会先通过 Simulator 构建，再生成已签名的 `ios-arm64` IPA。
+- Pull Request 以及 `master`、`develop/v2/ios` 的相关提交会在 `macos-26` 上执行无签名的 `ios-arm64` 真机构建。
+- 手动运行 `Build iOS` 工作流会先通过无签名真机构建，再生成已签名的 `ios-arm64` IPA。
 - 推送形如 `ios-v2.0.0` 的 tag 也会使用 `ios-production` Environment 构建正式 IPA，因此 workflow 尚未合并到默认分支时仍可触发首次构建。
 - IPA 上传前会验证主 App、Live Activity Extension、双 provisioning profile、代码签名，以及 ActivityKit 的 weak link（弱链接）。
 - 构建结果和 SHA-256 文件会作为 GitHub Artifact 保留 14 天。
