@@ -38,7 +38,7 @@ public class Application : AvaloniaAndroidApplication<App>
         return AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
-                app.OperatingSystem = "windows";
+                app.OperatingSystem = "android";
                 return app;
             })
             .UseAndroid()
