@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using Avalonia;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.UriNavigation;
@@ -68,11 +70,7 @@ public class UriNavigationService : IUriNavigationService
             }
             else
             {
-                Process.Start(new ProcessStartInfo()
-                {
-                    FileName = uri.ToString(),
-                    UseShellExecute = true
-                });
+                AppBase.Current.PhonyRootWindow.Launcher.LaunchUriAsync(uri);
             }
         });
     }
