@@ -55,11 +55,11 @@ public class Application : AvaloniaAndroidApplication<App>
             })
             .With(new AndroidPlatformOptions()
             {
-                // RenderingMode = [
-                //     AndroidRenderingMode.Vulkan,
-                //     AndroidRenderingMode.Egl,
-                //     AndroidRenderingMode.Software
-                // ]
+                RenderingMode = [
+                    AndroidRenderingMode.Egl,
+                    AndroidRenderingMode.Vulkan,
+                    AndroidRenderingMode.Software
+                ]
             })
             .LogToHostSink();
     }
