@@ -88,9 +88,9 @@ public static class Program
 
         bool createNew;
         Mutex mutex;
-        if (PlatformHelper.IsMobile)
+        if (PlatformHelper.IsAppleMobile)
         {
-            // iOS/Android 已由系统保证单一应用实例；避免依赖移动沙盒中的命名 Mutex 语义。
+            // iOS 已由系统保证单一应用实例；避免依赖移动沙盒中的命名 Mutex 语义。
             mutex = new Mutex(true);
             createNew = true;
         }
