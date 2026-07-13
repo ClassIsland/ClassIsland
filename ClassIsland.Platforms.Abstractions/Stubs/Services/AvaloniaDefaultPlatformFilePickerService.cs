@@ -48,10 +48,14 @@ public class AvaloniaDefaultPlatformFilePickerService : IPlatformFilePickerServi
         }
         if (file.TryGetLocalPath() is {} path)
         {
+            if (!File.Exists(path))
+            {
+                await File.Create(path).DisposeAsync();
+            }
             file.Dispose();
             return path;
         }
-
+        
         if (!file.CanBookmark)
             return null;
         var path2 = FileBookmarkSchema + await file.SaveBookmarkAsync();
