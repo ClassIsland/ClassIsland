@@ -57,6 +57,7 @@ public static class TriggerRegistryExtensions
         info.TriggerType = triggerType;
         info.SettingsControlType = settingsType;
         IAutomationService.RegisteredTriggers.Add(info);
+        RegistryContext.LastContributorInfo = info.ContributorInfo;
         return info;
     }
 }

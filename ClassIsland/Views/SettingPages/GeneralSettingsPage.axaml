@@ -24,6 +24,7 @@
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
 
         <ci:RulesetControl x:Key="RulesetControl"
+                           x:Name="RulesetControl"
                            Classes="in-drawer"
                            Ruleset="{Binding ViewModel.SettingsService.Settings.HideRules, Mode=TwoWay}"/>
     </controls:SettingsPageBase.Resources>

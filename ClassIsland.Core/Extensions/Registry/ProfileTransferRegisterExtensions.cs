@@ -16,7 +16,7 @@ namespace ClassIsland.Core.Extensions.Registry;
 public static class ProfileTransferProviderRegisterExtensions
 {
     /// <summary>
-    /// 注册一个档案迁移提供方
+    /// 注册一个档案迁移提供方。使用 <see cref="ContributorRegistryExtensions.WithContributorInfo"/> 附加贡献者信息。
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">提供方 id</param>
@@ -40,7 +40,7 @@ public static class ProfileTransferProviderRegisterExtensions
     }
 
     /// <summary>
-    /// 注册一个档案迁移提供方
+    /// 注册一个档案迁移提供方。使用 <see cref="ContributorRegistryExtensions.WithContributorInfo"/> 附加贡献者信息。
     /// </summary>
     /// <typeparam name="TProvider">要注册的提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
@@ -74,6 +74,8 @@ public static class ProfileTransferProviderRegisterExtensions
             throw new InvalidOperationException($"已存在 id 为 {info.Id} 的迁移提供方");
         }
         
+        info.ContributorInfo ??= new();
+        RegistryContext.LastContributorInfo = info.ContributorInfo;
         
         IProfileTransferService.Providers.Add(info);
     }

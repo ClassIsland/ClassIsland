@@ -13,7 +13,7 @@ namespace ClassIsland.Core.Extensions.Registry;
 public static class RulesetRegistryExtensions
 {
     /// <summary>
-    /// 注册规则。
+    /// 注册规则。使用 <see cref="ContributorRegistryExtensions.WithContributorInfo"/> 附加贡献者信息。
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">规则ID，例如“classisland.example”。</param>
@@ -29,7 +29,7 @@ public static class RulesetRegistryExtensions
     }
 
     /// <summary>
-    /// 注册规则。
+    /// 注册规则。使用 <see cref="ContributorRegistryExtensions.WithContributorInfo"/> 附加贡献者信息。
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">规则ID，例如“classisland.example”。</param>
@@ -47,7 +47,7 @@ public static class RulesetRegistryExtensions
     }
 
     /// <summary>
-    /// 注册规则。
+    /// 注册规则。使用 <see cref="ContributorRegistryExtensions.WithContributorInfo"/> 附加贡献者信息。
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">规则ID，例如“classisland.example”。</param>
@@ -80,6 +80,9 @@ public static class RulesetRegistryExtensions
         var info = new RuleRegistryInfo(id, name, iconGlyph);
         info.Handle += onHandle;
         IRulesetService.Rules.Add(id, info);
+        
+        info.ContributorInfo ??= new();
+        RegistryContext.LastContributorInfo = info.ContributorInfo;
         
         return info;
     }

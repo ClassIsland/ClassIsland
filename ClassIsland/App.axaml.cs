@@ -573,6 +573,7 @@ public partial class App : AppBase, IAppHost
         if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
             Logger?.LogDebug("应用多次启动失败。startupCount={startupCount}",startupCount);
+#if !DEBUG
             var dialog = new TaskDialog()
             {
                 Title = "进入恢复模式",
@@ -592,6 +593,7 @@ public partial class App : AppBase, IAppHost
             {
                 ApplicationCommand.Recovery = true;
             }
+#endif
         }
         // 恢复模式
         if (ApplicationCommand.Recovery)
@@ -624,6 +626,7 @@ public partial class App : AppBase, IAppHost
         FileFolderService.CreateFolders();
         PluginService.ProcessPluginsInstall();
         bool isSystemSpeechSystemExist = false;
+        ContributorInfoHelper.ClassIslandAssemblies.Add(typeof(App).Assembly);
         var spanHostBuilding = spanPreInit.StartChild("startup-host-building");
 
         IAppHost.Host = Microsoft.Extensions.Hosting.Host

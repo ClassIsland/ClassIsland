@@ -7,7 +7,6 @@ using ClassIsland.Models.Rules;
 
 namespace ClassIsland.Controls.RuleSettingsControls;
 
-[ContributorInfo("@baiyao")]
 public partial class SunRiseSetRuleSettingsControl : RuleSettingsControlBase<SunRiseSetRuleSettings>
 {
     public SunRiseSetRuleSettingsControl()

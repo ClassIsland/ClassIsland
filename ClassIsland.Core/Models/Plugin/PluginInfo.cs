@@ -1,4 +1,4 @@
-using System.IO;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using ClassIsland.Core.Abstractions.Models.Marketplace;
 using ClassIsland.Core.Enums;
@@ -121,6 +121,18 @@ public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
     /// </summary>
     [JsonIgnore]
     public PluginLoadStatus LoadStatus { get; internal set; } = PluginLoadStatus.NotLoaded;
+
+    /// <summary>
+    /// 插件程序集
+    /// </summary>
+    [JsonIgnore]
+    internal Assembly Assembly { get; set; }
+
+    /// <summary>
+    /// 插件支持信息（贡献者信息）
+    /// </summary>
+    [JsonIgnore]
+    internal string? ContributorMessage { get; set; }
 
     /// <inheritdoc />
     [JsonIgnore]

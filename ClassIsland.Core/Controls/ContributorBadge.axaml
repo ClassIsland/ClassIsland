@@ -21,7 +21,7 @@
                                        Margin="0 0 0 4"/>
                             <local:SimpleRichText
                                 Text="{Binding Markdown}"
-                                UserDictionary="{x:Static services:IPluginService.ContributorDisplayNames}"
+                                UserDictionary="{x:Static services:IPluginService.ContributorAliases}"
                                 TextWrapping="Wrap"
                                 MaxWidth="320"
                                 LineHeight="24"

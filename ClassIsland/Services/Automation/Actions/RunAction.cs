@@ -11,7 +11,7 @@ using static ClassIsland.Models.Actions.RunActionSettings.RunActionRunType;
 namespace ClassIsland.Services.Automation.Actions;
 
 [ActionInfo("classisland.os.run", "打开 / 运行", "\uec2e", addDefaultToMenu:false)]
-[ContributorInfo("@dryice 本行动\\代码贡献者 @lrs @baiyao")]
+[ContributorInfo("@dryice @lrs @baiyao")]
 public class RunAction : ActionBase<RunActionSettings>
 {
     protected override async Task OnInvoke()

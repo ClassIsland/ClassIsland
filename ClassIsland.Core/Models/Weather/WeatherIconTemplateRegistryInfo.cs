@@ -28,13 +28,12 @@ public class WeatherIconTemplateRegistryInfo
     /// <summary>
     /// 贡献者信息。
     /// </summary>
-    public ContributorInfo? ContributorInfo { get; }
+    public ContributorInfo? ContributorInfo { get; set; }
 
-    internal WeatherIconTemplateRegistryInfo(string id, string name, IDataTemplate template, ContributorInfo? contributorInfo)
+    internal WeatherIconTemplateRegistryInfo(string id, string name, IDataTemplate template)
     {
         Id = id;
         Name = name;
         Template = template;
-        ContributorInfo = contributorInfo;
     }
 }

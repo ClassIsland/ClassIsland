@@ -3,6 +3,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Markup.Xaml.Templates;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Weather;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,17 +15,21 @@ namespace ClassIsland.Core.Extensions.Registry;
 public static class WeatherIconTemplateRegistryExtensions
 {
     /// <summary>
-    /// 注册天气图标模板
+    /// 注册天气图标模板。使用 <see cref="ContributorRegistryExtensions.WithContributorInfo"/> 附加贡献者信息。
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/> 实例</param>
     /// <param name="id">天气图标模板 ID</param>
     /// <param name="name">天气图标模板名称</param>
     /// <param name="template">天气图标模板内容</param>
-    /// <param name="contributorInfo">贡献者信息</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 实例</returns>
-    public static IServiceCollection AddWeatherIconTemplate(this IServiceCollection services, string id, string name, IDataTemplate template, ContributorInfo? contributorInfo = null)
+    public static IServiceCollection AddWeatherIconTemplate(this IServiceCollection services, string id, string name, IDataTemplate template)
     {
-        IWeatherService.RegisteredTemplates.Add(new WeatherIconTemplateRegistryInfo(id, name, template, contributorInfo));
+        var info = new WeatherIconTemplateRegistryInfo(id, name, template);
+        IWeatherService.RegisteredTemplates.Add(info);
+        
+        info.ContributorInfo ??= new();
+        RegistryContext.LastContributorInfo = info.ContributorInfo;
+        
         return services;
     } 
 }

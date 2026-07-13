@@ -19,6 +19,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -48,6 +49,17 @@ public class PluginService : IPluginService
     internal static List<PluginManifest> InstalledPlugins { get; } = [];
     
     internal static List<PluginManifest> UninstalledPlugins { get; } = [];
+
+    static PluginService()
+    {
+        IPluginService.GetPluginInfo = assembly =>
+        {
+            var alc = AssemblyLoadContext.GetLoadContext(assembly);
+            if (alc is PluginLoadContext plc)
+                return plc.Info;
+            return null;
+        };
+    }
 
     /// <summary>
     /// 处理插件安装
@@ -182,7 +194,7 @@ public class PluginService : IPluginService
                 PluginLoadContexts[info.Manifest.Id] = loadContext;
                 var asm = loadContext.LoadFromAssemblyName(
                     new AssemblyName(Path.GetFileNameWithoutExtension(fullPath)));
-                ContributorInfoHelper.RegisterPlugin(asm, manifest);
+                info.Assembly = asm;
                 var entrance = asm.ExportedTypes.FirstOrDefault(x =>
                     x.BaseType == typeof(PluginBase) ||
                     x.GetCustomAttributes().FirstOrDefault(a => a.GetType() == typeof(PluginEntrance)) != null);

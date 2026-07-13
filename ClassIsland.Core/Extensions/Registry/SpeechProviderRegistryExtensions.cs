@@ -17,7 +17,7 @@ public static class SpeechProviderRegistryExtensions
     /// <summary>
     /// 注册一个语音提供方
     /// </summary>
-    /// <typeparam name="TSpeechProvider">语音提供方类型</typeparam>
+    /// <typeparam name="TSpeechProvider">语音提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 服务集合</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
     public static IServiceCollection AddSpeechProvider<TSpeechProvider>(this IServiceCollection services) where TSpeechProvider : class, ISpeechService

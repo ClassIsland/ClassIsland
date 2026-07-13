@@ -24,7 +24,6 @@ using ClassIsland.Core.Models.Logging;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.XamlTheme;
 using ClassIsland.Helpers.ProfileTransferHelpers;
-using ClassIsland.Models.Actions;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Models.Rules;
 using ClassIsland.Platforms.Abstraction;
@@ -264,7 +263,7 @@ public partial class App
         services.AddRule<CurrentWeatherRuleSettings, CurrentWeatherRuleSettingsControl>("classisland.weather.tomorrowWeather", "明天天气是", "\uE4DC");
         services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.weather.hasWeatherAlert", "存在气象预警", "\uF431");
         services.AddRule<RainTimeRuleSettings, RainTimeRuleSettingsControl>("classisland.weather.rainTime", "距离降水开始/结束还剩", "\uF43F");
-        services.AddRule<SunRiseSetRuleSettings, SunRiseSetRuleSettingsControl>("classisland.weather.sunRiseSet", "是否日出/日落", "\uE150");
+        services.AddRule<SunRiseSetRuleSettings, SunRiseSetRuleSettingsControl>("classisland.weather.sunRiseSet", "是否日出/日落", "\uE150").WithContributorInfo("@baiyao");
         // 行动提供方
         services.AddAction<SignalTriggerSettings, BroadcastSignalActionSettingsControl>("classisland.broadcastSignal", "广播信号", "\uE561");
         services.AddAction<RunAction, RunActionSettingsControl>();
@@ -286,7 +285,7 @@ public partial class App
         // 天气图标模板
         services.AddWeatherIconTemplate("classisland.weatherIcons.lucide", "Lucide（默认）", (this.FindResource("LucideWeatherIconTemplate") as IDataTemplate)!);
         services.AddWeatherIconTemplate("classisland.weatherIcons.fluentDesign", "Fluent Design", (this.FindResource("FluentDesignWeatherIconTemplate") as IDataTemplate)!);
-        services.AddWeatherIconTemplate("classisland.weatherIcons.sfSymbols", "SF Symbols", (this.FindResource("SFSymbolsWeatherIconTemplate") as IDataTemplate)!, "@wrc\\@ryo");
+        services.AddWeatherIconTemplate("classisland.weatherIcons.sfSymbols", "SF Symbols", (this.FindResource("SFSymbolsWeatherIconTemplate") as IDataTemplate)!).WithContributorInfo("@wrc\\@ryo");
         services.AddWeatherIconTemplate("classisland.weatherIcons.simpleText", "纯文本", (this.FindResource("SimpleTextWeatherIconTemplate") as IDataTemplate)!);
         // 档案迁移提供方
         services.AddProfileTransferProvider<CsesImportProvider>("classisland.profileTransfer.import.cses", "从 CSES 导入", ProfileTransferProviderType.Import, "\ue6cb");
