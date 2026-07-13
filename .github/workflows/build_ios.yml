@@ -115,6 +115,18 @@ jobs:
           -p:BrandType=Production
           -p:EnableCodeSigning=false
 
+      - name: Embed Swift runtime libraries
+        run: |
+          app_executable="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_BUNDLE_PATH/Info.plist")"
+          mkdir -p "$APP_BUNDLE_PATH/Frameworks"
+          /usr/bin/xcrun swift-stdlib-tool \
+            --copy \
+            --platform iphoneos \
+            --scan-executable "$APP_BUNDLE_PATH/$app_executable" \
+            --scan-folder "$APP_BUNDLE_PATH/Frameworks" \
+            --scan-folder "$APP_BUNDLE_PATH/PlugIns" \
+            --destination "$APP_BUNDLE_PATH/Frameworks"
+
       - name: Package unsigned IPA
         run: |
           if [[ ! -d "$APP_BUNDLE_PATH" ]]; then
