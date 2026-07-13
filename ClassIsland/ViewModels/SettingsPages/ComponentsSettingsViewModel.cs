@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
+using ClassIsland.Models;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
@@ -21,9 +23,18 @@ public partial class ComponentsSettingsViewModel : ObservableRecipient
 
     public ComponentsSettingsPageDropHandler DropHandler { get; }
     
-    [ObservableProperty] private ComponentSettings? _selectedComponentSettings;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentContributorInfo))]
+    private ComponentSettings? _selectedComponentSettings;
     [ObservableProperty] private string _createProfileName = "";
-    [ObservableProperty] private int _settingsTabControlIndex = 0;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentContributorInfo))]
+    private int _settingsTabControlIndex = 0;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentContributorInfo))]
+    private ComponentInfo? _selectedComponentLibraryItem;
+
     [ObservableProperty] private bool _isComponentSettingsVisible = false;
     [ObservableProperty] private bool _isComponentAdvancedSettingsVisible = false;
     [ObservableProperty] private ObservableCollection<ComponentSettings> _selectedComponentContainerChildren = new();
@@ -40,10 +51,47 @@ public partial class ComponentsSettingsViewModel : ObservableRecipient
     [ObservableProperty] private Dictionary<ListBox, MainWindowLineSettings> _mainWindowLineListBoxCacheReversed = new();
     [ObservableProperty] private bool _isSelectedComponentOnRoot = false;
 
+    public ContributorInfo? CurrentContributorInfo => SettingsTabControlIndex == 0
+        ? SelectedComponentLibraryItem?.ContributorInfo
+        : SelectedComponentSettings?.AssociatedComponentInfo.ContributorInfo;
+
     public static FuncValueConverter<int, double> ComponentsEditorHeightConverter { get; } = new(x => x * 43.2);
+
+    public ObservableCollection<ComponentLibraryGroup> ComponentLibraryGroups { get; } = new();
 
     public IReadOnlyList<ComponentInfo> ContainerComponents { get; } =
         ComponentRegistryService.Registered.Where(x => x.IsComponentContainer).ToList();
+
+    // private static readonly Random GroupRandom = new();
+
+    public void BuildComponentLibraryGroups()
+    {
+        ComponentLibraryGroups.Clear();
+        var groups = new Dictionary<string, ComponentLibraryGroup>();
+
+        foreach (var component in ComponentRegistryService.Registered)
+        {
+            var key = component.ContributorInfo?.PluginName ?? "";
+            if (!groups.TryGetValue(key, out var group))
+            {
+                group = new(component.ContributorInfo);
+                groups[key] = group;
+            }
+            group.Items.Add(component);
+        }
+
+        var classIslandGroup = groups.GetValueOrDefault("");
+        var otherGroups = groups
+            .Where(kv => kv.Key != "")
+            .Select(kv => kv.Value)
+            // .OrderBy(_ => GroupRandom.Next())
+            .ToList();
+
+        if (classIslandGroup != null)
+            ComponentLibraryGroups.Add(classIslandGroup);
+        foreach (var group in otherGroups)
+            ComponentLibraryGroups.Add(group);
+    }
 
     /// <inheritdoc/>
     public ComponentsSettingsViewModel(IComponentsService componentsService, SettingsService settingsService)

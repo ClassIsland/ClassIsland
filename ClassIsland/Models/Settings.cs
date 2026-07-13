@@ -1860,6 +1860,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isScreenRecordingModeEnabled = false;
     private bool _isWindowCaptureBlockingEnabled = false;
     private bool _hasEditModeTutorialShown = false;
+    private bool _isComponentEditModeMessageVisible = true;
     private int _classPlanEditModeIndex = 1;
     private bool _isRefreshingToastEnabled = true;
     private int _refreshingToastThresholdDays = 20;
@@ -1872,6 +1873,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _maxRefreshingToastCounts = 5;
     private RefreshingScopes _refreshingScopes = new();
     private bool _isThemeSeparateInfoVisible = true;
+    private bool _isComponentLibraryGrouped = false;
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -2637,6 +2639,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _classPlanEditModeIndex) return;
             _classPlanEditModeIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsComponentEditModeMessageVisible
+    {
+        get => _isComponentEditModeMessageVisible;
+        set
+        {
+            if (value == _isComponentEditModeMessageVisible) return;
+            _isComponentEditModeMessageVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsComponentLibraryGrouped
+    {
+        get => _isComponentLibraryGrouped;
+        set
+        {
+            if (value == _isComponentLibraryGrouped) return;
+            _isComponentLibraryGrouped = value;
             OnPropertyChanged();
         }
     }

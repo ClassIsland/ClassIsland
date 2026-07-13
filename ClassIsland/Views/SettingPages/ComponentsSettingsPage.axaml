@@ -156,8 +156,51 @@
     </ci:SettingsPageBase.Styles>
     <ci:SettingsPageBase.Resources>
         <ci:HorizontalAlignmentToIntConverter x:Key="HorizontalAlignmentToIntConverter" />
-        
+
         <ci:RulesetControl x:Key="RulesetControl" Classes="in-drawer"/>
+
+        <DataTemplate x:Key="ComponentLibraryItemTemplate">
+            <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
+                  Margin="0 8" Height="50">
+                <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                   Width="24"/>
+
+                <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
+                                            Grid.RowSpan="2"
+                                            Width="32" Height="32"
+                                            VerticalAlignment="Center"
+                                            ClipToBounds="False"
+                                            TextElement.FontSize="32"
+                                            Classes="repair-fontsize"
+                                            Margin="0 -4 4 0"
+                                            IconSource="{Binding IconSource}"/>
+                <TextBlock Grid.Row="0" Grid.Column="2"
+                           Text="{Binding Name}"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Margin="0 0 0 1"
+                           TextTrimming="CharacterEllipsis"/>
+                <TextBlock Grid.Row="1" Grid.Column="2"
+                           Text="{Binding Description}"
+                           Opacity="0.75"
+                           FontSize="12"
+                           FontWeight="Regular"
+                           TextWrapping="Wrap"
+                           HorizontalAlignment="Stretch"
+                           TextAlignment="Left"
+                           TextTrimming="CharacterEllipsis"/>
+            </Grid>
+        </DataTemplate>
+
+        <ItemsPanelTemplate x:Key="ComponentLibraryWrapPanel">
+            <WrapPanel>
+                <Interaction.Behaviors>
+                    <BehaviorCollection>
+                        <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
+                    </BehaviorCollection>
+                </Interaction.Behaviors>
+            </WrapPanel>
+        </ItemsPanelTemplate>
     </ci:SettingsPageBase.Resources>
     <Grid Margin="12 0">
         <Grid.RowDefinitions>
@@ -180,6 +223,10 @@
                         HorizontalAlignment="Right"
                         Spacing="2"
                         VerticalAlignment="Center">
+                <ToggleButton IsChecked="{Binding ViewModel.SettingsService.Settings.IsComponentLibraryGrouped}"
+                              VerticalAlignment="Bottom">
+                    <ci:IconText Glyph="&#xED49;" Text="按插件分组"/>
+                </ToggleButton>
                 <ci:Field Label="配置方案">
                     <ComboBox ItemsSource="{Binding ViewModel.ComponentsService.ComponentConfigs}"
                               MinWidth="150"
@@ -346,54 +393,39 @@
                         Classes="compact"
                         SelectedIndex="{Binding ViewModel.SettingsTabControlIndex}">
                 <TabItem Header="组件库">
-                    <ListBox ItemsSource="{x:Static registry:ComponentRegistryService.Registered}"
-                             Classes="drag-source">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid HorizontalAlignment="Stretch" RowDefinitions="Auto,*" ColumnDefinitions="Auto,Auto,*,Auto"
-                                      Margin="0 8" Height="50">
-                                    <ci:TouchDragThumb Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                                                       Width="24"/>
-                                    
-                                    <controls:IconSourceElement Grid.Column="1" Grid.Row="0"
-                                                                Grid.RowSpan="2"
-                                                                Width="32" Height="32"
-                                                                VerticalAlignment="Center"
-                                                                ClipToBounds="False"
-                                                                TextElement.FontSize="32"
-                                                                Classes="repair-fontsize"
-                                                                Margin="0 -4 4 0"
-                                                                IconSource="{Binding IconSource}"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="2"
-                                               Text="{Binding Name}"
-                                               HorizontalAlignment="Left"
-                                               VerticalAlignment="Top"
-                                               Margin="0 0 0 1"
-                                               TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="2"
-                                               Text="{Binding Description}"
-                                               Opacity="0.75"
-                                               FontSize="12"
-                                               FontWeight="Regular"
-                                               TextWrapping="Wrap"
-                                               HorizontalAlignment="Stretch"
-                                               TextAlignment="Left"
-                                               TextTrimming="CharacterEllipsis"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel>
-                                    <Interaction.Behaviors>
-                                        <BehaviorCollection>
-                                            <ci:WrapPanelAutoResizeBehavior TargetWidth="225"/>
-                                        </BehaviorCollection>
-                                    </Interaction.Behaviors>
-                                </WrapPanel>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
+                    <Panel>
+                        <ListBox ItemsSource="{x:Static registry:ComponentRegistryService.Registered}"
+                                 SelectedItem="{Binding ViewModel.SelectedComponentLibraryItem}"
+                                 Classes="drag-source"
+                                 IsVisible="{Binding !ViewModel.SettingsService.Settings.IsComponentLibraryGrouped}"
+                                 ItemTemplate="{StaticResource ComponentLibraryItemTemplate}"
+                                 ItemsPanel="{StaticResource ComponentLibraryWrapPanel}"/>
+                        <ScrollViewer IsVisible="{Binding ViewModel.SettingsService.Settings.IsComponentLibraryGrouped}">
+                            <ItemsControl ItemsSource="{Binding ViewModel.ComponentLibraryGroups}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="models:ComponentLibraryGroup">
+                                        <StackPanel Margin="0 0 0 12">
+                                            <Border Background="{DynamicResource CustomizedAccentBarBackground1Brush}"
+                                                    CornerRadius="4"
+                                                    Padding="8 4"
+                                                    Margin="0 8 0 4">
+                                                <TextBlock Text="{Binding GroupName}"
+                                                           FontWeight="SemiBold"
+                                                           FontSize="14"/>
+                                            </Border>
+                                            <ListBox ItemsSource="{Binding Items}"
+                                                     SelectedItem="{Binding $parent[settingPages:ComponentsSettingsPage].ViewModel.SelectedComponentLibraryItem}"
+                                                     Classes="drag-source"
+                                                     BorderThickness="0"
+                                                     Background="Transparent"
+                                                     ItemTemplate="{StaticResource ComponentLibraryItemTemplate}"
+                                                     ItemsPanel="{StaticResource ComponentLibraryWrapPanel}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Panel>
                 </TabItem>
                 <TabItem Header="组件设置" IsVisible="{Binding ViewModel.IsComponentSettingsVisible}">
                     <ci:ComponentPresenter Settings="{Binding ViewModel.SelectedComponentSettings}"
@@ -411,7 +443,7 @@
                             <!-- 按规则隐藏 -->
                             <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xEFBF;}"
                                                        Header="按规则隐藏"
-                                                       Description="在指定规则满足时，自动隐藏此组件。注意此处的隐藏不会释放组件资源。">
+                                                       Description="在指定规则满足时，自动隐藏此主界面行。注意此处的隐藏不会释放组件资源。">
                                 <controls:SettingsExpander.Footer>
                                     <StackPanel Orientation="Horizontal">
                                         <Button HorizontalAlignment="Left"
@@ -500,7 +532,7 @@
                                                        Description="当前主界面行背景圆角半径，调至最大数值时左右边缘为半圆。">
                                 <controls:SettingsExpander.Footer>
                                     <StackPanel Orientation="Horizontal">
-                                        <Slider Grid.Row="0" Width="180" Minimum="0" Maximum="20"
+                                        <Slider Width="180" Minimum="0" Maximum="20"
                                                 Value="{Binding CustomCornerRadius}"
                                                 TickFrequency="0.5"
                                                 ci:SliderDragTooltipAssist.StringFormat="F1"
@@ -598,26 +630,34 @@
                 </TabItem>
             </TabControl>
             
-            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
-                        Spacing="4"
-                        IsVisible="{Binding ViewModel.SelectedComponentSettings, Converter={x:Static ObjectConverters.IsNotNull}}"
-                        Margin="0 0 0 0">
-                <ci:AnimatedIconButton
-                        Theme="{StaticResource TransparentButton}"
-                        IsEnabled="{Binding ViewModel.SelectedComponentSettings.HideOnRule}"
-                        Classes.fade="{Binding !ViewModel.SelectedComponentSettings.HideOnRule}"
-                        IsKeepingExpanded="{Binding ViewModel.SelectedComponentSettings.HideOnRule}"
-                        Glyph="&#xF17E;"
-                        Text="编辑…"
-                        Click="ButtonOpenRuleset_OnClick"
-                        ToolTip.Tip="编辑规则集…"/>
-                <CheckBox IsChecked="{Binding ViewModel.SelectedComponentSettings.HideOnRule}">按规则隐藏</CheckBox>
-            </StackPanel>
+            <Panel Grid.Row="1"
+                   MaxWidth="{StaticResource SettingsContainerWidth}"
+                   HorizontalAlignment="Stretch">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
+                            Spacing="4"
+                            Margin="0 0 0 0">
+                    <ci:ContributorBadge ContributorInfo="{Binding ViewModel.CurrentContributorInfo}"/>
+                    <ci:AnimatedIconButton
+                            Theme="{StaticResource TransparentButton}"
+                            IsEnabled="{Binding ViewModel.SelectedComponentSettings?.HideOnRule}"
+                            Classes.fade="{Binding !ViewModel.SelectedComponentSettings.HideOnRule}"
+                            IsKeepingExpanded="{Binding ViewModel.SelectedComponentSettings?.HideOnRule}"
+                            Glyph="&#xF17E;"
+                            Text="编辑…"
+                            Click="ButtonOpenRuleset_OnClick"
+                            ToolTip.Tip="编辑规则集…"
+                            IsVisible="{Binding ViewModel.SelectedComponentSettings, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                    <CheckBox IsChecked="{Binding ViewModel.SelectedComponentSettings?.HideOnRule}"
+                              IsVisible="{Binding ViewModel.SelectedComponentSettings, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        按规则隐藏
+                    </CheckBox>
+                </StackPanel>
+            </Panel>
         </Grid>
         
         <controls:InfoBar Grid.Row="5" Grid.Column="0" 
                           Message="新功能：现在可以使用⌈编辑模式⌋更加直观地编辑主界面上的组件！"
-                          IsOpen="True">
+                          IsOpen="{Binding ViewModel.SettingsService.Settings.IsComponentEditModeMessageVisible, Mode=TwoWay}">
             <controls:InfoBar.ActionButton>
                 <Button Content="进入编辑模式"
                         Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"

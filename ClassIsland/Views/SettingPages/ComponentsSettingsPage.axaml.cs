@@ -312,6 +312,12 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.MainWindowLineListBoxCacheReversed[listBox] = settings;
     }
 
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        ViewModel.BuildComponentLibraryGroups();
+    }
+
     private void ListBoxMainWindowLineSettings_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         if (sender is not ListBox listBox)
