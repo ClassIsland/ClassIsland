@@ -27,7 +27,7 @@ namespace ClassIsland.Controls.Components;
 /// </summary>
 [PseudoClasses(":connector-colored", ":compact", ":progress-colored", ":progress-visible")]
 [ComponentInfo("7C645D35-8151-48BA-B4AC-15017460D994", "倒计时", "\uf361", "显示距离某一天的倒计时。")]
-[ContributorInfo("@doctor @wrc @lyxwx @lipoly")]
+[ContributorInfo("@doctor @wrc @lyxwx @lipoly @ryo")]
 public partial class CountDownComponent : ComponentBase<CountDownComponentSettings>, INotifyPropertyChanged
 {
     public static readonly FuncValueConverter<double, Geometry?> PercentToPathGeometryConverter = new(percentage =>

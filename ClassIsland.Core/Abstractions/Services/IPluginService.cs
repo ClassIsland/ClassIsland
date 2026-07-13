@@ -43,7 +43,9 @@ public interface IPluginService
     /// </summary>
     public static Dictionary<string, string> ContributorDisplayNames { get; } = new() // 初始值由 ClassIsland 维护。
     {
+        ["amiya"]  = "Amiya",
         ["baiyao"] = "白杳",
+        ["ryo"]    = "DannyFeng",
         ["doctor"] = "Doctor-yoi",
         ["dryice"] = "干冰DryIce",
         ["lipoly"] = "LiPolymer",
