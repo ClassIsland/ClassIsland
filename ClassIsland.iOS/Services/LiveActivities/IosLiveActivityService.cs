@@ -16,29 +16,10 @@ namespace ClassIsland.iOS.Services.LiveActivities;
 internal sealed partial class IosLiveActivityService : ILiveActivityService
 {
     private const int MaximumPayloadBytes = 4 * 1024;
+    private const string NativeLibrary =
+        "@rpath/ClassIslandLiveActivityBridge.framework/ClassIslandLiveActivityBridge";
 
-    public LiveActivityAvailability Availability
-    {
-        get
-        {
-            if (!OperatingSystem.IsIOSVersionAtLeast(16, 1))
-            {
-                return LiveActivityAvailability.Unsupported;
-            }
-
-            try
-            {
-                var value = NativeGetAvailability();
-                return Enum.IsDefined(typeof(LiveActivityAvailability), value)
-                    ? (LiveActivityAvailability)value
-                    : LiveActivityAvailability.Unsupported;
-            }
-            catch (Exception exception) when (IsNativeBridgeUnavailable(exception))
-            {
-                return LiveActivityAvailability.Unsupported;
-            }
-        }
-    }
+    public LiveActivityAvailability Availability => GetAvailability().Availability;
 
     public Task<LiveActivityResult> PublishAsync(
         LessonLiveActivityContent content,
@@ -59,13 +40,14 @@ internal sealed partial class IosLiveActivityService : ILiveActivityService
                 ErrorMessage: "IntervalId 和 Title 不能为空。"));
         }
 
-        var availability = Availability;
-        if (availability != LiveActivityAvailability.Available)
+        var availability = GetAvailability();
+        if (availability.Availability != LiveActivityAvailability.Available)
         {
             return Task.FromResult(new LiveActivityResult(
-                availability == LiveActivityAvailability.Disabled
+                availability.Availability == LiveActivityAvailability.Disabled
                     ? LiveActivityResultCode.Disabled
-                    : LiveActivityResultCode.Unsupported));
+                    : LiveActivityResultCode.Unsupported,
+                ErrorMessage: availability.ErrorMessage));
         }
 
         var payload = new NativeLessonLiveActivityPayload(
@@ -112,8 +94,47 @@ internal sealed partial class IosLiveActivityService : ILiveActivityService
     private static string? FormatDate(DateTimeOffset? value) =>
         value?.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture);
 
+    private static AvailabilityCheck GetAvailability()
+    {
+        if (!OperatingSystem.IsIOSVersionAtLeast(16, 1))
+        {
+            return new AvailabilityCheck(
+                LiveActivityAvailability.Unsupported,
+                "实时活动需要 iOS 16.1 或更高版本。");
+        }
+
+        try
+        {
+            var value = NativeGetAvailability();
+            if (!Enum.IsDefined(typeof(LiveActivityAvailability), value))
+            {
+                return new AvailabilityCheck(
+                    LiveActivityAvailability.Unsupported,
+                    $"实时活动原生桥返回了未知可用性值：{value}。");
+            }
+
+            var availability = (LiveActivityAvailability)value;
+            return new AvailabilityCheck(
+                availability,
+                availability == LiveActivityAvailability.Disabled
+                    ? "系统设置已关闭 ClassIsland 的实时活动。"
+                    : null);
+        }
+        catch (Exception exception) when (IsNativeBridgeUnavailable(exception))
+        {
+            return new AvailabilityCheck(
+                LiveActivityAvailability.Unsupported,
+                $"无法加载实时活动原生桥 {NativeLibrary}：" +
+                $"{exception.GetType().Name}: {exception.Message}");
+        }
+    }
+
     private static bool IsNativeBridgeUnavailable(Exception exception) =>
         exception is DllNotFoundException or EntryPointNotFoundException or BadImageFormatException;
+
+    private readonly record struct AvailabilityCheck(
+        LiveActivityAvailability Availability,
+        string? ErrorMessage);
 
     private static unsafe Task<LiveActivityResult> InvokePublishAsync(
         string json,
@@ -197,12 +218,12 @@ internal sealed partial class IosLiveActivityService : ILiveActivityService
         handle.Free();
     }
 
-    [LibraryImport("ClassIslandLiveActivityBridge", EntryPoint = "ci_live_activity_get_availability")]
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_live_activity_get_availability")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     private static partial int NativeGetAvailability();
 
     [LibraryImport(
-        "ClassIslandLiveActivityBridge",
+        NativeLibrary,
         EntryPoint = "ci_live_activity_publish_json",
         StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -211,7 +232,7 @@ internal sealed partial class IosLiveActivityService : ILiveActivityService
         delegate* unmanaged[Cdecl]<nint, int, nint, nint, void> completion,
         nint context);
 
-    [LibraryImport("ClassIslandLiveActivityBridge", EntryPoint = "ci_live_activity_end")]
+    [LibraryImport(NativeLibrary, EntryPoint = "ci_live_activity_end")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     private static unsafe partial void NativeEnd(
         int dismissalPolicy,

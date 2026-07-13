@@ -8,6 +8,7 @@ using ClassIsland.Services.LiveActivities;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
 using Foundation;
+using Microsoft.Extensions.Logging;
 using UIKit;
 
 namespace ClassIsland.iOS.Services.LiveActivities;
@@ -25,6 +26,7 @@ internal sealed class LessonsLiveActivityCoordinator(
     private NSObject? _foregroundObserver;
     private ILessonsService? _lessonsService;
     private LessonsLiveActivitySnapshotFactory? _snapshotFactory;
+    private ILogger<LessonsLiveActivityCoordinator>? _logger;
     private LessonLiveActivityContent? _lastRequestedContent;
     private LessonLiveActivityContent? _lastFailedContent;
     private DateTimeOffset _retryFailedContentAfter;
@@ -68,12 +70,14 @@ internal sealed class LessonsLiveActivityCoordinator(
         }
 
         _lessonsService = IAppHost.GetService<ILessonsService>();
+        _logger = IAppHost.TryGetService<ILogger<LessonsLiveActivityCoordinator>>();
         var exactTimeService = IAppHost.GetService<IExactTimeService>();
         _snapshotFactory = new LessonsLiveActivitySnapshotFactory(
             _lessonsService,
             exactTimeService);
         _lessonsService.PostMainTimerTicked += OnPostMainTimerTicked;
         _isWorkStarted = true;
+        LogInformation($"课程实时活动协调器已启动：Availability={liveActivityService.Availability}。");
         QueueRefresh();
     }
 
@@ -119,19 +123,30 @@ internal sealed class LessonsLiveActivityCoordinator(
             var result = await liveActivityService.PublishAsync(
                 content,
                 CancellationToken.None);
-            if (result.IsSuccess || result.Code is
-                    LiveActivityResultCode.Disabled or LiveActivityResultCode.Unsupported)
+            if (result.IsSuccess)
+            {
+                _lastRequestedContent = content;
+                _lastFailedContent = null;
+                _retryFailedContentAfter = default;
+                LogInformation(
+                    $"课程实时活动已发布：ActivityId={result.ActivityId ?? "<null>"}，" +
+                    $"IntervalId={content.IntervalId}，Phase={content.Phase}。");
+            }
+            else if (result.Code is
+                     LiveActivityResultCode.Disabled or LiveActivityResultCode.Unsupported)
             {
                 // 系统禁用或不支持时也避免被 50 ms 主计时器反复调用；
                 // 回到前台会清除此值并重新检查系统授权。
                 _lastRequestedContent = content;
                 _lastFailedContent = null;
                 _retryFailedContentAfter = default;
+                LogWarning(
+                    $"课程实时活动不可用：{result.Code} {result.ErrorMessage}");
             }
             else
             {
                 RememberFailure(content);
-                Console.Error.WriteLine(
+                LogError(
                     $"无法更新课程实时活动：{result.Code} {result.ErrorMessage}");
             }
         }
@@ -146,7 +161,7 @@ internal sealed class LessonsLiveActivityCoordinator(
                 RememberFailure(content);
             }
 
-            Console.Error.WriteLine($"更新课程实时活动时发生异常：{exception.Message}");
+            LogError("更新课程实时活动时发生异常。", exception);
         }
         finally
         {
@@ -170,13 +185,23 @@ internal sealed class LessonsLiveActivityCoordinator(
             // 等待在途 Publish 的原生 callback，再发出 End，保证 ActivityKit 操作顺序。
             await _refreshGate.WaitAsync(CancellationToken.None);
             gateEntered = true;
-            await liveActivityService.EndAsync(
+            var result = await liveActivityService.EndAsync(
                 LiveActivityDismissalPolicy.Immediate,
                 CancellationToken.None);
+            if (!result.IsSuccess)
+            {
+                LogError(
+                    $"结束课程实时活动失败：{result.Code} {result.ErrorMessage}");
+            }
+            else
+            {
+                LogInformation(
+                    $"课程实时活动已结束：ActivityId={result.ActivityId ?? "<null>"}。");
+            }
         }
         catch (Exception exception)
         {
-            Console.Error.WriteLine($"结束课程实时活动时发生异常：{exception.Message}");
+            LogError("结束课程实时活动时发生异常。", exception);
         }
         finally
         {
@@ -193,6 +218,39 @@ internal sealed class LessonsLiveActivityCoordinator(
     {
         _lastFailedContent = content;
         _retryFailedContentAfter = DateTimeOffset.UtcNow + FailureRetryDelay;
+    }
+
+    private void LogInformation(string message)
+    {
+        if (_logger != null)
+        {
+            _logger.LogInformation("{Message}", message);
+            return;
+        }
+
+        Console.WriteLine(message);
+    }
+
+    private void LogWarning(string message)
+    {
+        if (_logger != null)
+        {
+            _logger.LogWarning("{Message}", message);
+            return;
+        }
+
+        Console.Error.WriteLine(message);
+    }
+
+    private void LogError(string message, Exception? exception = null)
+    {
+        if (_logger != null)
+        {
+            _logger.LogError(exception, "{Message}", message);
+            return;
+        }
+
+        Console.Error.WriteLine(exception == null ? message : $"{message}\n{exception}");
     }
 
     private static LessonLiveActivityContent CreateContent(

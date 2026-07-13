@@ -113,6 +113,7 @@ jobs:
           --no-restore
           -m:1
           -p:BrandType=Production
+          -p:ClassIslandNativeConfiguration=Release
           -p:DeveloperPreview=true
           -p:EnableCodeSigning=false
 
@@ -184,6 +185,10 @@ jobs:
             echo "::error::The Live Activity bridge framework is missing from the IPA"
             exit 1
           fi
+          if compgen -G "$extension_bundle/*.debug.dylib" > /dev/null || [[ -e "$extension_bundle/__preview.dylib" ]]; then
+            echo "::error::The Live Activity extension contains Xcode preview/debug loader binaries that are unsafe for external re-signing"
+            exit 1
+          fi
           if [[ ! -f "$miniaudio_binary" ]]; then
             echo "::error::The SoundFlow miniaudio framework is missing from the IPA"
             exit 1
@@ -215,6 +220,18 @@ jobs:
             echo "::error::The app does not support opening Documents content in place"
             exit 1
           fi
+          if [[ "$(/usr/libexec/PlistBuddy -c 'Print :NSSupportsLiveActivities' "$app_bundle/Info.plist")" != "true" ]]; then
+            echo "::error::The app does not declare Live Activity support"
+            exit 1
+          fi
+          if [[ "$(/usr/libexec/PlistBuddy -c 'Print :NSSupportsLiveActivities' "$extension_bundle/Info.plist")" != "true" ]]; then
+            echo "::error::The extension does not declare Live Activity support"
+            exit 1
+          fi
+          if [[ "$(/usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' "$extension_bundle/Info.plist")" != "com.apple.widgetkit-extension" ]]; then
+            echo "::error::The Live Activity extension does not use the WidgetKit extension point"
+            exit 1
+          fi
 
           assert_unsigned_bundle() {
             local bundle_path="$1"
@@ -233,6 +250,32 @@ jobs:
           extension_executable="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$extension_bundle/Info.plist")"
           app_binary="$app_bundle/$app_executable"
           extension_binary="$extension_bundle/$extension_executable"
+
+          expected_bridge_install_name="@rpath/ClassIslandLiveActivityBridge.framework/ClassIslandLiveActivityBridge"
+          bridge_install_name="$(/usr/bin/otool -D "$bridge_binary" | awk 'NR > 1 && !found { value = $0; found = 1 } END { gsub(/^[[:space:]]+|[[:space:]]+$/, "", value); print value }')"
+          if [[ "$bridge_install_name" != "$expected_bridge_install_name" ]]; then
+            echo "::error::The Live Activity bridge install name is $bridge_install_name, expected $expected_bridge_install_name"
+            exit 1
+          fi
+
+          for symbol in ci_live_activity_get_availability ci_live_activity_publish_json ci_live_activity_end; do
+            if ! /usr/bin/nm -gUj "$bridge_binary" | awk -v expected="_$symbol" '
+              $0 == expected { found = 1 }
+              END { exit found ? 0 : 1 }
+            '; then
+              echo "::error::The Live Activity bridge does not export $symbol"
+              exit 1
+            fi
+          done
+
+          if ! /usr/bin/otool -l "$app_binary" | awk '
+            $1 == "cmd" { in_rpath = ($2 == "LC_RPATH") }
+            in_rpath && $1 == "path" && $2 == "@executable_path/Frameworks" { found = 1 }
+            END { exit found ? 0 : 1 }
+          '; then
+            echo "::error::The app cannot resolve embedded frameworks through @rpath"
+            exit 1
+          fi
 
           assert_arm64() {
             local binary_path="$1"
