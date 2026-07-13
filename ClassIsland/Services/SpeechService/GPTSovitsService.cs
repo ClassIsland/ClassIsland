@@ -27,6 +27,7 @@ using SoundFlow.Providers;
 namespace ClassIsland.Services.SpeechService;
 
 [SpeechProviderInfo("classisland.speech.gpt-sovits", "GPT-SoVITS")]
+[ContributorInfo("@xiaowuap @wrc @LaoShui")]
 public class GptSoVitsService : ISpeechService
 {
     public static readonly string GPTSoVITSCacheFolderPath = Path.Combine(CommonDirectories.AppCacheFolderPath, "GPTSoVITS");

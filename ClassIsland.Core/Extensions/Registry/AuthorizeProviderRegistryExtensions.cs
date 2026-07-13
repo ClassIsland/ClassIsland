@@ -2,6 +2,7 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Services.Registry;
 
 namespace ClassIsland.Core.Extensions.Registry;
@@ -15,12 +16,13 @@ public static class AuthorizeProviderRegistryExtensions
     /// 注册认证提供方。
     /// </summary>
     /// <param name="services"></param>
-    /// <typeparam name="TProvider">认证提供方类型</typeparam>
+    /// <typeparam name="TProvider">认证提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
     /// <returns>原来的<see cref="IServiceCollection"/>对象</returns>
     public static IServiceCollection AddAuthorizeProvider<TProvider>(this IServiceCollection services) where TProvider : AuthorizeProviderControlBase
     {
         var provider = typeof(TProvider);
-        if (provider.GetCustomAttributes(false).FirstOrDefault(x => x is AuthorizeProviderInfo) is not AuthorizeProviderInfo info)
+        var attributes = provider.GetCustomAttributes(false);
+        if (attributes.FirstOrDefault(x => x is AuthorizeProviderInfo) is not AuthorizeProviderInfo info)
         {
             throw new ArgumentException($"无法注册认证提供方，因为这个认证提供方 {provider.FullName} 没有注册信息。");
         }
@@ -30,6 +32,7 @@ public static class AuthorizeProviderRegistryExtensions
             throw new ArgumentException($"此认证提供方id {info.Id} 已经被占用。");
         }
 
+        info.ContributorInfo = ContributorInfoHelper.Extract(provider);
         info.AuthorizeProviderType = provider;
         services.AddKeyedTransient<AuthorizeProviderControlBase, TProvider>(info.Id);
         AuthorizeProviderRegistryService.RegisteredAuthorizeProviders.Add(info);

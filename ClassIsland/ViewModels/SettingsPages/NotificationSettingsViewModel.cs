@@ -8,6 +8,8 @@ using System.Reactive.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Services.Registry;
 using ClassIsland.Models;
 using ClassIsland.Models.Notification;
 using ClassIsland.Services;
@@ -48,6 +50,7 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
             if (value == _notificationSettingsSelectedProvider) return;
             _notificationSettingsSelectedProvider = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(SelectedRegisterContributorInfo));
         }
     }
 
@@ -73,6 +76,11 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
         }
     }
 
+    public ContributorInfo? SelectedRegisterContributorInfo =>
+        NotificationProviderRegistryService.RegisteredProviders
+            .FirstOrDefault(x => x.Guid.ToString() == NotificationSettingsSelectedProvider)
+            ?.ContributorInfo;
+
     public List<eVoice> EdgeVoices { get; } =
         EdgeTts.GetVoice().FindAll(i => i.Locale.Contains("zh-CN"));
 
@@ -82,6 +90,7 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
     private INotificationSenderRegisterInfo? _selectedRegisterInfo;
     private string? _notificationSettingsSelectedChannel;
     private object? _speechProviderSettingsControl;
+    private SpeechProviderInfo _speechProviderInfo;
     
     [ObservableProperty] private ObservableCollection<string> _notificationProvidersFiltered = null!;
 
@@ -127,6 +136,17 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _speechProviderSettingsControl)) return;
             _speechProviderSettingsControl = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public SpeechProviderInfo SpeechProviderInfo
+    {
+        get => _speechProviderInfo;
+        set
+        {
+            if (Equals(value, _speechProviderInfo)) return;
+            _speechProviderInfo = value;
             OnPropertyChanged();
         }
     }

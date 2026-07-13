@@ -40,4 +40,9 @@ public class ActionInfo(string id, string name, string? iconGlyph = null, bool a
     /// 在「添加行动」菜单添加默认项的根菜单组。
     /// </summary>
     public string DefaultGroupToMenu { get; } = defaultGroupToMenu;
+
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    public ContributorInfo? ContributorInfo { get; set; }
 }

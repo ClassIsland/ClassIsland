@@ -56,6 +56,7 @@ public partial class NotificationSettingsPage : SettingsPageBase
             return;
         }
 
+        ViewModel.SpeechProviderInfo = info;
         ViewModel.SpeechProviderSettingsControl = IAppHost.Host?.Services.GetKeyedService<SpeechProviderControlBase>(info.Id);
     }
 

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using ClassIsland.Core.Abstractions.Models;
+using ClassIsland.Core.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MoonSharp.Interpreter;
 
@@ -30,6 +31,11 @@ public partial class TutorialGroup : ObservableObject, IXmlnsAttached
     /// 此章节包含的教程。
     /// </summary>
     [ObservableProperty] private ObservableCollection<Tutorial> _tutorials = [];
+
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    [ObservableProperty] ContributorInfo? _contributorInfo;
     
     [ObservableProperty] private IDictionary<string, string> _xmlns = new Dictionary<string, string>();
 }

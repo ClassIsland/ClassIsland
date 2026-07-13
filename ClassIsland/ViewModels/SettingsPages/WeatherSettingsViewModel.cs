@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using ClassIsland.Core.Models.Weather;
@@ -60,6 +61,11 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
             if (e.PropertyName == nameof(SettingsService.Settings.WeatherLocationSource))
             {
                 SelectedLocationSource = settingsService.Settings.WeatherLocationSource;
+            }
+
+            if (e.PropertyName == nameof(SettingsService.Settings.WeatherIconId))
+            {
+                OnPropertyChanged(nameof(SelectedWeatherIconTemplateRegistryInfo));
             }
         };
     }
@@ -150,4 +156,7 @@ public partial class WeatherSettingsViewModel : ObservableRecipient
         if (value == _settingsService.Settings.WeatherLocationSource) return;
         _settingsService.Settings.WeatherLocationSource = value;
     }
+
+    public WeatherIconTemplateRegistryInfo? SelectedWeatherIconTemplateRegistryInfo =>
+        IWeatherService.RegisteredTemplates.FirstOrDefault(x => x.Id == SettingsService.Settings.WeatherIconId);
 }

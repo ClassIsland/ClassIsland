@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Avalonia.Controls.Templates;
 using Avalonia.Markup.Xaml.Templates;
+using ClassIsland.Core.Attributes;
 
 namespace ClassIsland.Core.Models.Weather;
 
@@ -24,10 +25,16 @@ public class WeatherIconTemplateRegistryInfo
     /// </summary>
     public IDataTemplate Template { get; }
 
-    internal WeatherIconTemplateRegistryInfo(string id, string name, IDataTemplate template)
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    public ContributorInfo? ContributorInfo { get; }
+
+    internal WeatherIconTemplateRegistryInfo(string id, string name, IDataTemplate template, ContributorInfo? contributorInfo)
     {
         Id = id;
         Name = name;
         Template = template;
+        ContributorInfo = contributorInfo;
     }
 }

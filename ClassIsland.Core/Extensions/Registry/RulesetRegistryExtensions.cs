@@ -1,5 +1,7 @@
 ﻿using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Ruleset;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,7 +39,7 @@ public static class RulesetRegistryExtensions
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings>(this IServiceCollection services, string id, string name = "",
-        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle=null)
+        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
         var info = Register(id, name, iconGlyph, onHandle);
         info.SettingsType = typeof(TSettings);
@@ -53,15 +55,16 @@ public static class RulesetRegistryExtensions
     /// <param name="iconGlyph">规则图标。</param>
     /// <param name="onHandle">规则处理程序。</param>
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
-    /// <typeparam name="TSettingsControl">规则设置控件类型。</typeparam>
+    /// <typeparam name="TSettingsControl">规则设置控件类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings, TSettingsControl>(this IServiceCollection services, string id, string name = "",
-        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate ? onHandle = null) where TSettingsControl : RuleSettingsControlBase
+        string iconGlyph = "\uef27", RuleRegistryInfo.HandleDelegate? onHandle = null) where TSettingsControl : RuleSettingsControlBase
     {
         var info = Register(id, name, iconGlyph, onHandle);
         services.AddKeyedTransient<RuleSettingsControlBase, TSettingsControl>(id);
         info.SettingsType = typeof(TSettings);
         info.SettingsControlType = typeof(TSettingsControl);
+        info.ContributorInfo = ContributorInfoHelper.Extract(info.SettingsControlType);
         return services;
     }
 

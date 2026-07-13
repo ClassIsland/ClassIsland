@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 namespace ClassIsland.Services.Automation.Actions;
 
 [ActionInfo("classisland.showNotification", "显示提醒", "\ue02b", addDefaultToMenu:false)]
+[ContributorInfo("@wrc @dryice")]
 public class NotificationAction : ActionBase<NotificationActionSettings>
 {
     static ActionNotificationProvider ActionNotificationProvider { get; } =

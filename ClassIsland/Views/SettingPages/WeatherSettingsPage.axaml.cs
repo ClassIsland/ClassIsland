@@ -23,6 +23,11 @@ namespace ClassIsland.Views.SettingPages;
 /// WeatherSettingsPage.xaml 的交互逻辑
 /// </summary>
 [SettingsPageInfo("weather", "天气", "\uf44f", "\uf44e", SettingsPageCategory.Internal)]
+[ContributorInfo("""
+                 @wrc 天气功能
+                 @Amiya 城市查询改进
+                 @baiyao 页面外观改进
+                 """)]
 public partial class WeatherSettingsPage : SettingsPageBase
 {
     public WeatherSettingsViewModel ViewModel { get; } = IAppHost.GetService<WeatherSettingsViewModel>();

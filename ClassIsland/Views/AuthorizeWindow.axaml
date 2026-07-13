@@ -106,6 +106,7 @@
                                     <Binding Path="ViewModel.IsEditingMode" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:AuthorizeWindow}"/>
                                 </MultiBinding>
                             </StackPanel.IsVisible>
+                            <ci:ContributorBadge ContributorInfo="{Binding ProviderInfo?.ContributorInfo}"/>
                             <ci:TouchDragThumb/>
                             <Button Theme="{StaticResource TransparentButton}"
                                     ToolTip.Tip="删除"

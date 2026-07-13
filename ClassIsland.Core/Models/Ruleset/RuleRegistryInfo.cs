@@ -1,3 +1,4 @@
+using ClassIsland.Core.Attributes;
 namespace ClassIsland.Core.Models.Ruleset;
 
 /// <summary>
@@ -33,6 +34,11 @@ public class RuleRegistryInfo(string id, string name = "", string iconGlyph = "\
     /// 设置类型。
     /// </summary>
     public Type? SettingsType { get; internal set; }
+
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    public ContributorInfo? ContributorInfo { get; set; }
 
     public delegate bool HandleDelegate(object? settings);
 

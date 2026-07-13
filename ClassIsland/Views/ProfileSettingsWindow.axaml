@@ -1506,14 +1506,17 @@
                                                     </Button>
                                                 </WrapPanel>
                                             </StackPanel>
-                                            <StackPanel x:Name="StackPanelBreakingTimePointSettings">
+                                            <Panel x:Name="StackPanelBreakingTimePointSettings">
                                                 <ci:Field Label="课间名称">
                                                     <AutoCompleteBox
                                                         ItemsSource="{Binding $parent[views:ProfileSettingsWindow].ViewModel.CurrentProfileBreakNames}"
                                                         Text="{Binding ViewModel.SelectedTimePoint.BreakName}"
                                                         GotFocus="StackPanelBreakingTimePointSettings_OnGotFocus"/>
                                                 </ci:Field>
-                                            </StackPanel>
+                                                <ci:ContributorBadge VerticalAlignment="Top"
+                                                                     HorizontalAlignment="Right"
+                                                                     Details="自定义课间名称 @RoboMico @dryice"/>
+                                            </Panel>
                                             <Separator Margin="0 4 0 8" />
                                             <StackPanel x:Name="StackPanelTimePointAttachedSettings">
                                                 <ci:IconText Glyph="&#xEF2B;" Text="更多选项" Margin="0 0 0 8" />

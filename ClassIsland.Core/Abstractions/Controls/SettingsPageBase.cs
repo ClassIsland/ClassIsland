@@ -1,12 +1,13 @@
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Labs.Input;
+using ClassIsland.Core.Attributes;
 using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
-/// 设置页面基类
+/// 设置页面基类。在该类上标记 <see cref="ContributorInfo"/> 信息。
 /// </summary>
 public abstract class SettingsPageBase : UserControl
 {

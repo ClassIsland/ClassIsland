@@ -46,7 +46,9 @@ public partial class RulesetSettingsControlPresenter : UserControl
         {
             return;
         }
-        if (!IRulesetService.Rules.TryGetValue(RuleId, out var info))
+
+        var info = Rule.AssociatedRuleRegistryInfo;
+        if (info == null)
         {
             return;
         }

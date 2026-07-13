@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Automation;
 
 namespace ClassIsland.Core.Abstractions.Automation;
 
 /// <summary>
-/// 自动化触发器基类。
+/// 自动化触发器基类。在该类上标记 <see cref="ContributorInfo"/> 信息。
 /// </summary>
 public abstract class TriggerBase
 {

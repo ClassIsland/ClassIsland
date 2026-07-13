@@ -11,6 +11,7 @@
         xmlns:input="clr-namespace:Avalonia.Labs.Input;assembly=Avalonia.Labs.CommandManager"
         xmlns:controls3="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:windowing="clr-namespace:FluentAvalonia.UI.Windowing;assembly=FluentAvalonia"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
         d:DataContext="{d:DesignInstance local:SettingsWindowNew}"
         mc:Ignorable="d"
         MinWidth="560"
@@ -101,6 +102,8 @@
                             <TextBlock FontWeight="Normal"
                                        Text="{Binding ViewModel.SelectedPageInfo.Name}"
                                        Theme="{StaticResource TitleTextBlockStyle}"/>
+                            <ci:ContributorBadge ContributorInfo="{Binding ViewModel.SelectedPageInfo?.ContributorInfo}"
+                                                 HorizontalAlignment="Right"/>
                         </Grid>
                         <controls3:Frame Grid.Row="1" Content="{Binding ViewModel.FrameContent}"
                                          Navigated="NavigationServiceOnLoadCompleted"

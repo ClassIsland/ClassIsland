@@ -42,4 +42,9 @@ public class AttachedSettingsControlInfo(
     /// 附加设置可以附加的目标。
     /// </summary>
     public AttachedSettingsTargets Targets { get; internal set; } = AttachedSettingsTargets.None;
+
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    public ContributorInfo? ContributorInfo { get; set; }
 }

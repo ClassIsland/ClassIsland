@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 namespace ClassIsland.Services.Automation.Actions;
 
 [ActionInfo("classisland.notification.weather", "显示天气提醒", "\uf44f", addDefaultToMenu:false)]
+[ContributorInfo("@wrc @dryice")]
 public class WeatherNotificationAction : ActionBase<WeatherNotificationActionSettings>
 {
     static WeatherNotificationProvider WeatherNotificationProvider { get; } =

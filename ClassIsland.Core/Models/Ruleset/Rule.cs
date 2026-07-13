@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ClassIsland.Core.Abstractions.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Ruleset;
@@ -12,6 +13,7 @@ public class Rule : ObservableRecipient
     private string _id = "";
     private object? _settings;
     private int _state = 0;
+    private RuleRegistryInfo? _associatedRuleRegistryInfo = null;
 
     /// <summary>
     /// 是否反转判断。
@@ -38,6 +40,7 @@ public class Rule : ObservableRecipient
             if (value == _id) return;
             _id = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(AssociatedRuleRegistryInfo));
         }
     }
 
@@ -56,7 +59,7 @@ public class Rule : ObservableRecipient
     }
 
     /// <summary>
-    /// 满足状态
+    /// 满足状态。
     /// </summary>
     [JsonIgnore]
     public int State
@@ -67,6 +70,17 @@ public class Rule : ObservableRecipient
             if (value == _state) return;
             _state = value;
             OnPropertyChanged();
+        }
+    }
+    
+    /// <summary>
+    /// 关联的规则注册信息。
+    /// </summary>
+    [JsonIgnore]
+    public RuleRegistryInfo? AssociatedRuleRegistryInfo {
+        get {
+            IRulesetService.Rules.TryGetValue(Id, out var info);
+            return info;
         }
     }
 }

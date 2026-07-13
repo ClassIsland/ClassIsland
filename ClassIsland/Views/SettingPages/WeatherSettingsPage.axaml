@@ -281,17 +281,20 @@
                                         Description="调整在显示天气类型时使用的图标外观。">
 
                 <controls3:SettingsExpander.Footer>
-                    <ComboBox ItemsSource="{x:Static services:IWeatherService.RegisteredTemplates}"
-                              HorizontalContentAlignment="Left"
-                              MinWidth="120"
-                              SelectedValueBinding="{Binding Id}"
-                              SelectedValue="{Binding ViewModel.SettingsService.Settings.WeatherIconId}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    <StackPanel Orientation="Horizontal">
+                        <ci:ContributorBadge ContributorInfo="{Binding ViewModel.SelectedWeatherIconTemplateRegistryInfo?.ContributorInfo}"/>
+                        <ComboBox ItemsSource="{x:Static services:IWeatherService.RegisteredTemplates}"
+                                  HorizontalContentAlignment="Left"
+                                  MinWidth="120"
+                                  SelectedValueBinding="{Binding Id}"
+                                  SelectedValue="{Binding ViewModel.SettingsService.Settings.WeatherIconId}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
                 </controls3:SettingsExpander.Footer>
             </controls3:SettingsExpander>
 

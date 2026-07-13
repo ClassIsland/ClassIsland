@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
-/// 可附加设置的控件
+/// 可附加设置的控件。在该类上标记 <see cref="ContributorInfo"/> 信息。
 /// </summary>
 public abstract class RuleSettingsControlBase : UserControl, INotifyPropertyChanged
 {
@@ -76,7 +76,7 @@ public abstract class RuleSettingsControlBase : UserControl, INotifyPropertyChan
 }
 
 /// <summary>
-/// 可附加设置的控件
+/// 可附加设置的控件。在该类上标记 <see cref="ContributorInfo"/> 信息。
 /// </summary>
 public abstract class RuleSettingsControlBase<T> : RuleSettingsControlBase where T : class
 {

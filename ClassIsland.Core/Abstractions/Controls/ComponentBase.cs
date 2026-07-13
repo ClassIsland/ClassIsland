@@ -2,13 +2,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 using Avalonia.Controls;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
-/// 主界面组件基类
+/// 主界面组件基类。在该类上标记 <see cref="ContributorInfo"/> 信息。
 /// </summary>
 public abstract class ComponentBase : UserControl
 {

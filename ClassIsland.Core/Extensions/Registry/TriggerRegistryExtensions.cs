@@ -2,6 +2,7 @@
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Core.Extensions.Registry;
@@ -14,7 +15,7 @@ public static class TriggerRegistryExtensions
     /// <summary>
     /// 注册一个自动化触发器。
     /// </summary>
-    /// <typeparam name="TTrigger">自动化触发器类型</typeparam>
+    /// <typeparam name="TTrigger">自动化触发器类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 对象</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
     public static IServiceCollection AddTrigger<TTrigger>(this IServiceCollection services) where TTrigger : TriggerBase
@@ -27,7 +28,7 @@ public static class TriggerRegistryExtensions
     /// <summary>
     /// 注册一个自动化触发器。
     /// </summary>
-    /// <typeparam name="TTrigger">自动化触发器类型</typeparam>
+    /// <typeparam name="TTrigger">自动化触发器类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
     /// <typeparam name="TSettings">自动化触发器设置界面类型</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 对象</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
@@ -41,9 +42,10 @@ public static class TriggerRegistryExtensions
 
     private static TriggerInfo Register(Type triggerType, Type? settingsType=null)
     {
-        if (triggerType.GetCustomAttributes(false).FirstOrDefault(x => x is TriggerInfo) is not TriggerInfo info)
+        var attributes = triggerType.GetCustomAttributes(false);
+        if (attributes.FirstOrDefault(x => x is TriggerInfo) is not TriggerInfo info)
         {
-            throw new InvalidOperationException($"无法注册自动化触发器 {triggerType.FullName}，因为此控件有注册信息。");
+            throw new InvalidOperationException($"无法注册自动化触发器 {triggerType.FullName}，因为此控件缺失注册信息。");
         }
 
         if (IAutomationService.RegisteredTriggers.FirstOrDefault(x => x.Id == info.Id) != null)
@@ -51,6 +53,7 @@ public static class TriggerRegistryExtensions
             throw new InvalidOperationException($"此自动化触发器id {info.Id} 已经被占用。");
         }
 
+        info.ContributorInfo = ContributorInfoHelper.Extract(triggerType);
         info.TriggerType = triggerType;
         info.SettingsControlType = settingsType;
         IAutomationService.RegisteredTriggers.Add(info);

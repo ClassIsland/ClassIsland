@@ -41,6 +41,7 @@ public partial class ActionItemControl : UserControl
         ActionInfoIconText.Glyph =
             IActionService.ActionInfos.TryGetValue(ActionItem.Id, out var actionInfo) ? actionInfo.IconGlyph : "\uee31";
         ActionInfoIconText.Text = actionInfo?.Name ?? $"{ActionItem.Id}（未知行动）";
+        ContributorBadge.ContributorInfo = actionInfo?.ContributorInfo;
 
         if (newControl != null)
         {

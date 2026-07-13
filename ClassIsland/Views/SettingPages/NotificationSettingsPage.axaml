@@ -45,15 +45,15 @@
                               IsPanelOpened="{Binding ViewModel.IsNotificationSettingsPanelOpened, Mode=TwoWay}">
 
         <controls1:ListDetailView.TitleElement>
-            <Grid>
-                <Grid DataContext="{Binding ViewModel.SelectedRegisterInfo, Mode=OneWay}"
-                      d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
-                    <TextBlock Text="{Binding Name}"
-                               Theme="{StaticResource SubtitleTextBlockStyle}"
-                               TextTrimming="CharacterEllipsis"
-                               VerticalAlignment="Center" />
-                </Grid>
-            </Grid>
+            <Panel>
+                <TextBlock Text="{Binding Name}"
+                           Theme="{StaticResource SubtitleTextBlockStyle}"
+                           TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center"
+                           DataContext="{Binding ViewModel.SelectedRegisterInfo, Mode=OneWay}"/>
+                <ci:ContributorBadge ContributorInfo="{Binding ViewModel.SelectedRegisterContributorInfo}"
+                                     HorizontalAlignment="Right"/>
+            </Panel>
         </controls1:ListDetailView.TitleElement>
 
         <controls1:ListDetailView.LeftContent>
@@ -236,7 +236,7 @@
                                     <!-- 语音引擎 -->
                                     <controls3:SettingsExpanderItem Content="语音引擎">
                                         <controls3:SettingsExpanderItem.Footer>
-                                            <StackPanel>
+                                            <DockPanel>
                                                 <ComboBox ItemsSource="{x:Static registry:SpeechProviderRegistryService.RegisteredProviders}"
                                                           SelectedValueBinding="{Binding Id}"
                                                           SelectedValue="{Binding ViewModel.SettingsService.Settings.SelectedSpeechProvider}">
@@ -246,7 +246,8 @@
                                                         </DataTemplate>
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
-                                            </StackPanel>
+                                                <ci:ContributorBadge ContributorInfo="{Binding ViewModel.SpeechProviderInfo.ContributorInfo}"/>
+                                            </DockPanel>
                                         </controls3:SettingsExpanderItem.Footer>
                                     </controls3:SettingsExpanderItem>
                                     <!-- 语音引擎设置 -->

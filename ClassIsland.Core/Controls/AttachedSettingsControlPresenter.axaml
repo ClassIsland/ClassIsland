@@ -143,6 +143,8 @@
                             </Flyout>
                         </Button.Flyout>
                     </Button>
+                    <!-- <local:ContributorBadge DockPanel.Dock="Right" -->
+                    <!--                         ContributorInfo="{Binding ControlInfo.ContributorInfo}"/> -->
                     <Grid>
                         <controls:IconText Glyph="{Binding ControlInfo.IconGlyph, Mode=OneWay}"
                                            Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"

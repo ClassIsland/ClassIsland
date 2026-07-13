@@ -33,4 +33,9 @@ public class TriggerInfo(string id, string name, string iconGlyph="\uED55") : At
     /// 设置界面类型
     /// </summary>
     public Type? SettingsControlType { get; internal set; }
+
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    public ContributorInfo? ContributorInfo { get; set; }
 }

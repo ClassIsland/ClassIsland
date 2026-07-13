@@ -29,4 +29,9 @@ public class AuthorizeProviderInfo(string id, string name, string iconGlyph) : A
     /// 认证提供方类型
     /// </summary>
     public Type? AuthorizeProviderType { get; internal set; }
+
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    public ContributorInfo? ContributorInfo { get; set; }
 }

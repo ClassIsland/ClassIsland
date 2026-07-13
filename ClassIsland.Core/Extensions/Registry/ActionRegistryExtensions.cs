@@ -4,6 +4,7 @@ using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Automation;
 using Microsoft.Extensions.DependencyInjection;
 namespace ClassIsland.Core.Extensions.Registry;
@@ -16,7 +17,7 @@ public static class ActionRegistryExtensions
     /// <summary>
     /// 注册一个行动提供方。
     /// </summary>
-    /// <typeparam name="TAction">行动提供方，继承自<see cref="ActionBase"/>。</typeparam>
+    /// <typeparam name="TAction">行动提供方，继承自<see cref="ActionBase"/>。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
     public static IServiceCollection AddAction<TAction>(this IServiceCollection services)
         where TAction : ActionBase
     {
@@ -28,8 +29,8 @@ public static class ActionRegistryExtensions
     /// <summary>
     /// 注册一个行动提供方。
     /// </summary>
-    /// <typeparam name="TAction">行动提供方，继承自<see cref="ActionBase"/>。</typeparam>
-    /// <typeparam name="TSettingsControl">行动设置界面，继承自<see cref="ActionSettingsControlBase"/>。</typeparam>
+    /// <typeparam name="TAction">行动提供方，继承自<see cref="ActionBase"/>。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
+    /// <typeparam name="TSettingsControl">行动设置界面，继承自 <see cref="ActionSettingsControlBase"/>。</typeparam>
     public static IServiceCollection AddAction<TAction, TSettingsControl>(this IServiceCollection services)
         where TAction : ActionBase
         where TSettingsControl : ActionSettingsControlBase
@@ -42,13 +43,15 @@ public static class ActionRegistryExtensions
 
     static ActionInfo RegisterActionInfo(Type actionType)
     {
-        if (actionType.GetCustomAttributes(false).FirstOrDefault(x => x is ActionInfo) is not ActionInfo info)
+        var attributes = actionType.GetCustomAttributes(false);
+        if (attributes.FirstOrDefault(x => x is ActionInfo) is not ActionInfo info)
             throw new InvalidOperationException($"无法注册行动提供方 {actionType.FullName}: 未标注 ActionInfo 特性。");
 
+        info.ContributorInfo = ContributorInfoHelper.Extract(actionType);
         info.IsRevertable = HasOverriddenOnRevert(actionType);
 
         if (!IActionService.ActionInfos.TryAdd(info.Id, info))
-            throw new InvalidOperationException($"无法注册行动提供方 {actionType.FullName}: ID {info.Id} 已被占用。");
+            throw new InvalidOperationException($"无法注册行动提供方 {actionType.FullName}: ID {info.Id} 已被 {IActionService.ActionInfos[info.Id].Name} 占用。");
 
         ProcessAddToGroup(info);
 

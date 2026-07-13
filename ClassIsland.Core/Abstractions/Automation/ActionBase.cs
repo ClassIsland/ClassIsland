@@ -1,12 +1,13 @@
 using System.Text.Json;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Automation;
 using Microsoft.Extensions.DependencyInjection;
 namespace ClassIsland.Core.Abstractions.Automation;
 
 /// <summary>
-/// 行动提供方基类。
+/// 行动提供方基类。在该类上标记 <see cref="ContributorInfo"/> 信息。
 /// </summary>
 public abstract class ActionBase
 {

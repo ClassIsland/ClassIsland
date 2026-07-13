@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using ClassIsland.Core.Abstractions.Models.Speech;
+using ClassIsland.Core.Attributes;
 
 namespace ClassIsland.Core.Abstractions.Services.SpeechService;
 
 /// <summary>
-/// TTS服务接口
+/// TTS服务接口。在该类上标记 <see cref="ContributorInfo"/> 信息。
 /// </summary>
 public interface ISpeechService
 {

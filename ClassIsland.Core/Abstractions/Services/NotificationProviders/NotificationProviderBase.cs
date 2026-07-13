@@ -15,7 +15,7 @@ using Microsoft.Extensions.Hosting;
 namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 
 /// <summary>
-/// 提醒提供方基类。
+/// 提醒提供方基类。在该类上标记 <see cref="ContributorInfo"/> 信息。
 /// </summary>
 public abstract class NotificationProviderBase : INotificationProvider, INotificationSender, IHostedService
 {

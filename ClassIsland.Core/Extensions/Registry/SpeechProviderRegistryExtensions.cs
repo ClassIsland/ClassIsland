@@ -2,6 +2,7 @@
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared.Abstraction.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,7 @@ public static class SpeechProviderRegistryExtensions
     /// <summary>
     /// 注册一个语音提供方
     /// </summary>
-    /// <typeparam name="TSpeechProvider">语音提供方类型</typeparam>
+    /// <typeparam name="TSpeechProvider">语音提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
     /// <typeparam name="TSpeechProviderSettingsControl">语音提供方设置控件类型</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 服务集合</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
@@ -45,7 +46,9 @@ public static class SpeechProviderRegistryExtensions
 
     private static SpeechProviderInfo Register(IServiceCollection services, Type provider, Type? settings = null)
     {
-        if (provider.GetCustomAttributes(false).FirstOrDefault(x => x is SpeechProviderInfo) is not SpeechProviderInfo info)
+
+        var attributes = provider.GetCustomAttributes(false);
+        if (attributes.FirstOrDefault(x => x is SpeechProviderInfo) is not SpeechProviderInfo info)
         {
             throw new ArgumentException($"无法注册语音提供方，因为这个语音提供方 {provider.FullName} 没有注册信息。");
         }
@@ -55,7 +58,7 @@ public static class SpeechProviderRegistryExtensions
             throw new ArgumentException($"此语音提供方id {info.Id} 已经被占用。");
         }
 
-
+        info.ContributorInfo = ContributorInfoHelper.Extract(provider);
         info.SettingsControlType = provider;
 
         if (settings != null)

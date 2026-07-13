@@ -26,6 +26,12 @@ namespace ClassIsland.Views.SettingPages;
 /// </summary>
 [FullWidthPage]
 [SettingsPageInfo("automation", "自动化", "\ueEF1", "\ueEF0", SettingsPageCategory.Internal)]
+[ContributorInfo("""
+                 @dryice 自动化＆行动
+                 @wrc 规则集、时间表行动、触发器＆工作流
+                 代码贡献者 @lrs
+                 文档贡献者 [GitHub↗️](https://github.com/ClassIsland/classisland-docs-next/commits/main/src/app/automation.md)
+                 """)]
 public partial class AutomationSettingsPage : SettingsPageBase
 {
     public AutomationSettingsPage()

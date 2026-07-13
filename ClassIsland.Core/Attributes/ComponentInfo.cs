@@ -60,6 +60,11 @@ public class ComponentInfo : Attribute
     /// </summary>
     public bool IsComponentContainer { get; internal set; } = false;
 
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    public ContributorInfo? ContributorInfo { get; set; }
+
     internal List<string> MigrateSources { get; } = new();
 
     /// <inheritdoc />

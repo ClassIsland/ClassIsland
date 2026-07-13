@@ -22,6 +22,7 @@ namespace ClassIsland.Controls.Components;
 /// </summary>
 [ContainerComponent]
 [ComponentInfo("7E19A113-D281-4F33-970A-834A0B78B5AD", "轮播容器", "\uefc9", "轮播多个组件。")]
+[ContributorInfo("@wrc 轮播容器\\@RoboMico 轮播逻辑改进")]
 public partial class SlideComponent : ComponentBase<SlideComponentSettings>
 {
     public IRulesetService RulesetService { get; } = IAppHost.GetService<IRulesetService>();

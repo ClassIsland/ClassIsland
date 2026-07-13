@@ -20,4 +20,9 @@ public class SpeechProviderInfo(string id, string name) : Attribute
     /// 设置控件类型
     /// </summary>
     public Type? SettingsControlType { get; internal set; }
+
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    public ContributorInfo? ContributorInfo { get; set; }
 }

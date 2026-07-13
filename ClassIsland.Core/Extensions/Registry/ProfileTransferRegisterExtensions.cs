@@ -3,6 +3,7 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.Profile;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Profile;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +42,7 @@ public static class ProfileTransferProviderRegisterExtensions
     /// <summary>
     /// 注册一个档案迁移提供方
     /// </summary>
-    /// <typeparam name="TProvider">要注册的提供方类型</typeparam>
+    /// <typeparam name="TProvider">要注册的提供方类型。在该类上标记 <see cref="ContributorInfo"/> 信息。</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/>对象。</param>
     /// <param name="id">提供方 id</param>
     /// <param name="type">迁移类型</param>
@@ -58,6 +59,7 @@ public static class ProfileTransferProviderRegisterExtensions
             Name = name,
             Type = type,
             HandlerControlType = controlType,
+            ContributorInfo = ContributorInfoHelper.Extract(controlType),
             Icon = IconExpressionHelper.TryParseOrNull(icon ?? "\ue68f"),
             UseFullWidth = controlType.GetCustomAttributes(false).OfType<FullWidthPageAttribute>().Any(),
             HidePageTitle = controlType.GetCustomAttributes(false).OfType<HidePageTitleAttribute>().Any()

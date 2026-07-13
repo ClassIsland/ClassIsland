@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.Profile;
 using ClassIsland.Core.Helpers.UI;
 using FluentAvalonia.UI.Controls;
@@ -51,4 +52,9 @@ public class ProfileTransferProviderInfo
     /// 提供方控件是否隐藏标题
     /// </summary>
     public bool HidePageTitle { get; init; }
+
+    /// <summary>
+    /// 贡献者信息。
+    /// </summary>
+    public ContributorInfo? ContributorInfo { get; set; }
 }

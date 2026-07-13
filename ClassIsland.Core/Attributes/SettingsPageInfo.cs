@@ -21,6 +21,8 @@ public class SettingsPageInfo : Attribute
     public string? GroupId { get; internal set; }
 
     public SettingsPageCategory Category { get; } = SettingsPageCategory.External;
+
+    public ContributorInfo? ContributorInfo { get; set; }
     
     public SettingsPageInfo(string id, string name, SettingsPageCategory category=SettingsPageCategory.External)
     {
