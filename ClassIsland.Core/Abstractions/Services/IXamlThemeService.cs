@@ -59,6 +59,11 @@ public interface IXamlThemeService
     /// <param name="outputPath">输出路径</param>
     /// <returns></returns>
     Task PackageThemeAsync(string id, string outputPath);
+
+    /// <summary>
+    /// 将主题打包到指定流。
+    /// </summary>
+    Task PackageThemeAsync(string id, Stream outputStream);
     
     /// <summary>
     /// 已启用的主题。主题将按照此列表的顺序加载，靠后的主题会覆盖前面的主题样式。

@@ -596,7 +596,16 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
                 return;
             }
 
-            await DiagnosticService.ExportDiagnosticData(file);
+            var topLevel = TopLevel.GetTopLevel(this)!;
+            using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                    ?? throw new FileNotFoundException("无法打开所选诊断数据文件。", file);
+            await using var outputStream = await storageFile.OpenWriteAsync();
+            if (outputStream.CanSeek)
+            {
+                outputStream.SetLength(0);
+                outputStream.Position = 0;
+            }
+            await DiagnosticService.ExportDiagnosticData(outputStream);
             this.ShowSuccessToast($"已导出诊断信息到 {file}。");
         }
         catch (Exception exception)
@@ -702,7 +711,16 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
 
         try
         {
-            await ShortcutHelpers.CreateClassSwapShortcutAsync(file);
+            var topLevel = TopLevel.GetTopLevel(this)!;
+            using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                    ?? throw new FileNotFoundException("无法打开所选快捷方式文件。", file);
+            await using var outputStream = await storageFile.OpenWriteAsync();
+            if (outputStream.CanSeek)
+            {
+                outputStream.SetLength(0);
+                outputStream.Position = 0;
+            }
+            await ShortcutHelpers.CreateClassSwapShortcutAsync(outputStream);
             this.ShowSuccessToast($"已创建快捷换课图标到 {file}。");
         }
         catch (Exception exception)

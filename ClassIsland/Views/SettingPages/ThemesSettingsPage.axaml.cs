@@ -143,8 +143,19 @@ public partial class ThemesSettingsPage : SettingsPageBase
             return;
         try
         {
-            await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, file);
-            await PlatformServices.LauncherService.LaunchPath(Path.GetDirectoryName(file) ?? "");
+            using var storageFile = await PlatformServices.FilePickerService.GetFileAsync(file, topLevel)
+                                    ?? throw new FileNotFoundException("无法打开所选主题包文件。", file);
+            await using var outputStream = await storageFile.OpenWriteAsync();
+            if (outputStream.CanSeek)
+            {
+                outputStream.SetLength(0);
+                outputStream.Position = 0;
+            }
+            await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, outputStream);
+            var launchPath = PlatformServices.FilePickerService.IsBookmark(file)
+                ? file
+                : Path.GetDirectoryName(file) ?? file;
+            await PlatformServices.LauncherService.LaunchPath(launchPath);
         }
         catch (Exception ex)
         {

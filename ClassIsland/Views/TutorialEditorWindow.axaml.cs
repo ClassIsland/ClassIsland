@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -181,17 +182,28 @@ public partial class TutorialEditorWindow : ViewBase
             return;
         }
 
-        var path = ViewModel.OpenedFilePath = paths[0];
-        ViewModel.CurrentTutorialGroup = ConfigureFileHelper.LoadConfig<TutorialGroup>(path, false);
-        this.ShowToast($"已打开 {path}");
-        var id = ViewModel.CurrentTutorialGroup.Id;
-        if (ITutorialService.RegisteredTutorialGroups.FirstOrDefault(x => x.Id == id) is not {} existed)
+        var path = paths[0];
+        try
         {
-            return;
+            using var file = await PlatformServices.FilePickerService.GetFileAsync(path, TopLevel!)
+                             ?? throw new FileNotFoundException("无法打开所选教程文件。", path);
+            await using var stream = await file.OpenReadAsync();
+            ViewModel.CurrentTutorialGroup = ConfigureFileHelper.LoadConfigUnWrapped<TutorialGroup>(stream);
+            ViewModel.OpenedFilePath = path;
+            this.ShowToast($"已打开 {path}");
+            var id = ViewModel.CurrentTutorialGroup.Id;
+            if (ITutorialService.RegisteredTutorialGroups.FirstOrDefault(x => x.Id == id) is not {} existed)
+            {
+                return;
+            }
+            ViewModel.TutorialService.StopTutorial();
+            ITutorialService.RegisteredTutorialGroups.Replace(existed, ViewModel.CurrentTutorialGroup);
+            this.ShowToast($"已替换 ID 为 {id} 的教程组并启用热重载。");
         }
-        ViewModel.TutorialService.StopTutorial();
-        ITutorialService.RegisteredTutorialGroups.Replace(existed, ViewModel.CurrentTutorialGroup);
-        this.ShowToast($"已替换 ID 为 {id} 的教程组并启用热重载。");
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法打开教程文件", exception);
+        }
     }
 
     private async void MenuItemSave_OnClick(object? sender, RoutedEventArgs e)
@@ -215,17 +227,34 @@ public partial class TutorialEditorWindow : ViewBase
             ViewModel.OpenedFilePath = paths;
         }
 
-        SaveTutorialGroupToFile();
+        await SaveTutorialGroupToFile();
     }
 
-    private void SaveTutorialGroupToFile()
+    private async Task<bool> SaveTutorialGroupToFile()
     {
         if (string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath))
         {
-            return;
+            return false;
         }
-        ConfigureFileHelper.SaveConfig(ViewModel.OpenedFilePath, ViewModel.CurrentTutorialGroup, true);
-        this.ShowToast($"已保存 {ViewModel.OpenedFilePath}");
+        try
+        {
+            using var file = await PlatformServices.FilePickerService.GetFileAsync(ViewModel.OpenedFilePath, TopLevel!)
+                             ?? throw new FileNotFoundException("无法打开所选教程文件。", ViewModel.OpenedFilePath);
+            await using var stream = await file.OpenWriteAsync();
+            if (stream.CanSeek)
+            {
+                stream.SetLength(0);
+                stream.Position = 0;
+            }
+            ConfigureFileHelper.SaveConfig(stream, ViewModel.CurrentTutorialGroup, true);
+            this.ShowToast($"已保存 {ViewModel.OpenedFilePath}");
+            return true;
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法保存教程文件", exception);
+            return false;
+        }
     }
 
     private async void TopLevel_OnClosing(object? sender, ViewClosingEventArgs e)
@@ -280,14 +309,17 @@ public partial class TutorialEditorWindow : ViewBase
                     break;
             }
         }
-        SaveTutorialGroupToFile();
+        if (!string.IsNullOrWhiteSpace(ViewModel.OpenedFilePath) && !await SaveTutorialGroupToFile())
+        {
+            return;
+        }
         ViewModel.IsClosing = true;
         Close();
     }
 
-    private void WindowBase_OnDeactivated(object? sender, EventArgs e)
+    private async void WindowBase_OnDeactivated(object? sender, EventArgs e)
     {
-        SaveTutorialGroupToFile();
+        await SaveTutorialGroupToFile();
     }
 
     protected override void OnLoaded(RoutedEventArgs e)

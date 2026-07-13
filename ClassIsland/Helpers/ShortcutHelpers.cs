@@ -57,9 +57,14 @@ public static class ShortcutHelpers
     public static async Task CreateClassSwapShortcutAsync(string path="")
     {
         var desktopPath = string.IsNullOrEmpty(path) ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "快捷换课.url") : path;
-        var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/ClassSwap.url"));
+        await using var outputStream = File.Create(desktopPath);
+        await CreateClassSwapShortcutAsync(outputStream);
+    }
 
-        await File.WriteAllTextAsync(desktopPath, await new StreamReader(stream).ReadToEndAsync());
+    public static async Task CreateClassSwapShortcutAsync(Stream outputStream)
+    {
+        await using var stream = AssetLoader.Open(new Uri("avares://ClassIsland/Assets/ShortcutTemplates/ClassSwap.url"));
+        await stream.CopyToAsync(outputStream);
     }
 
     public static async Task CreateFreedesktopShortcutAsync(string path = "", bool isAutostart = false)

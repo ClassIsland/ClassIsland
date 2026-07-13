@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
@@ -12,6 +13,19 @@ public static class ClassIslandV1ProfileTransferHelper
     public static Profile TransferClassIslandV1ProfileToClassIslandProfile(string path)
     {
         var config = ConfigureFileHelper.LoadConfigUnWrapped<Profile>(path, false);
+        return TransferClassIslandV1ProfileToClassIslandProfile(config);
+    }
+
+    [Obsolete]
+    public static Profile TransferClassIslandV1ProfileToClassIslandProfile(Stream stream)
+    {
+        var config = ConfigureFileHelper.LoadConfigUnWrapped<Profile>(stream);
+        return TransferClassIslandV1ProfileToClassIslandProfile(config);
+    }
+
+    [Obsolete]
+    private static Profile TransferClassIslandV1ProfileToClassIslandProfile(Profile config)
+    {
         foreach (var tl in config.TimeLayouts)
         {
             foreach (var layoutItem in tl.Value.Layouts.Where(x =>

@@ -68,12 +68,23 @@ public class CsesExportHelper
         try
         {
             var csesProfile = profileService.Profile.ToCsesObject();
-            CsesLoader.SaveToYamlFile(csesProfile, filePath);
-            Process.Start(new ProcessStartInfo()
+            using var file = await PlatformServices.FilePickerService.GetFileAsync(filePath, root)
+                             ?? throw new FileNotFoundException("无法打开所选 CSES 文件。", filePath);
+            await using var stream = await file.OpenWriteAsync();
+            if (stream.CanSeek)
             {
-                FileName = Path.GetDirectoryName(Path.GetFullPath(filePath)),
-                UseShellExecute = true
-            });
+                stream.SetLength(0);
+                stream.Position = 0;
+            }
+            await using (var writer = new StreamWriter(stream, leaveOpen: true))
+            {
+                await writer.WriteAsync(CsesLoader.SaveToYamlString(csesProfile));
+                await writer.FlushAsync();
+            }
+            var launchPath = PlatformServices.FilePickerService.IsBookmark(filePath)
+                ? filePath
+                : Path.GetDirectoryName(Path.GetFullPath(filePath)) ?? filePath;
+            await PlatformServices.LauncherService.LaunchPath(launchPath);
             root.ShowSuccessToast($"成功导出到 {filePath}。");
         }
         catch (Exception exception)

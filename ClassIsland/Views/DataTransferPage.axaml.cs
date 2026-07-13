@@ -329,6 +329,10 @@ public partial class DataTransferPage : UserControl
         try
         {
             ViewModel.PageIndex = 3;
+            var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+            using var file = await PlatformServices.FilePickerService.GetFileAsync(root, topLevel)
+                             ?? throw new FileNotFoundException("无法打开所选 ClassIsland 数据文件。", root);
+            await using var inputStream = await file.OpenReadAsync();
             await Task.Run(() =>
             {
                 var appRoot = Path.GetFullPath(CommonDirectories.AppRootFolderPath);
@@ -338,7 +342,7 @@ public partial class DataTransferPage : UserControl
                     Directory.Delete(PluginService.PluginsRootPath, true);
                 }
 
-                using var archive = ZipFile.OpenRead(root);
+                using var archive = new ZipArchive(inputStream, ZipArchiveMode.Read, true);
                 foreach (var entry in archive.Entries)
                 {
                     if (!ShouldImportEntry(entry.FullName))
@@ -458,6 +462,15 @@ public partial class DataTransferPage : UserControl
         {
             ViewModel.PageIndex = 3;
             var path = ViewModel.ImportSourcePath;
+            var topLevel = TopLevel.GetTopLevel(this) ?? AppBase.Current.GetRootWindow();
+            using var file = await PlatformServices.FilePickerService.GetFileAsync(path, topLevel)
+                             ?? throw new FileNotFoundException("无法打开所选 ClassIsland 数据文件。", path);
+            await using var outputStream = await file.OpenWriteAsync();
+            if (outputStream.CanSeek)
+            {
+                outputStream.SetLength(0);
+                outputStream.Position = 0;
+            }
             var temp = Directory.CreateTempSubdirectory("ClassIslandDataExport").FullName;
             //await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
             Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
@@ -479,8 +492,7 @@ public partial class DataTransferPage : UserControl
                     FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppConfigPath), Path.Combine(temp, "Config/"));
                     FileFolderService.CopyFolder(Path.Combine(PluginService.PluginsRootPath), Path.Combine(temp, "Plugins/"));
                 }
-                File.Delete(path);
-                ZipFile.CreateFromDirectory(temp, path);
+                ZipFile.CreateFromDirectory(temp, outputStream);
             });
             Directory.Delete(temp, true);
             ViewModel.PageIndex = 4;

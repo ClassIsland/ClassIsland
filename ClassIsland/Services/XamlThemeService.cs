@@ -451,6 +451,16 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
     public async Task PackageThemeAsync(string id, string outputPath)
     {
+        if (Themes.All(x => x.Manifest.Id != id))
+        {
+            throw new ArgumentException($"找不到主题 {id}。", nameof(id));
+        }
+        await using var outputStream = File.Create(outputPath);
+        await PackageThemeAsync(id, outputStream);
+    }
+
+    public async Task PackageThemeAsync(string id, Stream outputStream)
+    {
         var plugin = Themes.FirstOrDefault(x => x.Manifest.Id == id);
         if (plugin == null)
         {
@@ -459,9 +469,7 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
 
         await Task.Run(() =>
         {
-            if (File.Exists(outputPath))
-                File.Delete(outputPath);
-            ZipFile.CreateFromDirectory(plugin.Path, outputPath);
+            ZipFile.CreateFromDirectory(plugin.Path, outputStream);
         });
     }
 }

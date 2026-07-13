@@ -254,6 +254,19 @@ public class PluginService : IPluginService
     /// <exception cref="ArgumentException">当找不到指定插件时抛出此异常</exception>
     public static async Task PackagePluginAsync(string id, string outputPath)
     {
+        if (IPluginService.LoadedPlugins.All(x => x.Manifest.Id != id))
+        {
+            throw new ArgumentException($"找不到插件 {id}。", nameof(id));
+        }
+        await using var outputStream = File.Create(outputPath);
+        await PackagePluginAsync(id, outputStream);
+    }
+
+    /// <summary>
+    /// 异步导出指定插件到流
+    /// </summary>
+    public static async Task PackagePluginAsync(string id, Stream outputStream)
+    {
         var plugin = IPluginService.LoadedPlugins.FirstOrDefault(x => x.Manifest.Id == id);
         if (plugin == null)
         {
@@ -262,9 +275,7 @@ public class PluginService : IPluginService
 
         await Task.Run(() =>
         {
-            if (File.Exists(outputPath))
-                File.Delete(outputPath);
-            ZipFile.CreateFromDirectory(plugin.PluginFolderPath, outputPath);
+            ZipFile.CreateFromDirectory(plugin.PluginFolderPath, outputStream);
         });
     }
 
