@@ -315,7 +315,7 @@ public partial class App
             VerticalSafeAreaPx = 20
         });
         // 教程
-        if (System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() && System.OperatingSystem.IsLinux())
+        if (System.OperatingSystem.IsWindows() || System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsLinux())
         {
             // services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.test.json"));
             // services.AddTutorialGroupByUri(new Uri("avares://ClassIsland/Assets/Tutorials/classisland.sp.json"));
