@@ -11,8 +11,9 @@ internal static class IosNotificationTimeMapper
         DateTimeOffset systemNow,
         TimeZoneInfo? timeZone = null)
     {
+        // DateTime 保留传入 offset 的墙上时间；LocalDateTime 会被构建主机时区再次换算。
         var localFireAt = DateTime.SpecifyKind(
-            systemNow.LocalDateTime + (logicalFireAt - logicalNow),
+            systemNow.DateTime + (logicalFireAt - logicalNow),
             DateTimeKind.Unspecified);
         var offset = (timeZone ?? TimeZoneInfo.Local).GetUtcOffset(localFireAt);
         var result = new DateTimeOffset(localFireAt, offset);

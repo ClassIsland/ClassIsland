@@ -38,7 +38,7 @@ public sealed class AvaloniaDefaultPlatformFilePickerServiceTests
             "Avalonia.Platform.Storage.FileIO.BclStorageFile",
             throwOnError: true)!;
         var constructor = type.GetConstructor(
-            BindingFlags.Instance | BindingFlags.NonPublic,
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             binder: null,
             [typeof(FileInfo)],
             modifiers: null)

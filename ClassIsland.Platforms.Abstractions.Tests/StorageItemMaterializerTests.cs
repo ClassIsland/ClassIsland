@@ -124,7 +124,7 @@ public sealed class StorageItemMaterializerTests
     {
         var type = typeof(IStorageItem).Assembly.GetType(typeName, throwOnError: true)!;
         var constructor = type.GetConstructor(
-            BindingFlags.Instance | BindingFlags.NonPublic,
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             binder: null,
             [fileSystemInfo.GetType()],
             modifiers: null)
