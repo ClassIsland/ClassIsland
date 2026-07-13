@@ -145,6 +145,10 @@ Assert-True ($ipaVerificationText.Contains("assert_unsigned_bundle")) "IPA verif
 Assert-True ($nukeBuildText.Contains('SetProperty("EnableCodeSigning", enableCodeSigning)')) "NUKE iOS publish must explicitly support signed and unsigned modes."
 Assert-True ($nukeBuildText.Contains('SetProperty("ArchiveOnBuild", enableCodeSigning)')) "Unsigned NUKE publish must skip xcarchive creation while still building the IPA."
 Assert-True ($nukeBuildText.Contains('SetProperty("BuildIpa", true)')) "NUKE iOS publish must keep IPA packaging enabled."
+$iosPublishProperties = [regex]::Match($nukeBuildText, '(?s)DotNetPublish\(settings =>.*?SetProject\(IosAppEntryProject\).*?if \(!EnableCodeSigning\)')
+Assert-True ($iosPublishProperties.Success) "The NUKE iOS publish block could not be validated."
+Assert-True ($iosPublishProperties.Value.Contains('SetProperty("PublishBuilding", true)')) "NUKE iOS publish must exclude non-publish fallback secrets."
+Assert-True ($iosPublishProperties.Value.Contains('SetProperty("PublishPlatform", OsName)')) "NUKE iOS publish must not inherit the macOS runner platform."
 Assert-True ($nukeBuildText.Contains('SetProperty("DebugType", "none")')) "NUKE iOS Release publish must disable PDB generation for every project reference."
 Assert-True ($nukeBuildText.Contains('SetProperty("DebugSymbols", false)')) "NUKE iOS Release publish must disable debug symbols for every project reference."
 $enableCodeSigningSchema = @($nukeSchema.allOf) |

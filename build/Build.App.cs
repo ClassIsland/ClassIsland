@@ -26,6 +26,8 @@ partial class Build
             {
                 DotNetRestore(s => s
                     .SetProjectFile(IosAppEntryProject)
+                    .SetProperty("PublishBuilding", true)
+                    .SetProperty("PublishPlatform", OsName)
                     .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
                 return;
             }
@@ -49,6 +51,8 @@ partial class Build
             {
                 DotNetClean(s => s
                     .SetProject(IosAppEntryProject)
+                    .SetProperty("PublishBuilding", true)
+                    .SetProperty("PublishPlatform", OsName)
                     .SetProperty("RuntimeIdentifier", RuntimeIdentifier));
                 return;
             }
@@ -101,6 +105,8 @@ partial class Build
                     settings = settings
                         .SetProject(IosAppEntryProject)
                         .SetConfiguration(Configuration)
+                        .SetProperty("PublishBuilding", true)
+                        .SetProperty("PublishPlatform", OsName)
                         .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
                         .SetProperty("ArchiveOnBuild", enableCodeSigning)
                         .SetProperty("BuildIpa", true)
