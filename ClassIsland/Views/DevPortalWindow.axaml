@@ -169,7 +169,7 @@
                     </controls:ListDetailView.RightContent>
                 </controls:ListDetailView>
             </TabItem>
-            <TabItem Header="OOBE_Intro">
+            <TabItem Header="OOBE">
                 <StackPanel>
                     <ContentPresenter HorizontalAlignment="Stretch"
                                       Height="400" 
@@ -197,7 +197,7 @@
             <TabItem Header="调课日历">
                 <controls:ScheduleCalendarControl/>
             </TabItem>
-            <TabItem Header="WeatherIcon">
+            <TabItem Header="Weather">
                 <Grid>
                     <ListBox ItemsSource="{Binding ViewModel.WeatherService.WeatherStatusList}">
                         <ListBox.ItemTemplate>
@@ -213,7 +213,7 @@
                     </ListBox>
                 </Grid>
             </TabItem>
-            <TabItem Header="StickyScrollViewer">
+            <TabItem Header="Sticky">
                 <Grid>
                     <ci:StickyScrollViewer CollapsedHeight="75">
                         <ci:StickyScrollViewer.HeaderContent>
@@ -263,6 +263,54 @@
             </TabItem>
             <TabItem Header="SDG">
                 <scheduleDataGrid:ScheduleDataGrid/>
+            </TabItem>
+            <TabItem Header="Margin">
+                <StackPanel>
+                    <TextBlock Text="SimpleRichText 调试滑块" Classes="Heading1"/>
+                    <ci:Field Label="Height（高度）">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Slider Minimum="10" Maximum="50" Width="500" x:Name="SliderHeight"
+                                    ValueChanged="Slider_OnValueChanged"/>
+                            <TextBlock Text="{Binding #SliderHeight.Value, StringFormat='{}{0:F0}'}"
+                                       VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ci:Field>
+                    <ci:Field Label="Margin.Top（上边距）">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Slider Minimum="-10" Maximum="10" Width="500" x:Name="SliderMarginTop"
+                                    ValueChanged="Slider_OnValueChanged"/>
+                            <TextBlock Text="{Binding #SliderMarginTop.Value, StringFormat='{}{0:F0}'}"
+                                       VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ci:Field>
+                    <ci:Field Label="Margin.Bottom（下边距）">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Slider Minimum="-10" Maximum="10" Width="500" x:Name="SliderMarginBottom"
+                                    ValueChanged="Slider_OnValueChanged"/>
+                            <TextBlock Text="{Binding #SliderMarginBottom.Value, StringFormat='{}{0:F0}'}"
+                                       VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ci:Field>
+                    <ci:Field Label="Padding.Top（内上边距）">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Slider Minimum="-5" Maximum="10" Width="500" x:Name="SliderPaddingTop"
+                                    ValueChanged="Slider_OnValueChanged"/>
+                            <TextBlock Text="{Binding #SliderPaddingTop.Value, StringFormat='{}{0:F0}'}"
+                                       VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ci:Field>
+                    <ci:Field Label="Padding.Bottom（内下边距）">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Slider Minimum="-5" Maximum="10" Width="500" x:Name="SliderPaddingBottom"
+                                    ValueChanged="Slider_OnValueChanged"/>
+                            <TextBlock Text="{Binding #SliderPaddingBottom.Value, StringFormat='{}{0:F0}'}"
+                                       VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ci:Field>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Button Click="ButtonResetSliders_OnClick">重置默认</Button>
+                    </StackPanel>
+                </StackPanel>
             </TabItem>
         </TabControl>
     </Grid>

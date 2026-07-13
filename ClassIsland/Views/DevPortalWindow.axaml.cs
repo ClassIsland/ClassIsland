@@ -15,6 +15,9 @@ using ClassIsland.Core.Models.Tutorial;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
+using Avalonia.Controls.Primitives;
+using ClassIsland.Core.Helpers;
+using ClassIsland.Helpers;
 using FluentAvalonia.UI.Controls;
 
 namespace ClassIsland.Views;
@@ -197,5 +200,39 @@ public partial class DevPortalWindow : MyWindow
     {
         ViewModel.SplashProvider?.EndSplash();
         ViewModel.SplashProvider = null;
+    }
+
+    // ---- SimpleRichText 调试滑块 ----
+    private void Slider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (sender is not Slider s) return;
+        switch (s.Name)
+        {
+            case "SliderHeight":
+                TextDebugConfig.Heit = s.Value;
+                break;
+            case "SliderMarginTop":
+                TextDebugConfig.MTop = s.Value;
+                break;
+            case "SliderMarginBottom":
+                TextDebugConfig.MBot = s.Value;
+                break;
+            case "SliderPaddingTop":
+                TextDebugConfig.PTop = s.Value;
+                break;
+            case "SliderPaddingBottom":
+                TextDebugConfig.PBot = s.Value;
+                break;
+        }
+        TextDebugConfig.NotifyChanged();
+    }
+
+    private void ButtonResetSliders_OnClick(object? sender, RoutedEventArgs e)
+    {
+        SliderHeight.Value = 22;
+        SliderMarginTop.Value = 0;
+        SliderMarginBottom.Value = 0;
+        SliderPaddingTop.Value = 0;
+        SliderPaddingBottom.Value = 0;
     }
 }

@@ -4,10 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:dd="urn:gong-wpf-dragdrop"
-                      xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
              xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:automation="clr-namespace:ClassIsland.Core.Controls.Automation"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=automation:TriggerSettingsControl}}">
@@ -20,38 +21,42 @@
                 <DataTemplate>
                     <Border HorizontalAlignment="Stretch"
                             Background="{DynamicResource MaterialDesignCardBackground}">
-                        <Grid Margin="0 4" ColumnDefinitions="Auto,*">
-                            <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 0 4">
-                                    <Button Grid.Column="0"
-                                            Theme="{StaticResource TransparentButton}"
-                                            Classes="circle"
-                                            ToolTip.Tip="删除"
-                                            Command="{Binding RemoveTriggerCommand, RelativeSource={RelativeSource AncestorType=automation:TriggerSettingsControl}}"
-                                            CommandParameter="{Binding}"
-                                            Margin="0 0 2 0"
-                                            IsVisible="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=automation:TriggerSettingsControl}}"
-                                            Content="{controls:FluentIcon &#xE671;}"
-                                            VerticalAlignment="Stretch">
-                                    </Button>
-                                    <ComboBox SelectedValue="{Binding Id}"
-                                              SelectedValueBinding="{Binding Id}"
-                                              ItemsSource="{x:Static services:IAutomationService.RegisteredTriggers}"
-                                              MinWidth="100">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <controls:IconText Glyph="{Binding IconGlyph}"
-                                                                   Text="{Binding Name}"/>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </StackPanel>
-                                <automation:TriggerSettingsControlPresenter Settings="{Binding}"
-                                                                       Id="{Binding Id}"
-                                                                      Margin="4 0 0 0"
-                                                                      Grid.Column="1" />
-                            </WrapPanel>
-                        </Grid>
+                        <DockPanel Dock="Left">
+                            <ci:SmartWrapPanel ContributorInfo="{Binding AssociatedTriggerInfo?.ContributorInfo}">
+                                <ci:SmartWrapPanel.Left>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0 0 0 4">
+                                        <Button Theme="{StaticResource TransparentButton}"
+                                                Classes="circle"
+                                                ToolTip.Tip="删除"
+                                                Command="{Binding RemoveTriggerCommand, RelativeSource={RelativeSource AncestorType=automation:TriggerSettingsControl}}"
+                                                CommandParameter="{Binding}"
+                                                Margin="0 0 2 0"
+                                                IsVisible="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=automation:TriggerSettingsControl}}"
+                                                Content="{controls:FluentIcon &#xE671;}"
+                                                VerticalAlignment="Stretch">
+                                        </Button>
+                                        <ComboBox SelectedValue="{Binding Id}"
+                                                  SelectedValueBinding="{Binding Id}"
+                                                  ItemsSource="{x:Static services:IAutomationService.RegisteredTriggers}"
+                                                  MinWidth="100"
+                                                  VerticalAlignment="Stretch">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <controls:IconText Glyph="{Binding IconGlyph}"
+                                                                       Text="{Binding Name}"/>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </ci:SmartWrapPanel.Left>
+                                <ci:SmartWrapPanel.Main>
+                                    <automation:TriggerSettingsControlPresenter Settings="{Binding}"
+                                                                           Id="{Binding Id}"
+                                                                          Margin="4 0 0 0"
+                                                                          x:Name="TriggerSettingsControlPresenter" />
+                                </ci:SmartWrapPanel.Main>
+                            </ci:SmartWrapPanel>
+                        </DockPanel>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

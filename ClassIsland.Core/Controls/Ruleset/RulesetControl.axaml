@@ -4,11 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ClassIsland.Core.Controls.Ruleset"
-             xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
              xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters"
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:controls1="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
              mc:Ignorable="d"
              Loaded="Control_OnLoaded"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -53,22 +53,22 @@
                           SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
                           Margin="0 0 4 0">
                     <TabStripItem>
-                        <controls:AnimatedIconButton Glyph="&#xE590;" Text="规则组任一满足时" 
-                                                     Classes="display-role"
-                                                     IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}" />
+                        <ci:AnimatedIconButton Glyph="&#xE590;" Text="规则组任一满足时" 
+                                               Classes="display-role"
+                                               IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}" />
                     </TabStripItem>
                     <TabStripItem>
-                        <controls:AnimatedIconButton Glyph="&#xE591;" Text="规则组全部满足时" 
-                                                     Classes="display-role"
-                                                     IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"/>
+                        <ci:AnimatedIconButton Glyph="&#xE591;" Text="规则组全部满足时" 
+                                               Classes="display-role"
+                                               IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"/>
                     </TabStripItem>
                 </TabStrip>
                 
                 <Button Theme="{StaticResource TransparentButton}"
                         Classes="accent"
                         Click="ButtonAddRule_OnClick">
-                    <controls:IconText Glyph="&#xE00D;" Text="添加组"
-                                       Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+                    <ci:IconText Glyph="&#xE00D;" Text="添加组"
+                                 Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
                 </Button>
                 <Ellipse Width="8" Height="8" Margin="4 2 4 0"
                          Classes="rule-state-indicator" DataContext="{Binding Ruleset.State}"/>
@@ -119,22 +119,22 @@
                                               SelectedIndex="{Binding Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
                                               Margin="0 0 4 0">
                                         <TabStripItem>
-                                            <controls:AnimatedIconButton Glyph="&#xE590;" Text="规则任一满足时" 
-                                                                         Classes="display-role"
-                                                                         IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}" />
+                                            <ci:AnimatedIconButton Glyph="&#xE590;" Text="规则任一满足时" 
+                                                                   Classes="display-role"
+                                                                   IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}" />
                                         </TabStripItem>
                                         <TabStripItem>
-                                            <controls:AnimatedIconButton Glyph="&#xE591;" Text="规则全部满足时" 
-                                                                         Classes="display-role"
-                                                                         IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"/>
+                                            <ci:AnimatedIconButton Glyph="&#xE591;" Text="规则全部满足时" 
+                                                                   Classes="display-role"
+                                                                   IsKeepingExpanded="{Binding $parent[TabStripItem].IsSelected}"/>
                                         </TabStripItem>
                                     </TabStrip>
                                     <Button Theme="{StaticResource TransparentButton}"
                                             Classes="accent"
                                             Command="{Binding AddRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                             CommandParameter="{Binding}">
-                                        <controls:IconText Glyph="&#xE00D;" Text="规则"
-                                                           Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
+                                        <ci:IconText Glyph="&#xE00D;" Text="规则"
+                                                     Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"/>
                                     </Button>
                                 </StackPanel>
 
@@ -153,13 +153,13 @@
                                         Command="{Binding DuplicateGroupCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                         CommandParameter="{Binding}"
                                         Margin="0 0 4 0"
-                                        Content="{controls:FluentIcon &#xE58B;}">
+                                        Content="{ci:FluentIcon &#xE58B;}">
                                     </Button>
                                     <Button Theme="{StaticResource TransparentButton}"
                                             Command="{Binding RemoveGroupCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
                                             CommandParameter="{Binding}"
                                             ToolTip.Tip="删除"
-                                            Content="{controls:FluentIcon &#xE671;}">
+                                            Content="{ci:FluentIcon &#xE671;}">
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -171,43 +171,51 @@
                             </Interaction.Behaviors>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid Margin="0 0 0 2" ColumnDefinitions="Auto,*">
-                                        <StackPanel Orientation="Horizontal"
-                                                    Grid.Column="0"
-                                                    Classes="items-valign-center"
-                                                    VerticalAlignment="Top">
-                                            <Button Theme="{StaticResource TransparentButton}"
-                                                    Classes="circle"
-                                                    ToolTip.Tip="删除"
-                                                    Command="{Binding RemoveRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    Content="{controls:FluentIcon &#xE671;}">
-                                            </Button>
-                                            <Ellipse Width="8" Height="8"
-                                                     Margin="4 0 8 0"
-                                                     DataContext="{Binding State}"
-                                                     Classes="rule-state-indicator"/>
-                                            <ToggleButton Content="非"
-                                                          ToolTip.Tip="反转"
-                                                          IsChecked="{Binding IsReversed}"
-                                                          Classes="light"/>
-                                            <ComboBox Margin="2 0"
-                                                      SelectedValue="{Binding Id}"
-                                                      SelectedValueBinding="{Binding Key}"
-                                                      ItemsSource="{x:Static services:IRulesetService.Rules}">
-                                                <ComboBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <controls:IconText Glyph="{Binding Value.IconGlyph}"
-                                                                           Text="{Binding Value.Name}" />
-                                                    </DataTemplate>
-                                                </ComboBox.ItemTemplate>
-                                            </ComboBox>
-                                        </StackPanel>
-                                        <local:RulesetSettingsControlPresenter Grid.Column="1"
-                                            Rule="{Binding Mode=OneWay}"
-                                            RuleId="{Binding Id, Mode=OneWay}"
-                                            VerticalAlignment="Top"/>
-                                    </Grid>
+                                    <DockPanel Dock="Left">
+                                        <ci:SmartWrapPanel Margin="0 0 0 4"
+                                                           ContributorInfo="{Binding AssociatedRuleRegistryInfo?.ContributorInfo}">
+                                            <ci:SmartWrapPanel.Left>
+                                                <StackPanel Orientation="Horizontal"
+                                                            VerticalAlignment="Top">
+                                                    <Button Theme="{StaticResource TransparentButton}"
+                                                            Classes="circle"
+                                                            ToolTip.Tip="删除"
+                                                            Command="{Binding RemoveRuleCommand, RelativeSource={RelativeSource AncestorType=local:RulesetControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            Content="{ci:FluentIcon &#xE671;}"
+                                                            VerticalAlignment="Stretch">
+                                                    </Button>
+                                                    <Ellipse Width="8" Height="8"
+                                                             Margin="2 0 8 0"
+                                                             DataContext="{Binding State}"
+                                                             Classes="rule-state-indicator"
+                                                             VerticalAlignment="Center"/>
+                                                    <ToggleButton Content="非"
+                                                                  ToolTip.Tip="反转"
+                                                                  IsChecked="{Binding IsReversed}"
+                                                                  Classes="light"
+                                                                  VerticalAlignment="Stretch"/>
+                                                    <ComboBox Margin="2 0"
+                                                              SelectedValue="{Binding Id}"
+                                                              SelectedValueBinding="{Binding Key}"
+                                                              ItemsSource="{x:Static services:IRulesetService.Rules}"
+                                                              VerticalAlignment="Stretch">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <ci:IconText Glyph="{Binding Value.IconGlyph}"
+                                                                                   Text="{Binding Value.Name}" />
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+                                                </StackPanel>
+                                            </ci:SmartWrapPanel.Left>
+                                            <ci:SmartWrapPanel.Main>
+                                                <local:RulesetSettingsControlPresenter
+                                                    Rule="{Binding Mode=OneWay}"
+                                                    RuleId="{Binding Id, Mode=OneWay}"/>
+                                            </ci:SmartWrapPanel.Main>
+                                        </ci:SmartWrapPanel>
+                                    </DockPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

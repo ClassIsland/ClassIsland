@@ -121,40 +121,34 @@
         </local:ModifyAppSettingsActionControlTemplateSelector>
     </ci:ActionSettingsControlBase.Resources>
 
-    <StackPanel>
-        <Grid ColumnDefinitions="Auto Auto * Auto">
-            <Button Height="30"
-                    VerticalAlignment="Center"
-                    Click="SelectorButton_OnClick">
-                <ci:IconText MinHeight="23"
-                             Glyph="{Binding #This.ViewModel.CurrentSettingsInfo.Glyph, FallbackValue=&#xE7C9;}"
-                             Text="{Binding #This.ViewModel.CurrentSettingsInfo.Name, FallbackValue=选择…}" />
-            </Button>
+    <ci:SmartWrapPanel>
+        <ci:SmartWrapPanel.Left>
+            <StackPanel Orientation="Horizontal">
+                <Button Height="30"
+                        Click="SelectorButton_OnClick">
+                    <ci:IconText MinHeight="23"
+                                 Glyph="{Binding #This.ViewModel.CurrentSettingsInfo.Glyph, FallbackValue=&#xE7C9;}"
+                                 Text="{Binding #This.ViewModel.CurrentSettingsInfo.Name, FallbackValue=选择…}" />
+                </Button>
 
-            <TextBlock Grid.Column="1"
-                       Margin="5 0"
-                       VerticalAlignment="Center"
-                       Text="修改为"
-                       IsVisible="{Binding #This.ViewModel.ControlTemplateName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <TextBlock Margin="5 0"
+                           VerticalAlignment="Center"
+                           Text="修改为"
+                           IsVisible="{Binding #This.ViewModel.ControlTemplateName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+        </ci:SmartWrapPanel.Left>
 
-            <ContentPresenter x:Name="InputerContentPresenter1"
-                              Grid.Column="2"
-                              IsVisible="{Binding !#This.ViewModel.IsInContentPresenter2}" />
+        <ci:SmartWrapPanel.Main>
+            <ContentPresenter x:Name="InputerContentPresenter" HorizontalAlignment="Stretch" />
+        </ci:SmartWrapPanel.Main>
 
+        <ci:SmartWrapPanel.Right>
             <ci:AnimatedIconButton x:Name="FillCurrentValueButton"
-                                   Grid.Column="3"
-                                   Margin="0"
-                                   Padding="0"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Stretch"
-                                   VerticalContentAlignment="Stretch"
                                    Glyph="&#xE47C;"
                                    Text="当前值"
                                    Click="FillCurrentValueButton_OnClick"
                                    Theme="{StaticResource TransparentButton}"
                                    ToolTip.Tip="填入当前值" />
-        </Grid>
-        <ContentPresenter x:Name="InputerContentPresenter2"
-                          IsVisible="{Binding #This.ViewModel.IsInContentPresenter2}" />
-    </StackPanel>
+        </ci:SmartWrapPanel.Right>
+    </ci:SmartWrapPanel>
 </ci:ActionSettingsControlBase>

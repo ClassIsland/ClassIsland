@@ -1,0 +1,13 @@
+<UserControl x:Class="ClassIsland.Core.Controls.SmartWrapPanel"
+             x:DataType="ci:SmartWrapPanel"
+             x:CompileBindings="True"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core">
+    <ci:SmartWrapLayout>
+        <ContentPresenter Content="{Binding $parent[ci:SmartWrapPanel].Left}"/>
+        <ContentPresenter Content="{Binding $parent[ci:SmartWrapPanel].Main}"/>
+        <ci:ContributorBadge ContributorInfo="{Binding $parent[ci:SmartWrapPanel].ContributorInfo}" VerticalAlignment="Top"/>
+        <ContentPresenter Content="{Binding $parent[ci:SmartWrapPanel].Right}"/>
+    </ci:SmartWrapLayout>
+</UserControl>

@@ -264,7 +264,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
     void ResetInputer()
     {
         ControlTemplateSelector.ControlTemplateName = "";
-        InputerContentPresenter1.Content = InputerContentPresenter2.Content = null;
+        InputerContentPresenter.Content = null;
     }
 
     void UpdateInputer()
@@ -274,16 +274,7 @@ public partial class ModifyAppSettingsActionSettingsControl : ActionSettingsCont
         ResetInputer();
 
         ControlTemplateSelector.ControlTemplateName = ViewModel.ControlTemplateName;
-
-        ViewModel.IsInContentPresenter2 =
-            Settings.Value?.ToString()?.Contains(Environment.NewLine) == true ||
-            ViewModel.ControlTemplateName == ".string" &&
-            Settings.Value?.ToString()?.Length > 20;
-
-        if (ViewModel.IsInContentPresenter2)
-            InputerContentPresenter2.Content = ControlTemplateSelector.Build();
-        else
-            InputerContentPresenter1.Content = ControlTemplateSelector.Build();
+        InputerContentPresenter.Content = ControlTemplateSelector.Build();
     }
 
     void UpdateSuggestions()
@@ -453,7 +444,6 @@ public partial class ModifyAppSettingsActionSettingsControlViewModel : Observabl
     [ObservableProperty] string _controlTemplateName = null!;
     [ObservableProperty] SettingsInfo? _currentSettingsInfo = null;
     [ObservableProperty] List<SettingsInfo> _settingsSearchResults = null!;
-    [ObservableProperty] bool _isInContentPresenter2;
     [ObservableProperty] bool _isModeVisible;
 }
 
