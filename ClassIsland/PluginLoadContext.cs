@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Services;
 
@@ -14,18 +13,18 @@ namespace ClassIsland;
 /// <summary>
 /// 为插件加载提供隔离的 <see cref="AssemblyLoadContext"/> 实现。<para/>
 /// 根据运行平台选择不同的依赖解析器，并负责从插件目录解析托管与非托管依赖项。
-/// <remarks>macOS平台的依赖解析器为<see cref="MacPluginAssemblyResolver"/></remarks>
+/// <remarks>macOS 和 Android 平台的依赖解析器为 <see cref="MonoPluginAssemblyResolver"/>。</remarks>
 /// </summary>
 public class PluginLoadContext : AssemblyLoadContext
 {
-    private readonly bool _suppressMacPluginLoader;
+    private readonly bool _forceMonoPluginLoader;
 
-    public PluginLoadContext(PluginInfo info, string fullPath, bool suppressMacPluginLoader) : base($"ClassIsland.PluginLoadContext[{info.Manifest.Id}]")
+    public PluginLoadContext(PluginInfo info, string fullPath, bool forceMonoPluginLoader) : base($"ClassIsland.PluginLoadContext[{info.Manifest.Id}]")
     {
-        _suppressMacPluginLoader = suppressMacPluginLoader;
+        _forceMonoPluginLoader = forceMonoPluginLoader;
         Info = info;
-        CoreResolver = UseMacOsPluginLoadingBehavior ? null : new(fullPath);
-        MacResolver = UseMacOsPluginLoadingBehavior ? new(fullPath) : null;
+        CoreResolver = UseMonoPluginLoadingBehavior ? null : new(fullPath);
+        MonoResolver = UseMonoPluginLoadingBehavior ? new(fullPath) : null;
     }
 
     /// <summary>
@@ -33,12 +32,12 @@ public class PluginLoadContext : AssemblyLoadContext
     /// </summary>
     public PluginInfo Info { get; }
 
-    private bool UseMacOsPluginLoadingBehavior =>
-        _suppressMacPluginLoader || RuntimeInformation.IsOSPlatform(OSPlatform.OSX); 
+    private bool UseMonoPluginLoadingBehavior =>
+        _forceMonoPluginLoader || OperatingSystem.IsMacOS() || OperatingSystem.IsAndroid();
 
     private AssemblyDependencyResolver? CoreResolver { get; }
     
-    private MacPluginAssemblyResolver? MacResolver { get; }
+    private MonoPluginAssemblyResolver? MonoResolver { get; }
 
     private static IReadOnlyList<string> WinRTDeps { get; } = [
         "WinRT.Runtime",
@@ -73,7 +72,7 @@ public class PluginLoadContext : AssemblyLoadContext
         }
         
         string? assemblyPath;
-        assemblyPath = UseMacOsPluginLoadingBehavior ? MacResolver?.ResolveAssemblyToPath(assemblyName) : CoreResolver?.ResolveAssemblyToPath(assemblyName);
+        assemblyPath = UseMonoPluginLoadingBehavior ? MonoResolver?.ResolveAssemblyToPath(assemblyName) : CoreResolver?.ResolveAssemblyToPath(assemblyName);
         
         if (assemblyPath != null)
         {
@@ -90,7 +89,7 @@ public class PluginLoadContext : AssemblyLoadContext
     protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
     {
         string? libraryPath;
-        libraryPath = UseMacOsPluginLoadingBehavior ? MacResolver?.ResolveUnmanagedDllToPath(unmanagedDllName) : CoreResolver?.ResolveUnmanagedDllToPath(unmanagedDllName);
+        libraryPath = UseMonoPluginLoadingBehavior ? MonoResolver?.ResolveUnmanagedDllToPath(unmanagedDllName) : CoreResolver?.ResolveUnmanagedDllToPath(unmanagedDllName);
 
         if (libraryPath != null)
         {
@@ -102,10 +101,9 @@ public class PluginLoadContext : AssemblyLoadContext
 }
 
 /// <summary>
-/// macOS 专用的插件程序集与本地库解析器。根据插件目录结构查找真实文件路径。
+/// Mono 运行时专用的插件程序集与本地库解析器。根据 macOS 或 Android 的插件目录结构查找真实文件路径。
 /// </summary>
-[SupportedOSPlatform("macos")]
-public class MacPluginAssemblyResolver(string componentAssemblyPath)
+public class MonoPluginAssemblyResolver(string componentAssemblyPath)
 {
     private readonly string _pluginDirectory = Path.GetDirectoryName(componentAssemblyPath) ?? "";
 
@@ -121,41 +119,61 @@ public class MacPluginAssemblyResolver(string componentAssemblyPath)
     }
 
     /// <summary>
-    /// 在插件目录及其可能的 runtimes 子目录中查找非托管库文件，并返回第一个匹配的完整路径。
-    /// 支持按处理器架构查找文件。
+    /// 在插件目录及当前平台对应的 runtimes 子目录中查找非托管库文件，并返回第一个匹配的完整路径。
+    /// 支持 macOS 和 Android 的平台通用目录与处理器架构目录。
     /// </summary>
     public string? ResolveUnmanagedDllToPath(string unmanagedDllName)
     {
         var searchPaths = new List<string>
         {
-            _pluginDirectory,
-            Path.Combine(_pluginDirectory, "runtimes", "osx", "native")
+            _pluginDirectory
         };
-        
+
+        var platform = OperatingSystem.IsMacOS()
+            ? "osx"
+            : OperatingSystem.IsAndroid()
+                ? "android"
+                : null;
+
+        var extension = OperatingSystem.IsMacOS()
+            ? ".dylib"
+            : OperatingSystem.IsAndroid()
+                ? ".so"
+                : null;
+
         var arch = RuntimeInformation.ProcessArchitecture switch
         {
+            Architecture.X86 when OperatingSystem.IsAndroid() => "x86",
             Architecture.X64 => "x64",
+            Architecture.Arm when OperatingSystem.IsAndroid() => "arm",
             Architecture.Arm64 => "arm64",
             _ => null
         };
-        
-        if (arch != null)
+
+        if (platform != null)
         {
-            searchPaths.Add(Path.Combine(_pluginDirectory, "runtimes", $"osx-{arch}", "native"));
+            searchPaths.Add(Path.Combine(_pluginDirectory, "runtimes", platform, "native"));
+            if (arch != null)
+            {
+                searchPaths.Add(Path.Combine(_pluginDirectory, "runtimes", $"{platform}-{arch}", "native"));
+            }
         }
 
         foreach (var path in searchPaths)
         {
             if (!Directory.Exists(path)) continue;
-            
-            var p1 = Path.Combine(path, $"lib{unmanagedDllName}.dylib");
-            if (File.Exists(p1)) return p1;
-            
-            var p2 = Path.Combine(path, $"{unmanagedDllName}.dylib");
-            if (File.Exists(p2)) return p2;
 
-            var p3 = Path.Combine(path, unmanagedDllName);
-            if (File.Exists(p3)) return p3;
+            if (extension != null)
+            {
+                var prefixedPath = Path.Combine(path, $"lib{unmanagedDllName}{extension}");
+                if (File.Exists(prefixedPath)) return prefixedPath;
+
+                var platformPath = Path.Combine(path, $"{unmanagedDllName}{extension}");
+                if (File.Exists(platformPath)) return platformPath;
+            }
+
+            var rawPath = Path.Combine(path, unmanagedDllName);
+            if (File.Exists(rawPath)) return rawPath;
         }
 
         return null;
