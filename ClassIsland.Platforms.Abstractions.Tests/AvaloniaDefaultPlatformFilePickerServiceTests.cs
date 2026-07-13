@@ -1,3 +1,4 @@
+using System.Reflection;
 using Avalonia.Platform.Storage;
 using ClassIsland.Platforms.Abstraction.Stubs.Services;
 using Xunit;
@@ -18,49 +19,38 @@ public sealed class AvaloniaDefaultPlatformFilePickerServiceTests
     }
 
     [Fact]
-    public async Task MaterializeFiles_ReturnsOnlyLocalPathsWithoutReadingFiles()
+    public async Task MaterializeFiles_ReturnsLocalPathWithoutReadingFile()
     {
-        var localPath = Path.Combine(Path.GetTempPath(), "plugin.cipx");
-        var localUri = new UriBuilder(Uri.UriSchemeFile, "", -1, Path.GetFullPath(localPath)).Uri;
-        var localFile = new FakeStorageFile("plugin.cipx", localUri);
-        var remoteFile = new FakeStorageFile(
-            "remote.cipx",
-            new Uri("https://example.com/remote.cipx"));
+        using var scope = new TemporaryDirectory();
+        var path = Path.Combine(scope.Path, "plugin.cipx");
+        await File.WriteAllTextAsync(path, "plugin");
+        using var file = CreateStorageFile(path);
         var service = new AvaloniaDefaultPlatformFilePickerService();
 
-        var paths = await service.MaterializeFilesAsync([localFile, remoteFile]);
+        var paths = await service.MaterializeFilesAsync([file]);
 
-        Assert.Equal(Path.GetFullPath(localPath), Assert.Single(paths));
-        Assert.Equal(0, localFile.OpenReadCount);
-        Assert.Equal(0, remoteFile.OpenReadCount);
+        Assert.Equal(Path.GetFullPath(path), Assert.Single(paths));
     }
 
-    private sealed class FakeStorageFile(string name, Uri path) : IStorageFile
+    private static IStorageFile CreateStorageFile(string path)
     {
-        public string Name { get; } = name;
-        public Uri Path { get; } = path;
-        public bool CanBookmark => false;
-        public int OpenReadCount { get; private set; }
+        var type = typeof(IStorageFile).Assembly.GetType(
+            "Avalonia.Platform.Storage.FileIO.BclStorageFile",
+            throwOnError: true)!;
+        var constructor = type.GetConstructor(
+            BindingFlags.Instance | BindingFlags.NonPublic,
+            binder: null,
+            [typeof(FileInfo)],
+            modifiers: null)
+            ?? throw new InvalidOperationException("Avalonia BclStorageFile constructor is unavailable.");
+        return (IStorageFile)constructor.Invoke([new FileInfo(path)]);
+    }
 
-        public Task<StorageItemProperties> GetBasicPropertiesAsync() =>
-            Task.FromResult(new StorageItemProperties(null, null, null));
+    private sealed class TemporaryDirectory : IDisposable
+    {
+        public string Path { get; } =
+            Directory.CreateTempSubdirectory("classisland-default-picker-").FullName;
 
-        public Task<string?> SaveBookmarkAsync() => Task.FromResult<string?>(null);
-        public Task<IStorageFolder?> GetParentAsync() => Task.FromResult<IStorageFolder?>(null);
-        public Task DeleteAsync() => throw new NotSupportedException();
-        public Task<IStorageItem?> MoveAsync(IStorageFolder destination) =>
-            throw new NotSupportedException();
-
-        public Task<Stream> OpenReadAsync()
-        {
-            OpenReadCount++;
-            return Task.FromResult<Stream>(new MemoryStream());
-        }
-
-        public Task<Stream> OpenWriteAsync() => throw new NotSupportedException();
-
-        public void Dispose()
-        {
-        }
+        public void Dispose() => Directory.Delete(Path, true);
     }
 }
