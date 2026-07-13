@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-ios</TargetFramework>
-    <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">ios-arm64</RuntimeIdentifier>
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -53,8 +54,7 @@
     <ClassIslandNativeConfiguration>Release</ClassIslandNativeConfiguration>
     <ClassIslandNativeConfiguration Condition="$([System.String]::Copy('$(Configuration)').StartsWith('Debug'))">Debug</ClassIslandNativeConfiguration>
     <ClassIslandLiveActivitySdk>iphoneos</ClassIslandLiveActivitySdk>
-    <ClassIslandLiveActivitySdk Condition="$([System.String]::Copy('$(RuntimeIdentifier)').Contains('simulator'))">iphonesimulator</ClassIslandLiveActivitySdk>
-    <ClassIslandLiveActivityDerivedData>$(IntermediateOutputPath)xcode-live-activity-extension</ClassIslandLiveActivityDerivedData>
+    <ClassIslandLiveActivityDerivedData>$(MSBuildProjectDirectory)/obj/xcode-live-activity-extension/$(Configuration)-$(RuntimeIdentifier)</ClassIslandLiveActivityDerivedData>
     <ClassIslandLiveActivityProducts>$(ClassIslandLiveActivityDerivedData)/Build/Products/$(ClassIslandNativeConfiguration)-$(ClassIslandLiveActivitySdk)</ClassIslandLiveActivityProducts>
     <ClassIslandLiveActivityCompiledEntitlements>$(ClassIslandLiveActivityDerivedData)/ClassIslandLiveActivityExtension.xcent</ClassIslandLiveActivityCompiledEntitlements>
     <ClassIslandLiveActivityCodesignArguments>CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO</ClassIslandLiveActivityCodesignArguments>
@@ -79,6 +79,14 @@
     </AdditionalAppExtensions>
   </ItemGroup>
 
+  <Target Name="ValidateIosDeviceRuntime"
+          BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(RuntimeIdentifier)' != 'ios-arm64'"
+           Text="ClassIsland iOS currently supports only the ios-arm64 device RID. SoundFlow 1.2.1 does not provide native assets for iossimulator-* RIDs." />
+    <Error Condition="$([System.String]::Copy('$(RuntimeIdentifiers)').Contains('iossimulator-'))"
+           Text="ClassIsland iOS cannot use iossimulator-* in RuntimeIdentifiers because SoundFlow 1.2.1 provides only an ios-arm64 device framework." />
+  </Target>
+
   <Target Name="BuildClassIslandLiveActivityExtension"
           BeforeTargets="_ExtendAppExtensionReferences"
           Condition="$([MSBuild]::IsOSPlatform('osx'))">
@@ -93,6 +101,48 @@
           Command="/usr/bin/codesign -d --entitlements :- &quot;$(ClassIslandLiveActivityProducts)/ClassIslandLiveActivityExtension.appex&quot; &gt; &quot;$(ClassIslandLiveActivityCompiledEntitlements)&quot;" />
   </Target>
 
+  <Target Name="CreateSoundFlowIosResolverAlias"
+          AfterTargets="_CreateAppBundle"
+          BeforeTargets="CoreCodesign"
+          Condition="$([MSBuild]::IsOSPlatform('osx')) And '$(RuntimeIdentifier)' == 'ios-arm64'">
+    <PropertyGroup>
+      <_SoundFlowMiniaudioBinary>$(AppBundleDir)Frameworks/miniaudio.framework/miniaudio</_SoundFlowMiniaudioBinary>
+      <_SoundFlowResolverDirectory>$(AppBundleDir)runtimes/ios-arm64/native/miniaudio.framework</_SoundFlowResolverDirectory>
+      <_SoundFlowResolverAlias>$(_SoundFlowResolverDirectory)/miniaudio</_SoundFlowResolverAlias>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(_SoundFlowMiniaudioBinary)')"
+           Text="SoundFlow miniaudio.framework is missing from the iOS app bundle." />
+    <MakeDir Directories="$(_SoundFlowResolverDirectory)" />
+    <Exec Command="/bin/ln -sfn &quot;../../../../Frameworks/miniaudio.framework/miniaudio&quot; &quot;$(_SoundFlowResolverAlias)&quot;" />
+  </Target>
+
+  <Target Name="EmbedIosSwiftRuntimeLibraries"
+          AfterTargets="_CreateAppBundle"
+          BeforeTargets="CoreCodesign"
+          DependsOnTargets="_GetNativeExecutableName"
+          Condition="$([MSBuild]::IsOSPlatform('osx')) And '$(RuntimeIdentifier)' == 'ios-arm64'">
+    <PropertyGroup>
+      <_IosSwiftRuntimeSignArguments Condition="'$(EnableCodeSigning)' == 'true'">--sign &quot;$(CodesignKey)&quot;</_IosSwiftRuntimeSignArguments>
+    </PropertyGroup>
+    <Error Condition="'$(EnableCodeSigning)' == 'true' And '$(CodesignKey)' == ''"
+           Text="CodesignKey is required to sign embedded Swift runtime libraries." />
+    <Error Condition="!Exists('$(_NativeExecutable)')"
+           Text="The iOS app executable is unavailable for Swift runtime discovery." />
+    <MakeDir Directories="$(AppBundleDir)Frameworks" />
+    <Exec Command="/usr/bin/xcrun swift-stdlib-tool --copy $(_IosSwiftRuntimeSignArguments) --platform iphoneos --scan-executable &quot;$(_NativeExecutable)&quot; --scan-folder &quot;$(AppBundleDir)Frameworks&quot; --scan-folder &quot;$(AppBundleDir)PlugIns&quot; --destination &quot;$(AppBundleDir)Frameworks&quot;" />
+  </Target>
+
+  <Target Name="CleanClassIslandLiveActivityDerivedData"
+          AfterTargets="Clean">
+    <RemoveDir Directories="$(MSBuildProjectDirectory)/obj/xcode-live-activity-extension"
+               Condition="Exists('$(MSBuildProjectDirectory)/obj/xcode-live-activity-extension')" />
+  </Target>
+
   <Import Project="..\Global.props" />
   <Import Project="..\AvaloniaShared.props" />
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
 </Project>

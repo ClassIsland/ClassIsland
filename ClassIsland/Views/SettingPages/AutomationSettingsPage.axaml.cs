@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -12,6 +11,7 @@ using ClassIsland.Core.Extensions;
 using ClassIsland.Core.Extensions.UI;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -19,6 +19,7 @@ using ClassIsland.Shared.Models.Automation;
 using ClassIsland.ViewModels.SettingsPages;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
+using Microsoft.Extensions.Logging;
 using Workflow = ClassIsland.Core.Models.Automation.Workflow;
 namespace ClassIsland.Views.SettingPages;
 
@@ -150,13 +151,18 @@ public partial class AutomationSettingsPage : SettingsPageBase
     }
 
     [RelayCommand]
-    void OpenConfigFolder()
+    async Task OpenConfigFolder()
     {
-        Process.Start(new ProcessStartInfo
+        try
         {
-            FileName = Path.GetFullPath(AutomationService.AutomationConfigsFolderPath),
-            UseShellExecute = true
-        });
+            await PlatformServices.LauncherService.LaunchPath(
+                Path.GetFullPath(AutomationService.AutomationConfigsFolderPath));
+        }
+        catch (Exception exception)
+        {
+            ViewModel.Logger.LogError(exception, "无法打开自动化配置目录。");
+            this.ShowErrorToast("无法打开自动化配置目录", exception);
+        }
     }
 
     [RelayCommand]

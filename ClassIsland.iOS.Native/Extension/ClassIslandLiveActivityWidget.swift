@@ -72,10 +72,18 @@ private struct ClassIslandLockScreenView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 ClassIslandPhaseBadge(phase: state.phase)
-                Text(state.title)
-                    .font(.headline)
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("ClassIsland")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text(state.title)
+                        .font(.headline)
+                        .lineLimit(1)
+                }
                 Spacer(minLength: 0)
+                if state.progressRange != nil {
+                    ClassIslandIslandTimer(state: state)
+                }
             }
 
             if !state.subtitle.isEmpty {

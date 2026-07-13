@@ -12,7 +12,7 @@ namespace ClassIsland.iOS.Services.LiveActivities;
 /// <summary>
 /// 通过稳定 C ABI 调用薄 Swift ActivityKit 桥；上层只接触 C# DTO。
 /// </summary>
-[SupportedOSPlatform("ios13.0")]
+[SupportedOSPlatform("ios15.0")]
 internal sealed partial class IosLiveActivityService : ILiveActivityService
 {
     private const int MaximumPayloadBytes = 4 * 1024;

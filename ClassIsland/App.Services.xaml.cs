@@ -139,7 +139,10 @@ public partial class App
         services.AddSingleton<SettingsWindowNew>();
         services.AddSingleton<ProfileSettingsWindow>();
         services.AddTransient<ClassPlanDetailsWindow>();
-        services.AddTransient<WindowRuleDebugWindow>();
+        if (!PlatformHelper.IsMobile)
+        {
+            services.AddTransient<WindowRuleDebugWindow>();
+        }
         // services.AddTransient<ConfigErrorsWindow>();
         services.AddTransient<TimeAdjustmentWindow>();
         // services.AddTransient<ExcelExportWindow>();
@@ -268,13 +271,19 @@ public partial class App
         services.AddRule<SunRiseSetRuleSettings, SunRiseSetRuleSettingsControl>("classisland.weather.sunRiseSet", "是否日出/日落", "\uE150");
         // 行动提供方
         services.AddAction<SignalTriggerSettings, BroadcastSignalActionSettingsControl>("classisland.broadcastSignal", "广播信号", "\uE561");
-        services.AddAction<RunAction, RunActionSettingsControl>();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            services.AddAction<RunAction, RunActionSettingsControl>();
+        }
         services.AddAction<NotificationAction, NotificationActionSettingsControl>();
         services.AddAction<SleepAction, SleepActionSettingsControl>();
         services.AddAction<ModifyAppSettingsAction, ModifyAppSettingsActionSettingsControl>();
         services.AddAction<WeatherNotificationAction, WeatherNotificationActionSettingControl>();
-        services.AddAction<AppQuitAction>();
-        services.AddAction<AppRestartAction, AppRestartActionSettingsControl>();
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            services.AddAction<AppQuitAction>();
+            services.AddAction<AppRestartAction, AppRestartActionSettingsControl>();
+        }
 
         // 认证提供方
         services.AddAuthorizeProvider<PasswordAuthorizeProvider>();

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +18,7 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Services;
@@ -262,13 +262,17 @@ public partial class EditModeView : UserControl
         ClearSelectedComponents();
     }
 
-    private void ButtonOpenComponentLayoutsFolder_OnClick(object? sender, RoutedEventArgs e)
+    private async void ButtonOpenComponentLayoutsFolder_OnClick(object? sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        try
         {
-            FileName = Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath),
-            UseShellExecute = true
-        });
+            await PlatformServices.LauncherService.LaunchPath(
+                Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath));
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法打开组件配置目录", exception);
+        }
     }
 
     private async void ButtonCreateComponentLayout_OnClick(object? sender, RoutedEventArgs e)

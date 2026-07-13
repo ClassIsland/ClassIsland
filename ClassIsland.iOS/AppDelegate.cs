@@ -6,6 +6,8 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ClassIsland.Controls.UI;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.UI;
 using ClassIsland.Core.Controls.IconSources;
 using ClassIsland.Extensions;
@@ -14,9 +16,11 @@ using ClassIsland.iOS.Services.Notifications;
 using ClassIsland.iOS.Services.Platform;
 using ClassIsland.iOS.Services.UI;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Shared;
 using ClassIsland.Views;
 using FluentAvalonia.UI.Controls;
 using Foundation;
+using UIKit;
 using UserNotifications;
 
 namespace ClassIsland.iOS;
@@ -31,16 +35,22 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     private IosLessonsNotificationCoordinator? _lessonsNotificationCoordinator;
     private readonly IosNotificationAuthorizationService _notificationAuthorizationService = new();
     private readonly IosNotificationCenterDelegate _notificationCenterDelegate = new();
+    private App? _app;
+    private Uri? _pendingNavigationUri;
+    private bool _isAppNavigationReady;
 
     protected override AppBuilder CreateAppBuilder()
     {
         UNUserNotificationCenter.Current.Delegate = _notificationCenterDelegate;
-        PlatformServices.AppLifetimeService = new IosAppLifetimeService();
-        PlatformServices.FolderService = new IosPlatformFolderService();
-        PlatformServices.UriLauncherService = new IosPlatformUriLauncherService();
+        PlatformServices.AppLifetimeService = new IosAppLifetimeService(
+            PrepareForManualTerminationAsync);
+        PlatformServices.FilePickerService = new IosPlatformFilePickerService();
+        PlatformServices.LauncherService = new IosLauncherService();
         PlatformServices.LiveActivityService = new IosLiveActivityService();
 
-        var buildApp = Program.AppEntry(["--mobile"]);
+        var launchArguments = new List<string> { "--mobile" };
+        launchArguments.AddRange(IosPendingLaunchArgumentsStore.Consume());
+        var buildApp = Program.AppEntry(launchArguments.ToArray());
         return AppBuilder.Configure<App>(() =>
             {
                 var app = buildApp();
@@ -75,6 +85,8 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             var viewHost = new MobileViewHost();
             IViewHostProvider.Instance = new IosViewHostProvider(viewHost);
             lifetime.MainView = viewHost;
+            _app = app;
+            app.AppStarted += OnAppStarted;
 
             var splash = new SplashView();
             splash.Show();
@@ -107,6 +119,58 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
             Dispatcher.UIThread.Post(app.Init);
 #endif
         });
+    }
+
+    public override bool OpenUrl(
+        UIApplication application,
+        NSUrl url,
+        UIApplicationOpenUrlOptions options)
+    {
+        if (!AppNavigationUriParser.TryParseClassIslandUri(
+                url.AbsoluteString,
+                out var uri))
+        {
+            return false;
+        }
+
+        if (!_isAppNavigationReady)
+        {
+            _pendingNavigationUri = uri;
+            return true;
+        }
+
+        QueueNavigation(uri!);
+        return true;
+    }
+
+    private void OnAppStarted(object? sender, EventArgs e)
+    {
+        _isAppNavigationReady = true;
+        if (_pendingNavigationUri is not { } uri)
+        {
+            return;
+        }
+
+        _pendingNavigationUri = null;
+        QueueNavigation(uri);
+    }
+
+    private static void QueueNavigation(Uri uri)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (IAppHost.TryGetService<IUriNavigationService>() is { } navigationService)
+            {
+                navigationService.NavigateWrapped(uri);
+            }
+        });
+    }
+
+    private Task PrepareForManualTerminationAsync(
+        CancellationToken cancellationToken)
+    {
+        return _liveActivityCoordinator?.StopAndEndAsync(cancellationToken)
+               ?? Task.CompletedTask;
     }
 
 #if DEVELOPER_PREVIEW
@@ -171,6 +235,12 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     {
         if (disposing)
         {
+            if (_app != null)
+            {
+                _app.AppStarted -= OnAppStarted;
+                _app = null;
+            }
+
             if (ReferenceEquals(
                     UNUserNotificationCenter.Current.Delegate,
                     _notificationCenterDelegate))

@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Extensions;
@@ -47,27 +51,40 @@ public class CsesExportHelper
             }
         }
 
-        var filePath = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions()
-        {
-            DefaultExtension = ".json",
-            FileTypeChoices =
-            [
-                new FilePickerFileType("CSES 课表文件")
-                {
-                    Patterns = ["*.yml", "*.yaml"]
-                }
-            ]
-        }, root);
-        if (filePath == null)
-        {
-            return;
-        }
-
         try
         {
             var csesProfile = profileService.Profile.ToCsesObject();
-            CsesLoader.SaveToYamlFile(csesProfile, filePath);
+            var filePath = await PlatformServices.FilePickerService.SaveFileAsync(
+                new FilePickerSaveOptions
+                {
+                    DefaultExtension = ".yml",
+                    FileTypeChoices =
+                    [
+                        new FilePickerFileType("CSES 课表文件")
+                        {
+                            Patterns = ["*.yml", "*.yaml"]
+                        }
+                    ]
+                },
+                root,
+                output => StreamExportHelper.WritePathBasedExportAsync(
+                    output,
+                    ".yml",
+                    path =>
+                    {
+                        CsesLoader.SaveToYamlFile(csesProfile, path);
+                        return Task.CompletedTask;
+                    }));
+            if (filePath == null)
+            {
+                return;
+            }
+
             root.ShowSuccessToast($"成功导出到 {filePath}。");
+            if (!PlatformHelper.IsAppleMobile && Path.GetDirectoryName(filePath) is { Length: > 0 } directory)
+            {
+                await PlatformServices.LauncherService.LaunchPath(directory);
+            }
         }
         catch (Exception exception)
         {

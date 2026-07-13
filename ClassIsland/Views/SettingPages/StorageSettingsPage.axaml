@@ -105,6 +105,25 @@
                 <controls:FASettingsExpanderItem Content="备份文件占用大小"
                                                Footer="{Binding ViewModel.SettingsService.Settings.BackupFilesSize}"/>
             </controls:FASettingsExpander>
+
+            <StackPanel x:Name="IosImportedFilesSettings" IsVisible="False">
+                <Separator Margin="0 16 0 8" />
+                <ci:IconText Glyph="&#xE8B7;" Text="iOS 导入文件" Margin="0 0 0 4" />
+                <controls:FASettingsExpander IconSource="{ci:FluentIconSource &#xE8B7;}"
+                                             Header="导入文件副本"
+                                             Description="从“文件”App 选择的内容会复制到 ClassIsland 沙盒，以便导入流程和自定义资源在授权结束后继续读取。"
+                                             IsExpanded="True">
+                    <controls:FASettingsExpanderItem Content="在“文件”App 中查看…"
+                                                     Click="ButtonViewImportedFiles_OnClick"
+                                                     IsClickEnabled="True"
+                                                     ActionIconSource="{ci:FluentIconSource &#xEC2D;}" />
+                    <controls:FASettingsExpanderItem Content="清空导入文件副本…"
+                                                     Description="仅在确认没有设置或待导入操作继续使用这些文件时清理。"
+                                                     Click="ButtonClearImportedFiles_OnClick"
+                                                     IsClickEnabled="True"
+                                                     ActionIconSource="{ci:FluentIconSource &#xE107;}" />
+                </controls:FASettingsExpander>
+            </StackPanel>
             
         </StackPanel>
     </ScrollViewer>

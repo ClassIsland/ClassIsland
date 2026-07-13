@@ -78,12 +78,7 @@ public class UriNavigationService : IUriNavigationService
     {
         try
         {
-            if (await PlatformServices.UriLauncherService.OpenUriAsync(uri).ConfigureAwait(false))
-            {
-                return;
-            }
-
-            throw new InvalidOperationException("系统未能打开该链接。");
+            await PlatformServices.LauncherService.LaunchUrl(uri.AbsoluteUri).ConfigureAwait(false);
         }
         catch (Exception exception)
         {
@@ -93,9 +88,8 @@ public class UriNavigationService : IUriNavigationService
         }
     }
 
-    public void NavigateWrapped(Uri uri, out Exception? exception)
+    public void NavigateWrapped(Uri uri)
     {
-        Exception? exc = null;
         Dispatcher.UIThread.Invoke(() =>
         {
             try
@@ -104,16 +98,9 @@ public class UriNavigationService : IUriNavigationService
             }
             catch (Exception ex)
             {
-                exc = ex;
                 Logger.LogError(ex, "无法导航到 {}", uri);
                 _ = CommonTaskDialogs.ShowDialog("导航失败", $"无法导航到 {uri}：{ex.Message}");
             }
         });
-        exception = exc;
-    }
-
-    public void NavigateWrapped(Uri uri)
-    {
-        NavigateWrapped(uri, out var _);
     }
 }

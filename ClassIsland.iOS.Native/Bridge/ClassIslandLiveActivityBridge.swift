@@ -200,25 +200,23 @@ private actor ClassIslandLiveActivityCoordinator {
             )
             let payload = try request.makePayload()
             let activities = LiveActivity.activities
-            let matchingActivity = preferredActivity(
-                in: activities,
-                intervalId: payload.attributes.intervalId
-            )
+            let matchingActivity = preferredActivity(in: activities)
 
             if let matchingActivity {
+                // Activity attributes 不可变；课程区间和阶段属于 ContentState，
+                // 因此跨阶段继续更新现有活动，避免先删除再创建造成锁屏空窗。
+                await update(matchingActivity, state: payload.state)
+                activeActivity = matchingActivity
                 await endAll(
                     activities.filter { $0.id != matchingActivity.id },
                     dismissalPolicy: .immediate
                 )
-                await update(matchingActivity, state: payload.state)
-                activeActivity = matchingActivity
                 return .success(activityId: matchingActivity.id)
             }
 
-            // 区间改变时立即移除旧活动，保证系统表面至多存在一个 ClassIsland 活动。
-            await endAll(activities, dismissalPolicy: .immediate)
             let activity = try requestActivity(payload)
             activeActivity = activity
+            await endAll(activities, dismissalPolicy: .immediate)
             return .success(activityId: activity.id)
         } catch let error as ClassIslandLiveActivityInputError {
             return .failure(
@@ -268,19 +266,13 @@ private actor ClassIslandLiveActivityCoordinator {
         }
     }
 
-    private func preferredActivity(
-        in activities: [LiveActivity],
-        intervalId: String
-    ) -> LiveActivity? {
+    private func preferredActivity(in activities: [LiveActivity]) -> LiveActivity? {
         if let activeActivity,
            activities.contains(where: { $0.id == activeActivity.id }),
-           canUpdate(activeActivity),
-           activeActivity.attributes.intervalId == intervalId {
+           canUpdate(activeActivity) {
             return activeActivity
         }
-        return activities.first {
-            canUpdate($0) && $0.attributes.intervalId == intervalId
-        }
+        return activities.first { canUpdate($0) }
     }
 
     private func canUpdate(_ activity: LiveActivity) -> Bool {

@@ -54,6 +54,12 @@ public partial class MainView : ViewBase
         {
             return;
         }
+
+        if (PlatformHelper.IsAppleMobile)
+        {
+            ((App)AppBase.Current).PrepareForAppleMobileManualTermination();
+            return;
+        }
         
         Close();
         AppBase.Current.Stop();

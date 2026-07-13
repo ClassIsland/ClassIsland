@@ -213,8 +213,22 @@
                             <MenuFlyout>
                                 <MenuItem Icon="{ci:FluentIcon &#xE06F;}" Header="打包插件" Click="MenuItemPackPlugin_OnClick"/>
                                 <Separator/>
-                                <MenuItem Icon="{ci:FluentIcon &#xE88D;}" Header="打开插件文件夹…" Click="MenuItemOpenPluginFolder_OnClick"/>
-                                <MenuItem Icon="{ci:FluentIcon &#xE5FD;}" Header="打开配置文件夹…" Click="MenuItemOpenPluginConfigFolder_OnClick"/>
+                                <MenuItem Icon="{ci:FluentIcon &#xE88D;}" Header="打开插件文件夹…" Click="MenuItemOpenPluginFolder_OnClick">
+                                    <MenuItem.IsVisible>
+                                        <OnPlatform Default="True">
+                                            <On Options="Android" Content="False" />
+                                            <On Options="iOS" Content="False" />
+                                        </OnPlatform>
+                                    </MenuItem.IsVisible>
+                                </MenuItem>
+                                <MenuItem Icon="{ci:FluentIcon &#xE5FD;}" Header="打开配置文件夹…" Click="MenuItemOpenPluginConfigFolder_OnClick">
+                                    <MenuItem.IsVisible>
+                                        <OnPlatform Default="True">
+                                            <On Options="Android" Content="False" />
+                                            <On Options="iOS" Content="False" />
+                                        </OnPlatform>
+                                    </MenuItem.IsVisible>
+                                </MenuItem>
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>
@@ -557,7 +571,14 @@
                                                   Click="ButtonInstallFromLocal_OnClick"/>
                                         <Separator/>
                                         <MenuItem Icon="{ci:FluentIcon &#xE88D;}" Header="打开插件文件夹…"
-                                                  Click="MenuItemOpenPluginsFolder_OnClick"/>
+                                                  Click="MenuItemOpenPluginsFolder_OnClick">
+                                            <MenuItem.IsVisible>
+                                                <OnPlatform Default="True">
+                                                    <On Options="Android" Content="False" />
+                                                    <On Options="iOS" Content="False" />
+                                                </OnPlatform>
+                                            </MenuItem.IsVisible>
+                                        </MenuItem>
                                         
                                     </MenuFlyout>
                                 </Button.Flyout>

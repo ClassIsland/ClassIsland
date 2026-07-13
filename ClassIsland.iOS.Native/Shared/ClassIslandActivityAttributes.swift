@@ -44,7 +44,7 @@ public struct ClassIslandActivityAttributes: ActivityAttributes {
         }
     }
 
-    /// 课程区间的稳定标识；标识改变时桥接层会结束旧活动并创建新活动。
+    /// 创建活动时的课程区间标识；后续课程与阶段变化通过 ContentState 平滑更新。
     public let intervalId: String
 
     public init(intervalId: String) {

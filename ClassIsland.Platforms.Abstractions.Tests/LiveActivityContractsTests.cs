@@ -19,12 +19,113 @@ public sealed class LiveActivityContractsTests
         Assert.Equal("张老师", content.Subtitle);
         Assert.Equal("08:00–08:45", content.Detail);
         Assert.Equal("数学", content.CompactText);
-        Assert.Equal("classisland://live-activity", content.DeepLink);
+        Assert.Equal("classisland://app/live-activity", content.DeepLink);
         Assert.True(content.HasProgress);
         Assert.False(CreateContent(start, start).HasProgress);
         Assert.False(CreateContent(start, start.AddMinutes(-1)).HasProgress);
         Assert.False(CreateContent(start, null).HasProgress);
         Assert.False(CreateContent(null, start).HasProgress);
+    }
+
+    [Fact]
+    public void Content_ShouldBeVisible_OnlyForActiveOrUpcomingLessonIntervals()
+    {
+        var start = new DateTimeOffset(2026, 7, 12, 8, 0, 0, TimeSpan.FromHours(8));
+        var progressContent = CreateContent(start, start.AddMinutes(45));
+
+        Assert.True(CreateContent().ShouldBeVisible);
+        Assert.True((CreateContent() with
+        {
+            Phase = LessonLiveActivityPhase.Breaking
+        }).ShouldBeVisible);
+        Assert.True((progressContent with
+        {
+            Phase = LessonLiveActivityPhase.None
+        }).ShouldBeVisible);
+        Assert.False((CreateContent() with
+        {
+            Phase = LessonLiveActivityPhase.None
+        }).ShouldBeVisible);
+        Assert.False((progressContent with
+        {
+            Phase = LessonLiveActivityPhase.AfterSchool
+        }).ShouldBeVisible);
+    }
+
+    [Fact]
+    public void PublicationPolicy_GatesUpcomingActivityAtPreparationNotificationTime()
+    {
+        var now = new DateTimeOffset(2026, 7, 12, 14, 29, 59, TimeSpan.FromHours(8));
+        var start = new DateTimeOffset(2026, 7, 12, 14, 40, 0, TimeSpan.FromHours(8));
+        var upcoming = CreateContent(start.AddMinutes(-30), start) with
+        {
+            Phase = LessonLiveActivityPhase.None,
+            IsUpcomingLesson = true
+        };
+        var prepareAt = new DateTimeOffset(2026, 7, 12, 14, 30, 0, TimeSpan.FromHours(8));
+        var aligned = LessonLiveActivityPublicationPolicy.AlignUpcomingProgressStart(
+            upcoming,
+            prepareAt);
+
+        Assert.False(LessonLiveActivityPublicationPolicy.ShouldPublish(upcoming, now, prepareAt));
+        Assert.Equal(prepareAt, aligned.StartTime);
+        Assert.Equal(start, aligned.EndTime);
+        Assert.True(LessonLiveActivityPublicationPolicy.ShouldPublish(
+            aligned,
+            prepareAt,
+            prepareAt));
+        Assert.False(LessonLiveActivityPublicationPolicy.ShouldPublish(
+            upcoming,
+            prepareAt,
+            null));
+    }
+
+    [Fact]
+    public void PublicationPolicy_GatesUpcomingLessonDuringBreakAtPreparationTime()
+    {
+        var prepareAt = new DateTimeOffset(2026, 7, 12, 14, 30, 0, TimeSpan.FromHours(8));
+        var start = prepareAt.AddMinutes(10);
+        var upcoming = CreateContent(prepareAt.AddMinutes(-20), start) with
+        {
+            Phase = LessonLiveActivityPhase.Breaking,
+            IsUpcomingLesson = true
+        };
+
+        Assert.False(LessonLiveActivityPublicationPolicy.ShouldPublish(
+            upcoming,
+            prepareAt.AddTicks(-1),
+            prepareAt));
+        Assert.True(LessonLiveActivityPublicationPolicy.ShouldPublish(
+            upcoming,
+            prepareAt,
+            prepareAt));
+        Assert.Equal(
+            prepareAt,
+            LessonLiveActivityPublicationPolicy.AlignUpcomingProgressStart(
+                upcoming,
+                prepareAt).StartTime);
+    }
+
+    [Fact]
+    public void PublicationPolicy_LeavesActiveIntervalsImmediate()
+    {
+        var now = new DateTimeOffset(2026, 7, 12, 8, 0, 0, TimeSpan.FromHours(8));
+        var content = CreateContent(now, now.AddMinutes(45));
+
+        Assert.True(LessonLiveActivityPublicationPolicy.ShouldPublish(content, now, null));
+        Assert.True(LessonLiveActivityPublicationPolicy.ShouldPublish(
+            content with { Phase = LessonLiveActivityPhase.Breaking },
+            now,
+            null));
+        Assert.False(LessonLiveActivityPublicationPolicy.ShouldPublish(
+            content with
+            {
+                Phase = LessonLiveActivityPhase.AfterSchool,
+                StartTime = null,
+                EndTime = null
+            },
+            now,
+            now));
     }
 
     [Fact]

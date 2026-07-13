@@ -95,20 +95,44 @@ partial class Build
         {
             if (IsIosBuild)
             {
-                DotNetPublish(s => s
-                    .SetProject(IosAppEntryProject)
-                    .SetConfiguration(Configuration)
-                    .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
-                    .SetProperty("ArchiveOnBuild", true)
-                    .SetProperty("BuildIpa", true)
-                    .SetProperty("BrandType", BrandType)
-                    .SetProperty("ApplicationDisplayVersion", AppVersion)
-                    .SetProperty("ApplicationVersion", BuildNumber)
-                    .SetProperty("CodesignKey", CodesignKey)
-                    .SetProperty("CodesignProvision", CodesignProvision)
-                    .SetProperty("ClassIslandLiveActivityCodesignProvision", ClassIslandLiveActivityCodesignProvision)
-                    .SetProperty("ClassIslandDevelopmentTeam", ClassIslandDevelopmentTeam)
-                    .SetProperty("IpaPackagePath", IosPublishArtifactPath));
+                DotNetPublish(settings =>
+                {
+                    var enableCodeSigning = EnableCodeSigning ? "true" : "false";
+                    settings = settings
+                        .SetProject(IosAppEntryProject)
+                        .SetConfiguration(Configuration)
+                        .SetProperty("RuntimeIdentifier", RuntimeIdentifier)
+                        .SetProperty("ArchiveOnBuild", enableCodeSigning)
+                        .SetProperty("BuildIpa", true)
+                        .SetProperty("EnableCodeSigning", enableCodeSigning)
+                        .SetProperty("BrandType", BrandType)
+                        .SetProperty("ApplicationDisplayVersion", AppVersion)
+                        .SetProperty("ApplicationVersion", BuildNumber)
+                        .SetProperty("IpaPackagePath", IosPublishArtifactPath);
+
+                    if (string.Equals(
+                            Configuration.Value,
+                            "Release",
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Global.props 默认开启符号；通过全局 MSBuild 属性同时约束
+                        // iOS 主项目及所有 ProjectReference，避免 PDB 进入发布 IPA。
+                        settings = settings
+                            .SetProperty("DebugType", "none")
+                            .SetProperty("DebugSymbols", false);
+                    }
+
+                    if (!EnableCodeSigning)
+                    {
+                        return settings;
+                    }
+
+                    return settings
+                        .SetProperty("CodesignKey", CodesignKey)
+                        .SetProperty("CodesignProvision", CodesignProvision)
+                        .SetProperty("ClassIslandLiveActivityCodesignProvision", ClassIslandLiveActivityCodesignProvision)
+                        .SetProperty("ClassIslandDevelopmentTeam", ClassIslandDevelopmentTeam);
+                });
                 return;
             }
 

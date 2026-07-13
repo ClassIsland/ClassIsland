@@ -1,0 +1,156 @@
+name: Build unsigned iOS IPA worker
+
+on:
+  workflow_call:
+    inputs:
+      checkout_ref:
+        description: Git ref or SHA to build
+        required: true
+        type: string
+      app_version:
+        description: Application display version
+        required: true
+        type: string
+      build_number:
+        description: Monotonic application build number
+        required: true
+        type: string
+      brand_type:
+        description: ClassIsland brand type
+        required: true
+        type: string
+      developer_preview:
+        description: Include developer preview behavior and assets
+        required: true
+        type: boolean
+      retention_days:
+        description: Artifact retention period
+        required: false
+        default: 14
+        type: number
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  IOS_PROJECT: ClassIsland.iOS/ClassIsland.iOS.csproj
+  IOS_CONFIGURATION: Release
+  IOS_RUNTIME_IDENTIFIER: ios-arm64
+  APPLICATION_ID: cn.classisland.ios
+  XCODE_PATH: /Applications/Xcode_26.5.app
+  IPA_PATH: ${{ github.workspace }}/out/out_app_ios_arm64_selfContained_ipa.ipa
+
+jobs:
+  build-unsigned-ipa:
+    name: Build unsigned iOS IPA
+    runs-on: macos-26
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          ref: ${{ inputs.checkout_ref }}
+
+      - name: Verify iOS build configuration
+        shell: pwsh
+        run: ./tools/ci/verify-ios-build-config.ps1
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
+          xcodebuild -showsdks
+          xcodebuild -project ClassIsland.iOS.Native/ClassIsland.iOS.Native.xcodeproj -list
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Add GitHub Packages source
+        env:
+          NUGET_AUTH_TOKEN: ${{ github.token }}
+        run: >-
+          dotnet nuget add source
+          --username github-actions
+          --password "$NUGET_AUTH_TOKEN"
+          --store-password-in-clear-text
+          --name github
+          "https://nuget.pkg.github.com/ClassIsland/index.json"
+
+      - name: Restore iOS workload
+        run: dotnet workload restore "$IOS_PROJECT"
+
+      - name: Run platform abstraction tests
+        run: >-
+          dotnet test
+          ClassIsland.Platforms.Abstractions.Tests/ClassIsland.Platforms.Abstractions.Tests.csproj
+          -c Release
+          --collect:"XPlat Code Coverage"
+          --settings ClassIsland.Platforms.Abstractions.Tests/coverlet.runsettings
+          --results-directory "$RUNNER_TEMP/ios-tests"
+
+      - name: Upload platform abstraction coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClassIsland-iOS-coverage-${{ github.run_number }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ios-tests/**/coverage.cobertura.xml
+          if-no-files-found: error
+          retention-days: ${{ inputs.retention_days }}
+
+      - name: Verify platform abstraction coverage
+        shell: pwsh
+        run: >-
+          ./tools/ci/verify-cobertura-coverage.ps1
+          -ResultsDirectory "$RUNNER_TEMP/ios-tests"
+          -MinimumLineRate 0.8
+
+      - name: Build unsigned iOS IPA through NUKE
+        env:
+          osName: ios
+          arch: arm64
+          package: ipa
+          buildType: selfContained
+          buildName: app
+          configuration: ${{ env.IOS_CONFIGURATION }}
+          appVersion: ${{ inputs.app_version }}
+          buildNumber: ${{ inputs.build_number }}
+          brandType: ${{ inputs.brand_type }}
+          DeveloperPreview: ${{ inputs.developer_preview && 'true' || 'false' }}
+          enableCodeSigning: 'false'
+        run: ./build.sh PublishApp
+
+      - name: Verify unsigned IPA
+        run: >-
+          bash ./tools/ci/verify-ios-ipa.sh
+          "$IPA_PATH"
+          "$APPLICATION_ID"
+          "$IOS_RUNTIME_IDENTIFIER"
+
+      - name: Write build summary
+        run: |
+          {
+            echo "### ClassIsland unsigned iOS IPA"
+            echo "- Bundle ID: \`$APPLICATION_ID\`"
+            echo "- Runtime: \`$IOS_RUNTIME_IDENTIFIER\`"
+            echo "- SHA-256: \`$(cut -d ' ' -f 1 "$IPA_PATH.sha256")\`"
+            echo "- The IPA must be signed externally before installation."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload unsigned IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClassIsland-iOS-unsigned-${{ github.run_number }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.IPA_PATH }}
+            ${{ env.IPA_PATH }}.sha256
+          if-no-files-found: error
+          retention-days: ${{ inputs.retention_days }}

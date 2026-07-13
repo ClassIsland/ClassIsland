@@ -15,7 +15,8 @@ internal sealed record LessonsLiveActivitySnapshot(
     int ProgressPercent = 0,
     string RemainingText = "",
     DateTimeOffset? StartTime = null,
-    DateTimeOffset? EndTime = null)
+    DateTimeOffset? EndTime = null,
+    bool IsUpcomingLesson = false)
 {
     public bool HasProgress => ProgressMax > 0;
 
@@ -35,7 +36,8 @@ internal sealed record LessonsLiveActivitySnapshot(
         ProgressMax == other.ProgressMax &&
         Progress == other.Progress &&
         ProgressPercent == other.ProgressPercent &&
-        RemainingText == other.RemainingText;
+        RemainingText == other.RemainingText &&
+        IsUpcomingLesson == other.IsUpcomingLesson;
 
     public static LessonsLiveActivitySnapshot Loading { get; } = new(
         TimeState.None,

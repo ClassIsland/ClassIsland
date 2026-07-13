@@ -44,6 +44,8 @@ partial class Build : NukeBuild
     [Parameter] readonly string CodesignProvision;
     [Parameter] readonly string ClassIslandLiveActivityCodesignProvision;
     [Parameter] readonly string ClassIslandDevelopmentTeam;
+    [Parameter("Whether the iOS IPA should be code signed. Disable only when producing an unsigned artifact for external signing.")]
+    readonly bool EnableCodeSigning = true;
     
     string PublishArtifactName;
 
@@ -96,10 +98,19 @@ partial class Build : NukeBuild
                     throw new InvalidOperationException("iOS 发布仅支持 --Package ipa --Arch arm64。");
                 }
 
-                var missingSigningParameter = new[]
+                var missingBuildParameter = new[]
                 {
+                    AppVersion,
                     BuildNumber,
-                    BrandType,
+                    BrandType
+                }.Any(string.IsNullOrWhiteSpace);
+                if (missingBuildParameter)
+                {
+                    throw new InvalidOperationException("iOS IPA publishing requires appVersion, buildNumber, and brandType.");
+                }
+
+                var missingSigningParameter = EnableCodeSigning && new[]
+                {
                     CodesignKey,
                     CodesignProvision,
                     ClassIslandLiveActivityCodesignProvision,
@@ -107,12 +118,13 @@ partial class Build : NukeBuild
                 }.Any(string.IsNullOrWhiteSpace);
                 if (missingSigningParameter)
                 {
-                    throw new InvalidOperationException("iOS IPA 发布缺少版本、品牌或双 target 签名参数。");
+                    throw new InvalidOperationException("Signed iOS IPA publishing requires signing parameters for both the app and Live Activity extension.");
                 }
             }
             
             Log.Information("AppVersion = {AppVersion}", AppVersion);
             Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
+            Log.Information("EnableCodeSigning = {EnableCodeSigning}", EnableCodeSigning);
             Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
             Log.Information("PublishArtifactName = {PublishArtifactName}", PublishArtifactName);
             Log.Information("AppPublishArtifactPath = {AppPublishArtifactPath}", AppPublishArtifactPath);

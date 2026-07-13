@@ -162,7 +162,10 @@ public static class Program
             await client.Connect();
             var uriSc = client.Provider.CreateIpcProxy<IPublicUriNavigationService>(client.PeerProxy!);
             uriSc.Navigate(new Uri(App.ApplicationCommand.Uri));
-            Environment.Exit(0);
+            if (!PlatformHelper.IsAppleMobile)
+            {
+                Environment.Exit(0);
+            }
         }
         catch
         {

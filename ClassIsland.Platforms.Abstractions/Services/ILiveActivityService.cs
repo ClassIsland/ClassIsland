@@ -13,7 +13,8 @@ public interface ILiveActivityService
     LiveActivityAvailability Availability { get; }
 
     /// <summary>
-    /// 发布课程实时活动；同一区间会更新，区间改变时会自动轮换。
+    /// 发布课程实时活动；已有的 ClassIsland Activity 会平滑更新。
+    /// <see cref="LessonLiveActivityContent.IntervalId"/> 仅用于业务标识和内容去重。
     /// </summary>
     /// <param name="content">要展示的课程内容。</param>
     /// <param name="cancellationToken">取消等待原生操作完成。</param>

@@ -4,6 +4,8 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Models.LiveActivities;
 using ClassIsland.Platforms.Abstraction.Models.LiveActivities;
 using ClassIsland.Platforms.Abstraction.Services;
+using ClassIsland.iOS.Services.Notifications;
+using ClassIsland.Services;
 using ClassIsland.Services.LiveActivities;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Enums;
@@ -19,17 +21,20 @@ namespace ClassIsland.iOS.Services.LiveActivities;
 internal sealed class LessonsLiveActivityCoordinator(
     ILiveActivityService liveActivityService) : IDisposable
 {
-    private static readonly TimeSpan FailureRetryDelay = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan FailureRetryDelay = TimeSpan.FromSeconds(15);
 
     private readonly CancellationTokenSource _cancellation = new();
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
     private NSObject? _foregroundObserver;
     private ILessonsService? _lessonsService;
     private LessonsLiveActivitySnapshotFactory? _snapshotFactory;
+    private IosLessonNotificationScheduleFactory? _notificationScheduleFactory;
     private ILogger<LessonsLiveActivityCoordinator>? _logger;
     private LessonLiveActivityContent? _lastRequestedContent;
-    private LessonLiveActivityContent? _lastFailedContent;
-    private DateTimeOffset _retryFailedContentAfter;
+    private DateTimeOffset _retryAfter;
+    private bool _activityStateKnown;
+    private bool _hasVisibleActivity;
+    private bool _isAvailabilityUnavailable;
     private bool _isStarted;
     private bool _isWorkStarted;
     private int _isStopping;
@@ -43,14 +48,14 @@ internal sealed class LessonsLiveActivityCoordinator(
 
         _isStarted = true;
         AppBase.Current.AppStarted += OnAppStarted;
-        AppBase.Current.AppStopping += OnAppStopping;
         _foregroundObserver = NSNotificationCenter.DefaultCenter.AddObserver(
             UIApplication.WillEnterForegroundNotification,
             _ =>
             {
                 _lastRequestedContent = null;
-                _lastFailedContent = null;
-                _retryFailedContentAfter = default;
+                _retryAfter = default;
+                _activityStateKnown = false;
+                _isAvailabilityUnavailable = false;
                 QueueRefresh();
             });
 
@@ -75,6 +80,12 @@ internal sealed class LessonsLiveActivityCoordinator(
         _snapshotFactory = new LessonsLiveActivitySnapshotFactory(
             _lessonsService,
             exactTimeService);
+        _notificationScheduleFactory = new IosLessonNotificationScheduleFactory(
+            _lessonsService,
+            IAppHost.GetService<IProfileService>(),
+            IAppHost.GetService<INotificationHostService>(),
+            IAppHost.GetService<SettingsService>(),
+            exactTimeService);
         _lessonsService.PostMainTimerTicked += OnPostMainTimerTicked;
         _isWorkStarted = true;
         LogInformation($"课程实时活动协调器已启动：Availability={liveActivityService.Availability}。");
@@ -83,12 +94,15 @@ internal sealed class LessonsLiveActivityCoordinator(
 
     private void OnPostMainTimerTicked(object? sender, EventArgs e) => QueueRefresh();
 
-    private async void QueueRefresh()
+    private void QueueRefresh() => _ = QueueRefreshAsync();
+
+    private async Task QueueRefreshAsync()
     {
         if (!_isWorkStarted ||
             _snapshotFactory == null ||
             _cancellation.IsCancellationRequested ||
-            Volatile.Read(ref _isStopping) != 0)
+            Volatile.Read(ref _isStopping) != 0 ||
+            _isAvailabilityUnavailable)
         {
             return;
         }
@@ -109,13 +123,57 @@ internal sealed class LessonsLiveActivityCoordinator(
             }
 
             content = CreateContent(_snapshotFactory.Create());
-            if (content == _lastRequestedContent)
+            if (DateTimeOffset.UtcNow < _retryAfter)
             {
                 return;
             }
 
-            if (content == _lastFailedContent &&
-                DateTimeOffset.UtcNow < _retryFailedContentAfter)
+            var preparationNotificationTime = content.IsUpcomingLesson
+                ? _notificationScheduleFactory?.GetUpcomingClassPreparationTime()
+                : null;
+            content = LessonLiveActivityPublicationPolicy.AlignUpcomingProgressStart(
+                content,
+                preparationNotificationTime);
+            if (!LessonLiveActivityPublicationPolicy.ShouldPublish(
+                    content,
+                    DateTimeOffset.Now,
+                    preparationNotificationTime))
+            {
+                if (_activityStateKnown && !_hasVisibleActivity)
+                {
+                    return;
+                }
+
+                var endResult = await liveActivityService.EndAsync(
+                    LiveActivityDismissalPolicy.Immediate,
+                    CancellationToken.None);
+                if (endResult.IsSuccess)
+                {
+                    _lastRequestedContent = null;
+                    _activityStateKnown = true;
+                    _hasVisibleActivity = false;
+                    _retryAfter = default;
+                    LogInformation(
+                        $"当前没有有效课程区间，已结束课程实时活动：" +
+                        $"ActivityId={endResult.ActivityId ?? "<null>"}。");
+                }
+                else if (RememberUnavailable(endResult))
+                {
+                    LogWarning(
+                        $"课程实时活动不可用：{endResult.Code} {endResult.ErrorMessage}");
+                }
+                else
+                {
+                    RememberFailure();
+                    LogError(
+                        $"无法结束课程实时活动：{endResult.Code} {endResult.ErrorMessage}");
+                }
+                return;
+            }
+
+            if (_activityStateKnown &&
+                _hasVisibleActivity &&
+                content == _lastRequestedContent)
             {
                 return;
             }
@@ -126,26 +184,21 @@ internal sealed class LessonsLiveActivityCoordinator(
             if (result.IsSuccess)
             {
                 _lastRequestedContent = content;
-                _lastFailedContent = null;
-                _retryFailedContentAfter = default;
+                _activityStateKnown = true;
+                _hasVisibleActivity = true;
+                _retryAfter = default;
                 LogInformation(
                     $"课程实时活动已发布：ActivityId={result.ActivityId ?? "<null>"}，" +
                     $"IntervalId={content.IntervalId}，Phase={content.Phase}。");
             }
-            else if (result.Code is
-                     LiveActivityResultCode.Disabled or LiveActivityResultCode.Unsupported)
+            else if (RememberUnavailable(result))
             {
-                // 系统禁用或不支持时也避免被 50 ms 主计时器反复调用；
-                // 回到前台会清除此值并重新检查系统授权。
-                _lastRequestedContent = content;
-                _lastFailedContent = null;
-                _retryFailedContentAfter = default;
                 LogWarning(
                     $"课程实时活动不可用：{result.Code} {result.ErrorMessage}");
             }
             else
             {
-                RememberFailure(content);
+                RememberFailure();
                 LogError(
                     $"无法更新课程实时活动：{result.Code} {result.ErrorMessage}");
             }
@@ -158,7 +211,7 @@ internal sealed class LessonsLiveActivityCoordinator(
         {
             if (content != null)
             {
-                RememberFailure(content);
+                RememberFailure();
             }
 
             LogError("更新课程实时活动时发生异常。", exception);
@@ -172,52 +225,24 @@ internal sealed class LessonsLiveActivityCoordinator(
         }
     }
 
-    private async void OnAppStopping(object? sender, EventArgs e)
+    private bool RememberUnavailable(LiveActivityResult result)
     {
-        if (Interlocked.Exchange(ref _isStopping, 1) != 0)
+        if (result.Code is not (LiveActivityResultCode.Disabled or
+            LiveActivityResultCode.Unsupported))
         {
-            return;
+            return false;
         }
 
-        var gateEntered = false;
-        try
-        {
-            // 等待在途 Publish 的原生 callback，再发出 End，保证 ActivityKit 操作顺序。
-            await _refreshGate.WaitAsync(CancellationToken.None);
-            gateEntered = true;
-            var result = await liveActivityService.EndAsync(
-                LiveActivityDismissalPolicy.Immediate,
-                CancellationToken.None);
-            if (!result.IsSuccess)
-            {
-                LogError(
-                    $"结束课程实时活动失败：{result.Code} {result.ErrorMessage}");
-            }
-            else
-            {
-                LogInformation(
-                    $"课程实时活动已结束：ActivityId={result.ActivityId ?? "<null>"}。");
-            }
-        }
-        catch (Exception exception)
-        {
-            LogError("结束课程实时活动时发生异常。", exception);
-        }
-        finally
-        {
-            if (gateEntered)
-            {
-                _refreshGate.Release();
-            }
-
-            _cancellation.Cancel();
-        }
+        _activityStateKnown = true;
+        _hasVisibleActivity = false;
+        _isAvailabilityUnavailable = true;
+        _retryAfter = default;
+        return true;
     }
 
-    private void RememberFailure(LessonLiveActivityContent content)
+    private void RememberFailure()
     {
-        _lastFailedContent = content;
-        _retryFailedContentAfter = DateTimeOffset.UtcNow + FailureRetryDelay;
+        _retryAfter = DateTimeOffset.UtcNow + FailureRetryDelay;
     }
 
     private void LogInformation(string message)
@@ -275,7 +300,8 @@ internal sealed class LessonsLiveActivityCoordinator(
             snapshot.SubText,
             compactText,
             snapshot.StartTime,
-            snapshot.EndTime);
+            snapshot.EndTime,
+            IsUpcomingLesson: snapshot.IsUpcomingLesson);
     }
 
     private static string RemoveRenderedCountdown(string content, string remainingText)
@@ -297,6 +323,55 @@ internal sealed class LessonsLiveActivityCoordinator(
             : content;
     }
 
+    public async Task StopAndEndAsync(CancellationToken cancellationToken)
+    {
+        if (Interlocked.CompareExchange(ref _isStopping, 1, 0) != 0)
+        {
+            return;
+        }
+
+        if (_lessonsService != null)
+        {
+            _lessonsService.PostMainTimerTicked -= OnPostMainTimerTicked;
+        }
+        _isWorkStarted = false;
+
+        var gateEntered = false;
+        try
+        {
+            await _refreshGate.WaitAsync(cancellationToken);
+            gateEntered = true;
+            var result = await liveActivityService.EndAsync(
+                LiveActivityDismissalPolicy.Immediate,
+                cancellationToken);
+            if (result.IsSuccess)
+            {
+                _lastRequestedContent = null;
+                _activityStateKnown = true;
+                _hasVisibleActivity = false;
+                LogInformation(
+                    $"用户准备手动结束应用，已关闭课程实时活动：" +
+                    $"ActivityId={result.ActivityId ?? "<null>"}。");
+            }
+            else if (result.Code is not (LiveActivityResultCode.Unsupported or
+                         LiveActivityResultCode.Disabled))
+            {
+                LogError(
+                    $"用户准备手动结束应用，但实时活动关闭失败：" +
+                    $"{result.Code} {result.ErrorMessage}");
+            }
+        }
+        finally
+        {
+            if (gateEntered)
+            {
+                _refreshGate.Release();
+            }
+
+            _cancellation.Cancel();
+        }
+    }
+
     public void Dispose()
     {
         if (!_isStarted)
@@ -305,8 +380,7 @@ internal sealed class LessonsLiveActivityCoordinator(
         }
 
         AppBase.Current.AppStarted -= OnAppStarted;
-        AppBase.Current.AppStopping -= OnAppStopping;
-        if (_lessonsService != null)
+        if (_lessonsService != null && Volatile.Read(ref _isStopping) == 0)
         {
             _lessonsService.PostMainTimerTicked -= OnPostMainTimerTicked;
         }
@@ -320,8 +394,8 @@ internal sealed class LessonsLiveActivityCoordinator(
 
         Interlocked.Exchange(ref _isStopping, 1);
         _cancellation.Cancel();
-        // QueueRefresh 是 async void，此时可能仍在 finally 中释放信号量。
-        // 同步对象不持有外部资源，交由 GC 回收可避免停止阶段的 Dispose/Release 竞态。
+        // 后台刷新此时可能仍在 finally 中释放信号量。同步对象不持有外部资源，
+        // 交由 GC 回收可避免停止阶段的 Dispose/Release 竞态。
         _isStarted = false;
         _isWorkStarted = false;
     }

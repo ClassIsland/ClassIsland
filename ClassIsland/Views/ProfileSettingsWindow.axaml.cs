@@ -379,12 +379,8 @@ public partial class ProfileSettingsWindow : ViewBase
         SentrySdk.Metrics.EmitCounter("views.ProfileSettingsWindow.profile.openFolder", 1);
         try
         {
-            var opened = await PlatformServices.FolderService.OpenFolderAsync(
+            await PlatformServices.LauncherService.LaunchPath(
                 Path.GetFullPath(Services.ProfileService.ProfilePath));
-            if (!opened)
-            {
-                this.ShowErrorToast("系统文件管理器无法打开档案文件夹。");
-            }
         }
         catch (Exception exception)
         {

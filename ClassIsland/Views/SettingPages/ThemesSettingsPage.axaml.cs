@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,8 +18,10 @@ using ClassIsland.ViewModels.SettingsPages;
 using CommunityToolkit.Mvvm.Input;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Shared;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Data;
@@ -63,13 +64,9 @@ public partial class ThemesSettingsPage : SettingsPageBase
     }
 
     [RelayCommand]
-    private void OpenFolder(ThemeInfo info)
+    private async Task OpenFolder(ThemeInfo info)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = System.IO.Path.GetFullPath(info.Path),
-            UseShellExecute = true
-        });
+        await OpenFolderAsync(System.IO.Path.GetFullPath(info.Path), "主题目录");
     }
 
     [RelayCommand]
@@ -78,13 +75,21 @@ public partial class ThemesSettingsPage : SettingsPageBase
         OpenDrawer("ErrorInfoDrawer", dataContext: info.Error?.ToString());
     }
 
-    private void ButtonOpenThemeFolder_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonOpenThemeFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        await OpenFolderAsync(ClassIsland.Services.XamlThemeService.ThemesPath, "主题目录");
+    }
+
+    private async Task OpenFolderAsync(string path, string folderName)
+    {
+        try
         {
-            FileName = ClassIsland.Services.XamlThemeService.ThemesPath,
-            UseShellExecute = true
-        });
+            await PlatformServices.LauncherService.LaunchPath(path);
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast($"无法打开{folderName}", exception);
+        }
     }
 
     private void ListBoxCategory_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -133,26 +138,46 @@ public partial class ThemesSettingsPage : SettingsPageBase
         {
             return;
         }
-        PopupHelper.DisableAllPopups();
-        var file = await PlatformServices.FilePickerService
-            .SaveFilePickerAsync(new FilePickerSaveOptions()
-            {
-                SuggestedFileName = info.Manifest.Id + ".zip",
-                Title = "打包主题",
-                FileTypeChoices = [
-                    new FilePickerFileType("ClassIsland 主题包")
-                    {
-                        Patterns = ["*.zip"]
-                    }
-                ]
-            }, topLevel);
-        PopupHelper.RestoreAllPopups();
-        if (file == null)
-            return;
         try
         {
-            await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, file);
+            PopupHelper.DisableAllPopups();
+            string? file;
+            try
+            {
+                file = await PlatformServices.FilePickerService.SaveFileAsync(
+                    new FilePickerSaveOptions
+                    {
+                        SuggestedFileName = info.Manifest.Id + ".zip",
+                        Title = "打包主题",
+                        FileTypeChoices =
+                        [
+                            new FilePickerFileType("ClassIsland 主题包")
+                            {
+                                Patterns = ["*.zip"]
+                            }
+                        ]
+                    },
+                    topLevel,
+                    output => StreamExportHelper.WritePathBasedExportAsync(
+                        output,
+                        ".zip",
+                        path => ViewModel.XamlThemeService.PackageThemeAsync(
+                            info.Manifest.Id,
+                            path)));
+            }
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
+
+            if (file == null)
+                return;
+
             this.ShowSuccessToast($"已将主题 {info.Manifest.Id} 打包到 {file}。");
+            if (!PlatformHelper.IsAppleMobile && Path.GetDirectoryName(file) is { Length: > 0 } directory)
+            {
+                await PlatformServices.LauncherService.LaunchPath(directory);
+            }
         }
         catch (Exception ex)
         {

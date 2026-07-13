@@ -21,6 +21,21 @@ env:
   PDC_CLIENT_VERSION: 1.0.1.0
 
 jobs:
+  build_ios_unsigned:
+    name: Build unsigned iOS IPA
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: read
+      packages: read
+    uses: ./.github/workflows/_build_ios_reusable.yml
+    with:
+      checkout_ref: ${{ inputs.release_tag }}
+      app_version: ${{ inputs.primary_version }}
+      build_number: ${{ format('{0}', github.run_number) }}
+      brand_type: Production
+      developer_preview: false
+      retention_days: 30
+
   build_app:
     runs-on: ${{ matrix.os == 'linux' &&  'ubuntu-24.04' || ( matrix.os == 'macos' && 'macos-26' || 'windows-2022' ) }}
     env:

@@ -90,7 +90,6 @@ public partial class MobileViewHost : UserControl, IViewHost
     protected override void OnLoaded(RoutedEventArgs e)
     {
         AppBase.Current.PhonyRootWindow = TopLevel.GetTopLevel(this)!;
-        Console.WriteLine($"[ELYSIADBG] Get TopLevel = {TopLevel.GetTopLevel(this)}");
         base.OnLoaded(e);
 
         AttachInputPane();
@@ -426,7 +425,7 @@ public partial class MobileViewHost : UserControl, IViewHost
             {
                 if (view1 != view)
                 {
-                    view.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable);
+                    view1.ViewDeactivating(WindowCloseReason.Undefined, true, cancelable);
                 }
                 view1.ViewDeactivated();
             }
@@ -606,7 +605,6 @@ public partial class MobileViewHost : UserControl, IViewHost
 
     public async Task<bool> HideView(ViewBase view)
     {
-        Console.WriteLine($"[ELYSIADBG] Going to hide view {view}");
         if (!ActivatedViews.Contains(view))
         {
             throw new InvalidOperationException("视图必须已经激活才能隐藏。");
@@ -617,7 +615,7 @@ public partial class MobileViewHost : UserControl, IViewHost
             return false;
         }
 
-        if (!DeactivateView(view))
+        if (!view.ViewDeactivating(WindowCloseReason.Undefined, true, true))
         {
             return false;
         }
@@ -625,13 +623,17 @@ public partial class MobileViewHost : UserControl, IViewHost
         if (NavigationPage.Pages?.Count() <= 1)
         {
             Hide();
+            if (ActivatedViews.Remove(view))
+            {
+                view.ViewDeactivated();
+            }
         }
         else
         {
             await RunNavigationWithProgressAsync(() => NavigationPage.PopAsync());
         }
 
-        return true;
+        return !ActivatedViews.Contains(view);
     }
 
     private async Task RunNavigationWithProgressAsync(Func<Task> navigation)
@@ -725,9 +727,10 @@ public partial class MobileViewHost : UserControl, IViewHost
         {
             return;
         }
-        viewBase.ViewDeactivating(WindowCloseReason.Undefined, true, true);
-        viewBase.ViewDeactivated();
-        ActivatedViews.Remove(viewBase);
+        if (ActivatedViews.Remove(viewBase))
+        {
+            viewBase.ViewDeactivated();
+        }
 
         SetCurrentView(NavigationPage.CurrentPage as ViewBase);
     }

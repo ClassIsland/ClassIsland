@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -24,6 +23,7 @@ using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.Components;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
@@ -143,13 +143,17 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ViewModel.SettingsTabControlIndex = ViewModel.SettingsTabControlIndex == 0 ? 1 : ViewModel.SettingsTabControlIndex;
     }
 
-    private void ButtonOpenConfigFolder_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonOpenConfigFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        try
         {
-            FileName = Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath),
-            UseShellExecute = true
-        });
+            await PlatformServices.LauncherService.LaunchPath(
+                Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath));
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法打开组件配置目录", exception);
+        }
     }
     
     private void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)

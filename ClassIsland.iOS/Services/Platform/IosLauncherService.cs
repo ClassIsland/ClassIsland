@@ -4,15 +4,17 @@ using Foundation;
 namespace ClassIsland.iOS.Services.Platform;
 
 /// <summary>
-/// 使用 iOS/iPadOS“文件”App 显示应用 Documents 中的目录。
+/// 使用 iOS/iPadOS“文件”App 打开应用目录，并使用系统 URL opener 打开外部链接。
 /// </summary>
-internal sealed class IosPlatformFolderService : IPlatformFolderService
+internal sealed class IosLauncherService : ILauncherService
 {
-    private readonly SharedDocumentsPlatformFolderService _service = new(
+    private readonly SharedDocumentsLauncherService _service = new(
         GetDocumentsPath,
-        OpenFilesAppAsync);
+        IosSystemUrlOpener.OpenAsync);
 
-    public Task<bool> OpenFolderAsync(string folderPath) => _service.OpenFolderAsync(folderPath);
+    public Task LaunchPath(string path) => _service.LaunchPath(path);
+
+    public Task LaunchUrl(string url) => _service.LaunchUrl(url);
 
     private static string GetDocumentsPath()
     {
@@ -23,6 +25,4 @@ internal sealed class IosPlatformFolderService : IPlatformFolderService
         return documentsUrl.Path
                ?? throw new InvalidOperationException("无法获取 iOS Documents 目录路径。");
     }
-
-    private static Task<bool> OpenFilesAppAsync(Uri uri) => IosSystemUrlOpener.OpenAsync(uri);
 }

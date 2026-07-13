@@ -44,14 +44,9 @@ public static class PlatformServices
     public static IPlatformFilePickerService FilePickerService { get; internal set; } = new AvaloniaDefaultPlatformFilePickerService();
 
     /// <summary>
-    /// 平台目录显示服务
+    /// 平台目录和外部 URL 启动服务
     /// </summary>
-    public static IPlatformFolderService FolderService { get; internal set; } = new ShellPlatformFolderService();
-
-    /// <summary>
-    /// 平台外部 URI 启动服务
-    /// </summary>
-    public static IPlatformUriLauncherService UriLauncherService { get; internal set; } = new ShellPlatformUriLauncherService();
+    public static ILauncherService LauncherService { get; internal set; } = new ShellLauncherService();
 
     /// <summary>
     /// 系统实时活动服务。非 Apple 平台和不受支持的系统会安全返回 Unsupported。

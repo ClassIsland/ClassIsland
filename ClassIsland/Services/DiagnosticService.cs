@@ -16,6 +16,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 
@@ -107,7 +108,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     /// 导出诊断信息到文件
     /// </summary>
     /// <param name="path">保存位置</param>
-    /// <param name="showExportedFile">为兼容现有调用保留；导出后不再自动打开文件目录。</param>
+    /// <param name="showExportedFile">是否在导出后打开文件所在目录。</param>
     public async Task ExportDiagnosticData(string path, bool showExportedFile = true)
     {
         try
@@ -136,6 +137,10 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                 ZipFile.CreateFromDirectory(temp, path);
             });
             Directory.Delete(temp, true);
+            if (showExportedFile && Path.GetDirectoryName(path) is { Length: > 0 } directory)
+            {
+                await PlatformServices.LauncherService.LaunchPath(directory);
+            }
         }
         catch (Exception e)
         {

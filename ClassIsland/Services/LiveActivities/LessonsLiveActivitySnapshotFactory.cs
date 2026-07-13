@@ -32,13 +32,13 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                 absoluteNow,
                 isClass: true),
             TimeState.Breaking when LessonsService.NextClassTimeLayoutItem != TimeLayoutItem.Empty =>
-                CreateUpcomingClassSnapshot(now, absoluteNow),
+                CreateUpcomingClassSnapshot(now, absoluteNow, TimeState.Breaking),
             TimeState.Breaking => CreateProgressSnapshot(
                 now,
                 absoluteNow,
                 isClass: false),
             TimeState.None when LessonsService.NextClassTimeLayoutItem != TimeLayoutItem.Empty =>
-                CreateUpcomingClassSnapshot(now, absoluteNow),
+                CreateUpcomingClassSnapshot(now, absoluteNow, TimeState.None),
             TimeState.AfterSchool => new LessonsLiveActivitySnapshot(
                 TimeState.AfterSchool,
                 $"after-school:{now:yyyyMMdd}",
@@ -155,7 +155,8 @@ internal sealed class LessonsLiveActivitySnapshotFactory
 
     private LessonsLiveActivitySnapshot CreateUpcomingClassSnapshot(
         DateTime now,
-        DateTimeOffset absoluteNow)
+        DateTimeOffset absoluteNow,
+        TimeState currentState)
     {
         var nextItem = LessonsService.NextClassTimeLayoutItem;
         var hasNextClass = !ReferenceEquals(nextItem, TimeLayoutItem.Empty) &&
@@ -191,8 +192,8 @@ internal sealed class LessonsLiveActivitySnapshotFactory
         if (hasNextClass && !string.IsNullOrEmpty(nextSubjectName))
         {
             return new LessonsLiveActivitySnapshot(
-                TimeState.None,
-                CreateIntervalKey(TimeState.None, nextItem, now),
+                currentState,
+                CreateIntervalKey(currentState, nextItem, now),
                 $"下一节 · {nextSubjectName}",
                 $"{FormatTime(nextItem.StartTime)} 开始",
                 FormatTimeRange(nextItem),
@@ -202,7 +203,8 @@ internal sealed class LessonsLiveActivitySnapshotFactory
                 progressPercent,
                 remainingText,
                 GetAbsoluteTime(now, absoluteNow, stableStartTime),
-                GetAbsoluteTime(now, absoluteNow, nextItem.StartTime));
+                GetAbsoluteTime(now, absoluteNow, nextItem.StartTime),
+                IsUpcomingLesson: true);
         }
 
         return new LessonsLiveActivitySnapshot(

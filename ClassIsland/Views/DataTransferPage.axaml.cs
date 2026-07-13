@@ -27,6 +27,7 @@ using ClassIsland.Models;
 using ClassIsland.Models.External.ClassWidgets;
 using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Platforms.Abstraction;
+using ClassIsland.Platforms.Abstraction.Services;
 using ClassIsland.Platforms.Abstraction.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.Logging;
@@ -95,6 +96,30 @@ public partial class DataTransferPage : UserControl
         }
 
         PopupHelper.DisableAllPopups();
+        if (PlatformHelper.IsAppleMobile)
+        {
+            try
+            {
+                var folders = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(
+                    new FolderPickerOpenOptions
+                    {
+                        Title = "选择 ClassIsland 1.x 数据目录",
+                        AllowMultiple = false
+                    },
+                    topLevel);
+                if (folders.Count > 0)
+                {
+                    ViewModel.ImportSourcePath = folders[0];
+                }
+            }
+            finally
+            {
+                PopupHelper.RestoreAllPopups();
+            }
+
+            return;
+        }
+
         var file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
         {
             Title = "选择先前版本的 ClassIsland 实例",
@@ -117,6 +142,12 @@ public partial class DataTransferPage : UserControl
 
     private async Task BeginPerformClassIslandImport()
     {
+        if (PlatformHelper.IsAppleMobile)
+        {
+            AppBase.Current.Restart(CreateClassIslandImportArguments("--importV1"));
+            return;
+        }
+
         var r = await new FAContentDialog()
         {
             Title = "重启以继续",
@@ -130,6 +161,11 @@ public partial class DataTransferPage : UserControl
             return;
         }
 
+        AppBase.Current.Restart(CreateClassIslandImportArguments("--importV1"));
+    }
+
+    private string[] CreateClassIslandImportArguments(string importOption)
+    {
         var entry = ImportEntries.None;
         if (ViewModel.IsProfileSelected)
         {
@@ -143,7 +179,7 @@ public partial class DataTransferPage : UserControl
         {
             entry |= ImportEntries.OtherConfig;
         }
-        AppBase.Current.Restart(["--importV1", ViewModel.ImportSourcePath, "-m", "--importEntries", ((int)entry).ToString()]);
+        return [importOption, ViewModel.ImportSourcePath, "-m", "--importEntries", ((int)entry).ToString()];
     }
 
     private void ImportSettings(string root)
@@ -274,17 +310,25 @@ public partial class DataTransferPage : UserControl
             return;
         }
 
+        List<string> file;
         PopupHelper.DisableAllPopups();
-        var file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
+        try
         {
-            Title = "浏览 ClassIsland 2 导出文件",
-            FileTypeFilter = [ new FilePickerFileType("ClassIsland 数据文件")
-                {
-                    Patterns = ["*.cidata"]
-                } 
-            ]
-        }, topLevel);
-        PopupHelper.RestoreAllPopups();
+            file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
+            {
+                Title = "浏览 ClassIsland 2 导出文件",
+                FileTypeFilter = [ new FilePickerFileType("ClassIsland 数据文件")
+                    {
+                        Patterns = ["*.cidata"]
+                    }
+                ]
+            }, topLevel);
+        }
+        finally
+        {
+            PopupHelper.RestoreAllPopups();
+        }
+
         if (file.Count <= 0)
         {
             return;
@@ -295,6 +339,12 @@ public partial class DataTransferPage : UserControl
     
     private async Task BeginPerformClassIsland2Import()
     {
+        if (PlatformHelper.IsAppleMobile)
+        {
+            AppBase.Current.Restart(CreateClassIslandImportArguments("--importV2"));
+            return;
+        }
+
         var r = await new FAContentDialog()
         {
             Title = "重启以继续",
@@ -308,20 +358,7 @@ public partial class DataTransferPage : UserControl
             return;
         }
 
-        var entry = ImportEntries.None;
-        if (ViewModel.IsProfileSelected)
-        {
-            entry |= ImportEntries.Profiles;
-        }
-        if (ViewModel.IsSettingsSelected)
-        {
-            entry |= ImportEntries.Settings;
-        }
-        if (ViewModel.IsOtherConfigSelected)
-        {
-            entry |= ImportEntries.OtherConfig;
-        }
-        AppBase.Current.Restart(["--importV2", ViewModel.ImportSourcePath, "-m", "--importEntries", ((int)entry).ToString()]);
+        AppBase.Current.Restart(CreateClassIslandImportArguments("--importV2"));
     }
     
     public async Task PerformClassIsland2Import(string root, ImportEntries importEntries)
@@ -425,6 +462,14 @@ public partial class DataTransferPage : UserControl
 
     private async Task BrowseClassIsland2ExportTargetAction()
     {
+        if (PlatformHelper.IsAppleMobile)
+        {
+            // iOS 必须在系统授予的 stream 写入权限有效期内完成导出；
+            // 实际保存面板由下一步的导出动作打开。
+            ViewModel.ImportSourcePath = "ios-stream-export";
+            return;
+        }
+
         var topLevel = TopLevel.GetTopLevel(this);
         if (topLevel == null)
         {
@@ -432,17 +477,17 @@ public partial class DataTransferPage : UserControl
         }
 
         PopupHelper.DisableAllPopups();
-        var file = await PlatformServices.FilePickerService.SaveFilePickerAsync(new FilePickerSaveOptions
+        string? file;
+        try
         {
-            Title = "浏览保存的导出文件",
-            FileTypeChoices = [ new FilePickerFileType("ClassIsland 数据文件")
-                {
-                    Patterns = ["*.cidata"]
-                } 
-            ],
-            SuggestedFileName = $"ClassIsland_data_{AppBase.AppVersion}_{DateTime.Now:yyyyMMdd_HHmmss}.cidata"
-        }, topLevel);
-        PopupHelper.RestoreAllPopups();
+            file = await PlatformServices.FilePickerService.SaveFilePickerAsync(
+                CreateClassIsland2ExportOptions(),
+                topLevel);
+        }
+        finally
+        {
+            PopupHelper.RestoreAllPopups();
+        }
         
         
         ViewModel.ImportSourcePath = file ?? "";
@@ -457,39 +502,105 @@ public partial class DataTransferPage : UserControl
         try
         {
             ViewModel.PageIndex = 3;
-            var path = ViewModel.ImportSourcePath;
-            var temp = Directory.CreateTempSubdirectory("ClassIslandDataExport").FullName;
-            //await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
-            Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
-            Directory.CreateDirectory(Path.Combine(temp, "Plugins/"));
-            Directory.CreateDirectory(Path.Combine(temp, "Config/"));
-            
-            await Task.Run(() =>
+            if (PlatformHelper.IsAppleMobile)
             {
-                if (ViewModel.IsSettingsSelected)
+                var topLevel = TopLevel.GetTopLevel(this);
+                if (topLevel == null)
                 {
-                    File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Path.Combine(temp, "Settings.json"));
+                    ViewModel.PageIndex = 2;
+                    return;
                 }
-                if (ViewModel.IsProfileSelected)
+
+                PopupHelper.DisableAllPopups();
+                string? file;
+                try
                 {
-                    FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles"), Path.Combine(temp, "Profiles/"));
+                    file = await PlatformServices.FilePickerService.SaveFileAsync(
+                        CreateClassIsland2ExportOptions(),
+                        topLevel,
+                        output => StreamExportHelper.WritePathBasedExportAsync(
+                            output,
+                            ".cidata",
+                            CreateClassIsland2ExportArchiveAsync));
                 }
-                if (ViewModel.IsOtherConfigSelected)
+                finally
                 {
-                    FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppConfigPath), Path.Combine(temp, "Config/"));
-                    FileFolderService.CopyFolder(Path.Combine(PluginService.PluginsRootPath), Path.Combine(temp, "Plugins/"));
+                    PopupHelper.RestoreAllPopups();
                 }
-                File.Delete(path);
-                ZipFile.CreateFromDirectory(temp, path);
-            });
-            Directory.Delete(temp, true);
+
+                if (file == null)
+                {
+                    ViewModel.PageIndex = 2;
+                    return;
+                }
+            }
+            else
+            {
+                await CreateClassIsland2ExportArchiveAsync(ViewModel.ImportSourcePath);
+            }
+
             ViewModel.PageIndex = 4;
         }
         catch (Exception e)
         {
             ViewModel.Logger.LogError(e, "导出数据时发生意外错误。");
             this.ShowErrorToast("导出数据时发生意外错误。", e);
-            throw;
+            ViewModel.PageIndex = 2;
+        }
+    }
+
+    private static FilePickerSaveOptions CreateClassIsland2ExportOptions() => new()
+    {
+        Title = "浏览保存的导出文件",
+        FileTypeChoices =
+        [
+            new FilePickerFileType("ClassIsland 数据文件")
+            {
+                Patterns = ["*.cidata"]
+            }
+        ],
+        SuggestedFileName = $"ClassIsland_data_{AppBase.AppVersion}_{DateTime.Now:yyyyMMdd_HHmmss}.cidata"
+    };
+
+    private async Task CreateClassIsland2ExportArchiveAsync(string path)
+    {
+        var temp = Directory.CreateTempSubdirectory("ClassIslandDataExport").FullName;
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
+            Directory.CreateDirectory(Path.Combine(temp, "Plugins/"));
+            Directory.CreateDirectory(Path.Combine(temp, "Config/"));
+
+            await Task.Run(() =>
+            {
+                if (ViewModel.IsSettingsSelected)
+                {
+                    File.Copy(
+                        Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"),
+                        Path.Combine(temp, "Settings.json"));
+                }
+                if (ViewModel.IsProfileSelected)
+                {
+                    FileFolderService.CopyFolder(
+                        Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles"),
+                        Path.Combine(temp, "Profiles/"));
+                }
+                if (ViewModel.IsOtherConfigSelected)
+                {
+                    FileFolderService.CopyFolder(
+                        CommonDirectories.AppConfigPath,
+                        Path.Combine(temp, "Config/"));
+                    FileFolderService.CopyFolder(
+                        PluginService.PluginsRootPath,
+                        Path.Combine(temp, "Plugins/"));
+                }
+                File.Delete(path);
+                ZipFile.CreateFromDirectory(temp, path);
+            });
+        }
+        finally
+        {
+            StreamExportHelper.TryDeleteTemporaryDirectory(temp);
         }
     }
     #endregion
@@ -555,12 +666,20 @@ public partial class DataTransferPage : UserControl
             return;
         }
 
+        List<string> file;
         PopupHelper.DisableAllPopups();
-        var file = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(new FolderPickerOpenOptions()
+        try
         {
-            Title = "浏览 Class Widgets 安装（即有 ClassWidgets[.exe]）的文件夹或其数据目录"
-        }, topLevel);
-        PopupHelper.RestoreAllPopups();
+            file = await PlatformServices.FilePickerService.OpenFoldersPickerAsync(new FolderPickerOpenOptions()
+            {
+                Title = "浏览 Class Widgets 安装（即有 ClassWidgets[.exe]）的文件夹或其数据目录"
+            }, topLevel);
+        }
+        finally
+        {
+            PopupHelper.RestoreAllPopups();
+        }
+
         if (file.Count <= 0)
         {
             return;

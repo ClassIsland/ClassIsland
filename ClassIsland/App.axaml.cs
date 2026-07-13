@@ -85,6 +85,7 @@ public partial class App : AppBase, IAppHost
     public Mutex? Mutex { get; set; }
     public bool IsMutexCreateNew { get; set; } = false;
     private ILogger<App>? Logger { get; set; }
+    private bool _isShowingAppleMobileTerminationInstructions;
     //public static IHost? Host;
 
 
@@ -228,7 +229,7 @@ public partial class App : AppBase, IAppHost
         {
             "folder" => Path.Combine(CommonDirectories.AppPackageRoot, "data"),
             "ipa" => Path.GetFullPath(Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal), "ClassIsland", "Data")),
+                CommonDirectories.AppSharedDocumentsFolderPath, "Data")),
             "installer" or "deb" or "appImage" or "pkg" or "msix" or "apk" => Path.GetFullPath(Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ClassIsland", "Data")),
             _ => System.OperatingSystem.IsMacOS() ? Path.GetFullPath(Path.Combine(
@@ -555,12 +556,12 @@ public partial class App : AppBase, IAppHost
                 if (ApplicationCommand.Autostartup)
                 {
                     // 自启动模式，直接退出
-                    Environment.Exit(0);
+                    HandleStartupAbort("检测到重复启动的自启动实例");
                     return;
                 }
                 
                 await ProcessInstanceExisted();
-                Environment.Exit(0);
+                HandleStartupAbort("检测到已有 ClassIsland 实例正在运行");
                 return;
             }
         }
@@ -569,7 +570,7 @@ public partial class App : AppBase, IAppHost
         if (Environment.CurrentDirectory.Contains(Path.GetTempPath()))
         {
             await CommonTaskDialogs.ShowDialog("检测到应用正在临时目录下运行", "ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
-            Environment.Exit(0);
+            HandleStartupAbort("应用正在临时目录下运行");
             return;
         }
 
@@ -579,7 +580,7 @@ public partial class App : AppBase, IAppHost
             var r = await CommonTaskDialogs.ShowDialog("检测到正在桌面上运行", "ClassIsland正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个单独的文件夹中。");
             if (r == (object)true)
             {
-                Environment.Exit(0);
+                HandleStartupAbort("应用正在桌面目录中运行");
                 return;
             }
         }
@@ -594,7 +595,7 @@ public partial class App : AppBase, IAppHost
         catch (Exception ex)
         {
             await CommonTaskDialogs.ShowDialog("目录权限错误", $"ClassIsland无法写入当前目录：{ex.Message}"+Environment.NewLine+Environment.NewLine+"请将本软件解压到一个合适的位置后再运行。");
-            Environment.Exit(0);
+            HandleStartupAbort("应用目录不可写");
             return;
         }
 
@@ -792,7 +793,17 @@ public partial class App : AppBase, IAppHost
         
         if (ApplicationCommand.Diagnostic)
         {
-            await GetService<DiagnosticService>().ExportDiagnosticData(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"ClassIsland_DiagnosticData_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip"), false);
+            var diagnosticDirectory = PlatformHelper.IsAppleMobile
+                ? Path.Combine(
+                    CommonDirectories.AppSharedDocumentsFolderPath,
+                    "Diagnostics")
+                : Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            Directory.CreateDirectory(diagnosticDirectory);
+            await GetService<DiagnosticService>().ExportDiagnosticData(
+                Path.Combine(
+                    diagnosticDirectory,
+                    $"ClassIsland_DiagnosticData_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip"),
+                false);
         }
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         
@@ -909,6 +920,13 @@ public partial class App : AppBase, IAppHost
                 GetService<MainWindow>().OpenProfileSettingsWindow(args.Uri);
             }
         });
+        uriNavigationService.HandleAppNavigation("live-activity", _ =>
+        {
+            if (PlatformHelper.IsAppleMobile)
+            {
+                GetService<MainView>().Open();
+            }
+        });
         uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/")));
         // uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
         // uriNavigationService.HandleAppNavigation("config-errors", args => GetService<ConfigErrorsWindow>().ShowDialog());
@@ -955,9 +973,24 @@ public partial class App : AppBase, IAppHost
 
         if (!isDesktop)
         {
-            PostStartup(spanLoadMainWindow, transaction, startupCountFilePath);
             var mv = GetService<MainView>();
-            mv.Show();
+            if (PlatformHelper.IsAppleMobile)
+            {
+                mv.Loaded += OnAppleMobileMainViewLoaded;
+                mv.Show();
+
+                void OnAppleMobileMainViewLoaded(object? sender, RoutedEventArgs e)
+                {
+                    mv.Loaded -= OnAppleMobileMainViewLoaded;
+                    Dispatcher.UIThread.Post(
+                        () => PostStartup(spanLoadMainWindow, transaction, startupCountFilePath));
+                }
+            }
+            else
+            {
+                PostStartup(spanLoadMainWindow, transaction, startupCountFilePath);
+                mv.Show();
+            }
         }
     }
 
@@ -1170,6 +1203,12 @@ public partial class App : AppBase, IAppHost
     /// </summary>
     public override void Stop()
     {
+        if (PlatformHelper.IsAppleMobile)
+        {
+            PrepareForAppleMobileManualTermination();
+            return;
+        }
+
         if (CurrentLifetime == ClassIsland.Core.Enums.ApplicationLifetime.Stopping)
         {
             return;
@@ -1240,13 +1279,96 @@ public partial class App : AppBase, IAppHost
     {
         if (PlatformHelper.IsAppleMobile)
         {
-            Logger?.LogInformation("当前平台不支持自动重新拉起应用，将关闭 ClassIsland 并等待用户手动重新打开。");
-            Stop();
+            PlatformServices.AppLifetimeService.Restart(parameters, restartToLauncher);
+            PrepareForAppleMobileManualTermination();
             return;
         }
 
         PlatformServices.AppLifetimeService.Restart(parameters, restartToLauncher);
         Stop();
+    }
+
+    internal void PrepareForAppleMobileManualTermination()
+    {
+        if (!PlatformHelper.IsAppleMobile)
+        {
+            return;
+        }
+
+        Logger?.LogInformation("iOS 不允许应用主动终止，已保存状态并提示用户从 App 切换器手动结束。");
+        SaveStateBeforeAppleMobileTermination();
+        Dispatcher.UIThread.Post(async () => await ShowAppleMobileTerminationInstructionsAsync());
+    }
+
+    private void HandleStartupAbort(string reason)
+    {
+        if (PlatformHelper.IsAppleMobile)
+        {
+            Trace.TraceWarning($"iOS 启动已中止：{reason}。应用将等待用户从 App 切换器手动结束。");
+            Logger?.LogWarning("iOS 启动已中止：{Reason}。应用将等待用户从 App 切换器手动结束。", reason);
+            PrepareForAppleMobileManualTermination();
+            return;
+        }
+
+        Environment.Exit(0);
+    }
+
+    private void SaveStateBeforeAppleMobileTermination()
+    {
+        if (CurrentLifetime < Core.Enums.ApplicationLifetime.StartingOnline)
+        {
+            return;
+        }
+
+        try
+        {
+            IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("用户将在 iOS App 切换器中手动结束应用。");
+            IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("用户将在 iOS App 切换器中手动结束应用。");
+            IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
+            IAppHost.Host?.Services.GetService<IComponentsService>()?.SaveConfig();
+        }
+        catch (Exception exception)
+        {
+            Logger?.LogError(exception, "在 iOS 手动结束前保存应用状态失败。");
+        }
+    }
+
+    private async Task ShowAppleMobileTerminationInstructionsAsync()
+    {
+        if (_isShowingAppleMobileTerminationInstructions)
+        {
+            return;
+        }
+
+        _isShowingAppleMobileTerminationInstructions = true;
+        try
+        {
+            await EndAppleMobileLiveActivityAsync();
+            await CommonTaskDialogs.ShowDialog(
+                "需要从 App 切换器结束应用",
+                "iOS 不允许 ClassIsland 自行退出或重新启动。请打开 App 切换器，向上滑动 ClassIsland 卡片以结束应用；如果本次操作需要重启，请随后从主屏幕重新打开。");
+        }
+        catch (Exception exception)
+        {
+            Logger?.LogError(exception, "无法显示 iOS 手动重新打开提示。");
+        }
+        finally
+        {
+            _isShowingAppleMobileTerminationInstructions = false;
+        }
+    }
+
+    private async Task EndAppleMobileLiveActivityAsync()
+    {
+        try
+        {
+            await PlatformServices.AppLifetimeService
+                .PrepareForManualTerminationAsync();
+        }
+        catch (Exception exception)
+        {
+            Logger?.LogError(exception, "在 iOS 手动结束前关闭实时活动时发生异常。");
+        }
     }
 
     private void NativeMenuItemOpenAbout_OnClick(object? sender, EventArgs e)

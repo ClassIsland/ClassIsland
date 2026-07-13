@@ -7,6 +7,9 @@ using Avalonia.Interactivity;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers;
+using ClassIsland.Core.Helpers.UI;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Services;
 
 namespace ClassIsland.Views;
@@ -32,6 +35,11 @@ public partial class CrashWindow : ViewBase
     public CrashWindow()
     {
         InitializeComponent();
+        if (PlatformHelper.IsAppleMobile)
+        {
+            DebugButton.IsVisible = false;
+        }
+
         DataContext = this;
     }
 
@@ -44,10 +52,22 @@ public partial class CrashWindow : ViewBase
     {
         if (IsCritical)
         {
+            if (PlatformHelper.IsAppleMobile)
+            {
+                (AppBase.Current as App)?.PrepareForAppleMobileManualTermination();
+                return;
+            }
+
             Environment.Exit(1);
         }
         else
         {
+            if (PlatformHelper.IsAppleMobile)
+            {
+                (AppBase.Current as App)?.PrepareForAppleMobileManualTermination();
+                return;
+            }
+
             AppBase.Current.Stop();
         }
     }
@@ -64,17 +84,20 @@ public partial class CrashWindow : ViewBase
         TextBoxCrashInfo.Copy();
     }
 
-    private void ButtonFeedback_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonFeedback_OnClick(object sender, RoutedEventArgs e)
     {
         var uri = new UriBuilder(
             $"https://github.com/ClassIsland/ClassIsland/issues/new");
         uri.Query = 
             $"template=BugReport.yml&stacktrace={HttpUtility.UrlEncode(CrashInfo)}&app_version={HttpUtility.UrlEncode(App.AppVersionLong)}&os_version={HttpUtility.UrlEncode(Environment.OSVersion.Version.ToString())}";
-        Process.Start(new ProcessStartInfo()
+        try
         {
-            FileName = uri.ToString(),
-            UseShellExecute = true
-        });
+            await PlatformServices.LauncherService.LaunchUrl(uri.ToString());
+        }
+        catch (Exception exception)
+        {
+            this.ShowErrorToast("无法打开问题反馈页面", exception);
+        }
     }
 
     private void ButtonDebug_OnClick(object sender, RoutedEventArgs e)

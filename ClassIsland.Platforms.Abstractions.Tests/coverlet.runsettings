@@ -5,7 +5,7 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <Include>[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Models.LiveActivities.*,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Stubs.Services.LiveActivityServiceStub,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.PlatformServices</Include>
+          <Include>[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Models.LiveActivities.*,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Services.AppNavigationUriParser,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Services.IosNotificationTimeMapper,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Services.PendingLaunchArgumentsStore,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Services.SharedDocumentsLauncherService,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Services.StorageItemMaterializer,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Services.StreamExportHelper,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Stubs.Services.LiveActivityServiceStub,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.Stubs.Services.ShellLauncherService,[ClassIsland.Platforms.Abstractions]ClassIsland.Platforms.Abstraction.PlatformServices</Include>
         </Configuration>
       </DataCollector>
     </DataCollectors>

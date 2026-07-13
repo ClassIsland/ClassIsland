@@ -19,7 +19,8 @@ namespace ClassIsland.iOS.Services.Notifications;
 internal sealed class IosLessonsNotificationCoordinator : IDisposable
 {
     private static readonly TimeSpan RefreshDebounceInterval = TimeSpan.FromMilliseconds(300);
-    private static readonly TimeSpan AttachedSettingsScanInterval = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan AttachedSettingsScanInterval = TimeSpan.FromMinutes(1);
+    private static readonly TimeSpan RollingScheduleRefreshInterval = TimeSpan.FromHours(6);
 
     private readonly IosNotificationAuthorizationService _authorizationService;
     private readonly CancellationTokenSource _cancellation = new();
@@ -27,6 +28,7 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     private readonly IosLessonNotificationScheduler _scheduler = new();
     private readonly DispatcherTimer _refreshDebounceTimer;
     private readonly DispatcherTimer _attachedSettingsScanTimer;
+    private readonly DispatcherTimer _rollingScheduleRefreshTimer;
     private readonly HashSet<INotifyPropertyChanged> _propertyChangeSources = [];
     private readonly HashSet<INotifyPropertyChanged> _attachedSettingsSources = [];
     private readonly HashSet<INotifyCollectionChanged> _collectionChangeSources = [];
@@ -36,8 +38,11 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
     private NSObject? _resignActiveObserver;
     private ILessonsService? _lessonsService;
     private IProfileService? _profileService;
+    private IExactTimeService? _exactTimeService;
     private SettingsService? _settingsService;
+    private INotificationHostService? _notificationHostService;
     private IosLessonNotificationScheduleFactory? _scheduleFactory;
+    private readonly IosNotificationQueueConsumer _queueConsumer = new();
     private IReadOnlyList<IosLessonNotificationRequest>? _lastRequests;
     private bool? _lastAuthorizationState;
     private int _refreshPending;
@@ -58,6 +63,11 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
             Interval = AttachedSettingsScanInterval
         };
         _attachedSettingsScanTimer.Tick += AttachedSettingsScanTimerOnTick;
+        _rollingScheduleRefreshTimer = new DispatcherTimer
+        {
+            Interval = RollingScheduleRefreshInterval
+        };
+        _rollingScheduleRefreshTimer.Tick += RollingScheduleRefreshTimerOnTick;
     }
 
     public void Start()
@@ -93,22 +103,30 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
 
         _lessonsService = IAppHost.GetService<ILessonsService>();
         _profileService = IAppHost.GetService<IProfileService>();
-        var notificationHostService = IAppHost.GetService<INotificationHostService>();
+        _notificationHostService = IAppHost.GetService<INotificationHostService>();
+        _exactTimeService = IAppHost.GetService<IExactTimeService>();
         _settingsService = IAppHost.GetService<SettingsService>();
         _scheduleFactory = new IosLessonNotificationScheduleFactory(
             _lessonsService,
             _profileService,
-            notificationHostService,
+            _notificationHostService,
             _settingsService,
-            IAppHost.GetService<IExactTimeService>());
+            _exactTimeService);
+        _notificationHostService.RegisterNotificationConsumer(
+            _queueConsumer,
+            int.MinValue);
         _isWorkStarted = true;
         _lessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
+        _exactTimeService.PropertyChanged += ExactTimeServiceOnPropertyChanged;
         RebuildChangeSubscriptions();
         _attachedSettingsScanTimer.Start();
+        _rollingScheduleRefreshTimer.Start();
         QueueRefresh();
     }
 
-    private async void QueueRefresh()
+    private void QueueRefresh() => _ = QueueRefreshAsync();
+
+    private async Task QueueRefreshAsync()
     {
         if (!_isWorkStarted ||
             _scheduleFactory == null ||
@@ -340,6 +358,16 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         QueueRefreshDebounced();
     }
 
+    private void ExactTimeServiceOnPropertyChanged(
+        object? sender,
+        PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IExactTimeService.SyncStatusMessage))
+        {
+            QueueRefreshDebounced();
+        }
+    }
+
     private void QueueRefreshDebounced()
     {
         if (!_isWorkStarted || _cancellation.IsCancellationRequested)
@@ -376,6 +404,9 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         RebuildChangeSubscriptions();
         QueueRefreshDebounced();
     }
+
+    private void RollingScheduleRefreshTimerOnTick(object? sender, EventArgs e) =>
+        QueueRefresh();
 
     private HashSet<INotifyPropertyChanged> CollectAttachedSettingsSources()
     {
@@ -462,16 +493,25 @@ internal sealed class IosLessonsNotificationCoordinator : IDisposable
         _refreshDebounceTimer.Tick -= RefreshDebounceTimerOnTick;
         _attachedSettingsScanTimer.Stop();
         _attachedSettingsScanTimer.Tick -= AttachedSettingsScanTimerOnTick;
+        _rollingScheduleRefreshTimer.Stop();
+        _rollingScheduleRefreshTimer.Tick -= RollingScheduleRefreshTimerOnTick;
         if (_lessonsService != null)
         {
             _lessonsService.PropertyChanged -= LessonsServiceOnPropertyChanged;
         }
+        if (_exactTimeService != null)
+        {
+            _exactTimeService.PropertyChanged -= ExactTimeServiceOnPropertyChanged;
+        }
+        _notificationHostService?.UnregisterNotificationConsumer(_queueConsumer);
         DetachChangeSubscriptions();
         DisposeObserver(ref _foregroundObserver);
         DisposeObserver(ref _resignActiveObserver);
         _lessonsService = null;
         _profileService = null;
+        _exactTimeService = null;
         _settingsService = null;
+        _notificationHostService = null;
         _scheduleFactory = null;
         _isStarted = false;
         _isWorkStarted = false;
