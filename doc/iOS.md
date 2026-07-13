@@ -13,7 +13,7 @@ ClassIsland 的 iPhone 与 iPad 主界面由 Avalonia 统一实现。Swift 代�
 - 上传前会重新解包，检查 arm64、minimum OS、Swift back-deployment runtime、ActivityKit weak link、Extension 和 bridge，并确认没有签名与 provisioning profile。
 - Artifact 保留 14 天，名称格式为 `ClassIsland-iOS-unsigned-<run number>-<run attempt>`。
 
-当前只支持 iOS/iPadOS 真机的 `ios-arm64` RID。SoundFlow 1.2.1 没有提供 Simulator 原生 framework，因此 `iossimulator-*` 构建会在项目校验阶段给出明确错误。主程序和 Swift bridge 最低支持 iOS 15.0；Live Activity Extension 最低支持 iOS 16.1。
+当前只支持 iOS/iPadOS 真机的 `ios-arm64` RID。SoundFlow 1.2.1 没有提供 Simulator 原生 framework，因此 `iossimulator-*` 应用构建会在项目校验阶段给出明确错误。`.NET for iOS` 的 `XcodeProject` 集成会为纯 Swift bridge 生成包含 device 与 Simulator slice 的 XCFramework；该内部 slice 不代表应用支持 Simulator，也不会链接 SoundFlow。主程序和 Swift bridge 最低支持 iOS 15.0；Live Activity Extension 最低支持 iOS 16.1。
 
 推送代码后，进入 `Actions > Build iOS` 打开对应运行，从 Artifacts 下载 unsigned IPA。也可以在工作流进入默认分支后通过 `Run workflow` 手动构建。
 

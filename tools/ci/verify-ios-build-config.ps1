@@ -88,7 +88,10 @@ $ios161Targets = ([regex]::Matches($nativeProjectText, "IPHONEOS_DEPLOYMENT_TARG
 Assert-True ($ios15Targets -eq 4) "The Xcode project and bridge Debug/Release targets must use iOS 15.0."
 Assert-True ($ios161Targets -eq 2) "The Live Activity extension Debug/Release targets must remain on iOS 16.1."
 Assert-True (-not $nativeProjectText.Contains("IPHONEOS_DEPLOYMENT_TARGET = 13.0;")) "The Xcode project still contains an iOS 13.0 target unsupported by Xcode 26."
-Assert-True (-not $nativeProjectText.Contains("iphonesimulator")) "The native bridge and extension must not declare Simulator platforms."
+$bridgePlatforms = ([regex]::Matches($nativeProjectText, 'SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";')).Count
+$deviceOnlyPlatforms = ([regex]::Matches($nativeProjectText, 'SUPPORTED_PLATFORMS = iphoneos;')).Count
+Assert-True ($bridgePlatforms -eq 2) "The Swift bridge must provide device and Simulator slices for the SDK-generated XCFramework."
+Assert-True ($deviceOnlyPlatforms -eq 2) "The Live Activity extension must remain device-only."
 
 $plistKeys = @($infoPlist.plist.dict.key)
 Assert-True (-not ($plistKeys -contains "CFBundleDisplayName")) "Info.plist must not hard-code CFBundleDisplayName; ApplicationTitle must generate it."

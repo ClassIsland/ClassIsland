@@ -66,6 +66,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('osx'))">
+    <!-- The SDK creates a device + Simulator XCFramework for this pure Swift bridge.
+         The Avalonia app itself remains device-only because SoundFlow has no Simulator slice. -->
     <XcodeProject Include="..\ClassIsland.iOS.Native\ClassIsland.iOS.Native.xcodeproj">
       <SchemeName>ClassIslandLiveActivityBridge</SchemeName>
       <Configuration>$(ClassIslandNativeConfiguration)</Configuration>
