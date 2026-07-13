@@ -1,0 +1,35 @@
+<UserControl x:Class="ClassIsland.Core.Controls.ContributorBadge"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
+             HorizontalAlignment="Center"
+             Classes="fade-visibility">
+    <Panel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ContributorBadge}}">
+        <Button x:Name="RootButton"
+                Theme="{StaticResource TransparentButton}"
+                Opacity="0.5"
+                ToolTip.Tip="贡献者信息">
+            <ci:IconText Glyph="&#xED49;"
+                         Text="{Binding PluginName}"/>
+            <Button.Flyout>
+                <Flyout>
+                    <Panel Margin="-4">
+                        <StackPanel RenderTransform="scale(0.95)">
+                            <TextBlock FontWeight="Bold" Text="贡献者信息"
+                                       Margin="0 0 0 4"/>
+                            <local:SimpleRichText
+                                Text="{Binding Markdown}"
+                                UserDictionary="{x:Static services:IPluginService.ContributorDisplayNames}"
+                                TextWrapping="Wrap"
+                                MaxWidth="320"
+                                LineHeight="24"
+                                Margin="0 4 0 -4"/>
+                        </StackPanel>
+                    </Panel>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
+    </Panel>
+</UserControl>

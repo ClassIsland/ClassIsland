@@ -182,7 +182,7 @@ public class PluginService : IPluginService
                 PluginLoadContexts[info.Manifest.Id] = loadContext;
                 var asm = loadContext.LoadFromAssemblyName(
                     new AssemblyName(Path.GetFileNameWithoutExtension(fullPath)));
-                ContributorInfoHelper.RegisterPlugin(asm, manifest.Name);
+                ContributorInfoHelper.RegisterPlugin(asm, manifest);
                 var entrance = asm.ExportedTypes.FirstOrDefault(x =>
                     x.BaseType == typeof(PluginBase) ||
                     x.GetCustomAttributes().FirstOrDefault(a => a.GetType() == typeof(PluginEntrance)) != null);

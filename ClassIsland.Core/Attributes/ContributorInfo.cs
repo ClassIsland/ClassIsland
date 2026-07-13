@@ -1,23 +1,15 @@
 namespace ClassIsland.Core.Attributes;
 
-/// <summary>
 /// 功能贡献者信息。
-/// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public class ContributorInfo(string text) : Attribute
+public class ContributorInfo(string details) : Attribute
 {
-    /// <summary>
-    /// 该功能的贡献者描述。
-    /// </summary>
-    public string? Text { get; } = text;
-
-    /// <summary>
     /// 插件名称。
-    /// </summary>
-    public string? Plugin { get; set; }
-
-    /// <summary>
-    /// 插件
-    /// </summary>
-    public string? Message { get; set; }
+    public string? PluginName { get; set; }
+    /// 插件支持信息。
+    public string? PluginMessage { get; set; }
+    /// 该功能的贡献者详情。
+    public string? Details { get; set; } = details;
+    
+    internal ContributorInfo() : this(null!) { }
 }
