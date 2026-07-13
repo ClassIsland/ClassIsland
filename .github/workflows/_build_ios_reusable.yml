@@ -110,7 +110,7 @@ jobs:
         shell: pwsh
         run: >-
           ./tools/ci/verify-cobertura-coverage.ps1
-          -ResultsDirectory "$RUNNER_TEMP/ios-tests"
+          -ResultsDirectory "${{ runner.temp }}/ios-tests"
           -MinimumLineRate 0.8
 
       - name: Build unsigned iOS IPA through NUKE
