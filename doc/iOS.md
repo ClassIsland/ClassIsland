@@ -2,93 +2,22 @@
 
 ClassIsland 的 iPhone 与 iPad 主界面由 Avalonia 统一实现。Swift 代码只存在于 ActivityKit bridge 和 Widget Extension 中；业务代码通过 `ClassIsland.Platforms.Abstraction` 提供的纯 C# API 调用实时活动与灵动岛。
 
-## 使用 GitHub Actions 构建 IPA
+## 使用 GitHub Actions 构建 unsigned IPA
 
-工作流位于 `.github/workflows/build_ios.yml`：
+工作流位于 `.github/workflows/build_ios.yml`，不需要 Apple 证书、provisioning profile 或 GitHub Environment Secrets。
 
-- Pull Request 以及 `master`、`develop/v2/ios` 的相关提交会在 `macos-26` 上执行无签名的 `ios-arm64` 真机构建。
-- 手动运行 `Build iOS` 工作流会先通过无签名真机构建，再生成已签名的 `ios-arm64` IPA。
-- 推送形如 `ios-v2.0.0` 的 tag 也会使用 `ios-production` Environment 构建正式 IPA，因此 workflow 尚未合并到默认分支时仍可触发首次构建。
-- IPA 上传前会验证主 App、Live Activity Extension、双 provisioning profile、代码签名，以及 ActivityKit 的 weak link（弱链接）。
-- 构建结果和 SHA-256 文件会作为 GitHub Artifact 保留 14 天。
+- Pull Request、`master` 与 `develop/v2/ios` 的相关提交会构建 `ios-arm64` 真机版本。
+- 工作流运行平台抽象测试，并构建 Avalonia 主程序、Swift bridge 和 Live Activity Extension。
+- 主程序使用正式 Bundle ID `cn.classisland.ios`，Extension 使用 `cn.classisland.ios.LiveActivityExtension`。
+- 构建结果封装为标准 `Payload/ClassIsland.iOS.app` IPA，并生成 SHA-256 文件。
+- 上传前会重新解包，检查 arm64、minimum OS、ActivityKit weak link、Extension 和 bridge，并确认没有签名与 provisioning profile。
+- Artifact 保留 14 天，名称格式为 `ClassIsland-iOS-unsigned-<run number>-<run attempt>`。
 
-### 1. 创建 App ID 和 provisioning profile
+推送代码后，进入 `Actions > Build iOS` 打开对应运行，从 Artifacts 下载 unsigned IPA。也可以在工作流进入默认分支后通过 `Run workflow` 手动构建。
 
-每个品牌都需要两个显式 App ID，以及两个相同发布类型的 provisioning profile：
+unsigned IPA 不能直接安装到普通 iPhone 或 iPad；安装前需由使用者通过自己的证书或侧载工具重新签名。仓库与 Action 不处理签名。
 
-| GitHub Action 品牌 | 主 App Bundle ID | Extension Bundle ID | GitHub Environment |
-| --- | --- | --- | --- |
-| `production` | `cn.classisland.ios` | `cn.classisland.ios.LiveActivityExtension` | `ios-production` |
-| `beta` | `cn.classisland.ios.beta` | `cn.classisland.ios.beta.LiveActivityExtension` | `ios-beta` |
-| `dev` | `cn.classisland.ios.dev` | `cn.classisland.ios.dev.LiveActivityExtension` | `ios-dev` |
-
-用于 TestFlight 或 App Store 时应创建 Apple Distribution 证书和 App Store provisioning profile。需要直接安装到已登记真机时，应为两个 App ID 创建 Ad Hoc profile。Development profile 只能配合 Apple Development 证书用于开发构建。
-
-### 2. 配置 GitHub Environment Secrets
-
-在仓库的 `Settings > Environments` 中创建所需的 `ios-production`、`ios-beta` 或 `ios-dev` Environment，并配置以下 Secrets：
-
-| Secret | 内容 |
-| --- | --- |
-| `IOS_DISTRIBUTION_CERTIFICATE_BASE64` | 包含私钥的 `.p12` 证书 Base64 |
-| `IOS_DISTRIBUTION_CERTIFICATE_PASSWORD` | `.p12` 的导出密码 |
-| `IOS_APP_PROVISIONING_PROFILE_BASE64` | 主 App `.mobileprovision` 的 Base64 |
-| `IOS_LIVE_ACTIVITY_PROVISIONING_PROFILE_BASE64` | Extension `.mobileprovision` 的 Base64 |
-
-可在 macOS 上生成待粘贴的 Base64：
-
-```bash
-base64 -i ClassIsland.p12 | pbcopy
-base64 -i ClassIsland.mobileprovision | pbcopy
-base64 -i ClassIslandLiveActivityExtension.mobileprovision | pbcopy
-```
-
-不要提交 `.p12`、`.mobileprovision`、证书密码或 Apple Team 信息。工作流会从 profile 自动读取 Team ID 和 UUID，并检查 profile 的 Bundle ID，配置不匹配时会在签名前失败。
-
-### 3. 运行工作流
-
-进入仓库的 `Actions > Build iOS > Run workflow`，选择：
-
-- `brand`：选择与 GitHub Environment 和 provisioning profile 一致的品牌；
-- `version`：三个整数段组成的版本号，例如 `2.0.0`。
-
-成功后，从该次运行的 Artifacts 中取得 `ClassIsland-iOS-<brand>-<version>-<run number>`。其中的 IPA 已包含 Avalonia 主应用、Swift bridge、实时活动 Widget Extension 和灵动岛布局。
-
-如果 workflow 还没有进入仓库默认分支，可在目标提交上推送生产构建 tag：
-
-```bash
-git tag ios-v2.0.0
-git push origin ios-v2.0.0
-```
-
-CI 会静态检查主程序和 bridge 的 iOS 13.0 minimum OS、ActivityKit weak load command，以及 `@rpath` Swift back-deployment 依赖。正式发布前仍需在 iOS 13 真机或对应旧 Simulator 上执行一次启动烟测。
-
-## 本地构建已签名 IPA
-
-本地发布必须在装有 Xcode 26.5 和 .NET 10 iOS workload 的 macOS 上执行。证书与两个 provisioning profile 需已安装到登录钥匙串和 provisioning profile 目录。
-
-```bash
-dotnet workload restore ClassIsland.iOS/ClassIsland.iOS.csproj
-
-./build.sh PublishApp \
-  --OsName ios \
-  --Arch arm64 \
-  --Package ipa \
-  --BuildType selfContained \
-  --BuildName app \
-  --Configuration Release \
-  --AppVersion 2.0.0 \
-  --BuildNumber 1 \
-  --BrandType Production \
-  --CodesignKey "Apple Distribution: Example (TEAMID)" \
-  --CodesignProvision "MAIN_PROFILE_UUID" \
-  --ClassIslandLiveActivityCodesignProvision "EXTENSION_PROFILE_UUID" \
-  --ClassIslandDevelopmentTeam "TEAMID"
-```
-
-产物位于 `out/out_app_ios_arm64_selfContained_ipa.ipa`。
-
-Windows 可以编译和测试 C# 层，但无法执行 Xcode、签名 Widget Extension 或产出可安装的 IPA。
+Windows 可以编译和测试 C# 层，但无法执行 Xcode、构建 Widget Extension 或封装 iOS 真机应用。
 
 ## 通过 Files App 查看应用文件
 

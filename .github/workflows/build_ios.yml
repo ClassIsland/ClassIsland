@@ -4,11 +4,8 @@ on:
   pull_request:
     paths:
       - '.github/workflows/build_ios.yml'
-      - '.nuke/build.schema.json'
       - 'global.json'
       - '*.props'
-      - 'build/**'
-      - 'build.sh'
       - 'ClassIsland.iOS/**'
       - 'ClassIsland.iOS.Native/**'
       - 'ClassIsland/**'
@@ -28,11 +25,8 @@ on:
       - 'ios-v*'
     paths:
       - '.github/workflows/build_ios.yml'
-      - '.nuke/build.schema.json'
       - 'global.json'
       - '*.props'
-      - 'build/**'
-      - 'build.sh'
       - 'ClassIsland.iOS/**'
       - 'ClassIsland.iOS.Native/**'
       - 'ClassIsland/**'
@@ -45,21 +39,6 @@ on:
       - 'ClassIsland.sln'
       - 'vendors/EdgeTtsSharp/**'
   workflow_dispatch:
-    inputs:
-      brand:
-        description: App brand and signing environment
-        required: true
-        default: production
-        type: choice
-        options:
-          - production
-          - beta
-          - dev
-      version:
-        description: CFBundleShortVersionString, for example 2.0.0
-        required: true
-        default: 2.0.0
-        type: string
 
 permissions:
   contents: read
@@ -67,18 +46,23 @@ permissions:
 
 concurrency:
   group: ios-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+  cancel-in-progress: true
 
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: '1'
   DOTNET_NOLOGO: '1'
   IOS_PROJECT: ClassIsland.iOS/ClassIsland.iOS.csproj
   IOS_SOLUTION_FILTER: ClassIsland.Filter.iOS.slnf
+  IOS_CONFIGURATION: Debug
+  IOS_RUNTIME_IDENTIFIER: ios-arm64
+  APPLICATION_ID: cn.classisland.ios
   XCODE_PATH: /Applications/Xcode_26.5.app
+  APP_BUNDLE_PATH: ${{ github.workspace }}/ClassIsland.iOS/bin/Debug/net10.0-ios/ios-arm64/ClassIsland.iOS.app
+  IPA_PATH: ${{ github.workspace }}/out/ClassIsland-iOS-unsigned.ipa
 
 jobs:
-  validate:
-    name: Validate unsigned iOS device build
+  build-unsigned-ipa:
+    name: Build unsigned iOS IPA
     runs-on: macos-26
     timeout-minutes: 60
     steps:
@@ -115,7 +99,7 @@ jobs:
         run: |
           dotnet workload restore "$IOS_PROJECT"
           dotnet restore "$IOS_SOLUTION_FILTER"
-          dotnet restore "$IOS_PROJECT" -r ios-arm64
+          dotnet restore "$IOS_PROJECT" -r "$IOS_RUNTIME_IDENTIFIER"
 
       - name: Run platform abstraction tests
         run: dotnet test ClassIsland.Platforms.Abstractions.Tests/ClassIsland.Platforms.Abstractions.Tests.csproj -c Release
@@ -124,211 +108,36 @@ jobs:
         run: >-
           dotnet build "$IOS_PROJECT"
           -f net10.0-ios
-          -c Debug
-          -r ios-arm64
+          -c "$IOS_CONFIGURATION"
+          -r "$IOS_RUNTIME_IDENTIFIER"
           --no-restore
           -m:1
-          -p:BrandType=Dev
+          -p:BrandType=Production
           -p:EnableCodeSigning=false
 
-  build-ipa:
-    name: Build signed IPA
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/ios-v')
-    needs: validate
-    runs-on: macos-26
-    timeout-minutes: 90
-    environment: ios-${{ github.event_name == 'workflow_dispatch' && inputs.brand || 'production' }}
-    env:
-      APP_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
-      BRAND_TYPE: ${{ github.event_name != 'workflow_dispatch' && 'Production' || inputs.brand == 'production' && 'Production' || inputs.brand == 'beta' && 'Beta' || 'Dev' }}
-      APPLICATION_ID: ${{ github.event_name != 'workflow_dispatch' && 'cn.classisland.ios' || inputs.brand == 'production' && 'cn.classisland.ios' || inputs.brand == 'beta' && 'cn.classisland.ios.beta' || 'cn.classisland.ios.dev' }}
-      IPA_PATH: ${{ github.workspace }}/out/out_app_ios_arm64_selfContained_ipa.ipa
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Validate workflow inputs and secrets
-        env:
-          IOS_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
-          IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-          IOS_APP_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_APP_PROVISIONING_PROFILE_BASE64 }}
-          IOS_LIVE_ACTIVITY_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_LIVE_ACTIVITY_PROVISIONING_PROFILE_BASE64 }}
+      - name: Package unsigned IPA
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/ios-v* ]]; then
-            APP_VERSION="${GITHUB_REF_NAME#ios-v}"
-            echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_ENV"
-          fi
-
-          if [[ ! "$APP_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::version must contain three dot-separated integers, for example 2.0.0"
+          if [[ ! -d "$APP_BUNDLE_PATH" ]]; then
+            echo "::error::Unsigned app bundle not found at $APP_BUNDLE_PATH"
             exit 1
           fi
 
-          missing=0
-          for variable_name in \
-            IOS_DISTRIBUTION_CERTIFICATE_BASE64 \
-            IOS_DISTRIBUTION_CERTIFICATE_PASSWORD \
-            IOS_APP_PROVISIONING_PROFILE_BASE64 \
-            IOS_LIVE_ACTIVITY_PROVISIONING_PROFILE_BASE64; do
-            if [[ -z "${!variable_name}" ]]; then
-              echo "::error::Missing GitHub Environment secret: $variable_name"
-              missing=1
-            fi
-          done
-          exit "$missing"
+          staging_directory="$(mktemp -d "$RUNNER_TEMP/classisland-unsigned-ipa.XXXXXX")"
+          mkdir -p "$staging_directory/Payload" "$(dirname "$IPA_PATH")"
+          /usr/bin/ditto "$APP_BUNDLE_PATH" "$staging_directory/Payload/ClassIsland.iOS.app"
+          (
+            cd "$staging_directory"
+            /usr/bin/ditto -c -k --sequesterRsrc --keepParent Payload "$IPA_PATH"
+          )
 
-      - name: Select Xcode
-        run: |
-          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
-          xcodebuild -version
-          xcodebuild -showsdks
-
-      - name: Install .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Add GitHub Packages source
-        env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >-
-          dotnet nuget add source
-          --username github-actions
-          --password "$NUGET_AUTH_TOKEN"
-          --store-password-in-clear-text
-          --name github
-          "https://nuget.pkg.github.com/ClassIsland/index.json"
-
-      - name: Restore iOS workload
-        run: dotnet workload restore "$IOS_PROJECT"
-
-      - name: Import code-signing certificate
-        uses: apple-actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
-          p12-password: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-
-      - name: Install and validate provisioning profiles
-        id: profiles
-        env:
-          IOS_APP_PROFILE_BASE64: ${{ secrets.IOS_APP_PROVISIONING_PROFILE_BASE64 }}
-          IOS_LIVE_ACTIVITY_PROFILE_BASE64: ${{ secrets.IOS_LIVE_ACTIVITY_PROVISIONING_PROFILE_BASE64 }}
-        run: |
-          install_profile() {
-            local encoded_profile="$1"
-            local profile_key="$2"
-            local expected_bundle_id="$3"
-            local profile_path="$RUNNER_TEMP/$profile_key.mobileprovision"
-            local plist_path="$RUNNER_TEMP/$profile_key.plist"
-
-            printf '%s' "$encoded_profile" | /usr/bin/base64 -D > "$profile_path"
-            /usr/bin/security cms -D -i "$profile_path" > "$plist_path"
-
-            INSTALLED_PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$plist_path")"
-            INSTALLED_PROFILE_TEAM_ID="$(/usr/libexec/PlistBuddy -c 'Print :TeamIdentifier:0' "$plist_path")"
-            INSTALLED_PROFILE_APP_ID_PREFIX="$(/usr/libexec/PlistBuddy -c 'Print :ApplicationIdentifierPrefix:0' "$plist_path")"
-            local application_identifier
-            application_identifier="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$plist_path")"
-
-            if [[ "$application_identifier" != "$INSTALLED_PROFILE_APP_ID_PREFIX.$expected_bundle_id" ]]; then
-              echo "::error::$profile_key profile targets $application_identifier, expected $INSTALLED_PROFILE_APP_ID_PREFIX.$expected_bundle_id"
-              exit 1
-            fi
-
-            for profile_directory in \
-              "$HOME/Library/MobileDevice/Provisioning Profiles" \
-              "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"; do
-              mkdir -p "$profile_directory"
-              install -m 600 "$profile_path" "$profile_directory/$INSTALLED_PROFILE_UUID.mobileprovision"
-            done
-          }
-
-          install_profile "$IOS_APP_PROFILE_BASE64" app "$APPLICATION_ID"
-          app_profile_uuid="$INSTALLED_PROFILE_UUID"
-          team_id="$INSTALLED_PROFILE_TEAM_ID"
-
-          install_profile "$IOS_LIVE_ACTIVITY_PROFILE_BASE64" live_activity "$APPLICATION_ID.LiveActivityExtension"
-          live_activity_profile_uuid="$INSTALLED_PROFILE_UUID"
-
-          if [[ "$team_id" != "$INSTALLED_PROFILE_TEAM_ID" ]]; then
-            echo "::error::The app and Live Activity profiles belong to different Apple Developer teams"
-            exit 1
-          fi
-
-          profile_certificate_hashes="$(python3 - "$RUNNER_TEMP/app.plist" "$RUNNER_TEMP/live_activity.plist" <<'PY'
-          import hashlib
-          import plistlib
-          import sys
-
-          def certificate_hashes(path: str) -> set[str]:
-              with open(path, "rb") as stream:
-                  profile = plistlib.load(stream)
-              return {
-                  hashlib.sha1(certificate).hexdigest().upper()
-                  for certificate in profile.get("DeveloperCertificates", [])
-              }
-
-          print(",".join(sorted(
-              certificate_hashes(sys.argv[1]) & certificate_hashes(sys.argv[2])
-          )))
-          PY
-          )"
-          if [[ -z "$profile_certificate_hashes" ]]; then
-            echo "::error::The app and Live Activity profiles do not share a signing certificate"
-            exit 1
-          fi
-
-          echo "app_profile_uuid=$app_profile_uuid" >> "$GITHUB_OUTPUT"
-          echo "live_activity_profile_uuid=$live_activity_profile_uuid" >> "$GITHUB_OUTPUT"
-          echo "team_id=$team_id" >> "$GITHUB_OUTPUT"
-          echo "certificate_hashes=$profile_certificate_hashes" >> "$GITHUB_OUTPUT"
-
-      - name: Select signing identity
-        id: signing
-        run: |
-          allowed_identities=",${{ steps.profiles.outputs.certificate_hashes }},"
-          signing_identity=""
-          while IFS= read -r candidate; do
-            if [[ "$allowed_identities" == *",$candidate,"* ]]; then
-              signing_identity="$candidate"
-              break
-            fi
-          done < <(security find-identity -v -p codesigning | sed -nE 's/^[[:space:]]*[0-9]+\) ([[:xdigit:]]{40}) .*/\1/p')
-
-          if [[ -z "$signing_identity" ]]; then
-            echo "::error::No imported code-signing identity is allowed by both provisioning profiles"
-            exit 1
-          fi
-          echo "identity=$signing_identity" >> "$GITHUB_OUTPUT"
-
-      - name: Publish signed IPA
-        run: |
-          ./build.sh PublishApp \
-            --OsName ios \
-            --Arch arm64 \
-            --Package ipa \
-            --BuildType selfContained \
-            --BuildName app \
-            --Configuration Release \
-            --AppVersion "$APP_VERSION" \
-            --BuildNumber "${{ github.run_number }}" \
-            --BrandType "$BRAND_TYPE" \
-            --CodesignKey "${{ steps.signing.outputs.identity }}" \
-            --CodesignProvision "${{ steps.profiles.outputs.app_profile_uuid }}" \
-            --ClassIslandLiveActivityCodesignProvision "${{ steps.profiles.outputs.live_activity_profile_uuid }}" \
-            --ClassIslandDevelopmentTeam "${{ steps.profiles.outputs.team_id }}"
-
-      - name: Verify IPA structure and signatures
+      - name: Verify unsigned IPA
         run: |
           if [[ ! -f "$IPA_PATH" ]]; then
-            echo "::error::PublishApp did not produce $IPA_PATH"
+            echo "::error::Unsigned IPA was not produced at $IPA_PATH"
             exit 1
           fi
 
-          verify_directory="$(mktemp -d "$RUNNER_TEMP/classisland-ipa.XXXXXX")"
+          verify_directory="$(mktemp -d "$RUNNER_TEMP/classisland-verify-ipa.XXXXXX")"
           /usr/bin/ditto -x -k "$IPA_PATH" "$verify_directory"
           shopt -s nullglob
           app_bundles=("$verify_directory"/Payload/*.app)
@@ -339,7 +148,8 @@ jobs:
 
           app_bundle="${app_bundles[0]}"
           extension_bundle="$app_bundle/PlugIns/ClassIslandLiveActivityExtension.appex"
-          bridge_binary="$app_bundle/Frameworks/ClassIslandLiveActivityBridge.framework/ClassIslandLiveActivityBridge"
+          bridge_bundle="$app_bundle/Frameworks/ClassIslandLiveActivityBridge.framework"
+          bridge_binary="$bridge_bundle/ClassIslandLiveActivityBridge"
           if [[ ! -d "$extension_bundle" ]]; then
             echo "::error::The Live Activity extension is missing from the IPA"
             exit 1
@@ -356,86 +166,63 @@ jobs:
             exit 1
           fi
           if [[ "$extension_bundle_id" != "$APPLICATION_ID.LiveActivityExtension" ]]; then
-            echo "::error::The Live Activity bundle ID is $extension_bundle_id, expected $APPLICATION_ID.LiveActivityExtension"
+            echo "::error::The extension bundle ID is $extension_bundle_id, expected $APPLICATION_ID.LiveActivityExtension"
             exit 1
           fi
 
-          /usr/bin/codesign --verify --deep --strict --verbose=2 "$app_bundle"
-
-          verify_bundle_signing() {
+          assert_unsigned_bundle() {
             local bundle_path="$1"
-            local profile_key="$2"
-            local expected_profile_uuid="$3"
-            local expected_bundle_id="$4"
-            local profile_plist="$verify_directory/$profile_key-profile.plist"
-            local entitlements_plist="$verify_directory/$profile_key-entitlements.plist"
-
-            /usr/bin/security cms -D -i "$bundle_path/embedded.mobileprovision" > "$profile_plist"
-            /usr/bin/codesign -d --entitlements :- "$bundle_path" > "$entitlements_plist" 2> /dev/null
-
-            local profile_uuid
-            local profile_team_id
-            local app_id_prefix
-            local profile_application_identifier
-            local signed_application_identifier
-            local signed_team_id
-            profile_uuid="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$profile_plist")"
-            profile_team_id="$(/usr/libexec/PlistBuddy -c 'Print :TeamIdentifier:0' "$profile_plist")"
-            app_id_prefix="$(/usr/libexec/PlistBuddy -c 'Print :ApplicationIdentifierPrefix:0' "$profile_plist")"
-            profile_application_identifier="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$profile_plist")"
-            signed_application_identifier="$(/usr/libexec/PlistBuddy -c 'Print :application-identifier' "$entitlements_plist")"
-            signed_team_id="$(/usr/libexec/PlistBuddy -c 'Print :com.apple.developer.team-identifier' "$entitlements_plist")"
-
-            if [[ "$profile_uuid" != "$expected_profile_uuid" ]]; then
-              echo "::error::$profile_key embedded profile UUID is $profile_uuid, expected $expected_profile_uuid"
-              exit 1
-            fi
-            if [[ "$profile_team_id" != "${{ steps.profiles.outputs.team_id }}" ]]; then
-              echo "::error::$profile_key embedded profile belongs to an unexpected Apple Developer team"
-              exit 1
-            fi
-            if [[ "$profile_application_identifier" != "$app_id_prefix.$expected_bundle_id" ||
-                  "$signed_application_identifier" != "$profile_application_identifier" ||
-                  "$signed_team_id" != "$profile_team_id" ]]; then
-              echo "::error::$profile_key profile, bundle ID, and signed entitlements do not match"
+            local bundle_name="$2"
+            if [[ -e "$bundle_path/embedded.mobileprovision" || -d "$bundle_path/_CodeSignature" ]]; then
+              echo "::error::$bundle_name unexpectedly contains signing data"
               exit 1
             fi
           }
 
-          verify_bundle_signing \
-            "$app_bundle" \
-            app \
-            "${{ steps.profiles.outputs.app_profile_uuid }}" \
-            "$APPLICATION_ID"
-          verify_bundle_signing \
-            "$extension_bundle" \
-            live_activity \
-            "${{ steps.profiles.outputs.live_activity_profile_uuid }}" \
-            "$APPLICATION_ID.LiveActivityExtension"
+          assert_unsigned_bundle "$app_bundle" "The main app"
+          assert_unsigned_bundle "$extension_bundle" "The Live Activity extension"
+          assert_unsigned_bundle "$bridge_bundle" "The Live Activity bridge"
 
           app_executable="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app_bundle/Info.plist")"
+          extension_executable="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$extension_bundle/Info.plist")"
           app_binary="$app_bundle/$app_executable"
+          extension_binary="$extension_bundle/$extension_executable"
 
-          assert_ios_13_minimum() {
+          assert_arm64() {
             local binary_path="$1"
             local binary_name="$2"
-            local minimum_version
-            minimum_version="$(/usr/bin/xcrun vtool -show-build "$binary_path" | awk '$1 == "minos" { print $2; exit }')"
-            if [[ "$minimum_version" != "13.0" && "$minimum_version" != "13.0.0" ]]; then
-              echo "::error::$binary_name has minimum iOS $minimum_version, expected iOS 13.0"
+            if ! /usr/bin/lipo -archs "$binary_path" | tr ' ' '\n' | grep -qx arm64; then
+              echo "::error::$binary_name does not contain the arm64 architecture"
               exit 1
             fi
           }
 
-          assert_ios_13_minimum "$app_binary" "The main app"
-          assert_ios_13_minimum "$bridge_binary" "The Live Activity bridge"
+          assert_arm64 "$app_binary" "The main app"
+          assert_arm64 "$extension_binary" "The Live Activity extension"
+          assert_arm64 "$bridge_binary" "The Live Activity bridge"
+
+          assert_minimum_ios() {
+            local binary_path="$1"
+            local binary_name="$2"
+            local expected_version="$3"
+            local minimum_version
+            minimum_version="$(/usr/bin/xcrun vtool -show-build "$binary_path" | awk '$1 == "minos" { print $2; exit }')"
+            if [[ "$minimum_version" != "$expected_version" && "$minimum_version" != "$expected_version.0" ]]; then
+              echo "::error::$binary_name has minimum iOS $minimum_version, expected iOS $expected_version"
+              exit 1
+            fi
+          }
+
+          assert_minimum_ios "$app_binary" "The main app" "13.0"
+          assert_minimum_ios "$bridge_binary" "The Live Activity bridge" "13.0"
+          assert_minimum_ios "$extension_binary" "The Live Activity extension" "16.1"
 
           while IFS= read -r dependency; do
             case "$dependency" in
               @rpath/*)
                 relative_dependency="${dependency#@rpath/}"
                 if [[ ! -e "$app_bundle/Frameworks/$relative_dependency" ]]; then
-                  echo "::error::The bridge dependency $dependency is not bundled for older iOS versions"
+                  echo "::error::The bridge dependency $dependency is not bundled"
                   exit 1
                 fi
                 ;;
@@ -447,7 +234,7 @@ jobs:
             $1 == "name" && $2 ~ /ActivityKit\.framework\/ActivityKit/ && load_command != "LC_LOAD_WEAK_DYLIB" { found = 1 }
             END { exit found ? 0 : 1 }
           '; then
-            echo "::error::The main app has a strong ActivityKit load command and cannot launch on iOS 13-15"
+            echo "::error::The main app strongly links ActivityKit"
             exit 1
           fi
 
@@ -465,17 +252,17 @@ jobs:
       - name: Write build summary
         run: |
           {
-            echo "### ClassIsland iOS IPA"
+            echo "### ClassIsland unsigned iOS IPA"
             echo "- Bundle ID: \`$APPLICATION_ID\`"
-            echo "- Version: \`$APP_VERSION (${{ github.run_number }})\`"
-            echo "- Brand: \`$BRAND_TYPE\`"
+            echo "- Runtime: \`$IOS_RUNTIME_IDENTIFIER\`"
             echo "- SHA-256: \`$(cut -d ' ' -f 1 "$IPA_PATH.sha256")\`"
+            echo "- The IPA must be signed externally before installation."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload IPA artifact
+      - name: Upload unsigned IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ClassIsland-iOS-${{ github.event_name == 'workflow_dispatch' && inputs.brand || 'production' }}-${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}-${{ github.run_number }}
+          name: ClassIsland-iOS-unsigned-${{ github.run_number }}-${{ github.run_attempt }}
           path: |
             ${{ env.IPA_PATH }}
             ${{ env.IPA_PATH }}.sha256
