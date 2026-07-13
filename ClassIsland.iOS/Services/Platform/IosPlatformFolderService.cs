@@ -1,6 +1,5 @@
 using ClassIsland.Platforms.Abstraction.Services;
 using Foundation;
-using UIKit;
 
 namespace ClassIsland.iOS.Services.Platform;
 
@@ -25,32 +24,5 @@ internal sealed class IosPlatformFolderService : IPlatformFolderService
                ?? throw new InvalidOperationException("无法获取 iOS Documents 目录路径。");
     }
 
-    private static async Task<bool> OpenFilesAppAsync(Uri uri)
-    {
-        using var filesAppUrl = new NSUrl(uri.AbsoluteUri);
-        return await OpenUrlOnMainThreadAsync(filesAppUrl).ConfigureAwait(false);
-    }
-
-    private static Task<bool> OpenUrlOnMainThreadAsync(NSUrl url)
-    {
-        var completionSource = new TaskCompletionSource<bool>(
-            TaskCreationOptions.RunContinuationsAsynchronously);
-
-        UIApplication.SharedApplication.BeginInvokeOnMainThread(() =>
-        {
-            try
-            {
-                UIApplication.SharedApplication.OpenUrl(
-                    url,
-                    new UIApplicationOpenUrlOptions(),
-                    opened => completionSource.TrySetResult(opened));
-            }
-            catch (Exception exception)
-            {
-                completionSource.TrySetException(exception);
-            }
-        });
-
-        return completionSource.Task;
-    }
+    private static Task<bool> OpenFilesAppAsync(Uri uri) => IosSystemUrlOpener.OpenAsync(uri);
 }

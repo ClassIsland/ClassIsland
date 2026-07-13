@@ -152,11 +152,7 @@ public partial class ThemesSettingsPage : SettingsPageBase
         try
         {
             await ViewModel.XamlThemeService.PackageThemeAsync(info.Manifest.Id, file);
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = Path.GetDirectoryName(file) ?? "",
-                UseShellExecute = true
-            });
+            this.ShowSuccessToast($"已将主题 {info.Manifest.Id} 打包到 {file}。");
         }
         catch (Exception ex)
         {

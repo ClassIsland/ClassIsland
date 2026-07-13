@@ -167,11 +167,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
         try
         {
             await Services.PluginService.PackagePluginAsync(ViewModel.SelectedPluginInfo.Manifest.Id, file);
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = Path.GetDirectoryName(file) ?? "",
-                UseShellExecute = true
-            });
+            this.ShowSuccessToast($"已将插件 {ViewModel.SelectedPluginInfo.Manifest.Id} 打包到 {file}。");
         }
         catch (Exception ex)
         {

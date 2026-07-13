@@ -11,6 +11,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
@@ -29,6 +30,18 @@ public partial class WindowSettingsPage : SettingsPageBase
     public WindowSettingsPage()
     {
         InitializeComponent();
+
+        if (PlatformHelper.IsAppleMobile)
+        {
+            Content = new TextBlock
+            {
+                Text = "该系统不支持",
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+            };
+            return;
+        }
+
         DataContext = this;
         
         var taskbarTimer = new DispatcherTimer

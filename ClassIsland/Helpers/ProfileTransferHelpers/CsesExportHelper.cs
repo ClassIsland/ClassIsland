@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ClassIsland.Core.Abstractions.Services;
@@ -69,11 +67,6 @@ public class CsesExportHelper
         {
             var csesProfile = profileService.Profile.ToCsesObject();
             CsesLoader.SaveToYamlFile(csesProfile, filePath);
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = Path.GetDirectoryName(Path.GetFullPath(filePath)),
-                UseShellExecute = true
-            });
             root.ShowSuccessToast($"成功导出到 {filePath}。");
         }
         catch (Exception exception)

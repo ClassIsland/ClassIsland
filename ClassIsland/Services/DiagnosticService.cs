@@ -107,7 +107,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     /// 导出诊断信息到文件
     /// </summary>
     /// <param name="path">保存位置</param>
-    /// <param name="showExportedFile">是否显示导出的文件</param>
+    /// <param name="showExportedFile">为兼容现有调用保留；导出后不再自动打开文件目录。</param>
     public async Task ExportDiagnosticData(string path, bool showExportedFile = true)
     {
         try
@@ -136,14 +136,6 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                 ZipFile.CreateFromDirectory(temp, path);
             });
             Directory.Delete(temp, true);
-            if (showExportedFile)
-            {
-                Process.Start(new ProcessStartInfo()
-                {
-                    FileName = Path.GetDirectoryName(path) ?? "",
-                    UseShellExecute = true
-                });
-            }
         }
         catch (Exception e)
         {

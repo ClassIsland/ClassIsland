@@ -49,6 +49,11 @@ public static class PlatformServices
     public static IPlatformFolderService FolderService { get; internal set; } = new ShellPlatformFolderService();
 
     /// <summary>
+    /// 平台外部 URI 启动服务
+    /// </summary>
+    public static IPlatformUriLauncherService UriLauncherService { get; internal set; } = new ShellPlatformUriLauncherService();
+
+    /// <summary>
     /// 系统实时活动服务。非 Apple 平台和不受支持的系统会安全返回 Unsupported。
     /// </summary>
     public static ILiveActivityService LiveActivityService { get; internal set; } = new LiveActivityServiceStub();

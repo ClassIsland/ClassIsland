@@ -2,7 +2,6 @@ using ClassIsland.Core.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
@@ -40,6 +39,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.UI;
 using ClassIsland.Core.Models.UI;
 using ClassIsland.Platforms.Abstraction;
@@ -609,22 +609,17 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         }
     }
 
-    private void MenuItemOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
+    private async void MenuItemOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(CommonDirectories.AppLogFolderPath) ?? "",
-            UseShellExecute = true
-        });
+        await OpenFolderAsync(CommonDirectories.AppLogFolderPath, "日志目录");
     }
 
-    private void MenuItemOpenAppFolder_OnClick(object sender, RoutedEventArgs e)
+    private async void MenuItemOpenAppFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
-        {
-            FileName = Path.GetFullPath(".") ?? "",
-            UseShellExecute = true
-        });
+        var folderPath = PlatformHelper.IsAppleMobile
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "ClassIsland")
+            : Path.GetFullPath(".");
+        await OpenFolderAsync(folderPath, "应用目录");
     }
 
     private void MenuItemDebugWindowRule_OnClick(object sender, RoutedEventArgs e)
@@ -632,13 +627,26 @@ public partial class SettingsWindowNew : ViewBase, IFANavigationPageFactory
         IAppHost.GetService<WindowRuleDebugWindow>().Show();
     }
 
-    private void MenuItemOpenDataFolder_OnClick(object sender, RoutedEventArgs e)
+    private async void MenuItemOpenDataFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        await OpenFolderAsync(CommonDirectories.AppRootFolderPath, "数据目录");
+    }
+
+    private async Task OpenFolderAsync(string folderPath, string folderName)
+    {
+        try
         {
-            FileName = Path.GetFullPath(CommonDirectories.AppRootFolderPath) ?? "",
-            UseShellExecute = true
-        });
+            var opened = await PlatformServices.FolderService.OpenFolderAsync(Path.GetFullPath(folderPath));
+            if (!opened)
+            {
+                this.ShowErrorToast($"系统文件管理器无法打开{folderName}。");
+            }
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "无法使用系统文件管理器打开{FolderName}。", folderName);
+            this.ShowErrorToast($"无法打开{folderName}", exception);
+        }
     }
 
     private async void MenuItemAddDesktopShortcut_OnClick(object? sender, RoutedEventArgs e)

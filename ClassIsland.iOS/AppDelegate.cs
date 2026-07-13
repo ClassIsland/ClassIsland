@@ -28,6 +28,7 @@ public sealed class AppDelegate : AvaloniaAppDelegate<App>
     {
         PlatformServices.AppLifetimeService = new IosAppLifetimeService();
         PlatformServices.FolderService = new IosPlatformFolderService();
+        PlatformServices.UriLauncherService = new IosPlatformUriLauncherService();
         PlatformServices.LiveActivityService = new IosLiveActivityService();
 
         var buildApp = Program.AppEntry(["--mobile"]);

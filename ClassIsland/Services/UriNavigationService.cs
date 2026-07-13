@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows;
 using Avalonia;
 using Avalonia.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.UriNavigation;
+using ClassIsland.Platforms.Abstraction;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Microsoft.Extensions.Logging;
@@ -68,13 +68,28 @@ public class UriNavigationService : IUriNavigationService
             }
             else
             {
-                Process.Start(new ProcessStartInfo()
-                {
-                    FileName = uri.ToString(),
-                    UseShellExecute = true
-                });
+                _ = OpenExternalUriAsync(uri);
             }
         });
+    }
+
+    private async Task OpenExternalUriAsync(Uri uri)
+    {
+        try
+        {
+            if (await PlatformServices.UriLauncherService.OpenUriAsync(uri).ConfigureAwait(false))
+            {
+                return;
+            }
+
+            throw new InvalidOperationException("系统未能打开该链接。");
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "无法导航到 {}", uri);
+            Dispatcher.UIThread.Post(() =>
+                _ = CommonTaskDialogs.ShowDialog("导航失败", $"无法导航到 {uri}：{exception.Message}"));
+        }
     }
 
     public void NavigateWrapped(Uri uri, out Exception? exception)
