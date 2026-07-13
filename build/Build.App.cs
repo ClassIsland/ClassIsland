@@ -111,7 +111,7 @@ partial class Build
                         .SetProperty("IpaPackagePath", IosPublishArtifactPath);
 
                     if (string.Equals(
-                            Configuration.Value,
+                            (string)Configuration,
                             "Release",
                             StringComparison.OrdinalIgnoreCase))
                     {
