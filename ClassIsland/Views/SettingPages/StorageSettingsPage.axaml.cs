@@ -15,6 +15,7 @@ using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
 using Microsoft.Extensions.Logging;
+using Directory = System.IO.Directory;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.SettingPages;
