@@ -127,6 +127,17 @@ jobs:
             --scan-folder "$APP_BUNDLE_PATH/PlugIns" \
             --destination "$APP_BUNDLE_PATH/Frameworks"
 
+      - name: Add SoundFlow iOS resolver alias
+        run: |
+          miniaudio_binary="$APP_BUNDLE_PATH/Frameworks/miniaudio.framework/miniaudio"
+          resolver_directory="$APP_BUNDLE_PATH/runtimes/$IOS_RUNTIME_IDENTIFIER/native/miniaudio.framework"
+          if [[ ! -f "$miniaudio_binary" ]]; then
+            echo "::error::SoundFlow miniaudio framework is missing from the app bundle"
+            exit 1
+          fi
+          mkdir -p "$resolver_directory"
+          ln -s "../../../../Frameworks/miniaudio.framework/miniaudio" "$resolver_directory/miniaudio"
+
       - name: Package unsigned IPA
         run: |
           if [[ ! -d "$APP_BUNDLE_PATH" ]]; then
@@ -162,12 +173,26 @@ jobs:
           extension_bundle="$app_bundle/PlugIns/ClassIslandLiveActivityExtension.appex"
           bridge_bundle="$app_bundle/Frameworks/ClassIslandLiveActivityBridge.framework"
           bridge_binary="$bridge_bundle/ClassIslandLiveActivityBridge"
+          miniaudio_binary="$app_bundle/Frameworks/miniaudio.framework/miniaudio"
+          miniaudio_resolver_alias="$app_bundle/runtimes/$IOS_RUNTIME_IDENTIFIER/native/miniaudio.framework/miniaudio"
           if [[ ! -d "$extension_bundle" ]]; then
             echo "::error::The Live Activity extension is missing from the IPA"
             exit 1
           fi
           if [[ ! -f "$bridge_binary" ]]; then
             echo "::error::The Live Activity bridge framework is missing from the IPA"
+            exit 1
+          fi
+          if [[ ! -f "$miniaudio_binary" ]]; then
+            echo "::error::The SoundFlow miniaudio framework is missing from the IPA"
+            exit 1
+          fi
+          if [[ ! -L "$miniaudio_resolver_alias" || ! -e "$miniaudio_resolver_alias" ]]; then
+            echo "::error::The SoundFlow iOS native resolver path is missing from the IPA"
+            exit 1
+          fi
+          if [[ "$(readlink "$miniaudio_resolver_alias")" != "../../../../Frameworks/miniaudio.framework/miniaudio" ]]; then
+            echo "::error::The SoundFlow iOS native resolver alias has an unexpected target"
             exit 1
           fi
 
@@ -212,6 +237,7 @@ jobs:
           assert_arm64 "$app_binary" "The main app"
           assert_arm64 "$extension_binary" "The Live Activity extension"
           assert_arm64 "$bridge_binary" "The Live Activity bridge"
+          assert_arm64 "$miniaudio_binary" "The SoundFlow miniaudio framework"
 
           assert_minimum_ios() {
             local binary_path="$1"
