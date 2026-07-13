@@ -116,7 +116,9 @@ internal sealed class IosLessonNotificationScheduleFactory(
                     lesson.Item,
                     classPlan,
                     timeLayout);
-            IClassNotificationSettings effectiveSettings = attachedSettings ?? providerSettings;
+            IClassNotificationSettings effectiveSettings = attachedSettings is not null
+                ? attachedSettings
+                : providerSettings;
             var subjectText = FormatSubject(
                 lesson.Subject,
                 providerSettings.ShowTeacherName);
@@ -186,7 +188,9 @@ internal sealed class IosLessonNotificationScheduleFactory(
                     timeLayoutItem: breakItem,
                     classPlan: classPlan,
                     timeLayout: timeLayout);
-            IClassNotificationSettings effectiveSettings = attachedSettings ?? providerSettings;
+            IClassNotificationSettings effectiveSettings = attachedSettings is not null
+                ? attachedSettings
+                : providerSettings;
             var breakingDelivery = GetDeliveryOptions(
                 ClassNotificationProvider.OnBreakingChannelId);
             if (!effectiveSettings.IsClassOffNotificationEnabled ||

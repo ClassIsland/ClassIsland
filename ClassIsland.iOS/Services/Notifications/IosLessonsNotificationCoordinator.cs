@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Avalonia.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Enums;
 using ClassIsland.iOS.Services.Platform;
 using ClassIsland.Services;
 using ClassIsland.Shared;
